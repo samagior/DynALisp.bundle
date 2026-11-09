@@ -67,12 +67,12 @@ The alias of a Quick Draw preset tells how it draws: `PL-*` for a preset drawn w
 
 - The version of DynALisp is the `AppVersion` of `PackageContents.xml`, and only there: Dyl-Info, the setup and the release all read it. Its `ProductCode` never changes.
 - Each version has its section at the top of `CHANGELOG.md`: a `## <version> - <date>` heading, then one short line per change (plain ASCII: AutoCAD reads the file as is). Raise `AppVersion` and add its section in the same change.
-- A release is a `v<version>` tag pushed to GitHub: the release workflow builds the setup (`Installer\Build.ps1`) and publishes the release, with its changelog section as notes.
+- A release is a `v<version>` tag pushed to the source repository (`DynALisp.bundle`, private): the release workflow builds the setup (`Installer\Build.ps1`) and publishes the release to the public releases repository (`DynALisp.release`, `*dyl:relrepo*`), with the setup and `CHANGELOG.md` as files and its changelog section as notes. Users, the setup and Dyl-Info only ever link to the releases repository; only git clones use the source one.
 - DynALisp is installed with the setup or as a git clone. The setup installs only the files git knows (never `User`, `MyTools` or the dev files), removes the shipped folders before copying the new ones, waits for AutoCAD to close, and never installs over a git clone. A git clone is updated with `git pull`.
 - The uninstall is **clean**: it offers to save the settings first (see [User Files](#user-files)), then removes the whole folder and everything DynALisp added outside it (the `Dynalisp*` user settings, the DynALisp profile, the paths into the folder in the AutoCAD profiles). Anything new that DynALisp adds outside its folder must be removed by the uninstall too (`CleanProduct` in `Installer\DynALisp.iss`).
 - A file edited by DynALisp at run time never goes under `Contents` (see [User Files](#user-files)): an update replaces the shipped folders whole.
 
-*Why: one version number for every reader, users told what changed on each update, the users' edits kept by every update, and nothing left behind by the uninstall unless the user saves it.*
+*Why: one version number for every reader, updates readable without a GitHub account while the source stays private, users told what changed on each update, the users' edits kept by every update, and nothing left behind by the uninstall unless the user saves it.*
 
 ## Windows
 

@@ -27,7 +27,7 @@ There are two ways to install DynALisp. Both put it in the AutoCAD plugins folde
 
 ### With the setup (to use the tools)
 
-1. Download `DynALisp-Setup-<version>.exe` from the [latest release](https://github.com/samagior/DynALisp.bundle/releases/latest) and run it. It installs for your Windows user only (no admin rights), into `%APPDATA%\Autodesk\ApplicationPlugins\DynALisp.bundle`. Close AutoCAD first, or the setup waits for you to.
+1. Download `DynALisp-Setup-<version>.exe` from the [latest release](https://github.com/samagior/DynALisp.release/releases/latest) of the public [DynALisp.release](https://github.com/samagior/DynALisp.release) repository and run it. It installs for your Windows user only (no admin rights), into `%APPDATA%\Autodesk\ApplicationPlugins\DynALisp.bundle`. Close AutoCAD first, or the setup waits for you to.
 2. Start AutoCAD. Accept the security prompt if AutoCAD asks to load DynALisp.
 
 Windows may warn about an unknown publisher (the setup is not signed yet): click **More info**, then **Run anyway**.
@@ -126,7 +126,7 @@ Before adding a tool, read [CONVENTIONS.md](CONVENTIONS.md): command naming (`Dy
 1. Raise `AppVersion` in `PackageContents.xml` and add its `## <version> - <date>` section at the top of `CHANGELOG.md`, in the same commit.
 2. Push a tag of that version: `git tag v1.1`, then `git push origin v1.1`.
 
-The [release workflow](.github/workflows/release.yml) checks the tag against `AppVersion`, builds the setup with `Installer\Build.ps1` and publishes the GitHub release with its changelog section as notes. Dyl-Info and the automatic updates read that release. To build the setup locally, install [Inno Setup 6](https://jrsoftware.org/isinfo.php) and run `powershell -ExecutionPolicy Bypass -File Installer\Build.ps1` (output in `Releases`).
+The [release workflow](.github/workflows/release.yml) checks the tag against `AppVersion`, builds the setup with `Installer\Build.ps1` and publishes the release to the public [DynALisp.release](https://github.com/samagior/DynALisp.release) repository: the setup and `CHANGELOG.md` as files, its changelog section as notes. Dyl-Info and the automatic updates read that release, without signing in to GitHub. The workflow needs the `RELEASE_TOKEN` secret of this repository: a fine-grained token with **Contents: Read and write** on `DynALisp.release` only (renew it when it expires, then run the workflow by hand with the tag to publish again). To build the setup locally, install [Inno Setup 6](https://jrsoftware.org/isinfo.php) and run `powershell -ExecutionPolicy Bypass -File Installer\Build.ps1` (output in `Releases`).
 
 &nbsp;
 

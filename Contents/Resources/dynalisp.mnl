@@ -2740,18 +2740,23 @@
   ;;; repository and to the module docs, and the core commands
   ;;; (Resources\Dyl-Info.dcl).
   ;;;
+  ;;; Two repositories: the source (*dyl:gitrepo*, private, the one a git clone
+  ;;; pulls) and the releases (*dyl:relrepo*, public: read without signing in to
+  ;;; GitHub). The release workflow of the source publishes each release to the
+  ;;; releases repository, with its setup and CHANGELOG.md as assets.
+  ;;;
   ;;; The version is the AppVersion of PackageContents.xml (the one AutoCAD
-  ;;; reads). The latest version is the tag of the latest GitHub release
-  ;;; (v1.2 or 1.2), or when there is no release, the AppVersion of
-  ;;; PackageContents.xml on the main branch. It is checked once per drawing
+  ;;; reads). The latest version is the tag of the latest release of the
+  ;;; releases repository (v1.2 or 1.2). It is checked once per drawing
   ;;; when Dyl-Info opens (Check again checks it again), with short timeouts so
   ;;; AutoCAD never waits long when offline. Its update button shows what changed
   ;;; and installs the new version (see Updates below), What's new shows the
   ;;; changes up to this version (CHANGELOG.md).
   ;;; ============================================================================
   (setq *dyl:gitrepo*   "samagior/DynALisp.bundle"
-        *dyl:gitbranch* "main"
+        *dyl:relrepo*   "samagior/DynALisp.release"
         *dyl:github*    (strcat "https://github.com/" *dyl:gitrepo*)
+        *dyl:releases*  (strcat "https://github.com/" *dyl:relrepo* "/releases")
         ;; Core commands: (command what it does), listed when defined:
         *dyl:core*      '(("Dyl-Info" "This window: version, updates, links and core commands")
                           ("Dyl-Suite" "Turn the module commands on or off, edit their aliases, open their docs")
@@ -2837,8 +2842,9 @@
     )
   )
 
-  ;;; URL of the setup (the first .exe asset) in the JSON of a GitHub release, nil if none:
-  (defun Dyl:InfoSetupUrl (jsn / mrk pos url res)
+  ;;; URL of the first asset matching pat (wcmatch, uppercase) in the JSON of a GitHub
+  ;;; release, nil if none: "*.EXE" the setup, "*/CHANGELOG.MD" the changes:
+  (defun Dyl:InfoAsset (jsn pat / mrk pos url res)
     (setq mrk "\"browser_download_url\""
           pos 0
     )
@@ -2846,38 +2852,25 @@
       (setq url (Dyl:InfoAfter (substr jsn (1+ pos)) mrk)
             pos (1+ pos)
       )
-      (if (and url (wcmatch (strcase url) "*.EXE")) (setq res url))
+      (if (and url (wcmatch (strcase url) pat)) (setq res url))
     )
     res
   )
 
-  ;;; Latest version on GitHub: (VERSION PAGE-URL SETUP-URL REF), nil if it cannot be
-  ;;; read. PAGE-URL: the release page (or the zip of the branch), SETUP-URL: its setup
-  ;;; (nil when the release has none), REF: the tag (or branch) its CHANGELOG.md is read at:
+  ;;; Latest version: (VERSION PAGE-URL SETUP-URL NOTES-URL) of the latest release of
+  ;;; the releases repository, nil if it cannot be read. PAGE-URL: the release page,
+  ;;; SETUP-URL: its setup, NOTES-URL: its CHANGELOG.md (each nil when the release has none):
   (defun Dyl:InfoLatest (/ jsn ver)
-    (cond
-      ((setq ver (Dyl:InfoAfter (setq jsn (Dyl:InfoHttp (strcat "https://api.github.com/repos/" *dyl:gitrepo* "/releases/latest")))
-                                "\"tag_name\""
-                 )
-       )
-       (list ver (strcat *dyl:github* "/releases/latest") (Dyl:InfoSetupUrl jsn) ver)
+    (if
+      (setq ver (Dyl:InfoAfter (setq jsn (Dyl:InfoHttp (strcat "https://api.github.com/repos/" *dyl:relrepo* "/releases/latest")))
+                               "\"tag_name\""
+                )
       )
-      ((setq ver (Dyl:InfoAfter (Dyl:InfoHttp (strcat "https://raw.githubusercontent.com/"
-                                                      *dyl:gitrepo*
-                                                      "/"
-                                                      *dyl:gitbranch*
-                                                      "/PackageContents.xml"
-                                              )
-                                )
-                                "AppVersion="
-                 )
-       )
-       (list ver (strcat *dyl:github* "/archive/refs/heads/" *dyl:gitbranch* ".zip") nil *dyl:gitbranch*)
-      )
+      (list ver (strcat *dyl:releases* "/latest") (Dyl:InfoAsset jsn "*.EXE") (Dyl:InfoAsset jsn "*/CHANGELOG.MD"))
     )
   )
 
-  ;;; Check the latest version: *dyl:latest* is (VERSION PAGE-URL SETUP-URL REF), or
+  ;;; Check the latest version: *dyl:latest* is (VERSION PAGE-URL SETUP-URL NOTES-URL), or
   ;;; NONE when it could not be read:
   (defun Dyl:InfoCheck ()
     (princ "\nChecking for a new version of DynALisp...")
@@ -2966,7 +2959,7 @@
        (set_tile "msg" (cond (msg) ("")))
        (if ins (set_tile "ins" ins) (mode_tile "ins" 1))
        (action_tile "ins" "(done_dialog 2)")
-       (action_tile "rel" "(Dyl:SuiteDlgShell (list (strcat *dyl:github* \"/releases\")))")
+       (action_tile "rel" "(Dyl:SuiteDlgShell (list *dyl:releases*))")
        (action_tile "cancel" "(done_dialog 0)")
        (Dyl:DocsTile "Core\\Dyl-Info.htm")
        (setq sta (start_dialog))
@@ -3102,7 +3095,7 @@
   )
 
   ;;; Update button of Dyl-Info: the notes of the versions since this one (the
-  ;;; CHANGELOG.md of the latest release), whose Install starts the setup (SETUP); a git
+  ;;; CHANGELOG.md asset of the latest release), whose Install starts the setup (SETUP); a git
   ;;; clone gets the notes only (GIT); the release page opened when it has no setup (PAGE):
   (defun Dyl:InfoUpdate (/ how ver res)
     (setq how (Dyl:InfoUpdHow)
@@ -3115,7 +3108,7 @@
               (strcat "Changes from version " (Dyl:InfoVersion) " (this one) to " ver ":")
               (Dyl:InfoNotes
                 (Dyl:InfoSplit
-                  (Dyl:InfoHttp (strcat "https://raw.githubusercontent.com/" *dyl:gitrepo* "/" (cadddr *dyl:latest*) "/CHANGELOG.md"))
+                  (if (cadddr *dyl:latest*) (Dyl:InfoHttp (cadddr *dyl:latest*)))
                 )
                 (Dyl:InfoVersion)
                 ver
@@ -3239,7 +3232,7 @@
        (action_tile "dwn" "(Dyl:InfoUpdate)")
        (action_tile "whn" "(Dyl:InfoWhatsNew)")
        (action_tile "chk" "(Dyl:InfoCheck) (Dyl:InfoDlgUpd)")
-       (action_tile "git" "(Dyl:SuiteDlgShell (list *dyl:github*))")
+       (action_tile "git" "(Dyl:SuiteDlgShell (list (if (Dyl:InfoGit-p) *dyl:github* (strcat \"https://github.com/\" *dyl:relrepo*))))")
        (action_tile "mdc" "(Dyl:SuiteDlgShell (list (cdr (nth (atoi (get_tile \"mod\")) mods))))")
        (action_tile "cmd" "(setq idx (atoi $value)) (if (= 4 $reason) (done_dialog 2))")
        (action_tile "run" "(setq idx (atoi (get_tile \"cmd\"))) (done_dialog 2)")
