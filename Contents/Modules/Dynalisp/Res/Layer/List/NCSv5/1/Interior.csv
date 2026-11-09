@@ -1,0 +1,16 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+I?,Area,----,----,----,Area
+I?,Clng,----,----,----,Ceiling
+I?,Cols,----,----,----,Columns
+I?,Crpt,----,----,----,Carpet/Carpet Tile
+I?,Cswk,----,----,----,Casework
+I?,Door,----,----,----,Doors
+I?,Eqpm,----,----,----,Equipment
+I?,Flor,----,----,----,Floor
+I?,Fnsh,----,----,----,Finishes
+I?,Furn,----,----,----,Furnishings
+I?,Glaz,----,----,----,Glazing
+I?,Hvac,----,----,----,Hvac Systems
+I?,Mill,----,----,----,Millwork
+I?,Prtn,----,----,----,Partitions
+I?,Tile,----,----,----,Tile

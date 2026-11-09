@@ -1,0 +1,42 @@
+# Release: pushing a tag v<AppVersion> (git tag v1.1 && git push origin v1.1) builds
+# the setup (Installer\Build.ps1) and publishes the GitHub release, its notes from
+# CHANGELOG.md. Dyl-Info and the automatic updates read that release.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the tag is the AppVersion of PackageContents.xml
+        shell: pwsh
+        run: |
+          [xml]$pkg = Get-Content -Raw PackageContents.xml
+          $version = $pkg.ApplicationPackage.AppVersion
+          $tag = '${{ github.ref_name }}'.TrimStart('v')
+          if ($tag -ne $version) { throw "Tag ${{ github.ref_name }} is not the AppVersion of PackageContents.xml ($version)." }
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: |
+          if (-not (Test-Path "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe")) { choco install innosetup -y --no-progress }
+
+      - name: Build the setup
+        shell: pwsh
+        run: ./Installer/Build.ps1
+
+      - name: Publish the release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $exe = (Get-ChildItem Releases/DynALisp-Setup-*.exe).FullName
+          gh release create '${{ github.ref_name }}' $exe --title 'DynALisp ${{ github.ref_name }}' --notes-file Releases/build/notes.md

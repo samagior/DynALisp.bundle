@@ -1,0 +1,10 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A,Detl,Scrn,0000,----,Detail: Screening Of Coordination Objects And Backgrounds
+A,Detl,XFin,0000,----,Detail: Extra Fine Lines
+A,Detl,Fine,0000,----,Detail: Fine Lines
+A,Detl,Thin,0000,----,Detail: Thin Lines
+A,Detl,Medm,0000,----,Detail: Medium Lines
+A,Detl,Wide,0000,----,Detail: Wide Lines
+A,Detl,X~~~,0000,----,Detail: Extra Wide Lines
+A,Detl,Patt,0000,----,Detail: Texture Or Hatch Patterns
+A,Detl,Hiln,0000,----,Detail: Objects Or Lines Hidden From View

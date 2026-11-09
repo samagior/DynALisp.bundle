@@ -1,0 +1,84 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+S?,Algn,----,----,----,Alignment
+S?,Beam,----,----,----,Beams
+S?,Beam,Alum,----,----,Beams: Aluminum
+S?,Beam,Conc,----,----,Beams: Concrete
+S?,Beam,Stel,----,----,Beams: Steel
+S?,Beam,Wood,----,----,Beams: Wood
+S?,Brcg,----,----,----,Bracing
+S?,Brcg,Alum,----,----,Bracing: Aluminum
+S?,Brcg,Metl,----,----,Bracing: Metal
+S?,Brcg,Stel,----,----,Bracing: Steel
+S?,Brcg,Wood,----,----,Bracing: Wood
+S?,Cols,----,----,----,Columns
+S?,Cols,Ablt,----,----,Columns: Anchor Bolts
+S?,Cols,Alum,----,----,Columns: Aluminum
+S?,Cols,Conc,----,----,Columns: Concrete
+S?,Cols,Stel,----,----,Columns: Steel
+S?,Cols,Wood,----,----,Columns: Wood
+S?,Deck,----,----,----,Deck
+S?,Deck,Flor,----,----,Deck: Floor
+S?,Deck,Roof,----,----,Deck: Roof
+S?,Detl,----,----,----,Detail
+S?,Detl,Hsss,----,----,Detail: Hollow Structural Steel
+S?,Detl,Plyw,----,----,Detail: Plywood
+S?,Detl,W2xs,----,----,Detail: Dimension Lumber
+S?,Fndn,----,----,----,Foundation
+S?,Fndn,Ftng,----,----,Foundation: Footings
+S?,Fndn,Grbm,----,----,Foundation: Grade Beams
+S?,Fndn,Pcap,----,----,Foundation: Pile Caps
+S?,Fndn,Pier,----,----,Foundation: Drilled Piers
+S?,Fndn,Pile,----,----,Foundation: Piles
+S?,Fndn,Rbar,----,----,Foundation: Reinforcing Bar
+S?,Fram,----,----,----,Braced Frame Or Moment Frame
+S?,Fstn,----,----,----,Fasteners And Connections
+S?,Gate,----,----,----,Gate
+S?,Grid,----,----,----,Grids
+S?,Grid,Extr,----,----,Grids: Exterior
+S?,Grid,Intr,----,----,Grids: Interior
+S?,Grln,----,----,----,Grade Line
+S?,Grln,Surf,----,----,Grade Line: Surface Areas
+S?,Grtg,----,----,----,Grating
+S?,Grtg,Ovhd,----,----,Grating: Overhead
+S?,Hydr,----,----,----,Hydraulic Structure
+S?,Jnts,----,----,----,Joints
+S?,Jnts,Cntj,----,----,Joints: Construction Joint
+S?,Jnts,Ctlj,----,----,Joints: Control Joint
+S?,Jnts,Expj,----,----,Joints: Expansion Joint
+S?,Jois,----,----,----,Joists
+S?,Jois,Brgx,----,----,Joists: Bridging
+S?,Lntl,----,----,----,Lintels
+S?,Pads,----,----,----,Pads
+S?,Pads,Eqpm,----,----,Pads: Equipment
+S?,Plat,----,----,----,Platform
+S?,Plat,Frmg,----,----,Platform: Framing
+S?,Plat,Grtg,----,----,Platform: Grating
+S?,Sign,----,----,----,Sign
+S?,Sign,Bouy,----,----,Sign: Bouy
+S?,Sign,Frmg,----,----,Sign: Framing
+S?,Sign,Gage,----,----,Sign: Gauge (Staff)
+S?,Sign,Text,----,----,Sign: Signage Text
+S?,Sign,Xtru,----,----,Sign: Extrusion
+S?,Slab,----,----,----,Slab
+S?,Slab,Conc,----,----,Slab: Concrete
+S?,Slab,Edge,----,----,Slab: Edge
+S?,Slab,Opng,----,----,Slab: Openings (And Depressions)
+S?,Slab,Opnx,----,----,Slab: Opening Indication
+S?,Slab,Stel,----,----,Slab: Steel
+S?,Slab,Wood,----,----,Slab: Wood
+S?,Stif,----,----,----,Stiffener
+S?,Stif,Long,----,----,Stiffener: Longitudinal
+S?,Stif,Trav,----,----,Stiffener: Transverse
+S?,Strs,----,----,----,Stairs
+S?,Strs,Ladd,----,----,Stairs: Ladders & Ladder Assemblies
+S?,Trus,----,----,----,Trusses
+S?,Wall,----,----,----,Walls
+S?,Wall,Abov,----,----,Walls: Above
+S?,Wall,Cmuw,----,----,Walls: Concrete Masonry Unit
+S?,Wall,Conc,----,----,Walls: Concrete
+S?,Wall,Msnw,----,----,Walls: Masonry
+S?,Wall,Pcst,----,----,Walls: Pre-Cast Concrete
+S?,Wall,Shea,----,----,Walls: Structural Bearing Or Shear Walls
+S?,Wall,Stel,----,----,Walls: Steel Stud
+S?,Wall,Venr,----,----,Walls: Veneer
+S?,Wall,Wood,----,----,Walls: Wood

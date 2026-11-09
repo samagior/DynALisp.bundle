@@ -1,0 +1,77 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+L,Fenc,----,----,----,Fences
+L,Fenc,Link,----,----,Fences: Chain Link
+L,Fenc,Link,04ft,----,Fences: Chain Link: Four Feet High 
+L,Fenc,Link,06ft,----,Fences: Chain Link: Six Feet High 
+L,Fenc,Prvc,----,----,Fences: Privacy
+L,Fenc,Wood,----,----,Fences: Wood
+L,Irrg,----,----,----,Irrigation
+L,Irrg,Covr,----,----,Irrigation: Coverage
+L,Irrg,Drip,----,----,Irrigation: Drip Irrigation Tubing
+L,Irrg,Eqpm,----,----,Irrigation: Equipment (Pumps/Valves/And Controllers) 
+L,Irrg,Ltrl,----,----,Irrigation: Lateral Pipe
+L,Irrg,Main,----,----,Irrigation: Mainline
+L,Irrg,Pipe,----,----,Irrigation: Piping
+L,Irrg,Slve,----,----,Irrigation: Pipe Sleeve
+L,Irrg,Spkl,----,----,Irrigation: Sprinklers (Rotors/Heads)
+L,Irrg,Valv,----,----,Irrigation: Valves
+L,Plnt,----,----,----,Plant And Landscape Material
+L,Plnt,Beds,----,----,Plant And Landscape Material: Perennial And Annual Beds 
+L,Plnt,Bush,----,----,Plant And Landscape Material: Bushes And Shrubs
+L,Plnt,Coni,----,----,Plant And Landscape Material: Coniferous Trees
+L,Plnt,Ctnr,----,----,Plant And Landscape Material: Container Or Planter 
+L,Plnt,Edgr,----,----,Plant And Landscape Material: Planting Bed Edger
+L,Plnt,Evgr,----,----,Plant And Landscape Material: Evergreen Trees - Broadleaf 
+L,Plnt,Gcvr,----,----,Plant And Landscape Material: Ground Cover
+L,Plnt,Mlch,----,----,Plant And Landscape Material: Mulches - Organic And Inorganic 
+L,Plnt,Palm,----,----,Plant And Landscape Material: Palm Trees
+L,Plnt,Plnt,----,----,Plant And Landscape Material: Plants
+L,Plnt,Seed,----,----,Plant And Landscape Material: Seeding Areas
+L,Plnt,Shad,----,----,Plant And Landscape Material: Shadow Area
+L,Plnt,Tree,----,----,Plant And Landscape Material: Trees
+L,Plnt,Turf,----,----,Plant And Landscape Material: Lawn Areas
+L,Plnt,Vine,----,----,Plant And Landscape Material: Vines
+L,Pvmt,----,----,----,Pavement
+L,Pvmt,Asph,----,----,Pavement: Asphalt
+L,Pvmt,Brck,----,----,Pavement: Brick
+L,Pvmt,Conc,----,----,Pavement: Concrete
+L,Pvmt,Conc,Aggr,----,Pavement: Concrete: Exposed Aggregate 
+L,Pvmt,Grvl,----,----,Pavement: Gravel
+L,Pvmt,Jntc,----,----,Pavement: Control Joint
+L,Pvmt,Jnte,----,----,Pavement: Expansion Joint (For Concrete Only)
+L,Pvmt,Pavr,----,----,Pavement: Unit Pavers
+L,Pvmt,Ramp,----,----,Pavement: Accessible Ramp
+L,Pvmt,Strs,----,----,Pavement: Stair Treads
+L,Site,----,----,----,Site Features
+L,Site,Brdg,----,----,Site Features: Bridge (Pedestrian)
+L,Site,Curb,----,----,Site Features: Curb
+L,Site,Curb,Back,----,Site Features: Curb: Back 
+L,Site,Curb,Face,----,Site Features: Curb: Face
+L,Site,Deck,----,----,Site Features: Deck
+L,Site,Furn,----,----,Site Features: Furnishings
+L,Site,Play,----,----,Site Features: Play Structures
+L,Site,Play,Eqpm,----,Site Features: Play Structures: Equipment 
+L,Site,Play,Zone,----,Site Features: Play Structures: Zoning
+L,Site,Pool,----,----,Site Features: Pools And Spas
+L,Site,Pool,Back,----,Site Features: Pools And Spas: Back Of Pool Wall 
+L,Site,Pool,Face,----,Site Features: Pools And Spas: Face Of Pool Wall 
+L,Site,Prkg,----,----,Site Features: Parking
+L,Site,Prkg,Strp,----,Site Features: Parking: Striping
+L,Site,Road,----,----,Site Features: Edge Of Roadway Line
+L,Site,Rock,----,----,Site Features: Large Rocks And Rock Outcroppings
+L,Site,Rrap,----,----,Site Features: Riprap
+L,Site,Rtwl,----,----,Site Features: Retaining Wall
+L,Site,Sprt,----,----,Site Features: Sports Fields
+L,Site,Sprt,Eqpm,----,Site Features: Sports Fields: Equipment 
+L,Site,Sprt,Peri,----,Site Features: Sports Fields: Perimeter 
+L,Site,Step,----,----,Site Features: Steps
+L,Site,Swlk,----,----,Site Features: Sidewalks And Steps
+L,Site,Tral,----,----,Site Features: Trail Or Path
+L,Site,Tral,Asph,----,Site Features: Trail Or Path: Asphalt 
+L,Site,Tral,Conc,----,Site Features: Trail Or Path: Concrete 
+L,Site,Tral,Grvl,----,Site Features: Trail Or Path: Gravel 
+L,Site,Wall,----,----,Site Features: Walls
+L,Site,Weir,----,----,Site Features: Pool Weir
+L,Topo,----,----,----,Topographic Feature
+L,Topo,Limi,----,----,Topographic Feature: Limit Of Earthwork
+L,Topo,Spot,----,----,Topographic Feature: Spot Elevations

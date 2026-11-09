@@ -1,0 +1,30 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A,Bgrd,----,----,----,Background
+A,Bgrd,Nplt,----,----,Background: Non-Plotting Graphic Information
+A,Bgrd,Scrn,----,----,Background: Screening Of Coordination Objects And Background
+A,Elev,----,----,----,Elevation
+A,Elev,Curt,----,----,Elevation: Curtain
+A,Elev,Deck,----,----,Elevation: Deck
+A,Elev,Door,----,----,Elevation: Doors
+A,Elev,Eqpm,----,----,Elevation: Equipment
+A,Elev,Flor,----,----,Elevation: Floor
+A,Elev,Glaz,----,----,Elevation: Glazing
+A,Elev,Grnd,----,----,Elevation: Ground
+A,Elev,Grph,----,----,Elevation: Graphics
+A,Elev,Hral,----,----,Elevation: Handrails / Guard Rails
+A,Elev,Jntc,----,----,Elevation: Control Joint
+A,Elev,Jnte,----,----,Elevation: Expansion Joint
+A,Elev,Jnts,----,----,Elevation: Joint / Construction Joint
+A,Elev,Ladd,----,----,Elevation: Ladders And Ladders Assemblies
+A,Elev,Nplt,----,----,Elevation: Non-Plotting Graphic Information
+A,Elev,Otln,----,----,Elevation: Outline
+A,Elev,Patt,----,----,Elevation: Texture Or Hatch Patterns
+A,Elev,Rdge,----,----,Elevation: Roof Ridges
+A,Elev,Rfdr,----,----,Elevation: Roof Drain
+A,Elev,Roof,----,----,Elevation: Roof
+A,Elev,Scrn,----,----,Elevation: Screening Of Coordination Objects And Background
+A,Elev,Sign,----,----,Elevation: Signag
+A,Elev,Sill,----,----,Elevation: Window Sill
+A,Elev,Strc,----,----,Elevation: Structures
+A,Elev,Strs,----,----,Elevation: Stair Treads
+A,Elev,Wall,----,----,Elevation: Wall

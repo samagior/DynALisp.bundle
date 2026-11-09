@@ -1,0 +1,59 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+I?,Area,----,----,----,Area
+I?,Area,Occp,----,----,Area: Occupant Or Employee Names
+I?,Clng,----,----,----,Ceiling
+I?,Clng,Accs,----,----,Ceiling: Access
+I?,Clng,Opng,----,----,Ceiling: Openings
+I?,Clng,Susp,----,----,Ceiling: Suspended Elements
+I?,Clng,Tees,----,----,Ceiling: Main Tees
+I?,Cols,----,----,----,Columns
+I?,Crpt,----,----,----,Carpet/Carpet Tile
+I?,Cswk,----,----,----,Casework
+I?,Door,----,----,----,Doors
+I?,Door,Full,----,----,Doors: Full-Height
+I?,Door,Prht,----,----,Doors: Partial-Height
+I?,Eqpm,----,----,----,Equipment
+I?,Eqpm,Accs,----,----,Equipment: Access
+I?,Eqpm,Fixd,----,----,Equipment: Fixed
+I?,Eqpm,Ovhd,----,----,Equipment: Overhead
+I?,Eqpm,Stor,----,----,Equipment: Storage
+I?,Flor,----,----,----,Floor
+I?,Flor,Evtr,----,----,Floor: Elevator Cars And Equipment
+I?,Flor,Fixt,----,----,Floor: Fixtures (Plumbing)
+I?,Flor,Hral,----,----,Floor: Handrails/Guard Rails
+I?,Flor,Levl,----,----,Floor: Level Changes (Ramps/Pits/Depressions)
+I?,Flor,Otln,----,----,Floor: Outline
+I?,Flor,Ovhd,----,----,Floor: Overhead
+I?,Flor,Rais,----,----,Floor: Raised
+I?,Flor,Risr,----,----,Floor: Risers
+I?,Flor,Sign,----,----,Floor: Signage
+I?,Flor,Spcl,----,----,Floor: Architectural Specialties (Toilet Room Accessories/Display Cases)
+I?,Flor,Strs,----,----,Floor: Stair Treads (Escalators/Ladders)
+I?,Flor,Tptn,----,----,Floor: Toilet Partitions
+I?,Flor,Wdwk,----,----,Floor: Architectural Woodwork
+I?,Fnsh,----,----,----,Finishes
+I?,Furn,----,----,----,Furnishings
+I?,Furn,File,----,----,Furnishings: File Cabinets
+I?,Furn,Free,----,----,Furnishings: Freestanding
+I?,Furn,Plnt,----,----,Furnishings: Plants
+I?,Furn,Pnls,----,----,Furnishings: System Panels
+I?,Furn,Seat,----,----,Furnishings: Seating
+I?,Furn,Stor,----,----,Furnishings: Storage (Component System)
+I?,Furn,Wksf,----,----,Furnishings: Work Surface (Component System)
+I?,Glaz,----,----,----,Glazing
+I?,Glaz,Full,----,----,Glazing: Full-Height
+I?,Glaz,Prht,----,----,Glazing: Partial-Height
+I?,Glaz,Sill,----,----,Glazing: Window Sills
+I?,Hvac,----,----,----,Hvac Systems
+I?,Hvac,Rdff,----,----,Hvac Systems: Return Air Diffusers
+I?,Hvac,Sdff,----,----,Hvac Systems: Supply Diffusers
+I?,Mill,----,----,----,Millwork
+I?,Prtn,----,----,----,Partitions
+I?,Prtn,Fire,----,----,Partitions: Fire Protection
+I?,Prtn,Full,----,----,Partitions: Full-Height
+I?,Prtn,Head,----,----,Partitions: Door And Window Headers
+I?,Prtn,Jamb,----,----,Partitions: Door And Window Jambs
+I?,Prtn,Move,----,----,Partitions: Moveable
+I?,Prtn,Prht,----,----,Partitions: Partial-Height
+I?,Tile,----,----,----,Tile
+

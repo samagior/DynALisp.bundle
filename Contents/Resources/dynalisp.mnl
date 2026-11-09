@@ -1,0 +1,4615 @@
+;;  dynalisp.mnl -  Main startup file for Dynalisp
+;;  Copyright (C) 2023  Samuel Martineau
+;;  
+;;  This program is free software: you can redistribute it and/or modify
+;;  it under the terms of the GNU General Public License as published by
+;;  the Free Software Foundation, either version 3 of the License, or
+;;  (at your option) any later version.
+;;  
+;;  This program is distributed in the hope that it will be useful,
+;;  but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;  GNU General Public License for more details.
+;;  
+;;  You should have received a copy of the GNU General Public License
+;;  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+;;-------------------------=={ Functions }==------------------------;;
+
+(defun-q dyl:startup () 
+  (vl-load-com)
+
+  ;;  Quiet startup: the steps print nothing but errors, their result is summed up in one
+  ;;  line at the end (Dyl:StartupSummary). *dyl:warn*: the steps that failed, printed
+  ;;  with the summary. Dyl-Reload prints the steps as before:
+  (setq *dyl:quiet* T
+        *dyl:warn*  nil
+        *dyl:note*  nil
+  )
+
+  ;;Default Autocad ActiveX variables:
+  (setq *acad:obj (vlax-get-acad-object))
+  (setq *acad:pref (vla-get-Preferences *acad:obj))
+  (setq *acad:fileprefs (vla-get-files *acad:pref))
+  (setq *acad:activedoc (vla-get-ActiveDocument *acad:obj))
+
+  ;;  Reactor r made to run only while its drawing is in front (by default the reactors of
+  ;;  every open drawing run on the events of any drawing). Never stops a startup: an
+  ;;  error leaves r as it is. Returns r:
+  (defun Dyl:ReactorLocal (r)
+    (vl-catch-all-apply 'vlr-set-notification (list r 'active-document-only))
+    r
+  )
+
+  ;;  T when the drawing made current (args of a document manager reactor) is the drawing
+  ;;  this code runs in: every open drawing has its own document manager reactors, which
+  ;;  all run when any drawing becomes current:
+  (defun Dyl:ThisDoc-p (args / doc)
+    (setq doc (car args))
+    (or (not (= 'VLA-OBJECT (type doc)))
+        (equal doc *acad:activedoc)
+        (and (not (vl-catch-all-error-p
+                    (vl-catch-all-apply
+                      '(lambda ()
+                         (setq doc (list (vla-get-FullName doc) (vla-get-Name doc))
+                               doc (equal doc (list (vla-get-FullName *acad:activedoc) (vla-get-Name *acad:activedoc)))
+                         )
+                       )
+                    )
+                  )
+             )
+             doc
+        )
+    )
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; DynALisp reactors switch. Every reactor of a module is made by a file of its
+  ;;; Reactor folder (Modules\<Module>\Reactor), loaded at startup after the Remote
+  ;;; files. The DynalispReactors user setting (off by default, Reactors in
+  ;;; Dyl-Settings) turns them all off: the Reactor folders are then not loaded at
+  ;;; all, and the reactors already made are removed (Dyl:ReactorsSet). Each Reactor
+  ;;; file registers its stop function (Dyl:ReactorsAdd) and makes no reactor while
+  ;;; the switch is off. To turn them off without the window (a reactor breaking the
+  ;;; startup): (setenv "DynalispReactors" "0"), then open the drawings again.
+  ;;; ---------------------------------------------------------------------------
+  ;;  T when the DynALisp reactors are on:
+  (defun Dyl:ReactorsOn-p () (= "1" (getenv "DynalispReactors")))
+
+  ;;  Each reactor also has its own setting, used while the reactors are on:
+  ;;    Auto-phase      DynalispPhaseAuto      Remote>>Dyl:PhaseAuto-p      new objects go to the active phase
+  ;;    Auto draw order DynalispDrawOrderAuto  Remote>>Dyl:DrawOrderAuto-p  new objects go to their draw order level
+  ;;    Settings sync   DynalispSettingsSync   Dyl:SettingsSyncOn-p         other open drawings follow Dyl-Settings
+  ;;  Off, a reactor setting keeps only the document reactor of its file (it runs when a
+  ;;  drawing is made current), so the drawings already open follow it when it is turned on.
+
+  ;;  T when the drawings already open follow the settings saved in another one (off by default):
+  (defun Dyl:SettingsSyncOn-p () (= "1" (getenv "DynalispSettingsSync")))
+
+  ;;  Turn the settings sync on or off (every drawing, from the next one made current):
+  (defun Dyl:SettingsSyncSet (on)
+    (setenv "DynalispSettingsSync" (if on "1" "0"))
+    (princ (strcat "\nSettings sync "
+                   (if on "on" "off")
+                   (if (and on (not (Dyl:ReactorsOn-p))) ", but the DynALisp reactors are off" "")
+                   "."
+           )
+    )
+  )
+
+  ;;  Register the stop function f (symbol) of a Reactor file: it removes the reactors of
+  ;;  its file in the drawing and clears their state:
+  (defun Dyl:ReactorsAdd (f)
+    (if (not (member f *dyl:reactorstops*)) (setq *dyl:reactorstops* (cons f *dyl:reactorstops*)))
+    f
+  )
+
+  ;;  Remove every DynALisp reactor of this drawing: the stop functions of the Reactor
+  ;;  files, then any reactor left whose data is a "Dyl-*" name. An error never stops it:
+  (defun Dyl:ReactorsStop (/ dat)
+    (foreach f *dyl:reactorstops* (vl-catch-all-apply f nil))
+    (foreach r (apply 'append (mapcar 'cdr (vlr-reactors)))
+      (if
+        (and (= 'STR (type (setq dat (vl-catch-all-apply 'vlr-data (list r)))))
+             (wcmatch dat "Dyl-*")
+        )
+        (vl-catch-all-apply 'vlr-remove (list r))
+      )
+    )
+    (princ)
+  )
+
+
+  ;;Default Dynalisp directory path assigned relative to the DYLB.txt beacon file inside the Resources folder:
+  (setq *dyl:res      (vl-filename-directory (findfile "DYLB.txt"))
+        *dyl:contents (vl-filename-directory *dyl:res)
+        *dyl:repo     (vl-filename-directory *dyl:contents)
+        *dyl:host     (vl-filename-directory *dyl:repo)
+        *dyl:module   (strcat *dyl:contents "\\Modules")
+        *dyl:lmapps   (strcat *dyl:module "\\LeeMac")
+        *dyl:custom   (strcat *dyl:module "\\MyTools")
+        *dyl:dyl      (strcat *dyl:module "\\Dynalisp") ;;        *dyl:docs          (strcat *dyl:res "\\Docs")
+        *dyl:apps     (strcat *dyl:dyl "\\Apps") ;;  Res paths are defined by each module in its own Remote folder
+         ;;  (see Modules\Dynalisp\Remote\Dyl-Paths.lsp)
+  )
+
+
+  ;#region UserFiles
+
+  ;;; ============================================================================
+  ;;; User files
+  ;;; ----------------------------------------------------------------------------
+  ;;; The files the user edits (aliases, Startup Suite, presets, layer keys,
+  ;;; draw order presets, shape libraries...) keep their default under Contents
+  ;;; (committed with DynALisp) and are saved in the User folder of the bundle
+  ;;; (ignored by git), at the same path:
+  ;;;
+  ;;;   Contents\Modules\Dynalisp\Res\QuickDraw.csv   default
+  ;;;   User\Modules\Dynalisp\Res\QuickDraw.csv       user copy, used when it exists
+  ;;;
+  ;;; A file is read from its user copy when there is one, else from its
+  ;;; default (Dyl:UserFile), and is always written to its user copy
+  ;;; (Dyl:UserFileW). A folder of presets where files are added, renamed or
+  ;;; deleted is copied whole into the User folder the first time it changes
+  ;;; (Dyl:UserDirW), then used instead of its default (Dyl:UserDir); it holds
+  ;;; a *dyl:userdirmark* file so Dyl-UserFiles handles it as one item.
+  ;;;
+  ;;; Any default file can be overridden by hand too: copy it to the same path
+  ;;; under User and edit it. Dyl-UserFiles lists the user copies, resets them
+  ;;; to their default or makes them the new default (to commit them).
+  ;;; ============================================================================
+  (setq *dyl:user        (strcat *dyl:repo "\\User")
+        *dyl:userdirmark* "_UserFolder.txt"
+  )
+
+  ;;  User copy of a path under Contents, nil when the path is not under Contents:
+  (defun Dyl:UserPath (path / pre)
+    (setq pre (strcase (strcat *dyl:contents "\\")))
+    (if (= pre (strcase (substr path 1 (strlen pre))))
+      (strcat *dyl:user (substr path (1+ (strlen *dyl:contents))))
+    )
+  )
+
+  ;;  Default (under Contents) of a path under the User folder:
+  (defun Dyl:UserDefault (path)
+    (strcat *dyl:contents (substr path (1+ (strlen *dyl:user))))
+  )
+
+  ;;  Make a folder and its missing parent folders:
+  (defun Dyl:UserMkdir (dir)
+    (if (not (vl-file-directory-p dir))
+      (progn (Dyl:UserMkdir (vl-filename-directory dir)) (vl-mkdir dir))
+    )
+  )
+
+  ;;  File to read: its user copy when it exists, else the default path:
+  (defun Dyl:UserFile (path / usr)
+    (if (and (setq usr (Dyl:UserPath path)) (findfile usr)) usr path)
+  )
+
+  ;;  File to write: its user copy, the folders made:
+  (defun Dyl:UserFileW (path / usr)
+    (if (setq usr (Dyl:UserPath path))
+      (progn (Dyl:UserMkdir (vl-filename-directory usr)) usr)
+      path
+    )
+  )
+
+  ;;  Folder to read: its user copy when it exists, else the default folder:
+  (defun Dyl:UserDir (dir / usr)
+    (if (and (setq usr (Dyl:UserPath dir)) (vl-file-directory-p usr)) usr dir)
+  )
+
+  ;;  Copy the files and sub-folders of the folder src into the folder dst:
+  (defun Dyl:UserCopyDir (src dst)
+    (Dyl:UserMkdir dst)
+    (foreach f (vl-directory-files src nil 1) (vl-file-copy (strcat src "\\" f) (strcat dst "\\" f)))
+    (foreach d (vl-remove-if '(lambda (x) (member x '("." ".."))) (vl-directory-files src nil -1))
+      (Dyl:UserCopyDir (strcat src "\\" d) (strcat dst "\\" d))
+    )
+  )
+
+  ;;  Folder to write: its user copy, made from the default folder the first time:
+  (defun Dyl:UserDirW (dir / usr des)
+    (cond
+      ((not (setq usr (Dyl:UserPath dir))) dir)
+      ((vl-file-directory-p usr) usr)
+      (T
+       (if (vl-file-directory-p dir) (Dyl:UserCopyDir dir usr) (Dyl:UserMkdir usr))
+       (if (setq des (open (strcat usr "\\" *dyl:userdirmark*) "w"))
+         (progn
+           (write-line "DynALisp user folder: used instead of its default under Contents (see Dyl-UserFiles)." des)
+           (close des)
+         )
+       )
+       usr
+      )
+    )
+  )
+
+  ;;  Delete a folder and everything in it, T on success:
+  (defun Dyl:UserRmDir (dir / fso res)
+    (if (setq fso (vlax-create-object "Scripting.FileSystemObject"))
+      (progn
+        (setq res (vl-catch-all-apply 'vlax-invoke-method (list fso 'DeleteFolder dir :vlax-true)))
+        (vlax-release-object fso)
+        (not (vl-catch-all-error-p res))
+      )
+    )
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Saved settings: a "DynALisp Settings <date>" folder, made by Export settings
+  ;;; of Dyl-UserFiles or by the uninstall of the setup, read by Import settings or
+  ;;; by the setup of a new installation:
+  ;;;   DynALisp-Settings.txt   the options of Dyl-Settings: Name=Value lines of the
+  ;;;                           Dynalisp* user settings (lines starting with ; skipped)
+  ;;;   User\...                the User folder (the edited files)
+  ;;;   Modules\MyTools\...     the personal module (from the uninstall: every module
+  ;;;                           not shipped with DynALisp)
+  ;;; The settings of this computer (stamps, profile names, paths: *dyl:setslocal*)
+  ;;; are never saved or imported. The setup of a new installation copies the
+  ;;; folders and leaves the settings file as Import-Settings.txt next to Contents,
+  ;;; applied by the next startup (Dyl:SetsPending). Installer\DynALisp.iss does the
+  ;;; same in Pascal: change both together.
+  ;;; ---------------------------------------------------------------------------
+  (setq *dyl:setsfile*  "DynALisp-Settings.txt"
+        *dyl:setslocal* '("DYNALISPLASTVERSION" "DYNALISPUPDATECHECKED" "DYNALISPPREFAPPLIED" "DYNALISPPREFBASE"
+                          "DYNALISPPREFCUSTOMBASE" "DYNALISPSYSVARSTAMP"
+                         )
+  )
+
+  ;;  T when name is a Dynalisp* user setting kept with the saved settings:
+  (defun Dyl:SetsName-p (name)
+    (and (wcmatch (strcase name) "DYNALISP?*") (not (member (strcase name) *dyl:setslocal*)))
+  )
+
+  ;;  Names of the Dynalisp* user settings of this AutoCAD (getenv / setenv):
+  (defun Dyl:SetsNames ()
+    (vl-remove-if-not
+      '(lambda (n) (and (= 'STR (type n)) (Dyl:SetsName-p n)))
+      (vl-registry-descendents
+        (strcat "HKEY_CURRENT_USER\\"
+                (if vlax-user-product-key (vlax-user-product-key) (vlax-product-key))
+                "\\FixedProfile\\General"
+        )
+        T
+      )
+    )
+  )
+
+  ;;  Copy the folder src into dst, the files already there replaced:
+  (defun Dyl:SetsCopy (src dst / d)
+    (Dyl:UserMkdir dst)
+    (foreach f (vl-directory-files src nil 1)
+      (setq d (strcat dst "\\" f))
+      (if (findfile d) (vl-file-delete d))
+      (vl-file-copy (strcat src "\\" f) d)
+    )
+    (foreach s (vl-remove-if '(lambda (x) (member x '("." ".."))) (vl-directory-files src nil -1))
+      (Dyl:SetsCopy (strcat src "\\" s) (strcat dst "\\" s))
+    )
+  )
+
+  ;;  Save the settings in a new "DynALisp Settings <date>" folder of dir. Returns a
+  ;;  status line ("-->" when it failed):
+  (defun Dyl:SetsExport (dir / dst des n)
+    (setq dst (strcat dir "\\DynALisp Settings " (menucmd "m=$(edtime,$(getvar,date),YYYY-MO-DD)")))
+    (if (vl-file-directory-p dst) (setq dst (strcat dst " " (menucmd "m=$(edtime,$(getvar,date),HHMMSS)"))))
+    (Dyl:UserMkdir dst)
+    (cond
+      ((not (setq des (open (strcat dst "\\" *dyl:setsfile*) "w"))) (strcat "--> Unable to write in " dst "."))
+      (T
+       (write-line "; DynALisp settings (Dyl-UserFiles > Import settings, or the setup, imports them)" des)
+       (setq n 0)
+       (foreach k (Dyl:SetsNames)
+         (if (getenv k) (progn (write-line (strcat k "=" (getenv k)) des) (setq n (1+ n))))
+       )
+       (close des)
+       (if (vl-file-directory-p *dyl:user) (Dyl:SetsCopy *dyl:user (strcat dst "\\User")))
+       (if (vl-file-directory-p *dyl:custom)
+         (Dyl:SetsCopy *dyl:custom (strcat dst "\\Modules\\" (vl-filename-base *dyl:custom)))
+       )
+       (strcat "Saved in " dst " (" (itoa n) " options, your files).")
+      )
+    )
+  )
+
+  ;;  Apply the Name=Value lines of a settings file (a UTF-8 mark skipped). Returns the
+  ;;  number of options set:
+  (defun Dyl:SetsApply (file / des str pos n)
+    (setq n 0)
+    (if (setq des (open file "r"))
+      (progn
+        (while (setq str (read-line des))
+          (setq str (vl-string-left-trim "\357\273\277 " str))
+          (if (and (/= ";" (substr str 1 1))
+                   (setq pos (vl-string-search "=" str))
+                   (Dyl:SetsName-p (substr str 1 pos))
+              )
+            (progn (setenv (substr str 1 pos) (substr str (+ pos 2))) (setq n (1+ n)))
+          )
+        )
+        (close des)
+      )
+    )
+    n
+  )
+
+  ;;  Import the saved settings of the folder dir (the one holding DynALisp-Settings.txt):
+  ;;  the options set, the User folder and the modules copied over the ones here.
+  ;;  Returns a status line ("-->" when it failed):
+  (defun Dyl:SetsImport (dir / n)
+    (cond
+      ((not (findfile (strcat dir "\\" *dyl:setsfile*))) (strcat "--> No " *dyl:setsfile* " in " dir "."))
+      (T
+       (setq n (Dyl:SetsApply (strcat dir "\\" *dyl:setsfile*)))
+       (if (vl-file-directory-p (strcat dir "\\User")) (Dyl:SetsCopy (strcat dir "\\User") *dyl:user))
+       (if (vl-file-directory-p (strcat dir "\\Modules"))
+         (foreach m (vl-remove-if '(lambda (x) (member x '("." ".."))) (vl-directory-files (strcat dir "\\Modules") nil -1))
+           (Dyl:SetsCopy (strcat dir "\\Modules\\" m) (strcat *dyl:module "\\" m))
+         )
+       )
+       (strcat "Imported (" (itoa n) " options, your files): restart AutoCAD to use them everywhere.")
+      )
+    )
+  )
+
+  ;;  Startup step: the settings file left by the setup of a new installation
+  ;;  (Import-Settings.txt next to Contents) applied once, then deleted. Returns a status
+  ;;  line, nil when there was none:
+  (defun Dyl:SetsPending (/ file n)
+    (if (findfile (setq file (strcat *dyl:repo "\\Import-Settings.txt")))
+      (progn
+        (setq n (Dyl:SetsApply file))
+        (vl-file-delete file)
+        (strcat "Saved settings imported (" (itoa n) " options).")
+      )
+    )
+  )
+
+  ;;  Export settings button of Dyl-UserFiles: a folder picked, the settings saved in it:
+  (defun Dyl:UserDlgExport (/ dir)
+    (if (setq dir (Remote>>LM:browseforfolder "Save the DynALisp settings in:" 0 81))
+      (set_tile "msg" (Dyl:SetsExport dir))
+    )
+  )
+
+  ;;  Import settings button of Dyl-UserFiles: a DynALisp-Settings.txt picked, its folder
+  ;;  imported:
+  (defun Dyl:UserDlgImport (/ fil)
+    (if (setq fil (getfiled "Import DynALisp Settings (DynALisp-Settings.txt)" "" "txt" 0))
+      (progn
+        (setq fil     (Dyl:SetsImport (vl-filename-directory fil))
+              uf:done (or uf:done (not (vl-string-search "-->" fil)))
+        )
+        (Dyl:UserDlgFill)
+        (set_tile "msg" fil)
+      )
+    )
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Dyl-UserFiles: list the user copies (Resources\Dyl-UserFiles.dcl), open
+  ;;; them, reset them to their default (the user copy is deleted) or make them
+  ;;; the default (the user copy replaces its default under Contents, to commit
+  ;;; it, and is deleted). A user folder (Dyl:UserDirW) is one item: it is reset
+  ;;; or made the default whole. Reset and Make it the default ask a second
+  ;;; click to confirm.
+  ;;; ---------------------------------------------------------------------------
+  ;;  User copies under the folder dir: ((FULL-PATH . FOLDER-P) ...), sorted:
+  (defun Dyl:UserItems (dir / lst)
+    (if (findfile (strcat dir "\\" *dyl:userdirmark*))
+      (list (cons dir T))
+      (progn
+        (foreach f (vl-directory-files dir nil 1) (setq lst (cons (cons (strcat dir "\\" f) nil) lst)))
+        (foreach d (vl-remove-if '(lambda (x) (member x '("." ".."))) (vl-directory-files dir nil -1))
+          (setq lst (append (Dyl:UserItems (strcat dir "\\" d)) lst))
+        )
+        (vl-sort lst '(lambda (a b) (< (strcase (car a)) (strcase (car b)))))
+      )
+    )
+  )
+
+  ;;  List line of an item: path under the User folder TAB what it is:
+  (defun Dyl:UserLine (itm)
+    (strcat (substr (car itm) (+ 2 (strlen *dyl:user)))
+            "\t"
+            (cond
+              ((cdr itm) "Folder, replaces its default")
+              ((findfile (Dyl:UserDefault (car itm))) "Changed")
+              ("Added (no default)")
+            )
+    )
+  )
+
+  ;;  Fill the list (uf:items) and keep the selection uf:idx in range:
+  (defun Dyl:UserDlgFill ()
+    (setq uf:items (if (vl-file-directory-p *dyl:user) (Dyl:UserItems *dyl:user))
+          uf:idx   (max 0 (min uf:idx (1- (length uf:items))))
+          uf:arm   nil
+    )
+    (start_list "lst")
+    (foreach i uf:items (add_list (Dyl:UserLine i)))
+    (end_list)
+    (if uf:items (set_tile "lst" (itoa uf:idx)))
+    (foreach k '("opn" "rst" "pub") (mode_tile k (if uf:items 0 1)))
+    (set_tile "msg" (if uf:items "" "No user file: every file is its default."))
+  )
+
+  ;;  Reset (mode 'reset) or make default (mode 'publish) the item selected, on the
+  ;;  second click of the same button on the same item:
+  (defun Dyl:UserDlgDo (mode / itm usr dft ok)
+    (setq itm (nth uf:idx uf:items))
+    (cond
+      ((not itm))
+      ((not (equal uf:arm (cons mode uf:idx)))
+       (setq uf:arm (cons mode uf:idx))
+       (set_tile "msg"
+                 (if (= mode 'reset)
+                   "Click Reset to default again to delete your copy and use the default."
+                   "Click Make it the default again to replace the default under Contents with your copy."
+                 )
+       )
+      )
+      (T
+       (setq usr (car itm)
+             dft (Dyl:UserDefault usr)
+       )
+       (setq ok (cond
+                  ((= mode 'reset) (if (cdr itm) (Dyl:UserRmDir usr) (vl-file-delete usr)))
+                  ((cdr itm)
+                   (and (or (not (vl-file-directory-p dft)) (Dyl:UserRmDir dft))
+                        (progn (Dyl:UserCopyDir usr dft) (vl-file-delete (strcat dft "\\" *dyl:userdirmark*)) T)
+                        (Dyl:UserRmDir usr)
+                   )
+                  )
+                  (T
+                   (Dyl:UserMkdir (vl-filename-directory dft))
+                   (if (findfile dft) (vl-file-delete dft))
+                   (and (vl-file-copy usr dft) (vl-file-delete usr))
+                  )
+                )
+             uf:done (or uf:done ok)
+       )
+       (Dyl:UserDlgFill)
+       (set_tile "msg"
+                 (cond
+                   ((not ok) (strcat "Unable to change " usr " (open in another program?)."))
+                   ((= mode 'reset) "Reset: the default is used again.")
+                   ("Done: the default under Contents is now your version (commit it).")
+                 )
+       )
+      )
+    )
+  )
+
+  (defun c:Dyl-UserFiles (/ uf:items uf:idx uf:arm uf:done dch)
+    (setq uf:idx 0
+          dch    (load_dialog (strcat *dyl:res "\\Dyl-UserFiles.dcl"))
+    )
+    (cond
+      ((> 0 dch) (princ "\n--> Unable to load the dialog : Dyl-UserFiles.dcl"))
+      ((not (new_dialog "dyl_userfiles" dch)) (princ "\n--> Unable to show the dialog : Dyl-UserFiles.dcl"))
+      (T
+       (set_tile "loc" (strcat "User folder: " *dyl:user))
+       (Dyl:UserDlgFill)
+       (action_tile "lst" "(setq uf:idx (atoi $value) uf:arm nil) (set_tile \"msg\" \"\") (if (= 4 $reason) (Dyl:SuiteDlgShell (list (car (nth uf:idx uf:items)))))")
+       (action_tile "opn" "(Dyl:SuiteDlgShell (list (car (nth uf:idx uf:items))))")
+       (action_tile "dir" "(Dyl:UserMkdir *dyl:user) (Dyl:SuiteDlgShell (list *dyl:user))")
+       (action_tile "rst" "(Dyl:UserDlgDo 'reset)")
+       (action_tile "pub" "(Dyl:UserDlgDo 'publish)")
+       (action_tile "exp" "(Dyl:UserDlgExport)")
+       (action_tile "imp" "(Dyl:UserDlgImport)")
+       (action_tile "cancel" "(done_dialog 0)")
+       (Dyl:DocsTile "Core\\Dyl-Info.htm")
+       (start_dialog)
+      )
+    )
+    (if (<= 0 dch) (unload_dialog dch))
+    ;;  Files changed: the cached presets are read again, the aliases defined again:
+    (if uf:done
+      (progn
+        (setq *do:stamp* nil
+              *qs:cache* nil
+        )
+        (Dyl:DynApply)
+        (Dyl:AliasApply)
+        (princ "\nUser files changed. Run Dyl-Reload if the Startup Suite changed.")
+      )
+    )
+    (princ)
+  )
+
+  ;#endregion
+
+  ;;  Saved settings left by the setup of a new installation, applied before anything is
+  ;;  loaded so this first startup uses them (see Dyl:SetsPending):
+  (setq *dyl:pending* (vl-catch-all-apply 'Dyl:SetsPending))
+  (cond
+    ((vl-catch-all-error-p *dyl:pending*)
+     (setq *dyl:warn* (cons (strcat "Saved settings: " (vl-catch-all-error-message *dyl:pending*)) *dyl:warn*))
+    )
+    (*dyl:pending* (setq *dyl:note* (cons *dyl:pending* *dyl:note*)))
+  )
+
+
+  ;;  Recursively get a list of a folder and all its sub-folders containing Lisp files:
+  (defun Dyl:lspdirs (dir) 
+    (append 
+      (if (vl-directory-files dir "*.lsp" 1) (list dir))
+      (apply 'append 
+             (mapcar '(lambda (x) (Dyl:lspdirs (strcat dir "\\" x))) 
+                     (vl-remove-if '(lambda (x) (wcmatch x "*.*")) 
+                                   (vl-directory-files dir nil -1)
+                     )
+             )
+      )
+    )
+  )
+
+  ;;  Get a list of the named folder (e.g. "Apps", "Remote", "Reactor") of each module inside the Modules folder:
+  (defun Dyl:moddirs (name) 
+    (vl-remove-if-not 'vl-file-directory-p 
+                      (mapcar '(lambda (x) (strcat *dyl:module "\\" x "\\" name)) 
+                              (vl-remove-if '(lambda (x) (wcmatch x "*.*")) 
+                                            (vl-directory-files *dyl:module nil -1)
+                              )
+                      )
+    )
+  )
+
+
+  ;;  Recursively load all the Lisp files of the folders dirs. An error in a file is
+  ;;  printed and the next files are loaded: one file stopped the whole startup (the
+  ;;  Apps, Dyl-Settings...) in the drawing:
+  (defun Dyl:LoadDirs (dirs / res)
+    (foreach dir dirs
+      (foreach pth (Dyl:lspdirs dir)
+        (foreach k (vl-directory-files pth "*.lsp" 1)
+          (if
+            (vl-catch-all-error-p
+              (setq res (vl-catch-all-apply 'load
+                                            (list (strcat pth "\\" k)
+                                                  (strcat "\n--> Unable to load : " k "\n--> From : " pth)
+                                            )
+                        )
+              )
+            )
+            (princ (strcat "\n--> Error loading : " k " : " (vl-catch-all-error-message res) "\n--> From : " pth))
+          )
+        )
+      )
+    )
+  )
+
+  ;;  Turn the DynALisp reactors on or off (Reactors in Dyl-Settings). On: the Reactor
+  ;;  folders are loaded in this drawing, the other open drawings get their reactors when
+  ;;  opened again (or with Dyl-Reload). Off: every DynALisp reactor of this drawing is
+  ;;  removed, the ones of the other open drawings when they are made current (their
+  ;;  document reactors check the switch first), and the Reactor folders are skipped at
+  ;;  startup:
+  (defun Dyl:ReactorsSet (on / scr)
+    (setenv "DynalispReactors" (if on "1" "0"))
+    (if on
+      (progn
+        (setq scr (getvar 'secureload))
+        (setvar 'secureload 0)
+        (Dyl:LoadDirs (Dyl:moddirs "Reactor"))
+        (setvar 'secureload scr)
+        (princ "\nDynALisp reactors on in this drawing, in the other open drawings once opened again (or Dyl-Reload).")
+      )
+      (progn
+        (Dyl:ReactorsStop)
+        (princ "\nDynALisp reactors off: removed from this drawing, from the other open drawings when you switch to them, and not loaded at startup.")
+      )
+    )
+    ;; The status bar shows auto-phase only while it runs:
+    (if Remote>>Dyl:PhaseStatus (vl-catch-all-apply 'Remote>>Dyl:PhaseStatus))
+    (princ)
+  )
+
+  ;; Default Dynalisp loading command :
+  (defun Dyl:load ()
+
+    ;; Error handler:
+    (defun *error* (*msg) 
+      (if *scr (setvar 'secureload *scr))
+      (if (not (member *msg '("Function cancelled" "quit / exit abort"))) 
+        (princ (strcat "\nError: " *msg))
+      )
+      (princ)
+    )
+
+    ;; Save and disable secureload system variable to prevent pop up confimation with each file:
+    (setq *scr (getvar 'secureload))
+    (setvar 'secureload 0)
+
+    ;; Recursively load all the Lisp file in each module Remote folder, then in each
+    ;; module Reactor folder (they can use the Remote functions) while the DynALisp
+    ;; reactors are on. Off, no Reactor folder is loaded and any DynALisp reactor
+    ;; left in the drawing (Dyl-Reload) is removed:
+    (Dyl:LoadDirs (Dyl:moddirs "Remote"))
+    (if (Dyl:ReactorsOn-p)
+      (Dyl:LoadDirs (Dyl:moddirs "Reactor"))
+      (Dyl:ReactorsStop)
+    )
+
+    ;; Load the core Lisp files kept in the Resources folder (CMDINDEX command):
+    (load (strcat *dyl:res "\\CommandIndex.lsp") 
+          (strcat "\n--> Unable to load : CommandIndex.lsp\n--> From : " *dyl:res)
+    )
+
+    ;;  Restore secure load:
+    (setvar 'secureload *scr)
+    (princ)
+  )
+  (Dyl:load)
+
+
+
+  ;#region StartupSuite
+
+  ;;; ============================================================================
+  ;;; StartupSuite
+  ;;; ----------------------------------------------------------------------------
+  ;;; Indexes every command (DEFUN C:xxx / DEFUN-Q C:xxx) found in the Lisp files
+  ;;; of each module Apps folder and registers them in Resources\StartupSuite.csv:
+  ;;;
+  ;;;   Load ; Command ; Name ; Description ; File ; Module ; Group ; Duplicate ; Path
+  ;;;
+  ;;;   - Load        : 1 = autoloaded at startup, 0 = not loaded (default for
+  ;;;                   every new command)
+  ;;;   - Command     : prefixed with "C:" so Excel never turns names such as
+  ;;;                   1-100 into dates or numbers
+  ;;;   - Name        : read from the command header comment (see below)
+  ;;;   - Description : read from the command header comment (see below)
+  ;;;   - Group       : sub-folder(s) of the Apps folder ("" if none)
+  ;;;   - Duplicate   : "Yes" when the command is defined in more than one file
+  ;;;                   (only one of them should be turned on)
+  ;;;   - Path        : file path relative to the Modules folder
+  ;;;   A file without any command is listed once with an empty Command:
+  ;;;   turning it on loads the whole file at startup.
+  ;;;
+  ;;; Command header comment: the last two lines of the comment block placed
+  ;;; directly above the DEFUN (blank lines allowed in between) give the Name
+  ;;; and the Description of the command:
+  ;;;
+  ;;;   ;; Quick Draw Concrete
+  ;;;   ;; Draws a closed outline and fills it with the concrete section hatch.
+  ;;;
+  ;;;   (defun c:Pst-QuickDrawConcrete () ...
+  ;;;
+  ;;; The CSV is rebuilt only when a Lisp file was added, removed or modified
+  ;;; since it was last written. Before it is replaced, the existing Load values
+  ;;; are read and reapplied to the new index (matched on Path + Command, then on
+  ;;; File + Command when a file moved to another folder). The former
+  ;;; "Application,load" format is read too: its value applies to every command
+  ;;; of the file.
+  ;;;
+  ;;; Parser notes (same as Resources\CommandIndex.lsp):
+  ;;;   - Line comments (;) and block comments (;| ... |;) are ignored.
+  ;;;   - Text inside strings ("...") is ignored, including multi-line strings.
+  ;;;   - "(defun" and "c:name" may be separated by spaces, tabs or line breaks.
+  ;;;
+  ;;; In the Dyl-Suite dialog, double-click (or Docs) opens the docs page of the
+  ;;; selected commands from their module Docs folder (see Dyl:SuiteDocs) and
+  ;;; Open Lisp opens their Lisp files. A double-click on a main command with
+  ;;; child commands folds / unfolds them instead (the Fold/Unfold button does it
+  ;;; for the selected lines, Fold/Unfold All for every main command listed,
+  ;;; and unchecking "Show child commands" hides every child, see Dyl:SuiteDlgFold). The commands turned off are listed only
+  ;;; when "Show unloaded commands" is checked (unchecked at each Dyl-Suite) or
+  ;;; when Show: is set to Off.
+  ;;;
+  ;;; Aliases: a command can have short aliases (e.g. QD-CONCRETE for
+  ;;; Pst-QuickDrawConcrete), saved in Resources\Aliases.csv. Dyl-Suite lists
+  ;;; them next to their command, finds a command by its aliases and edits the
+  ;;; aliases of the selected command (Add / Rename / Remove). They are defined
+  ;;; with the commands turned on (see Dyl:AliasApply). When a command is renamed
+  ;;; in its Lisp file, giving it its former name as an alias keeps its Load
+  ;;; value (see Dyl:SuiteBuild).
+  ;;;
+  ;;; Child commands: a command named Pst-* is a preset of the main command of
+  ;;; its file (e.g. Pst-QuickDrawConcrete under Dyl-QuickDraw). It is
+  ;;; run by its aliases, and Dyl-Suite lists it under its main command by its
+  ;;; aliases only (see Dyl:SuiteChild-p). The other commands of a file with a
+  ;;; Dyl-* or LM-* main command are its children too (e.g. SAVE under
+  ;;; Dyl-CmdOptimizer), run by their own name.
+  ;;;
+  ;;; Commands:
+  ;;;   Dyl-Suite        -> dialog box to turn each command on or off
+  ;;;   Dyl-SuiteUpdate  -> force the rebuild of StartupSuite.csv
+  ;;;   Dyl-Reload       -> reload the Apps using the current StartupSuite.csv
+  ;;; ============================================================================
+  (setq *dyl:suite (strcat *dyl:res "\\StartupSuite.csv"))
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; List every Lisp file of the Apps folders:
+  ;;; ((PATH FULL-PATH MODULE GROUP FILE) ...) sorted by Module, Group, File.
+  ;;; PATH is relative to the Modules folder.
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:SuiteFiles (/ mod grp ful lst) 
+    (foreach app (Dyl:moddirs "Apps") 
+      (setq mod (vl-filename-base (vl-filename-directory app)))
+      (foreach pth (Dyl:lspdirs app) 
+        (setq grp (vl-string-left-trim "\\" (substr pth (1+ (strlen app)))))
+        (foreach fle (vl-directory-files pth "*.lsp" 1) 
+          (setq ful (strcat pth "\\" fle)
+                lst (cons (list (substr ful (+ 2 (strlen *dyl:module))) ful mod grp fle) 
+                          lst
+                    )
+          )
+        )
+      )
+    )
+    (vl-sort lst 
+             '(lambda (a b) 
+                (< (strcase (strcat (nth 2 a) "\t" (nth 3 a) "\t" (nth 4 a))) 
+                   (strcase (strcat (nth 2 b) "\t" (nth 3 b) "\t" (nth 4 b)))
+                )
+              )
+    )
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Parser: flush the token being read and detect the sequence
+  ;;; "(" -> DEFUN | DEFUN-Q -> C:<name>.
+  ;;; Works on the locals of Dyl:SuiteParse (tok par nam fnd hdr) by dynamic
+  ;;; scoping.
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:SuiteFlush (/ wrd len) 
+    (if tok 
+      (progn 
+        (setq wrd (strcase (vl-list->string (reverse tok)))
+              tok nil
+        )
+        (cond 
+          ;; Previous token was DEFUN: is this one a C: command name?
+          ;; The header comment above it gives its name and description.
+          (nam
+           (if (and (wcmatch wrd "C:?*") (not (assoc (substr wrd 3) fnd))) 
+             (setq len (length hdr)
+                   fnd (cons 
+                         (if (> len 1) 
+                           (list (substr wrd 3) (nth (- len 2) hdr) (last hdr))
+                           (list (substr wrd 3) "" "")
+                         )
+                         fnd
+                       )
+             )
+           )
+           (setq nam nil)
+          )
+          ;; "(" followed by DEFUN or DEFUN-Q: the next token is the name
+          ((and par (member wrd '("DEFUN" "DEFUN-Q")))
+           (setq nam T)
+          )
+        )
+        (setq par nil)
+      )
+    )
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Parser: return the commands defined in a Lisp file, in file order:
+  ;;; ((COMMAND NAME DESCRIPTION) ...), COMMAND in upper case without the "C:"
+  ;;; prefix, NAME and DESCRIPTION read from the header comment ("" if none).
+  ;;; Lines that cannot hold a definition are skipped without being tokenized.
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:SuiteParse (fle / des str cod chs c nxt stp tok par nam fnd ins inb esc lin tln hdr gap) 
+    (if (setq des (open fle "r")) 
+      (progn 
+        (while (setq str (read-line des)) 
+          ;; Line starting outside of any string or block comment:
+          (setq lin (not (or ins inb))
+                tln (vl-string-trim " \t\r" str)
+          )
+          (cond 
+            ;; Inside a block comment that does not end on this line
+            ((and inb (not (vl-string-search "|;" str))))
+            ;; Inside a string that does not end on this line
+            ((and ins (not (vl-string-position 34 str))))
+            ;; Plain code line (no string, no block comment) without DEFUN
+            ((and (not ins) 
+                  (not inb)
+                  (not nam)
+                  (not (vl-string-position 34 str))
+                  (not (vl-string-position 124 str))
+                  (setq cod (if (setq c (vl-string-position 59 str)) (substr str 1 c) str))
+                  (not (vl-string-search "DEFUN" (strcase cod)))
+             )
+             (if (/= "" (setq cod (vl-string-right-trim " \t" cod))) 
+               (setq par (= "(" (substr cod (strlen cod))))
+             )
+            )
+            ;; Anything else: scan each character of the line
+            (T
+             (setq chs (vl-string->list str)
+                   esc nil
+             )
+             (while chs 
+               (setq c   (car chs)
+                     nxt (cadr chs)
+                     stp 1
+               )
+               (cond 
+                 ;; Inside a block comment: wait for "|;"
+                 (inb
+                  (if (and (= c 124) (= nxt 59)) 
+                    (setq inb nil
+                          stp 2
+                    )
+                  )
+                 )
+                 ;; Inside a string: handle escapes, wait for the closing quote
+                 (ins
+                  (cond 
+                    (esc (setq esc nil))
+                    ((= c 92) (setq esc T))
+                    ((= c 34) (setq ins nil))
+                  )
+                 )
+                 ;; ";|" opens a block comment, ";" comments the rest of the line
+                 ((= c 59)
+                  (Dyl:SuiteFlush)
+                  (if (= nxt 124) 
+                    (setq inb T
+                          stp 2
+                    )
+                    (setq stp (length chs))
+                  )
+                 )
+                 ((= c 34)
+                  (Dyl:SuiteFlush)
+                  (setq ins T
+                        par nil
+                        nam nil
+                  )
+                 )
+                 ((= c 40)
+                  (Dyl:SuiteFlush)
+                  (setq par T
+                        nam nil
+                  )
+                 )
+                 ((= c 41)
+                  (Dyl:SuiteFlush)
+                  (setq par nil
+                        nam nil
+                  )
+                 )
+                 ;; Separators: space, tab, CR, quote, backquote, comma
+                 ((member c '(32 9 13 39 96 44)) (Dyl:SuiteFlush))
+                 (T (setq tok (cons c tok)))
+               )
+               (repeat stp (setq chs (cdr chs)))
+             )
+             (if (not ins) (Dyl:SuiteFlush))
+            )
+          )
+          ;; Header comment block, updated once the line is parsed so that a
+          ;; DEFUN line still sees the block above it:
+          ;;   blank line   -> the next comment line starts a new block
+          ;;   comment line -> added to the block (without its leading ";")
+          ;;   code line    -> no block above the next definition
+          (cond 
+            ((not lin)
+             (setq hdr nil
+                   gap nil
+             )
+            )
+            ((= "" tln) (setq gap T))
+            ((and (= ";" (substr tln 1 1)) (/= "|" (substr tln 2 1)))
+             (setq tln (vl-string-trim " \t" (vl-string-left-trim ";" tln))
+                   hdr (if gap (list tln) (append hdr (list tln)))
+                   gap nil
+             )
+            )
+            ((setq hdr nil
+                   gap nil
+             )
+            )
+          )
+        )
+        (close des)
+      )
+      (princ (strcat "\n--> Unable to read : " fle))
+    )
+    (reverse fnd)
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; CSV value helpers
+  ;;; ---------------------------------------------------------------------------
+  ;; Header cell -> upper case letters only (also drops an Excel UTF-8 BOM):
+  (defun Dyl:SuiteKey (str) 
+    (vl-list->string 
+      (vl-remove-if-not '(lambda (c) (< 64 c 91)) (vl-string->list (strcase str)))
+    )
+  )
+  ;; Load cell -> "1" or "0" (anything that is not on is off):
+  (defun Dyl:SuiteBit (str) 
+    (if 
+      (and str 
+           (member (strcase (vl-string-trim " " str)) '("1" "ON" "YES" "TRUE" "X"))
+      )
+      "1"
+      "0"
+    )
+  )
+  ;; Command cell -> upper case name without the "C:" prefix:
+  (defun Dyl:SuiteCmd (str)
+    (setq str (strcase (vl-string-trim " " (cond (str) ("")))))
+    (if (wcmatch str "C:*") (substr str 3) str)
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Command aliases, saved in Resources\Aliases.csv and edited in Dyl-Suite:
+  ;;;
+  ;;;   Alias ; Command
+  ;;;
+  ;;; Both are prefixed with "C:" as in StartupSuite.csv. An alias is a short
+  ;;; command that runs its command, e.g. QD-CONCRETE runs
+  ;;; Pst-QuickDrawConcrete. A command can have any number of aliases.
+  ;;; Aliases are defined in each drawing by Dyl:AliasApply, only for the
+  ;;; commands that are turned on.
+  ;;; ---------------------------------------------------------------------------
+  (setq *dyl:alias (strcat *dyl:res "\\Aliases.csv"))
+
+  ;; T if str (upper case) can be a command name: letters, digits, "-" and "_":
+  (defun Dyl:AliasName-p (str)
+    (and (/= "" str)
+         (vl-every '(lambda (c) (or (< 47 c 58) (< 64 c 91) (= c 45) (= c 95)))
+                   (vl-string->list str)
+         )
+    )
+  )
+
+  ;; Read Aliases.csv: ((ALIAS . COMMAND) ...) in file order, upper case without
+  ;; "C:". Invalid or repeated aliases are skipped. A missing file means no alias.
+  (defun Dyl:AliasRead (/ des str sep hdr ial icm row ali cmd lst)
+    (if (setq des (open (Dyl:UserFile *dyl:alias) "r"))
+      (progn
+        (if (setq str (read-line des))
+          (setq sep (cond
+                      ((vl-string-search ";" str) ";")
+                      ((vl-string-search "\t" str) "\t")
+                      (",")
+                    )
+                hdr (mapcar 'Dyl:SuiteKey (Remote>>LM:csv->lst str sep 0))
+                ial (vl-position "ALIAS" hdr)
+                icm (vl-position "COMMAND" hdr)
+          )
+        )
+        (if (and ial icm)
+          (while (setq str (read-line des))
+            (if (/= "" (vl-string-trim " \t" str))
+              (setq row (Remote>>LM:csv->lst str sep 0)
+                    ali (Dyl:SuiteCmd (nth ial row))
+                    cmd (Dyl:SuiteCmd (nth icm row))
+                    lst (if
+                          (and (Dyl:AliasName-p ali)
+                               (/= "" cmd)
+                               (/= ali cmd)
+                               (not (assoc ali lst))
+                          )
+                          (cons (cons ali cmd) lst)
+                          lst
+                        )
+              )
+            )
+          )
+        )
+        (close des)
+      )
+    )
+    (reverse lst)
+  )
+
+  ;; Write Aliases.csv from a list in the Dyl:AliasRead format, sorted by command
+  ;; then alias. Returns T on success, nil if the file cannot be written:
+  (defun Dyl:AliasWrite (lst)
+    (Remote>>LM:writecsv
+      (cons '("Alias" "Command")
+            (mapcar '(lambda (p) (list (strcat "C:" (car p)) (strcat "C:" (cdr p))))
+                    (vl-sort lst
+                             '(lambda (a b)
+                                (if (= (cdr a) (cdr b)) (< (car a) (car b)) (< (cdr a) (cdr b)))
+                              )
+                    )
+            )
+      )
+      (Dyl:UserFileW *dyl:alias)
+    )
+  )
+
+  ;; Aliases of a command in a list in the Dyl:AliasRead format, sorted:
+  (defun Dyl:AliasesOf (cmd lst)
+    (acad_strlsort
+      (mapcar 'car (vl-remove-if-not '(lambda (p) (= cmd (cdr p))) lst))
+    )
+  )
+
+  ;;; Define the aliases of Aliases.csv in the current drawing. The aliases
+  ;;; defined before are removed first, so a deleted alias, or an alias of a
+  ;;; command turned off, stops working. An alias is defined only when:
+  ;;;   - its command is defined (turned on: the command or its autoload stub);
+  ;;;   - no command already has its name (a real command always wins);
+  ;;;   - it is not an AutoCAD command (those run before any Lisp command).
+  ;;; The alias calls its command, so an autoload stub still loads its file
+  ;;; first. Returns the number of aliases defined.
+  (defun Dyl:AliasApply (/ sym skp n)
+    (foreach a *dyl:aliasdefs* (set (read (strcat "C:" a)) nil))
+    (setq *dyl:aliasdefs* nil
+          n               0
+    )
+    (foreach p (Dyl:AliasRead)
+      (setq sym (read (strcat "C:" (car p))))
+      (cond
+        ((not (eval (read (strcat "C:" (cdr p))))))
+        ((or (eval sym) (getcname (car p))) (setq skp (cons (car p) skp)))
+        (T
+         (eval (list 'defun sym nil (list (read (strcat "C:" (cdr p))))))
+         (setq *dyl:aliasdefs* (cons (car p) *dyl:aliasdefs*)
+               n               (1+ n)
+         )
+        )
+      )
+    )
+    ;; Not at startup (quiet): Dyl-Reload and Dyl-Suite show it:
+    (if (and skp (not *dyl:quiet*))
+      (princ
+        (strcat "\n--> Alias(es) not defined, the name is already a command: "
+                (Remote>>LM:lst->str (reverse skp) ", ")
+        )
+      )
+    )
+    n
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Dynamic children: child commands made from data instead of a DEFUN, e.g.
+  ;;; one command per custom preset of Dyl-QuickDraw. A module Remote file
+  ;;; adds a provider function to *dyl:dynproviders*. It returns
+  ;;;   ((COMMAND NAME DESCRIPTION PATH BODY) ...)
+  ;;; COMMAND is a child name (Pst-*), PATH the Lisp file of its main command
+  ;;; (relative to the Modules folder) and BODY the expression the command runs.
+  ;;; A dynamic child is defined when a command of PATH is turned on, is listed
+  ;;; in Dyl-Suite under its main command (on / off with it) and can have aliases.
+  ;;; ---------------------------------------------------------------------------
+  ;; Every dynamic child of the providers (a provider that fails is skipped):
+  (defun Dyl:DynList (/ lst res)
+    (foreach p *dyl:dynproviders*
+      (if (not (vl-catch-all-error-p (setq lst (vl-catch-all-apply p nil))))
+        (setq res (append res lst))
+      )
+    )
+    res
+  )
+
+  ;; Define the dynamic children whose main command is on in the current drawing
+  ;; (the ones defined before are removed first). Returns their number:
+  (defun Dyl:DynApply (/ ons n)
+    (foreach c *dyl:dyndefs* (set (read (strcat "C:" c)) nil))
+    (setq *dyl:dyndefs* nil
+          n             0
+    )
+    (foreach r (Dyl:Suite nil)
+      (if (and (= "1" (car r)) (/= "" (nth 1 r)) (not (wcmatch (nth 1 r) "PST`-*")))
+        (setq ons (cons (strcase (nth 3 r)) ons))
+      )
+    )
+    (foreach d (Dyl:DynList)
+      (if (member (strcase (nth 3 d)) ons)
+        (progn
+          (eval (list 'defun (read (strcat "C:" (car d))) nil (nth 4 d)))
+          (setq *dyl:dyndefs* (cons (car d) *dyl:dyndefs*)
+                n             (1+ n)
+          )
+        )
+      )
+    )
+    n
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Child picker: the list dialog of a main command whose Lisp file holds
+  ;;; preset child commands (Pst-*). The main command only calls it, e.g.
+  ;;;   (defun c:Dyl-LayerMake ()
+  ;;;     (Dyl:ChildPicker "Dyl-LayerMake.lsp" "Make Layers"
+  ;;;                      "Double-click a layer set (or OK) to create its layers." '*lm:last*)
+  ;;;   )
+  ;;; The children turned on are listed in file order, with their aliases and
+  ;;; their name (the header of each command, from the Startup Suite index).
+  ;;; Double-click or OK runs the child picked.
+  ;;; ---------------------------------------------------------------------------
+  ;;  Children of the Lisp file fle (e.g. "Dyl-LayerMake.lsp") that are defined:
+  ;;  (("ALIASES" "Name" symbol) ...)
+  (defun Dyl:ChildList (fle / als sym lst)
+    (setq als (if Dyl:AliasRead (Dyl:AliasRead))
+          fle (strcase fle)
+    )
+    (foreach r (if Dyl:SuiteRecs (Dyl:SuiteRecs))
+      (if
+        (and (= fle (strcase (nth 2 r)))
+             (wcmatch (nth 1 r) "PST-?*")
+             (eval (setq sym (read (strcat "C:" (nth 1 r)))))
+             (not (vl-some '(lambda (x) (eq sym (caddr x))) lst))
+        )
+        (setq lst (cons (list (cond ((Remote>>LM:lst->str (Dyl:AliasesOf (nth 1 r) als) ", ")) (""))
+                              (cond ((/= "" (nth 6 r)) (nth 6 r)) ((substr (nth 1 r) 5)))
+                              sym
+                        )
+                        lst
+                  )
+        )
+      )
+    )
+    (reverse lst)
+  )
+
+  ;;  Write the dialog definition (n lines in the list) to a temporary DCL file and
+  ;;  return its path:
+  (defun Dyl:ChildDcl (title hint n / path file)
+    (setq path (vl-filename-mktemp "dch" nil ".dcl")
+          file (open path "w")
+    )
+    (foreach line
+      (list (strcat "dyl_child : dialog { label = \"DynALisp - " title "\";")
+            (strcat "  : list_box { key = \"lst\"; label = \"Alias / command:\"; width = 72; height = "
+                    (itoa (min 26 (max 6 (1+ n))))
+                    "; tabs = \"16\"; }"
+            )
+            (strcat "  : text { label = \"" hint "\"; }")
+            "  : text { label = \"The aliases are edited in Dyl-Suite.\"; }"
+            ;;  OK / Cancel, and Open Docs (the page of the main command, see Dyl:DocsTile):
+            "  : row { fixed_width = true; alignment = right;"
+            "    : button { key = \"accept\"; label = \"OK\"; is_default = true; width = 12; fixed_width = true; }"
+            "    : button { key = \"cancel\"; label = \"Cancel\"; is_cancel = true; width = 12; fixed_width = true; }"
+            "    : button { key = \"docs\"; label = \"Open Docs\"; width = 12; fixed_width = true; }"
+            "  }"
+            "  errtile;"
+            "}"
+      )
+      (write-line line file)
+    )
+    (close file)
+    path
+  )
+
+  ;;  Show the children of the Lisp file fle in a dialog titled title, with hint under
+  ;;  the list, and run the child picked. last is the quoted symbol of a global that
+  ;;  keeps the name of the last child picked, selected first the next time:
+  (defun Dyl:ChildPicker (fle title hint last / lst dcl:pth dcl:id sta idx)
+    (cond
+      ((not (setq lst (Dyl:ChildList fle)))
+       (princ (strcat "\nNo command of " title " is turned on (see Dyl-Suite)."))
+      )
+      ((> 0 (setq dcl:id (load_dialog (setq dcl:pth (Dyl:ChildDcl title hint (length lst))))))
+       (princ (strcat "\n--> Unable to load the " title " dialog."))
+      )
+      ((not (new_dialog "dyl_child" dcl:id)) (princ (strcat "\n--> Unable to show the " title " dialog.")))
+      (T
+       (start_list "lst")
+       (foreach x lst (add_list (strcat (car x) "\t" (cadr x))))
+       (end_list)
+       (setq idx (cond ((vl-position (eval last) (mapcar 'cadr lst))) (0)))
+       (set_tile "lst" (itoa idx))
+       (action_tile "lst" "(setq idx (atoi $value)) (if (= 4 $reason) (done_dialog 1))")
+       (action_tile "accept" "(setq idx (atoi (get_tile \"lst\"))) (done_dialog 1)")
+       (Dyl:DocsTile (Dyl:DocsOfFile fle))
+       (setq sta (start_dialog))
+      )
+    )
+    (if (and dcl:id (<= 0 dcl:id)) (unload_dialog dcl:id))
+    (if dcl:pth (vl-file-delete dcl:pth))
+    (if (and (= 1 sta) (nth idx lst))
+      (progn
+        (set last (cadr (nth idx lst)))
+        (princ (strcat "\n" (cadr (nth idx lst))))
+        (eval (list (caddr (nth idx lst))))
+      )
+    )
+    (princ)
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Read StartupSuite.csv. The separator is taken from the header, so files
+  ;;; saved with ";" or "," are both read. Returns (FORMAT . ROWS) with
+  ;;; ROWS = ((LOAD COMMAND FILE PATH) ...) and FORMAT:
+  ;;;   INDEX  - current format
+  ;;;   INDEX0 - index without the Name/Description columns (rebuilt once)
+  ;;;   LEGACY - former "Application,load" format (COMMAND = "*", PATH = "")
+  ;;; Returns nil if the file is missing or its header is not recognized.
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:SuiteRead () (Dyl:SuiteReadFile (Dyl:UserFile *dyl:suite)))
+
+  ;;; Same as Dyl:SuiteRead for the file fle (the default file, or the user copy):
+  (defun Dyl:SuiteReadFile (fle / des str sep hdr lst ild icm ifl ipt)
+    (if (setq des (open fle "r"))
+      (progn 
+        (if (setq str (read-line des)) 
+          (setq sep (cond 
+                      ((vl-string-search ";" str) ";")
+                      ((vl-string-search "\t" str) "\t")
+                      (",")
+                    )
+                hdr (mapcar 'Dyl:SuiteKey (Remote>>LM:csv->lst str sep 0))
+          )
+        )
+        (while (setq str (read-line des)) 
+          (if (/= "" (vl-string-trim " \t" str)) 
+            (setq lst (cons (Remote>>LM:csv->lst str sep 0) lst))
+          )
+        )
+        (close des)
+        (setq lst (reverse lst))
+      )
+    )
+    (cond 
+      ((and (setq ild (vl-position "LOAD" hdr)) 
+            (setq icm (vl-position "COMMAND" hdr))
+            (setq ifl (vl-position "FILE" hdr))
+            (setq ipt (vl-position "PATH" hdr))
+       )
+       (cons (if (vl-position "DESCRIPTION" hdr) 'INDEX 'INDEX0) 
+             (vl-remove-if '(lambda (r) (= "" (nth 3 r))) 
+                           (mapcar 
+                             '(lambda (r) 
+                                (list (Dyl:SuiteBit (nth ild r)) 
+                                      (Dyl:SuiteCmd (nth icm r))
+                                      (cond ((nth ifl r)) (""))
+                                      (cond ((nth ipt r)) (""))
+                                )
+                              )
+                             lst
+                           )
+             )
+       )
+      )
+      ((and (setq ifl (vl-position "APPLICATION" hdr)) (setq ild (vl-position "LOAD" hdr)))
+       (cons 'LEGACY 
+             (mapcar '(lambda (r) (list (Dyl:SuiteBit (nth ild r)) "*" (cond ((nth ifl r)) ("")) "")) 
+                     lst
+             )
+       )
+      )
+    )
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Last modification time of a file as a comparable list (Y M D h m s):
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:SuiteTime (fle / tim) 
+    (if (setq tim (vl-file-systime fle)) 
+      (list (nth 0 tim) (nth 1 tim) (nth 3 tim) (nth 4 tim) (nth 5 tim) (nth 6 tim))
+    )
+  )
+  ;; T if time a is later than time b:
+  (defun Dyl:SuiteNewer-p (a b) 
+    (cond 
+      ((null a) nil)
+      ((null b) T)
+      ((/= (car a) (car b)) (> (car a) (car b)))
+      ((Dyl:SuiteNewer-p (cdr a) (cdr b)))
+    )
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; T if StartupSuite.csv must be rebuilt: missing, legacy or INDEX0 file, a
+  ;;; Lisp file was added or removed, or a Lisp file is newer than the CSV.
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:SuiteStale-p (files old / new prv tim) 
+    (setq new (mapcar '(lambda (f) (strcase (car f))) files))
+    (foreach r (cdr old) 
+      (if (not (member (strcase (nth 3 r)) prv)) 
+        (setq prv (cons (strcase (nth 3 r)) prv))
+      )
+    )
+    (or (/= 'INDEX (car old)) 
+        (/= (length new) (length prv))
+        (not (vl-every '(lambda (p) (member p prv)) new))
+        (progn 
+          (setq tim (Dyl:SuiteTime (Dyl:UserFile *dyl:suite)))
+          (vl-some '(lambda (f) (Dyl:SuiteNewer-p (Dyl:SuiteTime (cadr f)) tim)) files)
+        )
+    )
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Scan the Apps files and build the new index, reapplying the Load values of
+  ;;; the previous file. A renamed command keeps the value of its former name
+  ;;; when that name is one of its aliases. dflt is the default file when old
+  ;;; is the user copy (else nil): a command missing from the user copy (new
+  ;;; in an update) takes its value in the default file.
+  ;;; Returns ((LOAD COMMAND FILE MODULE GROUP PATH NAME DESCRIPTION) ...).
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:SuiteBuild (files old dflt / bypth byfle als cmds cmd lst)
+    ;; Previous values keyed by "PATH|COMMAND" and by "FILE|COMMAND", the ones of
+    ;; old found first (added last):
+    (foreach r (append (cdr dflt) (cdr old))
+      (setq bypth (cons (cons (strcase (strcat (nth 3 r) "|" (nth 1 r))) (car r)) bypth)
+            byfle (cons (cons (strcase (strcat (nth 2 r) "|" (nth 1 r))) (car r)) byfle)
+      )
+    )
+    (setq als (Dyl:AliasRead))
+    (foreach f files
+      (setq cmds (Dyl:SuiteParse (cadr f)))
+      (foreach itm (cond (cmds) ('(("" "" ""))))
+        (setq cmd (car itm)
+              lst (cons
+                    (list
+                      (cdr
+                        (cond
+                          ((assoc (strcase (strcat (nth 0 f) "|" cmd)) bypth))
+                          ((assoc (strcase (strcat (nth 4 f) "|" cmd)) byfle))
+                          ((vl-some
+                             '(lambda (a)
+                                (cond
+                                  ((assoc (strcase (strcat (nth 0 f) "|" a)) bypth))
+                                  ((assoc (strcase (strcat (nth 4 f) "|" a)) byfle))
+                                )
+                              )
+                             (if (/= "" cmd) (Dyl:AliasesOf cmd als))
+                           )
+                          )
+                          ((assoc (strcase (strcat (nth 4 f) "|*")) byfle))
+                          ('(nil . "0"))
+                        )
+                      )
+                      cmd
+                      (nth 4 f)
+                      (nth 2 f)
+                      (nth 3 f)
+                      (nth 0 f)
+                      (cadr itm)
+                      (caddr itm)
+                    )
+                    lst
+                  )
+        )
+      )
+    )
+    (reverse lst)
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Write the index to StartupSuite.csv (Windows list separator, as Excel).
+  ;;; Returns T on success, nil if the file cannot be written (open in Excel?).
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:SuiteWrite (recs / cnt itm) 
+    ;; Count the definitions of each command to flag the duplicates:
+    (foreach r recs 
+      (if (/= "" (nth 1 r)) 
+        (setq cnt (if (setq itm (assoc (nth 1 r) cnt)) 
+                    (subst (cons (car itm) (1+ (cdr itm))) itm cnt)
+                    (cons (cons (nth 1 r) 1) cnt)
+                  )
+        )
+      )
+    )
+    (Remote>>LM:writecsv 
+      (cons '("Load" "Command" "Name" "Description" "File" "Module" "Group" "Duplicate" "Path") 
+            (mapcar 
+              '(lambda (r) 
+                 (list (nth 0 r) 
+                       (if (= "" (nth 1 r)) "" (strcat "C:" (nth 1 r)))
+                       (nth 6 r)
+                       (nth 7 r)
+                       (nth 2 r)
+                       (nth 3 r)
+                       (nth 4 r)
+                       (if (> (cond ((cdr (assoc (nth 1 r) cnt))) (0)) 1) "Yes" "")
+                       (nth 5 r)
+                 )
+               )
+              recs
+            )
+      )
+      (Dyl:UserFileW *dyl:suite)
+    )
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Update StartupSuite.csv when needed (or always if force is T) and return
+  ;;; its rows: ((LOAD COMMAND FILE PATH) ...).
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:Suite (force / files old recs)
+    (setq files (Dyl:SuiteFiles)
+          old   (Dyl:SuiteRead)
+    )
+    (if (or force (Dyl:SuiteStale-p files old))
+      (progn
+        (if (not *dyl:quiet*) (princ "\n...Indexing the Apps commands into StartupSuite.csv"))
+        (setq recs (Dyl:SuiteBuild files
+                                   old
+                                   (if (/= *dyl:suite (Dyl:UserFile *dyl:suite)) (Dyl:SuiteReadFile *dyl:suite))
+                   )
+        )
+        (if (not (Dyl:SuiteWrite recs))
+          (princ (strcat "\n--> Unable to write : " (Dyl:UserFileW *dyl:suite) "\n--> File open in another program?"))
+        )
+        (mapcar '(lambda (r) (list (nth 0 r) (nth 1 r) (nth 2 r) (nth 5 r))) recs)
+      )
+      (cdr old)
+    )
+  )
+
+  (defun c:Dyl-SuiteUpdate () 
+    (Dyl:Suite T)
+    (princ (strcat "\nStartupSuite updated: " (Dyl:UserFile *dyl:suite)))
+    (princ "\nRun Dyl-Reload or open a drawing to apply the Load values.")
+    (princ)
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Read every column of StartupSuite.csv (updated first if needed).
+  ;;; Returns ((LOAD COMMAND FILE MODULE GROUP PATH NAME DESCRIPTION) ...), the
+  ;;; record format of Dyl:SuiteBuild / Dyl:SuiteWrite, or nil if the file is
+  ;;; missing or not in the current format.
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:SuiteRecs (/ des str sep hdr idx lst) 
+    (Dyl:Suite nil)
+    (if (setq des (open (Dyl:UserFile *dyl:suite) "r"))
+      (progn 
+        (if (setq str (read-line des)) 
+          (setq sep (cond 
+                      ((vl-string-search ";" str) ";")
+                      ((vl-string-search "\t" str) "\t")
+                      (",")
+                    )
+                hdr (mapcar 'Dyl:SuiteKey (Remote>>LM:csv->lst str sep 0))
+                idx (mapcar '(lambda (k) (vl-position k hdr)) 
+                            '("LOAD" "COMMAND" "FILE" "MODULE" "GROUP" "PATH" "NAME" "DESCRIPTION")
+                    )
+          )
+        )
+        (if (vl-every 'numberp idx) 
+          (while (setq str (read-line des)) 
+            (if (/= "" (vl-string-trim " \t" str)) 
+              (setq str (Remote>>LM:csv->lst str sep 0)
+                    str (mapcar '(lambda (i) (cond ((nth i str)) (""))) idx)
+                    lst (cons 
+                          (cons (Dyl:SuiteBit (car str)) 
+                                (cons (Dyl:SuiteCmd (cadr str)) (cddr str))
+                          )
+                          lst
+                        )
+              )
+            )
+          )
+        )
+        (close des)
+      )
+    )
+    (setq lst               (vl-remove-if '(lambda (r) (= "" (nth 5 r))) (reverse lst))
+          *dyl:suitemains*  nil
+    )
+    ;; PATH of the files with a Dyl-* or LM-* main command (see Dyl:SuiteChild-p):
+    (foreach r lst
+      (if (and (wcmatch (nth 1 r) "DYL`-*,LM`-*") (not (member (nth 5 r) *dyl:suitemains*)))
+        (setq *dyl:suitemains* (cons (nth 5 r) *dyl:suitemains*))
+      )
+    )
+    lst
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Docs page of a record. Each module Docs folder mirrors its Apps folder,
+  ;;; a page has the base name of its Lisp file:
+  ;;;   Modules\<Module>\Apps\<Group>\<File>.lsp
+  ;;;   Modules\<Module>\Docs\<Group>\<File>.htm   (or .html .pdf .md .txt)
+  ;;; A file without a page of its own uses the index.htm (or .html) of its
+  ;;; group folder, then of each parent folder up to the module Docs folder.
+  ;;; Returns the full path of the page, or nil.
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:SuiteDocs (r / top dir bse fnd) 
+    (setq top (strcat *dyl:module "\\" (nth 3 r) "\\Docs")
+          dir (if (= "" (nth 4 r)) top (strcat top "\\" (nth 4 r)))
+          bse (vl-filename-base (nth 2 r))
+          fnd (vl-some '(lambda (x) (findfile (strcat dir "\\" bse x))) 
+                       '(".htm" ".html" ".pdf" ".md" ".txt")
+              )
+    )
+    (while (and (not fnd) dir) 
+      (setq fnd (vl-some '(lambda (x) (findfile (strcat dir "\\index" x))) '(".htm" ".html"))
+            dir (if (/= (strcase dir) (strcase top)) (vl-filename-directory dir))
+      )
+    )
+    fnd
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Dyl-Suite dialog helpers. They work on the locals of c:Dyl-Suite
+  ;;; (recs vis sel mods grps mains als acmd alst) by dynamic scoping:
+  ;;;   recs - every record, vis - indexes of the listed records,
+  ;;;   sel  - indexes of the selected records (always listed ones),
+  ;;;   als  - aliases being edited, in the Dyl:AliasRead format,
+  ;;;   acmd - command shown in the Aliases panel, alst - its aliases.
+  ;;; In the dialog each record gets a 9th item: its aliases as one string,
+  ;;; kept up to date by Dyl:SuiteDlgAliasCache (Dyl:SuiteWrite ignores it).
+  ;;; ---------------------------------------------------------------------------
+  ;; Aliases of the command of a record, as one string ("" if none):
+  (defun Dyl:SuiteDlgAliasCalc (r)
+    (cond
+      ((= "" (nth 1 r)) "")
+      ((Remote>>LM:lst->str (Dyl:AliasesOf (nth 1 r) als) ", "))
+      ("")
+    )
+  )
+  ;; Cached aliases string of a record:
+  (defun Dyl:SuiteDlgAliasStr (r) (cond ((nth 8 r)) ("")))
+
+  ;; First n items of a list:
+  (defun Dyl:SuiteFirst (lst n / res)
+    (repeat (min n (length lst))
+      (setq res (cons (car lst) res)
+            lst (cdr lst)
+      )
+    )
+    (reverse res)
+  )
+
+  ;; Set the cached aliases of every record (cmd nil) or of the records of cmd.
+  ;; Returns the indexes of the records updated:
+  (defun Dyl:SuiteDlgAliasCache (cmd / i ids)
+    (setq i    -1
+          recs (mapcar
+                 '(lambda (r)
+                    (setq i (1+ i))
+                    (if (or (not cmd) (= cmd (nth 1 r)))
+                      (progn
+                        (setq ids (cons i ids))
+                        (append (Dyl:SuiteFirst r 8) (list (Dyl:SuiteDlgAliasCalc r)))
+                      )
+                      r
+                    )
+                  )
+                 recs
+               )
+    )
+    ids
+  )
+
+  ;;; Child commands: a command whose name starts with "Pst-" (e.g.
+  ;;; Pst-QuickDrawConcrete) is a preset of the main command of its file,
+  ;;; the first command of the same file that is not a child. A child is run by
+  ;;; its aliases (QD-CONCRETE): Dyl-Suite lists it right under its main
+  ;;; command, by its aliases only. In a file with a Dyl-* or LM-* main command,
+  ;;; the commands with another name are children too, run by their own name
+  ;;; (SAVE, QSAVE... under Dyl-CmdOptimizer).
+  ;; Records of the dynamic children (see Dyl:DynList) added to the records lst,
+  ;; with the Load value, file, module and group of the main command of their
+  ;; file. Sets dyns, a local of c:Dyl-Suite: the commands of these records:
+  (defun Dyl:SuiteDlgDyn (lst / main out)
+    (setq dyns nil)
+    (foreach d (Dyl:DynList)
+      (if
+        (setq main (vl-some
+                     '(lambda (r)
+                        (if
+                          (and (= (strcase (nth 5 r)) (strcase (nth 3 d)))
+                               (/= "" (nth 1 r))
+                               (not (Dyl:SuiteChild-p r))
+                          )
+                          r
+                        )
+                      )
+                     lst
+                   )
+        )
+        (setq dyns (cons (car d) dyns)
+              out  (cons (list (car main) (car d) (nth 2 main) (nth 3 main) (nth 4 main) (nth 5 main) (nth 1 d) (nth 2 d))
+                         out
+                   )
+        )
+      )
+    )
+    (append lst (reverse out))
+  )
+
+  ;; T if the record is a child command: a preset (Pst-*), or any other command
+  ;; of a file with a Dyl-* or LM-* main command (e.g. SAVE in Dyl-CmdOptimizer.lsp,
+  ;; *dyl:suitemains* set by Dyl:SuiteRecs):
+  (defun Dyl:SuiteChild-p (r)
+    (or (Dyl:SuitePreset-p r)
+        (and (/= "" (nth 1 r))
+             (not (wcmatch (nth 1 r) "DYL`-*,LM`-*"))
+             (member (nth 5 r) *dyl:suitemains*)
+        )
+    )
+  )
+
+  ;; T if the record is a preset child, run by its aliases (the other children,
+  ;; e.g. a redefined AutoCAD command, run by their own name):
+  (defun Dyl:SuitePreset-p (r) (wcmatch (nth 1 r) "PST`-*"))
+
+  ;; Records in list order, each child right after the main command of its file
+  ;; (a child without main command keeps its place). Sets mains and nkids, locals
+  ;; of c:Dyl-Suite: (("PATH" . "MAIN COMMAND") ...) and (("PATH" . children) ...):
+  (defun Dyl:SuiteDlgOrder (lst / out n)
+    (setq mains nil
+          nkids nil
+    )
+    (foreach r lst
+      (if (and (/= "" (nth 1 r)) (not (Dyl:SuiteChild-p r)) (not (assoc (nth 5 r) mains)))
+        (setq mains (cons (cons (nth 5 r) (nth 1 r)) mains))
+      )
+    )
+    (foreach r lst
+      (cond
+        ((and (Dyl:SuiteChild-p r) (assoc (nth 5 r) mains)))
+        (T
+         (setq out (cons r out))
+         (if (= (nth 1 r) (cdr (assoc (nth 5 r) mains)))
+           (progn
+             (setq n 0)
+             (foreach k lst
+               (if (and (Dyl:SuiteChild-p k) (= (nth 5 k) (nth 5 r)))
+                 (setq out (cons k out)
+                       n   (1+ n)
+                 )
+               )
+             )
+             (if (< 0 n) (setq nkids (cons (cons (nth 5 r) n) nkids)))
+           )
+         )
+        )
+      )
+    )
+    (reverse out)
+  )
+
+  ;; Main command of a child record (nil for any other record):
+  (defun Dyl:SuiteDlgMain (r)
+    (if (Dyl:SuiteChild-p r) (cdr (assoc (nth 5 r) mains)))
+  )
+
+  ;; Number of children of a main command record (nil for any other record):
+  (defun Dyl:SuiteDlgKids (r)
+    (if (= (nth 1 r) (cdr (assoc (nth 5 r) mains))) (cdr (assoc (nth 5 r) nkids)))
+  )
+
+  ;;; Folding: the children of a main command are listed only when it is
+  ;;; unfolded (its PATH is in opens, a local of c:Dyl-Suite), or when they
+  ;;; match the search text. showk ("1" / "0", the "Show child commands"
+  ;;; toggle) set to "0" hides every child. The folding is kept for the next
+  ;;; Dyl-Suite, the toggle is checked at each Dyl-Suite.
+  ;; Lines shown by the list box (the lst tile of Dyl-Suite.dcl, height = 28). A
+  ;; main command unfolded is scrolled to the top of the list with this number:
+  ;; lower it if the main command ends up above the list, raise it if below the top.
+  (setq *dyl:suiterows* 26)
+
+  ;; Index in recs of the main command of the file pth:
+  (defun Dyl:SuiteDlgMainIdx (pth / i res)
+    (setq i -1)
+    (foreach r recs
+      (setq i (1+ i))
+      (if (and (not res) (= pth (nth 5 r)) (= (nth 1 r) (cdr (assoc pth mains)))) (setq res i))
+    )
+    res
+  )
+
+  ;; Scroll the list so that the record n is its first line (the list box shows
+  ;; the line selected: selecting the line one page below brings n to the top),
+  ;; then select the selection again:
+  (defun Dyl:SuiteDlgTop (n / pos)
+    (if (and n (setq pos (vl-position n vis)))
+      (progn
+        (set_tile "lst" (itoa (min (1- (length vis)) (+ pos *dyl:suiterows* -1))))
+        (Dyl:SuiteDlgReselect)
+      )
+    )
+  )
+
+  ;; Fold or unfold the children of the main command of the file pth. An unfolded
+  ;; main command goes to the top of the list, so its children can be seen:
+  (defun Dyl:SuiteDlgFold (pth)
+    (setq opens (if (member pth opens) (vl-remove pth opens) (cons pth opens)))
+    (Dyl:SuiteDlgList)
+    (if (member pth opens) (Dyl:SuiteDlgTop (Dyl:SuiteDlgMainIdx pth)))
+  )
+
+  ;; Groups (PATH of their file) of the selected main commands and children:
+  (defun Dyl:SuiteDlgFoldPaths (/ pths)
+    (foreach n sel
+      (if
+        (and (or (Dyl:SuiteDlgKids (nth n recs)) (Dyl:SuiteDlgMain (nth n recs)))
+             (not (member (nth 5 (nth n recs)) pths))
+        )
+        (setq pths (cons (nth 5 (nth n recs)) pths))
+      )
+    )
+    pths
+  )
+
+  ;; Fold/Unfold button: the main commands of the selected lines, a selected child
+  ;; standing for its main command. Folds them when one of them is unfolded,
+  ;; unfolds them otherwise. The main command is selected too, so it stays
+  ;; selected when its children are folded:
+  (defun Dyl:SuiteDlgFoldSel (/ pths open r i)
+    (setq pths (Dyl:SuiteDlgFoldPaths)
+          open (not (vl-some '(lambda (p) (member p opens)) pths))
+    )
+    (foreach n sel
+      (setq r (nth n recs))
+      (if (or (Dyl:SuiteDlgKids r) (Dyl:SuiteDlgMain r))
+        (progn
+          (setq opens (cond
+                        ((not open) (vl-remove (nth 5 r) opens))
+                        ((member (nth 5 r) opens) opens)
+                        ((cons (nth 5 r) opens))
+                      )
+                i     -1
+          )
+          (foreach x recs
+            (setq i (1+ i))
+            (if
+              (and (= (nth 5 x) (nth 5 r))
+                   (= (nth 1 x) (cdr (assoc (nth 5 r) mains)))
+                   (not (member i sel))
+              )
+              (setq sel (cons i sel))
+            )
+          )
+        )
+      )
+    )
+    (Dyl:SuiteDlgList)
+    ;; Unfolded: the first main command listed goes to the top of the list:
+    (if (and open pths)
+      (Dyl:SuiteDlgTop
+        (car (vl-sort (vl-remove-if-not '(lambda (n) (member n vis)) (mapcar 'Dyl:SuiteDlgMainIdx pths))
+                      '(lambda (a b) (< (vl-position a vis) (vl-position b vis)))
+             )
+        )
+      )
+    )
+  )
+
+  ;; Groups (PATH of their file) of the main commands with children listed, or
+  ;; with a child listed:
+  (defun Dyl:SuiteDlgFoldAllPaths (/ r pths)
+    (foreach n vis
+      (setq r (nth n recs))
+      (if
+        (and (or (Dyl:SuiteDlgKids r) (Dyl:SuiteDlgMain r))
+             (not (member (nth 5 r) pths))
+        )
+        (setq pths (cons (nth 5 r) pths))
+      )
+    )
+    pths
+  )
+
+  ;; Fold/Unfold All button: the main commands listed. Unfolds them all when one
+  ;; of them is folded, folds them all otherwise:
+  (defun Dyl:SuiteDlgFoldAll (/ pths)
+    (if (setq pths (Dyl:SuiteDlgFoldAllPaths))
+      (progn
+        (setq opens
+               (if (vl-some '(lambda (p) (not (member p opens))) pths)
+                 (append (vl-remove-if '(lambda (p) (member p opens)) pths) opens)
+                 (vl-remove-if '(lambda (p) (member p pths)) opens)
+               )
+        )
+        (Dyl:SuiteDlgList)
+      )
+    )
+  )
+
+  ;; Column titles of the list (hdr tile), in the order of Dyl:SuiteDlgLine:
+  (setq *dyl:suitehdr* '("Load" "Fold" "Command" "Aliases" "Name" "Module" "Group"))
+
+  ;;; Sorting: the "Sort by" list (srt tile) orders the list by Command, Aliases,
+  ;;; Name, Module or Group (the order of the CSV for the same value). A child
+  ;;; always follows its main command. recs keeps its order (the On / Off changes
+  ;;; are found by position): ord, a local of c:Dyl-Suite, holds the indexes of
+  ;;; recs in list order.
+  ;; Sort value of a record for the sort k (index in the srt tile). A command
+  ;; without aliases goes after the others:
+  (defun Dyl:SuiteDlgSortKey (r k)
+    (strcase
+      (cond
+        ((= 0 k) (if (= "" (nth 1 r)) (nth 2 r) (nth 1 r)))
+        ((= 1 k) (if (= "" (Dyl:SuiteDlgAliasStr r)) "~" (Dyl:SuiteDlgAliasStr r)))
+        ((= 2 k) (nth 6 r))
+        ((= 3 k) (strcat (nth 3 r) "\t" (nth 4 r)))
+        ((strcat (nth 4 r) "\t" (nth 3 r)))
+      )
+    )
+  )
+
+  ;; Sort the list by the srt tile: sets ord, marks the column sorted in the titles.
+  ;; Each key ends with the index of the record (same value: CSV order), a child
+  ;; takes the key of its main command (cur), followed by its own index:
+  (defun Dyl:SuiteDlgSort (/ k i cur keys)
+    (setq k (atoi (get_tile "srt"))
+          i -1
+    )
+    (foreach r recs
+      (setq i (1+ i))
+      (if (not (and cur (Dyl:SuiteDlgMain r) (= (nth 5 r) (car cur))))
+        (setq cur (list (nth 5 r) (strcat (Dyl:SuiteDlgSortKey r k) "\t" (substr (itoa (+ 100000 i)) 2))))
+      )
+      (setq keys (cons (strcat (cadr cur) "\t" (substr (itoa (+ 100000 i)) 2)) keys))
+    )
+    (setq ord (vl-sort-i (reverse keys) '<))
+    (setq i -1)
+    (start_list "hdr")
+    (add_list
+      (Remote>>LM:lst->str
+        (mapcar '(lambda (s) (if (= (+ 2 k) (setq i (1+ i))) (strcat s "  v") s)) *dyl:suitehdr*)
+        "\t"
+      )
+    )
+    (end_list)
+  )
+
+  ;; List box line of a record: state, fold, command, aliases, name, module, group
+  ;; (the file is shown in the details of the selection). A child shows its name
+  ;; in the Command column, indented under its main command, and no name in the
+  ;; Name column (it stays for the main commands):
+  (defun Dyl:SuiteDlgLine (r)
+    (strcat (if (= "1" (car r)) "[X]" "[  ]")
+            "\t"
+            ;; A main command with children: [+] folded / [-] unfolded
+            (cond ((or (/= "1" showk) (Dyl:SuiteDlgMain r) (not (Dyl:SuiteDlgKids r))) "")
+                  ((member (nth 5 r) opens) "[-]")
+                  ("[+]")
+            )
+            "\t"
+            (cond
+              ((= "" (nth 1 r)) (strcat "(whole file) " (nth 2 r)))
+              ((Dyl:SuiteDlgMain r) (strcat "   |_ " (nth 6 r)))
+              ;; A main command with children: their number
+              ((Dyl:SuiteDlgKids r)
+               (strcat (nth 1 r) " (" (itoa (Dyl:SuiteDlgKids r)) ")")
+              )
+              ((nth 1 r))
+            )
+            "\t"
+            (cond ((/= "" (Dyl:SuiteDlgAliasStr r)) (Dyl:SuiteDlgAliasStr r))
+                  ((not (Dyl:SuiteDlgMain r)) "")
+                  ((Dyl:SuitePreset-p r) "(no alias)")
+                  ((nth 1 r))
+            )
+            "\t"
+            (if (Dyl:SuiteDlgMain r) "" (nth 6 r))
+            "\t"
+            (nth 3 r)
+            "\t"
+            (nth 4 r)
+    )
+  )
+
+  ;; Fill a popup list, "" shown as (root):
+  (defun Dyl:SuiteDlgPopup (key lst) 
+    (start_list key)
+    (foreach x lst (add_list (if (= "" x) "(root)" x)))
+    (end_list)
+    (set_tile key "0")
+  )
+
+  ;; T if the record r can be listed: a command turned off only when "Show
+  ;; unloaded commands" is checked (or Show: Off, shw = "2"):
+  (defun Dyl:SuiteDlgShown-p (r shw)
+    (or (= "1" showoff) (= "2" shw) (= "1" (car r)))
+  )
+
+  ;; Module popup: "All" + the modules of the commands that can be listed. The
+  ;; module selected is kept while it is there, else All (groups rebuilt):
+  (defun Dyl:SuiteDlgModules (/ cur shw lst)
+    (setq cur (if mods (nth (atoi (get_tile "mod")) mods))
+          shw (get_tile "shw")
+    )
+    (foreach r recs
+      (if (and (Dyl:SuiteDlgShown-p r shw) (not (member (nth 3 r) lst)))
+        (setq lst (cons (nth 3 r) lst))
+      )
+    )
+    (Dyl:SuiteDlgPopup "mod" (setq mods (cons "All" (acad_strlsort lst))))
+    (cond
+      ((member cur (cdr mods)) (set_tile "mod" (itoa (vl-position cur mods))))
+      ((and cur (/= "All" cur)) (Dyl:SuiteDlgGroups))
+    )
+  )
+
+  ;; Group popup: "All" + the groups of the module selected:
+  (defun Dyl:SuiteDlgGroups (/ mod) 
+    (setq mod  (if (/= "0" (get_tile "mod")) (nth (atoi (get_tile "mod")) mods))
+          grps nil
+    )
+    (foreach r recs 
+      (if (and (or (not mod) (= mod (nth 3 r))) (not (member (nth 4 r) grps))) 
+        (setq grps (cons (nth 4 r) grps))
+      )
+    )
+    (Dyl:SuiteDlgPopup "grp" (setq grps (cons "All" (acad_strlsort grps))))
+  )
+
+  ;; Select the listed records of sel again (the list box forgets them):
+  (defun Dyl:SuiteDlgReselect (/ i pos) 
+    (setq i -1)
+    (foreach n vis 
+      (setq i (1+ i))
+      (if (member n sel) (setq pos (cons (itoa i) pos)))
+    )
+    (set_tile "lst" (if pos (Remote>>LM:lst->str (reverse pos) " ") ""))
+  )
+
+  ;; Rebuild the list from the filters, in the order ord, keep the selection
+  ;; still listed:
+  (defun Dyl:SuiteDlgList (/ mod grp shw txt r lns)
+    (setq mod (if (/= "0" (get_tile "mod")) (nth (atoi (get_tile "mod")) mods))
+          grp (if (/= "0" (get_tile "grp")) (nth (atoi (get_tile "grp")) grps))
+          shw (get_tile "shw")
+          txt (strcase (vl-string-trim " " (get_tile "flt")))
+          vis nil
+    )
+    (foreach i ord
+      (setq r (nth i recs))
+      (if
+        (and (or (not mod) (= mod (nth 3 r)))
+             (or (not grp) (= grp (nth 4 r)))
+             (cond
+               ((= "1" shw) (= "1" (car r)))
+               ((= "2" shw) (= "0" (car r)))
+               ((= "3" shw) (/= "" (Dyl:SuiteDlgAliasStr r)))
+               (T)
+             )
+             (Dyl:SuiteDlgShown-p r shw)
+             ;; A child is listed when its main command is unfolded or when
+             ;; searching, unless the children are hidden:
+             (or (not (Dyl:SuiteDlgMain r))
+                 (and (= "1" showk) (or (/= "" txt) (member (nth 5 r) opens)))
+             )
+             ;; The search also finds a command by any of its aliases:
+             (or (= "" txt)
+                 (vl-some '(lambda (s) (vl-string-search txt (strcase s)))
+                          (list (nth 1 r) (nth 2 r) (nth 6 r) (nth 7 r) (Dyl:SuiteDlgAliasStr r))
+                 )
+             )
+        )
+        (setq vis (cons i vis)
+              lns (cons (Dyl:SuiteDlgLine r) lns)
+        )
+      )
+    )
+    (setq vis (reverse vis)
+          sel (vl-remove-if-not '(lambda (n) (member n vis)) sel)
+    )
+    (start_list "lst")
+    (foreach x (reverse lns) (add_list x))
+    (end_list)
+    (Dyl:SuiteDlgReselect)
+    (Dyl:SuiteDlgInfo)
+  )
+
+  ;; Records of ids that can be set on / off (a dynamic child follows its main command):
+  (defun Dyl:SuiteDlgOwn (ids)
+    (vl-remove-if '(lambda (n) (member (nth 1 (nth n recs)) dyns)) ids)
+  )
+
+  ;; On/Off and All Listed On/Off buttons: turn the records ids on when one of
+  ;; them is off, off when they are all on:
+  (defun Dyl:SuiteDlgSwitch (ids)
+    (setq ids (Dyl:SuiteDlgOwn ids))
+    (if ids
+      (Dyl:SuiteDlgSet ids (if (vl-some '(lambda (n) (/= "1" (car (nth n recs)))) ids) "1" "0"))
+    )
+  )
+
+  ;; Grey the buttons that would do nothing for the selection and the list:
+  (defun Dyl:SuiteDlgButtons ()
+    (mode_tile "onf" (if (Dyl:SuiteDlgOwn sel) 0 1))
+    (mode_tile "aonf" (if (Dyl:SuiteDlgOwn vis) 0 1))
+    (mode_tile "doc" (if sel 0 1))
+    (mode_tile "lsp" (if sel 0 1))
+    ;; Fold/Unfold: a main command or child selected, children not hidden:
+    (mode_tile "fld" (if (and (= "1" showk) (Dyl:SuiteDlgFoldPaths)) 0 1))
+    ;; Fold/Unfold All: a main command with children listed, children not hidden:
+    (mode_tile "fal" (if (and (= "1" showk) (Dyl:SuiteDlgFoldAllPaths)) 0 1))
+  )
+
+  ;; Counter, details and aliases of the selected record, state of the buttons:
+  (defun Dyl:SuiteDlgInfo (/ r dup)
+    (set_tile "cnt"
+              (strcat (itoa (length vis))
+                      " listed   |   "
+                      (itoa (length (vl-remove-if-not '(lambda (x) (= "1" (car x))) recs)))
+                      " on / "
+                      (itoa (length recs))
+                      " total   |   "
+                      (itoa (length als))
+                      " aliases"
+              )
+    )
+    (Dyl:SuiteDlgAliases)
+    (Dyl:SuiteDlgButtons)
+    (cond 
+      ((null sel)
+       (foreach k '("nam" "des" "pth") (set_tile k ""))
+      )
+      ((cdr sel)
+       (set_tile "nam" (strcat (itoa (length sel)) " items selected"))
+       (set_tile "des" "")
+       (set_tile "pth" "")
+      )
+      (T
+       (setq r (nth (car sel) recs))
+       ;; Other files defining the same command (module and file):
+       (if (/= "" (nth 1 r))
+         (foreach x recs
+           (if (and (= (nth 1 x) (nth 1 r)) (/= (nth 5 x) (nth 5 r)))
+             (setq dup (cons (strcat (nth 3 x) "\\" (nth 2 x) (if (= "1" (car x)) " (on)" "")) dup))
+           )
+         )
+       )
+       ;; 1st line: command (a child: its aliases) and name, 2nd line: description,
+       ;; 3rd line: parent / child relation and duplicates (Open Lisp opens the file):
+       (set_tile "nam"
+                 (cond
+                   ((= "" (nth 1 r)) (strcat (nth 2 r) " (whole file)"))
+                   ((Dyl:SuiteDlgMain r)
+                    (strcat (cond ((/= "" (Dyl:SuiteDlgAliasStr r)) (Dyl:SuiteDlgAliasStr r))
+                                  ((Dyl:SuitePreset-p r) "(no alias)")
+                                  ((nth 1 r))
+                            )
+                            " - "
+                            (nth 6 r)
+                    )
+                   )
+                   ((strcat (nth 1 r) " - " (nth 6 r)))
+                 )
+       )
+       (set_tile "des"
+                 (if (= "" (nth 1 r)) "No command: turning it on loads the whole file." (nth 7 r))
+       )
+       (set_tile "pth"
+                 (cond
+                   ((Remote>>LM:lst->str
+                      (vl-remove nil
+                                 (list
+                                   (if (Dyl:SuiteDlgMain r)
+                                     (strcat "Child of "
+                                             (Dyl:SuiteDlgMain r)
+                                             ", runs "
+                                             (nth 1 r)
+                                             (if (member (nth 1 r) dyns) " (custom preset, on / off with it)" "")
+                                     )
+                                   )
+                                   (if (Dyl:SuiteDlgKids r)
+                                     (strcat (itoa (Dyl:SuiteDlgKids r)) " child commands: double-click to fold / unfold")
+                                   )
+                                   (if dup (strcat "Also defined in: " (Remote>>LM:lst->str dup ", ")))
+                                 )
+                      )
+                      "   |   "
+                    )
+                   )
+                   ("")
+                 )
+       )
+      )
+    )
+  )
+
+  ;; List box picked: keep the selection. A double-click folds / unfolds a main
+  ;; command with children, and opens the docs pages of anything else:
+  (defun Dyl:SuiteDlgPick (val why)
+    (setq sel (mapcar '(lambda (n) (nth n vis)) (read (strcat "(" val ")"))))
+    (Dyl:SuiteDlgInfo)
+    (cond
+      ((/= 4 why))
+      ((and sel (not (cdr sel)) (Dyl:SuiteDlgKids (nth (car sel) recs)) (= "1" showk))
+       (Dyl:SuiteDlgFold (nth 5 (nth (car sel) recs)))
+      )
+      ((Dyl:SuiteDlgDocs sel))
+    )
+  )
+
+  ;; Open the full paths fils with their Windows association (Notepad if that
+  ;; fails). More than 10 files at once is refused (likely a wrong selection):
+  (defun Dyl:SuiteDlgShell (fils / shl) 
+    (if (< 10 (length fils)) 
+      (set_tile "pth" (strcat (itoa (length fils)) " files to open: select 10 items or fewer"))
+      (progn 
+        (setq shl (vl-catch-all-apply 'vla-getinterfaceobject 
+                                      (list (vlax-get-acad-object) "Shell.Application")
+                  )
+        )
+        (foreach f fils 
+          (cond 
+            ((and (not (vl-catch-all-error-p shl)) 
+                  (not 
+                    (vl-catch-all-error-p 
+                      (vl-catch-all-apply 'vlax-invoke-method (list shl 'ShellExecute f "" "" "open" 1))
+                    )
+                  )
+             )
+            )
+            ((startapp "notepad" (strcat "\"" f "\"")))
+          )
+        )
+        (if (not (vl-catch-all-error-p shl)) (vlax-release-object shl))
+      )
+    )
+  )
+
+  ;; Open the .lsp files of the records ids, each file once:
+  (defun Dyl:SuiteDlgOpen (ids / f fils) 
+    (foreach n ids 
+      (setq f (strcat *dyl:module "\\" (nth 5 (nth n recs))))
+      (cond 
+        ((member f fils))
+        ((findfile f) (setq fils (cons f fils)))
+        ((set_tile "pth" (strcat "File not found: " f)))
+      )
+    )
+    (Dyl:SuiteDlgShell (reverse fils))
+  )
+
+  ;; Open the docs pages of the records ids, each page once. The expected page
+  ;; of the first record without one is shown in the details:
+  (defun Dyl:SuiteDlgDocs (ids / r f fils miss) 
+    (foreach n ids 
+      (setq r (nth n recs))
+      (cond 
+        ((not (setq f (Dyl:SuiteDocs r)))
+         (if (not miss) (setq miss r))
+        )
+        ((not (member f fils)) (setq fils (cons f fils)))
+      )
+    )
+    (if miss 
+      (set_tile "pth" 
+                (strcat "No docs page: Modules\\" 
+                        (nth 3 miss)
+                        "\\Docs\\"
+                        (if (= "" (nth 4 miss)) "" (strcat (nth 4 miss) "\\"))
+                        (vl-filename-base (nth 2 miss))
+                        ".htm"
+                )
+      )
+    )
+    (Dyl:SuiteDlgShell (reverse fils))
+  )
+
+  ;; Set the records ids to "1", "0" or toggle them ("T"). A few lines are
+  ;; changed in place so the list keeps its scroll position, more are rebuilt.
+  ;; A dynamic child is not set on its own: it follows its main command:
+  (defun Dyl:SuiteDlgSet (ids mode / i pths)
+    (setq ids  (vl-remove-if '(lambda (n) (member (nth 1 (nth n recs)) dyns)) ids)
+          i    -1
+          recs (mapcar
+                 '(lambda (r)
+                    (setq i (1+ i))
+                    (if (member i ids)
+                      (cons (cond ((/= "T" mode) mode) ((= "1" (car r)) "0") ("1")) (cdr r))
+                      r
+                    )
+                  )
+                 recs
+               )
+    )
+    ;; The dynamic children of the main commands set take their new value:
+    (foreach n ids
+      (if (= (nth 1 (nth n recs)) (cdr (assoc (nth 5 (nth n recs)) mains)))
+        (setq pths (cons (cons (nth 5 (nth n recs)) (car (nth n recs))) pths))
+      )
+    )
+    (setq i    -1
+          recs (mapcar
+                 '(lambda (r / p)
+                    (setq i (1+ i))
+                    (if (and (member (nth 1 r) dyns) (setq p (assoc (nth 5 r) pths)))
+                      (progn
+                        (setq ids (cons i ids))
+                        (cons (cdr p) (cdr r))
+                      )
+                      r
+                    )
+                  )
+                 recs
+               )
+    )
+    (Dyl:SuiteDlgRedraw ids)
+  )
+
+  ;; Redraw the lines of the records ids: in place for a few (the list keeps
+  ;; its scroll position), the whole list for more:
+  (defun Dyl:SuiteDlgRedraw (ids / pos)
+    (if (< 50 (length ids))
+      (Dyl:SuiteDlgList)
+      (progn
+        (foreach n ids
+          (if (setq pos (vl-position n vis))
+            (progn
+              (start_list "lst" 1 pos)
+              (add_list (Dyl:SuiteDlgLine (nth n recs)))
+              (end_list)
+            )
+          )
+        )
+        (Dyl:SuiteDlgReselect)
+        (Dyl:SuiteDlgInfo)
+      )
+    )
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Aliases panel: the aliases of the single command selected. Add creates
+  ;;; the alias typed, Rename gives the alias picked the name typed, Remove
+  ;;; deletes the alias picked. Changes are saved with the dialog (Save).
+  ;;; ---------------------------------------------------------------------------
+  ;; T if name is the command of a record:
+  (defun Dyl:SuiteDlgIsCmd (name)
+    (vl-some '(lambda (r) (= name (nth 1 r))) recs)
+  )
+
+  ;; Fill the panel for the selection (empty unless one command is selected):
+  (defun Dyl:SuiteDlgAliases (/ r)
+    (setq r    (if (and sel (not (cdr sel))) (nth (car sel) recs))
+          acmd (if (and r (/= "" (nth 1 r))) (nth 1 r))
+          alst (if acmd (Dyl:AliasesOf acmd als))
+    )
+    (start_list "als")
+    (foreach a alst (add_list (if (Dyl:SuiteDlgIsCmd a) (strcat a "  (also a command)") a)))
+    (end_list)
+    (mode_tile "aln" (if acmd 0 1))
+    (mode_tile "aad" (if acmd 0 1))
+    (mode_tile "aren" 1)
+    (mode_tile "adel" 1)
+    (set_tile "aln" "")
+    (set_tile "ams"
+              (cond
+                ((not acmd) "Select one command to edit its aliases.")
+                ((and (not alst) (Dyl:SuiteDlgMain r) (Dyl:SuitePreset-p r)) "A child command runs by its aliases: add one.")
+                ((/= "1" (car r)) "Aliases run once the command is turned on.")
+                ((not alst) "No alias yet: type one and click Add.")
+                ("Pick an alias to rename or remove it.")
+              )
+    )
+  )
+
+  ;; An alias was picked: put it in the edit box for a rename:
+  (defun Dyl:SuiteDlgAliasPick (val)
+    (if (and val (/= "" val) (nth (atoi val) alst))
+      (progn
+        (set_tile "aln" (nth (atoi val) alst))
+        (mode_tile "aren" 0)
+        (mode_tile "adel" 0)
+        (set_tile "ams" "")
+      )
+    )
+  )
+
+  ;; Error message for the alias name a (nil when valid). old is the alias being
+  ;; renamed (nil for a new one):
+  (defun Dyl:SuiteDlgAliasCheck (a old / x)
+    (cond
+      ((= "" a) "Type an alias name.")
+      ((not (Dyl:AliasName-p a)) "Use letters, digits, - and _ only.")
+      ((= a old) "The name did not change.")
+      ((= a acmd) "This is the name of the command itself.")
+      ((setq x (assoc a als)) (strcat a " is already an alias of " (cdr x) "."))
+      ((setq x (vl-some '(lambda (r) (if (= a (nth 1 r)) r)) recs))
+       (strcat a " is already a command: Modules\\" (nth 5 x))
+      )
+      ((getcname a) (strcat a " is an AutoCAD command: the alias would never run."))
+    )
+  )
+
+  ;; Apply a change of the aliases of acmd (new als) and show msg:
+  (defun Dyl:SuiteDlgAliasDone (new msg / cmd)
+    (setq als new
+          cmd acmd
+    )
+    (Dyl:SuiteDlgRedraw (Dyl:SuiteDlgAliasCache cmd))
+    (set_tile "ams" msg)
+  )
+
+  ;; Alias picked in the panel list (nil if none):
+  (defun Dyl:SuiteDlgAliasSel (/ v)
+    (if (/= "" (setq v (get_tile "als"))) (nth (atoi v) alst))
+  )
+
+  ;; Add, Rename and Remove buttons:
+  (defun Dyl:SuiteDlgAliasAdd (/ a err)
+    (setq a (Dyl:SuiteCmd (get_tile "aln")))
+    (if (setq err (Dyl:SuiteDlgAliasCheck a nil))
+      (set_tile "ams" err)
+      (Dyl:SuiteDlgAliasDone (append als (list (cons a acmd))) (strcat a " added."))
+    )
+  )
+  (defun Dyl:SuiteDlgAliasRename (/ old a err)
+    (setq old (Dyl:SuiteDlgAliasSel)
+          a   (Dyl:SuiteCmd (get_tile "aln"))
+    )
+    (cond
+      ((not old) (set_tile "ams" "Pick the alias to rename."))
+      ((setq err (Dyl:SuiteDlgAliasCheck a old)) (set_tile "ams" err))
+      ((Dyl:SuiteDlgAliasDone
+         (subst (cons a acmd) (cons old acmd) als)
+         (strcat old " renamed " a ".")
+       )
+      )
+    )
+  )
+  (defun Dyl:SuiteDlgAliasRemove (/ old)
+    (if (setq old (Dyl:SuiteDlgAliasSel))
+      (Dyl:SuiteDlgAliasDone (vl-remove (cons old acmd) als) (strcat old " removed."))
+      (set_tile "ams" "Pick the alias to remove.")
+    )
+  )
+
+  ;; Question of up to 3 lines in the dyl_suite_ask dialog of Dyl-Suite.dcl, with
+  ;; the labels of its two buttons (asked on the command line if the dialog
+  ;; cannot be shown). Returns T for the first button:
+  (defun Dyl:SuiteAsk (lines yes no / dch res)
+    (if
+      (and (< 0 (setq dch (load_dialog (strcat *dyl:res "\\Dyl-Suite.dcl"))))
+           (new_dialog "dyl_suite_ask" dch)
+      )
+      (progn
+        (foreach k '("l1" "l2" "l3")
+          (set_tile k (cond ((car lines)) ("")))
+          (setq lines (cdr lines))
+        )
+        (set_tile "accept" yes)
+        (set_tile "cancel" no)
+        (setq res (= 1 (start_dialog)))
+        (unload_dialog dch)
+        res
+      )
+      (progn
+        (if (< 0 dch) (unload_dialog dch))
+        (initget "Yes No")
+        (/= "No" (getkword (strcat "\n" (car lines) " [Yes/No] <Yes>: ")))
+      )
+    )
+  )
+
+  ;; Write a file with write-fn, asking to retry while it is open in another
+  ;; program. Returns T once written, nil when the user gives up:
+  (defun Dyl:SuiteSave (write-fn name / ok)
+    (while
+      (and (not (setq ok (apply write-fn nil)))
+           (Dyl:SuiteAsk
+             (list (strcat "Unable to write " name ".")
+                   "Close it in Excel (or any other program)"
+                   "and retry, or cancel to drop the changes."
+             )
+             "Retry"
+             "Cancel"
+           )
+      )
+    )
+    ok
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Dyl-Suite: turn the commands of StartupSuite.csv on or off and edit their
+  ;;; aliases from a dialog, save StartupSuite.csv and Aliases.csv, then apply
+  ;;; the changes to the current drawing (aliases always, on / off on request).
+  ;;; ---------------------------------------------------------------------------
+  (defun c:Dyl-Suite (/ recs old vis sel ord mods grps mains nkids opens showk showoff dyns als alsold acmd alst dch res ons offs achg)
+    (setq recs   (Dyl:SuiteDlgOrder (Dyl:SuiteDlgDyn (Dyl:SuiteRecs)))
+          old    recs
+          als    (Dyl:AliasRead)
+          alsold als
+    )
+    (cond
+      ((null recs)
+       (alert (strcat "Unable to read the Startup Suite:\n" (Dyl:UserFile *dyl:suite) "\n\nRun Dyl-SuiteUpdate and try again."))
+      )
+      ((not
+         (and (< 0 (setq dch (load_dialog (strcat *dyl:res "\\Dyl-Suite.dcl"))))
+              (new_dialog "dyl_suite" dch)
+         )
+       )
+       (princ "\n--> Unable to load the dialog : Dyl-Suite.dcl")
+      )
+      (T
+       (Dyl:SuiteDlgAliasCache nil)
+       ;; Column titles (set by Dyl:SuiteDlgSort); a click on them is undone
+       ;; (they are not a selection):
+       (action_tile "hdr" "(set_tile \"hdr\" \"\")")
+       ;; Main commands unfolded in the last Dyl-Suite, children shown at each
+       ;; Dyl-Suite:
+       (setq opens *dyl:suiteopen*
+             showk "1"
+       )
+       (set_tile "sch" showk)
+       ;; The commands turned off are hidden at each Dyl-Suite:
+       (setq showoff "0")
+       (set_tile "sof" showoff)
+       (Dyl:SuiteDlgPopup "shw" '("All" "On" "Off" "With aliases"))
+       (Dyl:SuiteDlgModules)
+       ;; Sort of the last Dyl-Suite (Module: the order of the CSV):
+       (Dyl:SuiteDlgPopup "srt" '("Command" "Aliases" "Name" "Module" "Group"))
+       (set_tile "srt"
+                 (if (member (getenv "DynalispSuiteSort") '("0" "1" "2" "3" "4")) (getenv "DynalispSuiteSort") "3")
+       )
+       (Dyl:SuiteDlgSort)
+       (Dyl:SuiteDlgGroups)
+       (Dyl:SuiteDlgList)
+       (action_tile "srt" "(Dyl:SuiteDlgSort) (Dyl:SuiteDlgList)")
+       (action_tile "mod" "(Dyl:SuiteDlgGroups) (Dyl:SuiteDlgList)")
+       (action_tile "grp" "(Dyl:SuiteDlgList)")
+       (action_tile "shw" "(Dyl:SuiteDlgModules) (Dyl:SuiteDlgList)")
+       (action_tile "flt" "(Dyl:SuiteDlgList)")
+       (action_tile "clr"
+                    "(set_tile \"mod\" \"0\") (set_tile \"shw\" \"0\") (Dyl:SuiteDlgModules) (Dyl:SuiteDlgGroups) (set_tile \"flt\" \"\") (Dyl:SuiteDlgList)"
+       )
+       (action_tile "lst" "(Dyl:SuiteDlgPick $value $reason)")
+       (action_tile "doc" "(Dyl:SuiteDlgDocs sel)")
+       (action_tile "lsp" "(Dyl:SuiteDlgOpen sel)")
+       (action_tile "onf" "(Dyl:SuiteDlgSwitch sel)")
+       (action_tile "aonf" "(Dyl:SuiteDlgSwitch vis)")
+       (action_tile "als" "(Dyl:SuiteDlgAliasPick $value)")
+       ;; Enter in the alias box adds it (focus lost does nothing):
+       (action_tile "aln" "(if (= 1 $reason) (Dyl:SuiteDlgAliasAdd))")
+       (action_tile "aad" "(Dyl:SuiteDlgAliasAdd)")
+       (action_tile "aren" "(Dyl:SuiteDlgAliasRename)")
+       (action_tile "adel" "(Dyl:SuiteDlgAliasRemove)")
+       (action_tile "sch"
+                    "(setq showk $value) (Dyl:SuiteDlgList)"
+       )
+       (action_tile "sof" "(setq showoff $value) (Dyl:SuiteDlgModules) (Dyl:SuiteDlgList)")
+       (action_tile "fld" "(Dyl:SuiteDlgFoldSel)")
+       (action_tile "fal" "(Dyl:SuiteDlgFoldAll)")
+       (action_tile "vsc" "(Dyl:VSCode)")
+       ;; The sort is kept (Save or Cancel), read before the dialog closes:
+       (action_tile "accept" "(setenv \"DynalispSuiteSort\" (get_tile \"srt\")) (done_dialog 1)")
+       (action_tile "cancel" "(setenv \"DynalispSuiteSort\" (get_tile \"srt\")) (done_dialog 0)")
+       (Dyl:DocsTile "Core\\Dyl-Suite.htm")
+       (setq res (start_dialog))
+       (unload_dialog dch)
+       ;; The folding is kept (Save or Cancel):
+       (setq *dyl:suiteopen* opens)
+
+       ;; The dynamic children are not saved in StartupSuite.csv (they follow
+       ;; their main command):
+       (setq recs (vl-remove-if '(lambda (r) (member (nth 1 r) dyns)) recs)
+             old  (vl-remove-if '(lambda (r) (member (nth 1 r) dyns)) old)
+       )
+       ;; Records turned on / off in the dialog:
+       (mapcar 
+         '(lambda (n o) 
+            (cond 
+              ((= (car n) (car o)))
+              ((= "1" (car n)) (setq ons (cons n ons)))
+              ((setq offs (cons n offs)))
+            )
+          )
+         recs
+         old
+       )
+       (setq achg (not (equal als alsold)))
+       (cond
+         ((/= 1 res) (princ "\nStartup Suite unchanged."))
+         ((not (or ons offs achg)) (princ "\nNo change to the Startup Suite."))
+         (T
+          ;; Each file is written again while it is open in another program:
+          (if achg
+            (if (Dyl:SuiteSave '(lambda () (Dyl:AliasWrite als)) "Aliases.csv")
+              (princ (strcat "\nAliases.csv saved (" (itoa (length als)) " aliases)."))
+              (progn
+                (setq achg nil)
+                (princ "\n--> Alias changes dropped.")
+              )
+            )
+          )
+          (if (or ons offs)
+            (cond
+              ((not (Dyl:SuiteSave '(lambda () (Dyl:SuiteWrite recs)) "StartupSuite.csv"))
+               (princ "\n--> Startup Suite changes dropped.")
+              )
+              ((Dyl:SuiteAsk
+                 (list "StartupSuite.csv saved."
+                       (strcat (itoa (length ons)) " item(s) turned on, " (itoa (length offs)) " item(s) turned off.")
+                       "Apply the changes to the current drawing now?"
+                 )
+                 "Yes"
+                 "No"
+               )
+               ;; Commands turned off are undefined (Dyl:autoload defines them
+               ;; again when another file of the same command is still on).
+               ;; Dyl:autoload also defines the aliases again:
+               (foreach r offs
+                 (if (/= "" (nth 1 r)) (set (read (strcat "C:" (nth 1 r))) nil))
+               )
+               (Dyl:autoload)
+               (setq achg nil)
+              )
+              ((princ "\nChanges apply to the drawings opened from now on (or run Dyl-Reload)."))
+            )
+          )
+          ;; Alias changes apply to the current drawing right away:
+          (if achg
+            (progn
+              (Dyl:AliasApply)
+              (princ "\nAliases updated in this drawing (other open drawings: run Dyl-Reload).")
+            )
+          )
+         )
+       )
+      )
+    )
+    (princ)
+  )
+
+  ;#endregion
+
+
+  ;#region VSCode
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Dyl-VSCode: open the whole DynALisp.bundle folder (*dyl:repo) in Visual
+  ;;; Studio Code, with its .vscode settings and recommended AutoLISP extension.
+  ;;; When VS Code is not found, the dyl_vscode dialog of Dyl-Suite.dcl guides
+  ;;; its install (winget or download page), then opens the folder. Also the
+  ;;; "Open in VS Code" button of Dyl-Suite.
+  ;;; ---------------------------------------------------------------------------
+
+  ;; Full path of Code.exe, or nil: the usual install folders (user, then
+  ;; machine), then the folders of the PATH holding code.cmd (the bin folder,
+  ;; next to Code.exe):
+  (defun Dyl:VSCodeExe (/ env)
+    (defun env (var) (cond ((getenv var)) ("")))
+    (cond
+      ((vl-some 'findfile
+                (list (strcat (env "LOCALAPPDATA") "\\Programs\\Microsoft VS Code\\Code.exe")
+                      (strcat (env "ProgramFiles") "\\Microsoft VS Code\\Code.exe")
+                      (strcat (env "ProgramFiles(x86)") "\\Microsoft VS Code\\Code.exe")
+                )
+       )
+      )
+      ((vl-some '(lambda (d)
+                   (setq d (vl-string-right-trim "\\" (vl-string-trim " \"" d)))
+                   (and (/= "" d)
+                        (findfile (strcat d "\\code.cmd"))
+                        (findfile (strcat (vl-filename-directory d) "\\Code.exe"))
+                   )
+                 )
+                (Remote>>LM:str->lst (env "PATH") ";")
+       )
+      )
+    )
+  )
+
+  ;; Open fle (a program, a page) with the Windows shell, with the arguments
+  ;; args. Returns T when it is started:
+  (defun Dyl:VSCodeShell (fle args / shl res)
+    (setq shl (vl-catch-all-apply 'vla-getinterfaceobject (list (vlax-get-acad-object) "Shell.Application")))
+    (if (not (vl-catch-all-error-p shl))
+      (progn
+        (setq res (not (vl-catch-all-error-p
+                         (vl-catch-all-apply 'vlax-invoke-method (list shl 'ShellExecute fle args *dyl:repo "open" 1))
+                       )
+                  )
+        )
+        (vlax-release-object shl)
+        res
+      )
+    )
+  )
+
+  ;; Open *dyl:repo in VS Code exe. Returns T when it is started:
+  (defun Dyl:VSCodeOpen (exe)
+    (if (Dyl:VSCodeShell exe (strcat "\"" *dyl:repo "\""))
+      (princ (strcat "\nOpening " *dyl:repo " in Visual Studio Code..."))
+      (princ (strcat "\n--> Unable to start : " exe))
+    )
+  )
+
+  ;; Install guide (dyl_vscode dialog). Install (winget) and Download page leave
+  ;; it open, Open DynALisp closes it once Code.exe is found. Returns the path of
+  ;; Code.exe, or nil (closed, or the dialog cannot be shown: the steps are
+  ;; written on the command line):
+  (defun Dyl:VSCodeGuide (/ dch res exe)
+    (if
+      (and (< 0 (setq dch (load_dialog (strcat *dyl:res "\\Dyl-Suite.dcl"))))
+           (new_dialog "dyl_vscode" dch)
+      )
+      (progn
+        (action_tile "wgt"
+                     (strcat "(if (Dyl:VSCodeShell \"cmd.exe\" \"/k winget install --id Microsoft.VisualStudioCode -e --scope user"
+                             " --accept-package-agreements --accept-source-agreements\")"
+                             " (set_tile \"msg\" \"Installing in the black window: wait for Successfully installed, close it, then click Open DynALisp.\")"
+                             " (set_tile \"msg\" \"Unable to start winget: use Download page.\"))"
+                     )
+        )
+        (action_tile "web"
+                     (strcat "(if (Dyl:VSCodeShell \"https://code.visualstudio.com/download\" \"\")"
+                             " (set_tile \"msg\" \"Download the Windows User Installer, run it, then click Open DynALisp.\")"
+                             " (set_tile \"msg\" \"Unable to open the browser: go to code.visualstudio.com/download\"))"
+                     )
+        )
+        (action_tile "accept"
+                     (strcat "(if (setq exe (Dyl:VSCodeExe)) (done_dialog 1)"
+                             " (set_tile \"msg\" \"Visual Studio Code is still not found: finish its install, then retry.\"))"
+                     )
+        )
+        (Dyl:DocsTile "Core\\Dyl-Suite.htm")
+        (setq res (start_dialog))
+        (unload_dialog dch)
+        (if (= 1 res) exe)
+      )
+      (progn
+        (if (< 0 dch) (unload_dialog dch))
+        (princ
+          (strcat "\nVisual Studio Code was not found. To install it:"
+                  "\n  1. Run in a command prompt: winget install --id Microsoft.VisualStudioCode -e --scope user"
+                  "\n     or download the Windows User Installer from https://code.visualstudio.com/download"
+                  "\n  2. Run Dyl-VSCode again to open the DynALisp.bundle folder."
+                  "\n  3. In VS Code, trust the folder and install the recommended AutoLISP extension."
+          )
+        )
+        nil
+      )
+    )
+  )
+
+  ;; Open the bundle in VS Code, the install guide first when it is missing:
+  (defun Dyl:VSCode (/ exe)
+    (if (setq exe (cond ((Dyl:VSCodeExe)) ((Dyl:VSCodeGuide))))
+      (Dyl:VSCodeOpen exe)
+    )
+  )
+
+  (defun c:Dyl-VSCode ()
+    (Dyl:VSCode)
+    (princ)
+  )
+
+  ;#endregion
+
+
+  ;#region Docs
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Open the docs index of a module (Modules\<Module>\Docs\index.htm) with its
+  ;;; Windows association. mod is the module folder (*dyl:dyl, *dyl:lmapps...):
+  ;;;   Dyl-Docs -> Dynalisp module docs
+  ;;;   LM-Docs  -> LeeMac module docs
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:DocsOpen (mod / f)
+    (if (findfile (setq f (strcat mod "\\Docs\\index.htm")))
+      (Dyl:SuiteDlgShell (list f))
+      (princ (strcat "\n--> Docs index not found: " f))
+    )
+    (princ)
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Open Docs button of the DynALisp windows (key "docs", label "Open Docs"):
+  ;;;   : button {label = "Open Docs"; key = "docs"; width = 12; fixed_width = true;}
+  ;;; page: a docs page relative to the Docs folder of the Dynalisp module (e.g.
+  ;;; "Layer\\Dyl-LayerKeys.htm"), or a full path. After new_dialog, (Dyl:DocsTile
+  ;;; page) makes the button open the page (the window stays open), greyed out
+  ;;; when the page is missing.
+  ;;; ---------------------------------------------------------------------------
+  ;;  Full path of the docs page, nil when it is not found:
+  (defun Dyl:DocsPage (page)
+    (cond
+      ((/= 'STR (type page)) nil)
+      ((findfile (strcat *dyl:dyl "\\Docs\\" page)))
+      ((wcmatch page "?:\\*,\\\\*") (findfile page))
+    )
+  )
+
+  ;;  Open the docs page (the message goes to the error tile when it is missing):
+  (defun Dyl:DocsShow (page / f)
+    (if (setq f (Dyl:DocsPage page))
+      (Dyl:SuiteDlgShell (list f))
+      (set_tile "error" (strcat "Docs page not found: " (if (= 'STR (type page)) page "none")))
+    )
+  )
+
+  ;;  The Open Docs button of the dialog shown (call after new_dialog):
+  (defun Dyl:DocsTile (page)
+    (action_tile "docs" (strcat "(Dyl:DocsShow " (vl-prin1-to-string page) ")"))
+    (if (not (Dyl:DocsPage page)) (mode_tile "docs" 1))
+  )
+
+  ;;  Docs page of the main command of the Lisp file fle (e.g. "Dyl-LayerMake.lsp"),
+  ;;  from its Startup Suite record (any module), nil when none:
+  (defun Dyl:DocsOfFile (fle)
+    (setq fle (strcase fle))
+    (vl-some '(lambda (r) (if (= fle (strcase (nth 2 r))) (Dyl:SuiteDocs r)))
+             (if Dyl:SuiteRecs (Dyl:SuiteRecs))
+    )
+  )
+
+  (defun c:Dyl-Docs () (Dyl:DocsOpen *dyl:dyl))
+
+  (defun c:LM-Docs () (Dyl:DocsOpen *dyl:lmapps))
+
+  ;#endregion
+
+
+  ;#region Info
+
+  ;;; ============================================================================
+  ;;; Info
+  ;;; ----------------------------------------------------------------------------
+  ;;; Dyl-Info: version of DynALisp, new version check, links to the GitHub
+  ;;; repository and to the module docs, and the core commands
+  ;;; (Resources\Dyl-Info.dcl).
+  ;;;
+  ;;; The version is the AppVersion of PackageContents.xml (the one AutoCAD
+  ;;; reads). The latest version is the tag of the latest GitHub release
+  ;;; (v1.2 or 1.2), or when there is no release, the AppVersion of
+  ;;; PackageContents.xml on the main branch. It is checked once per drawing
+  ;;; when Dyl-Info opens (Check again checks it again), with short timeouts so
+  ;;; AutoCAD never waits long when offline. Its update button shows what changed
+  ;;; and installs the new version (see Updates below), What's new shows the
+  ;;; changes up to this version (CHANGELOG.md).
+  ;;; ============================================================================
+  (setq *dyl:gitrepo*   "samagior/DynALisp.bundle"
+        *dyl:gitbranch* "main"
+        *dyl:github*    (strcat "https://github.com/" *dyl:gitrepo*)
+        ;; Core commands: (command what it does), listed when defined:
+        *dyl:core*      '(("Dyl-Info" "This window: version, updates, links and core commands")
+                          ("Dyl-Suite" "Turn the module commands on or off, edit their aliases, open their docs")
+                          ("Dyl-Settings" "Drawing settings, file preferences, reactors, commands")
+                          ("Dyl-PrepSuite" "Output prep: the steps run before the saves, prints and REGEN")
+                          ("Dyl-UserFiles" "Your edited files (presets, aliases...): open, reset or make default")
+                          ("Dyl-Docs" "Open the docs of the DynALisp module")
+                          ("LM-Docs" "Open the docs of the Lee Mac module")
+                          ("Dyl-Reload" "Load the module commands again, as turned on in Dyl-Suite")
+                          ("Dyl-SuiteUpdate" "Rebuild the command index (StartupSuite.csv) from the Lisp files")
+                          ("Dyl-VSCode" "Open the DynALisp folder in Visual Studio Code to read or edit it")
+                          ("CMDINDEX" "Export the commands of a Lisp folder to a CSV file")
+                          ("Dyl-RestoreCommands" "Use the native save, plot, publish, preview and regen commands this session")
+                          ("TBLFIX" "Fit every table row of the drawing to its text height now")
+                         )
+  )
+
+  ;;; First quoted string after marker in str, nil if none:
+  ;;;   (Dyl:InfoAfter "AppVersion=\"1.0\"" "AppVersion=") -> "1.0"
+  (defun Dyl:InfoAfter (str marker / pos end)
+    (if
+      (and str
+           (setq pos (vl-string-search marker str))
+           (setq pos (vl-string-search "\"" str (+ pos (strlen marker))))
+           (setq end (vl-string-search "\"" str (1+ pos)))
+      )
+      (substr str (+ pos 2) (- end pos 1))
+    )
+  )
+
+  ;;; Version of this DynALisp (AppVersion of PackageContents.xml), "?" if unknown:
+  (defun Dyl:InfoVersion (/ des str txt)
+    (if (setq des (open (strcat *dyl:repo "\\PackageContents.xml") "r"))
+      (progn
+        (setq txt "")
+        (while (setq str (read-line des)) (setq txt (strcat txt str " ")))
+        (close des)
+      )
+    )
+    (cond ((Dyl:InfoAfter txt "AppVersion=")) ("?"))
+  )
+
+  ;;; Version string -> list of numbers: "v1.2.10" -> (1 2 10)
+  (defun Dyl:InfoVer (str)
+    (mapcar 'atoi
+            (Remote>>LM:str->lst
+              (vl-list->string (vl-remove-if-not '(lambda (c) (or (= c 46) (< 47 c 58))) (vl-string->list str)))
+              "."
+            )
+    )
+  )
+
+  ;;; T when version a is newer than version b (lists of Dyl:InfoVer, 1.2 = 1.2.0):
+  (defun Dyl:InfoNewer-p (a b / x y)
+    (setq x 0
+          y 0
+    )
+    (while (and (or a b) (= (setq x (cond ((car a)) (0))) (setq y (cond ((car b)) (0)))))
+      (setq a (cdr a)
+            b (cdr b)
+      )
+    )
+    (> x y)
+  )
+
+  ;;; GET request: the response text when the status is 200, nil otherwise
+  ;;; (offline, timeout, not found...):
+  (defun Dyl:InfoGet (req url)
+    (vlax-invoke-method req 'SetTimeouts 3000 3000 3000 5000)
+    (vlax-invoke-method req 'Open "GET" url :vlax-false)
+    (vlax-invoke-method req 'SetRequestHeader "User-Agent" "DynALisp")
+    (vlax-invoke-method req 'Send)
+    (if (= 200 (vlax-get-property req 'Status)) (vlax-get-property req 'ResponseText))
+  )
+
+  (defun Dyl:InfoHttp (url / req res)
+    (if (setq req (vlax-create-object "WinHttp.WinHttpRequest.5.1"))
+      (progn
+        (setq res (vl-catch-all-apply 'Dyl:InfoGet (list req url)))
+        (vlax-release-object req)
+        (if (not (vl-catch-all-error-p res)) res)
+      )
+    )
+  )
+
+  ;;; URL of the setup (the first .exe asset) in the JSON of a GitHub release, nil if none:
+  (defun Dyl:InfoSetupUrl (jsn / mrk pos url res)
+    (setq mrk "\"browser_download_url\""
+          pos 0
+    )
+    (while (and jsn (not res) (setq pos (vl-string-search mrk jsn pos)))
+      (setq url (Dyl:InfoAfter (substr jsn (1+ pos)) mrk)
+            pos (1+ pos)
+      )
+      (if (and url (wcmatch (strcase url) "*.EXE")) (setq res url))
+    )
+    res
+  )
+
+  ;;; Latest version on GitHub: (VERSION PAGE-URL SETUP-URL REF), nil if it cannot be
+  ;;; read. PAGE-URL: the release page (or the zip of the branch), SETUP-URL: its setup
+  ;;; (nil when the release has none), REF: the tag (or branch) its CHANGELOG.md is read at:
+  (defun Dyl:InfoLatest (/ jsn ver)
+    (cond
+      ((setq ver (Dyl:InfoAfter (setq jsn (Dyl:InfoHttp (strcat "https://api.github.com/repos/" *dyl:gitrepo* "/releases/latest")))
+                                "\"tag_name\""
+                 )
+       )
+       (list ver (strcat *dyl:github* "/releases/latest") (Dyl:InfoSetupUrl jsn) ver)
+      )
+      ((setq ver (Dyl:InfoAfter (Dyl:InfoHttp (strcat "https://raw.githubusercontent.com/"
+                                                      *dyl:gitrepo*
+                                                      "/"
+                                                      *dyl:gitbranch*
+                                                      "/PackageContents.xml"
+                                              )
+                                )
+                                "AppVersion="
+                 )
+       )
+       (list ver (strcat *dyl:github* "/archive/refs/heads/" *dyl:gitbranch* ".zip") nil *dyl:gitbranch*)
+      )
+    )
+  )
+
+  ;;; Check the latest version: *dyl:latest* is (VERSION PAGE-URL SETUP-URL REF), or
+  ;;; NONE when it could not be read:
+  (defun Dyl:InfoCheck ()
+    (princ "\nChecking for a new version of DynALisp...")
+    (setq *dyl:latest* (cond ((Dyl:InfoLatest)) ('NONE)))
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Updates. DynALisp is installed one of two ways:
+  ;;;   - with its setup (DynALisp-Setup-<version>.exe of the GitHub release, built by
+  ;;;     Installer\Build.ps1): Dyl-Info downloads the setup of a new version and starts
+  ;;;     it hidden; it waits for AutoCAD to close, then installs in this folder. The
+  ;;;     User folder (the user's edits) and the modules not shipped are kept;
+  ;;;   - as a git clone (a .git folder in the bundle): updated with git pull, never by
+  ;;;     the setup (it refuses a clone).
+  ;;; The changes of each version are in CHANGELOG.md ("## <version> - <date>"
+  ;;; headings): shown before an update (the CHANGELOG.md of the release) and once at
+  ;;; the first startup after it (DynalispLastVersion: the version last started).
+  ;;; Automatic updates (Updates in Dyl-Settings, DynalispAutoUpdate, off by default):
+  ;;; at most once a day (DynalispUpdateChecked: the day checked), the first drawing
+  ;;; opened checks for a new version and starts its setup.
+  ;;; ---------------------------------------------------------------------------
+
+  ;;; T when this DynALisp is a git clone (updated with git pull):
+  (defun Dyl:InfoGit-p () (vl-file-directory-p (strcat *dyl:repo "\\.git")))
+
+  ;;; Lines of a text file, nil if it cannot be read:
+  (defun Dyl:InfoLines (file / des str lst)
+    (if (and file (setq des (open file "r")))
+      (progn
+        (while (setq str (read-line des)) (setq lst (cons str lst)))
+        (close des)
+        (reverse lst)
+      )
+    )
+  )
+
+  ;;; Lines of a text (a response), nil for nil:
+  (defun Dyl:InfoSplit (txt)
+    (if txt (mapcar '(lambda (l) (vl-string-right-trim "\r" l)) (Remote>>LM:str->lst txt "\n")))
+  )
+
+  ;;; A changelog line without its markdown marks (` and **) and tabs:
+  (defun Dyl:InfoMd (str)
+    (setq str (vl-string-translate "\t" " " (vl-list->string (vl-remove 96 (vl-string->list str)))))
+    (while (vl-string-search "**" str) (setq str (vl-string-subst "" "**" str)))
+    str
+  )
+
+  ;;; Notes of the changelog lines lst for the versions newer than from (nil: all) up to
+  ;;; to (nil: no limit): each "## 1.2 - date" heading as "Version 1.2 - date", its
+  ;;; lines under it, a blank line between versions:
+  (defun Dyl:InfoNotes (lst from to / in ver res)
+    (foreach l lst
+      (cond
+        ((= "## " (substr l 1 3))
+         (setq ver (car (Remote>>LM:str->lst (vl-string-trim " " (substr l 4)) " "))
+               in  (and ver
+                        (wcmatch ver "*#*")
+                        (or (not from) (Dyl:InfoNewer-p (Dyl:InfoVer ver) (Dyl:InfoVer from)))
+                        (or (not to) (not (Dyl:InfoNewer-p (Dyl:InfoVer ver) (Dyl:InfoVer to))))
+                   )
+         )
+         (if in
+           (setq res (cons (strcat "Version " (vl-string-trim " " (substr l 4))) (if res (cons "" res))))
+         )
+        )
+        ((and in (/= "" (vl-string-trim " " l))) (setq res (cons (Dyl:InfoMd l) res)))
+      )
+    )
+    (reverse res)
+  )
+
+  ;;; The What's new window (dyl_whatsnew of Dyl-Info.dcl): head (the line above the
+  ;;; notes), lines (the notes), msg (the line under them), ins (the label of the
+  ;;; Install button, nil: greyed out). T when Install was picked:
+  (defun Dyl:InfoNotesDlg (head lines msg ins / dch sta)
+    (setq dch (load_dialog (strcat *dyl:res "\\Dyl-Info.dcl")))
+    (cond
+      ((> 0 dch) (princ "\n--> Unable to load the dialog : Dyl-Info.dcl"))
+      ((not (new_dialog "dyl_whatsnew" dch)) (princ "\n--> Unable to show the dialog : Dyl-Info.dcl"))
+      (T
+       (set_tile "hed" head)
+       (start_list "lst")
+       (foreach l (cond (lines) ('("(No notes found for these versions in CHANGELOG.md.)"))) (add_list l))
+       (end_list)
+       (set_tile "msg" (cond (msg) ("")))
+       (if ins (set_tile "ins" ins) (mode_tile "ins" 1))
+       (action_tile "ins" "(done_dialog 2)")
+       (action_tile "rel" "(Dyl:SuiteDlgShell (list (strcat *dyl:github* \"/releases\")))")
+       (action_tile "cancel" "(done_dialog 0)")
+       (Dyl:DocsTile "Core\\Dyl-Info.htm")
+       (setq sta (start_dialog))
+      )
+    )
+    (if (<= 0 dch) (unload_dialog dch))
+    (= 2 sta)
+  )
+
+  ;;; What's new button of Dyl-Info: the changes of every version up to this one
+  ;;; (CHANGELOG.md of this folder):
+  (defun Dyl:InfoWhatsNew ()
+    (Dyl:InfoNotesDlg (strcat "Changes of DynALisp, up to version " (Dyl:InfoVersion) " (this one):")
+                      (Dyl:InfoNotes (Dyl:InfoLines (findfile (strcat *dyl:repo "\\CHANGELOG.md"))) nil (Dyl:InfoVersion))
+                      nil
+                      nil
+    )
+  )
+
+  ;;; Save url to file (binary), T when saved. Long timeouts: the setup is a few MB:
+  (defun Dyl:InfoDownload (url file / req stm res)
+    (if (setq req (vlax-create-object "WinHttp.WinHttpRequest.5.1"))
+      (progn
+        (setq res (vl-catch-all-apply
+                    '(lambda ()
+                       (vlax-invoke-method req 'SetTimeouts 5000 5000 10000 60000)
+                       (vlax-invoke-method req 'Open "GET" url :vlax-false)
+                       (vlax-invoke-method req 'SetRequestHeader "User-Agent" "DynALisp")
+                       (vlax-invoke-method req 'Send)
+                       (if (= 200 (vlax-get-property req 'Status))
+                         (progn
+                           (setq stm (vlax-create-object "ADODB.Stream"))
+                           (vlax-put-property stm 'Type 1)
+                           (vlax-invoke-method stm 'Open)
+                           (vlax-invoke-method stm 'Write (vlax-get-property req 'ResponseBody))
+                           (vlax-invoke-method stm 'SaveToFile file 2)
+                           (vlax-invoke-method stm 'Close)
+                           T
+                         )
+                       )
+                     )
+                  )
+        )
+        (if stm (vlax-release-object stm))
+        (vlax-release-object req)
+        (and (not (vl-catch-all-error-p res)) res (findfile file) T)
+      )
+    )
+  )
+
+  ;;; Start the setup exe hidden and silent, into this folder: it waits for AutoCAD
+  ;;; to close, then installs (its log next to it). T when started:
+  (defun Dyl:InfoRun (exe / shl res)
+    (if (setq shl (vlax-create-object "WScript.Shell"))
+      (progn
+        (setq res (vl-catch-all-apply
+                    'vlax-invoke-method
+                    (list shl
+                          'Run
+                          (strcat "\"" exe "\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /DIR=\"" *dyl:repo "\" /LOG=\"" exe ".log\"")
+                          0
+                          :vlax-false
+                    )
+                  )
+        )
+        (vlax-release-object shl)
+        (not (vl-catch-all-error-p res))
+      )
+    )
+  )
+
+  ;;; Download the setup of the latest version lat (see Dyl:InfoLatest) to the temp
+  ;;; folder and start it. Returns a status line ("-->" when it failed). Once started,
+  ;;; the version is kept on the blackboard (*dyl:installing*, every drawing):
+  (defun Dyl:InfoInstall (lat / dir exe)
+    (setq dir (strcat (getenv "TEMP") "\\DynALisp")
+          exe (strcat dir "\\DynALisp-Setup-" (car lat) ".exe")
+    )
+    (vl-mkdir dir)
+    (princ (strcat "\nDownloading DynALisp " (car lat) "..."))
+    (cond
+      ((not (Dyl:InfoDownload (caddr lat) exe)) (strcat "--> Unable to download the setup of DynALisp " (car lat) "."))
+      ((not (Dyl:InfoRun exe)) (strcat "--> Unable to start " exe "."))
+      (T
+       (vl-bb-set '*dyl:installing* (car lat))
+       (strcat "DynALisp " (car lat) " downloaded: it installs when you close AutoCAD (every AutoCAD window).")
+      )
+    )
+  )
+
+  ;;; What the update button of Dyl-Info does: NONE (no newer version, or not checked),
+  ;;; WAIT (its setup started, installs when AutoCAD closes), GIT (a git clone: its notes,
+  ;;; then git pull), SETUP (its notes, then its setup) or PAGE (no setup in the release:
+  ;;; its page opened):
+  (defun Dyl:InfoUpdHow ()
+    (cond
+      ((vl-bb-ref '*dyl:installing*) 'WAIT)
+      ((not (and (vl-consp *dyl:latest*)
+                 (Dyl:InfoNewer-p (Dyl:InfoVer (car *dyl:latest*)) (Dyl:InfoVer (Dyl:InfoVersion)))
+            )
+       )
+       'NONE
+      )
+      ((Dyl:InfoGit-p) 'GIT)
+      ((caddr *dyl:latest*) 'SETUP)
+      ('PAGE)
+    )
+  )
+
+  ;;; Show the update status and set the update button:
+  (defun Dyl:InfoDlgUpd (/ how ver)
+    (setq how (Dyl:InfoUpdHow)
+          ver (if (vl-consp *dyl:latest*) (car *dyl:latest*))
+    )
+    (set_tile "upd"
+              (cond
+                ((eq how 'WAIT) (strcat "DynALisp " (vl-bb-ref '*dyl:installing*) " downloaded: it installs when you close AutoCAD."))
+                ((not ver) "Unable to check for a new version (offline or no public release).")
+                ((eq how 'GIT) (strcat "New version available: " ver " (git clone: update it with git pull)."))
+                ((not (eq how 'NONE)) (strcat "New version available: " ver))
+                ((strcat "Up to date (latest: " ver ")."))
+              )
+    )
+    (set_tile "dwn"
+              (cond
+                ((eq how 'SETUP) (strcat "Update to " ver "..."))
+                ((eq how 'GIT) (strcat "What's new in " ver "..."))
+                ((eq how 'PAGE) (strcat "Download " ver))
+                ("Update")
+              )
+    )
+    (mode_tile "dwn" (if (member how '(NONE WAIT)) 1 0))
+  )
+
+  ;;; Update button of Dyl-Info: the notes of the versions since this one (the
+  ;;; CHANGELOG.md of the latest release), whose Install starts the setup (SETUP); a git
+  ;;; clone gets the notes only (GIT); the release page opened when it has no setup (PAGE):
+  (defun Dyl:InfoUpdate (/ how ver res)
+    (setq how (Dyl:InfoUpdHow)
+          ver (if (vl-consp *dyl:latest*) (car *dyl:latest*))
+    )
+    (cond
+      ((eq how 'PAGE) (Dyl:SuiteDlgShell (list (cadr *dyl:latest*))))
+      ((and (member how '(SETUP GIT))
+            (Dyl:InfoNotesDlg
+              (strcat "Changes from version " (Dyl:InfoVersion) " (this one) to " ver ":")
+              (Dyl:InfoNotes
+                (Dyl:InfoSplit
+                  (Dyl:InfoHttp (strcat "https://raw.githubusercontent.com/" *dyl:gitrepo* "/" (cadddr *dyl:latest*) "/CHANGELOG.md"))
+                )
+                (Dyl:InfoVersion)
+                ver
+              )
+              (if (eq how 'GIT)
+                (strcat "This folder is a git clone: run git pull in it, then restart AutoCAD.")
+                "Installed when you close AutoCAD (every AutoCAD window). Your edits (User folder) are kept."
+              )
+              (if (eq how 'SETUP) (strcat "Install " ver " when AutoCAD closes"))
+            )
+       )
+       (princ (strcat "\n" (setq res (Dyl:InfoInstall *dyl:latest*))))
+      )
+    )
+    (Dyl:InfoDlgUpd)
+    (if (and res (vl-string-search "-->" res)) (set_tile "upd" res))
+  )
+
+  ;;; Automatic updates on (Updates in Dyl-Settings, off by default):
+  (defun Dyl:UpdAutoOn-p () (= "1" (getenv "DynalispAutoUpdate")))
+
+  ;;; Turn the automatic updates on or off. On, the next drawing opened checks (the day
+  ;;; checked is cleared):
+  (defun Dyl:UpdAutoSet (on)
+    (setenv "DynalispAutoUpdate" (if on "1" "0"))
+    (if on (setenv "DynalispUpdateChecked" ""))
+    (princ (strcat "\nAutomatic updates "
+                   (cond
+                     ((not on) "off: Dyl-Info tells you when a new version is out")
+                     ((Dyl:InfoGit-p) "on, but this folder is a git clone: update it with git pull")
+                     ("on: checked once a day, installed when AutoCAD closes")
+                   )
+                   "."
+           )
+    )
+  )
+
+  ;;; Startup step of the automatic updates: at most once a day (every drawing, see
+  ;;; DynalispUpdateChecked), a newer version's setup downloaded and started. Never for
+  ;;; a git clone. Returns a status line, nil when there is nothing to tell:
+  (defun Dyl:UpdAuto (/ day lat)
+    (setq day (itoa (fix (getvar "DATE"))))
+    (if
+      (and (Dyl:UpdAutoOn-p)
+           (not (Dyl:InfoGit-p))
+           (not (vl-bb-ref '*dyl:installing*))
+           (/= day (getenv "DynalispUpdateChecked"))
+      )
+      (progn
+        (setenv "DynalispUpdateChecked" day)
+        (setq lat          (Dyl:InfoLatest)
+              *dyl:latest* (cond (lat) ('NONE))
+        )
+        (if (and lat (caddr lat) (Dyl:InfoNewer-p (Dyl:InfoVer (car lat)) (Dyl:InfoVer (Dyl:InfoVersion))))
+          (Dyl:InfoInstall lat)
+        )
+      )
+    )
+  )
+
+  ;;; Startup step of What's new: the first startup of a new version (installed or
+  ;;; pulled) shows the changes since the version last started, once (the first
+  ;;; drawing); not in a script. A new installation only saves its version. Returns a
+  ;;; status line, nil when there is nothing to tell:
+  (defun Dyl:UpdWhatsNew (/ cur old)
+    (setq cur (Dyl:InfoVersion)
+          old (getenv "DynalispLastVersion")
+    )
+    (if (and (/= "?" cur) (/= cur old)) (setenv "DynalispLastVersion" cur))
+    (if (and old (/= "" old) (/= "?" cur) (Dyl:InfoNewer-p (Dyl:InfoVer cur) (Dyl:InfoVer old)))
+      (progn
+        (if (= 0 (logand 4 (getvar "CMDACTIVE")))
+          (Dyl:InfoNotesDlg (strcat "DynALisp is updated: changes from version " old " to " cur ":")
+                            (Dyl:InfoNotes (Dyl:InfoLines (findfile (strcat *dyl:repo "\\CHANGELOG.md"))) old cur)
+                            "Dyl-Info shows them again (What's new)."
+                            nil
+          )
+        )
+        (strcat "DynALisp updated to " cur " (Dyl-Info: What's new).")
+      )
+    )
+  )
+
+  (defun c:Dyl-Info (/ cmds mods dch sta idx res)
+    (if (not *dyl:latest*) (Dyl:InfoCheck))
+    ;; Core commands defined, and the modules with a docs index: ((name . index) ...)
+    (setq cmds (vl-remove-if-not '(lambda (c) (eval (read (strcat "C:" (car c)))))
+                                 *dyl:core*
+               )
+          mods (vl-remove nil
+                          (mapcar '(lambda (d)
+                                     (if (findfile (strcat d "\\index.htm"))
+                                       (cons (vl-filename-base (vl-filename-directory d)) (strcat d "\\index.htm"))
+                                     )
+                                   )
+                                  (Dyl:moddirs "Docs")
+                          )
+               )
+          dch  (load_dialog (strcat *dyl:res "\\Dyl-Info.dcl"))
+          idx  0
+    )
+    (cond
+      ((> 0 dch) (princ "\n--> Unable to load the dialog : Dyl-Info.dcl"))
+      ((not (new_dialog "dyl_info" dch)) (princ "\n--> Unable to show the dialog : Dyl-Info.dcl"))
+      (T
+       (set_tile "ver" (strcat "Version: " (Dyl:InfoVersion)))
+       (set_tile "acv" (strcat "AutoCAD: " (getvar "PRODUCT") " " (getvar "ACADVER")))
+       (set_tile "pth" (strcat "Folder: " *dyl:repo))
+       (Dyl:InfoDlgUpd)
+       (start_list "mod")
+       (foreach m mods (add_list (car m)))
+       (end_list)
+       (if mods
+         (set_tile "mod" (itoa (cond ((vl-position "DYNALISP" (mapcar 'strcase (mapcar 'car mods)))) (0))))
+         (progn (mode_tile "mod" 1) (mode_tile "mdc" 1))
+       )
+       (start_list "cmd")
+       (foreach c cmds (add_list (strcat (car c) "\t" (cadr c))))
+       (end_list)
+       (set_tile "cmd" "0")
+       (action_tile "dwn" "(Dyl:InfoUpdate)")
+       (action_tile "whn" "(Dyl:InfoWhatsNew)")
+       (action_tile "chk" "(Dyl:InfoCheck) (Dyl:InfoDlgUpd)")
+       (action_tile "git" "(Dyl:SuiteDlgShell (list *dyl:github*))")
+       (action_tile "mdc" "(Dyl:SuiteDlgShell (list (cdr (nth (atoi (get_tile \"mod\")) mods))))")
+       (action_tile "cmd" "(setq idx (atoi $value)) (if (= 4 $reason) (done_dialog 2))")
+       (action_tile "run" "(setq idx (atoi (get_tile \"cmd\"))) (done_dialog 2)")
+       (action_tile "cancel" "(done_dialog 0)")
+       (Dyl:DocsTile "Core\\Dyl-Info.htm")
+       (setq sta (start_dialog))
+      )
+    )
+    (if (<= 0 dch) (unload_dialog dch))
+    ;; Run the command picked (Dyl-Info itself only closes the window):
+    (if (and (= 2 sta) (nth idx cmds) (/= "DYL-INFO" (strcase (car (nth idx cmds)))))
+      (progn
+        (princ (strcat "\n" (car (nth idx cmds))))
+        (setq res (vl-catch-all-apply (read (strcat "C:" (car (nth idx cmds)))) nil))
+        (if
+          (and (vl-catch-all-error-p res)
+               (not (wcmatch (strcase (vl-catch-all-error-message res)) "*CANCEL*,*QUIT*"))
+          )
+          (princ (strcat "\nError: " (vl-catch-all-error-message res)))
+        )
+      )
+    )
+    (princ)
+  )
+
+  ;#endregion
+
+
+
+  ;;  Sync the support file search path with the Startup Suite. The Res folder of
+  ;;  each module in mods (modules with something turned on) is added; the Res
+  ;;  folder of the other modules is removed, along with any Apps folder (the Apps
+  ;;  files are loaded with their full path, they don't need the support path):
+  (defun Dyl:respaths (mods / pre old add new sub pos) 
+    (setq pre (strcase (strcat *dyl:module "\\"))
+          old (vl-remove "" (Remote>>LM:str->lst (cond ((getenv "ACAD")) ("")) ";"))
+          add (vl-remove-if-not 'vl-file-directory-p 
+                                (mapcar '(lambda (m) (strcat *dyl:module "\\" m "\\Res")) mods)
+              )
+    )
+    (foreach pth old 
+      (setq sub (strcase (vl-string-right-trim "\\" pth)))
+      (cond 
+        ;; Outside the Modules folder: keep
+        ((/= pre (substr sub 1 (strlen pre)))
+         (setq new (cons pth new))
+        )
+        ;; Res folder of a module turned on: keep it where it is (once)
+        ((member sub (mapcar 'strcase add))
+         (setq add (vl-remove-if '(lambda (x) (= sub (strcase x))) add)
+               new (cons pth new)
+         )
+        )
+        ;; "<Module>\Res" of a module turned off, or "<Module>\Apps[\...]": remove
+        ((and 
+           (setq sub (substr sub (1+ (strlen pre)))
+                 pos (vl-string-search "\\" sub)
+           )
+           (setq sub (substr sub (+ pos 2)))
+           (or (= "RES" sub) (= "APPS" sub) (= "APPS\\" (substr sub 1 5)))
+         )
+        )
+        ;; Any other Modules sub-folder (added by hand): keep
+        ((setq new (cons pth new)))
+      )
+    )
+    (setq new (append (reverse new) add))
+    (if (and new (/= (Remote>>LM:lst->str new ";") (Remote>>LM:lst->str old ";"))) 
+      (setenv "ACAD" (strcat (Remote>>LM:lst->str new ";") ";"))
+    )
+  )
+
+  ;;  Autoload the commands turned on in StartupSuite.csv from each module Apps folder:
+  (defun Dyl:autoload (/ ons itm key cmds ful num mods mod pos)
+    ;; Commands turned on and aliases defined, for the startup summary:
+    (setq *dyl:cmdcount*   0
+          *dyl:aliascount* 0
+    )
+    ;; Group the commands turned on by file: (("PATH" "CMD" ...) ...)
+    ;; and list the modules with something turned on (first folder of PATH):
+    (foreach r (Dyl:Suite nil) 
+      (if (= "1" (car r)) 
+        (setq key  (strcase (nth 3 r))
+              ons  (if (setq itm (assoc key ons)) 
+                     (subst (append itm (list (nth 1 r))) itm ons)
+                     (cons (list key (nth 1 r)) ons)
+                   )
+              mod  (if (setq pos (vl-string-search "\\" (nth 3 r))) (substr (nth 3 r) 1 pos))
+              mods (if (and mod (not (member (strcase mod) (mapcar 'strcase mods)))) 
+                     (cons mod mods)
+                     mods
+                   )
+        )
+      )
+    )
+    (Dyl:respaths mods)
+    (foreach *app (Dyl:moddirs "Apps") 
+      ;; Trust the Apps folder and all its sub-folders:
+      (if (not (vl-string-search (strcase *app) (strcase (getvar "TRUSTEDPATHS")))) 
+        (setvar "TRUSTEDPATHS" 
+                (vl-string-left-trim ";" 
+                                     (strcat (vl-string-right-trim ";" (getvar "TRUSTEDPATHS")) 
+                                             ";"
+                                             *app
+                                             "\\..."
+                                     )
+                )
+        )
+      )
+      (setq num 0)
+      (foreach *pth (Dyl:lspdirs *app) 
+        (foreach *fle (vl-directory-files *pth "*.lsp" 1) 
+          (setq ful  (strcat *pth "\\" *fle)
+                cmds (cdr (assoc (strcase (substr ful (+ 2 (strlen *dyl:module)))) ons))
+          )
+          (cond 
+            ;; File without command turned on: load it entirely
+            ((member "" cmds)
+             (load ful (strcat "\n--> Unable to load : " *fle "\n--> From : " *pth))
+             (setq num (1+ num))
+            )
+            ;; Full path (avoids same-name files of other modules) with "/" since
+            ;; autoload writes it into a string that is evaluated with (read):
+            (cmds
+             (autoload (vl-string-translate "\\" "/" ful) cmds)
+             (setq num (+ num (length cmds)))
+            )
+          )
+        )
+      )
+      (setq *dyl:cmdcount* (+ *dyl:cmdcount* num))
+      (if (and (< 0 num) (not *dyl:quiet*))
+        (princ
+          (strcat "\n..."
+                  (vl-filename-base (vl-filename-directory *app))
+                  " loaded ("
+                  (itoa num)
+                  " command(s) on)"
+          )
+        )
+      )
+    )
+    ;; Dynamic children (custom presets...), then the aliases of the commands now defined:
+    (Dyl:DynApply)
+    (if (and (< 0 (setq *dyl:aliascount* (Dyl:AliasApply))) (not *dyl:quiet*))
+      (princ (strcat "\n..." (itoa *dyl:aliascount*) " command alias(es) defined"))
+    )
+    ;; Output commands turned on or off (Dyl-Suite, Dyl-Reload): native ones
+    ;; undefined or restored to match (MAJ:Redefine is defined later at startup):
+    (if MAJ:Redefine (MAJ:Redefine (MAJ:Redefine-p)))
+    (princ)
+  )
+  (Dyl:autoload)
+
+  ;;  Run a startup step f (a function returning a status line), caught: an error here
+  ;;  would stop the rest of the startup in this drawing. The status is printed only out
+  ;;  of the quiet startup; an error, or a status line with "-->" (what to do, e.g. run
+  ;;  Dyl-SetFilePrefs), is kept for the summary (*dyl:warn*). name: the step, as printed:
+  (defun Dyl:StartupStep (name f args / res pos)
+    (setq res (vl-catch-all-apply f args))
+    (cond
+      ((vl-catch-all-error-p res)
+       (setq *dyl:warn* (cons (strcat name ": " (vl-catch-all-error-message res)) *dyl:warn*))
+      )
+      ((and (= 'STR (type res)) (setq pos (vl-string-search "-->" res)))
+       (setq *dyl:warn* (cons (strcat name ": " (vl-string-left-trim " " (substr res (+ pos 4)))) *dyl:warn*))
+      )
+      ((and res (not *dyl:quiet*)) (princ (strcat "\n..." name ": " res)))
+    )
+    res
+  )
+
+  ;; Default units and grid of the imperial / metric drawings, chosen in Dyl-Settings
+  ;; (see Modules\Dynalisp\Remote\Dyl-DrawingSetup.lsp):
+  (if Remote>>Dyl:SetupWatch (Dyl:StartupStep "Drawing settings" 'Remote>>Dyl:SetupWatch nil))
+
+  ;; System variables: the preferred values of the active profile, set while System
+  ;; variables is on (see Modules\Dynalisp\Remote\Dyl-SysVars.lsp). SV:synced: the stamp
+  ;; this drawing applied (see Dyl:SetSync):
+  (if Remote>>Dyl:SysVarApply
+    (progn
+      (setq SV:synced (Remote>>Dyl:SysVarStamp))
+      (Dyl:StartupStep "System variables" 'Remote>>Dyl:SysVarApply nil)
+    )
+  )
+
+  ;; Display settings chosen in Dyl-Settings (background...), applied while Display is on
+  ;; (see Modules\Dynalisp\Remote\Dyl-EnvColor.lsp):
+  (if Remote>>Dyl:DisplayApply (Dyl:StartupStep "Display" 'Remote>>Dyl:DisplayApply nil))
+
+  ;; DynALisp profile set from the file preferences chosen in Dyl-Settings: only checked,
+  ;; a profile made current while a drawing opens reloads the menus of every drawing (see
+  ;; Modules\Dynalisp\Remote\Dyl-FilePrefs.lsp):
+  (if Remote>>Dyl:PrefApply (Dyl:StartupStep "File preferences" 'Remote>>Dyl:PrefApply '(nil)))
+
+  ;; Updates (see the Info region): What's new once after an update, then the automatic
+  ;; updates (Dyl-Settings). Their status lines are printed under the startup summary
+  ;; (*dyl:note*), their errors with its warnings:
+  (mapcar '(lambda (s / r)
+             (if (and (= 'STR (type (setq r (Dyl:StartupStep (car s) (cadr s) nil)))) (not (vl-string-search "-->" r)))
+               (setq *dyl:note* (cons r *dyl:note*))
+             )
+           )
+          '(("What's new" Dyl:UpdWhatsNew) ("Updates" Dyl:UpdAuto))
+  )
+
+
+  ;;  Get a list and load all the Lisp file in the main Apps folder:
+  (defun c:Dyl-reload ()
+    ;; Every step printed (the startup is quiet, see Dyl:StartupSummary):
+    (setq *dyl:quiet* nil)
+    (Dyl:load)
+    (Dyl:autoload)
+    ;;    (setq *lst (vl-directory-files *dyl:apps nil -1))
+    ;;    (setq *lst (vl-remove-if-not '(lambda (x) (not (wcmatch x "*.*"))) *lst))
+    ;;    (foreach *dir *lst
+    ;;      (if (setq *ls2 (vl-directory-files (strcat *dyl:apps "\\" *dir) "*.lsp"))
+    ;;        (progn
+    ;;          (setq *pth (strcat *dyl:apps "\\" *dir))
+    ;;          (foreach *fle *ls2
+    ;;            (load (strcat *pth "\\" *fle))
+    ;;          )
+    ;;        )
+    ;;      )
+    ;;    )
+    ;;  )
+  )
+
+
+
+  ;#region TableRowWatcher
+
+  ;;; ============================================================================
+  ;;; Table rows
+  ;;; ----------------------------------------------------------------------------
+  ;;; Fits every row of every table (ACAD_TABLE) to its text height: the tallest
+  ;;; text of the row + 2 x the vertical cell margin. Run by the "Fit table row
+  ;;; heights" step of the output prep (the commands redefined by the command
+  ;;; optimizer, see Dyl-PrepSuite) and by TBLFIX.
+  ;;;
+  ;;; Commands:
+  ;;;   TBLFIX        -> fit every row of every table to its text height NOW
+  ;;; ============================================================================
+  (vl-load-com)
+
+  ;;; The table row watcher of earlier versions (reactors formatting the rows
+  ;;; added): its reactors are removed from a drawing still open while DynALisp
+  ;;; is loaded again, their callbacks being gone:
+  (foreach r (apply 'append (mapcar 'cdr (vlr-reactors :vlr-object-reactor :vlr-command-reactor)))
+    (if (= "TBL row watcher" (vlr-data r)) (vlr-remove r))
+  )
+  (setq TBL:objreactor nil
+        TBL:cmdreactor nil
+        TBL:rowcounts  nil
+        TBL:pending    nil
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Collect every table object in the drawing (model space + layouts)
+  ;;; ---------------------------------------------------------------------------
+  (defun TBL:all-tables (/ ss i lst) 
+    (if (setq ss (ssget "_X" '((0 . "ACAD_TABLE")))) 
+      (progn 
+        (setq i 0)
+        (repeat (sslength ss) 
+          (setq lst (cons (vlax-ename->vla-object (ssname ss i)) lst)
+                i   (1+ i)
+          )
+        )
+      )
+    )
+    lst
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Shrink every row of one table to fit its tallest text.
+  ;;; A row is only written when its height changes: every table write forces
+  ;;; AutoCAD to lay out the whole table again and adds an undo record.
+  ;;; ---------------------------------------------------------------------------
+  (defun TBL:shrink-rows (tbl / rows cols vmarg r c h hmax tgt cur mnh) 
+    (setq rows  (vla-get-Rows tbl)
+          cols  (vla-get-Columns tbl)
+          vmarg (vla-get-VertCellMargin tbl)
+          r     0
+    )
+    (while (< r rows) 
+      (setq hmax 0.0
+            c    0
+      )
+      (while (< c cols) 
+        (setq h (vl-catch-all-apply 'vla-GetCellTextHeight (list tbl r c)))
+        (if (and (numberp h) (> h hmax)) (setq hmax h))
+        (setq c (1+ c))
+      )
+      (if (> hmax 0.0) 
+        (progn 
+          (setq tgt (+ hmax (* 2.0 vmarg))
+                cur (vl-catch-all-apply 'vla-GetRowHeight (list tbl r))
+                mnh (vl-catch-all-apply 'vla-GetMinimumRowHeight (list tbl r))
+          )
+          ;; Skip the row if it is already at the target height, or already
+          ;; clamped to the minimum its multi-line content needs:
+          (if 
+            (not 
+              (and (numberp cur) 
+                   (or (equal cur tgt 1e-6) 
+                       (and (numberp mnh) (> mnh tgt) (equal cur mnh 1e-6))
+                   )
+              )
+            )
+            ;; AutoCAD clamps to the real minimum if multi-line content needs more
+            (vl-catch-all-apply 'vla-SetRowHeight (list tbl r tgt))
+          )
+        )
+      )
+      (setq r (1+ r))
+    )
+    (princ)
+  )
+
+  ;;; Shrink every row of every table right now (callable from other routines)
+  (defun TBL:ShrinkAllTables ()
+    (foreach tbl (TBL:all-tables) (TBL:shrink-rows tbl))
+    (princ)
+  )
+  (defun c:TBLFIX ()
+    (TBL:ShrinkAllTables)
+    (princ "\nAll table rows fitted to their text height.")
+    (princ)
+  )
+
+  ;#endregion
+
+
+
+
+  ;#region PrepBeforeOutput
+
+  ;;; ============================================================================
+  ;;; PrepBeforeOutput.lsp
+  ;;; ----------------------------------------------------------------------------
+  ;;; Redefines the save commands (SAVE, QSAVE, SAVEAS, +SAVEAS), the print
+  ;;; commands (PLOT, PUBLISH, EXPORTPDF, EXPORTDWF, EXPORTDWFX), PREVIEW and
+  ;;; REGEN to automatically prepare the drawing before them:
+  ;;;
+  ;;;   1. Turns ON and THAWs all layers
+  ;;;   2. Unhides hidden / isolated objects (HIDEOBJECTS / ISOLATEOBJECTS)
+  ;;;   3. Reloads all xrefs
+  ;;;   4. Updates all data links (datalinks)
+  ;;;   5. Fits table row heights
+  ;;;   6. Applies the draw order preset (while auto draw order is on)
+  ;;;   7. Regenerates the drawing (REGENALL)
+  ;;;
+  ;;; Each command runs only the steps turned on for it in
+  ;;; Modules\Dynalisp\Res\PrepSuite.csv, see Dyl-Settings and MAJ:PrepDefault.
+  ;;; The redefinition itself can be turned off in Dyl-Settings
+  ;;; (DynalispPrepRedefine user setting, off by default).
+  ;;;
+  ;;; The redefined commands are in
+  ;;; Modules\Dynalisp\Apps\Output\Dyl-CmdOptimizer.lsp, each one turned on
+  ;;; or off in Dyl-Suite; this region holds the
+  ;;; prep steps they run (MAJ:PrepFor) and the UNDEFINE / REDEFINE of the
+  ;;; native commands (MAJ:Redefine).
+  ;;;
+  ;;; Utility commands added:
+  ;;;   Dyl-PrepDrawing     -> runs every preparation step manually (with the
+  ;;;                          steps themselves, MAJ:PrepDrawing..., in
+  ;;;                          Modules\Dynalisp\Apps\Output\Dyl-PrepDrawing.lsp)
+  ;;;   Dyl-PrepSuite       -> the output prep window, where the steps of each
+  ;;;                          group of commands are chosen (also opened by the
+  ;;;                          Output prep button of Dyl-Settings)
+  ;;;   Dyl-RESTORECOMMANDS -> restores the native behavior of the commands
+  ;;;                          for this session
+  ;;; ============================================================================
+  (vl-load-com)
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Utility: runs a command while silently absorbing any error.
+  ;;; If the command is somehow left waiting for input (e.g. a keyword
+  ;;; mismatch on a localized version), Enter is sent until it terminates,
+  ;;; so the routine can never hang on a selection prompt.
+  ;;; ---------------------------------------------------------------------------
+  (defun MAJ:cmd-silent (lst / i) 
+    (vl-catch-all-apply 'vl-cmdf lst)
+    (setq i 0)
+    (while (and (> (logand (getvar "CMDACTIVE") 1) 0) (< i 4)) 
+      (vl-catch-all-apply 'vl-cmdf '(""))
+      (setq i (1+ i))
+    )
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Prep Suite: the steps each output command runs, saved in
+  ;;; Modules\Dynalisp\Res\PrepSuite.csv and edited in the Dyl-Settings dialog:
+  ;;;
+  ;;;   Step ; Description ; SAVE ; PLOT ; REGEN
+  ;;;
+  ;;; 1 = the command runs the step, 0 = it skips it. Each group of MAJ:groups
+  ;;; has one column, named by its first command: every save command runs the
+  ;;; steps of the SAVE column, every print command the ones of the PLOT column
+  ;;; (see MAJ:PrepCol). The file is read again
+  ;;; before every command, so a change applies right away to every open
+  ;;; drawing. A missing file, step or command column uses MAJ:PrepDefault.
+  ;;; ---------------------------------------------------------------------------
+  ;;  *dyl:dylres is set by Modules\Dynalisp\Remote\Dyl-Paths.lsp (loaded by Dyl:load):
+  (setq *dyl:prep (strcat (if *dyl:dylres *dyl:dylres (strcat *dyl:dyl "\\Res")) "\\PrepSuite.csv"))
+  (setq MAJ:steps '(("LAYERS" "Turn on and thaw all layers")
+                    ("UNHIDE" "Unhide hidden / isolated objects")
+                    ("XREFS" "Reload all xrefs")
+                    ("DATALINKS" "Update all data links")
+                    ("TABLES" "Fit table row heights")
+                    ("DRAWORDER" "Apply the draw order preset (while auto draw order is on)")
+                    ("DRAWORDERCLEAN" "Rebuild the draw order from scratch (while auto draw order is on)")
+                    ("REGEN" "Regenerate the drawing (REGENALL)")
+                   )
+        ;; The commands redefined, by group sharing the same steps: the saves, the
+        ;; prints (-PLOT and -PUBLISH are left out: scripts and Lisp programs call
+        ;; them with (command "-PLOT" ...), which fails while they are undefined),
+        ;; PREVIEW and REGEN:
+        MAJ:groups '(("SAVE" "QSAVE" "SAVEAS" "+SAVEAS")
+                     ("PLOT" "PUBLISH" "EXPORTPDF" "EXPORTDWF" "EXPORTDWFX")
+                     ("PREVIEW")
+                     ("REGEN")
+                    )
+        MAJ:cmds  (apply 'append MAJ:groups)
+  )
+
+  ;;; Column of PrepSuite.csv and of the Dyl-Settings grid giving the steps of
+  ;;; cmd: the first command of its group (SAVE, PLOT, PREVIEW or REGEN):
+  (defun MAJ:PrepCol (cmd) (car (vl-some '(lambda (g) (if (member cmd g) g)) MAJ:groups)))
+
+  ;;; The columns of PrepSuite.csv and of the grid:
+  (defun MAJ:PrepCols () (mapcar 'car MAJ:groups))
+
+  ;;; Step stp of the command cmd when PrepSuite.csv does not give it: on (the
+  ;;; original behavior), but REGEN runs only the draw order, the draw order
+  ;;; runs only before REGEN and its rebuild is off (it loses a DRAWORDER set by
+  ;;; hand within a level):
+  (defun MAJ:PrepDefault (stp cmd)
+    (cond
+      ((= "DRAWORDERCLEAN" stp) nil)
+      ((= "REGEN" cmd) (= "DRAWORDER" stp))
+      ((= "DRAWORDER" stp) nil)
+      (T)
+    )
+  )
+
+  ;;; Read PrepSuite.csv: (("SAVE" "LAYERS" ...) ...) the steps turned on for
+  ;;; each command of MAJ:cmds.
+  (defun MAJ:PrepRead (/ des str sep hdr row lst) 
+    (if (setq des (open (Dyl:UserFile *dyl:prep) "r")) 
+      (progn 
+        (if (setq str (read-line des)) 
+          (setq sep (cond 
+                      ((vl-string-search ";" str) ";")
+                      ((vl-string-search "\t" str) "\t")
+                      (",")
+                    )
+                hdr (mapcar 'Dyl:SuiteKey (Remote>>LM:csv->lst str sep 0))
+          )
+        )
+        (while (setq str (read-line des)) 
+          (if (/= "" (vl-string-trim " \t" str)) 
+            (setq row (Remote>>LM:csv->lst str sep 0)
+                  lst (cons (cons (Dyl:SuiteKey (car row)) row) lst)
+            )
+          )
+        )
+        (close des)
+      )
+    )
+    (mapcar 
+      '(lambda (cmd / col) 
+         (setq col (vl-position (MAJ:PrepCol cmd) hdr))
+         (cons cmd 
+               (vl-remove nil 
+                          (mapcar 
+                            '(lambda (stp / row) 
+                               (setq row (cdr (assoc (car stp) lst)))
+                               (if
+                                 (if (and col row (nth col row))
+                                   (= "1" (Dyl:SuiteBit (nth col row)))
+                                   (MAJ:PrepDefault (car stp) cmd)
+                                 )
+                                 (car stp)
+                               )
+                             )
+                            MAJ:steps
+                          )
+               )
+         )
+       )
+      MAJ:cmds
+    )
+  )
+
+  ;;; Write PrepSuite.csv from a list in the MAJ:PrepRead format.
+  ;;; Returns T on success, nil if the file cannot be written (open in Excel?).
+  (defun MAJ:PrepWrite (cfg) 
+    (Remote>>LM:writecsv 
+      (cons (append '("Step" "Description") (MAJ:PrepCols)) 
+            (mapcar 
+              '(lambda (stp) 
+                 (append (list (car stp) (cadr stp)) 
+                         (mapcar 
+                           '(lambda (cmd) (if (member (car stp) (cdr (assoc cmd cfg))) "1" "0"))
+                           (MAJ:PrepCols)
+                         )
+                 )
+               )
+              MAJ:steps
+            )
+      )
+      (Dyl:UserFileW *dyl:prep)
+    )
+  )
+
+  ;;; Steps turned on for one output command:
+  (defun MAJ:PrepSteps (cmd) (cdr (assoc cmd (MAJ:PrepRead))))
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Output prep window (dyl_prepsuite of Dyl-Settings.dcl): check which steps
+  ;;; each output command runs, in a grid of toggles (keys t_<STEP>_<COLUMN>).
+  ;;; The commands of a group share its column (MAJ:PrepCol). Opened by
+  ;;; Dyl-PrepSuite and by the Output prep button of Dyl-Settings.
+  ;;; ---------------------------------------------------------------------------
+  (defun MAJ:PrepDlgKey (stp cmd) (strcat "t_" stp "_" (MAJ:PrepCol cmd)))
+
+  ;; Set every toggle from a list in the MAJ:PrepRead format:
+  (defun MAJ:PrepDlgSet (cfg) 
+    (foreach cmd MAJ:cmds 
+      (foreach stp MAJ:steps 
+        (set_tile (MAJ:PrepDlgKey (car stp) cmd) 
+                  (if (member (car stp) (cdr (assoc cmd cfg))) "1" "0")
+        )
+      )
+    )
+  )
+
+  ;; Set every toggle to "1" or "0":
+  (defun MAJ:PrepDlgAll (val) 
+    (foreach cmd MAJ:cmds 
+      (foreach stp MAJ:steps (set_tile (MAJ:PrepDlgKey (car stp) cmd) val))
+    )
+  )
+
+  ;; Read the toggles back into the MAJ:PrepRead format:
+  (defun MAJ:PrepDlgGet () 
+    (mapcar 
+      '(lambda (cmd) 
+         (cons cmd 
+               (vl-remove-if-not 
+                 '(lambda (stp) (= "1" (get_tile (MAJ:PrepDlgKey stp cmd))))
+                 (mapcar 'car MAJ:steps)
+               )
+         )
+       )
+      MAJ:cmds
+    )
+  )
+
+  ;; Open the window on cfg (MAJ:PrepRead format) from the DCL file loaded as dch,
+  ;; on: the command optimizer is on (shown in the window). Returns the steps
+  ;; checked on OK, nil on Cancel or when the window cannot be shown:
+  (defun MAJ:PrepDlg (dch cfg on / res)
+    (if (new_dialog "dyl_prepsuite" dch)
+      (progn
+        (MAJ:PrepDlgSet cfg)
+        (set_tile "sta"
+                  (if on
+                    "Commands on: the commands run the steps checked, then the native command."
+                    "Commands off: the steps run once Commands is on (Dyl-Settings, Overrides)."
+                  )
+        )
+        (action_tile "allon" "(MAJ:PrepDlgAll \"1\")")
+        (action_tile "alloff" "(MAJ:PrepDlgAll \"0\")")
+        (action_tile "accept" "(setq res (MAJ:PrepDlgGet)) (done_dialog 1)")
+        (action_tile "cancel" "(done_dialog 0)")
+        (Dyl:DocsTile "Output\\Dyl-PrepDrawing.htm")
+        (start_dialog)
+      )
+    )
+    res
+  )
+
+  ;; Save the steps cfg to PrepSuite.csv when they differ from old, and list them
+  ;; (one line per column of the grid, a group of commands):
+  (defun MAJ:PrepSave (cfg old)
+    (cond
+      ((equal cfg old))
+      ((not (MAJ:PrepWrite cfg))
+       (alert
+         (strcat "Unable to write:\n"
+                 (Dyl:UserFileW *dyl:prep)
+                 "\n\nClose it in Excel (or any other program) and try again."
+         )
+       )
+      )
+      (T
+       (princ "\nOutput prep steps saved:")
+       (foreach itm cfg
+         (if (= (car itm) (MAJ:PrepCol (car itm)))
+           (princ
+             (strcat "\n  "
+                     (cdr (assoc (car itm) '(("SAVE" . "All saves") ("PLOT" . "All prints") ("PREVIEW" . "PREVIEW") ("REGEN" . "REGEN"))))
+                     " -> "
+                     (if (cdr itm) (Remote>>LM:lst->str (cdr itm) ", ") "native (no prep)")
+             )
+           )
+         )
+       )
+      )
+    )
+  )
+
+  ;;; Output prep window on its own: saved on OK.
+  (defun c:Dyl-PrepSuite (/ dch old cfg)
+    (setq old (MAJ:PrepRead)
+          dch (load_dialog (strcat (vl-filename-directory *dyl:prep) "\\Dyl-Settings.dcl"))
+    )
+    (cond
+      ((> 0 dch) (princ "\n--> Unable to load the dialog : Dyl-Settings.dcl"))
+      ((setq cfg (MAJ:PrepDlg dch old (MAJ:Redefine-p)))
+       (if (equal cfg old) (princ "\nOutput prep unchanged.") (MAJ:PrepSave cfg old))
+      )
+      ((princ "\nOutput prep unchanged."))
+    )
+    (if (<= 0 dch) (unload_dialog dch))
+    (princ)
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Removing (on = T) or restoring (on = nil) the native definitions (silent
+  ;;; if already done). Done at startup unless the redefinition is turned off in
+  ;;; Dyl-Settings (DynalispPrepRedefine = "0"), and again by Dyl:autoload.
+  ;;; UNDEFINE is for the whole AutoCAD session but the Lisp commands are per
+  ;;; drawing: only the commands defined here (turned on in Dyl-Suite, see
+  ;;; Dyl-CmdOptimizer.lsp) are undefined, the others are restored, or
+  ;;; the native command would be "Unknown command" in this drawing.
+  ;;; PUBLISH is demand-loaded from AcPublish.crx: it is unknown to UNDEFINE
+  ;;; ("Unknown command name.") until that module is loaded. A command UNDEFINE
+  ;;; does not know (EXPORTPDF... if not loaded yet) stays native.
+  ;;; ---------------------------------------------------------------------------
+  (defun MAJ:Redefine-p () (= "1" (getenv "DynalispPrepRedefine")))
+
+  ;;; Run by the commands of the Output files before their native command: the
+  ;;; steps checked for cmd, when the output prep is on.
+  (defun MAJ:PrepFor (cmd)
+    (if (and (MAJ:Redefine-p) (MAJ:PrepLoad)) (MAJ:PrepDrawing (MAJ:PrepSteps cmd)))
+  )
+
+  ;;; The prep steps (MAJ:PrepDrawing...) are in Modules\Dynalisp\Apps\Output\
+  ;;; Dyl-PrepDrawing.lsp, autoloaded with its command only: loaded here the
+  ;;; first time they are needed. Returns T when they are defined.
+  (defun MAJ:PrepLoad (/ f)
+    (cond
+      (MAJ:PrepDrawing T)
+      ((setq f (findfile (strcat *dyl:apps "\\Output\\Dyl-PrepDrawing.lsp")))
+       (load f nil)
+       (if MAJ:PrepDrawing T)
+      )
+      ((princ "\n--> Dyl-PrepDrawing.lsp not found: output prep skipped.") nil)
+    )
+  )
+
+  ;;; The commands of MAJ:cmds defined in this drawing (or their autoload stub):
+  (defun MAJ:CmdsOn ()
+    (vl-remove-if-not '(lambda (n) (eval (read (strcat "C:" n)))) MAJ:cmds)
+  )
+
+  ;;; Status line: "QSAVE, PLOT redefined (...)" or "... native (...)":
+  (defun MAJ:Status (/ ons)
+    (setq ons (MAJ:CmdsOn))
+    (cond
+      ((not (MAJ:Redefine-p))
+       "Save, plot, publish, preview and regen commands native (command optimizer off, see Dyl-Settings)"
+      )
+      ((not ons)
+       "Save, plot, publish, preview and regen commands native (turned off in Dyl-Suite)"
+      )
+      ((strcat (Remote>>LM:lst->str ons ", ")
+               " redefined"
+               (if (= (length ons) (length MAJ:cmds)) "" " (the others are turned off in Dyl-Suite)")
+       )
+      )
+    )
+  )
+
+  (defun MAJ:Redefine (on / cme nmt)
+    (if
+      (and on (not (vl-some '(lambda (x) (wcmatch (strcase x) "*ACPUBLISH.CRX")) (arx))))
+      (vl-catch-all-apply 'arxload (list "AcPublish.crx" nil))
+    )
+    (setq cme (getvar "CMDECHO")
+          nmt (getvar "NOMUTT")
+    )
+    (setvar "CMDECHO" 0)
+    (setvar "NOMUTT" 1)
+    (setq on (if on (MAJ:CmdsOn)))
+    (foreach name MAJ:cmds
+      (vl-catch-all-apply 'vl-cmdf (list (if (member name on) "_.UNDEFINE" "_.REDEFINE") name))
+    )
+    (setvar "NOMUTT" nmt)
+    (setvar "CMDECHO" cme)
+  )
+  (if (MAJ:Redefine-p) (MAJ:Redefine T))
+  ;; MAJ:synced: the setting this drawing applied (see Dyl:SetSync, run by the settings reactor)
+  (setq MAJ:synced (MAJ:Redefine-p))
+
+  ;;; A drawing already open follows the setting changed in another one (sent by
+  ;;; Dyl:SetSync from the settings reactor, UNDEFINE cannot run from a reactor):
+  (defun MAJ:RedefineSync ()
+    (MAJ:Redefine (MAJ:Redefine-p))
+    (princ (strcat "\nOutput prep changed in Dyl-Settings: " (MAJ:Status) "."))
+    (princ)
+  )
+
+  ;;; Turning the redefinition on or off (the checkbox of Dyl-Settings and the
+  ;;; Dyl-CmdOptimizer command): saved for every drawing, applied to this one
+  ;;; now, to the other open drawings when they become current (Dyl:SetSync).
+  (defun MAJ:RedefineSet (on)
+    (setenv "DynalispPrepRedefine" (if on "1" "0"))
+    (MAJ:Redefine on)
+    (setq MAJ:synced on)
+    (princ (strcat "\n" (MAJ:Status) "."))
+  )
+
+  ;;; The redefined commands are in Modules\Dynalisp\Apps\Output\Dyl-CmdOptimizer.lsp,
+  ;;; loaded by Dyl:autoload when turned on in Dyl-Suite.
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Utility commands
+  ;;; ---------------------------------------------------------------------------
+  (defun c:Dyl-RESTORECOMMANDS ()
+    (MAJ:Redefine nil)
+    (princ "\n[PrepBeforeOutput] Native commands restored for this session.")
+    (princ "\n[PrepBeforeOutput] Turn off the output prep in Dyl-Settings to keep them.")
+    (princ)
+  )
+  ;;; ---------------------------------------------------------------------------
+  ;;; Startup summary: the commands and aliases, the notes (updates), then what failed
+  ;;; (only when something did):
+  ;;;   DynALisp loaded (516 commands/453 aliases)
+  ;;;   Dyl-Settings to change the settings, Dyl-Info for help.
+  ;;;   DynALisp updated to 1.2 (Dyl-Info: What's new).
+  ;;;   --> File preferences: run Dyl-SetFilePrefs ...
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:StartupSummary ()
+    (princ (strcat "\n\nDynALisp loaded ("
+                   (itoa (cond (*dyl:cmdcount*) (0)))
+                   " commands/"
+                   (itoa (cond (*dyl:aliascount*) (0)))
+                   " aliases)\nDyl-Settings to change the settings, Dyl-Info for help."
+           )
+    )
+    (foreach n (reverse *dyl:note*) (princ (strcat "\n" n)))
+    (if *dyl:warn* (princ (strcat "\n--> " (Remote>>LM:lst->str (reverse *dyl:warn*) " | "))))
+    (princ "\n")
+    (setq *dyl:quiet* nil
+          *dyl:warn*  nil
+          *dyl:note*  nil
+    )
+    (princ)
+  )
+  (Dyl:StartupSummary)
+
+
+  ;#endregion
+
+
+
+
+  ;#region Settings
+
+  ;;; ============================================================================
+  ;;; Settings
+  ;;; ----------------------------------------------------------------------------
+  ;;; Dyl-Settings: one window for the drawing setup and the passive behaviors
+  ;;; (Modules\Dynalisp\Res\Dyl-Settings.dcl):
+  ;;;
+  ;;;   - Drawing defaults (Overrides, DynalispSetupOn) and its ... button, the
+  ;;;     drawing defaults window (Dyl:SetDefsDlg, greyed out while the check is
+  ;;;     off): the unit and grid presets of the imperial and metric drawings,
+  ;;;     checked each time a drawing opens and set when the drawing differs (user
+  ;;;     settings, see Modules\Dynalisp\Remote\Dyl-DrawingSetup.lsp). Saving a
+  ;;;     change checks the current drawing right away.
+  ;;;   - DynALisp profile (Overrides) and its ... button, the file preferences
+  ;;;     window (Dyl:SetPrefsDlg, greyed out while the profile is off): the AEC
+  ;;;     library classification, the drawing units and the language, which set the
+  ;;;     paths and the main dictionary of the DynALisp profile when it is on, and
+  ;;;     whether the DynALisp custom dictionary of the language is used (when it has
+  ;;;     one) (user settings, see Modules\Dynalisp\Remote\Dyl-FilePrefs.lsp). Saving
+  ;;;     a change sets the profile right away.
+  ;;;   - Reactors (its own section, above Overrides), each with a short description under it:
+  ;;;     DynALisp reactors: DynalispReactors user setting (see Dyl:ReactorsOn-p),
+  ;;;     every reactor at once (the Reactor folder of each module). Off, the
+  ;;;     reactor settings under it (auto-phase, auto draw order, settings sync)
+  ;;;     are greyed out: they need the reactors
+  ;;;   - Settings sync: DynalispSettingsSync user setting (see Dyl:SettingsSyncOn-p)
+  ;;;   - Auto-phase: DynalispPhaseAuto user setting (see Dyl-LayerPhase)
+  ;;;   - Auto draw order: DynalispDrawOrderAuto user setting (see Dyl-DrawOrder,
+  ;;;     whose window, opened by its ... button, chooses the preferred
+  ;;;     preset and the preset of the drawing)
+  ;;;   - Command optimizer (Overrides): the redefinition of the save and print
+  ;;;     commands and REGEN (DynalispPrepRedefine user setting, see MAJ:Redefine-p),
+  ;;;     its Output prep button opening the output prep window (MAJ:PrepDlg) for
+  ;;;     the steps each one runs, the draw order among them (PrepSuite.csv,
+  ;;;     see MAJ:PrepRead)
+  ;;;   - System variables (Overrides, DynalispSysVarOn) and its ... button, which
+  ;;;     closes the window, runs Dyl-SysVars (the profiles: preferred values, like
+  ;;;     the System Variable Monitor) and opens it again (greyed out while off or
+  ;;;     when Dyl-SysVars is turned off): the active profile set in every drawing
+  ;;;     opened (see Modules\Dynalisp\Remote\Dyl-SysVars.lsp)
+  ;;;   - Display (Overrides, DynalispDisplayOn) and its ... button, the display
+  ;;;     window (Dyl:SetDisplayDlg, greyed out while Display is off): the display
+  ;;;     settings applied in every drawing opened while Display is on, for now the
+  ;;;     model space background color, Black, Default or White, or (Not set): the
+  ;;;     current color kept (DynalispBackground, see
+  ;;;     Modules\Dynalisp\Remote\Dyl-EnvColor.lsp). More display settings go in
+  ;;;     that window, with their value in st:bkg's place made a list
+  ;;;   - Install updates automatically (Updates, DynalispAutoUpdate, see
+  ;;;     Dyl:UpdAuto in the Info region): checked once a day, the setup of a new
+  ;;;     version started (installed when AutoCAD closes); greyed out for a git clone
+  ;;;
+  ;;; The values are applied when the window is saved, Cancel leaves them as
+  ;;; they were (a setup command run from the window is not undone).
+  ;;;
+  ;;; Every on/off setting is off on a new installation: it is on only once the
+  ;;; user turns it on, saved as "1" in its Dynalisp* user setting (setenv, kept
+  ;;; in the AutoCAD profile from then on); read it with (= "1" (getenv ...)).
+  ;;;
+  ;;; Every setting is for all the drawings: the drawing the window is used in
+  ;;; applies it right away, the other drawings already open when they are made
+  ;;; current (Dyl:SetSync, run by Reactor\Dyl-SettingsSync.lsp, the reactors of
+  ;;; Dyl-LayerPhase and Dyl-DrawOrder for theirs), the drawings opened later at
+  ;;; startup. While the DynALisp reactors are off, the other drawings already open
+  ;;; follow them only once opened again.
+  ;;;
+  ;;; The helpers below work on the locals of c:Dyl-Settings (st:*) by dynamic
+  ;;; scoping, prefixed so the commands run from the window (... buttons) cannot
+  ;;; change them by using the same global names.
+  ;;; ============================================================================
+
+  ;;; Drawing default popups: (what kind tile), what and kind as given to
+  ;;; Remote>>Dyl:SetupDefault. st:defs holds their preset keys in this order:
+  (setq *dyl:setdefs* '(("Units" "Imperial" "uim")
+                        ("Units" "Metric" "umt")
+                        ("Grid" "Imperial" "gim")
+                        ("Grid" "Metric" "gmt")
+                       )
+  )
+
+  ;;; Presets of what ("Units" or "Grid"): ((key label ...) ...)
+  (defun Dyl:SetPresets (what) (if (= "Units" what) *ds:units* *ds:grids*))
+
+  ;;; Default preset keys of the user, in the *dyl:setdefs* order (nil: not checked):
+  (defun Dyl:SetDefsRead ()
+    (mapcar '(lambda (d) (if Remote>>Dyl:SetupDefault (Remote>>Dyl:SetupDefault (car d) (cadr d))))
+            *dyl:setdefs*
+    )
+  )
+
+  ;;; File preferences being edited: (on class units language custom), custom T
+  ;;; when the DynALisp custom dictionaries are used (the last item, after the ones
+  ;;; of *fp:prefs*), nil when Dyl-FilePrefs.lsp is not loaded. on is the DynALisp
+  ;;; profile toggle (pfo) of the settings window, the others are in the file
+  ;;; preferences window (dyl_fileprefs): their popups, in the *fp:prefs* order, then
+  ;;; the custom dictionary toggle (pcd):
+  (setq *dyl:setprefs* '("pcl" "pun" "pla"))
+  (defun Dyl:SetPrefsRead ()
+    (if Remote>>Dyl:PrefGet
+      (append (cons (Remote>>Dyl:PrefOn-p) (mapcar '(lambda (p) (Remote>>Dyl:PrefGet (car p))) *fp:prefs*))
+              (list (and (Remote>>Dyl:PrefCustomOn-p) T))
+      )
+    )
+  )
+
+  ;;; Items of the Background popup of the display window: nil, shown as (Not set),
+  ;;; then the names of the colors:
+  (defun Dyl:SetBkgs () (cons nil (mapcar 'car *ec:colors*)))
+
+  ;;; The reactor settings (auto-phase, auto draw order, settings sync) greyed out
+  ;;; while the DynALisp reactors are off (on: the DynALisp reactors checkbox), or
+  ;;; when their Remote file is not loaded:
+  (defun Dyl:SetDlgRea (on)
+    (mode_tile "aph" (if (and on Remote>>Dyl:PhaseAutoSet) 0 1))
+    (mode_tile "ado" (if (and on Remote>>Dyl:DrawOrderAutoSet) 0 1))
+    (mode_tile "syn" (if on 0 1))
+  )
+
+  ;;; Draw the small square image button key (set_more in Dyl-Settings.dcl) with an
+  ;;; "open" icon: a box open at its top-right corner, an arrow coming out of it. Grey
+  ;;; and disabled when on is nil (its command turned off). Pixels, y going down:
+  (defun Dyl:SetDlgMore (key on / w h s p l tp r b mx my a c ln)
+    (setq w  (dimx_tile key)
+          h  (dimy_tile key)
+          s  (min w h)
+          p  (max 2 (/ s 6))
+          ;;  Icon square (left, top, right, bottom), centered in the tile:
+          l  (+ (/ (- w s) 2) p)
+          tp (+ (/ (- h s) 2) p)
+          r  (- (+ l s) p p 1)
+          b  (- (+ tp s) p p 1)
+          ;;  Its middle and the size of the arrow head:
+          mx (/ (+ l r) 2)
+          my (/ (+ tp b) 2)
+          a  (max 2 (/ (- r l) 3))
+          c  (if on -16 8)
+    )
+    (defun ln (x1 y1 x2 y2) (vector_image x1 y1 x2 y2 c))
+    (start_image key)
+    (fill_image 0 0 w h -15)
+    ;;  Box open at its top-right corner: left side, bottom, right side up to the middle,
+    ;;  top up to the middle:
+    (ln l tp l b)
+    (ln l b r b)
+    (ln r b r my)
+    (ln l tp mx tp)
+    ;;  Arrow from the middle of the box to its top-right corner (drawn twice: bolder),
+    ;;  and its head:
+    (ln mx my r tp)
+    (ln (1+ mx) my (1+ r) tp)
+    (ln (- r a) tp r tp)
+    (ln r tp r (+ tp a))
+    (end_image)
+    (mode_tile key (if on 0 1))
+  )
+
+  ;;; Set the tiles from the values being edited:
+  (defun Dyl:SetDlgFill ()
+    ;; Drawing defaults: its ... button (the drawing settings window) available even while
+    ;; the check is off (the Shrinkwrap gap step of that window is used anyway), greyed out
+    ;; with the checkbox when Dyl-DrawingSetup.lsp is not loaded:
+    (set_tile "dso" (if st:dso "1" "0"))
+    (if (not Remote>>Dyl:SetupOnSet) (mode_tile "dso" 1))
+    (Dyl:SetDlgMore "dsm" (and Remote>>Dyl:SetupDefaultSet T))
+    ;; DynALisp profile: its ... button (the file preferences window) greyed out while
+    ;; the profile is off, both when Dyl-FilePrefs.lsp is not loaded:
+    (set_tile "pfo" (if (car st:pfp) "1" "0"))
+    (if (not st:pfp) (mode_tile "pfo" 1))
+    (Dyl:SetDlgMore "pfm" (car st:pfp))
+    (set_tile "rea" (if st:rea "1" "0"))
+    (set_tile "aph" (if st:aph "1" "0"))
+    ;; Greyed out when Dyl-LayerPhase is turned off in Dyl-Suite:
+    (Dyl:SetDlgMore "lph" c:Dyl-LayerPhase)
+    (Dyl:SetDlgMore "ldo" c:Dyl-DrawOrder)
+    (Dyl:SetDlgMore "prs" T)
+    (set_tile "ado" (if st:ado "1" "0"))
+    (set_tile "syn" (if st:syn "1" "0"))
+    (Dyl:SetDlgRea st:rea)
+    (set_tile "prp" (if st:prp "1" "0"))
+    ;; Display: its ... button (the display window) greyed out while Display is off,
+    ;; both when Dyl-EnvColor.lsp is not loaded:
+    (set_tile "dpo" (if st:dpo "1" "0"))
+    (if (not Remote>>Dyl:DisplayOnSet) (mode_tile "dpo" 1))
+    (Dyl:SetDlgMore "dpm" (and st:dpo Remote>>Dyl:DisplayOnSet))
+    ;; System variables: its ... button (Dyl-SysVars, the profiles) greyed out while off,
+    ;; or when Dyl-SysVars is turned off in Dyl-Suite; both when Dyl-SysVars.lsp of the
+    ;; Remote folder is not loaded:
+    (set_tile "svo" (if st:svo "1" "0"))
+    (if (not Remote>>Dyl:SysVarOnSet) (mode_tile "svo" 1))
+    (Dyl:SetDlgMore "svm" (and st:svo c:Dyl-SysVars))
+    ;; Automatic updates: greyed out for a git clone (updated with git pull):
+    (set_tile "aup" (if st:aup "1" "0"))
+    (if (Dyl:InfoGit-p)
+      (progn (mode_tile "aup" 1) (set_tile "aud" "Git clone: update it with git pull."))
+    )
+  )
+
+  ;;; Read the tiles back into the values being edited (before the window closes):
+  (defun Dyl:SetDlgGet ()
+    ;; The drawing defaults themselves (st:defs) are set in their own window (Dyl:SetDefsDlg):
+    (setq st:dso (= "1" (get_tile "dso"))
+          st:aph (= "1" (get_tile "aph"))
+          st:ado (= "1" (get_tile "ado"))
+          st:rea (= "1" (get_tile "rea"))
+          st:syn (= "1" (get_tile "syn"))
+          st:prp (= "1" (get_tile "prp"))
+          ;; The display settings themselves (st:bkg) are set in their own window (Dyl:SetDisplayDlg):
+          st:dpo (= "1" (get_tile "dpo"))
+          st:svo (= "1" (get_tile "svo"))
+          st:aup (= "1" (get_tile "aup"))
+          ;; The other file preferences are set in their own window (Dyl:SetPrefsDlg):
+          st:pfp (if st:pfp (cons (= "1" (get_tile "pfo")) (cdr st:pfp)))
+    )
+  )
+
+  ;;; ... button of Drawing defaults: the drawing defaults window (dyl_drawdefs) over
+  ;;; this one, on the values being edited (st:defs). OK keeps the presets picked in
+  ;;; st:defs, saved with the other settings by Save; Cancel leaves them:
+  (defun Dyl:SetDefsDlg (/ res gaps)
+    (if (new_dialog "dyl_drawdefs" st:dch)
+      (progn
+        (mapcar
+          '(lambda (d key / pos)
+             (start_list (caddr d))
+             (add_list "(Not checked)")
+             (foreach p (Dyl:SetPresets (car d)) (add_list (cadr p)))
+             (end_list)
+             (setq pos (vl-position key (mapcar 'car (Dyl:SetPresets (car d)))))
+             (set_tile (caddr d) (itoa (if pos (1+ pos) 0)))
+           )
+          *dyl:setdefs*
+          st:defs
+        )
+        ;;  Shrinkwrap gap steps (imperial, metric), checked on OK:
+        (set_tile "gpi" (car st:gaps))
+        (set_tile "gpm" (cadr st:gaps))
+        (if (not Remote>>Dyl:ShrinkwrapStep) (foreach k '("gpi" "gpm") (mode_tile k 1)))
+        (action_tile "accept"
+                     (strcat "(if (setq gaps (Dyl:SetGapsGet))"
+                             " (progn (setq res (Dyl:SetDefsGet)) (done_dialog 1))"
+                             " (set_tile \"gerr\" \"A gap step is a number greater than 0 (drawing units).\"))"
+                     )
+        )
+        (action_tile "cancel" "(done_dialog 0)")
+        (Dyl:DocsTile "Core\\Dyl-Settings.htm")
+        (start_dialog)
+        (if res (setq st:defs res st:gaps gaps))
+      )
+    )
+  )
+
+  ;;; Shrinkwrap gap steps of the imperial and metric drawings (texts, see
+  ;;; Remote>>Dyl:ShrinkwrapStep):
+  (defun Dyl:SetGapsRead ()
+    (if Remote>>Dyl:ShrinkwrapStep
+      (mapcar '(lambda (k) (rtos (Remote>>Dyl:ShrinkwrapStep k) 2 4)) '("Imperial" "Metric"))
+      '("1" "25")
+    )
+  )
+
+  ;;; Gap steps typed in the drawing settings window, nil when one is not a number > 0:
+  (defun Dyl:SetGapsGet (/ l)
+    (setq l (mapcar '(lambda (k) (vl-string-trim " " (get_tile k))) '("gpi" "gpm")))
+    (if (vl-every '(lambda (s / v) (and (setq v (distof s 2)) (< 0 v))) l) l)
+  )
+
+  ;;; Preset keys picked in the drawing defaults window, in the *dyl:setdefs* order
+  ;;; (nil: not checked):
+  (defun Dyl:SetDefsGet ()
+    (mapcar '(lambda (d / i)
+               (setq i (atoi (get_tile (caddr d))))
+               (if (< 0 i) (car (nth (1- i) (Dyl:SetPresets (car d)))))
+             )
+            *dyl:setdefs*
+    )
+  )
+
+  ;;; What a drawing compares to follow the drawing defaults changed in another one
+  ;;; (DS:synced, see Dyl:SetSync): (on default ...):
+  (defun Dyl:SetDefsSync ()
+    (cons (and Remote>>Dyl:SetupOn-p (Remote>>Dyl:SetupOn-p) T) (Dyl:SetDefsRead))
+  )
+
+  ;;; ... button of Display: the display window (dyl_display) over this one, on the
+  ;;; values being edited (st:bkg). OK keeps the values picked, saved with the other
+  ;;; settings by Save; Cancel leaves them. More display settings: set and read
+  ;;; their tiles here too:
+  (defun Dyl:SetDisplayDlg (/ res)
+    (if (new_dialog "dyl_display" st:dch)
+      (progn
+        (start_list "bkg")
+        (foreach b (Dyl:SetBkgs) (add_list (cond (b) ("(Not set: current color kept)"))))
+        (end_list)
+        (set_tile "bkg" (itoa (cond ((vl-position st:bkg (Dyl:SetBkgs))) (0))))
+        (if (not Remote>>Dyl:BackgroundSet) (mode_tile "bkg" 1))
+        ;; res: (background), a list so that "not set" (nil) is told from Cancel:
+        (action_tile "accept" "(setq res (list (nth (atoi (get_tile \"bkg\")) (Dyl:SetBkgs)))) (done_dialog 1)")
+        (action_tile "cancel" "(done_dialog 0)")
+        (Dyl:DocsTile "Core\\Dyl-Settings.htm")
+        (start_dialog)
+        (if res (setq st:bkg (car res)))
+      )
+    )
+  )
+
+  ;;; ... button of the DynALisp profile: the file preferences window (dyl_fileprefs)
+  ;;; over this one, on the values being edited (st:pfp). OK keeps the values picked
+  ;;; in st:pfp, saved with the other settings by Save; Cancel leaves them:
+  (defun Dyl:SetPrefsDlg (/ res)
+    (if (and st:pfp (new_dialog "dyl_fileprefs" st:dch))
+      (progn
+        (mapcar '(lambda (p key tile)
+                   (start_list tile)
+                   (foreach c (caddr p) (add_list (cadr c)))
+                   (end_list)
+                   (set_tile tile (itoa (cond ((vl-position key (mapcar 'car (caddr p)))) (0))))
+                 )
+                *fp:prefs*
+                (cdr st:pfp)
+                *dyl:setprefs*
+        )
+        (set_tile "pcd" (if (last st:pfp) "1" "0"))
+        (set_tile "pfs" (strcat "Current profile: " (vla-get-ActiveProfile (vla-get-Profiles *acad:pref))))
+        (action_tile "accept" "(setq res (Dyl:SetPrefsGet)) (done_dialog 1)")
+        (action_tile "cancel" "(done_dialog 0)")
+        (Dyl:DocsTile "Setup\\Dyl-SetFilePrefs.htm")
+        (start_dialog)
+        (if res (setq st:pfp (cons (car st:pfp) res)))
+      )
+    )
+  )
+
+  ;;; Values of the file preferences window: (class units language custom):
+  (defun Dyl:SetPrefsGet ()
+    (append (mapcar '(lambda (p tile) (car (nth (atoi (get_tile tile)) (caddr p)))) *fp:prefs* *dyl:setprefs*)
+            (list (= "1" (get_tile "pcd")))
+    )
+  )
+
+  ;;; Run the command of a ... button: (NAME SYMBOL nil). An error or a cancel in
+  ;;; the command brings the window back all the same:
+  (defun Dyl:SetRun (c / res)
+    (princ (strcat "\n" (car (Remote>>LM:str->lst (vl-string-left-trim " " (car c)) "\t"))))
+    (setq res (vl-catch-all-apply (cadr c) nil))
+    (if
+      (and (vl-catch-all-error-p res)
+           (not (wcmatch (strcase (vl-catch-all-error-message res)) "*CANCEL*,*QUIT*"))
+      )
+      (princ (strcat "\nError: " (vl-catch-all-error-message res)))
+    )
+  )
+
+  ;;; ... button of Auto-phase: the Layer Phases window (Dyl-LayerPhase):
+  (defun Dyl:SetPhases () (Dyl:SetRun (list "Layer Phases" 'c:Dyl-LayerPhase nil)))
+
+  ;;; ... button of Auto draw order: the Draw Order window (Dyl-DrawOrder), which sets auto
+  ;;; draw order itself and chooses the presets. The Auto draw order checkbox
+  ;;; changed here is applied first, so that window shows it. When this one opens
+  ;;; again, it shows the auto draw order that window leaves, also kept as the
+  ;;; value to compare on Save (st:old: aph ado ...):
+  (defun Dyl:SetDrawOrder ()
+    (if (and Remote>>Dyl:DrawOrderAutoSet (not (eq st:ado (cadr st:old))))
+      (Remote>>Dyl:DrawOrderAutoSet st:ado)
+    )
+    (Dyl:SetRun (list "Draw Order" 'c:Dyl-DrawOrder nil))
+    (if Remote>>Dyl:DrawOrderAuto-p
+      (setq st:ado (and (Remote>>Dyl:DrawOrderAuto-p) T)
+            st:old (cons (car st:old) (cons st:ado (cddr st:old)))
+      )
+    )
+  )
+
+  ;;; ... button of System variables: the profiles window (Dyl-SysVars), which saves its
+  ;;; profiles itself:
+  (defun Dyl:SetSysVars () (Dyl:SetRun (list "System Variables" 'c:Dyl-SysVars nil)))
+
+  ;;; Apply the values saved, only the ones changed (old: the values when the
+  ;;; window opened, see st:old in c:Dyl-Settings):
+  (defun Dyl:SetApply (old / res)
+    ;;  Shrinkwrap gap steps (drawing settings window):
+    (if (and Remote>>Dyl:ShrinkwrapStepSet (not (equal st:gaps (nth 12 old))))
+      (progn
+        (mapcar 'Remote>>Dyl:ShrinkwrapStepSet '("Imperial" "Metric") st:gaps)
+        (princ (strcat "\nShrinkwrap gap step saved: " (car st:gaps) " (imperial), " (cadr st:gaps) " (metric)."))
+      )
+    )
+    (if (not (and (equal st:defs (nth 4 old)) (eq st:dso (nth 9 old))))
+      (progn
+        (mapcar '(lambda (d key) (Remote>>Dyl:SetupDefaultSet (car d) (cadr d) key)) *dyl:setdefs* st:defs)
+        (Remote>>Dyl:SetupOnSet st:dso)
+        (setq DS:synced (cons st:dso st:defs))
+        (princ (strcat "\nDrawing settings saved, "
+                       (cond
+                         ((not st:dso) "off: the drawings are no longer checked")
+                         ((Remote>>Dyl:SetupWatch))
+                         ((strcat (strcase (Remote>>Dyl:SetupKind) t) " drawing: no default"))
+                       )
+                       "."
+               )
+        )
+      )
+    )
+    ;; The reactors first: turned on, auto-phase and auto draw order below make theirs:
+    (if (not (eq st:rea (nth 7 old))) (Dyl:ReactorsSet st:rea))
+    (if (not (eq st:aph (nth 0 old))) (Remote>>Dyl:PhaseAutoSet st:aph))
+    (if (not (eq st:ado (nth 1 old))) (Remote>>Dyl:DrawOrderAutoSet st:ado))
+    (if (not (eq st:syn (nth 8 old))) (Dyl:SettingsSyncSet st:syn))
+    (if (not (eq st:prp (nth 2 old))) (MAJ:RedefineSet st:prp))
+    (if (not (eq st:aup (nth 13 old))) (Dyl:UpdAutoSet st:aup))
+    ;; The steps edited in the output prep window (Output prep button):
+    (MAJ:PrepSave st:cfg (nth 3 old))
+    ;; System variables: the preferred values of the active profile set right away when
+    ;; turned on, the drawings already open following (stamp, see Dyl:SetSync):
+    (if (not (eq st:svo (nth 11 old)))
+      (progn
+        (Remote>>Dyl:SysVarOnSet st:svo)
+        (setq SV:synced (Remote>>Dyl:SysVarStamp))
+        (princ (strcat "\nSystem variables "
+                       (cond
+                         ((not st:svo) "off: the drawings keep their values.")
+                         ((vl-catch-all-error-p (setq res (vl-catch-all-apply 'Remote>>Dyl:SysVarApply)))
+                          (strcat "on, --> " (vl-catch-all-error-message res) ".")
+                         )
+                         ((strcat "on, " res "."))
+                       )
+               )
+        )
+      )
+    )
+    ;; Display: the settings saved, then applied right away while Display is on (the
+    ;; display preferences are the same in every drawing):
+    (if (not (and (equal st:bkg (nth 5 old)) (eq st:dpo (nth 10 old))))
+      (progn
+        (Remote>>Dyl:BackgroundPrefSet st:bkg)
+        (Remote>>Dyl:DisplayOnSet st:dpo)
+        (princ (strcat "\nDisplay saved, "
+                       (cond
+                         ((not st:dpo) "off: the display preferences are left as they are")
+                         ((vl-catch-all-error-p (setq res (vl-catch-all-apply 'Remote>>Dyl:DisplayApply)))
+                          (strcat "--> " (vl-catch-all-error-message res))
+                         )
+                         (res)
+                         ("no display setting chosen")
+                       )
+                       "."
+               )
+        )
+      )
+    )
+    ;; File preferences: the DynALisp profile set again, or the previous profile back when
+    ;; turned off. Also set again when on and not current or not set from them yet (a new
+    ;; version of the way it is set, FilePrefs.csv changed), even if none was changed:
+    (if (and st:pfp
+             (or (not (equal st:pfp (nth 6 old)))
+                 (and (car st:pfp)
+                      (or (/= (getenv "DynalispPrefApplied") (Remote>>Dyl:PrefStamp))
+                          (not (Remote>>Dyl:PrefIs-p (vla-get-ActiveProfile (vla-get-Profiles *acad:pref)) *fp:profile*))
+                      )
+                 )
+             )
+        )
+      (progn
+        (mapcar '(lambda (p key) (Remote>>Dyl:PrefSet (car p) key)) *fp:prefs* (cdr st:pfp))
+        (Remote>>Dyl:PrefCustomSet (last st:pfp))
+        (Remote>>Dyl:PrefProfileSet (car st:pfp))
+        (princ (strcat "\nFile preferences saved, "
+                       (cond
+                         ((Remote>>Dyl:PrefApply T))
+                         ((strcat "DynALisp profile off, current profile: "
+                                  (vla-get-ActiveProfile (vla-get-Profiles *acad:pref))
+                          )
+                         )
+                       )
+                       "."
+               )
+        )
+      )
+    )
+  )
+
+  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:old st:dch st:sta)
+    (setq st:defs (Dyl:SetDefsRead)
+          st:aph  (and Remote>>Dyl:PhaseAuto-p (Remote>>Dyl:PhaseAuto-p) T)
+          st:ado  (and Remote>>Dyl:DrawOrderAuto-p (Remote>>Dyl:DrawOrderAuto-p) T)
+          st:prp  (MAJ:Redefine-p)
+          st:cfg  (MAJ:PrepRead)
+          st:bkg  (if Remote>>Dyl:BackgroundPref (Remote>>Dyl:BackgroundPref))
+          st:dpo  (and Remote>>Dyl:DisplayOn-p (Remote>>Dyl:DisplayOn-p) T)
+          st:pfp  (Dyl:SetPrefsRead)
+          st:rea  (Dyl:ReactorsOn-p)
+          st:syn  (Dyl:SettingsSyncOn-p)
+          st:dso  (and Remote>>Dyl:SetupOn-p (Remote>>Dyl:SetupOn-p) T)
+          st:svo  (and Remote>>Dyl:SysVarOn-p (Remote>>Dyl:SysVarOn-p) T)
+          st:gaps (Dyl:SetGapsRead)
+          st:aup  (Dyl:UpdAutoOn-p)
+          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup)
+          st:dch  (load_dialog (strcat (vl-filename-directory *dyl:prep) "\\Dyl-Settings.dcl"))
+          st:sta  2
+    )
+    ;; ... of Auto-phase (4) closes the window, runs Dyl-LayerPhase and opens it again,
+    ;; ... of Auto draw order (5) the same with Dyl-DrawOrder:
+    (while (and (< 1 st:sta) (<= 0 st:dch) (new_dialog "dyl_settings" st:dch))
+      (Dyl:SetDlgFill)
+      (action_tile "lph" "(Dyl:SetDlgGet) (done_dialog 4)")
+      (action_tile "ldo" "(Dyl:SetDlgGet) (done_dialog 5)")
+      (action_tile "rea" "(Dyl:SetDlgRea (= \"1\" $value))")
+      ;; The output prep window over this one: its steps are kept in st:cfg, saved
+      ;; with the other settings:
+      (action_tile "prs" "(setq st:cfg (cond ((MAJ:PrepDlg st:dch st:cfg (= \"1\" (get_tile \"prp\")))) (st:cfg)))")
+      ;; The file preferences window over this one, its ... button greyed out while
+      ;; the DynALisp profile is off:
+      (action_tile "pfo" "(Dyl:SetDlgMore \"pfm\" (= \"1\" $value))")
+      (action_tile "pfm" "(Dyl:SetPrefsDlg)")
+      ;; The drawing settings window over this one (available while the check is off too):
+      (action_tile "dsm" "(Dyl:SetDefsDlg)")
+      ;; The display window over this one, its ... button greyed out while Display is off:
+      (action_tile "dpo" "(Dyl:SetDlgMore \"dpm\" (and (= \"1\" $value) Remote>>Dyl:DisplayOnSet))")
+      (action_tile "dpm" "(Dyl:SetDisplayDlg)")
+      ;; ... of System variables (6) closes the window, runs Dyl-SysVars and opens it
+      ;; again; greyed out while off:
+      (action_tile "svo" "(Dyl:SetDlgMore \"svm\" (and (= \"1\" $value) c:Dyl-SysVars))")
+      (action_tile "svm" "(Dyl:SetDlgGet) (done_dialog 6)")
+      (action_tile "accept" "(Dyl:SetDlgGet) (done_dialog 1)")
+      (action_tile "cancel" "(done_dialog 0)")
+      (Dyl:DocsTile "Core\\Dyl-Settings.htm")
+      (setq st:sta (start_dialog))
+      (if (= 4 st:sta) (Dyl:SetPhases))
+      (if (= 5 st:sta) (Dyl:SetDrawOrder))
+      (if (= 6 st:sta) (Dyl:SetSysVars))
+    )
+    (if (<= 0 st:dch) (unload_dialog st:dch))
+    (cond
+      ((> 0 st:dch) (princ "\n--> Unable to load the dialog : Dyl-Settings.dcl"))
+      ((= 1 st:sta) (Dyl:SetApply st:old))
+      ((= 0 st:sta) (princ "\nSettings unchanged."))
+      ((princ "\n--> Unable to show the dialog : Dyl-Settings.dcl"))
+    )
+    (princ)
+  )
+
+  ;;; A drawing made current follows the settings changed in another drawing
+  ;;; since it applied them (DS:synced, MAJ:synced): only a change
+  ;;; is applied, so Dyl-RestoreCommands (this drawing only)
+  ;;; and units changed by hand are kept until the setting changes again.
+  ;;; Run by the settings reactor (Modules\Dynalisp\Reactor\Dyl-SettingsSync.lsp)
+  ;;; while the DynALisp reactors are on:
+  (defun Dyl:SetSync (/ defs res)
+    (if
+      (and Remote>>Dyl:SetupWatch
+           (not (equal (setq defs (Dyl:SetDefsSync)) DS:synced))
+           (setq DS:synced defs)
+           (not (vl-catch-all-error-p (setq res (vl-catch-all-apply 'Remote>>Dyl:SetupWatch))))
+           res
+      )
+      (princ (strcat "\nDrawing settings changed in Dyl-Settings, " res "."))
+    )
+    ;; System variables: the override or a profile saved in another drawing (its stamp
+    ;; changed), the active profile set again:
+    (if
+      (and Remote>>Dyl:SysVarApply
+           (not (equal (Remote>>Dyl:SysVarStamp) SV:synced))
+           (setq SV:synced (Remote>>Dyl:SysVarStamp))
+           (not (vl-catch-all-error-p (setq res (vl-catch-all-apply 'Remote>>Dyl:SysVarApply))))
+           res
+      )
+      (princ (strcat "\nSystem variables changed in another drawing, " res "."))
+    )
+    ;; UNDEFINE cannot run from a reactor: sent to the command line, when idle
+    (if
+      (and (not (eq (MAJ:Redefine-p) MAJ:synced))
+           (= 0 (getvar "CMDACTIVE"))
+           (not (vl-catch-all-error-p
+                  (vl-catch-all-apply 'vla-SendCommand
+                                      (list (vla-get-ActiveDocument (vlax-get-acad-object)) "(MAJ:RedefineSync) ")
+                  )
+                )
+           )
+      )
+      (setq MAJ:synced (MAJ:Redefine-p))
+    )
+    (princ)
+  )
+  (setq DS:synced (Dyl:SetDefsSync))
+
+  ;#endregion
+)
+
+;;  The startup runs once per drawing: the menus loaded again in a drawing (a profile
+;;  made current, CUILOAD) load this file again, which would add it to s::startup again:
+(defun Dyl:StartupOnce ()
+  (if (not *dyl:started*)
+    (progn
+      (setq *dyl:started* T)
+      (dyl:startup)
+    )
+  )
+  (princ)
+)
+(if (not (member '(Dyl:StartupOnce) s::startup))
+  (setq s::startup (append s::startup '(nil (Dyl:StartupOnce))))
+)

@@ -1,0 +1,24 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A,Anno,Brng,0000,----,Annotation: Bearings And Distance Labels (Survey Coordinates)
+A,Anno,Dfrm,0000,----,Annotation: Deformation Gradient
+A,Anno,Crak,0000,----,Annotation: Cracking Lines
+A,Anno,Jntc,0000,----,Annotation: Control Joint
+A,Anno,Jnte,0000,----,Annotation: Expansion Joint
+A,Anno,Jnts,0000,----,Annotation: Joint
+A,Anno,Opng,0000,----,Annotation: Opening Lines And Symbols
+A,Anno,Rfsh,0000,----,Annotation: Refurbish Patterns to Reproduce/Remodel/Repair/Refinish
+A,Elev,Bgrd,0000,----,Elevation: Standard Line As Background Filler (Hidden From Top View)
+A,Elev,Blin,0000,----,Elevation: Baseline
+A,Elev,Eqpm,0000,----,Elevation: Equipment
+A,Elev,Genf,0000,----,Elevation: General Features
+A,Elev,Grph,0000,----,Elevation: Graphics
+A,Elev,Hidd,0000,----,Elevation: Standard Line (Hidden From Top View)
+A,Elev,Line,0000,----,Elevation: Standard Line
+A,Elev,Main,0000,----,Elevation: Mainline
+A,Elev,Mcut,0000,----,Elevation: Material Pattern Cut By The View (Always Black Pattern)
+A,Elev,Nplt,0000,----,Elevation: Non-Plotting Graphic Information
+A,Elev,Otln,0000,----,Elevation: Outline
+A,Elev,Patt,0000,----,Elevation: Texture Or Hatch Patterns
+A,Elev,Redl,0000,----,Elevation: Redlines
+A,Elev,Sect,0000,----,Elevation: Section Lines
+A,Elev,Scrn,0000,----,Elevation: Standard Line As Screening Of Coordination Objects

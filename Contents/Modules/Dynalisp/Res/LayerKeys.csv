@@ -1,0 +1,8 @@
+Key;Layer;Color;Linetype;Lineweight;Plot;Description;Phased
+FINE;A-Detl-Fine;1;CONTINUOUS;0.18;1;Detail: Fine Lines;1
+THIN;A-Detl-Thin;2;CONTINUOUS;0.25;1;Detail: Thin Lines;1
+MED;A-Detl-Medm;3;CONTINUOUS;0.35;1;Detail: Medium Lines;1
+WIDE;A-Detl-Wide;4;CONTINUOUS;0.50;1;Detail: Wide Lines;1
+XLINE;A-Detl-XFin;8;CONTINUOUS;0.13;1;Detail: Extra Fine Lines;1
+HATCH;A-Detl-Patt;8;CONTINUOUS;0.18;1;Detail: Texture Or Hatch Patterns;1
+G-DS-ANNO-STD-BACKGROUND_SCREEN;A-Detl-Scrn;254;CONTINUOUS;0.18;1;Detail: Screening Of Coordination Objects And Backgrounds;0

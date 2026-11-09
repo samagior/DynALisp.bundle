@@ -1,0 +1,17 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A,Anno,Dims,0000,----,Annotation: Dimensions
+A,Anno,Iden,0000,----,Annotation: View Identification
+A,Anno,Labl,0000,----,Annotation: Labels (Grid And Level Head)
+A,Anno,Tags,0000,----,Annotation: Tags (Wall / Door / Window / Etc.)
+A,Anno,Note,0000,----,Annotation: Notes
+A,Anno,Mark,0000,----,Annotation: Markers/Break Marks/Leaders
+A,Anno,Nplt,0000,----,Annotation: Non-Plotting Graphic Information
+A,Anno,Rdme,0000,----,Annotation: Read-Me Layer (Not Plotted)
+A,Anno,Redl,0000,----,Annotation: Redlines
+A,Anno,Refr,0000,----,Annotation: Reference/External Files
+A,Anno,Revc,0000,----,Annotation: Revision Clouds
+A,Anno,Revs,0000,----,Annotation: Revision Indicators And Text
+A,Anno,Symb,0000,----,Annotation: Reference Symbols
+A,Anno,Text,0000,----,Annotation: Text
+A,Anno,Titl,0000,----,Annotation: Drawing Or Detail Titles
+A,Anno,Grid,0000,----,Annotation: Grid And Level Lines

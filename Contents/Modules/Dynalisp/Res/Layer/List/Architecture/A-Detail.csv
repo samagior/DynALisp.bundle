@@ -1,0 +1,22 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A,Majr,Scrn,----,----,GroupTyp: Screening Of Coordination And Background Lines
+A,Majr,Line,----,----,GroupTyp: Standard Line
+A,Majr,Hevy,----,----,GroupTyp: Heavy Material Line Cut By The View
+A,Majr,Lght,----,----,GroupTyp: Light Material Line Cut By The View
+A,Majr,Mbnd,----,----,GroupTyp: Material Patterns Beyond Cut
+A,Majr,Mcut,----,----,GroupTyp: Material Patterns Cut By The View
+A,Majr,Patt,----,----,GroupTyp: Texture Or Hatch Patterns
+A,Majr,Hidd,----,----,GroupTyp: Objects Or Lines Hidden From View
+A,Majr,Exst,----,----,GroupTyp: Existing Background Hatch
+A,Majr,Genf,----,----,GroupTyp: General Features
+A,Majr,Nplt,----,----,GroupTyp: Non-Plotting Graphic Information
+A,Majr,Air~,----,----,GroupTyp: Air Barrier
+A,Majr,Vapr,----,----,GroupTyp: Vapor Barrier
+A,Majr,Flex,----,----,GroupTyp: Flexible/Transition Barrier
+A,Majr,Botm,----,----,GroupTyp: Multilayer System Bottom Membrane
+A,Majr,Top~,----,----,GroupTyp: Multilayer System Top Membrane
+A,Majr,Watr,----,----,GroupTyp: Water Barrier
+A,Majr,Rfcr,----,----,GroupTyp: Reinforcement Layer
+A,Majr,Rbar,----,----,GroupTyp: Reinforcing Bar
+A,Majr,Insl,----,----,GroupTyp: Insulation Material
+A,Majr,Flah,----,----,GroupTyp: Flashing

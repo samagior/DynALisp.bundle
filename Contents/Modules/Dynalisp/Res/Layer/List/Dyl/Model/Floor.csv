@@ -1,0 +1,40 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A,Door,Full,----,----,Doors: Full-Height (Swing And Leaf)
+A,Door,Prht,----,----,Doors: Partial-Height (Swing And Leaf)
+A,Door,Sill,----,----,Doors: Sill
+A,Eqpm,Accs,----,----,Equipment: Access
+A,Eqpm,Conv,----,----,Equipment: Conveying Systems
+A,Eqpm,Evtr,----,----,Equipment: Elevator Cars And Equipment
+A,Eqpm,Fixd,----,----,Equipment: Fixed
+A,Eqpm,Fixt,----,----,Equipment: Fixtures (Plumbing)
+A,Eqpm,Heat,----,----,Equipment: Hydronic/Electric Heating
+A,Eqpm,Hvac,----,----,Equipment: Hvac Systems
+A,Eqpm,Lite,----,----,Equipment: Lighting Fixtures
+A,Eqpm,Sign,----,----,Equipment: Signage
+A,Eqpm,Spcl,----,----,Equipment: Specialties (Toilet Room Accessories/Display Cases) 
+A,Flor,Cswk,----,----,Floor: Casework
+A,Flor,Fnsh,----,----,Floor: Finishes
+A,Flor,Hral,----,----,Floor: Handrails/Guard Rails
+A,Flor,Levl,----,----,Floor: Level Changes (Ramps/Pits/Depressions)
+A,Flor,Otln,----,----,Floor: Outline
+A,Flor,Ovhd,----,----,Floor: Overhead
+A,Flor,Rais,----,----,Floor: Raised
+A,Flor,Risr,----,----,Floor: Risers
+A,Flor,Strs,----,----,Floor: Stair Treads
+A,Flor,Tptn,----,----,Floor: Toilet Partitions
+A,Glaz,Full,----,----,Glazing: Full-Height
+A,Glaz,Prht,----,----,Glazing: Partial-Height
+A,Glaz,Sill,----,----,Glazing: Window Sills
+A,Wall,Cavi,----,----,Walls: Cavity
+A,Wall,Cntr,----,----,Walls: Center
+A,Wall,Curt,----,----,Walls: Curtain
+A,Wall,Fire,----,----,Walls: Fire Protection
+A,Wall,Full,----,----,Walls: Full-Height
+A,Wall,Head,----,----,Walls: Door And Window Headers
+A,Wall,Jamb,----,----,Walls: Door And Window Jambs
+A,Wall,Mesh,----,----,Walls: Mesh Or Wire
+A,Wall,Move,----,----,Walls: Moveable
+A,Wall,Patt,----,----,Walls: Texture And Hatch Patterns
+A,Wall,Prht,----,----,Walls: Partial-Height
+S,Cols,Conc,----,----,Columns: Concrete
+S,Wall,Conc,----,----,Columns: Concrete

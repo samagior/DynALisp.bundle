@@ -1,0 +1,9 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A,Detl,Mbnd,Line,----,Material line beyond cut plane
+A,Detl,Mbnd,Hidd,----,Material hidden line beyond cut plane
+A,Detl,Mbnd,Patt,----,Material hatch pattern beyond cut plane
+A,Detl,Mbnd,Tags,----,Material tags beyond cut plane
+A,Detl,Mcut,Otln,----,Detail: Cut material fine line
+A,Detl,Mcut,Line,----,Cut material thin line
+A,Detl,Mcut,Hdln,----,Cut material medium line
+A,Detl,Mcut,Patt,----,Cut material hatch pattern

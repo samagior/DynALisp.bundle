@@ -1,0 +1,9 @@
+Name;Level;Layers;Objects;Description;Order
+Redlines;9;*-Anno-Redl*,*-Anno-Revc*,*-Anno-Revs*,*-Anno-Rdme*,*-Anno-Nplt*,*-Nplt,*-Nplt-*;;Redlines, revisions and non-plotting information: above everything;10
+References;-9;*-Anno-Refr*;;External references and attached files: below everything;80
+Annotation;8;*-Anno,*-Anno-[~R]*,*-Tags,*-Tags-*;;Annotation layers: text, dimensions, tags, symbols, titles;20
+Annotation objects;7;;TEXT,MTEXT,ARCALIGNEDTEXT,*DIMENSION,*LEADER,TOLERANCE,ACAD_TABLE,ATTDEF;Text, dimensions, leaders and tables on any other layer;30
+Images;-8;;IMAGE,*UNDERLAY,POINTCLOUD*;Images and underlays (PDF, DWF, DGN) on any other layer;70
+Background;-7;*-Scrn,*-Scrn-*,*-Bgrd,*-Bgrd-*,*-Exst,*-Exst-?;;Screened coordination lines and background solid fills;60
+Hatch layers;-4;*-Patt,*-Patt-*;;Texture and hatch pattern layers;40
+Hatch objects;-4;;HATCH,MPOLYGON;Hatches and gradients on any other layer;50

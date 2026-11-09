@@ -1,0 +1,11 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+$$,Maj$,Scrn,----,----,MajrDesc$: Screening Of Coordination And Background Lines
+$$,Maj$,Fine,----,----,MajrDesc$: Fine Line
+$$,Maj$,Thin,----,----,MajrDesc$: Thin Line
+$$,Maj$,Wide,----,----,MajrDesc$: Wide Line
+$$,Maj$,Medm,----,----,MajrDesc$: Medium Line
+$$,Maj$,Mbnd,----,----,MajrDesc$: Material Beyond Cut Line
+$$,Maj$,Patt,----,----,MajrDesc$: Texture Or Hatch Patterns
+$$,Maj$,Hdln,----,----,MajrDesc$: Hidden line
+$$,Maj$,Exst,----,----,MajrDesc$: Existing Background Solid Fill
+$$,Maj$,Nplt,----,----,MajrDesc$: Non-Plotting Graphic Information

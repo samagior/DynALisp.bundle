@@ -1,0 +1,14 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A,Anno,Dims,----,----,Annotation: Dimensions
+A,Anno,Iden,----,----,Annotation: View Identification
+A,Anno,Labl,----,----,Annotation: Labels
+A,Anno,Note,----,----,Annotation: Notes
+A,Anno,Nplt,----,----,Annotation: Non-Plotting Graphic Information
+A,Anno,Rdme,----,----,Annotation: Read-Me Layer (Not Plotted)
+A,Anno,Redl,----,----,Annotation: Redlines
+A,Anno,Revc,----,----,Annotation: Revision Clouds
+A,Anno,Revs,----,----,Annotation: Revision Indicators And Text
+A,Anno,Symb,----,----,Annotation: Reference Symbols
+A,Anno,Text,----,----,Annotation: Text
+A,Anno,Titl,----,----,Annotation: Drawing Or Detail Titles
+A,Anno,Grid,----,----,Annotation: Grid

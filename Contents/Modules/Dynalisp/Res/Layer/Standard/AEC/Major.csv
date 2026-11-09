@@ -1,0 +1,60 @@
+Abbreviation,ColorGroup,ColorIndex,Lineweight,Linetype,Description
+Accs,--,-,----,------,Access Plan
+Acid,--,-,----,------,Acid Water System
+Aeri,--,-,----,------,Aerial Survey
+Afff,--,-,----,------,Aqueous Film Forming Foam System
+Afld,--,-,----,------,Airfields
+Air~,--,-,----,------,Air
+Algn,--,-,----,------,Alignment
+Alrm,--,-,----,------,Alarm
+Anch,--,-,----,------,Anchor
+Anno,--,-,----,------,Annotation
+Appl,--,-,----,------,Bearings And Distance Labels
+Area,--,-,----,------,Area
+Arow,--,-,----,------,North Arrow
+Auxl,--,-,----,------,Auxiliary
+Barr,--,-,----,------,Barrier
+Bcst,--,-,----,------,Broadcast Related System (Radio or TV)
+Beam,--,-,----,------,Beam
+Bell,--,-,----,------,Bell
+Bgrd,--,-,----,------,Background
+Bldg,--,-,----,------,Building And Primary Structures
+Blin,--,-,----,------,Boundary Line
+Bloc,--,-,----,------,Block
+Bndy,--,-,----,------,Boundary
+Bore,--,-,----,------,Borings
+Brcg,--,-,----,------,Bracing
+Brdg,--,-,----,------,Bridge
+Brin,--,-,----,------,Brine
+Brkl,--,-,----,------,Break / Fault Line
+Brln,--,-,----,------,Building Restriction Line
+Bzna,--,-,----,------,Buffer Zone Aera
+Clng,--,-,----,------,Ceiling
+Clng,--,-,----,------,Ceiling Plan
+Code,--,-,----,------,Code Compliance Plan
+Cols,--,-,----,------,Columns
+Conv,--,-,----,------,Conveying systems
+Detl,--,-,----,------,Detail
+Door,--,-,----,------,Doors
+Elec,--,-,----,------,Electrical Plan
+Elev,--,-,----,------,Elevation
+Eqpm,--,-,----,------,Equipment
+Fenc,--,-,----,------,Fences
+Flor,--,-,----,------,Floor
+Fnsh,--,-,----,------,Finishes Plan
+Furn,--,-,----,------,Furnishing Plan
+Furn,--,-,----,------,Furnishings
+Glaz,--,-,----,------,Glazing
+Hvac,--,-,----,------,Hvac Plan
+Hvac,--,-,----,------,Hvac systems
+Irrg,--,-,----,------,Irrigation
+Lite,--,-,----,------,Lighting
+Plan,--,-,----,------,Plan
+Plnt,--,-,----,------,Plant and landascape material
+Pvmt,--,-,----,------,Pavement
+Roof,--,-,----,------,Roof
+Sect,--,-,----,------,Section
+Site,--,-,----,------,Site features
+Strc,--,-,----,------,Structural Plan
+Topo,--,-,----,------,Topographic features
+Wall,--,-,----,------,Wall

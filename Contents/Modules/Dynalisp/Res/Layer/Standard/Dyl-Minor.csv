@@ -1,0 +1,10 @@
+Abbreviation,ColorGroup,ColorIndex,Lineweight,Linetype,Description
+Crak,10,1,0.18,Continuous,Cracking Lines
+Dfrg,10,1,0.18,Continuous,Deformation Gradient
+Dfrm,10,1,0.18,Continuous,Deformation
+Lghg,10,1,0.18,Continuous,Light Gradient
+Rfsh,10,1,0.18,Continuous,Refurbish Patterns to Reproduce/Remodel/Repair/Refinish
+Thrg,10,1,0.18,Continuous,Thermal Gradient
+Thrm,10,1,0.18,Continuous,Thermal
+Vapr,10,1,0.18,Continuous,Vapor
+Rfrc,10,1,0.18,Continuous,Reinforcement

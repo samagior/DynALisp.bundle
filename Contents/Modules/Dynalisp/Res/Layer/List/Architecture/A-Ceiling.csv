@@ -1,0 +1,19 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A,Clng,Accs,----,----,Ceiling: Access
+A,Clng,Fire,----,----,Ceiling: Fire Protection
+A,Clng,Grid,----,----,Ceiling: Grid
+A,Clng,Hvac,----,----,Ceiling: Hvac Systems
+A,Clng,Lite,----,----,Ceiling: Lighting
+A,Clng,Opng,----,----,Ceiling: Openings
+A,Clng,Eqpm,----,----,Ceiling: Equipment
+A,Clng,Otln,----,----,Ceiling: Outlines
+A,Clng,Susp,----,----,Ceiling: Suspended Elements
+A,Clng,Tees,----,----,Ceiling: Main Tees
+A,Door,Full,----,----,Doors: Full-Height (Swing And Leaf)
+A,Glaz,Full,----,----,Glazing: Full-Height
+A,Wall,Curt,----,----,Walls: Curtain
+A,Wall,Full,----,----,Walls: Full-Height
+A,Wall,Head,----,----,Walls: Door And Window Headers
+A,Wall,Mesh,----,----,Walls: Mesh Or Wire
+A,Wall,Move,----,----,Walls: Moveable
+A,Wall,Patt,----,----,Walls: Texture And Hatch Patterns

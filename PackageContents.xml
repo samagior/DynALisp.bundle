@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ApplicationPackage
+    SchemaVersion="1.0"
+    AppVersion="1.0"
+    ProductCode="[C481FFC8-87C5-4BB3-8529-5CA7B41EB8E6]"
+>
+
+    <Components>
+        <RuntimeRequirements
+            OS="Win32|Win64"
+            Platform="AutoCAD|AutoCAD*"
+            SeriesMin="R18"
+            SupportPath="./Contents/Resources"
+        />
+        <ComponentEntry
+            AppName="DynALisp ribbon and startup"
+            ModuleName="./Contents/Resources/DynALisp.cuix"
+        />
+    </Components>
+
+</ApplicationPackage>

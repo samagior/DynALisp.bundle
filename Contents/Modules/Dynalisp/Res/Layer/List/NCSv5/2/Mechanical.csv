@@ -1,0 +1,127 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+M?,Brin,Eqpm,----,----,Brine systems: equipment
+M?,Brin,Pipe,----,----,Brine systems: piping
+M?,Chim,----,----,----,Chimneys and stacks
+M?,Cmpa,----,----,----,Compressed/processed air systems
+M?,Cmpa,Eqpm,----,----,Compressed/processed air systems: equipment
+M?,Cmpa,Peqp,----,----,Compressed/processed air systems: process equipment
+M?,Cmpa,Pipe,----,----,Compressed/processed air systems: piping
+M?,Cmpa,Ppip,----,----,Compressed/processed air systems: process piping
+M?,Cndw,----,----,----,Condenser water systems
+M?,Cndw,Eqpm,----,----,Condenser water systems: equipment
+M?,Cndw,Pipe,----,----,Condenser water systems: piping
+M?,Cndw,Retn,----,----,Condenser water systems: return
+M?,Cndw,Sply,----,----,Condenser water systems: supply
+M?,Cont,----,----,----,Controls and instrumentation
+M?,Cont,Ther,----,----,Controls and instrumentation: thermostats
+M?,Cont,Wire,----,----,Controls and instrumentation: wiring (low voltage)
+M?,Cwtr,----,----,----,Chilled water systems
+M?,Cwtr,Cnds,----,----,Chilled water systems: condensate piping
+M?,Cwtr,Eqpm,----,----,Chilled water systems: equipment
+M?,Cwtr,Pipe,----,----,Chilled water systems: piping
+M?,Cwtr,Retn,----,----,Chilled water systems: return
+M?,Cwtr,Sply,----,----,Chilled water systems: supply
+M?,Domw,----,----,----,Domestic water systems
+M?,Domw,Mkup,----,----,Domestic water systems: make-up water
+M?,Dual,----,----,----,Dual temperature systems
+M?,Dual,Retn,----,----,Dual temperature systems: return
+M?,Dual,Sply,----,----,Dual temperature systems: supply
+M?,Dust,Duct,----,----,Dust and fume collection systems: ductwork
+M?,Dust,Eqpm,----,----,Dust and fume collection systems: equipment
+M?,Elht,----,----,----,Electric heat
+M?,Elht,Eqpm,----,----,Electric heat: equipment
+M?,Ener,----,----,----,Energy management systems
+M?,Ener,Eqpm,----,----,Energy management systems: equipment
+M?,Ener,Wire,----,----,Energy management systems: wiring
+M?,Exhs,----,----,----,Exhaust system
+M?,Exhs,Cdff,----,----,Exhaust system: ceiling diffusers
+M?,Exhs,Duct,----,----,Exhaust system: ductwork
+M?,Exhs,Eqpm,----,----,Exhaust system: equipment
+M?,Exhs,Rfeq,----,----,Exhaust system: rooftop equipment
+M?,Flor,----,----,----,Floor
+M?,Flor,Pene,----,----,Floor: penetrations
+M?,Fuel,----,----,----,Fuel systems
+M?,Fuel,Eqpm,----,----,Fuel systems: equipment
+M?,Fuel,Ggep,----,----,Fuel systems: gas general piping
+M?,Fuel,Gprp,----,----,Fuel systems: gas process piping
+M?,Fuel,Ogep,----,----,Fuel systems: oil general piping
+M?,Fuel,Oprp,----,----,Fuel systems: oil process piping
+M?,Fume,----,----,----,Fume hood
+M?,Fume,Duct,----,----,Fume hood: ductwork
+M?,Fume,Eqpm,----,----,Fume hood: equipment
+M?,Glyc,----,----,----,Glycol systems
+M?,Glyc,Retn,----,----,Glycol systems: return
+M?,Hvac,----,----,----,HVAC systems
+M?,Hvac,Boxd,----,----,HVAC systems: mixing box dual duct
+M?,Hvac,Boxs,----,----,HVAC systems: mixing box single duct
+M?,Hvac,Cdff,----,----,HVAC systems: ceiling diffusers
+M?,Hvac,Clda,----,----,HVAC systems: cold air
+M?,Hvac,Dmpr,----,----,HVAC systems: fire/smoke/volume damper
+M?,Hvac,Door,----,----,HVAC systems: equipment doors
+M?,Hvac,Efan,----,----,HVAC systems: equipment with electric fans
+M?,Hvac,Epdu,----,----,HVAC systems: equipment with piping/ductwork and electricity
+M?,Hvac,Epip,----,----,HVAC systems: equipment with piping and electricity
+M?,Hvac,Eqpm,----,----,HVAC systems: equipment
+M?,Hvac,Exhs,----,----,HVAC systems: exhaust air
+M?,Hvac,Hota,----,----,HVAC systems: hot air
+M?,Hvac,Odff,----,----,HVAC systems: other diffusers
+M?,Hvac,Pipe,----,----,HVAC systems: piping
+M?,Hvac,Rdff,----,----,HVAC systems: return air diffusers
+M?,Hvac,Retn,----,----,HVAC systems: return
+M?,Hvac,Sdff,----,----,HVAC systems: supply diffusers
+M?,Hvac,Sply,----,----,HVAC systems: supply
+M?,Hwtr,----,----,----,Hot water heating system
+M?,Hwtr,Eqpm,----,----,Hot water heating system: equipment
+M?,Hwtr,Pipe,----,----,Hot water heating system: piping
+M?,Hwtr,Retn,----,----,Hot water heating system: return
+M?,Hwtr,Sply,----,----,Hot water heating system: supply
+M?,Lgas,----,----,----,Laboratory gas systems
+M?,Lgas,Eqpm,----,----,Laboratory gas systems: equipment
+M?,Lgas,Pipe,----,----,Laboratory gas systems: piping
+M?,Mach,----,----,----,Machine shop
+M?,Mdgs,----,----,----,Medical gas systems
+M?,Mdgs,Cair,----,----,Medical gas systems: compressed air
+M?,Mdgs,Eqpm,----,----,Medical gas systems: equipment
+M?,Mdgs,Nitg,----,----,Medical gas systems: nitrogen
+M?,Mdgs,Noxg,----,----,Medical gas systems: nitrous oxide
+M?,Mdgs,Oxyg,----,----,Medical gas systems: pure O2
+M?,Mdgs,Pipe,----,----,Medical gas systems: piping
+M?,Mdgs,Sair,----,----,Medical gas systems: scavenge air
+M?,Mdgs,Vacu,----,----,Medical gas systems: vacuum
+M?,Mkup,----,----,----,Make-up air systems
+M?,Mkup,Cdff,----,----,Make-up air systems: ceiling diffusers
+M?,Mkup,Duct,----,----,Make-up air systems: ductwork
+M?,Mkup,Eqpm,----,----,Make-up air systems: equipment
+M?,Ngas,----,----,----,Natural gas systems
+M?,Ngas,Eqpm,----,----,Natural gas systems: equipment
+M?,Ngas,Pipe,----,----,Natural gas systems: piping
+M?,Proc,----,----,----,Process systems
+M?,Proc,Eqpm,----,----,Process systems: equipment
+M?,Proc,Pipe,----,----,Process systems: piping
+M?,Rair,----,----,----,Relief air systems
+M?,Rcov,----,----,----,Energy recovery systems
+M?,Rcov,Eqpm,----,----,Energy recovery systems: equipment
+M?,Rcov,Pipe,----,----,Energy recovery systems: piping
+M?,Refg,----,----,----,Refrigeration systems
+M?,Refg,Disc,----,----,Refrigeration systems: discharge
+M?,Refg,Eqpm,----,----,Refrigeration systems: equipment
+M?,Refg,Pipe,----,----,Refrigeration systems: piping
+M?,Refg,Retn,----,----,Refrigeration systems: return
+M?,Refg,Sply,----,----,Refrigeration systems: supply
+M?,Roof,----,----,----,Roof
+M?,Roof,Pene,----,----,Roof: penetrations
+M?,Smok,----,----,----,Smoke extraction systems
+M?,Smok,Cdff,----,----,Smoke extraction systems: ceiling diffusers
+M?,Smok,Duct,----,----,Smoke extraction systems: ductwork
+M?,Smok,Eqpm,----,----,Smoke extraction systems: equipment
+M?,Spcl,----,----,----,Special systems
+M?,Spcl,Eqpm,----,----,Special systems: equipment
+M?,Spcl,Pipe,----,----,Special systems: piping
+M?,Stem,----,----,----,Steam system
+M?,Stem,Blbd,----,----,Steam system: boiler blow down piping
+M?,Stem,Cnds,----,----,Steam system: condensate piping
+M?,Stem,Eqpm,----,----,Steam system: equipment
+M?,Stem,Hpip,----,----,Steam system: high-pressure piping
+M?,Stem,Lpip,----,----,Steam system: low-pressure piping
+M?,Stem,Mpip,----,----,Steam system: medium-pressure piping
+M?,Test,----,----,----,Test equipment

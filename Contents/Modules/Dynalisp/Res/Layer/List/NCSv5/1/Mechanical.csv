@@ -1,0 +1,31 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+M?,Chim,----,----,----,Chimneys and stacks
+M?,Cmpa,----,----,----,Compressed/processed air systems
+M?,Cndw,----,----,----,Condenser water systems
+M?,Cont,----,----,----,Controls and instrumentation
+M?,Cwtr,----,----,----,Chilled water systems
+M?,Domw,----,----,----,Domestic water systems
+M?,Dual,----,----,----,Dual temperature systems
+M?,Elht,----,----,----,Electric heat
+M?,Ener,----,----,----,Energy management systems
+M?,Exhs,----,----,----,Exhaust system
+M?,Flor,----,----,----,Floor
+M?,Fuel,----,----,----,Fuel systems
+M?,Fume,----,----,----,Fume hood
+M?,Glyc,----,----,----,Glycol systems
+M?,Hvac,----,----,----,HVAC systems
+M?,Hwtr,----,----,----,Hot water heating system
+M?,Lgas,----,----,----,Laboratory gas systems
+M?,Mach,----,----,----,Machine shop
+M?,Mdgs,----,----,----,Medical gas systems
+M?,Mkup,----,----,----,Make-up air systems
+M?,Ngas,----,----,----,Natural gas systems
+M?,Proc,----,----,----,Process systems
+M?,Rair,----,----,----,Relief air systems
+M?,Rcov,----,----,----,Energy recovery systems
+M?,Refg,----,----,----,Refrigeration systems
+M?,Roof,----,----,----,Roof
+M?,Smok,----,----,----,Smoke extraction systems
+M?,Spcl,----,----,----,Special systems
+M?,Stem,----,----,----,Steam system
+M?,Test,----,----,----,Test equipment

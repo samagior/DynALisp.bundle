@@ -1,0 +1,15 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A?,Area,----,----,----,Area
+A?,Barr,----,----,----,Barrier
+A?,Clng,----,----,----,Ceiling
+A?,Cols,----,----,----,Columns
+A?,Conv,----,----,----,Conveying Systems
+A?,Door,----,----,----,Doors
+A?,Eqpm,----,----,----,Equipment
+A?,Flor,----,----,----,Floor
+A?,Furn,----,----,----,Furnishings
+A?,Glaz,----,----,----,Glazing
+A?,Hvac,----,----,----,Hvac Systems
+A?,Lite,----,----,----,Lighting
+A?,Roof,----,----,----,Roof
+A?,Wall,----,----,----,Walls

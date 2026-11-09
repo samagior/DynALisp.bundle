@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Text Counter</title>
+    <link rel="stylesheet" href="../../../../Resources/docs.css">
+</head>
+
+<body>
+    <div id="header">
+        <p>DynALisp <span>Docs</span></p>
+    </div>
+
+    <div id="content">
+        <h1>Text Counter</h1>
+
+        <p class="note">This page is a copy of the original help page on Lee Mac's website, included here for offline
+            reference. For the latest version, see the original page:
+            <a href="https://lee-mac.com/tcount.html" target="_blank">https://lee-mac.com/tcount.html</a></p>
+
+<div class="programs">
+<table>
+<tr class="alt">
+<td>Function Syntax</td>
+<td><span class="fixw">LM-TextCount</span> &ndash; original syntax: TCount (see <a href="#aliases">aliases</a>)</td>
+</tr>
+<tr>
+<td>Current Version</td>
+<td>1.1</td>
+</tr>
+
+
+<tr class="alt">
+<td>Compatible with AutoCAD for Mac?</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Compatible with AutoCAD LT?</td>
+<td>Yes</td>
+</tr>
+
+<tr class="alt"><td>Original Page</td><td><a href="https://lee-mac.com/tcount.html" target="_blank">lee-mac.com/tcount.html</a></td></tr></table>
+</div>
+<h2>Program Description</h2>
+<p>This program prompts for a selection of Text, MText, MLeaders, Attributed Blocks, or Dimensions with a dimension text override, 
+                and proceeds to count the number of occurrences of distinct strings contained within these objects.</p>
+<p>The resulting data is then displayed in an AutoCAD Table Object, with strings sorted alphabetically. Table properties (such as line
+                colour, text style etc.) are entirely dependent upon the settings implemented by the active Table Style. The width of the table columns
+                and height of the table rows are both determined by the text height for a data row in the current Table Style.</p>
+<div class="cent">
+<h2>Example of Output</h2>
+<img alt="TCount.png" height="180" src="images/LM-TCount.png" width="440"/>
+</div>
+<h3>Restrictions</h3>
+<ul class="programs">
+<li>May only be run in an AutoCAD version in which the Table Object is available.</li>
+</ul>
+        <details class="bundled">
+            <summary>Bundled program notes</summary>
+            <pre>;;--------------------=={ Text Count }==----------------------;;
+;;                                                            ;;
+;;  Counts the number of occurrences of each string in a      ;;
+;;  selection and produces a report in an ACAD Table object   ;;
+;;------------------------------------------------------------;;
+;;  Author: Lee Mac, Copyright © 2011 - www.lee-mac.com       ;;
+;;------------------------------------------------------------;;
+;;  Version 1.0  -  07.11.2010                                ;;
+;;  First Release.                                            ;;
+;;------------------------------------------------------------;;
+;;  Version 1.1  -  05.08.2011                                ;;
+;;  Added Dimensions Override Text &amp; MLeaders                 ;;
+;;  Updated &#x27;AddTable&#x27; to account for Annotative Text Styles. ;;
+;;------------------------------------------------------------;;</pre>
+        </details>
+<!-- dyl:aliases -->
+<h2 id="aliases">Command Names And Aliases</h2>
+<p>This page is a copy of Lee Mac's page: the commands keep their original names as aliases. Each program has one main command starting with <span class="fixw">LM-</span>. The short names are its aliases: they run the same command, and can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (saved in <span class="fixw">Resources\Aliases.csv</span>).</p>
+<div class="programs commands wide">
+<table>
+<tr><th>Command</th><th>Aliases</th><th>Name</th></tr>
+<tr><td><span class="fixw">LM-TextCount</span></td><td><span class="fixw">TCOUNT</span></td><td>Text Count</td></tr>
+</table>
+</div>
+<!-- /dyl:aliases -->
+
+
+    </div>
+
+    <div id="footer">
+        <p>Author: Lee Mac, Copyright &copy; 2011 &ndash;
+            <a href="https://www.lee-mac.com" target="_blank">www.lee-mac.com</a></p>
+    </div>
+</body>
+
+</html>

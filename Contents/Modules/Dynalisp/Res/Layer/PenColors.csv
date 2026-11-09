@@ -1,0 +1,8 @@
+Name;Layers;Colors;Color;Description
+Non-plotting;;140;;Non-plotting layers: kept as is
+Text and notes;;41;;Text and note layers: kept as is
+Dimensions;;211;;Dimension layers: kept as is
+Existing to remain;;20#;;Existing to remain layers (200 to 209): kept as is
+Patterns;*-Patt,*-Patt-*;;40;Texture or hatch pattern layers
+Screened;*-Scrn,*-Scrn-*;;8;Screened background layers: dark grey
+Existing;*-Exst,*-Exst-*;;9;Existing layers: light grey

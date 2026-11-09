@@ -1,0 +1,22 @@
+Abbreviation,ColorID,Color,Lineweight,Linetype,Description
+A,--,-,----,------,Architectural
+C,--,-,----,------,Civil
+Z,--,-,----,------,Contractor
+E,--,-,----,------,Electrical
+W,--,-,----,------,Energy
+Q,--,-,----,------,Equipment
+F,--,-,----,------,Fire
+G,--,-,----,------,General
+B,--,-,----,------,Geotechnical
+H,--,-,----,------,Hazardeous
+I,--,-,----,------,Interior
+L,--,-,----,------,Landscape
+M,--,-,----,------,Mechanical 
+O,--,-,----,------,Operation
+X,--,-,----,------,Other Discipline
+P,--,-,----,------,Plumbing
+D,--,-,----,------,Process
+R,--,-,----,------,Resource
+S,--,-,----,------,Structural
+V,--,-,----,------,Survey
+T,--,-,----,------,Telecomunication

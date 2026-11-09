@@ -1,0 +1,24 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A,Anno,Brng,0000,----,Annotation: Bearings And Distance Labels (Survey Coordinates)
+A,Anno,Dfrm,0000,----,Annotation: Deformation Gradient
+A,Anno,Crak,0000,----,Annotation: Cracking Lines
+A,Anno,Jntc,0000,----,Annotation: Control Joint
+A,Anno,Jnte,0000,----,Annotation: Expansion Joint
+A,Anno,Jnts,0000,----,Annotation: Joint
+A,Anno,Opng,0000,----,Annotation: Opening Lines And Symbols
+A,Anno,Rfsh,0000,----,Annotation: Refurbish Patterns to Reproduce/Remodel/Repair/Refinish
+A,Flor,Blin,0000,----,Floor: Baseline (Building Outline)
+A,Flor,Eqpm,0000,----,Floor: Equipment
+A,Flor,Genf,0000,----,Floor: General Features
+A,Flor,Line,0000,----,Floor: Standard Lines
+A,Flor,Prht,0000,----,Floor: Partial-Height Beyond Cut Lines
+A,Flor,Hid2,0000,----,Floor: Hidden2 Lines
+A,Flor,Mcut,0000,----,Floor: Material Patterns And Detail Lines Cut By The View
+A,Flor,Nplt,0000,----,Floor: Non-Plotting Graphic Information
+A,Flor,Patt,0000,----,Floor: Texture Or Hatch Patterns
+A,Flor,Redl,0000,----,Floor: Redlines
+A,Flor,Full,0000,----,Floor: Full-Height Section Lines
+A,Flor,Scrn,0000,----,Floor: Screening Of Coordination Objects And Backgroun
+A,Ceil,Line,0000,----,Ceiling: Standard Lines
+A,Ceil,Eqpm,0000,----,Ceiling: Equipment
+A,Ceil,Scrn,0000,----,Ceiling: Screening Of Coordination Objects And Backgroun

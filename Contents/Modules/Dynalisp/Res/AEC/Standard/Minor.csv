@@ -1,0 +1,1268 @@
+Abbreviation,ColorGroup,ColorIndex,Lineweight,Linetype,Description
+0001,--,-,----,------,Number 0001
+0002,--,-,----,------,Number 0002
+0003,--,-,----,------,Number 0003
+0004,--,-,----,------,Number 0004
+0005,--,-,----,------,Number 0005
+0006,--,-,----,------,Number 0006
+0007,--,-,----,------,Number 0007
+0008,--,-,----,------,Number 0008
+0009,--,-,----,------,Number 0009
+0010,--,-,----,------,Number 0010
+0024,--,-,----,------,Half Scale
+0048,--,-,----,------,Quarter Scale
+0096,--,-,----,------,Eighth Scale
+0100,--,-,----,------,Class 100
+0192,--,-,----,------,Sixteenth Scale
+1000,--,-,----,------,Class 1.000
+003c,--,-,----,------,3 Deg C
+004c,--,-,----,------,4 Deg C
+006c,--,-,----,------,6 Deg C
+007c,--,-,----,------,7 Deg C
+008c,--,-,----,------,8 Deg C
+009c,--,-,----,------,9 Deg C
+010c,--,-,----,------,10 Deg C
+010k,--,-,----,------,Class 10.000
+011c,--,-,----,------,11 Deg C
+012c,--,-,----,------,12 Deg C
+012v,--,-,----,------,12 Volt Control
+013c,--,-,----,------,13 Deg C
+014c,--,-,----,------,14 Deg C
+016c,--,-,----,------,16 Deg C
+01ft,--,-,----,------,One Foot High (12 inches)
+01hr,--,-,----,------,1-Hour
+01ps,--,-,----,------,One Pipe System
+021c,--,-,----,------,21 Deg C
+025y,--,-,----,------,25-Year Mark
+027c,--,-,----,------,27 Deg C
+029c,--,-,----,------,29 Deg C
+02ft,--,-,----,------,Two Feet High (24 inches)
+02hr,--,-,----,------,2-Hour
+02ps,--,-,----,------,Two Pipe System
+032c,--,-,----,------,32 Deg C
+035c,--,-,----,------,35 Deg C
+038c,--,-,----,------,38 Deg C
+038f,--,-,----,------,38 Deg F
+03ft,--,-,----,------,Three Feet High (36 inches)
+03hr,--,-,----,------,3-Hour
+03in,--,-,----,------,One-Quarter Foot High (3 inches)
+03ps,--,-,----,------,Three Pipe System
+040f,--,-,----,------,40 Deg F
+041c,--,-,----,------,41 Deg C
+042f,--,-,----,------,42 Deg F
+043c,--,-,----,------,43 Deg C
+044f,--,-,----,------,44 Deg F
+045f,--,-,----,------,45 Deg F
+046c,--,-,----,------,46 Deg C
+046f,--,-,----,------,46 Deg F
+048f,--,-,----,------,48 Deg F
+049c,--,-,----,------,49 Deg C
+04ft,--,-,----,------,Four Feet High (48 inches)
+04hr,--,-,----,------,4-Hour
+04in,--,-,----,------,One-Third Foot High (4 inches)
+04ps,--,-,----,------,Four Pipe System
+050f,--,-,----,------,50 Deg F
+050y,--,-,----,------,50-Year Mark
+052f,--,-,----,------,52 Deg F
+054c,--,-,----,------,54 Deg C
+054f,--,-,----,------,54 Deg F
+055f,--,-,----,------,55 Deg F
+056f,--,-,----,------,56 Deg F
+058f,--,-,----,------,58 Deg F
+05ft,--,-,----,------,Five Feet High (60 inches)
+060c,--,-,----,------,60 Deg C
+060f,--,-,----,------,60 Deg F
+063c,--,-,----,------,63 Deg C
+066c,--,-,----,------,66 Deg C
+068c,--,-,----,------,68 Deg C
+06ft,--,-,----,------,Six Feet High (72 inches)
+06in,--,-,----,------,Half-Foot High (6 inches)
+070f,--,-,----,------,70 Def F
+071c,--,-,----,------,71 Deg C
+074c,--,-,----,------,74 Deg C
+077c,--,-,----,------,77 Deg C
+079c,--,-,----,------,79 Deg C
+07ft,--,-,----,------,Seven Feet High (84 inches)
+080f,--,-,----,------,80 Deg F
+082c,--,-,----,------,82 Deg C
+085c,--,-,----,------,85 Deg C
+085f,--,-,----,------,85 Deg F
+088c,--,-,----,------,88 Deg C
+08ft,--,-,----,------,Eight Feet High (96 inches)
+08in,--,-,----,------,Two-Third  Foot High (8 inches)
+090f,--,-,----,------,90 Deg F
+091c,--,-,----,------,91 Deg C
+093c,--,-,----,------,93 Deg C
+095f,--,-,----,------,95 Deg F
+096c,--,-,----,------,96 Deg C
+099c,--,-,----,------,99 Deg C
+09ft,--,-,----,------,Nine Feet High (108 inches)
+09in,--,-,----,------,Three-Third Foot High (9 inches)
+100f,--,-,----,------,100 Deg F
+100k,--,-,----,------,Class 100.000
+100y,--,-,----,------,100-Year Mark
+105f,--,-,----,------,105 Deg F
+10ft,--,-,----,------,Ten Feet High (120 inches)
+10in,--,-,----,------,Ten Inches High (10 inches)
+110f,--,-,----,------,110 Deg F
+115f,--,-,----,------,115 Deg F
+11ft,--,-,----,------,Eleven Feet High (132 inches)
+120f,--,-,----,------,120 Deg F
+120v,--,-,----,------,120 Volt
+12ft,--,-,----,------,Twelve Feet High (144 inches)
+130f,--,-,----,------,130 Deg F
+13ft,--,-,----,------,Thirteen Feet High (156 inches)
+140f,--,-,----,------,140 Deg F
+145f,--,-,----,------,145 Deg F
+14ft,--,-,----,------,Fourteen Feet High (168 inches)
+14in,--,-,----,------,Fourteen Inches High (14 inches)
+150f,--,-,----,------,150 Deg F
+155f,--,-,----,------,155 Def F
+15ft,--,-,----,------,Fifteen Feet High (180 inches)
+160f,--,-,----,------,160 Deg F
+165f,--,-,----,------,165 Deg F
+16ft,--,-,----,------,Sixteen Feet High (192 inches)
+170f,--,-,----,------,150 Deg F
+175f,--,-,----,------,175 Deg F
+180f,--,-,----,------,180 Deg F
+185f,--,-,----,------,185 Deg F
+18ft,--,-,----,------,Eighteen Feet High (216 inches)
+18in,--,-,----,------,One And One-Half Foot High (18 inches)
+190f,--,-,----,------,190 Deg F
+195f,--,-,----,------,195 Deg F
+1hhr,--,-,----,------,One And One-Half Hour Fire Rating
+1phs,--,-,----,------,Single Phase
+1thr,--,-,----,------,One-Third Hour Fire Rating
+1wir,--,-,----,------,One Wire
+200f,--,-,----,------,200 Deg F
+200y,--,-,----,------,200-Year Mark
+205f,--,-,----,------,205 Deg F
+208v,--,-,----,------,208 Volt
+20ft,--,-,----,------,Twenty Feet High (240 inches)
+210f,--,-,----,------,210 Deg F
+240v,--,-,----,------,240 Volt
+24in,--,-,----,------,Twenty Inches High (24 inches)
+277v,--,-,----,------,277 Volt
+2phs,--,-,----,------,Two Phase
+2way,--,-,----,------,2-Way Type
+2wir,--,-,----,------,Two Wire
+30in,--,-,----,------,Thirty Inches High (30 inches)
+3a~~,--,-,----,------,Three A Waste
+3phs,--,-,----,------,Three Phase
+3qhr,--,-,----,------,Three-Quarter Hour Fire Rating
+3way,--,-,----,------,3-Way Type
+3wir,--,-,----,------,Three Wire
+480v,--,-,----,------,480 Volt
+4wir,--,-,----,------,Four Wire
+600v,--,-,----,------,600 Volt
+Aa~~,--,-,----,------,Agitation Air-System
+Ablt,--,-,----,------,Anchor Bolts
+Abov,--,-,----,------,Above
+Absr,--,-,----,------,Absorber
+Abut,--,-,----,------,Abutment
+Ac~~,--,-,----,------,Air Cooler/Color Override Layer
+Accs,--,-,----,------,Access
+Accu,--,-,----,------,Air Cooled Condensing Unit
+Acet,--,-,----,------,Acetylene
+Acfu,--,-,----,------,Fused Ac
+Acid,--,-,----,------,Acid Waste System
+Aclt,--,-,----,------,Aerial Horizontal And Vertical Control Points
+Acnf,--,-,----,------,Unfused Ac
+Adtv,--,-,----,------,Additive Elements
+Aff~,--,-,----,------,Above Finished Floor
+Afff,--,-,----,------,Aqueous Film-Forming Foam System
+Afrz,--,-,----,------,Anti-Freeze
+Aggr,--,-,----,------,Exposed Aggregate
+Ahu~,--,-,----,------,Air Handling Unit
+Air~,--,-,----,------,Air
+Aloc,--,-,----,------,Allocation
+Alrm,--,-,----,------,Alarm
+Alum,--,-,----,------,Aluminium
+Amex,--,-,----,------,Ammonia Exhaust-System
+Ammo,--,-,----,------,Ammonia
+Amw~,--,-,----,------,Ammonia Waste-System
+Anlg,--,-,----,------,Analog
+Annn,--,-,----,------,"TO BE EDITED / A=Letter, N=Number"
+Anno,--,-,----,------,Annotation
+Anod,--,-,----,------,Sacrificial Anode
+Anta,--,-,----,------,Antenna
+Appl,--,-,----,------,Appliances
+Ar~~,--,-,----,------,Argon-System
+Arat,--,-,----,------,Aeration
+Arb~,--,-,----,------,Argon Bulk-System
+Arc~,--,-,----,------,Regenerative Caustic-System
+Arex,--,-,----,------,Arsenic Exhaust-System
+Asph,--,-,----,------,Asphalt
+Assm,--,-,----,------,Assemblies
+Ats~,--,-,----,------,Automatic Transfer Switches
+Aud~,--,-,----,------,Audio
+Auxl,--,-,----,------,Auxiliary
+Av~~,--,-,----,------,Audio Video
+Ba~~,--,-,----,------,Breathable Air-System
+Back,--,-,----,------,Back
+Bafl,--,-,----,------,Baffle Block And Splash Pad
+Ball,--,-,----,------,Ball Type
+Baln,--,-,----,------,Balance/Equalization
+Barr,--,-,----,------,Barrier
+Bas~,--,-,----,------,Building Automation System
+Base,--,-,----,------,Base Mounted
+Basn,--,-,----,------,Stilling And Setting Basin
+Bath,--,-,----,------,Bath
+Batt,--,-,----,------,Batting
+Bbac,--,-,----,------,Battery Backup
+Bbh~,--,-,----,------,Baseboard Heater
+Bbs~,--,-,----,------,Battery Backup Service
+Bdd~,--,-,----,------,Backdraft Damper
+Beds,--,-,----,------,Perennial And Annual Beds
+Bell,--,-,----,------,Bell
+Bent,--,-,----,------,Top Of Bent
+Bflo,--,-,----,------,Backflow Type
+Bfly,--,-,----,------,Butterfly Type
+Bfw~,--,-,----,------,Boiler Feed Water-System
+Bidt,--,-,----,------,Bidet
+Bkrs,--,-,----,------,Breakers
+Bkup,--,-,----,------,Backup
+Blbd,--,-,----,------,Boiler Blow Down Piping
+Blck,--,-,----,------,Black
+Bldg,--,-,----,------,Building Points
+Blin,--,-,----,------,Baseline
+Blo~,--,-,----,------,Blower
+Blow,--,-,----,------,Below
+Bmrk,--,-,----,------,Benchmarks
+Bms~,--,-,----,------,Building Management System
+Bndy,--,-,----,------,Boundary
+Boil,--,-,----,------,Boiler
+Bold,--,-,----,------,Bold Line
+Boro,--,-,----,------,Borough
+Bot1,--,-,----,------,Bottom Group 1
+Bot2,--,-,----,------,Bottom Group 2
+Botb,--,-,----,------,Bottom Of Bank
+Botm,--,-,----,------,Bottom
+Boxd,--,-,----,------,"Mixing Box, Dual Duct"
+Boxs,--,-,----,------,"Mixing Box, Single Duct"
+Bpas,--,-,----,------,"By-Pass, Hot Gas By-Pass Refrigerant"
+Brcg,--,-,----,------,Bracing
+Brch,--,-,----,------,Fire Sprinkler Branch
+Brck,--,-,----,------,Brick
+Brdg,--,-,----,------,Bridge
+Brdr,--,-,----,------,Border
+Brgx,--,-,----,------,Bridging
+Brin,--,-,----,------,Brine
+Brkl,--,-,----,------,Break Lines
+Brng,--,-,----,------,Bearings And Distance Labels
+Brow,--,-,----,------,Brush Row points
+Brsh,--,-,----,------,Brush Points
+Brss,--,-,----,------,Brass
+Brwn,--,-,----,------,Brown
+Bt~~,--,-,----,------,Bath Tub
+Bubl,--,-,----,------,Bubbles
+Buoy,--,-,----,------,Buoy
+Bush,--,-,----,------,Bushes And Shrubs
+Buss,--,-,----,------,Bus Duct
+Busw,--,-,----,------,Busways
+But~,--,-,----,------,Buthane-System
+Bwtr,--,-,----,------,Breakwater
+C~~~,--,-,----,------,Caustic-System
+Ca~~,--,-,----,------,Compressed Air-System
+Cabl,--,-,----,------,Cable
+Cabn,--,-,----,------,Cabinet
+Cair,--,-,----,------,Compressed Air
+Cars,--,-,----,------,Cars And Other Vehicles
+Cast,--,-,----,------,Cast Iron
+Cath,--,-,----,------,Cathodic Protection
+Catv,--,-,----,------,Cable Television
+Cav~,--,-,----,------,Constant Air Volume Type
+Cavi,--,-,----,------,Cavity
+Cbox,--,-,----,------,Combiner Box
+Cc~~,--,-,----,------,Cooling Coil
+Cctv,--,-,----,------,Closed-Circuit Television
+Cd~~,--,-,----,------,Condensate Drain-System
+Cda~,--,-,----,------,Clean Dry Air-System
+Cdff,--,-,----,------,Ceiling Diffusers
+Cds~,--,-,----,------,Central Detergent System
+Cdw~,--,-,----,------,Childed Drinking Water
+Cell,--,-,----,------,Cellular
+Cent,--,-,----,------,Centrate - Water Leaving A Centrifuge
+Cfl~,--,-,----,------,Compact Fluorescent Type
+Cfo~,--,-,----,------,Cold Fuel Oil
+Cfug,--,-,----,------,Centrifugal
+Cgen,--,-,----,------,Cogen Energy
+Ch~~,--,-,----,------,Chiller
+Char,--,-,----,------,Charcoal Filter Type
+Chas,--,-,----,------,In Chase
+Chcf,--,-,----,------,Chilled Water Chemical Feed
+Chek,--,-,----,------,Check Type
+Chem,--,-,----,------,Chemical Treatment/Fire Protection Chemical
+Chim,--,-,----,------,Chimney
+Cip~,--,-,----,------,Clean In Place Waste
+Cipr,--,-,----,------,Culvent Inlet Protection
+Circ,--,-,----,------,Circuits
+City,--,-,----,------,City
+Cl~~,--,-,----,------,Chlorine
+Clac,--,-,----,------,Classroom Air Conditioning
+Clas,--,-,----,------,Classifications
+Clay,--,-,----,------,Vitreous Clay
+Clda,--,-,----,------,Cold Air
+Clen,--,-,----,------,Clean Power/Clean Steam
+Clg~,--,-,----,------,Chlorine Gas-System
+Clhd,--,-,----,------,Ceiling Heads
+Clnc,--,-,----,------,Clearances
+Clng,--,-,----,------,Ceiling
+Clok,--,-,----,------,Clock
+Clos,--,-,----,------,Close Coupled
+Cls1,--,-,----,------,Class 1
+Cls2,--,-,----,------,Class 2
+Cls3,--,-,----,------,Class 3
+Clth,--,-,----,------,Clothes
+Clv~,--,-,----,------,Chlorine Vaccum-System
+Clw~,--,-,----,------,Concentrated Lead Waste-System
+Cmbo,--,-,----,------,Combination San Stm Waste Vent
+Cmnt,--,-,----,------,Cement
+Cmtl,--,-,----,------,Corrugated Metal
+Cmuw,--,-,----,------,Concrete Masonry Unit
+Cmw~,--,-,----,------,Concentrated Metal Waste-System
+Cncl,--,-,----,------,Concealed
+Cnds,--,-,----,------,Condensate Piping
+Cndt,--,-,----,------,Diversionary / bypass Conduit / Culvert
+Cndw,--,-,----,------,Condenser Water
+Cnmb,--,-,----,------,Circuit Numbers
+Cnt2,--,-,----,------,Centerline 2
+Cnte,--,-,----,------,Construction Entrance
+Cntj,--,-,----,------,Construction Joint
+Cntr,--,-,----,------,Centerline
+Cnty,--,-,----,------,Country
+Co2s,--,-,----,------,CO2 System
+Coax,--,-,----,------,Coax Cable
+Coff,--,-,----,------,Coffer Dam
+Cold,--,-,----,------,Cold
+Comb,--,-,----,------,Combustion Air
+Comm,--,-,----,------,Communications
+Comn,--,-,----,------,Common Pipe
+Comp,--,-,----,------,Internal Components / Conpressor
+Conc,--,-,----,------,Concrete
+Cond,--,-,----,------,Electrical Conductors
+Coni,--,-,----,------,Coniferous Trees
+Conn,--,-,----,------,Connections
+Cons,--,-,----,------,Conversation
+Conv,--,-,----,------,Conveying Systems
+Cool,--,-,----,------,Hydronic/Electric Cooling
+Copr,--,-,----,------,Copper
+Corp,--,-,----,------,Corporation
+Cp~~,--,-,----,------,Condensate Pump System
+Cpip,--,-,----,------,Cold Water Piping
+Crac,--,-,----,------,Computer Room Unit
+Crit,--,-,----,------,Critical
+Crkt,--,-,----,------,Crickets
+Cryo,--,-,----,------,Cryogenic Liquid
+Cstg,--,-,----,------,Construction / Grading
+Cswk,--,-,----,------,Casework
+Ctla,--,-,----,------,Controlled Access
+Ctlg,--,-,----,------,Control Joint
+Ctnr,--,-,----,------,Container Or Planter
+Ctrl,--,-,----,------,Control Points
+Ctwr,--,-,----,------,Cooling Power Water
+Cuh~,--,-,----,------,Cabinet Unit Heater
+Cupw,--,-,----,------,Copper Plating Waste-System
+Cur~,--,-,----,------,Air Curtains
+Curb,--,-,----,------,Curbs
+Curr,--,-,----,------,Impress Current
+Curt,--,-,----,------,Curtain
+Curv,--,-,----,------,Curve
+Curw,--,-,----,------,Copper Rinse Waste-System
+Cusw,--,-,----,------,Cabinet Wall
+Cuv~,--,-,----,------,Cabinet Unit Ventilator
+Cv~~,--,-,----,------,Chemical Vacuum-System
+Cwal,--,-,----,------,Critical Wall
+Cwc~,--,-,----,------,Chilled Water Coil
+Cwtr,--,-,----,------,Chilled Water
+Cyc~,--,-,----,------,Cyclones
+Dacl,--,-,----,------,"De-Authorized Channel Limits, Anchorages, etc."
+Dam~,--,-,----,------,Dam
+Das2,--,-,----,------,Dashed 2 Lines
+Dash,--,-,----,------,Dashed Lines
+Dasp,--,-,----,------,Description Attributes For Survey Points
+Data,--,-,----,------,Data
+Date,--,-,----,------,Date
+Dble,--,-,----,------,Double Wall
+Dbnk,--,-,----,------,Underground Ductbank
+Dcfu,--,-,----,------,Fused Dc
+Dcnf,--,-,----,------,Unfused Dc
+Ddc~,--,-,----,------,Direct Digital Controls
+Ddeh,--,-,----,------,Dessicant Dehumidifier
+Ddiv,--,-,----,------,Drainage Divides
+Deck,--,-,----,------,Deck
+Dedi,--,-,----,------,Isolated Dedicated Circuit
+Deh~,--,-,----,------,Dehumidifier
+Demo,--,-,----,------,Demolition Line
+Depr,--,-,----,------,Depression
+Detc,--,-,----,------,Detection
+Detl,--,-,----,------,Detail
+Dev~,--,-,----,------,Developer-System
+Devc,--,-,----,------,Devices
+Dfee,--,-,----,------,Disposed Fee
+Dfue,--,-,----,------,Defuel Line
+Dgtl,--,-,----,------,Digital
+Di~~,--,-,----,------,De-Ionized Water
+Diag,--,-,----,------,Diagrams
+Dict,--,-,----,------,Dictation
+Dies,--,-,----,------,Diesel Fuel
+Diff,--,-,----,------,Diffuser
+Dimr,--,-,----,------,Dimmer Lighting
+Dims,--,-,----,------,Dimensions
+Dir~,--,-,----,------,Deionized Water Return-System
+Dirc,--,-,----,------,Deionized Water Reclaim-System
+Dirt,--,-,----,------,Dirt
+Dis~,--,-,----,------,Deionized Water Supply-System
+Disc,--,-,----,------,Discharge
+Dish,--,-,----,------,Dish
+Disp,--,-,----,------,Display
+Divd,--,-,----,------,Divided Detail Line
+Diwp,--,-,----,------,Deionized Water Polishing Loop-System
+Dlph,--,-,----,------,Dolphin
+Dlw~,--,-,----,------,Dilute Waste-System
+Dmpr,--,-,----,------,"Damper (Fire, Smoke, Volume)"
+Dnbl,--,-,----,------,Downblast Type
+Dock,--,-,----,------,"Decks, Docks, Floats, Piers"
+Domc,--,-,----,------,Domestic Cold Water
+Domh,--,-,----,------,Domestic Hot Water
+Door,--,-,----,------,Equipment Doors
+Dot2,--,-,----,------,Dotted 2 Lines
+Dotd,--,-,----,------,Dotted Linetype
+Down,--,-,----,------,Down Lighting
+Dphr,--,-,----,------,Diaphragm
+Dran,--,-,----,------,Drainage Slope Indications
+Drip,--,-,----,------,Drip Irrigation Tubing
+Driv,--,-,----,------,Driveway Point
+Drnk,--,-,----,------,Drinking Fountain
+Drns,--,-,----,------,Drains
+Dry~,--,-,----,------,Dry
+Dryc,--,-,----,------,Dry Condensate Return
+Dryr,--,-,----,------,Dryer
+Dsco,--,-,----,------,Disconnect Switches
+Dsh2,--,-,----,------,Dashed 2 Detail Lines
+Dshd,--,-,----,------,Dashed Detail Lines
+Dtch,--,-,----,------,Ditches Or Washes
+Dual,--,-,----,------,Dual Duct Type; Dual Temperature Water
+Dubl,--,-,----,------,Double Wall
+Duct,--,-,----,------,Ductwork
+Dust,--,-,----,------,Dust And Fume Collection
+Dvdk,--,-,----,------,Diversion Dike
+Dvdr,--,-,----,------,Thin Dividers
+Dwc~,--,-,----,------,Domestic Water Chiller/Cold Deck
+Dwh~,--,-,----,------,Domestic Water Heater
+Dwtr,--,-,----,------,De-Watering
+Dxc~,--,-,----,------,Dx-Coil
+Easp,--,-,----,------,Elevation Attributes For Survey Points
+Econ,--,-,----,------,Economizer
+Edge,--,-,----,------,Edge
+Edgr,--,-,----,------,Planting Bed Edger
+Efan,--,-,----,------,Equipment With Electric Fans
+Effl,--,-,----,------,Effluent
+Eg~~,--,-,----,------,Ethylene Glycol-System
+Egrs,--,-,----,------,Egress
+Egw~,--,-,----,------,Ethylene Glycol Waste-System
+Elc~,--,-,----,------,Electric Coil
+Elec,--,-,----,------,Electrical
+Elev,--,-,----,------,Elevation
+Elht,--,-,----,------,Electric Heat
+Emcs,--,-,----,------,Emergency Monitoring Control System
+Emer,--,-,----,------,Emergency
+Encl,--,-,----,------,Equipment Enclosures
+Encs,--,-,----,------,Energy Monitoring Control System
+Ener,--,-,----,------,Energy Management
+Engr,--,-,----,------,Engineering Information
+Epdu,--,-,----,------,"Equipment With Piping, Ductwork And Electricity"
+Epip,--,-,----,------,Equipment With Piping And Electricity
+Eqpm,--,-,----,------,Equipment
+Equi,--,-,----,------,Equipotential
+Erth,--,-,----,------,Earth
+Esfr,--,-,----,------,Early Suppression Fast Response Fire Sprinkler System
+Esmt,--,-,----,------,Easement
+Essn,--,-,----,------,Essential
+Ev~~,--,-,----,------,Equipment Vacuum-System
+Evac,--,-,----,------,Evacuation Plan
+Evgr,--,-,----,------,Evergreen Trees - Broadleaf
+Evtr,--,-,----,------,Elevator Cars And Equipment
+Ewal,--,-,----,------,Emergency Wall
+Ewat,--,-,----,------,Edge Of Water
+Ewc~,--,-,----,------,Electric Water Cooler
+Exhs,--,-,----,------,Exhaust Air
+Exit,--,-,----,------,Exit
+Expj,--,-,----,------,Expansion Joint
+Expn,--,-,----,------,Expansion Type
+Expo,--,-,----,------,Exposed
+Exst,--,-,----,------,Existing
+Exti,--,-,----,------,Extinguishers
+Extr,--,-,----,------,Exterior
+Eye~,--,-,----,------,Eye Wash
+Fabr,--,-,----,------,Fabric
+Face,--,-,----,------,Face
+Falt,--,-,----,------,Fault / Break Line
+Fan~,--,-,----,------,Fan
+Fasc,--,-,----,------,Fascias
+Fauc,--,-,----,------,Faucet
+Fcu~,--,-,----,------,Fan Coil Unit
+Fdta,--,-,----,------,Field Data
+Fee~,--,-,----,------,Fee
+Feed,--,-,----,------,Feeders
+Fenc,--,-,----,------,Fences
+Fend,--,-,----,------,Fender
+Fext,--,-,----,------,Fire Extinguisher
+Fibr,--,-,----,------,Fiber Optics Cable
+File,--,-,----,------,File Cabinets
+Fill,--,-,----,------,Fil And cover Material
+Filt,--,-,----,------,"Filter, Filtrate"
+Fine,--,-,----,------,Fine Lines
+Fire,--,-,----,------,Fire Protection
+Fish,--,-,----,------,Fish Ladder / Passage
+Fitt,--,-,----,------,Fitting
+Fixd,--,-,----,------,Fixed
+Fixt,--,-,----,------,Fixtures
+Fldr,--,-,----,------,Floor Drains
+Flex,--,-,----,------,Flexible Duct/Pipe/Connections
+Fllw,--,-,----,------,Flow
+Flmt,--,-,----,------,Lamp Flament
+Flne,--,-,----,------,Fire Lane
+Flod,--,-,----,------,Flood Lights
+Flor,--,-,----,------,Floor
+Flow,--,-,----,------,Flowline
+Flpl,--,-,----,------,Ragpole
+Flsh,--,-,----,------,Flush
+Flue,--,-,----,------,Flue
+Flum,--,-,----,------,Flume
+Fluo,--,-,----,------,Fluorescent
+Flys,--,-,----,------,Fly Station
+Fndn,--,-,----,------,Foundation
+Fnsh,--,-,----,------,Finishes
+Fntn,--,-,----,------,Fountain
+Foam,--,-,----,------,Fire Protection Foam Pipe
+Forc,--,-,----,------,Force Main
+Fpb~,--,-,----,------,Fan Powered Box Type
+Free,--,-,----,------,Freestanding
+Frmg,--,-,----,------,Framing
+Frnt,--,-,----,------,Front
+Ftng,--,-,----,------,Footings
+Ftpt,--,-,----,------,Area Footprint
+Fuel,--,-,----,------,Fuel Line
+Full,--,-,----,------,Full-Height
+Fume,--,-,----,------,Fume Hood
+Fur~,--,-,----,------,Furnace
+Furn,--,-,----,------,Furnishings
+Fw~~,--,-,----,------,Fire Water-System
+Gage,--,-,----,------,Gauge
+Gas~,--,-,----,------,Gas
+Gate,--,-,----,------,Gate
+Gcvr,--,-,----,------,Ground Cover
+Gear,--,-,----,------,Gear Actuated
+Genf,--,-,----,------,General Featured
+Genr,--,-,----,------,General
+Gens,--,-,----,------,Generator
+Geot,--,-,----,------,Geothermal Energy
+Gest,--,-,----,------,Digest
+Ggep,--,-,----,------,Gas General Piping
+Glaz,--,-,----,------,Glazing
+Glob,--,-,----,------,Globe Type
+Glyc,--,-,----,------,Glycol
+Gndw,--,-,----,------,Ground Water
+Gprp,--,-,----,------,Gas Process Piping
+Gral,--,-,----,------,Guard Rail
+Grav,--,-,----,------,Gravity Return
+Gray,--,-,----,------,Gray Water
+Grbm,--,-,----,------,Grade Beams
+Grey,--,-,----,------,Grey
+Grid,--,-,----,------,Grid
+Gril,--,-,----,------,Grilles
+Grit,--,-,----,------,Grit
+Grnd,--,-,----,------,Ground
+Grph,--,-,----,------,Graphics
+Grps,--,-,----,------,Groups
+Grse,--,-,----,------,Grease Waste
+Grtg,--,-,----,------,Grating
+Grvl,--,-,----,------,Gravel
+H2~~,--,-,----,------,Hydrogen-System
+H2o2,--,-,----,------,Hydrogen Peroxide-System
+Haln,--,-,----,------,Halon System
+Halo,--,-,----,------,Halogen Type
+Hand,--,-,----,------,Handicapped
+Hang,--,-,----,------,Hanger
+Hard,--,-,----,------,Hard Ceiling
+Hazd,--,-,----,------,Hazardeous
+Hbtm,--,-,----,------,Header Bottom
+Hca~,--,-,----,------,High Pressure Compressed Air
+Hcda,--,-,----,------,High Pressure Clean Dry Air-System
+Hcl~,--,-,----,------,Hydrochloric Acid-System
+Hdir,--,-,----,------,Hot deionized Water Return-System
+Hdis,--,-,----,------,Hot deionized Water Supply-System
+Hdln,--,-,----,------,Hidden Line
+Hdrc,--,-,----,------,Hot Deionized Water Return-System
+He~~,--,-,----,------,Hot Deionized Water Supply-System
+Head,--,-,----,------,Door And Window Headers
+Heat,--,-,----,------,Hydronic/Electric Heating
+Hepa,--,-,----,------,High Efficiency Particulate Air Filter Type
+Hevy,--,-,----,------,Heavy Lines
+Hex~,--,-,----,------,Heat Exchanger
+Hexf,--,-,----,------,Heat Exchanger Fluid
+Hexs,--,-,----,------,Heat Exchanger Steam
+Hexw,--,-,----,------,Heat Exchanger Water
+Hf~~,--,-,----,------,Hydrofluoric Acid-System
+Hfo~,--,-,----,------,Hot Fuel Oil
+Hfw~,--,-,----,------,Hydrofluoric Waste-System
+Hid~,--,-,----,------,High Intensity Discharge Type
+Hid2,--,-,----,------,Hidden 2 Detail Lines
+Hidd,--,-,----,------,Objects Or Lines Hidden From View
+High,--,-,----,------,High
+Hole,--,-,----,------,Holes
+Home,--,-,----,------,Schematic Wire Home Runs
+Hood,--,-,----,------,Hood
+Horz,--,-,----,------,Horizontal
+Hose,--,-,----,------,Hoses
+Hot~,--,-,----,------,Hot
+Hota,--,-,----,------,Hot Air
+Hotg,--,-,----,------,Hot Gas
+Hpa~,--,-,----,------,High Pressure Air
+Hpc~,--,-,----,------,High Pressure Condensate
+Hpdr,--,-,----,------,High Ph Dionized Water Return-System
+Hpds,--,-,----,------,High Ph Dionized Water Supply-System
+Hpip,--,-,----,------,Hot Water / High-Pressure Piping
+Hpmp,--,-,----,------,Heat Pump
+Hpn2,--,-,----,------,High Purity Nitrogen-System
+Hpo2,--,-,----,------,High Purity Oxygen-System
+Hpr~,--,-,----,------,High Pressure Refrigerant
+Hprs,--,-,----,------,High Pressure Duct
+Hpw~,--,-,----,------,High Purity Water
+Hral,--,-,----,------,Handrails / Guard Rails
+Hrdw,--,-,----,------,Hardware
+Hrs~,--,-,----,------,Heat Recovery System
+Hsss,--,-,----,------,Hollow Structural Steel
+Hstm,--,-,----,------,High Pressure Steam
+Htch,--,-,----,------,Hatch
+Htex,--,-,----,------,Heat Exhaust-System
+Htr~,--,-,----,------,Heater
+Htub,--,-,----,------,Hot Tub
+Htw~,--,-,----,------,High Temperature Water
+Hum~,--,-,----,------,Humidifier
+Humd,--,-,----,------,Humidification/Humidity
+Hv~~,--,-,----,------,Hose Vacuum-System
+Hva~,--,-,----,------,Arsenic House Vacuum-System
+Hvac,--,-,----,------,HVAC System
+Hvel,--,-,----,------,High Velocity Duct
+Hvlt,--,-,----,------,High Voltage
+Hvpt,--,-,----,------,Horizontal / Vertical
+Hwal,--,-,----,------,Headwall
+Hwc~,--,-,----,------,Hot Water Coil
+Hwhw,--,-,----,------,Hot Water To Hot Water Converter
+Hwtr,--,-,----,------,Hot Water Heating
+Hydr,--,-,----,------,"Hydrolic, Hydronic"
+Hydt,--,-,----,------,Hydrants And Connections
+Ia~~,--,-,----,------,Instrument Air-System
+Icw~,--,-,----,------,Industrial City Water-System
+Iden,--,-,----,------,Identification Tags
+Igas,--,-,----,------,Inert Gas System
+Imag,--,-,----,------,Images
+Inca,--,-,----,------,Incandescent Type
+Indc,--,-,----,------,Indicating
+Indr,--,-,----,------,Indirect
+Indu,--,-,----,------,Industrial Gas
+Ineg,--,-,----,------,Ingress / Egress
+Infl,--,-,----,------,Influent
+Init,--,-,----,------,Initiation
+Inln,--,-,----,------,In-Line Type
+Inlt,--,-,----,------,Inlet
+Inpr,--,-,----,------,Inlet Protection
+Insl,--,-,----,------,Insulated
+Inst,--,-,----,------,Instrumentation
+Intc,--,-,----,------,Intercom
+Intk,--,-,----,------,Intake
+Intr,--,-,----,------,Interior
+Ipa~,--,-,----,------,Isopropyl Alcohol-System
+Ir~~,--,-,----,------,Infra-Red Heater
+Iron,--,-,----,------,Iron
+Irrg,--,-,----,------,Irrigation
+Iso~,--,-,----,------,Isometric Line Schematic
+Ito~,--,-,----,------,Insulating Transformer Oil
+Iw~~,--,-,----,------,Industrial Water System
+Jack,--,-,----,------,Jacks
+Jamb,--,-,----,------,Door And Window Jambs
+Jbox,--,-,----,------,Junction Box
+Jntc,--,-,----,------,Control Joint
+Jnte,--,-,----,------,Expansion Joint
+Jnts,--,-,----,------,Joints
+Keyn,--,-,----,------,Keynotes
+Keyt,--,-,----,------,Key Tags
+Ktch,--,-,----,------,Kitchen
+L~~~,--,-,----,------,Louver
+Labl,--,-,----,------,Labels
+Ladd,--,-,----,------,Ladders And Ladders Assemblies
+Latl,--,-,----,------,Lateral Line
+Latn,--,-,----,------,Latent
+Lav~,--,-,----,------,Lavatories
+Lca~,--,-,----,------,Low Pressure Compressed Air
+Lche,--,-,----,------,Leak Check Helium-System
+Lchw,--,-,----,------,Latent Chilled Water
+Ldta,--,-,----,------,Laboratory Data
+Leak,--,-,----,------,Water Leak Detection
+Leas,--,-,----,------,Lease
+Led~,--,-,----,------,LED Type
+Ledr,--,-,----,------,Leaders
+Left,--,-,----,------,Left
+Legn,--,-,----,------,"Legend, Symbol Keys"
+Levl,--,-,----,------,Level Changes
+Levr,--,-,----,------,Lever Actuated
+Lfee,--,-,----,------,Disposed Less Than Fee
+Lgas,--,-,----,------,Laboratory Gas
+Lght,--,-,----,------,Light Line
+Licn,--,-,----,------,License
+Life,--,-,----,------,Life Safety
+Limi,--,-,----,------,Limit Earthwork
+Line,--,-,----,------,Lines
+Link,--,-,----,------,Chain Link
+Linr,--,-,----,------,"Linear, Liner"
+Liqd,--,-,----,------,Liquid
+Lite,--,-,----,------,Lighting Fixtures
+Lmta,--,-,----,------,Limited Access
+Lo~~,--,-,----,------,Lube Oil-System
+Logo,--,-,----,------,Company Logo
+Long,--,-,----,------,Longitudinal
+Loop,--,-,----,------,Loop
+Low~,--,-,----,------,Low
+Lowr,--,-,----,------,Lower
+Lox~,--,-,----,------,Liquid Oxygen
+Loxy,--,-,----,------,Liquid Oxygen
+Lpa~,--,-,----,------,Low Pressure Air
+Lpc~,--,-,----,------,Low Pressure Condensate
+Lpg~,--,-,----,------,Liquid Petroleum Gas-System
+Lpip,--,-,----,------,Low Pressure Piping
+Lpr~,--,-,----,------,Low Pressure Refrigerant
+Lprs,--,-,----,------,Low Pressure Duct
+Lqpg,--,-,----,------,Liquid Petroleum Gas
+Lscp,--,-,----,------,Landscape
+Lstm,--,-,----,------,Low Pressure Steam
+Ltng,--,-,----,------,Lightning Protection
+Ltrl,--,-,----,------,Lateral Pipe
+Ltyp,--,-,----,------,Linework By Line Type
+Lube,--,-,----,------,Lubrication
+Lvel,--,-,----,------,Low Velocity Duct
+Lvlt,--,-,----,------,Low Voltage
+Lwgh,--,-,----,------,Linework By Line Weight
+Main,--,-,----,------,Mainline
+Mair,--,-,----,------,Medical Air
+Majr,--,-,----,------,Major
+Mark,--,-,----,------,"Markers, Break Marks, Leaders"
+Mass,--,-,----,------,Massing Elements
+Matc,--,-,----,------,Match Lines
+Mau~,--,-,----,------,Make-Up Air Unit
+Mbnd,--,-,----,------,Material Beyond Cut
+Mca~,--,-,----,------,Medium Pressure Compressed Air
+Mcc~,--,-,----,------,Motor Control Center
+Mcut,--,-,----,------,Material Cut By The View
+Mdgs,--,-,----,------,Medical Gas System
+Medc,--,-,----,------,Medical
+Medm,--,-,----,------,Medium Lines
+Mesh,--,-,----,------,Mesh Or Wire
+Metl,--,-,----,------,Metal
+Metr,--,-,----,------,Meters
+Mfld,--,-,----,------,Manifold
+Mgmt,--,-,----,------,Management System
+Mhol,--,-,----,------,Manhole
+Minr,--,-,----,------,Minor
+Misc,--,-,----,------,Miscellaneous
+Mixd,--,-,----,------,Mixed Air
+Mkup,--,-,----,------,Make-Up Water
+Mlch,--,-,----,------,Mulches - Organic And Inorganic
+Mmed,--,-,----,------,Multimedia
+Mntg,--,-,----,------,Mounting System
+Moor,--,-,----,------,Mooring
+Motn,--,-,----,------,Motion Detector
+Motr,--,-,----,------,Motorized
+Move,--,-,----,------,Movable
+Mpa~,--,-,----,------,Medium Pressure Air
+Mpc~,--,-,----,------,Medium Pressure Condensate
+Mpip,--,-,----,------,Medium-Pressure Piping
+Mprs,--,-,----,------,Medium Pressure Duct
+Mrkg,--,-,----,------,Pavement Marking
+Mrkr,--,-,----,------,Marker
+Msnw,--,-,----,------,Masonry
+Mst~,--,-,----,------,Motor Starters
+Mstm,--,-,----,------,Medium Pressure Steam
+Mtrl,--,-,----,------,Materials
+Mtrx,--,-,----,------,Matrix
+Mult,--,-,----,------,Multi-Conductor Cable
+Mvel,--,-,----,------,Medium Velocity Duct
+Mvlt,--,-,----,------,Medium Voltage
+Mvng,--,-,----,------,Moving / Suspended
+Mw~~,--,-,----,------,Metal Waste-System
+N2~~,--,-,----,------,Nitrogen-System
+N2o~,--,-,----,------,Nitrous Oxide-System
+Na~~,--,-,----,------,Sodium
+Naid,--,-,----,------,Navigation Aids
+Natl,--,-,----,------,National
+Nc~~,--,-,----,------,Normally Closed
+Nedl,--,-,----,------,Needle Type
+Netw,--,-,----,------,Network
+Nfee,--,-,----,------,Non-Fee
+Ng~~,--,-,----,------,Natural Gas-System
+Ngas,--,-,----,------,Natural Gas Line
+Nght,--,-,----,------,Night Lighting
+Nitg,--,-,----,------,Nitrogen
+No~~,--,-,----,------,Normally Open
+Node,--,-,----,------,Node
+Note,--,-,----,------,Notes
+Novr,--,-,----,------,Non-Overflow Structure
+Noxg,--,-,----,------,Nitrous Oxide
+Nplt,--,-,----,------,Non-Plotting Graphic Information
+Npw~,--,-,----,------,Non-Potable Water-System
+Npwr,--,-,----,------,Non-Potable Water Reuse-System
+Nrml,--,-,----,------,Normal
+Nsbr,--,-,----,------,Noise Barrior
+Ntfy,--,-,----,------,Notification
+Nurs,--,-,----,------,Nurse Call
+O2~~,--,-,----,------,Oxygen-System
+Oa~~,--,-,----,------,Outside Air-System
+Objt,--,-,----,------,Objects
+Occp,--,-,----,------,Occupant Or Employee Names
+Ocl~,--,-,----,------,Hypochlorite - Oxygen + Chlorine
+Odff,--,-,----,------,Other Diffusers
+Odor,--,-,----,------,Odor Control
+Ofa~,--,-,----,------,Oil Free Air
+Oflw,--,-,----,------,Overflow
+Ofrm,--,-,----,------,Outer Frame
+Ofst,--,-,----,------,Offset Zones
+Ogep,--,-,----,------,Oil General Piping
+Oil~,--,-,----,------,Oil
+Oilt,--,-,----,------,Oil Trap
+Oiw~,--,-,----,------,Organic Industrial Waste-System
+Olw~,--,-,----,------,Organic Liquid Waste-System
+Opng,--,-,----,------,Openings
+Opnx,--,-,----,------,Opening Indication
+Oprp,--,-,----,------,Oil Process Piping
+Osha,--,-,----,------,Osha Information
+Osny,--,-,----,------,OS&Y Type
+Osw~,--,-,----,------,Organic Solvent Waste-System
+Othd,--,-,----,------,Other Heads
+Othr,--,-,----,------,Other
+Otln,--,-,----,------,Outline
+Outd,--,-,----,------,Schedule Out Of Date
+Outl,--,-,----,------,Outlet
+Outs,--,-,----,------,Outside
+Oval,--,-,----,------,Oval
+Over,--,-,----,------,Crossover Bridge
+Ovhd,--,-,----,------,Overhead
+Oxyg,--,-,----,------,Pure Oxygen
+P~~~,--,-,----,------,Pump
+Pa~~,--,-,----,------,Plant Air-System
+Pack,--,-,----,------,Packaged Type
+Pact,--,-,----,------,Fire Protection Pre-Action Pipe
+Padm,--,-,----,------,Pad-Mounted
+Pads,--,-,----,------,Pads
+Palm,--,-,----,------,Palm Trees
+Panl,--,-,----,------,Panels
+Para,--,-,----,------,Parallel Circuits
+Pasp,--,-,----,------,Point Number Attributes For Survey Points
+Patt,--,-,----,------,Texture Or Hatch Patterns
+Pavr,--,-,----,------,Unit Pavers
+Pbrd,--,-,----,------,Panelboard
+Pcap,--,-,----,------,Pile Caps
+Pcs~,--,-,----,------,Pcs Equipment
+Pcst,--,-,----,------,Pre-Cast Concrete
+Pcwr,--,-,----,------,Cooling Water Return-System
+Pcws,--,-,----,------,Cooling Water Supply-System
+Pdfs,--,-,----,------,Pdf files
+Pene,--,-,----,------,Penetrations
+Pens,--,-,----,------,Penstock
+Pepl,--,-,----,------,People
+Peqp,--,-,----,------,Process Equipment
+Peri,--,-,----,------,Perimiter
+Perm,--,-,----,------,Permanent; Permeate
+Pgng,--,-,----,------,Paging
+Phn2,--,-,----,------,Phantom 2 Line
+Phnt,--,-,----,------,Phantom Lines
+Phon,--,-,----,------,Telephone Line
+Phos,--,-,----,------,Phosphoric Acid-System
+Phrc,--,-,----,------,Phosphoric Acid Reclaim-System
+Pier,--,-,----,------,Drilled Piers
+Pile,--,-,----,------,Piles
+Pipe,--,-,----,------,Piping
+Plas,--,-,----,------,Plastic
+Play,--,-,----,------,Play Structures
+Plen,--,-,----,------,Plenum Adapter
+Plnt,--,-,----,------,Plants
+Plug,--,-,----,------,Plug Type
+Plyw,--,-,----,------,Plywood
+Pmit,--,-,----,------,Permit
+Pndt,--,-,----,------,Pendant Type
+Pneu,--,-,----,------,Pneumatic
+Pnhs,--,-,----,------,Penthouse
+Pnls,--,-,----,------,System Panels
+Pnpt,--,-,----,------,Panel Points
+Pocc,--,-,----,------,Point Of Common Coupling
+Poi~,--,-,----,------,Point Of Interconnection
+Pole,--,-,----,------,Poles
+Poly,--,-,----,------,Polymers
+Pond,--,-,----,------,Retention Pond
+Pool,--,-,----,------,Pools And Spas
+Post,--,-,----,------,Posts
+Powr,--,-,----,------,Power
+Ppip,--,-,----,------,Process piping
+Prch,--,-,----,------,Porch
+Prcl,--,-,----,------,Parcels
+Pres,--,-,----,------,Pressure
+Prht,--,-,----,------,Partial-Height
+Prim,--,-,----,------,Primary
+Prkg,--,-,----,------,Parking
+Prmr,--,-,----,------,Primer Line
+Pro~,--,-,----,------,Propane-System
+Proc,--,-,----,------,Process
+Prof,--,-,----,------,Profile
+Proj,--,-,----,------,Projector
+Prop,--,-,----,------,Property Boundary
+Pros,--,-,----,------,Date / Time / File Name Stamp
+Prot,--,-,----,------,Protection
+Prov,--,-,----,------,Province
+Prpt,--,-,----,------,Parapet
+Prvc,--,-,----,------,Privacy
+Prvs,--,-,----,------,Pressure Regulator Type
+Psw~,--,-,----,------,Photo Solvent Waste-System
+Ptac,--,-,----,------,Ptac Unit
+Pure,--,-,----,------,Pure Steam / Pure Water
+Pv~~,--,-,----,------,Vacuum-System
+Pvc~,--,-,----,------,Pvc
+Pvmt,--,-,----,------,Pavement
+Pw~~,--,-,----,------,Potable Water-System
+Qtrs,--,-,----,------,Quarter Section
+Quik,--,-,----,------,Quick Action Type
+Rack,--,-,----,------,In Rack
+Racw,--,-,----,------,Raceways
+Rad~,--,-,----,------,Radiant Heater
+Rado,--,-,----,------,Radioisotope Waste
+Rair,--,-,----,------,Relief Air
+Rais,--,-,----,------,Raised
+Ramp,--,-,----,------,Accessible Ramp
+Rate,--,-,----,------,Ratings
+Raw~,--,-,----,------,Raw Water
+Rbar,--,-,----,------,Reinforcing Bar
+Rcon,--,-,----,------,Reinforced Concrete
+Rcov,--,-,----,------,Energy Recovery
+Rcrc,--,-,----,------,Recirculation
+Rcyc,--,-,----,------,Recycle
+Rdff,--,-,----,------,Return Air Diffusers
+Rdge,--,-,----,------,Roof Ridges
+Rdme,--,-,----,------,Read-Me Layer (Non-Plotted)
+Recp,--,-,----,------,Receptacle
+Recs,--,-,----,------,Recessed
+Rect,--,-,----,------,Rectangular
+Redl,--,-,----,------,Redlines
+Refl,--,-,----,------,Reflected Plans
+Refr,--,-,----,------,"Reference, External Files"
+Reg~,--,-,----,------,Pressure Regulator
+Regr,--,-,----,------,Register
+Rer~,--,-,----,------,Solvent-System
+Retn,--,-,----,------,Return
+Revc,--,-,----,------,Revision Clouds
+Revs,--,-,----,------,Revision Indicators And Text
+Rfdr,--,-,----,------,Roof Drain
+Rfeq,--,-,----,------,Rooftop Equipment
+Rght,--,-,----,------,Right
+Rhc~,--,-,----,------,Reheat Coil
+Risr,--,-,----,------,Risers
+Rlif,--,-,----,------,Relief
+Rnge,--,-,----,------,Range
+Ro~~,--,-,----,------,Reverse Osmosis Water-System
+Road,--,-,----,------,Roadway
+Rock,--,-,----,------,Large Rocks And Rock Outcroppings
+Roof,--,-,----,------,Roof
+Room,--,-,----,------,Rooms
+Ror~,--,-,----,------,Reverse Osmosis Reject Water-System
+Roun,--,-,----,------,Round
+Rows,--,-,----,------,Row Linework
+Rpip,--,-,----,------,Recirculation Piping
+Rrap,--,-,----,------,Riprap
+Rsch,--,-,----,------,Sketch Line Round Or Oval Duct
+Rsrv,--,-,----,------,Reservation
+Rtu~,--,-,----,------,Rooftop Unit
+Rtwl,--,-,----,------,Retaining Wall
+Rubr,--,-,----,------,Rubber
+Rway,--,-,----,------,Right-Of-Way
+Safe,--,-,----,------,Fire Safety; Safety Type
+Sair,--,-,----,------,Scanvenge Air
+Sand,--,-,----,------,Sand Filter Type
+Satd,--,-,----,------,Satelite Dishes
+Saud,--,-,----,------,Audio Signal
+Sbck,--,-,----,------,Setback Lines
+Sbst,--,-,----,------,Substations
+Scal,--,-,----,------,Graphical Drawing Scales
+Scex,--,-,----,------,Scrubber Exhaust-System
+Schd,--,-,----,------,Schedules
+Schm,--,-,----,------,Schematic Lines
+Schw,--,-,----,------,Sensible Chilled Water
+Scom,--,-,----,------,Communications Signal
+Scrb,--,-,----,------,Scrub Type
+Scrn,--,-,----,------,Screening Of Coordination Objects And Background
+Scrw,--,-,----,------,Screw
+Sctl,--,-,----,------,Control Signal
+Scum,--,-,----,------,Scum
+Sdat,--,-,----,------,Data Signal
+Sdd~,--,-,----,------,Scrubber Duct Drains-System
+Sdff,--,-,----,------,Supply Diffusers
+Sdga,--,-,----,------,Digital Audio Signal
+Sdgv,--,-,----,------,Digital Video Signal
+Seal,--,-,----,------,Seal
+Seat,--,-,----,------,Seating
+Secd,--,-,----,------,Secondary
+Sect,--,-,----,------,Section
+Seed,--,-,----,------,Seeding Areas
+Semi,--,-,----,------,Semi-Recessed
+Sens,--,-,----,------,Sensible Chilled Water
+Sep~,--,-,----,------,Separator
+Sers,--,-,----,------,Series Circuits
+Sert,--,-,----,------,Security
+Serv,--,-,----,------,Service Piping
+Setr,--,-,----,------,Circuit Setter Type
+Sewg,--,-,----,------,Sewage
+Sfit,--,-,----,------,Soffit
+Sg~~,--,-,----,------,Speciality Gas-System
+Sght,--,-,----,------,Sight Distance
+Shad,--,-,----,------,Shadow Area
+Shea,--,-,----,------,Structural Bearing Or Shear Wall
+Shlf,--,-,----,------,Wall-Mounted Shelving
+Show,--,-,----,------,Showers
+Shut,--,-,----,------,Shut-Off
+Side,--,-,----,------,Side
+Sign,--,-,----,------,Signage
+Sill,--,-,----,------,Window Sill
+Silt,--,-,----,------,Silt Fence
+Sink,--,-,----,------,Sinks
+Site,--,-,----,------,Key Plan (Site Plan)
+Size,--,-,----,------,Ductwork Size
+Skch,--,-,----,------,Sketch
+Sktl,--,-,----,------,Skylight
+Slab,--,-,----,------,Slab
+Slce,--,-,----,------,Slices
+Slop,--,-,----,------,Schematic Slope
+Slot,--,-,----,------,Linear Slot
+Slr~,--,-,----,------,Slurry Return-System
+Slry,--,-,----,------,Slurrey Ice
+Sls~,--,-,----,------,Slurry Supply-System
+Slud,--,-,----,------,Sludge
+Slve,--,-,----,------,Pipe Sleeve
+Slw~,--,-,----,------,Slurry Waste-System
+Smic,--,-,----,------,Microphone Signal
+Smok,--,-,----,------,Smoke Detector / Heat Sensors
+Snow,--,-,----,------,Snow-Ice Melting System
+Snsr,--,-,----,------,Sensor
+Soda,--,-,----,------,Soda Fountain
+Soft,--,-,----,------,Soft Water
+Sole,--,-,----,------,Solenoid Actuated
+Solr,--,-,----,------,Solar Heated Water
+Solu,--,-,----,------,Solution
+Soun,--,-,----,------,Soundings
+Spa~,--,-,----,------,Whirlpool Spa
+Spce,--,-,----,------,Space
+Spcl,--,-,----,------,Special / Speciality
+Spkl,--,-,----,------,Sprinklers
+Spkr,--,-,----,------,Speaker
+Spln,--,-,----,------,Spline Ceiling
+Splt,--,-,----,------,Horizontal Split Case
+Sply,--,-,----,------,Supply Diffusers
+Spot,--,-,----,------,Spot Elevations
+Sprl,--,-,----,------,Spiral Type
+Sprt,--,-,----,------,Sports Fields
+Spry,--,-,----,------,Spray Water
+Spwr,--,-,----,------,Power Signal
+Sqre,--,-,----,------,Square
+Srce,--,-,----,------,Source
+Srfi,--,-,----,------,RF Signal
+Srgb,--,-,----,------,RGB And Component Video Signal
+Ssch,--,-,----,------,Sketch Line Rectangular Duct
+Sslt,--,-,----,------,Ssuper Silt Fence
+Sstl,--,-,----,------,Stainless Steel
+Sswr,--,-,----,------,Sanitary Sewer
+Ssyn,--,-,----,------,Sync Signal
+Stag,--,-,----,------,Stage Lighting
+Stan,--,-,----,------,Stationing
+Stat,--,-,----,------,State
+Stby,--,-,----,------,Standby
+Stc~,--,-,----,------,Steam Coil
+Stck,--,-,----,------,Stack
+Stel,--,-,----,------,Steel
+Stem,--,-,----,------,Steam System
+Step,--,-,----,------,Steps
+Ster,--,-,----,------,Sterile
+Sthw,--,-,----,------,Steam To Hot Water Converter
+Stil,--,-,----,------,Distilled Water
+Stmp,--,-,----,------,Professional Stamp
+Stnd,--,-,----,------,"Standard, Common, Generic / Details"
+Stor,--,-,----,------,Storage
+Str~,--,-,----,------,Strainers/Structural
+Strb,--,-,----,------,Strobic Type
+Strc,--,-,----,------,Structures
+Strm,--,-,----,------,Storm Sewer
+Strp,--,-,----,------,Striping
+Strs,--,-,----,------,Stair Treads
+Stst,--,-,----,------,Steam To Steam Converter
+Suba,--,-,----,------,"Cabinet Sub-Assemblies, Drawer Boxes"
+Subd,--,-,----,------,Subdivision (Interior) Lines
+Subm,--,-,----,------,Submersible Type
+Subs,--,-,----,------,Sub-Surface Areas
+Subt,--,-,----,------,Substractive Elements
+Suct,--,-,----,------,Suction
+Sulf,--,-,----,------,Sulfuric Acid-System
+Sulr,--,-,----,------,Sulfuric Acid Return-System
+Sump,--,-,----,------,Sump
+Supt,--,-,----,------,Support
+Surf,--,-,----,------,Surface Aress
+Surg,--,-,----,------,Medical - Surgical Vacuum
+Susp,--,-,----,------,Suspended Elements
+Svex,--,-,----,------,Solvent Exhaust-System
+Svid,--,-,----,------,Video Signal
+Sw~~,--,-,----,------,Solvent Waste-System
+Sway,--,-,----,------,Spilway
+Swbd,--,-,----,------,Switchboard
+Swch,--,-,----,------,Switches
+Swf~,--,-,----,------,Solvent Waste Fammable-System
+Swgr,--,-,----,------,Switch Gear
+Swlk,--,-,----,------,Sidewalks
+Swmt,--,-,----,------,Storm Water Management
+Swnf,--,-,----,------,Solvent Waste Non-Flammable-System
+Sxts,--,-,----,------,Sixteeth Section
+Symb,--,-,----,------,Reference Symbols
+Syst,--,-,----,------,System
+Tabl,--,-,----,------,Data Tables
+Tags,--,-,----,------,Circuit/Equipment Tags
+Take,--,-,----,------,Taking Line
+Tank,--,-,----,------,Storage Tanks
+Tbox,--,-,----,------,Termination Box
+Tdir,--,-,----,------,Tempered Deionized Water-Return-System
+Tdis,--,-,----,------,Tempered Deionized Water Supply-System
+Tees,--,-,----,------,Main Tees
+Temp,--,-,----,------,Temporary
+Tert,--,-,----,------,Tertiary Loop
+Test,--,-,----,------,Test Stations
+Text,--,-,----,------,Texture Or Hatch Patterns
+Tght,--,-,----,------,Gas Tight
+Thck,--,-,----,------,Thickened
+Them,--,-,----,------,Display Theme
+Ther,--,-,----,------,Thermostats
+Thin,--,-,----,------,Thin Line
+Thld,--,-,----,------,Thresholds
+Tick,--,-,----,------,Tick Marks
+Time,--,-,----,------,Time Clock
+Titl,--,-,----,------,Drawing or Detail Titles
+Tlt~,--,-,----,------,Toilets
+Tmah,--,-,----,------,TMAH System
+Toil,--,-,----,------,Toilet Type
+Top~,--,-,----,------,Top
+Top1,--,-,----,------,Top Group 1
+Top2,--,-,----,------,Top Group 2
+Topb,--,-,----,------,Top Of Bank
+Totl,--,-,----,------,Total
+Towr,--,-,----,------,Towers
+Tpit,--,-,----,------,Test Pits
+Tpnt,--,-,----,------,Toilet Partitions
+Trac,--,-,----,------,Tract Lines
+Trak,--,-,----,------,Track
+Tral,--,-,----,------,Trail Or Path
+Tran,--,-,----,------,Transmission System
+Trap,--,-,----,------,Grease Trap; Steam Trap
+Trav,--,-,----,------,Transverse
+Tray,--,-,----,------,Cabletray And Wireways
+Tree,--,-,----,------,Trees
+Trid,--,-,----,------,Triple Duty Type
+Trow,--,-,----,------,Tree Row
+Tshp,--,-,----,------,Town Or Township
+Ttlb,--,-,----,------,Border And Titleblock
+Tube,--,-,----,------,Tubing; Tube Axial Type
+Tubs,--,-,----,------,Bathtubs
+Tunl,--,-,----,------,In Tunnel
+Turf,--,-,----,------,Lawn Areas
+Tvan,--,-,----,------,Television Antenna
+Tw~~,--,-,----,------,Tempered Water-System
+Ubs~,--,-,----,------,Utility Backup Service
+Uchw,--,-,----,------,Utility Chilled Water (District Cooling)
+Ucpt,--,-,----,------,Under-Carpet Wiring
+Uctr,--,-,----,------,Under Counter
+Udcw,--,-,----,------,Utility Domestic Cold Water
+Uele,--,-,----,------,Utility Electric Service
+Ufir,--,-,----,------,Utility Fire Main
+Uflr,--,-,----,------,Under Floor
+Ugas,--,-,----,------,Utility Gas Service
+Ugnd,--,-,----,------,Underground Ductbank
+Uh~~,--,-,----,------,Unit Heaters
+Uhhw,--,-,----,------,Utility Heating Hot Water (Distric Heating)
+Ulpa,--,-,----,------,Ultra Low Penetration Air Filter Type
+Un2~,--,-,----,------,Utility Nitrogen-System
+Undr,--,-,----,------,Under
+Unit,--,-,----,------,Unit
+Up~~,--,-,----,------,Up / Up Lighting
+Upbl,--,-,----,------,Upblast Type
+Uppr,--,-,----,------,Upper
+Uprt,--,-,----,------,Upright Type
+Uprw,--,-,----,------,Ultra-Pure Recycle Water-System
+Ups~,--,-,----,------,Uninterruptible Power Supply
+Upvd,--,-,----,------,Unpaved Surface
+Upw~,--,-,----,------,Ultra-Pure Water-System
+Urac,--,-,----,------,Under-Floor Raceways
+Urin,--,-,----,------,Urinals
+Uslb,--,-,----,------,Underneath Slab
+Uspp,--,-,----,------,United States Pharm. Purified Water
+Ustm,--,-,----,------,Utility High Pressure Steam (District Heating)
+Util,--,-,----,------,Utility Lines
+Uwtr,--,-,----,------,Utility Water Service (Fire Plus Domestic Cold Water)
+V~~~,--,-,----,------,Vent-System
+Vacu,--,-,----,------,Vacuum
+Valv,--,-,----,------,Valves
+Vav~,--,-,----,------,Variable Air Volume Terminal Units
+Vege,--,-,----,------,"Trees, Shrubs And Other Vegetation"
+Velo,--,-,----,------,Velocity
+Venr,--,-,----,------,Veneer
+Vent,--,-,----,------,Vents
+Vert,--,-,----,------,Vertical
+Vfd~,--,-,----,------,Variable Frequency Drive
+Vhcl,--,-,----,------,Vehicles
+Vido,--,-,----,------,Video Projection System
+View,--,-,----,------,Triangulation View
+Vine,--,-,----,------,Vines
+Vitr,--,-,----,------,Vitrified Clay
+Vn2~,--,-,----,------,Venturi Nitrogen-System
+Voic,--,-,----,------,Voice Data
+Void,--,-,----,------,Void Regions
+Volt,--,-,----,------,Voltage
+Voxg,--,-,----,------,Vox Gas
+Vtr~,--,-,----,------,Vent Thru Roof
+Vvt~,--,-,----,------,Variable Volume Temperature Type
+W2xs,--,-,----,------,Dimension Lumber
+Wagd,--,-,----,------,Waste Anesthetic Gas Disposal Vacuum
+Walk,--,-,----,------,Sidewalks
+Wall,--,-,----,------,Wall
+War~,--,-,----,------,Weld Argon-System
+Wash,--,-,----,------,Wash
+Wast,--,-,----,------,Waste
+Watr,--,-,----,------,Water Supply
+Wc~~,--,-,----,------,Water Closet
+Wccu,--,-,----,------,Water Cooled Condensing Unit
+Wdwk,--,-,----,------,Architectural Woodwork
+Weir,--,-,----,------,Pool Weir
+Well,--,-,----,------,Well
+Wet~,--,-,----,------,Wet
+Wetc,--,-,----,------,Wet Condensate Return
+Wfi~,--,-,----,------,Water For Injection
+Whit,--,-,----,------,White Paint
+Wht~,--,-,----,------,Wall Heater
+Wide,--,-,----,------,Wide Line
+Wind,--,-,----,------,Wind Powered
+Wire,--,-,----,------,Wiring
+Wksf,--,-,----,------,Worksurface
+Wles,--,-,----,------,Wireless
+Wood,--,-,----,------,Wood
+Work,--,-,----,------,Work Type
+X~~~,--,-,----,------,Extra Wide Lines
+Xfer,--,-,----,------,Transfer
+Xfin,--,-,----,------,Extra Fine Detail Lines
+Xfmr,--,-,----,------,Transformers
+Xref,--,-,----,------,External Reference
+Xtra,--,-,----,------,Extra
+Xtru,--,-,----,------,Extrusion
+Xx~~,--,-,----,------,XX Wide Lines
+Xxx~,--,-,----,------,XXX Wide Lines
+Xxxx,--,-,----,------,XXXX Wide Lines
+Yelo,--,-,----,------,Yellow Paint
+Zone,--,-,----,------,Zoning

@@ -1,0 +1,4334 @@
+// Dynalisp snippets: calls to the built-in Remote Lee Mac subfunctions (LM-Sub.lsp)
+// Generated from Contents/Modules/LeeMac/Remote/LM-Sub.lsp; <prefix>/a is the apply form.
+{
+	// region 3-Point Circle & Arc Functions
+	"3-Point Circle": {
+		"prefix": "Remote>>LM:3pcircle",
+		"body": [
+			"(Remote>>LM:3pcircle ${1:pt1} ${2:pt2} ${3:pt3})"
+		],
+		"description": "Returns the center (UCS) and radius of the circle defined by three supplied points (UCS)."
+	},
+	"(Apply) 3-Point Circle": {
+		"prefix": "Remote>>LM:3pcircle/a",
+		"body": [
+			"(apply 'Remote>>LM:3pcircle ${1:lst})"
+		],
+		"description": "Apply LM:3pcircle to an argument list (pt1 pt2 pt3)"
+	},
+	"3-Point Circle (Cartesian)": {
+		"prefix": "Remote>>LM:3pcircle-c",
+		"body": [
+			"(Remote>>LM:3pcircle-c ${1:pt1} ${2:pt2} ${3:pt3})"
+		],
+		"description": "Returns the center (UCS) and radius of the circle defined by three supplied points (UCS)."
+	},
+	"(Apply) 3-Point Circle (Cartesian)": {
+		"prefix": "Remote>>LM:3pcircle-c/a",
+		"body": [
+			"(apply 'Remote>>LM:3pcircle-c ${1:lst})"
+		],
+		"description": "Apply LM:3pcircle-c to an argument list (pt1 pt2 pt3)"
+	},
+	// region 5 Point Ellipse
+	"5-Point Ellipse": {
+		"prefix": "Remote>>LM:5P-Ellipse",
+		"body": [
+			"(Remote>>LM:5P-Ellipse ${1:pt1} ${2:pt2} ${3:pt3} ${4:pt4} ${5:pt5})"
+		],
+		"description": "Args: p1,p2,p3,p4,p5 - UCS points defining Ellipse\nReturns a list of: ((10 <WCS Center>) (11 <WCS Major Axis Endpoint from Center>) (40 . <Minor/Major Ratio>))"
+	},
+	"(Apply) 5-Point Ellipse": {
+		"prefix": "Remote>>LM:5P-Ellipse/a",
+		"body": [
+			"(apply 'Remote>>LM:5P-Ellipse ${1:lst})"
+		],
+		"description": "Apply LM:5P-Ellipse to an argument list (p1 p2 p3 p4 p5)"
+	},
+	// region Active Space
+	"Active Space": {
+		"prefix": "Remote>>LM:activespace",
+		"body": [
+			"(Remote>>LM:activespace 'doc 'spc)"
+		],
+		"description": "Retrieves pointers to the Active Document and Space"
+	},
+	"(Apply) Active Space": {
+		"prefix": "Remote>>LM:activespace/a",
+		"body": [
+			"(apply 'Remote>>LM:activespace ${1:lst})"
+		],
+		"description": "Apply LM:activespace to an argument list (*doc *spc)"
+	},
+	// region Add & Remove Support File Search Paths
+	"Add Support File Search Paths": {
+		"prefix": "Remote>>LM:sfsp+",
+		"body": [
+			"(Remote>>LM:sfsp+ '(${1:dir}))"
+		],
+		"description": "Adds a list of Support File Search Paths, excluding duplicates and invalid paths"
+	},
+	"(Apply) Add Support File Search Paths": {
+		"prefix": "Remote>>LM:sfsp+/a",
+		"body": [
+			"(apply 'Remote>>LM:sfsp+ ${1:lst})"
+		],
+		"description": "Apply LM:sfsp+ to an argument list (lst)"
+	},
+	"Add Support File Search Paths at 'n'": {
+		"prefix": "Remote>>LM:sfsp+n",
+		"body": [
+			"(Remote>>LM:sfsp+n '(${1:dir}) 0)"
+		],
+		"description": "Adds a list of Support File Search Paths, excluding duplicates and invalid paths"
+	},
+	"(Apply) Add Support File Search Paths at 'n'": {
+		"prefix": "Remote>>LM:sfsp+n/a",
+		"body": [
+			"(apply 'Remote>>LM:sfsp+n ${1:lst})"
+		],
+		"description": "Apply LM:sfsp+n to an argument list (lst idx)"
+	},
+	"Remove Support File Search Paths": {
+		"prefix": "Remote>>LM:sfsp-",
+		"body": [
+			"(Remote>>LM:sfsp- '(${1:dir}))"
+		],
+		"description": "Removes a list of Support File Search Paths if present"
+	},
+	"(Apply) Remove Support File Search Paths": {
+		"prefix": "Remote>>LM:sfsp-/a",
+		"body": [
+			"(apply 'Remote>>LM:sfsp- ${1:lst})"
+		],
+		"description": "Apply LM:sfsp- to an argument list (lst)"
+	},
+	"Wildcard Remove Support File Search Paths": {
+		"prefix": "Remote>>LM:wcsfsp-",
+		"body": [
+			"(Remote>>LM:wcsfsp- ${1:dir})"
+		],
+		"description": "Removes all Support File Search Paths matching a supplied wildcard pattern"
+	},
+	"(Apply) Wildcard Remove Support File Search Paths": {
+		"prefix": "Remote>>LM:wcsfsp-/a",
+		"body": [
+			"(apply 'Remote>>LM:wcsfsp- ${1:lst})"
+		],
+		"description": "Apply LM:wcsfsp- to an argument list (pat)"
+	},
+	// region Apply to Block Objects
+	"Apply to Block Objects": {
+		"prefix": "Remote>>LM:ApplytoBlockObjects",
+		"body": [
+			"(Remote>>LM:ApplytoBlockObjects ${1:blk} ${2:nme} ${3:fnc})"
+		],
+		"description": "Evaluates a supplied function on all objects in a block definition"
+	},
+	"(Apply) Apply to Block Objects": {
+		"prefix": "Remote>>LM:ApplytoBlockObjects/a",
+		"body": [
+			"(apply 'Remote>>LM:ApplytoBlockObjects ${1:lst})"
+		],
+		"description": "Apply LM:ApplytoBlockObjects to an argument list (blks name func)"
+	},
+	// region Assoc++ Functions
+	"Assoc++": {
+		"prefix": "Remote>>LM:assoc++",
+		"body": [
+			"(Remote>>LM:assoc++ ${1:key} ${2:lst})"
+		],
+		"description": "Increments the value of a key in an association list if present, else adds key to the list"
+	},
+	"(Apply) Assoc++": {
+		"prefix": "Remote>>LM:assoc++/a",
+		"body": [
+			"(apply 'Remote>>LM:assoc++ ${1:lst})"
+		],
+		"description": "Apply LM:assoc++ to an argument list (key lst)"
+	},
+	"Nested Assoc++": {
+		"prefix": "Remote>>LM:nassoc++",
+		"body": [
+			"(Remote>>LM:nassoc++ ${1:ky1} ${2:ky2} ${3:lst})"
+		],
+		"description": "Increments the value of a key in an association list with possible nested structure"
+	},
+	"(Apply) Nested Assoc++": {
+		"prefix": "Remote>>LM:nassoc++/a",
+		"body": [
+			"(apply 'Remote>>LM:nassoc++ ${1:lst})"
+		],
+		"description": "Apply LM:nassoc++ to an argument list (key lst)"
+	},
+	// region Attribute Functions
+	"Get Attribute Value": {
+		"prefix": "Remote>>LM:vl-getattributevalue",
+		"body": [
+			"(Remote>>LM:vl-getattributevalue ${1:blk} ${2:tag})"
+		],
+		"description": "Returns the value held by the specified tag within the supplied block, if present"
+	},
+	"(Apply) Get Attribute Value": {
+		"prefix": "Remote>>LM:vl-getattributevalue/a",
+		"body": [
+			"(apply 'Remote>>LM:vl-getattributevalue ${1:lst})"
+		],
+		"description": "Apply LM:vl-getattributevalue to an argument list (blk tag)"
+	},
+	"Set Attribute Value": {
+		"prefix": "Remote>>LM:vl-setattributevalue",
+		"body": [
+			"(Remote>>LM:vl-setattributevalue ${1:blk} ${2:tag} ${3:val})"
+		],
+		"description": "Sets the value of the first attribute with the given tag found within the block, if present"
+	},
+	"(Apply) Set Attribute Value": {
+		"prefix": "Remote>>LM:vl-setattributevalue/a",
+		"body": [
+			"(apply 'Remote>>LM:vl-setattributevalue ${1:lst})"
+		],
+		"description": "Apply LM:vl-setattributevalue to an argument list (blk tag val)"
+	},
+	"Get Attribute Values": {
+		"prefix": "Remote>>LM:vl-getattributevalues",
+		"body": [
+			"(Remote>>LM:vl-getattributevalues ${1:blk})"
+		],
+		"description": "Returns an association list of attributes present in the supplied block"
+	},
+	"(Apply) Get Attribute Values": {
+		"prefix": "Remote>>LM:vl-getattributevalues/a",
+		"body": [
+			"(apply 'Remote>>LM:vl-getattributevalues ${1:lst})"
+		],
+		"description": "Apply LM:vl-getattributevalues to an argument list (blk)"
+	},
+	"Set Attribute Values": {
+		"prefix": "Remote>>LM:vl-setattributevalues",
+		"body": [
+			"(Remote>>LM:vl-setattributevalues ${1:blk} ${2:lst})"
+		],
+		"description": "Sets attributes with tags found in the association list to their associated values"
+	},
+	"(Apply) Set Attribute Values": {
+		"prefix": "Remote>>LM:vl-setattributevalues/a",
+		"body": [
+			"(apply 'Remote>>LM:vl-setattributevalues ${1:lst})"
+		],
+		"description": "Apply LM:vl-setattributevalues to an argument list (blk lst)"
+	},
+	"Get Attribute Value (2)": {
+		"prefix": "Remote>>LM:getattributevalue-r",
+		"body": [
+			"(Remote>>LM:getattributevalue-r ${1:blk} ${2:tag})"
+		],
+		"description": "Returns the value held by the specified tag within the supplied block, if present"
+	},
+	"(Apply) Get Attribute Value (2)": {
+		"prefix": "Remote>>LM:getattributevalue-r/a",
+		"body": [
+			"(apply 'Remote>>LM:getattributevalue-r ${1:lst})"
+		],
+		"description": "Apply LM:getattributevalue-r to an argument list (blk tag)"
+	},
+	"Get Attribute Value (3)": {
+		"prefix": "Remote>>LM:getattributevalue",
+		"body": [
+			"(Remote>>LM:getattributevalue ${1:blk} ${2:tag})"
+		],
+		"description": "Returns the value held by the specified tag within the supplied block, if present"
+	},
+	"(Apply) Get Attribute Value (3)": {
+		"prefix": "Remote>>LM:getattributevalue/a",
+		"body": [
+			"(apply 'Remote>>LM:getattributevalue ${1:lst})"
+		],
+		"description": "Apply LM:getattributevalue to an argument list (blk tag)"
+	},
+	"Set Attribute Value (recursive)": {
+		"prefix": "Remote>>LM:setattributevalue-r",
+		"body": [
+			"(Remote>>LM:setattributevalue-r ${1:blk} ${2:tag} ${3:val})"
+		],
+		"description": "Sets the value of the first attribute with the given tag found within the block, if present"
+	},
+	"(Apply) Set Attribute Value (recursive)": {
+		"prefix": "Remote>>LM:setattributevalue-r/a",
+		"body": [
+			"(apply 'Remote>>LM:setattributevalue-r ${1:lst})"
+		],
+		"description": "Apply LM:setattributevalue-r to an argument list (blk tag val)"
+	},
+	"Set Attribute Value (2)": {
+		"prefix": "Remote>>LM:setattributevalue",
+		"body": [
+			"(Remote>>LM:setattributevalue ${1:blk} ${2:tag} ${3:val})"
+		],
+		"description": "Sets the value of the first attribute with the given tag found within the block, if present"
+	},
+	"(Apply) Set Attribute Value (2)": {
+		"prefix": "Remote>>LM:setattributevalue/a",
+		"body": [
+			"(apply 'Remote>>LM:setattributevalue ${1:lst})"
+		],
+		"description": "Apply LM:setattributevalue to an argument list (blk tag val)"
+	},
+	"Get Attribute Values (recursive)": {
+		"prefix": "Remote>>LM:getattributevalues-r",
+		"body": [
+			"(Remote>>LM:getattributevalues-r ${1:blk})"
+		],
+		"description": "Returns an association list of attributes present in the supplied block"
+	},
+	"(Apply) Get Attribute Values (recursive)": {
+		"prefix": "Remote>>LM:getattributevalues-r/a",
+		"body": [
+			"(apply 'Remote>>LM:getattributevalues-r ${1:lst})"
+		],
+		"description": "Apply LM:getattributevalues-r to an argument list (blk)"
+	},
+	"Get Attribute Values (2)": {
+		"prefix": "Remote>>LM:getattributevalues",
+		"body": [
+			"(Remote>>LM:getattributevalues ${1:blk})"
+		],
+		"description": "Returns an association list of attributes present in the supplied block"
+	},
+	"(Apply) Get Attribute Values (2)": {
+		"prefix": "Remote>>LM:getattributevalues/a",
+		"body": [
+			"(apply 'Remote>>LM:getattributevalues ${1:lst})"
+		],
+		"description": "Apply LM:getattributevalues to an argument list (blk)"
+	},
+	"Set Attribute Values (recusrsive)": {
+		"prefix": "Remote>>LM:setattributevalues-r",
+		"body": [
+			"(Remote>>LM:setattributevalues-r ${1:blk} ${2:lst})"
+		],
+		"description": "Sets attributes with tags found in the association list to their associated values"
+	},
+	"(Apply) Set Attribute Values (recusrsive)": {
+		"prefix": "Remote>>LM:setattributevalues-r/a",
+		"body": [
+			"(apply 'Remote>>LM:setattributevalues-r ${1:lst})"
+		],
+		"description": "Apply LM:setattributevalues-r to an argument list (blk lst)"
+	},
+	"Set Attribute Values (2)": {
+		"prefix": "Remote>>LM:setattributevalues",
+		"body": [
+			"(Remote>>LM:setattributevalues ${1:blk} ${2:lst})"
+		],
+		"description": "Sets attributes with tags found in the association list to their associated values"
+	},
+	"(Apply) Set Attribute Values (2)": {
+		"prefix": "Remote>>LM:setattributevalues/a",
+		"body": [
+			"(apply 'Remote>>LM:setattributevalues ${1:lst})"
+		],
+		"description": "Apply LM:setattributevalues to an argument list (blk lst)"
+	},
+	// region Base Conversion Functions
+	"Decimal to Base": {
+		"prefix": "Remote>>LM:dec->base",
+		"body": [
+			"(Remote>>LM:dec->base ${1:int} ${2:bse})"
+		],
+		"description": "Converts a decimal number to another base"
+	},
+	"(Apply) Decimal to Base": {
+		"prefix": "Remote>>LM:dec->base/a",
+		"body": [
+			"(apply 'Remote>>LM:dec->base ${1:lst})"
+		],
+		"description": "Apply LM:dec->base to an argument list (n b)"
+	},
+	"Base to Decimal": {
+		"prefix": "Remote>>LM:base->dec",
+		"body": [
+			"(Remote>>LM:base->dec ${1:str} ${2:bse})"
+		],
+		"description": "Converts an number in an arbitrary base to decimal"
+	},
+	"(Apply) Base to Decimal": {
+		"prefix": "Remote>>LM:base->dec/a",
+		"body": [
+			"(apply 'Remote>>LM:base->dec ${1:lst})"
+		],
+		"description": "Apply LM:base->dec to an argument list (n b)"
+	},
+	"Base to Decimal (2)": {
+		"prefix": "Remote>>LM:vl-base->dec",
+		"body": [
+			"(Remote>>LM:vl-base->dec ${1:str} ${2:bse})"
+		],
+		"description": "Converts an number in an arbitrary base to decimal"
+	},
+	"(Apply) Base to Decimal (2)": {
+		"prefix": "Remote>>LM:vl-base->dec/a",
+		"body": [
+			"(apply 'Remote>>LM:vl-base->dec ${1:lst})"
+		],
+		"description": "Apply LM:vl-base->dec to an argument list (n b)"
+	},
+	"Base to Base": {
+		"prefix": "Remote>>LM:base->base",
+		"body": [
+			"(Remote>>LM:base->base ${1:str} ${2:inp} ${3:out})"
+		],
+		"description": "Converts an number from one base to another"
+	},
+	"(Apply) Base to Base": {
+		"prefix": "Remote>>LM:base->base/a",
+		"body": [
+			"(apply 'Remote>>LM:base->base ${1:lst})"
+		],
+		"description": "Apply LM:base->base to an argument list (n b1 b2)"
+	},
+	// region Bounding Box
+	"Bounding Box": {
+		"prefix": "Remote>>LM:boundingbox",
+		"body": [
+			"(Remote>>LM:boundingbox (vlax-ename->vla-object ${1:ent}))"
+		],
+		"description": "Returns the point list describing the rectangular frame bounding the supplied object"
+	},
+	"(Apply) Bounding Box": {
+		"prefix": "Remote>>LM:boundingbox/a",
+		"body": [
+			"(apply 'Remote>>LM:boundingbox ${1:lst})"
+		],
+		"description": "Apply LM:boundingbox to an argument list (obj)"
+	},
+	// region Browse for Folder
+	"Browse for Folder": {
+		"prefix": "Remote>>LM:browseforfolder",
+		"body": [
+			"(Remote>>LM:browseforfolder ${1:msg} ${2:dir} ${3:bit})"
+		],
+		"description": "Displays a dialog prompting the user to select a folder"
+	},
+	"(Apply) Browse for Folder": {
+		"prefix": "Remote>>LM:browseforfolder/a",
+		"body": [
+			"(apply 'Remote>>LM:browseforfolder ${1:lst})"
+		],
+		"description": "Apply LM:browseforfolder to an argument list (msg dir bit)"
+	},
+	// region Bulge Conversion Functions
+	"Arc to Bulge": {
+		"prefix": "Remote>>LM:arc->bulge",
+		"body": [
+			"(Remote>>LM:arc->bulge ${1:ctr} ${2:ag1} ${3:ag2} ${4:rad} )"
+		],
+		"description": "c     - center\na1,a2 - start, end angle\nr     - radius\nReturns: (<vertex> <bulge> <vertex>)"
+	},
+	"(Apply) Arc to Bulge": {
+		"prefix": "Remote>>LM:arc->bulge/a",
+		"body": [
+			"(apply 'Remote>>LM:arc->bulge ${1:lst})"
+		],
+		"description": "Apply LM:arc->bulge to an argument list (c a1 a2 r)"
+	},
+	"3-Points to Bulge": {
+		"prefix": "Remote>>LM:3p->bulge",
+		"body": [
+			"(Remote>>LM:3p->bulge ${1:pt1} ${2:pt2} ${3:pt3} )"
+		],
+		"description": ""
+	},
+	"(Apply) 3-Points to Bulge": {
+		"prefix": "Remote>>LM:3p->bulge/a",
+		"body": [
+			"(apply 'Remote>>LM:3p->bulge ${1:lst})"
+		],
+		"description": "Apply LM:3p->bulge to an argument list (pt1 pt2 pt3)"
+	},
+	"Bulge to Arc": {
+		"prefix": "Remote>>LM:Bulge->Arc",
+		"body": [
+			"(Remote>>LM:Bulge->Arc ${1:vt1} ${2:vt2} ${3:blg} )"
+		],
+		"description": "p1 - start vertex\np2 - end vertex\nb  - bulge\nReturns: (<center> <start angle> <end angle> <radius>)"
+	},
+	"(Apply) Bulge to Arc": {
+		"prefix": "Remote>>LM:Bulge->Arc/a",
+		"body": [
+			"(apply 'Remote>>LM:Bulge->Arc ${1:lst})"
+		],
+		"description": "Apply LM:Bulge->Arc to an argument list (p1 p2 b)"
+	},
+	"Bulge to Arc (2)": {
+		"prefix": "Remote>>LM:Bulge->Arc~",
+		"body": [
+			"(Remote>>LM:Bulge->Arc~ ${1:vt1} ${2:vt2} ${3:blg} )"
+		],
+		"description": "p1 - start vertex\np2 - end vertex\nb  - bulge\nReturns: (<center> <start angle> <end angle> <radius>)"
+	},
+	"(Apply) Bulge to Arc (2)": {
+		"prefix": "Remote>>LM:Bulge->Arc~/a",
+		"body": [
+			"(apply 'Remote>>LM:Bulge->Arc~ ${1:lst})"
+		],
+		"description": "Apply LM:Bulge->Arc~ to an argument list (p1 p2 b)"
+	},
+	"Bulge Center": {
+		"prefix": "Remote>>LM:BulgeCenter",
+		"body": [
+			"(Remote>>LM:BulgeCenter ${1:pt1} ${2:pt2} ${3:blg} )"
+		],
+		"description": "p1 - start vertex\np2 - end vertex\nb  - bulge\nReturns the center of the arc described by the given bulge and vertices"
+	},
+	"(Apply) Bulge Center": {
+		"prefix": "Remote>>LM:BulgeCenter/a",
+		"body": [
+			"(apply 'Remote>>LM:BulgeCenter ${1:lst})"
+		],
+		"description": "Apply LM:BulgeCenter to an argument list (p1 p2 b)"
+	},
+	"Bulge Radius": {
+		"prefix": "Remote>>LM:BulgeRadius",
+		"body": [
+			"(Remote>>LM:BulgeRadius ${1:pt1} ${2:pt2} ${3:blg} )"
+		],
+		"description": "p1 - start vertex\np2 - end vertex\nb  - bulge\nReturns the radius of the arc described by the given bulge and vertices"
+	},
+	"(Apply) Bulge Radius": {
+		"prefix": "Remote>>LM:BulgeRadius/a",
+		"body": [
+			"(apply 'Remote>>LM:BulgeRadius ${1:lst})"
+		],
+		"description": "Apply LM:BulgeRadius to an argument list (p1 p2 b)"
+	},
+	// region Clockwise-p
+	"Clockwise-p (Standard": {
+		"prefix": "Remote>>LM:Clockwise-p",
+		"body": [
+			"(Remote>>LM:Clockwise-p ${1:pt1} ${2:pt2} ${3:pt3})"
+		],
+		"description": "Returns T if p1,p2,p3 are clockwise oriented"
+	},
+	"(Apply) Clockwise-p (Standard": {
+		"prefix": "Remote>>LM:Clockwise-p/a",
+		"body": [
+			"(apply 'Remote>>LM:Clockwise-p ${1:lst})"
+		],
+		"description": "Apply LM:Clockwise-p to an argument list (p1 p2 p3)"
+	},
+	"Clockwise-p (Version 1)": {
+		"prefix": "Remote>>LM:Clockwise-p1",
+		"body": [
+			"(Remote>>LM:Clockwise-p1 ${1:p1} ${2:p2} ${3:p3})"
+		],
+		"description": "Returns T if p1,p2,p3 are clockwise oriented"
+	},
+	"(Apply) Clockwise-p (Version 1)": {
+		"prefix": "Remote>>LM:Clockwise-p1/a",
+		"body": [
+			"(apply 'Remote>>LM:Clockwise-p1 ${1:lst})"
+		],
+		"description": "Apply LM:Clockwise-p1 to an argument list (p1 p2 p3)"
+	},
+	"Clockwise-p (Version 2)": {
+		"prefix": "Remote>>LM:Clockwise-p2",
+		"body": [
+			"(Remote>>LM:Clockwise-p2 ${1:p1} ${2:p2} ${3:p3})"
+		],
+		"description": "Returns T if p1,p2,p3 are clockwise oriented"
+	},
+	"(Apply) Clockwise-p (Version 2)": {
+		"prefix": "Remote>>LM:Clockwise-p2/a",
+		"body": [
+			"(apply 'Remote>>LM:Clockwise-p2 ${1:lst})"
+		],
+		"description": "Apply LM:Clockwise-p2 to an argument list (p1 p2 p3)"
+	},
+	"Clockwise-p (Version 3)": {
+		"prefix": "Remote>>LM:clockwise-p3",
+		"body": [
+			"(Remote>>LM:clockwise-p3 ${1:p1} ${2:p2} ${3:p3})"
+		],
+		"description": "Returns T if p1,p2,p3 are clockwise oriented"
+	},
+	"(Apply) Clockwise-p (Version 3)": {
+		"prefix": "Remote>>LM:clockwise-p3/a",
+		"body": [
+			"(apply 'Remote>>LM:clockwise-p3 ${1:lst})"
+		],
+		"description": "Apply LM:clockwise-p3 to an argument list (p1 p2 p3)"
+	},
+	// region Collection Functions
+	"VLA-Collection: Get Item": {
+		"prefix": "Remote>>LM:getitem",
+		"body": [
+			"(Remote>>LM:getitem ${1:cll} ${2:idx})"
+		],
+		"description": "Retrieves the item with index 'idx' if present in the supplied collection\ncol - [vla]     VLA Collection Object\nidx - [str/int] Index of the item to be retrieved"
+	},
+	"(Apply) VLA-Collection: Get Item": {
+		"prefix": "Remote>>LM:getitem/a",
+		"body": [
+			"(apply 'Remote>>LM:getitem ${1:lst})"
+		],
+		"description": "Apply LM:getitem to an argument list (col idx)"
+	},
+	"VLA-Collection: Get All Items": {
+		"prefix": "Remote>>LM:getallitems",
+		"body": [
+			"(Remote>>LM:getallitems ${1:cll})"
+		],
+		"description": "Returns a list of all items in the supplied collection\ncol - [vla] VLA Collection Object"
+	},
+	"(Apply) VLA-Collection: Get All Items": {
+		"prefix": "Remote>>LM:getallitems/a",
+		"body": [
+			"(apply 'Remote>>LM:getallitems ${1:lst})"
+		],
+		"description": "Apply LM:getallitems to an argument list (col)"
+	},
+	// region Colour Conversion Functions
+	"RGB -> OLE": {
+		"prefix": "Remote>>LM:RGB->OLE",
+		"body": [
+			"(Remote>>LM:RGB->OLE ${1:r} ${2:g} ${3:b})"
+		],
+		"description": "Args: r,g,b - [int] Red, Green, Blue values"
+	},
+	"(Apply) RGB -> OLE": {
+		"prefix": "Remote>>LM:RGB->OLE/a",
+		"body": [
+			"(apply 'Remote>>LM:RGB->OLE ${1:lst})"
+		],
+		"description": "Apply LM:RGB->OLE to an argument list (r g b)"
+	},
+	"OLE -> RGB": {
+		"prefix": "Remote>>LM:OLE->RGB",
+		"body": [
+			"(Remote>>LM:OLE->RGB ${1:c})"
+		],
+		"description": "Args: c - [int] OLE Colour"
+	},
+	"(Apply) OLE -> RGB": {
+		"prefix": "Remote>>LM:OLE->RGB/a",
+		"body": [
+			"(apply 'Remote>>LM:OLE->RGB ${1:lst})"
+		],
+		"description": "Apply LM:OLE->RGB to an argument list (c)"
+	},
+	"RGB -> True": {
+		"prefix": "Remote>>LM:RGB->True",
+		"body": [
+			"(Remote>>LM:RGB->True ${1:r} ${2:g} ${3:b})"
+		],
+		"description": "Args: r,g,b - [int] Red, Green, Blue values"
+	},
+	"(Apply) RGB -> True": {
+		"prefix": "Remote>>LM:RGB->True/a",
+		"body": [
+			"(apply 'Remote>>LM:RGB->True ${1:lst})"
+		],
+		"description": "Apply LM:RGB->True to an argument list (r g b)"
+	},
+	"True -> RGB": {
+		"prefix": "Remote>>LM:True->RGB",
+		"body": [
+			"(Remote>>LM:True->RGB ${1:c})"
+		],
+		"description": "Args: c - [int] True Colour"
+	},
+	"(Apply) True -> RGB": {
+		"prefix": "Remote>>LM:True->RGB/a",
+		"body": [
+			"(apply 'Remote>>LM:True->RGB ${1:lst})"
+		],
+		"description": "Apply LM:True->RGB to an argument list (c)"
+	},
+	"RGB -> ACI": {
+		"prefix": "Remote>>LM:RGB->ACI",
+		"body": [
+			"(Remote>>LM:RGB->ACI ${1:r} ${2:g} ${3:b})"
+		],
+		"description": "Args: r,g,b - [int] Red, Green, Blue values"
+	},
+	"(Apply) RGB -> ACI": {
+		"prefix": "Remote>>LM:RGB->ACI/a",
+		"body": [
+			"(apply 'Remote>>LM:RGB->ACI ${1:lst})"
+		],
+		"description": "Apply LM:RGB->ACI to an argument list (r g b)"
+	},
+	"ACI -> RGB": {
+		"prefix": "Remote>>LM:ACI->RGB",
+		"body": [
+			"(Remote>>LM:ACI->RGB ${1:c})"
+		],
+		"description": "Args: c - [int] ACI (AutoCAD Colour Index) Colour (1<=c<=255)"
+	},
+	"(Apply) ACI -> RGB": {
+		"prefix": "Remote>>LM:ACI->RGB/a",
+		"body": [
+			"(apply 'Remote>>LM:ACI->RGB ${1:lst})"
+		],
+		"description": "Apply LM:ACI->RGB to an argument list (c)"
+	},
+	"RGB -> HSL": {
+		"prefix": "Remote>>LM:RGB->HSL",
+		"body": [
+			"(Remote>>LM:RGB->HSL ${1:r} ${2:g} ${3:b})"
+		],
+		"description": "Args: r,g,b - [int] Red, Green, Blue values"
+	},
+	"(Apply) RGB -> HSL": {
+		"prefix": "Remote>>LM:RGB->HSL/a",
+		"body": [
+			"(apply 'Remote>>LM:RGB->HSL ${1:lst})"
+		],
+		"description": "Apply LM:RGB->HSL to an argument list (r g b)"
+	},
+	"HSL -> RGB": {
+		"prefix": "Remote>>LM:HSL->RGB",
+		"body": [
+			"(Remote>>LM:HSL->RGB ${1:h} ${2:s} ${3:l})"
+		],
+		"description": "Args: [int] 0<=h<=360, 0<=s<=100, 0<=l<=100"
+	},
+	"(Apply) HSL -> RGB": {
+		"prefix": "Remote>>LM:HSL->RGB/a",
+		"body": [
+			"(apply 'Remote>>LM:HSL->RGB ${1:lst})"
+		],
+		"description": "Apply LM:HSL->RGB to an argument list (h s l)"
+	},
+	"OLE -> True": {
+		"prefix": "Remote>>LM:OLE->True",
+		"body": [
+			"(Remote>>LM:OLE->True ${1:c})"
+		],
+		"description": "Args: c - [int] OLE Colour"
+	},
+	"(Apply) OLE -> True": {
+		"prefix": "Remote>>LM:OLE->True/a",
+		"body": [
+			"(apply 'Remote>>LM:OLE->True ${1:lst})"
+		],
+		"description": "Apply LM:OLE->True to an argument list (c)"
+	},
+	"True -> OLE": {
+		"prefix": "Remote>>LM:True->OLE",
+		"body": [
+			"(Remote>>LM:True->OLE ${1:c})"
+		],
+		"description": "Args: c - [int] True Colour"
+	},
+	"(Apply) True -> OLE": {
+		"prefix": "Remote>>LM:True->OLE/a",
+		"body": [
+			"(apply 'Remote>>LM:True->OLE ${1:lst})"
+		],
+		"description": "Apply LM:True->OLE to an argument list (c)"
+	},
+	"OLE -> ACI": {
+		"prefix": "Remote>>LM:OLE->ACI",
+		"body": [
+			"(Remote>>LM:OLE->ACI ${1:c})"
+		],
+		"description": "Args: c - [int] OLE Colour"
+	},
+	"(Apply) OLE -> ACI": {
+		"prefix": "Remote>>LM:OLE->ACI/a",
+		"body": [
+			"(apply 'Remote>>LM:OLE->ACI ${1:lst})"
+		],
+		"description": "Apply LM:OLE->ACI to an argument list (c)"
+	},
+	"ACI -> OLE": {
+		"prefix": "Remote>>LM:ACI->OLE",
+		"body": [
+			"(Remote>>LM:ACI->OLE ${1:c})"
+		],
+		"description": "Args: c - [int] ACI (AutoCAD Colour Index) Colour (1<=c<=255)"
+	},
+	"(Apply) ACI -> OLE": {
+		"prefix": "Remote>>LM:ACI->OLE/a",
+		"body": [
+			"(apply 'Remote>>LM:ACI->OLE ${1:lst})"
+		],
+		"description": "Apply LM:ACI->OLE to an argument list (c)"
+	},
+	"OLE -> HSL": {
+		"prefix": "Remote>>LM:OLE->HSL",
+		"body": [
+			"(Remote>>LM:OLE->HSL ${1:c})"
+		],
+		"description": "Args: c - [int] OLE Colour"
+	},
+	"(Apply) OLE -> HSL": {
+		"prefix": "Remote>>LM:OLE->HSL/a",
+		"body": [
+			"(apply 'Remote>>LM:OLE->HSL ${1:lst})"
+		],
+		"description": "Apply LM:OLE->HSL to an argument list (c)"
+	},
+	"HSL -> OLE": {
+		"prefix": "Remote>>LM:HSL->OLE",
+		"body": [
+			"(Remote>>LM:HSL->OLE ${1:h} ${2:s} ${3:l})"
+		],
+		"description": "Args: [int] 0<=h<=360, 0<=s<=100, 0<=l<=100"
+	},
+	"(Apply) HSL -> OLE": {
+		"prefix": "Remote>>LM:HSL->OLE/a",
+		"body": [
+			"(apply 'Remote>>LM:HSL->OLE ${1:lst})"
+		],
+		"description": "Apply LM:HSL->OLE to an argument list (h s l)"
+	},
+	"True -> ACI": {
+		"prefix": "Remote>>LM:True->ACI",
+		"body": [
+			"(Remote>>LM:True->ACI ${1:c})"
+		],
+		"description": "Args: c - [int] True Colour"
+	},
+	"(Apply) True -> ACI": {
+		"prefix": "Remote>>LM:True->ACI/a",
+		"body": [
+			"(apply 'Remote>>LM:True->ACI ${1:lst})"
+		],
+		"description": "Apply LM:True->ACI to an argument list (c)"
+	},
+	"ACI -> True": {
+		"prefix": "Remote>>LM:ACI->True",
+		"body": [
+			"(Remote>>LM:ACI->True ${1:c})"
+		],
+		"description": "Args: c - [int] ACI (AutoCAD Colour Index) Colour (1<=c<=255)"
+	},
+	"(Apply) ACI -> True": {
+		"prefix": "Remote>>LM:ACI->True/a",
+		"body": [
+			"(apply 'Remote>>LM:ACI->True ${1:lst})"
+		],
+		"description": "Apply LM:ACI->True to an argument list (c)"
+	},
+	"True -> HSL": {
+		"prefix": "Remote>>LM:True->HSL",
+		"body": [
+			"(Remote>>LM:True->HSL ${1:c})"
+		],
+		"description": "Args: c - [int] True Colour"
+	},
+	"(Apply) True -> HSL": {
+		"prefix": "Remote>>LM:True->HSL/a",
+		"body": [
+			"(apply 'Remote>>LM:True->HSL ${1:lst})"
+		],
+		"description": "Apply LM:True->HSL to an argument list (c)"
+	},
+	"HSL -> True": {
+		"prefix": "Remote>>LM:HSL->True",
+		"body": [
+			"(Remote>>LM:HSL->True ${1:h} ${2:s} ${3:l})"
+		],
+		"description": "Args: [int] 0<=h<=360, 0<=s<=100, 0<=l<=100"
+	},
+	"(Apply) HSL -> True": {
+		"prefix": "Remote>>LM:HSL->True/a",
+		"body": [
+			"(apply 'Remote>>LM:HSL->True ${1:lst})"
+		],
+		"description": "Apply LM:HSL->True to an argument list (h s l)"
+	},
+	"ACI -> HSL": {
+		"prefix": "Remote>>LM:ACI->HSL",
+		"body": [
+			"(Remote>>LM:ACI->HSL ${1:c})"
+		],
+		"description": "Args: c - [int] ACI (AutoCAD Colour Index) Colour (1<=c<=255)"
+	},
+	"(Apply) ACI -> HSL": {
+		"prefix": "Remote>>LM:ACI->HSL/a",
+		"body": [
+			"(apply 'Remote>>LM:ACI->HSL ${1:lst})"
+		],
+		"description": "Apply LM:ACI->HSL to an argument list (c)"
+	},
+	"HSL -> ACI": {
+		"prefix": "Remote>>LM:HSL->ACI",
+		"body": [
+			"(Remote>>LM:HSL->ACI ${1:h} ${2:s} ${3:l})"
+		],
+		"description": "Args: [int] 0<=h<=360, 0<=s<=100, 0<=l<=100"
+	},
+	"(Apply) HSL -> ACI": {
+		"prefix": "Remote>>LM:HSL->ACI/a",
+		"body": [
+			"(apply 'Remote>>LM:HSL->ACI ${1:lst})"
+		],
+		"description": "Apply LM:HSL->ACI to an argument list (h s l)"
+	},
+	// region Column Reference Functions
+	"Number to Column": {
+		"prefix": "Remote>>LM:num->col",
+		"body": [
+			"(Remote>>LM:num->col ${1:n})"
+		],
+		"description": "Converts an integer into a column reference, e.g. 27 -> AA\nn - [int] positive non-zero integer"
+	},
+	"(Apply) Number to Column": {
+		"prefix": "Remote>>LM:num->col/a",
+		"body": [
+			"(apply 'Remote>>LM:num->col ${1:lst})"
+		],
+		"description": "Apply LM:num->col to an argument list (n)"
+	},
+	"Column to Number": {
+		"prefix": "Remote>>LM:col->num",
+		"body": [
+			"(Remote>>LM:col->num ${1:c})"
+		],
+		"description": "Converts a column reference into an integer, e.g. AA -> 27\nc - [str] upper-case string representing column reference"
+	},
+	"(Apply) Column to Number": {
+		"prefix": "Remote>>LM:col->num/a",
+		"body": [
+			"(apply 'Remote>>LM:col->num ${1:lst})"
+		],
+		"description": "Apply LM:col->num to an argument list (c)"
+	},
+	"Column to Number (2)": {
+		"prefix": "Remote>>LM:col->num~",
+		"body": [
+			"(Remote>>LM:col->num~ ${1:c})"
+		],
+		"description": "Converts a column reference into an integer, e.g. AA -> 27\nc - [str] upper-case string representing column reference"
+	},
+	"(Apply) Column to Number (2)": {
+		"prefix": "Remote>>LM:col->num~/a",
+		"body": [
+			"(apply 'Remote>>LM:col->num~ ${1:lst})"
+		],
+		"description": "Apply LM:col->num~ to an argument list (c)"
+	},
+	"Increment Alpha": {
+		"prefix": "Remote>>LM:incalpha",
+		"body": [
+			"(Remote>>LM:incalpha ${1:a} ${2:i})"
+		],
+		"description": "Increments an uppercase alphabetical string by a given number of units, e.g. AX + 4 = BB\na - [str] uppercase alphabetical string\ni - [int] integer increment"
+	},
+	"(Apply) Increment Alpha": {
+		"prefix": "Remote>>LM:incalpha/a",
+		"body": [
+			"(apply 'Remote>>LM:incalpha ${1:lst})"
+		],
+		"description": "Apply LM:incalpha to an argument list (a i)"
+	},
+	"Increment Alpha (2)": {
+		"prefix": "Remote>>LM:incalpha~",
+		"body": [
+			"(Remote>>LM:incalpha~ ${1:a} ${2:i})"
+		],
+		"description": "Increments an uppercase alphabetical string by a given number of units, e.g. AX + 4 = BB\na - [str] uppercase alphabetical string\ni - [int] integer increment"
+	},
+	"(Apply) Increment Alpha (2)": {
+		"prefix": "Remote>>LM:incalpha~/a",
+		"body": [
+			"(apply 'Remote>>LM:incalpha~ ${1:lst})"
+		],
+		"description": "Apply LM:incalpha~ to an argument list (a i)"
+	},
+	"Increment Alpha (3)": {
+		"prefix": "Remote>>LM:incalphacol",
+		"body": [
+			"(Remote>>LM:incalphacol ${1:a} ${2:i})"
+		],
+		"description": "Increments an uppercase alphabetical string by a given number of units, e.g. AX + 4 = BB\na - [str] uppercase alphabetical string\ni - [int] integer increment"
+	},
+	"(Apply) Increment Alpha (3)": {
+		"prefix": "Remote>>LM:incalphacol/a",
+		"body": [
+			"(apply 'Remote>>LM:incalphacol ${1:lst})"
+		],
+		"description": "Apply LM:incalphacol to an argument list (a i)"
+	},
+	"Alpha++": {
+		"prefix": "Remote>>LM:alpha++",
+		"body": [
+			"(Remote>>LM:alpha++ ${1:a})"
+		],
+		"description": "Increments an uppercase alphabetical string by one, e.g. AZ => BA\na - [str] uppercase alphabetical string"
+	},
+	"(Apply) Alpha++": {
+		"prefix": "Remote>>LM:alpha++/a",
+		"body": [
+			"(apply 'Remote>>LM:alpha++ ${1:lst})"
+		],
+		"description": "Apply LM:alpha++ to an argument list (a)"
+	},
+	"Alpha++ (2)": {
+		"prefix": "Remote>>LM:alpha++~",
+		"body": [
+			"(Remote>>LM:alpha++~ ${1:a})"
+		],
+		"description": "Increments an uppercase alphabetical string by one, e.g. AZ => BA\na - [str] uppercase alphabetical string"
+	},
+	"(Apply) Alpha++ (2)": {
+		"prefix": "Remote>>LM:alpha++~/a",
+		"body": [
+			"(apply 'Remote>>LM:alpha++~ ${1:lst})"
+		],
+		"description": "Apply LM:alpha++~ to an argument list (a)"
+	},
+	// region Consistent rtos
+	"rtos wrapper": {
+		"prefix": "Remote>>LM:rtos",
+		"body": [
+			"(Remote>>LM:rtos ${1:real} ${2:units} ${3:prec})"
+		],
+		"description": "A wrapper for the rtos function to negate the effect of DIMZIN"
+	},
+	"(Apply) rtos wrapper": {
+		"prefix": "Remote>>LM:rtos/a",
+		"body": [
+			"(apply 'Remote>>LM:rtos ${1:lst})"
+		],
+		"description": "Apply LM:rtos to an argument list (real units prec)"
+	},
+	// region Convex Hull
+	"Convex Hull": {
+		"prefix": "Remote>>LM:ConvexHull",
+		"body": [
+			"(Remote>>LM:ConvexHull ${1:lst})"
+		],
+		"description": "Implements the Graham Scan Algorithm to return the Convex Hull of a list of points."
+	},
+	"(Apply) Convex Hull": {
+		"prefix": "Remote>>LM:ConvexHull/a",
+		"body": [
+			"(apply 'Remote>>LM:ConvexHull ${1:lst})"
+		],
+		"description": "Apply LM:ConvexHull to an argument list (lst)"
+	},
+	// region Copy Block Definition
+	"Copy Block Definition": {
+		"prefix": "Remote>>LM:CopyBlockDefinition",
+		"body": [
+			"(Remote>>LM:CopyBlockDefinition ${1:blk} ${2:new})"
+		],
+		"description": "Duplicates a block definition, with the copied definition assigned the name provided.\nblk - [str] name of block definition to be duplicated\nnew - [str] name to be assigned to copied block definition\nReturns the copied VLA Block Definition Object, else nil"
+	},
+	"(Apply) Copy Block Definition": {
+		"prefix": "Remote>>LM:CopyBlockDefinition/a",
+		"body": [
+			"(apply 'Remote>>LM:CopyBlockDefinition ${1:lst})"
+		],
+		"description": "Apply LM:CopyBlockDefinition to an argument list (blk new)"
+	},
+	// region Copy Folder
+	"Copy Folder": {
+		"prefix": "Remote>>LM:copyfolder",
+		"body": [
+			"(Remote>>LM:copyfolder ${1:src} ${2:des} ${3:ovr})"
+		],
+		"description": "Uses the CopyFolder method of the FileSystemObject (FSO) to recursively\ncopy a folder from one location to another.\nsrc - [str] Directory to be copied\ndes - [str] Destination directory\novr - [bol] T=overwrite existing files, nil=do not overwrite\nReturns T if copy was successful, else nil"
+	},
+	"(Apply) Copy Folder": {
+		"prefix": "Remote>>LM:copyfolder/a",
+		"body": [
+			"(apply 'Remote>>LM:copyfolder ${1:lst})"
+		],
+		"description": "Apply LM:copyfolder to an argument list (src des ovr)"
+	},
+	"Copy Folder (2)": {
+		"prefix": "Remote>>LM:copyfolder~",
+		"body": [
+			"(Remote>>LM:copyfolder~ ${1:src} ${2:des})"
+		],
+		"description": "Recursively copies the contents of a folder and the contents of any\nsubfolders to a destination directory; will not overwrite existing files.\nsrc - [str] Directory to be copied\ndes - [str] Destination directory\nReturns T if all files were copied successfully, else nil\nalternative to the above function"
+	},
+	"(Apply) Copy Folder (2)": {
+		"prefix": "Remote>>LM:copyfolder~/a",
+		"body": [
+			"(apply 'Remote>>LM:copyfolder~ ${1:lst})"
+		],
+		"description": "Apply LM:copyfolder~ to an argument list (src des)"
+	},
+	// region Create Directory
+	"Create Directory": {
+		"prefix": "Remote>>LM:createdirectory",
+		"body": [
+			"(Remote>>LM:createdirectory ${1:dir})"
+		],
+		"description": "dir - [str] directory to create (\"C:\\\\Folder1\\\\Folder2\")\nReturns:  T if directory creation is successful, else nil"
+	},
+	"(Apply) Create Directory": {
+		"prefix": "Remote>>LM:createdirectory/a",
+		"body": [
+			"(apply 'Remote>>LM:createdirectory ${1:lst})"
+		],
+		"description": "Apply LM:createdirectory to an argument list (dir)"
+	},
+	// region DCL List Tile Dependency
+	"DCL List-Tile Dependency": {
+		"prefix": "Remote>>LM:dcld:action",
+		"body": [
+			"(Remote>>LM:dcld:action ${1:key} ${2:lst-sym} ${3:rtn-sym})"
+		],
+		"description": "Configures action_tile statements for the list of keys to enabled dependency between the DCL tiles.\nkey     - [lst] List of DCL tile keys in order of dependency\nlst-sym - [sym] Quoted variable containing list data\nrtn-sym - [sym] Quoted variable containing initial selection indexes"
+	},
+	"(Apply) DCL List-Tile Dependency": {
+		"prefix": "Remote>>LM:dcld:action/a",
+		"body": [
+			"(apply 'Remote>>LM:dcld:action ${1:lst})"
+		],
+		"description": "Apply LM:dcld:action to an argument list (key lst-sym rtn-sym)"
+	},
+	"DCL List-Tile Dependency (2)": {
+		"prefix": "Remote>>LM:dcld:getitems",
+		"body": [
+			"(Remote>>LM:dcld:getitems ${1:idx} ${2:lst})"
+		],
+		"description": "Returns a list of the items selected from each dependent list tile.\nidx - [lst] List of selection indexes\nlst - [lst] List data"
+	},
+	"(Apply) DCL List-Tile Dependency (2)": {
+		"prefix": "Remote>>LM:dcld:getitems/a",
+		"body": [
+			"(apply 'Remote>>LM:dcld:getitems ${1:lst})"
+		],
+		"description": "Apply LM:dcld:getitems to an argument list (idx lst)"
+	},
+	// region Directory Files
+	"Directory Files": {
+		"prefix": "Remote>>LM:directoryfiles",
+		"body": [
+			"(Remote>>LM:directoryfiles ${1:dir} ${2:typ} ${3:sub})"
+		],
+		"description": "Retrieves all files of a specified filetype residing in a directory (and subdirectories)\ndir - [str] Root directory for which to return filenames\ntyp - [str] Optional filetype filter (DOS pattern)\nsub - [bol] If T, subdirectories of the root directory are included\nReturns: [lst] List of files matching the filetype criteria, else nil if none are found"
+	},
+	"(Apply) Directory Files": {
+		"prefix": "Remote>>LM:directoryfiles/a",
+		"body": [
+			"(apply 'Remote>>LM:directoryfiles ${1:lst})"
+		],
+		"description": "Apply LM:directoryfiles to an argument list (dir typ sub)"
+	},
+	// region Draw Order Functions
+	"Move to Top": {
+		"prefix": "Remote>>LM:movetotop",
+		"body": [
+			"(Remote>>LM:movetotop ${1:obs})"
+		],
+		"description": "Moves a set of objects to the top of the draw order.\nobs - [lst/sel] Selection set or list of objects with same owner\nReturns: T if successful, else nil"
+	},
+	"(Apply) Move to Top": {
+		"prefix": "Remote>>LM:movetotop/a",
+		"body": [
+			"(apply 'Remote>>LM:movetotop ${1:lst})"
+		],
+		"description": "Apply LM:movetotop to an argument list (obs)"
+	},
+	"Move to Bottom": {
+		"prefix": "Remote>>LM:movetobottom",
+		"body": [
+			"(Remote>>LM:movetobottom ${1:obs})"
+		],
+		"description": "Moves a set of objects to the bottom of the draw order.\nobs - [lst/sel] Selection set or list of objects with same owner\nReturns: T if successful, else nil"
+	},
+	"(Apply) Move to Bottom": {
+		"prefix": "Remote>>LM:movetobottom/a",
+		"body": [
+			"(apply 'Remote>>LM:movetobottom ${1:lst})"
+		],
+		"description": "Apply LM:movetobottom to an argument list (obs)"
+	},
+	"Move Above": {
+		"prefix": "Remote>>LM:moveabove",
+		"body": [
+			"(Remote>>LM:moveabove ${1:obs} ${2:obj})"
+		],
+		"description": "Moves a set of objects above a supplied object in the draw order.\nobs - [lst/sel] Selection set or list of objects with same owner\nobj - [vla] Object above which to move supplied objects\nReturns: T if successful, else nil"
+	},
+	"(Apply) Move Above": {
+		"prefix": "Remote>>LM:moveabove/a",
+		"body": [
+			"(apply 'Remote>>LM:moveabove ${1:lst})"
+		],
+		"description": "Apply LM:moveabove to an argument list (obs obj)"
+	},
+	"Move Below": {
+		"prefix": "Remote>>LM:movebelow",
+		"body": [
+			"(Remote>>LM:movebelow ${1:obs} ${2:obj})"
+		],
+		"description": "Moves a set of objects below a supplied object in the draw order.\nobs - [lst/sel] Selection set or list of objects with same owner\nobj - [vla] Object below which to move supplied objects\nReturns: T if successful, else nil"
+	},
+	"(Apply) Move Below": {
+		"prefix": "Remote>>LM:movebelow/a",
+		"body": [
+			"(apply 'Remote>>LM:movebelow ${1:lst})"
+		],
+		"description": "Apply LM:movebelow to an argument list (obs obj)"
+	},
+	"Swap Order": {
+		"prefix": "Remote>>LM:swaporder",
+		"body": [
+			"(Remote>>LM:swaporder ${1:ob1} ${2:ob2})"
+		],
+		"description": "Swaps the draw order of two objects (may require regen).\nob1,ob2 - [vla] Objects to swap\nReturns: T if successful, else nil"
+	},
+	"(Apply) Swap Order": {
+		"prefix": "Remote>>LM:swaporder/a",
+		"body": [
+			"(apply 'Remote>>LM:swaporder ${1:lst})"
+		],
+		"description": "Apply LM:swaporder to an argument list (ob1 ob2)"
+	},
+	// region Drawing Version
+	"Drawing Version": {
+		"prefix": "Remote>>LM:dwgversion",
+		"body": [
+			"(Remote>>LM:dwgversion ${1:dwg})"
+		],
+		"description": "Returns the version of the supplied filename (dwg/dws/dwt/dxf)\ndwg - [str] Drawing filename"
+	},
+	"(Apply) Drawing Version": {
+		"prefix": "Remote>>LM:dwgversion/a",
+		"body": [
+			"(apply 'Remote>>LM:dwgversion ${1:lst})"
+		],
+		"description": "Apply LM:dwgversion to an argument list (dwg)"
+	},
+	// region Dynamic Block Functions
+	"Get Dynamic Block Property Value": {
+		"prefix": "Remote>>LM:getdynpropvalue",
+		"body": [
+			"(Remote>>LM:getdynpropvalue ${1:blk} ${2:prp})"
+		],
+		"description": "Returns the value of a Dynamic Block property (if present)\nblk - [vla] VLA Dynamic Block Reference object\nprp - [str] Dynamic Block property name (case-insensitive)"
+	},
+	"(Apply) Get Dynamic Block Property Value": {
+		"prefix": "Remote>>LM:getdynpropvalue/a",
+		"body": [
+			"(apply 'Remote>>LM:getdynpropvalue ${1:lst})"
+		],
+		"description": "Apply LM:getdynpropvalue to an argument list (blk prp)"
+	},
+	"Set Dynamic Block Property Value": {
+		"prefix": "Remote>>LM:setdynpropvalue",
+		"body": [
+			"(Remote>>LM:setdynpropvalue ${1:blk} ${2:prp} ${3:val})"
+		],
+		"description": "Modifies the value of a Dynamic Block property (if present)\nblk - [vla] VLA Dynamic Block Reference object\nprp - [str] Dynamic Block property name (case-insensitive)\nval - [any] New value for property\nReturns: [any] New value if successful, else nil"
+	},
+	"(Apply) Set Dynamic Block Property Value": {
+		"prefix": "Remote>>LM:setdynpropvalue/a",
+		"body": [
+			"(apply 'Remote>>LM:setdynpropvalue ${1:lst})"
+		],
+		"description": "Apply LM:setdynpropvalue to an argument list (blk prp val)"
+	},
+	"Set Dynamic Block Properties": {
+		"prefix": "Remote>>LM:setdynprops",
+		"body": [
+			"(Remote>>LM:setdynprops ${1:blk} ${2:lst})"
+		],
+		"description": "Modifies values of Dynamic Block properties using a supplied association list.\nblk - [vla] VLA Dynamic Block Reference object\nlst - [lst] Association list of ((<Property> . <Value>) ... )\nReturns: nil"
+	},
+	"(Apply) Set Dynamic Block Properties": {
+		"prefix": "Remote>>LM:setdynprops/a",
+		"body": [
+			"(apply 'Remote>>LM:setdynprops ${1:lst})"
+		],
+		"description": "Apply LM:setdynprops to an argument list (blk lst)"
+	},
+	"Get Dynamic Block Property Allowed Values": {
+		"prefix": "Remote>>LM:getdynpropallowedvalues",
+		"body": [
+			"(Remote>>LM:getdynpropallowedvalues ${1:blk} ${2:prp})"
+		],
+		"description": "Returns the allowed values for a specific Dynamic Block property.\nblk - [vla] VLA Dynamic Block Reference object\nprp - [str] Dynamic Block property name (case-insensitive)\nReturns: [lst] List of allowed values for property, else nil if no restrictions"
+	},
+	"(Apply) Get Dynamic Block Property Allowed Values": {
+		"prefix": "Remote>>LM:getdynpropallowedvalues/a",
+		"body": [
+			"(apply 'Remote>>LM:getdynpropallowedvalues ${1:lst})"
+		],
+		"description": "Apply LM:getdynpropallowedvalues to an argument list (blk prp)"
+	},
+	"Get Visibility Parameter Name": {
+		"prefix": "Remote>>LM:getvisibilityparametername",
+		"body": [
+			"(Remote>>LM:getvisibilityparametername ${1:blk})"
+		],
+		"description": "Returns the name of the Visibility Parameter of a Dynamic Block (if present)\nblk - [vla] VLA Dynamic Block Reference object\nReturns: [str] Name of Visibility Parameter, else nil"
+	},
+	"(Apply) Get Visibility Parameter Name": {
+		"prefix": "Remote>>LM:getvisibilityparametername/a",
+		"body": [
+			"(apply 'Remote>>LM:getvisibilityparametername ${1:lst})"
+		],
+		"description": "Apply LM:getvisibilityparametername to an argument list (blk)"
+	},
+	"Get Dynamic Block Visibility State": {
+		"prefix": "Remote>>LM:getvisibilitystate",
+		"body": [
+			"(Remote>>LM:getvisibilitystate ${1:blk})"
+		],
+		"description": "Returns the value of the Visibility Parameter of a Dynamic Block (if present)\nblk - [vla] VLA Dynamic Block Reference object\nReturns: [str] Value of Visibility Parameter, else nil"
+	},
+	"(Apply) Get Dynamic Block Visibility State": {
+		"prefix": "Remote>>LM:getvisibilitystate/a",
+		"body": [
+			"(apply 'Remote>>LM:getvisibilitystate ${1:lst})"
+		],
+		"description": "Apply LM:getvisibilitystate to an argument list (blk)"
+	},
+	"Set Dynamic Block Visibility State": {
+		"prefix": "Remote>>LM:SetVisibilityState",
+		"body": [
+			"(Remote>>LM:SetVisibilityState ${1:blk} ${2:val})"
+		],
+		"description": "Sets the Visibility Parameter of a Dynamic Block (if present) to a specific value (if allowed)\nblk - [vla] VLA Dynamic Block Reference object\nval - [str] Visibility State Parameter value\nReturns: [str] New value of Visibility Parameter, else nil"
+	},
+	"(Apply) Set Dynamic Block Visibility State": {
+		"prefix": "Remote>>LM:SetVisibilityState/a",
+		"body": [
+			"(apply 'Remote>>LM:SetVisibilityState ${1:lst})"
+		],
+		"description": "Apply LM:SetVisibilityState to an argument list (blk val)"
+	},
+	// region Edit Box
+	"Edit Box": {
+		"prefix": "Remote>>LM:editbox",
+		"body": [
+			"(Remote>>LM:editbox ${1:str})"
+		],
+		"description": "Displays a DCL Edit Box to obtain a string from the user\nstr - [str] Initial value to display (\"\" for none)\nReturns: [str] Edit box contents if user pressed OK, else nil"
+	},
+	"(Apply) Edit Box": {
+		"prefix": "Remote>>LM:editbox/a",
+		"body": [
+			"(apply 'Remote>>LM:editbox ${1:lst})"
+		],
+		"description": "Apply LM:editbox to an argument list (str)"
+	},
+	// region Effective Block Name
+	"Effective Block Name": {
+		"prefix": "Remote>>LM:effectivename",
+		"body": [
+			"(Remote>>LM:effectivename ${1:obj})"
+		],
+		"description": "obj - [vla] VLA Block Reference object"
+	},
+	"(Apply) Effective Block Name": {
+		"prefix": "Remote>>LM:effectivename/a",
+		"body": [
+			"(apply 'Remote>>LM:effectivename ${1:lst})"
+		],
+		"description": "Apply LM:effectivename to an argument list (obj)"
+	},
+	// region Entity to Point List
+	"Entity to Point List": {
+		"prefix": "Remote>>LM:ent->pts",
+		"body": [
+			"(Remote>>LM:ent->pts ${1:ent} ${2:acc})"
+		],
+		"description": "Returns a list of WCS points describing or approximating the supplied entity, else nil if the entity is not supported.\nent - [ent] Entity name to be described by point list (POINT/LINE/ARC/CIRCLE/LWPOLYLINE/POLYLINE/ELLIPSE/SPLINE)\nacc - [num] Positive number determining the point density for non-linear objects"
+	},
+	"(Apply) Entity to Point List": {
+		"prefix": "Remote>>LM:ent->pts/a",
+		"body": [
+			"(apply 'Remote>>LM:ent->pts ${1:lst})"
+		],
+		"description": "Apply LM:ent->pts to an argument list (ent acc)"
+	},
+	"ent->pts:lwpolyvertices": {
+		"prefix": "Remote>>LM:ent->pts:lwpolyvertices",
+		"body": [
+			"(Remote>>LM:ent->pts:lwpolyvertices ${1:enx})"
+		],
+		"description": ""
+	},
+	"(Apply) ent->pts:lwpolyvertices": {
+		"prefix": "Remote>>LM:ent->pts:lwpolyvertices/a",
+		"body": [
+			"(apply 'Remote>>LM:ent->pts:lwpolyvertices ${1:lst})"
+		],
+		"description": "Apply LM:ent->pts:lwpolyvertices to an argument list (enx)"
+	},
+	"ent->pts:polyvertices": {
+		"prefix": "Remote>>LM:ent->pts:polyvertices",
+		"body": [
+			"(Remote>>LM:ent->pts:polyvertices ${1:ent})"
+		],
+		"description": ""
+	},
+	"(Apply) ent->pts:polyvertices": {
+		"prefix": "Remote>>LM:ent->pts:polyvertices/a",
+		"body": [
+			"(apply 'Remote>>LM:ent->pts:polyvertices ${1:lst})"
+		],
+		"description": "Apply LM:ent->pts:polyvertices to an argument list (ent)"
+	},
+	// region Escape Wildcards
+	"Escape Wildcards (Iterative)": {
+		"prefix": "Remote>>LM:escapewildcards",
+		"body": [
+			"(Remote>>LM:escapewildcards ${1:str})"
+		],
+		"description": "Escapes wildcard special characters in a supplied string"
+	},
+	"(Apply) Escape Wildcards (Iterative)": {
+		"prefix": "Remote>>LM:escapewildcards/a",
+		"body": [
+			"(apply 'Remote>>LM:escapewildcards ${1:lst})"
+		],
+		"description": "Apply LM:escapewildcards to an argument list (str)"
+	},
+	"Escape Wildcards (Recursive)": {
+		"prefix": "Remote>>LM:escapewildcards-r",
+		"body": [
+			"(Remote>>LM:escapewildcards-r ${1:str})"
+		],
+		"description": "Escapes wildcard special characters in a supplied string"
+	},
+	"(Apply) Escape Wildcards (Recursive)": {
+		"prefix": "Remote>>LM:escapewildcards-r/a",
+		"body": [
+			"(apply 'Remote>>LM:escapewildcards-r ${1:lst})"
+		],
+		"description": "Apply LM:escapewildcards-r to an argument list (str)"
+	},
+	// region Evaluate Once on Startup
+	"Evaluate Once on Startup": {
+		"prefix": "Remote>>LM:evalonceonstartup",
+		"body": [
+			"(Remote>>LM:evalonceonstartup ${1:expr})"
+		],
+		"description": "Writes expressions to an existing or temporary acaddoc.lsp to be evaluated on drawing startup,\nwith the acaddoc.lsp restored to its original state or deleted following evaluation.\nCall with quoted expressions to be evaluated, e.g.:\n(Remote>>LM:evalonceonstartup '((lambda ( / foo ) (setq foo 10.0) (print foo) (princ))))\nFunction returns T if expressions are written successfully."
+	},
+	"(Apply) Evaluate Once on Startup": {
+		"prefix": "Remote>>LM:evalonceonstartup/a",
+		"body": [
+			"(apply 'Remote>>LM:evalonceonstartup ${1:lst})"
+		],
+		"description": "Apply LM:evalonceonstartup to an argument list (expr)"
+	},
+	// region Explore
+	"Explore": {
+		"prefix": "Remote>>LM:explore",
+		"body": [
+			"(Remote>>LM:explore ${1:target})"
+		],
+		"description": "Opens a specified folder in a Windows Explorer window.\ntarget - [int/str] Directory or ShellSpecialFolderConstants enum"
+	},
+	"(Apply) Explore": {
+		"prefix": "Remote>>LM:explore/a",
+		"body": [
+			"(apply 'Remote>>LM:explore ${1:lst})"
+		],
+		"description": "Apply LM:explore to an argument list (LM:target)"
+	},
+	// region Field Code
+	"Field Code": {
+		"prefix": "Remote>>LM:fieldcode",
+		"body": [
+			"(Remote>>LM:fieldcode ${1:ent})"
+		],
+		"description": "Returns the field expression associated with an entity"
+	},
+	"(Apply) Field Code": {
+		"prefix": "Remote>>LM:fieldcode/a",
+		"body": [
+			"(apply 'Remote>>LM:fieldcode ${1:lst})"
+		],
+		"description": "Apply LM:fieldcode to an argument list (ent)"
+	},
+	// region Field Objects
+	"Field Objects": {
+		"prefix": "Remote>>LM:fieldobjects",
+		"body": [
+			"(Remote>>LM:fieldobjects ${1:ent})"
+		],
+		"description": "Returns a list of entities referenced by a supplied field\nent - [ent] Entity containing field (Text / MText / Attribute)\nReturns: [lst] List of entities referenced by Field, else nil"
+	},
+	"(Apply) Field Objects": {
+		"prefix": "Remote>>LM:fieldobjects/a",
+		"body": [
+			"(apply 'Remote>>LM:fieldobjects ${1:lst})"
+		],
+		"description": "Apply LM:fieldobjects to an argument list (ent)"
+	},
+	// region Find File
+	"Findfile": {
+		"prefix": "Remote>>LM:findfile",
+		"body": [
+			"(Remote>>LM:findfile ${1:fnm} ${2:dir})"
+		],
+		"description": "Searches the supplied directory and all subdirectories of the supplied directory for the specified file.\nfnm - [str] File to search, e.g. \"MyFile.txt\"\ndir - [str] Root directory\nReturns: [str] Full filename of file if found, else nil."
+	},
+	"(Apply) Findfile": {
+		"prefix": "Remote>>LM:findfile/a",
+		"body": [
+			"(apply 'Remote>>LM:findfile ${1:lst})"
+		],
+		"description": "Apply LM:findfile to an argument list (fnm dir)"
+	},
+	// region Flatten List
+	"Flatten List": {
+		"prefix": "Remote>>LM:flatten",
+		"body": [
+			"(Remote>>LM:flatten ${1:l})"
+		],
+		"description": "Transforms a nested list into a non-nested list"
+	},
+	"(Apply) Flatten List": {
+		"prefix": "Remote>>LM:flatten/a",
+		"body": [
+			"(apply 'Remote>>LM:flatten ${1:lst})"
+		],
+		"description": "Apply LM:flatten to an argument list (l)"
+	},
+	"Flatten List (2)": {
+		"prefix": "Remote>>LM:flatten-nils",
+		"body": [
+			"(Remote>>LM:flatten-nils ${1:l})"
+		],
+		"description": "Transforms a nested list into a non-nested list with null values removed"
+	},
+	"(Apply) Flatten List (2)": {
+		"prefix": "Remote>>LM:flatten-nils/a",
+		"body": [
+			"(apply 'Remote>>LM:flatten-nils ${1:lst})"
+		],
+		"description": "Apply LM:flatten-nils to an argument list (l)"
+	},
+	// region Get Anonymous References
+	"Get Anonymous References": {
+		"prefix": "Remote>>LM:getanonymousreferences",
+		"body": [
+			"(Remote>>LM:getanonymousreferences ${1:blk})"
+		],
+		"description": "Returns the names of all anonymous references of a block.\nblk - [str] Block name/wildcard pattern for which to return anon. references"
+	},
+	"(Apply) Get Anonymous References": {
+		"prefix": "Remote>>LM:getanonymousreferences/a",
+		"body": [
+			"(apply 'Remote>>LM:getanonymousreferences ${1:lst})"
+		],
+		"description": "Apply LM:getanonymousreferences to an argument list (blk)"
+	},
+	"Effective Block Name (2)": {
+		"prefix": "Remote>>LM:al-effectivename",
+		"body": [
+			"(Remote>>LM:al-effectivename ${1:ent})"
+		],
+		"description": "ent - [ent] Block Reference entity"
+	},
+	"(Apply) Effective Block Name (2)": {
+		"prefix": "Remote>>LM:al-effectivename/a",
+		"body": [
+			"(apply 'Remote>>LM:al-effectivename ${1:lst})"
+		],
+		"description": "Apply LM:al-effectivename to an argument list (ent)"
+	},
+	// region Get Files Dialog
+	"GetFiles": {
+		"prefix": "Remote>>LM:getfiles",
+		"body": [
+			"(Remote>>LM:getfiles ${1:msg} ${2:def} ${3:ext})"
+		],
+		"description": "An analog of the 'getfiled' function for multiple file selection.\nmsg - [str/nil] Dialog box label; 'Select Files' if nil or \"\".\ndef - [str/nil] Default directory; dwgprefix if nil or \"\".\next - [str/nil] File extension filter (e.g. \"dwg;lsp\"); \"*\" if nil\nReturns: List of selected files, else nil\nAuthor:  Lee Mac, Copyright © 2012  -  www.lee-mac.com"
+	},
+	"(Apply) GetFiles": {
+		"prefix": "Remote>>LM:getfiles/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles ${1:lst})"
+		],
+		"description": "Apply LM:getfiles to an argument list (msg def ext)"
+	},
+	"getfiles:listbox": {
+		"prefix": "Remote>>LM:getfiles:listbox",
+		"body": [
+			"(Remote>>LM:getfiles:listbox ${1:key} ${2:lst})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:listbox": {
+		"prefix": "Remote>>LM:getfiles:listbox/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:listbox ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:listbox to an argument list (key lst)"
+	},
+	"getfiles:listfiles": {
+		"prefix": "Remote>>LM:getfiles:listfiles",
+		"body": [
+			"(Remote>>LM:getfiles:listfiles ${1:dir} ${2:ext} ${3:lst})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:listfiles": {
+		"prefix": "Remote>>LM:getfiles:listfiles/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:listfiles ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:listfiles to an argument list (dir ext lst)"
+	},
+	"getfiles:checkredirect": {
+		"prefix": "Remote>>LM:getfiles:checkredirect",
+		"body": [
+			"(Remote>>LM:getfiles:checkredirect ${1:dir})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:checkredirect": {
+		"prefix": "Remote>>LM:getfiles:checkredirect/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:checkredirect ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:checkredirect to an argument list (dir)"
+	},
+	"getfiles:sort": {
+		"prefix": "Remote>>LM:getfiles:sort",
+		"body": [
+			"(Remote>>LM:getfiles:sort ${1:lst})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:sort": {
+		"prefix": "Remote>>LM:getfiles:sort/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:sort ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:sort to an argument list (lst)"
+	},
+	"getfiles:sortlist": {
+		"prefix": "Remote>>LM:getfiles:sortlist",
+		"body": [
+			"(Remote>>LM:getfiles:sortlist ${1:lst})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:sortlist": {
+		"prefix": "Remote>>LM:getfiles:sortlist/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:sortlist ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:sortlist to an argument list (lst)"
+	},
+	"getfiles:groupbyfunction": {
+		"prefix": "Remote>>LM:getfiles:groupbyfunction",
+		"body": [
+			"(Remote>>LM:getfiles:groupbyfunction ${1:lst} ${2:fun})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:groupbyfunction": {
+		"prefix": "Remote>>LM:getfiles:groupbyfunction/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:groupbyfunction ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:groupbyfunction to an argument list (lst fun)"
+	},
+	"getfiles:splitstring": {
+		"prefix": "Remote>>LM:getfiles:splitstring",
+		"body": [
+			"(Remote>>LM:getfiles:splitstring ${1:str})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:splitstring": {
+		"prefix": "Remote>>LM:getfiles:splitstring/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:splitstring ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:splitstring to an argument list (str)"
+	},
+	"getfiles:browseforfolder": {
+		"prefix": "Remote>>LM:getfiles:browseforfolder",
+		"body": [
+			"(Remote>>LM:getfiles:browseforfolder ${1:msg} ${2:dir} ${3:flg})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:browseforfolder": {
+		"prefix": "Remote>>LM:getfiles:browseforfolder/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:browseforfolder ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:browseforfolder to an argument list (msg dir flg)"
+	},
+	"getfiles:full->relative": {
+		"prefix": "Remote>>LM:getfiles:full->relative",
+		"body": [
+			"(Remote>>LM:getfiles:full->relative ${1:dir} ${2:path})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:full->relative": {
+		"prefix": "Remote>>LM:getfiles:full->relative/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:full->relative ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:full->relative to an argument list (dir path)"
+	},
+	"getfiles:str->lst": {
+		"prefix": "Remote>>LM:getfiles:str->lst",
+		"body": [
+			"(Remote>>LM:getfiles:str->lst ${1:str} ${2:del})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:str->lst": {
+		"prefix": "Remote>>LM:getfiles:str->lst/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:str->lst ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:str->lst to an argument list (str del)"
+	},
+	"getfiles:updatefilelist": {
+		"prefix": "Remote>>LM:getfiles:updatefilelist",
+		"body": [
+			"(Remote>>LM:getfiles:updatefilelist ${1:dir} ${2:ext} ${3:lst})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:updatefilelist": {
+		"prefix": "Remote>>LM:getfiles:updatefilelist/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:updatefilelist ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:updatefilelist to an argument list (dir ext lst)"
+	},
+	"getfiles:updateselected": {
+		"prefix": "Remote>>LM:getfiles:updateselected",
+		"body": [
+			"(Remote>>LM:getfiles:updateselected ${1:dir} ${2:lst})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:updateselected": {
+		"prefix": "Remote>>LM:getfiles:updateselected/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:updateselected ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:updateselected to an argument list (dir lst)"
+	},
+	"getfiles:updir": {
+		"prefix": "Remote>>LM:getfiles:updir",
+		"body": [
+			"(Remote>>LM:getfiles:updir ${1:dir})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:updir": {
+		"prefix": "Remote>>LM:getfiles:updir/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:updir ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:updir to an argument list (dir)"
+	},
+	"getfiles:fixdir": {
+		"prefix": "Remote>>LM:getfiles:fixdir",
+		"body": [
+			"(Remote>>LM:getfiles:fixdir ${1:dir})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:fixdir": {
+		"prefix": "Remote>>LM:getfiles:fixdir/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:fixdir ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:fixdir to an argument list (dir)"
+	},
+	"getfiles:removeitems": {
+		"prefix": "Remote>>LM:getfiles:removeitems",
+		"body": [
+			"(Remote>>LM:getfiles:removeitems ${1:itm} ${2:lst})"
+		],
+		"description": ""
+	},
+	"(Apply) getfiles:removeitems": {
+		"prefix": "Remote>>LM:getfiles:removeitems/a",
+		"body": [
+			"(apply 'Remote>>LM:getfiles:removeitems ${1:lst})"
+		],
+		"description": "Apply LM:getfiles:removeitems to an argument list (itm lst)"
+	},
+	// region Get Layer Status
+	"GetLayerStatus": {
+		"prefix": "Remote>>LM:GetLayerStatus",
+		"body": [
+			"(Remote>>LM:GetLayerStatus)"
+		],
+		"description": "Returns a list of dotted pairs detailing the status of each layer in a drawing.\nReturns: [str] Full filename of file if found, else nil.\nAuthor: Lee Mac, Copyright © 2010 - www.lee-mac.com"
+	},
+	// region Get Syntax
+	"Get Syntax": {
+		"prefix": "Remote>>LM:GetSyntax",
+		"body": [
+			"(Remote>>LM:GetSyntax ${1:file})"
+		],
+		"description": "Returns a list of syntax for all defined commands in a\nsupplied LISP file.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nfile - filename of LISP file to read\nReturns:  List of defined commands in supplied LISP file"
+	},
+	"(Apply) Get Syntax": {
+		"prefix": "Remote>>LM:GetSyntax/a",
+		"body": [
+			"(apply 'Remote>>LM:GetSyntax ${1:lst})"
+		],
+		"description": "Apply LM:GetSyntax to an argument list (file)"
+	},
+	// region Get True Content
+	"Get True Content": {
+		"prefix": "Remote>>LM:GetTrueContent",
+		"body": [
+			"(Remote>>LM:GetTrueContent ${1:RegExp} ${2:entity} ${3:*dtextstring} ${4:*mtextstring})"
+		],
+		"description": "Returns the unformatted string associated with the\nsupplied entity, in formats compatible with Text & MText\nobjects.\nThe arguments *dtextstring & *mtextstring should be\nsupplied with quoted symbols (other than those symbols\nused by the arguments themselves). The unformatted\nstrings suitable for Text & MText objects will henceforth\nbe bound to the supplied symbol arguments respectively.\nNote that it is the caller's responsibility to create and\nrelease the RegularExpressions (Remote>>gc:RegExp) object. This\nobject may be created using the\nProgrammatic Identifier: \"VBScript.RegExp\".\nAuthor: Lee Mac, Copyright © 2010 - www.lee-mac.com\nArguments:\nRegExp       - RegularExpressions (Remote>>gc:RegExp) Object\nentity       - Ename whose text content is to be returned\n*dtextstring - (output) Unformatted string compatible\nwith Text entities\n*mtextstring - (output) Unformatted string compatible\nwith MText entities\nReturns:    This function always returns nil"
+	},
+	"(Apply) Get True Content": {
+		"prefix": "Remote>>LM:GetTrueContent/a",
+		"body": [
+			"(apply 'Remote>>LM:GetTrueContent ${1:lst})"
+		],
+		"description": "Apply LM:GetTrueContent to an argument list (gc:RegExp entity *dtextstring *mtextstring)"
+	},
+	// region Group List by Number
+	"Group by Number (Recursive)": {
+		"prefix": "Remote>>LM:group<n-r",
+		"body": [
+			"(Remote>>LM:group<n-r ${1:l} ${2:n})"
+		],
+		"description": "Groups a list 'l' into a list of lists, each of max length 'n'"
+	},
+	"(Apply) Group by Number (Recursive)": {
+		"prefix": "Remote>>LM:group<n-r/a",
+		"body": [
+			"(apply 'Remote>>LM:group<n-r ${1:lst})"
+		],
+		"description": "Apply LM:group<n-r to an argument list (l n)"
+	},
+	"group<n-sub": {
+		"prefix": "Remote>>LM:group<n-sub",
+		"body": [
+			"(Remote>>LM:group<n-sub ${1:l} ${2:m} ${3:n})"
+		],
+		"description": ""
+	},
+	"(Apply) group<n-sub": {
+		"prefix": "Remote>>LM:group<n-sub/a",
+		"body": [
+			"(apply 'Remote>>LM:group<n-sub ${1:lst})"
+		],
+		"description": "Apply LM:group<n-sub to an argument list (l m n)"
+	},
+	"Group by Number": {
+		"prefix": "Remote>>LM:group<n",
+		"body": [
+			"(Remote>>LM:group<n ${1:l} ${2:n})"
+		],
+		"description": "Groups a list 'l' into a list of lists, each of max length 'n'"
+	},
+	"(Apply) Group by Number": {
+		"prefix": "Remote>>LM:group<n/a",
+		"body": [
+			"(apply 'Remote>>LM:group<n ${1:lst})"
+		],
+		"description": "Apply LM:group<n to an argument list (l n)"
+	},
+	"Group by Number (Recursive) (2)": {
+		"prefix": "Remote>>LM:group-n-r",
+		"body": [
+			"(Remote>>LM:group-n-r ${1:l} ${2:n})"
+		],
+		"description": "Groups a list 'l' into a list of lists, each of length 'n'"
+	},
+	"(Apply) Group by Number (Recursive) (2)": {
+		"prefix": "Remote>>LM:group-n-r/a",
+		"body": [
+			"(apply 'Remote>>LM:group-n-r ${1:lst})"
+		],
+		"description": "Apply LM:group-n-r to an argument list (l n)"
+	},
+	"Group by Number (2)": {
+		"prefix": "Remote>>LM:group-n",
+		"body": [
+			"(Remote>>LM:group-n ${1:l} ${2:n})"
+		],
+		"description": "Groups a list 'l' into a list of lists, each of length 'n'"
+	},
+	"(Apply) Group by Number (2)": {
+		"prefix": "Remote>>LM:group-n/a",
+		"body": [
+			"(apply 'Remote>>LM:group-n ${1:lst})"
+		],
+		"description": "Apply LM:group-n to an argument list (l n)"
+	},
+	// region GrSnap
+	"Object Snap for grread: Snap Function": {
+		"prefix": "Remote>>LM:grsnap:snapfunction",
+		"body": [
+			"(Remote>>LM:grsnap:snapfunction)"
+		],
+		"description": "Returns: [fun] A function requiring two arguments:\np - [lst] UCS Point to be snapped\no - [int] Object Snap bit code\nThe returned function returns either the snapped point (displaying an appropriate snap symbol)\nor the supplied point if the snap failed for the given Object Snap bit code."
+	},
+	"Object Snap for grread: Display Snap": {
+		"prefix": "Remote>>LM:grsnap:displaysnap",
+		"body": [
+			"(Remote>>LM:grsnap:displaysnap ${1:pnt} ${2:lst} ${3:col})"
+		],
+		"description": "pnt - [lst] UCS point at which to display the symbol\nlst - [lst] grvecs vector list\ncol - [int] ACI colour for displayed symbol\nReturns nil"
+	},
+	"(Apply) Object Snap for grread: Display Snap": {
+		"prefix": "Remote>>LM:grsnap:displaysnap/a",
+		"body": [
+			"(apply 'Remote>>LM:grsnap:displaysnap ${1:lst})"
+		],
+		"description": "Apply LM:grsnap:displaysnap to an argument list (pnt lst col)"
+	},
+	"Object Snap for grread: Snap Symbols": {
+		"prefix": "Remote>>LM:grsnap:snapsymbols",
+		"body": [
+			"(Remote>>LM:grsnap:snapsymbols ${1:p})"
+		],
+		"description": "p - [int] Size of snap symbol in pixels\nReturns: [lst] List of vector lists describing each Object Snap symbol"
+	},
+	"(Apply) Object Snap for grread: Snap Symbols": {
+		"prefix": "Remote>>LM:grsnap:snapsymbols/a",
+		"body": [
+			"(apply 'Remote>>LM:grsnap:snapsymbols ${1:lst})"
+		],
+		"description": "Apply LM:grsnap:snapsymbols to an argument list (p)"
+	},
+	"Object Snap for grread: Parse Point": {
+		"prefix": "Remote>>LM:grsnap:parsepoint",
+		"body": [
+			"(Remote>>LM:grsnap:parsepoint ${1:bpt} ${2:str})"
+		],
+		"description": "bpt - [lst] Basepoint for relative point input, e.g. @5,5\nstr - [str] String representing point input\nReturns: [lst] Point represented by the given string, else nil"
+	},
+	"(Apply) Object Snap for grread: Parse Point": {
+		"prefix": "Remote>>LM:grsnap:parsepoint/a",
+		"body": [
+			"(apply 'Remote>>LM:grsnap:parsepoint ${1:lst})"
+		],
+		"description": "Apply LM:grsnap:parsepoint to an argument list (bpt str)"
+	},
+	"Object Snap for grread: Snap Mode": {
+		"prefix": "Remote>>LM:grsnap:snapmode",
+		"body": [
+			"(Remote>>LM:grsnap:snapmode ${1:str})"
+		],
+		"description": "str - [str] Object Snap modifier\nReturns: [int] Object Snap bit code for the given modifier, else nil"
+	},
+	"(Apply) Object Snap for grread: Snap Mode": {
+		"prefix": "Remote>>LM:grsnap:snapmode/a",
+		"body": [
+			"(apply 'Remote>>LM:grsnap:snapmode ${1:lst})"
+		],
+		"description": "Apply LM:grsnap:snapmode to an argument list (str)"
+	},
+	// region GrText
+	"GrText": {
+		"prefix": "Remote>>LM:GrText",
+		"body": [
+			"(Remote>>LM:GrText ${1:str})"
+		],
+		"description": "Returns a grvecs pixel vector list relative to the origin\nencoding the supplied string.\nAuthor: Lee Mac, Copyright © 2013 - www.lee-mac.com\nWith thanks to ElpanovEvgeniy for the method of vector\nencoding to save me a lot of typing.\nArguments:\nstr - String to be expressed in vector list format.\nReturns:  GrVecs Pixel Vector List relative to the Origin\nVersion 1.1    -    26-03-2011"
+	},
+	"(Apply) GrText": {
+		"prefix": "Remote>>LM:GrText/a",
+		"body": [
+			"(apply 'Remote>>LM:GrText ${1:lst})"
+		],
+		"description": "Apply LM:GrText to an argument list (str)"
+	},
+	// region Insert Nth
+	"Insert Nth (Recursive)": {
+		"prefix": "Remote>>LM:insertnth-r",
+		"body": [
+			"(Remote>>LM:insertnth-r ${1:x} ${2:n} ${3:l})"
+		],
+		"description": "Inserts an item at the nth position in a list.\nx - [any] Item to be inserted\nn - [int] Zero-based index at which to insert item\nl - [lst] List in which item is to be inserted"
+	},
+	"(Apply) Insert Nth (Recursive)": {
+		"prefix": "Remote>>LM:insertnth-r/a",
+		"body": [
+			"(apply 'Remote>>LM:insertnth-r ${1:lst})"
+		],
+		"description": "Apply LM:insertnth-r to an argument list (x n l)"
+	},
+	"Insert Nth (Iterative)": {
+		"prefix": "Remote>>LM:insertnth",
+		"body": [
+			"(Remote>>LM:insertnth ${1:x} ${2:n} ${3:l})"
+		],
+		"description": "Inserts an item at the nth position in a list.\nx - [any] Item to be inserted\nn - [int] Zero-based index at which to insert item\nl - [lst] List in which item is to be inserted"
+	},
+	"(Apply) Insert Nth (Iterative)": {
+		"prefix": "Remote>>LM:insertnth/a",
+		"body": [
+			"(apply 'Remote>>LM:insertnth ${1:lst})"
+		],
+		"description": "Apply LM:insertnth to an argument list (x n l)"
+	},
+	// region Intersection Functions
+	"Intersections": {
+		"prefix": "Remote>>LM:intersections",
+		"body": [
+			"(Remote>>LM:intersections ${1:ob1} ${2:ob2} ${3:mod})"
+		],
+		"description": "Returns a list of all points of intersection between two objects\nfor the given intersection mode.\nob1,ob2 - [vla] VLA-Objects\nmod - [int] acextendoption enum of intersectwith method"
+	},
+	"(Apply) Intersections": {
+		"prefix": "Remote>>LM:intersections/a",
+		"body": [
+			"(apply 'Remote>>LM:intersections ${1:lst})"
+		],
+		"description": "Apply LM:intersections to an argument list (ob1 ob2 mod)"
+	},
+	"Intersections in Set": {
+		"prefix": "Remote>>LM:intersectionsinset",
+		"body": [
+			"(Remote>>LM:intersectionsinset ${1:sel})"
+		],
+		"description": "Returns a list of all points of intersection between all objects in a supplied selection set.\nsel - [sel] Selection Set"
+	},
+	"(Apply) Intersections in Set": {
+		"prefix": "Remote>>LM:intersectionsinset/a",
+		"body": [
+			"(apply 'Remote>>LM:intersectionsinset ${1:lst})"
+		],
+		"description": "Apply LM:intersectionsinset to an argument list (sel)"
+	},
+	"Intersections in Object List": {
+		"prefix": "Remote>>LM:intersectionsinobjlist",
+		"body": [
+			"(Remote>>LM:intersectionsinobjlist ${1:lst})"
+		],
+		"description": "Returns a list of all points of intersection between all objects in a list of VLA-Objects.\nlst - [lst] List of VLA-Objects"
+	},
+	"(Apply) Intersections in Object List": {
+		"prefix": "Remote>>LM:intersectionsinobjlist/a",
+		"body": [
+			"(apply 'Remote>>LM:intersectionsinobjlist ${1:lst})"
+		],
+		"description": "Apply LM:intersectionsinobjlist to an argument list (lst)"
+	},
+	"Intersections Between Sets": {
+		"prefix": "Remote>>LM:intersectionsbetweensets",
+		"body": [
+			"(Remote>>LM:intersectionsbetweensets ${1:ss1} ${2:ss2})"
+		],
+		"description": "Returns a list of all points of intersection between objects in two selection sets.\nss1,ss2 - [sel] Selection sets"
+	},
+	"(Apply) Intersections Between Sets": {
+		"prefix": "Remote>>LM:intersectionsbetweensets/a",
+		"body": [
+			"(apply 'Remote>>LM:intersectionsbetweensets ${1:lst})"
+		],
+		"description": "Apply LM:intersectionsbetweensets to an argument list (ss1 ss2)"
+	},
+	"Intersections Between Object Lists": {
+		"prefix": "Remote>>LM:intersectionsbetweenobjlists",
+		"body": [
+			"(Remote>>LM:intersectionsbetweenobjlists ${1:ol1} ${2:ol2})"
+		],
+		"description": "Returns a list of all points of intersection between objects in two lists of VLA-Objects.\nol1,ol2 - [lst] Lists of VLA-Objects"
+	},
+	"(Apply) Intersections Between Object Lists": {
+		"prefix": "Remote>>LM:intersectionsbetweenobjlists/a",
+		"body": [
+			"(apply 'Remote>>LM:intersectionsbetweenobjlists ${1:lst})"
+		],
+		"description": "Apply LM:intersectionsbetweenobjlists to an argument list (ol1 ol2)"
+	},
+	// region List Box
+	"List Box": {
+		"prefix": "Remote>>LM:listbox",
+		"body": [
+			"(Remote>>LM:listbox ${1:msg} ${2:lst} ${3:bit})"
+		],
+		"description": "Displays a DCL list box allowing the user to make a selection from the supplied data.\nmsg - [str] Dialog label\nlst - [lst] List of strings to display\nbit - [int] 1=allow multiple; 2=return indexes\nReturns: [lst] List of selected items/indexes, else nil"
+	},
+	"(Apply) List Box": {
+		"prefix": "Remote>>LM:listbox/a",
+		"body": [
+			"(apply 'Remote>>LM:listbox ${1:lst})"
+		],
+		"description": "Apply LM:listbox to an argument list (msg lst bit)"
+	},
+	// region List Box Functions
+	"List Box: List Up": {
+		"prefix": "Remote>>LM:listup",
+		"body": [
+			"(Remote>>LM:listup ${1:idx} ${2:lst})"
+		],
+		"description": "Shifts the items at the supplied indexes by one position to a lower index\nidx - [lst] List of zero-based indexes\nlst - [lst] List of items\nReturns: [lst] List of ((idx) (lst)) following operation"
+	},
+	"(Apply) List Box: List Up": {
+		"prefix": "Remote>>LM:listup/a",
+		"body": [
+			"(apply 'Remote>>LM:listup ${1:lst})"
+		],
+		"description": "Apply LM:listup to an argument list (idx lst)"
+	},
+	"List Box: List Down": {
+		"prefix": "Remote>>LM:listdown",
+		"body": [
+			"(Remote>>LM:listdown ${1:idx} ${2:lst})"
+		],
+		"description": "Shifts the items at the supplied indexes by one position to a higher index\nidx - [lst] List of zero-based indexes\nlst - [lst] List of items\nReturns: [lst] List of ((idx) (lst)) following operation"
+	},
+	"(Apply) List Box: List Down": {
+		"prefix": "Remote>>LM:listdown/a",
+		"body": [
+			"(apply 'Remote>>LM:listdown ${1:lst})"
+		],
+		"description": "Apply LM:listdown to an argument list (idx lst)"
+	},
+	"List Box: List Top": {
+		"prefix": "Remote>>LM:listtop",
+		"body": [
+			"(Remote>>LM:listtop ${1:idx} ${2:lst})"
+		],
+		"description": "Shifts the items at the supplied indexes to the lowest index\nidx - [lst] List of zero-based indexes\nlst - [lst] List of items\nReturns: [lst] List of ((idx) (lst)) following operation"
+	},
+	"(Apply) List Box: List Top": {
+		"prefix": "Remote>>LM:listtop/a",
+		"body": [
+			"(apply 'Remote>>LM:listtop ${1:lst})"
+		],
+		"description": "Apply LM:listtop to an argument list (idx lst)"
+	},
+	"List Box: List Bottom": {
+		"prefix": "Remote>>LM:listbottom",
+		"body": [
+			"(Remote>>LM:listbottom ${1:idx} ${2:lst})"
+		],
+		"description": "Shifts the items at the supplied indexes to the highest index\nidx - [lst] List of zero-based indexes\nlst - [lst] List of items\nReturns: [lst] List of ((idx) (lst)) following operation"
+	},
+	"(Apply) List Box: List Bottom": {
+		"prefix": "Remote>>LM:listbottom/a",
+		"body": [
+			"(apply 'Remote>>LM:listbottom ${1:lst})"
+		],
+		"description": "Apply LM:listbottom to an argument list (idx lst)"
+	},
+	"Remove Items": {
+		"prefix": "Remote>>LM:removeitems",
+		"body": [
+			"(Remote>>LM:removeitems ${1:idx} ${2:lst})"
+		],
+		"description": "Removes the items at the supplied indexes from a given list\nidx - [lst] List of zero-based indexes\nlst - [lst] List from which items are to be removed\nReturns: [lst] List with items at the supplied indexes removed"
+	},
+	"(Apply) Remove Items": {
+		"prefix": "Remote>>LM:removeitems/a",
+		"body": [
+			"(apply 'Remote>>LM:removeitems ${1:lst})"
+		],
+		"description": "Apply LM:removeitems to an argument list (idx lst)"
+	},
+	// region List Box with Filter
+	"Filtered List Box": {
+		"prefix": "Remote>>LM:filtlistbox",
+		"body": [
+			"(Remote>>LM:filtlistbox ${1:msg} ${2:lst} ${3:mtp})"
+		],
+		"description": "Displays a list box interface from which the user may select one or more items.\nIncludes an edit box filter to enable the user to filter the displayed list of items.\nmsg - [str] List box dialog title\nlst - [lst] List of strings to display in the list box\nmtp - [bol] T=Allow multiple items; nil=Single item selection\nReturns: [lst] List of selected items, else nil"
+	},
+	"(Apply) Filtered List Box": {
+		"prefix": "Remote>>LM:filtlistbox/a",
+		"body": [
+			"(apply 'Remote>>LM:filtlistbox ${1:lst})"
+		],
+		"description": "Apply LM:filtlistbox to an argument list (msg lst mtp)"
+	},
+	// region List Difference
+	"List Difference": {
+		"prefix": "Remote>>LM:ListDifference-r",
+		"body": [
+			"(Remote>>LM:ListDifference-r ${1:l1} ${2:l2})"
+		],
+		"description": "Returns items appearing exclusively in one list but not\nanother, i.e. the relative complement: l1 \\ l2\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nl1,l2 - lists for which to return the difference\nReturns:  List of items appearing exclusively in list l1\nRecursive"
+	},
+	"(Apply) List Difference": {
+		"prefix": "Remote>>LM:ListDifference-r/a",
+		"body": [
+			"(apply 'Remote>>LM:ListDifference-r ${1:lst})"
+		],
+		"description": "Apply LM:ListDifference-r to an argument list (l1 l2)"
+	},
+	"List Difference (2)": {
+		"prefix": "Remote>>LM:ListDifference",
+		"body": [
+			"(Remote>>LM:ListDifference ${1:l1} ${2:l2})"
+		],
+		"description": "Returns items appearing exclusively in one list but not\nanother, i.e. the relative complement: l1 \\ l2\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nl1,l2 - lists for which to return the difference\nReturns:  List of items appearing exclusively in list l1\nIterative"
+	},
+	"(Apply) List Difference (2)": {
+		"prefix": "Remote>>LM:ListDifference/a",
+		"body": [
+			"(apply 'Remote>>LM:ListDifference ${1:lst})"
+		],
+		"description": "Apply LM:ListDifference to an argument list (l1 l2)"
+	},
+	// region List Intersection
+	"List Intersection": {
+		"prefix": "Remote>>LM:ListIntersection-r",
+		"body": [
+			"(Remote>>LM:ListIntersection-r ${1:l1} ${2:l2})"
+		],
+		"description": "Returns a list expressing the intersection of two lists\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nl1,l2 - Lists for which to return the intersection\nReturns:  A list of all items common to both lists"
+	},
+	"(Apply) List Intersection": {
+		"prefix": "Remote>>LM:ListIntersection-r/a",
+		"body": [
+			"(apply 'Remote>>LM:ListIntersection-r ${1:lst})"
+		],
+		"description": "Apply LM:ListIntersection-r to an argument list (l1 l2)"
+	},
+	"List Intersection (2)": {
+		"prefix": "Remote>>LM:ListIntersection",
+		"body": [
+			"(Remote>>LM:ListIntersection ${1:l1} ${2:l2})"
+		],
+		"description": "Returns a list expressing the intersection of two lists\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nl1,l2 - Lists for which to return the intersection\nReturns:  A list of all items common to both lists"
+	},
+	"(Apply) List Intersection (2)": {
+		"prefix": "Remote>>LM:ListIntersection/a",
+		"body": [
+			"(apply 'Remote>>LM:ListIntersection ${1:lst})"
+		],
+		"description": "Apply LM:ListIntersection to an argument list (l1 l2)"
+	},
+	// region List Symmetric Difference
+	"List Symmetric Difference": {
+		"prefix": "Remote>>LM:ListSymDifference-r",
+		"body": [
+			"(Remote>>LM:ListSymDifference-r ${1:l1} ${2:l2})"
+		],
+		"description": "Returns items appearing exclusively in each list and not\nin their intersection.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nl1,l2 - lists for which to return symmetric difference\nReturns:  List of items in the set (l1\\l2)U(l2\\l1)\nRecursive"
+	},
+	"(Apply) List Symmetric Difference": {
+		"prefix": "Remote>>LM:ListSymDifference-r/a",
+		"body": [
+			"(apply 'Remote>>LM:ListSymDifference-r ${1:lst})"
+		],
+		"description": "Apply LM:ListSymDifference-r to an argument list (l1 l2)"
+	},
+	"List Symmetric Difference (2)": {
+		"prefix": "Remote>>LM:ListSymDifference",
+		"body": [
+			"(Remote>>LM:ListSymDifference ${1:l1} ${2:l2})"
+		],
+		"description": "Returns items appearing exclusively in each list and not\nin their intersection.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nl1,l2 - lists for which to return symmetric difference\nReturns:  List of items in the set (l1\\l2)U(l2\\l1)\nIterative"
+	},
+	"(Apply) List Symmetric Difference (2)": {
+		"prefix": "Remote>>LM:ListSymDifference/a",
+		"body": [
+			"(apply 'Remote>>LM:ListSymDifference ${1:lst})"
+		],
+		"description": "Apply LM:ListSymDifference to an argument list (l1 l2)"
+	},
+	"Lists Symmetric Difference": {
+		"prefix": "Remote>>LM:ListsSymDifference-r",
+		"body": [
+			"(Remote>>LM:ListsSymDifference-r ${1:l})"
+		],
+		"description": "Returns items appearing exclusively in each list and not\nin the intersection of any pair of lists.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nl - list of lists for which to return the sym difference\nReturns: List of (l1\\(l2Ul3U..UlN)U(l2\\(l1Ul3..UlN)U..."
+	},
+	"(Apply) Lists Symmetric Difference": {
+		"prefix": "Remote>>LM:ListsSymDifference-r/a",
+		"body": [
+			"(apply 'Remote>>LM:ListsSymDifference-r ${1:lst})"
+		],
+		"description": "Apply LM:ListsSymDifference-r to an argument list (l)"
+	},
+	"Lists Symmetric Difference (2)": {
+		"prefix": "Remote>>LM:ListsSymDifference",
+		"body": [
+			"(Remote>>LM:ListsSymDifference ${1:l})"
+		],
+		"description": "Returns items appearing exclusively in each list and not\nin the intersection of any pair of lists.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nl - list of lists for which to return the sym difference\nReturns: List of (l1\\(l2Ul3U..UlN)U(l2\\(l1Ul3..UlN)U..."
+	},
+	"(Apply) Lists Symmetric Difference (2)": {
+		"prefix": "Remote>>LM:ListsSymDifference/a",
+		"body": [
+			"(apply 'Remote>>LM:ListsSymDifference ${1:lst})"
+		],
+		"description": "Apply LM:ListsSymDifference to an argument list (l)"
+	},
+	"ListsSymDifference-so": {
+		"prefix": "Remote>>LM:ListsSymDifference-so",
+		"body": [
+			"(Remote>>LM:ListsSymDifference-so ${1:l})"
+		],
+		"description": ""
+	},
+	"(Apply) ListsSymDifference-so": {
+		"prefix": "Remote>>LM:ListsSymDifference-so/a",
+		"body": [
+			"(apply 'Remote>>LM:ListsSymDifference-so ${1:lst})"
+		],
+		"description": "Apply LM:ListsSymDifference-so to an argument list (l)"
+	},
+	// region List to String
+	"List to String (Recursive)": {
+		"prefix": "Remote>>LM:lst->str",
+		"body": [
+			"(Remote>>LM:lst->str ${1:lst} ${2:del})"
+		],
+		"description": "Concatenates each string in a supplied list, separated by a given delimiter\nlst - [lst] List of strings to concatenate\ndel - [str] Delimiter string to separate each item"
+	},
+	"(Apply) List to String (Recursive)": {
+		"prefix": "Remote>>LM:lst->str/a",
+		"body": [
+			"(apply 'Remote>>LM:lst->str ${1:lst})"
+		],
+		"description": "Apply LM:lst->str to an argument list (lst del)"
+	},
+	"List to String (Iterative)": {
+		"prefix": "Remote>>LM:lst->str~",
+		"body": [
+			"(Remote>>LM:lst->str~ ${1:lst} ${2:del})"
+		],
+		"description": "Concatenates each string in a supplied list, separated by a given delimiter\nlst - [lst] List of strings to concatenate\ndel - [str] Delimiter string to separate each item"
+	},
+	"(Apply) List to String (Iterative)": {
+		"prefix": "Remote>>LM:lst->str~/a",
+		"body": [
+			"(apply 'Remote>>LM:lst->str~ ${1:lst})"
+		],
+		"description": "Apply LM:lst->str~ to an argument list (lst del)"
+	},
+	// region List Union
+	"List Union": {
+		"prefix": "Remote>>LM:ListUnion-r",
+		"body": [
+			"(Remote>>LM:ListUnion-r ${1:l1} ${2:l2})"
+		],
+		"description": "Returns a list expressing the union of two lists\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nl1,l2 - Lists for which to return the union\nReturns:  A list of all distinct items in the two lists"
+	},
+	"(Apply) List Union": {
+		"prefix": "Remote>>LM:ListUnion-r/a",
+		"body": [
+			"(apply 'Remote>>LM:ListUnion-r ${1:lst})"
+		],
+		"description": "Apply LM:ListUnion-r to an argument list (l1 l2)"
+	},
+	"List Union (2)": {
+		"prefix": "Remote>>LM:ListUnion",
+		"body": [
+			"(Remote>>LM:ListUnion ${1:l1} ${2:l2})"
+		],
+		"description": "Returns a list expressing the union of two lists\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nl1,l2 - Lists for which to return the union\nReturns:  A list of all distinct items in the two lists"
+	},
+	"(Apply) List Union (2)": {
+		"prefix": "Remote>>LM:ListUnion/a",
+		"body": [
+			"(apply 'Remote>>LM:ListUnion ${1:lst})"
+		],
+		"description": "Apply LM:ListUnion to an argument list (l1 l2)"
+	},
+	"Lists Union": {
+		"prefix": "Remote>>LM:ListsUnion-r",
+		"body": [
+			"(Remote>>LM:ListsUnion-r ${1:l})"
+		],
+		"description": "Returns a list expressing the union of a set of lists\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nl - a list of lists for which to return the union\nReturns:  A list of distinct items in the set of lists"
+	},
+	"(Apply) Lists Union": {
+		"prefix": "Remote>>LM:ListsUnion-r/a",
+		"body": [
+			"(apply 'Remote>>LM:ListsUnion-r ${1:lst})"
+		],
+		"description": "Apply LM:ListsUnion-r to an argument list (l)"
+	},
+	"Lists Union (2)": {
+		"prefix": "Remote>>LM:ListsUnion",
+		"body": [
+			"(Remote>>LM:ListsUnion ${1:l})"
+		],
+		"description": "Returns a list expressing the union of a set of lists\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nl - a list of lists for which to return the union\nReturns:  A list of distinct items in the set of lists"
+	},
+	"(Apply) Lists Union (2)": {
+		"prefix": "Remote>>LM:ListsUnion/a",
+		"body": [
+			"(apply 'Remote>>LM:ListsUnion ${1:lst})"
+		],
+		"description": "Apply LM:ListsUnion to an argument list (l)"
+	},
+	// region Load Linetypes
+	"Load Linetypes": {
+		"prefix": "Remote>>LM:loadlinetypes",
+		"body": [
+			"(Remote>>LM:loadlinetypes ${1:lts} ${2:rdf})"
+		],
+		"description": "Attempts to load a list of linetypes from any .lin files found in the support path.\nExcludes known metric & imperial definition files based on the value of MEASUREMENT\nlts - [lst] List of linetypes to load\nrdf - [bol] If T, linetypes will be redefined from file if already loaded\nReturns: [bol] T if all linetypes are loaded successfully, else nil"
+	},
+	"(Apply) Load Linetypes": {
+		"prefix": "Remote>>LM:loadlinetypes/a",
+		"body": [
+			"(apply 'Remote>>LM:loadlinetypes ${1:lst})"
+		],
+		"description": "Apply LM:loadlinetypes to an argument list (lts rdf)"
+	},
+	"Linetype Defined-p": {
+		"prefix": "Remote>>LM:ltdefined-p",
+		"body": [
+			"(Remote>>LM:ltdefined-p ${1:ltp} ${2:lin})"
+		],
+		"description": "Returns T if the linetype is defined in the specified .lin file\nltp - [str] Linetype name\nlin - [str] Filename of linetype definition file (.lin)"
+	},
+	"(Apply) Linetype Defined-p": {
+		"prefix": "Remote>>LM:ltdefined-p/a",
+		"body": [
+			"(apply 'Remote>>LM:ltdefined-p ${1:lst})"
+		],
+		"description": "Apply LM:ltdefined-p to an argument list (ltp lin)"
+	},
+	// region Mathematical Functions
+	"Matrix Determinant (Laplace Formula)": {
+		"prefix": "Remote>>LM:detm",
+		"body": [
+			"(Remote>>LM:detm ${1:m})"
+		],
+		"description": "Args: m - nxn matrix"
+	},
+	"(Apply) Matrix Determinant (Laplace Formula)": {
+		"prefix": "Remote>>LM:detm/a",
+		"body": [
+			"(apply 'Remote>>LM:detm ${1:lst})"
+		],
+		"description": "Apply LM:detm to an argument list (m)"
+	},
+	"Matrix Inverse": {
+		"prefix": "Remote>>LM:invm",
+		"body": [
+			"(Remote>>LM:invm ${1:m})"
+		],
+		"description": "Uses Gauss-Jordan Elimination to return the inverse of a non-singular nxn matrix.\nArgs: m - nxn matrix"
+	},
+	"(Apply) Matrix Inverse": {
+		"prefix": "Remote>>LM:invm/a",
+		"body": [
+			"(apply 'Remote>>LM:invm ${1:lst})"
+		],
+		"description": "Apply LM:invm to an argument list (m)"
+	},
+	"Identity Matrix": {
+		"prefix": "Remote>>LM:imat",
+		"body": [
+			"(Remote>>LM:imat ${1:n})"
+		],
+		"description": "Args: n - matrix dimension"
+	},
+	"(Apply) Identity Matrix": {
+		"prefix": "Remote>>LM:imat/a",
+		"body": [
+			"(apply 'Remote>>LM:imat ${1:lst})"
+		],
+		"description": "Apply LM:imat to an argument list (n)"
+	},
+	"Matrix Transpose": {
+		"prefix": "Remote>>LM:trp",
+		"body": [
+			"(Remote>>LM:trp ${1:m})"
+		],
+		"description": "Args: m - nxn matrix"
+	},
+	"(Apply) Matrix Transpose": {
+		"prefix": "Remote>>LM:trp/a",
+		"body": [
+			"(apply 'Remote>>LM:trp ${1:lst})"
+		],
+		"description": "Apply LM:trp to an argument list (m)"
+	},
+	"Matrix Trace": {
+		"prefix": "Remote>>LM:trc",
+		"body": [
+			"(Remote>>LM:trc ${1:m})"
+		],
+		"description": "Args: m - nxn matrix"
+	},
+	"(Apply) Matrix Trace": {
+		"prefix": "Remote>>LM:trc/a",
+		"body": [
+			"(apply 'Remote>>LM:trc ${1:lst})"
+		],
+		"description": "Apply LM:trc to an argument list (m)"
+	},
+	"Matrix x Matrix": {
+		"prefix": "Remote>>LM:mxm",
+		"body": [
+			"(Remote>>LM:mxm ${1:m} ${2:n})"
+		],
+		"description": "Args: m,n - nxn matrices"
+	},
+	"(Apply) Matrix x Matrix": {
+		"prefix": "Remote>>LM:mxm/a",
+		"body": [
+			"(apply 'Remote>>LM:mxm ${1:lst})"
+		],
+		"description": "Apply LM:mxm to an argument list (m n)"
+	},
+	"Matrix + Matrix": {
+		"prefix": "Remote>>LM:m+m",
+		"body": [
+			"(Remote>>LM:m+m ${1:m} ${2:n})"
+		],
+		"description": "Args: m,n - nxn matrices"
+	},
+	"(Apply) Matrix + Matrix": {
+		"prefix": "Remote>>LM:m+m/a",
+		"body": [
+			"(apply 'Remote>>LM:m+m ${1:lst})"
+		],
+		"description": "Apply LM:m+m to an argument list (m n)"
+	},
+	"Matrix x Scalar": {
+		"prefix": "Remote>>LM:mxs",
+		"body": [
+			"(Remote>>LM:mxs ${1:m} ${2:s})"
+		],
+		"description": "Args: m - nxn matrix, n - real scalar"
+	},
+	"(Apply) Matrix x Scalar": {
+		"prefix": "Remote>>LM:mxs/a",
+		"body": [
+			"(apply 'Remote>>LM:mxs ${1:lst})"
+		],
+		"description": "Apply LM:mxs to an argument list (m s)"
+	},
+	"Matrix x Vector": {
+		"prefix": "Remote>>LM:mxv",
+		"body": [
+			"(Remote>>LM:mxv ${1:m} ${2:v})"
+		],
+		"description": "Args: m - nxn matrix, v - vector in R^n"
+	},
+	"(Apply) Matrix x Vector": {
+		"prefix": "Remote>>LM:mxv/a",
+		"body": [
+			"(apply 'Remote>>LM:mxv ${1:lst})"
+		],
+		"description": "Apply LM:mxv to an argument list (m v)"
+	},
+	"Vector x Scalar": {
+		"prefix": "Remote>>LM:vxs",
+		"body": [
+			"(Remote>>LM:vxs ${1:v} ${2:s})"
+		],
+		"description": "Args: v - vector in R^n, s - real scalar"
+	},
+	"(Apply) Vector x Scalar": {
+		"prefix": "Remote>>LM:vxs/a",
+		"body": [
+			"(apply 'Remote>>LM:vxs ${1:lst})"
+		],
+		"description": "Apply LM:vxs to an argument list (v s)"
+	},
+	"Vector Dot Product": {
+		"prefix": "Remote>>LM:vxv",
+		"body": [
+			"(Remote>>LM:vxv ${1:u} ${2:v})"
+		],
+		"description": "Args: u,v - vectors in R^n"
+	},
+	"(Apply) Vector Dot Product": {
+		"prefix": "Remote>>LM:vxv/a",
+		"body": [
+			"(apply 'Remote>>LM:vxv ${1:lst})"
+		],
+		"description": "Apply LM:vxv to an argument list (u v)"
+	},
+	"Vector Cross Product": {
+		"prefix": "Remote>>LM:v^v",
+		"body": [
+			"(Remote>>LM:v^v ${1:u} ${2:v})"
+		],
+		"description": "Args: u,v - vectors in R^3"
+	},
+	"(Apply) Vector Cross Product": {
+		"prefix": "Remote>>LM:v^v/a",
+		"body": [
+			"(apply 'Remote>>LM:v^v ${1:lst})"
+		],
+		"description": "Apply LM:v^v to an argument list (u v)"
+	},
+	"Unit Vector": {
+		"prefix": "Remote>>LM:vx1",
+		"body": [
+			"(Remote>>LM:vx1 ${1:v})"
+		],
+		"description": "Args: v - vector in R^2 or R^3"
+	},
+	"(Apply) Unit Vector": {
+		"prefix": "Remote>>LM:vx1/a",
+		"body": [
+			"(apply 'Remote>>LM:vx1 ${1:lst})"
+		],
+		"description": "Apply LM:vx1 to an argument list (v)"
+	},
+	"Vector Norm (R^n)": {
+		"prefix": "Remote>>LM:|v|",
+		"body": [
+			"(Remote>>LM:|v| ${1:v})"
+		],
+		"description": "Args: v - vector in R^n"
+	},
+	"(Apply) Vector Norm (R^n)": {
+		"prefix": "Remote>>LM:|v|/a",
+		"body": [
+			"(apply 'Remote>>LM:|v| ${1:lst})"
+		],
+		"description": "Apply LM:|v| to an argument list (v)"
+	},
+	"Unit Vector (R^n)": {
+		"prefix": "Remote>>LM:unit",
+		"body": [
+			"(Remote>>LM:unit ${1:v})"
+		],
+		"description": "Args: v - vector in R^n"
+	},
+	"(Apply) Unit Vector (R^n)": {
+		"prefix": "Remote>>LM:unit/a",
+		"body": [
+			"(apply 'Remote>>LM:unit ${1:lst})"
+		],
+		"description": "Apply LM:unit to an argument list (v)"
+	},
+	"Tangent": {
+		"prefix": "Remote>>LM:tan",
+		"body": [
+			"(Remote>>LM:tan ${1:x})"
+		],
+		"description": "Args: x - real"
+	},
+	"(Apply) Tangent": {
+		"prefix": "Remote>>LM:tan/a",
+		"body": [
+			"(apply 'Remote>>LM:tan ${1:lst})"
+		],
+		"description": "Apply LM:tan to an argument list (x)"
+	},
+	"ArcSine": {
+		"prefix": "Remote>>LM:asin",
+		"body": [
+			"(Remote>>LM:asin ${1:x})"
+		],
+		"description": "Args: -1 <= x <= 1"
+	},
+	"(Apply) ArcSine": {
+		"prefix": "Remote>>LM:asin/a",
+		"body": [
+			"(apply 'Remote>>LM:asin ${1:lst})"
+		],
+		"description": "Apply LM:asin to an argument list (x)"
+	},
+	"ArcCosine": {
+		"prefix": "Remote>>LM:acos",
+		"body": [
+			"(Remote>>LM:acos ${1:x})"
+		],
+		"description": "Args: -1 <= x <= 1"
+	},
+	"(Apply) ArcCosine": {
+		"prefix": "Remote>>LM:acos/a",
+		"body": [
+			"(apply 'Remote>>LM:acos ${1:lst})"
+		],
+		"description": "Apply LM:acos to an argument list (x)"
+	},
+	"Hyperbolic Sine": {
+		"prefix": "Remote>>LM:sinh",
+		"body": [
+			"(Remote>>LM:sinh ${1:x})"
+		],
+		"description": "Args: x - real"
+	},
+	"(Apply) Hyperbolic Sine": {
+		"prefix": "Remote>>LM:sinh/a",
+		"body": [
+			"(apply 'Remote>>LM:sinh ${1:lst})"
+		],
+		"description": "Apply LM:sinh to an argument list (x)"
+	},
+	"Hyperbolic Cosine": {
+		"prefix": "Remote>>LM:cosh",
+		"body": [
+			"(Remote>>LM:cosh ${1:x})"
+		],
+		"description": "Args: x - real"
+	},
+	"(Apply) Hyperbolic Cosine": {
+		"prefix": "Remote>>LM:cosh/a",
+		"body": [
+			"(apply 'Remote>>LM:cosh ${1:lst})"
+		],
+		"description": "Apply LM:cosh to an argument list (x)"
+	},
+	"Hyperbolic Tangent": {
+		"prefix": "Remote>>LM:tanh",
+		"body": [
+			"(Remote>>LM:tanh ${1:x})"
+		],
+		"description": "Args: x - real"
+	},
+	"(Apply) Hyperbolic Tangent": {
+		"prefix": "Remote>>LM:tanh/a",
+		"body": [
+			"(apply 'Remote>>LM:tanh ${1:lst})"
+		],
+		"description": "Apply LM:tanh to an argument list (x)"
+	},
+	"Area Hyperbolic Sine": {
+		"prefix": "Remote>>LM:asinh",
+		"body": [
+			"(Remote>>LM:asinh ${1:x})"
+		],
+		"description": "Args: x - real"
+	},
+	"(Apply) Area Hyperbolic Sine": {
+		"prefix": "Remote>>LM:asinh/a",
+		"body": [
+			"(apply 'Remote>>LM:asinh ${1:lst})"
+		],
+		"description": "Apply LM:asinh to an argument list (x)"
+	},
+	"Area Hyperbolic Cosine": {
+		"prefix": "Remote>>LM:acosh",
+		"body": [
+			"(Remote>>LM:acosh ${1:x})"
+		],
+		"description": "Args: 1 <= x"
+	},
+	"(Apply) Area Hyperbolic Cosine": {
+		"prefix": "Remote>>LM:acosh/a",
+		"body": [
+			"(apply 'Remote>>LM:acosh ${1:lst})"
+		],
+		"description": "Apply LM:acosh to an argument list (x)"
+	},
+	"Area Hyperbolic Tangent": {
+		"prefix": "Remote>>LM:atanh",
+		"body": [
+			"(Remote>>LM:atanh ${1:x})"
+		],
+		"description": "Args: -1 < x < 1"
+	},
+	"(Apply) Area Hyperbolic Tangent": {
+		"prefix": "Remote>>LM:atanh/a",
+		"body": [
+			"(apply 'Remote>>LM:atanh ${1:lst})"
+		],
+		"description": "Apply LM:atanh to an argument list (x)"
+	},
+	"Collinear-p": {
+		"prefix": "Remote>>LM:Collinear-p",
+		"body": [
+			"(Remote>>LM:Collinear-p ${1:p1} ${2:p2} ${3:p3})"
+		],
+		"description": "Returns T if p1,p2,p3 are collinear"
+	},
+	"(Apply) Collinear-p": {
+		"prefix": "Remote>>LM:Collinear-p/a",
+		"body": [
+			"(apply 'Remote>>LM:Collinear-p ${1:lst})"
+		],
+		"description": "Apply LM:Collinear-p to an argument list (p1 p2 p3)"
+	},
+	"List Collinear-p": {
+		"prefix": "Remote>>LM:ListCollinear-p",
+		"body": [
+			"(Remote>>LM:ListCollinear-p ${1:lst})"
+		],
+		"description": "Returns T if all points in a list are collinear"
+	},
+	"(Apply) List Collinear-p": {
+		"prefix": "Remote>>LM:ListCollinear-p/a",
+		"body": [
+			"(apply 'Remote>>LM:ListCollinear-p ${1:lst})"
+		],
+		"description": "Apply LM:ListCollinear-p to an argument list (lst)"
+	},
+	"Coplanar-p": {
+		"prefix": "Remote>>LM:Coplanar-p",
+		"body": [
+			"(Remote>>LM:Coplanar-p ${1:p1} ${2:p2} ${3:p3} ${4:p4})"
+		],
+		"description": "Returns T if points p1,p2,p3,p4 are coplanar"
+	},
+	"(Apply) Coplanar-p": {
+		"prefix": "Remote>>LM:Coplanar-p/a",
+		"body": [
+			"(apply 'Remote>>LM:Coplanar-p ${1:lst})"
+		],
+		"description": "Apply LM:Coplanar-p to an argument list (p1 p2 p3 p4)"
+	},
+	"List Coplanar-p": {
+		"prefix": "Remote>>LM:ListCoplanar-p",
+		"body": [
+			"(Remote>>LM:ListCoplanar-p ${1:lst})"
+		],
+		"description": "Returns T if all points in a list are coplanar"
+	},
+	"(Apply) List Coplanar-p": {
+		"prefix": "Remote>>LM:ListCoplanar-p/a",
+		"body": [
+			"(apply 'Remote>>LM:ListCoplanar-p ${1:lst})"
+		],
+		"description": "Apply LM:ListCoplanar-p to an argument list (lst)"
+	},
+	"Perpendicular-p": {
+		"prefix": "Remote>>LM:Perpendicular-p",
+		"body": [
+			"(Remote>>LM:Perpendicular-p ${1:v1} ${2:v2})"
+		],
+		"description": "Returns T if vectors v1,v2 are perpendicular"
+	},
+	"(Apply) Perpendicular-p": {
+		"prefix": "Remote>>LM:Perpendicular-p/a",
+		"body": [
+			"(apply 'Remote>>LM:Perpendicular-p ${1:lst})"
+		],
+		"description": "Apply LM:Perpendicular-p to an argument list (v1 v2)"
+	},
+	"List Clockwise-p": {
+		"prefix": "Remote>>LM:ListClockwise-p",
+		"body": [
+			"(Remote>>LM:ListClockwise-p ${1:lst})"
+		],
+		"description": "Returns T if the point list is clockwise oriented"
+	},
+	"(Apply) List Clockwise-p": {
+		"prefix": "Remote>>LM:ListClockwise-p/a",
+		"body": [
+			"(apply 'Remote>>LM:ListClockwise-p ${1:lst})"
+		],
+		"description": "Apply LM:ListClockwise-p to an argument list (lst)"
+	},
+	"InsideTriangle-p": {
+		"prefix": "Remote>>LM:InsideTriangle-p",
+		"body": [
+			"(Remote>>LM:InsideTriangle-p ${1:pt} ${2:p1} ${3:p2} ${4:p3})"
+		],
+		"description": "Returns T if pt lies inside the triangle formed by p1,p2,p3"
+	},
+	"(Apply) InsideTriangle-p": {
+		"prefix": "Remote>>LM:InsideTriangle-p/a",
+		"body": [
+			"(apply 'Remote>>LM:InsideTriangle-p ${1:lst})"
+		],
+		"description": "Apply LM:InsideTriangle-p to an argument list (pt p1 p2 p3)"
+	},
+	"Project Point onto Line": {
+		"prefix": "Remote>>LM:ProjectPointToLine",
+		"body": [
+			"(Remote>>LM:ProjectPointToLine ${1:pt} ${2:p1} ${3:p2})"
+		],
+		"description": "Projects pt onto the line defined by p1,p2"
+	},
+	"(Apply) Project Point onto Line": {
+		"prefix": "Remote>>LM:ProjectPointToLine/a",
+		"body": [
+			"(apply 'Remote>>LM:ProjectPointToLine ${1:lst})"
+		],
+		"description": "Apply LM:ProjectPointToLine to an argument list (pt p1 p2)"
+	},
+	"Project Point onto Plane": {
+		"prefix": "Remote>>LM:ProjectPointToPlane",
+		"body": [
+			"(Remote>>LM:ProjectPointToPlane ${1:pt} ${2:org} ${3:nm})"
+		],
+		"description": "Projects pt onto the plane defined by its origin and normal"
+	},
+	"(Apply) Project Point onto Plane": {
+		"prefix": "Remote>>LM:ProjectPointToPlane/a",
+		"body": [
+			"(apply 'Remote>>LM:ProjectPointToPlane ${1:lst})"
+		],
+		"description": "Apply LM:ProjectPointToPlane to an argument list (pt org nm)"
+	},
+	"Reflect Point": {
+		"prefix": "Remote>>LM:Reflect",
+		"body": [
+			"(Remote>>LM:Reflect ${1:pt} ${2:p1} ${3:p2})"
+		],
+		"description": "Returns the point obtained by reflecting 'pt' in the axis defined by points p1 & p2."
+	},
+	"(Apply) Reflect Point": {
+		"prefix": "Remote>>LM:Reflect/a",
+		"body": [
+			"(apply 'Remote>>LM:Reflect ${1:lst})"
+		],
+		"description": "Apply LM:Reflect to an argument list (pt p1 p2)"
+	},
+	"Line-Plane Intersection": {
+		"prefix": "Remote>>LM:inters-line-plane",
+		"body": [
+			"(Remote>>LM:inters-line-plane ${1:p1} ${2:p2} ${3:org} ${4:nm})"
+		],
+		"description": "Returns the point of intersection of a line defined by\npoints p1,p2 and a plane defined by its origin and normal"
+	},
+	"(Apply) Line-Plane Intersection": {
+		"prefix": "Remote>>LM:inters-line-plane/a",
+		"body": [
+			"(apply 'Remote>>LM:inters-line-plane ${1:lst})"
+		],
+		"description": "Apply LM:inters-line-plane to an argument list (p1 p2 org nm)"
+	},
+	"Line-Circle Intersection (vector version)": {
+		"prefix": "Remote>>LM:inters-line-circle",
+		"body": [
+			"(Remote>>LM:inters-line-circle ${1:p} ${2:q} ${3:c} ${4:r})"
+		],
+		"description": "Returns the point(s) of intersection between an infinite line defined by\npoints p,q and circle with centre c and radius r"
+	},
+	"(Apply) Line-Circle Intersection (vector version)": {
+		"prefix": "Remote>>LM:inters-line-circle/a",
+		"body": [
+			"(apply 'Remote>>LM:inters-line-circle ${1:lst})"
+		],
+		"description": "Apply LM:inters-line-circle to an argument list (p q c r)"
+	},
+	"2-Circle Intersection (trans version)": {
+		"prefix": "Remote>>LM:inters-circle-circle",
+		"body": [
+			"(Remote>>LM:inters-circle-circle ${1:c1} ${2:r1} ${3:c2} ${4:r2})"
+		],
+		"description": "Returns the point(s) of intersection between two circles\nwith centres c1,c2 and radii r1,r2"
+	},
+	"(Apply) 2-Circle Intersection (trans version)": {
+		"prefix": "Remote>>LM:inters-circle-circle/a",
+		"body": [
+			"(apply 'Remote>>LM:inters-circle-circle ${1:lst})"
+		],
+		"description": "Apply LM:inters-circle-circle to an argument list (c1 r1 c2 r2)"
+	},
+	"2-Arc Intersection": {
+		"prefix": "Remote>>LM:inters-arc-arc",
+		"body": [
+			"(Remote>>LM:inters-arc-arc ${1:c1} ${2:r1} ${3:s1} ${4:e1} ${5:c2} ${6:r2} ${7:s2} ${8:e2})"
+		],
+		"description": "Returns the point(s) of intersection between two arcs\nwith centres c1,c2 radii r1,r2, start angles s1,s2 & end angles e1,e2"
+	},
+	"(Apply) 2-Arc Intersection": {
+		"prefix": "Remote>>LM:inters-arc-arc/a",
+		"body": [
+			"(apply 'Remote>>LM:inters-arc-arc ${1:lst})"
+		],
+		"description": "Apply LM:inters-arc-arc to an argument list (c1 r1 s1 e1 c2 r2 s2 e2)"
+	},
+	"Midpoint": {
+		"prefix": "Remote>>LM:mid",
+		"body": [
+			"(Remote>>LM:mid ${1:a} ${2:b})"
+		],
+		"description": "Returns the midpoint of two points"
+	},
+	"(Apply) Midpoint": {
+		"prefix": "Remote>>LM:mid/a",
+		"body": [
+			"(apply 'Remote>>LM:mid ${1:lst})"
+		],
+		"description": "Apply LM:mid to an argument list (a b)"
+	},
+	"3-Point Arc": {
+		"prefix": "Remote>>LM:3PArc",
+		"body": [
+			"(Remote>>LM:3PArc ${1:p1} ${2:p2} ${3:p3})"
+		],
+		"description": "Returns the center, start/end angle and radius of the arc defined by three supplied points."
+	},
+	"(Apply) 3-Point Arc": {
+		"prefix": "Remote>>LM:3PArc/a",
+		"body": [
+			"(apply 'Remote>>LM:3PArc ${1:lst})"
+		],
+		"description": "Apply LM:3PArc to an argument list (p1 p2 p3)"
+	},
+	"2-Circle Tangents": {
+		"prefix": "Remote>>LM:2CircleTangents",
+		"body": [
+			"(Remote>>LM:2CircleTangents ${1:c1} ${2:r1} ${3:c2} ${4:r2})"
+		],
+		"description": "Returns the two groups of points for which a line from a point in\neach group is tangent to both circles with centres c1,c2 and radii r1,r2"
+	},
+	"(Apply) 2-Circle Tangents": {
+		"prefix": "Remote>>LM:2CircleTangents/a",
+		"body": [
+			"(apply 'Remote>>LM:2CircleTangents ${1:lst})"
+		],
+		"description": "Apply LM:2CircleTangents to an argument list (c1 r1 c2 r2)"
+	},
+	"Point-Circle Tangents": {
+		"prefix": "Remote>>LM:PointCircleTangents",
+		"body": [
+			"(Remote>>LM:PointCircleTangents ${1:pt} ${2:c1} ${3:r1})"
+		],
+		"description": "Returns the two points for which a line from 'pt' to each point returned\nis tangent to the circle with centre c1 and radius r1"
+	},
+	"(Apply) Point-Circle Tangents": {
+		"prefix": "Remote>>LM:PointCircleTangents/a",
+		"body": [
+			"(apply 'Remote>>LM:PointCircleTangents ${1:lst})"
+		],
+		"description": "Apply LM:PointCircleTangents to an argument list (pt c1 r1)"
+	},
+	"Quadratic Solution": {
+		"prefix": "Remote>>LM:quad",
+		"body": [
+			"(Remote>>LM:quad ${1:a} ${2:b} ${3:c})"
+		],
+		"description": "Args: a,b,c - coefficients of ax^2 + bx + c = 0"
+	},
+	"(Apply) Quadratic Solution": {
+		"prefix": "Remote>>LM:quad/a",
+		"body": [
+			"(apply 'Remote>>LM:quad ${1:lst})"
+		],
+		"description": "Apply LM:quad to an argument list (a b c)"
+	},
+	"Least Common Multiple": {
+		"prefix": "Remote>>LM:lcm",
+		"body": [
+			"(Remote>>LM:lcm ${1:a} ${2:b})"
+		],
+		"description": "Args: a,b - positive non-zero integers"
+	},
+	"(Apply) Least Common Multiple": {
+		"prefix": "Remote>>LM:lcm/a",
+		"body": [
+			"(apply 'Remote>>LM:lcm ${1:lst})"
+		],
+		"description": "Apply LM:lcm to an argument list (a b)"
+	},
+	"Least Common Multiple of List": {
+		"prefix": "Remote>>LM:lcml",
+		"body": [
+			"(Remote>>LM:lcml ${1:l})"
+		],
+		"description": "Args: l - list of positive non-zero integers"
+	},
+	"(Apply) Least Common Multiple of List": {
+		"prefix": "Remote>>LM:lcml/a",
+		"body": [
+			"(apply 'Remote>>LM:lcml ${1:lst})"
+		],
+		"description": "Apply LM:lcml to an argument list (l)"
+	},
+	"Prime Factors": {
+		"prefix": "Remote>>LM:pf",
+		"body": [
+			"(Remote>>LM:pf ${1:n})"
+		],
+		"description": "Args: n - positive non-zero integer"
+	},
+	"(Apply) Prime Factors": {
+		"prefix": "Remote>>LM:pf/a",
+		"body": [
+			"(apply 'Remote>>LM:pf ${1:lst})"
+		],
+		"description": "Apply LM:pf to an argument list (n)"
+	},
+	"Prime-p": {
+		"prefix": "Remote>>LM:prime-p",
+		"body": [
+			"(Remote>>LM:prime-p ${1:n})"
+		],
+		"description": "Args: n - positive non-zero integer"
+	},
+	"(Apply) Prime-p": {
+		"prefix": "Remote>>LM:prime-p/a",
+		"body": [
+			"(apply 'Remote>>LM:prime-p ${1:lst})"
+		],
+		"description": "Apply LM:prime-p to an argument list (n)"
+	},
+	"Factorial": {
+		"prefix": "Remote>>LM:n!",
+		"body": [
+			"(Remote>>LM:n! ${1:n})"
+		],
+		"description": "Args: n - positive integer"
+	},
+	"(Apply) Factorial": {
+		"prefix": "Remote>>LM:n!/a",
+		"body": [
+			"(apply 'Remote>>LM:n! ${1:lst})"
+		],
+		"description": "Apply LM:n! to an argument list (n)"
+	},
+	"Factorial (recursive version)": {
+		"prefix": "Remote>>LM:n!-rec",
+		"body": [
+			"(Remote>>LM:n!-rec ${1:n})"
+		],
+		"description": "Args: n - positive integer"
+	},
+	"(Apply) Factorial (recursive version)": {
+		"prefix": "Remote>>LM:n!-rec/a",
+		"body": [
+			"(apply 'Remote>>LM:n!-rec ${1:lst})"
+		],
+		"description": "Apply LM:n!-rec to an argument list (n)"
+	},
+	"Factorial Division": {
+		"prefix": "Remote>>LM:n!/k!",
+		"body": [
+			"(Remote>>LM:n!/k! ${1:n} ${2:k})"
+		],
+		"description": "Args: n,k - positive integers"
+	},
+	"(Apply) Factorial Division": {
+		"prefix": "Remote>>LM:n!/k!/a",
+		"body": [
+			"(apply 'Remote>>LM:n!/k! ${1:lst})"
+		],
+		"description": "Apply LM:n!/k! to an argument list (n k)"
+	},
+	"Factorial Multiplication": {
+		"prefix": "Remote>>LM:n!k!",
+		"body": [
+			"(Remote>>LM:n!k! ${1:n} ${2:k})"
+		],
+		"description": "Args: n,k - positive integers"
+	},
+	"(Apply) Factorial Multiplication": {
+		"prefix": "Remote>>LM:n!k!/a",
+		"body": [
+			"(apply 'Remote>>LM:n!k! ${1:lst})"
+		],
+		"description": "Apply LM:n!k! to an argument list (n k)"
+	},
+	"Complex Addition": {
+		"prefix": "Remote>>LM:c+c",
+		"body": [
+			"(Remote>>LM:c+c ${1:c1} ${2:c2})"
+		],
+		"description": "Args: c1,c2 - complex numbers of the form a+bi = (a b)"
+	},
+	"(Apply) Complex Addition": {
+		"prefix": "Remote>>LM:c+c/a",
+		"body": [
+			"(apply 'Remote>>LM:c+c ${1:lst})"
+		],
+		"description": "Apply LM:c+c to an argument list (c1 c2)"
+	},
+	"Complex Subtraction": {
+		"prefix": "Remote>>LM:c-c",
+		"body": [
+			"(Remote>>LM:c-c ${1:c1} ${2:c2})"
+		],
+		"description": "Args: c1,c2 - complex numbers of the form a+bi = (a b)"
+	},
+	"(Apply) Complex Subtraction": {
+		"prefix": "Remote>>LM:c-c/a",
+		"body": [
+			"(apply 'Remote>>LM:c-c ${1:lst})"
+		],
+		"description": "Apply LM:c-c to an argument list (c1 c2)"
+	},
+	"Complex Multiplication": {
+		"prefix": "Remote>>LM:cxc",
+		"body": [
+			"(Remote>>LM:cxc ${1:c1} ${2:c2})"
+		],
+		"description": "Args: c1,c2 - complex numbers of the form a+bi = (a b)"
+	},
+	"(Apply) Complex Multiplication": {
+		"prefix": "Remote>>LM:cxc/a",
+		"body": [
+			"(apply 'Remote>>LM:cxc ${1:lst})"
+		],
+		"description": "Apply LM:cxc to an argument list (c1 c2)"
+	},
+	"Complex Conjugate": {
+		"prefix": "Remote>>LM:c_",
+		"body": [
+			"(Remote>>LM:c_ ${1:c1})"
+		],
+		"description": "Args: c1 - complex number of the form a+bi = (a b)"
+	},
+	"(Apply) Complex Conjugate": {
+		"prefix": "Remote>>LM:c_/a",
+		"body": [
+			"(apply 'Remote>>LM:c_ ${1:lst})"
+		],
+		"description": "Apply LM:c_ to an argument list (c1)"
+	},
+	"Complex Division": {
+		"prefix": "Remote>>LM:c/c",
+		"body": [
+			"(Remote>>LM:c/c ${1:c1} ${2:c2})"
+		],
+		"description": "Args: c1,c2 - complex numbers of the form a+bi = (a b)"
+	},
+	"(Apply) Complex Division": {
+		"prefix": "Remote>>LM:c/c/a",
+		"body": [
+			"(apply 'Remote>>LM:c/c ${1:lst})"
+		],
+		"description": "Apply LM:c/c to an argument list (c1 c2)"
+	},
+	"Complex Norm": {
+		"prefix": "Remote>>LM:/c/",
+		"body": [
+			"(Remote>>LM:/c/ ${1:c1})"
+		],
+		"description": "Args: c1 - complex number of the form a+bi = (a b)\ndefun name change from  |c|  to  Remote>>LM:/c/"
+	},
+	"(Apply) Complex Norm": {
+		"prefix": "Remote>>LM:/c//a",
+		"body": [
+			"(apply 'Remote>>LM:/c/ ${1:lst})"
+		],
+		"description": "Apply LM:/c/ to an argument list (c1)"
+	},
+	// region Matrix Transformation Functions
+	"Scale by Matrix": {
+		"prefix": "Remote>>LM:ScaleByMatrix",
+		"body": [
+			"(Remote>>LM:ScaleByMatrix ${1:target} ${2:p1} ${3:scale})"
+		],
+		"description": "Scales a VLA-Object or Point List using a\nTransformation Matrix\nAuthor: Lee Mac, Copyright © 2010 - www.lee-mac.com\nArguments:\ntarget - VLA-Object or Point List to transform\np1     - Base Point for Scaling Transformation\nscale  - Scale Factor by which to scale object"
+	},
+	"(Apply) Scale by Matrix": {
+		"prefix": "Remote>>LM:ScaleByMatrix/a",
+		"body": [
+			"(apply 'Remote>>LM:ScaleByMatrix ${1:lst})"
+		],
+		"description": "Apply LM:ScaleByMatrix to an argument list (LM:target p1 scale)"
+	},
+	"Translate by Matrix": {
+		"prefix": "Remote>>LM:TranslateByMatrix",
+		"body": [
+			"(Remote>>LM:TranslateByMatrix ${1:target} ${2:p1} ${3:p2})"
+		],
+		"description": "Translates a VLA-Object or Point List using a\nTransformation Matrix\nAuthor: Lee Mac, Copyright © 2010 - www.lee-mac.com\nArguments:\ntarget - VLA-Object or Point List to transform\np1, p2 - Points representing vector by which to translate"
+	},
+	"(Apply) Translate by Matrix": {
+		"prefix": "Remote>>LM:TranslateByMatrix/a",
+		"body": [
+			"(apply 'Remote>>LM:TranslateByMatrix ${1:lst})"
+		],
+		"description": "Apply LM:TranslateByMatrix to an argument list (LM:target p1 p2)"
+	},
+	"Rotate by Matrix": {
+		"prefix": "Remote>>LM:RotateByMatrix",
+		"body": [
+			"(Remote>>LM:RotateByMatrix ${1:target} ${2:p1} ${3:ang})"
+		],
+		"description": "Rotates a VLA-Object or Point List using a\nTransformation Matrix\nAuthor: Lee Mac, Copyright © 2010 - www.lee-mac.com\nArguments:\ntarget - VLA-Object or Point List to transform\np1     - Base Point for Rotation Transformation\nang    - Angle through which to rotate object"
+	},
+	"(Apply) Rotate by Matrix": {
+		"prefix": "Remote>>LM:RotateByMatrix/a",
+		"body": [
+			"(apply 'Remote>>LM:RotateByMatrix ${1:lst})"
+		],
+		"description": "Apply LM:RotateByMatrix to an argument list (LM:target p1 ang)"
+	},
+	"Reflect by Matrix": {
+		"prefix": "Remote>>LM:ReflectByMatrix",
+		"body": [
+			"(Remote>>LM:ReflectByMatrix ${1:target} ${2:p1} ${3:p2})"
+		],
+		"description": "Reflects a VLA-Object or Point List using a\nTransformation Matrix\nAuthor: Lee Mac, Copyright © 2010 - www.lee-mac.com\nArguments:\ntarget - VLA-Object or Point List to transform\np1, p2 - Points representing vector in which to reflect"
+	},
+	"(Apply) Reflect by Matrix": {
+		"prefix": "Remote>>LM:ReflectByMatrix/a",
+		"body": [
+			"(apply 'Remote>>LM:ReflectByMatrix ${1:lst})"
+		],
+		"description": "Apply LM:ReflectByMatrix to an argument list (LM:target p1 p2)"
+	},
+	// region MD5 Cryptographic Hash Function
+	"MD5 Cryptographic Hash Function": {
+		"prefix": "Remote>>LM:MD5",
+		"body": [
+			"(Remote>>LM:MD5 ${1:lst})"
+		],
+		"description": "AutoLISP implementation of the MD5 algorithm by Ronald Rivest\nlst - [lst] List of bytes for which to generate hash\nReturns 128-bit (16-byte) hash string."
+	},
+	"(Apply) MD5 Cryptographic Hash Function": {
+		"prefix": "Remote>>LM:MD5/a",
+		"body": [
+			"(apply 'Remote>>LM:MD5 ${1:lst})"
+		],
+		"description": "Apply LM:MD5 to an argument list (lst)"
+	},
+	// region Minimum Bounding Box
+	"Minimum Bounding Box": {
+		"prefix": "Remote>>LM:minboundingbox",
+		"body": [
+			"(Remote>>LM:minboundingbox ${1:sel} ${2:tol})"
+		],
+		"description": "Returns the WCS coordinates describing the minimum bounding rectangle\nsurrounding all objects in a supplied selection set.\nsel - [sel] selection set to process\ntol - [rea] precision of calculation, 0 < tol < 1"
+	},
+	"(Apply) Minimum Bounding Box": {
+		"prefix": "Remote>>LM:minboundingbox/a",
+		"body": [
+			"(apply 'Remote>>LM:minboundingbox ${1:lst})"
+		],
+		"description": "Apply LM:minboundingbox to an argument list (sel tol)"
+	},
+	// region Minimum Enclosing Circle
+	"Minimum Enclosing Circle": {
+		"prefix": "Remote>>LM:MinEncCircle",
+		"body": [
+			"(Remote>>LM:MinEncCircle ${1:lst})"
+		],
+		"description": "Implements the algorithm by Pr.Chrystal (1885) using the Convex Hull\nto determine the Minimum Enclosing Circle of a point set."
+	},
+	"(Apply) Minimum Enclosing Circle": {
+		"prefix": "Remote>>LM:MinEncCircle/a",
+		"body": [
+			"(apply 'Remote>>LM:MinEncCircle ${1:lst})"
+		],
+		"description": "Apply LM:MinEncCircle to an argument list (lst)"
+	},
+	// region ObjectDBX Wrapper
+	"ObjectDBX Wrapper": {
+		"prefix": "Remote>>LM:ODBX",
+		"body": [
+			"(Remote>>LM:ODBX ${1:fun} ${2:lst} ${3:sav})"
+		],
+		"description": "Evaluates a supplied function on all drawings in a given list or\nselected directory.\nAuthor:  Lee Mac, Copyright © 2013  -  www.lee-mac.com\nArguments:\nfun [SYM]\nA function requiring a single argument (the VLA Document object),\nand following the 'rules' of ObjectDBX:\n- No SelectionSets               (ssget, ssname, ssdel, etc)\n- No Command Calls               (command \"_.line\" ... etc)\n- No ent* methods                (entget, entmod, entupd, etc)\n- No Access to System Variables  (setvar, getvar, setvariable, etc)\nlst [LIST] [Optional]\nList of DWG Filenames; if nil, BrowseForFolder Dialog is displayed.\nsav [SYM]\nBoolean flag determining whether drawings should be saved following\nfunction evaluation (T=saved, nil=not saved).\nReturns:\nList of:\n(\n(<Drawing Filename> . <Function Result>)\n(<Drawing Filename> . <Function Result>)\n...\n(<Drawing Filename> . <Function Result>)\n)\nWhere:\n<Drawing Filename>\nis the filename of drawing that has been processed.\n<Function Result>\nis the result of evaluating the supplied function on the Document\nObject representing the associated drawing filename.\nIf an error occurs when evaluating the supplied function the\nFunction Result will be nil and the error message will be printed\nto the command-line."
+	},
+	"(Apply) ObjectDBX Wrapper": {
+		"prefix": "Remote>>LM:ODBX/a",
+		"body": [
+			"(apply 'Remote>>LM:ODBX ${1:lst})"
+		],
+		"description": "Apply LM:ODBX to an argument list (fun lst sav)"
+	},
+	// region Open
+	"Open": {
+		"prefix": "Remote>>LM:open",
+		"body": [
+			"(Remote>>LM:open ${1:target})"
+		],
+		"description": "A wrapper for the 'Open' method of the Shell Object\ntarget - [int/str] File, folder or ShellSpecialFolderConstants enum"
+	},
+	"(Apply) Open": {
+		"prefix": "Remote>>LM:open/a",
+		"body": [
+			"(apply 'Remote>>LM:open ${1:lst})"
+		],
+		"description": "Apply LM:open to an argument list (target)"
+	},
+	// region Ortho Point
+	"Ortho Point": {
+		"prefix": "Remote>>LM:OrthoPoint",
+		"body": [
+			"(Remote>>LM:OrthoPoint ${1:base} ${2:point})"
+		],
+		"description": "Returns a point transformed relative to a basepoint to\naccount for activation of Orthomode in the current UCS.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nbase  - basepoint for transformation (UCS)\npoint - point to be transformed (UCS)\nReturns:  Point (UCS) transformed to account for Ortho"
+	},
+	"(Apply) Ortho Point": {
+		"prefix": "Remote>>LM:OrthoPoint/a",
+		"body": [
+			"(apply 'Remote>>LM:OrthoPoint ${1:lst})"
+		],
+		"description": "Apply LM:OrthoPoint to an argument list (base point)"
+	},
+	"Ortho Point - Trans version": {
+		"prefix": "Remote>>LM:OrthoPoint-trans",
+		"body": [
+			"(Remote>>LM:OrthoPoint-trans ${1:base} ${2:point})"
+		],
+		"description": "Returns a point transformed relative to a basepoint to\naccount for activation of Orthomode in the current UCS.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nbase  - basepoint for transformation (UCS)\npoint - point to be transformed (UCS)\nReturns:  Point (UCS) transformed to account for Ortho"
+	},
+	"(Apply) Ortho Point - Trans version": {
+		"prefix": "Remote>>LM:OrthoPoint-trans/a",
+		"body": [
+			"(apply 'Remote>>LM:OrthoPoint-trans ${1:lst})"
+		],
+		"description": "Apply LM:OrthoPoint-trans to an argument list (base point)"
+	},
+	// region Pad Between Strings
+	"Pad Between recursive": {
+		"prefix": "Remote>>LM:PadBetween-r",
+		"body": [
+			"(Remote>>LM:PadBetween-r ${1:s1} ${2:s2} ${3:ch} ${4:ln})"
+		],
+		"description": "Returns a string of a minimum specified length which is\nthe concatenation of two supplied strings padded to a\ndesired length using a supplied character.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\ns1,s2 - strings to be concatenated\nch    - character for padding\nln    - minimum length of returned string\nReturns:  Concatenation of s1,s2 padded to a min length"
+	},
+	"(Apply) Pad Between recursive": {
+		"prefix": "Remote>>LM:PadBetween-r/a",
+		"body": [
+			"(apply 'Remote>>LM:PadBetween-r ${1:lst})"
+		],
+		"description": "Apply LM:PadBetween-r to an argument list (s1 s2 ch ln)"
+	},
+	"Pad Between": {
+		"prefix": "Remote>>LM:PadBetween",
+		"body": [
+			"(Remote>>LM:PadBetween ${1:s1} ${2:s2} ${3:ch} ${4:ln})"
+		],
+		"description": "Returns a string of a minimum specified length which is\nthe concatenation of two supplied strings padded to a\ndesired length using a supplied character.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\ns1,s2 - strings to be concatenated\nch    - character for padding\nln    - minimum length of returned string\nReturns:  Concatenation of s1,s2 padded to a min length"
+	},
+	"(Apply) Pad Between": {
+		"prefix": "Remote>>LM:PadBetween/a",
+		"body": [
+			"(apply 'Remote>>LM:PadBetween ${1:lst})"
+		],
+		"description": "Apply LM:PadBetween to an argument list (s1 s2 ch ln)"
+	},
+	// region Parse Numbers
+	"Parse Numbers": {
+		"prefix": "Remote>>LM:parsenumbers",
+		"body": [
+			"(Remote>>LM:parsenumbers ${1:str})"
+		],
+		"description": "Parses a list of numerical values from a supplied string."
+	},
+	"(Apply) Parse Numbers": {
+		"prefix": "Remote>>LM:parsenumbers/a",
+		"body": [
+			"(apply 'Remote>>LM:parsenumbers ${1:lst})"
+		],
+		"description": "Apply LM:parsenumbers to an argument list (str)"
+	},
+	// region Permutations
+	"Permutations": {
+		"prefix": "Remote>>LM:Permutations",
+		"body": [
+			"(Remote>>LM:Permutations ${1:l})"
+		],
+		"description": "Returns a list of all permutations of elements in a list\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nl - list to process\nReturns: List of all permutations of elements in the list"
+	},
+	"(Apply) Permutations": {
+		"prefix": "Remote>>LM:Permutations/a",
+		"body": [
+			"(apply 'Remote>>LM:Permutations ${1:lst})"
+		],
+		"description": "Apply LM:Permutations to an argument list (l)"
+	},
+	// region Polygon Centroid
+	"Polygon Centroid": {
+		"prefix": "Remote>>LM:PolyCentroid",
+		"body": [
+			"(Remote>>LM:PolyCentroid ${1:e})"
+		],
+		"description": "Returns the WCS Centroid of an LWPolyline Polygon Entity"
+	},
+	"(Apply) Polygon Centroid": {
+		"prefix": "Remote>>LM:PolyCentroid/a",
+		"body": [
+			"(apply 'Remote>>LM:PolyCentroid ${1:lst})"
+		],
+		"description": "Apply LM:PolyCentroid to an argument list (e)"
+	},
+	// region Random Number Functions
+	"Rand": {
+		"prefix": "Remote>>LM:rand",
+		"body": [
+			"(Remote>>LM:rand)"
+		],
+		"description": "PRNG implementing a linear congruential generator with\nparameters derived from the book 'Numerical Recipes'"
+	},
+	"Random in Range": {
+		"prefix": "Remote>>LM:randrange",
+		"body": [
+			"(Remote>>LM:randrange ${1:a} ${2:b})"
+		],
+		"description": "Returns a pseudo-random integral number in a given range (inclusive)"
+	},
+	"(Apply) Random in Range": {
+		"prefix": "Remote>>LM:randrange/a",
+		"body": [
+			"(apply 'Remote>>LM:randrange ${1:lst})"
+		],
+		"description": "Apply LM:randrange to an argument list (a b)"
+	},
+	// region Read CSV
+	"Read CSV": {
+		"prefix": "Remote>>LM:readcsv",
+		"body": [
+			"(Remote>>LM:readcsv ${1:csv})"
+		],
+		"description": "Parses a CSV file into a matrix list of cell values.\ncsv - [str] filename of CSV file to read"
+	},
+	"(Apply) Read CSV": {
+		"prefix": "Remote>>LM:readcsv/a",
+		"body": [
+			"(apply 'Remote>>LM:readcsv ${1:lst})"
+		],
+		"description": "Apply LM:readcsv to an argument list (csv)"
+	},
+	"CSV -> List": {
+		"prefix": "Remote>>LM:csv->lst",
+		"body": [
+			"(Remote>>LM:csv->lst ${1:str} ${2:sep} ${3:pos})"
+		],
+		"description": "Parses a line from a CSV file into a list of cell values.\nstr - [str] string read from CSV file\nsep - [str] CSV separator token\npos - [int] initial position index (always zero)"
+	},
+	"(Apply) CSV -> List": {
+		"prefix": "Remote>>LM:csv->lst/a",
+		"body": [
+			"(apply 'Remote>>LM:csv->lst ${1:lst})"
+		],
+		"description": "Apply LM:csv->lst to an argument list (str sep pos)"
+	},
+	"csv-replacequotes": {
+		"prefix": "Remote>>LM:csv-replacequotes",
+		"body": [
+			"(Remote>>LM:csv-replacequotes ${1:str})"
+		],
+		"description": ""
+	},
+	"(Apply) csv-replacequotes": {
+		"prefix": "Remote>>LM:csv-replacequotes/a",
+		"body": [
+			"(apply 'Remote>>LM:csv-replacequotes ${1:lst})"
+		],
+		"description": "Apply LM:csv-replacequotes to an argument list (str)"
+	},
+	// region 3D Rotate by Matrix
+	"3D Rotate by Matrix": {
+		"prefix": "Remote>>LM:Rotate3D",
+		"body": [
+			"(Remote>>LM:Rotate3D ${1:target} ${2:p1} ${3:p2} ${4:ang})"
+		],
+		"description": "Rotates a VLA-Object or Point List about a 3D axis using\na Transformation matrix.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\ntarget - VLA-Object or Point List to Rotate\np1,p2  - Two 3D points defining the axis of rotation\nang    - Rotation Angle"
+	},
+	"(Apply) 3D Rotate by Matrix": {
+		"prefix": "Remote>>LM:Rotate3D/a",
+		"body": [
+			"(apply 'Remote>>LM:Rotate3D ${1:lst})"
+		],
+		"description": "Apply LM:Rotate3D to an argument list (LM:target p1 p2 ang)"
+	},
+	"3D Reflect by Matrix": {
+		"prefix": "Remote>>LM:Reflect3D",
+		"body": [
+			"(Remote>>LM:Reflect3D ${1:target} ${2:p1} ${3:p2} ${4:p3})"
+		],
+		"description": "Reflects a VLA-Object or Point List in a plane using a\nTransformation matrix.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\ntarget   - VLA-Object or Point List to Reflect\np1,p2,p3 - Three 3D points defining the reflection plane"
+	},
+	"(Apply) 3D Reflect by Matrix": {
+		"prefix": "Remote>>LM:Reflect3D/a",
+		"body": [
+			"(apply 'Remote>>LM:Reflect3D ${1:lst})"
+		],
+		"description": "Apply LM:Reflect3D to an argument list (LM:target p1 p2 p3)"
+	},
+	"Apply Matrix Transformation": {
+		"prefix": "Remote>>LM:ApplyMatrixTransformation",
+		"body": [
+			"(Remote>>LM:ApplyMatrixTransformation ${1:target} ${2:matrix} ${3:vector})"
+		],
+		"description": "Transforms a VLA-Object or Point List using a\nTransformation Matrix\nAuthor: Lee Mac, Copyright © 2010 - www.lee-mac.com\nArguments:\ntarget - VLA-Object or Point List to Transform\nmatrix - 3x3 Matrix by which to Transform object\nvector - 3D translation vector"
+	},
+	"(Apply) Apply Matrix Transformation": {
+		"prefix": "Remote>>LM:ApplyMatrixTransformation/a",
+		"body": [
+			"(apply 'Remote>>LM:ApplyMatrixTransformation ${1:lst})"
+		],
+		"description": "Apply LM:ApplyMatrixTransformation to an argument list (LM:target matrix vector)"
+	},
+	// region Release Object
+	"Release Object": {
+		"prefix": "Remote>>LM:ReleaseObject",
+		"body": [
+			"(Remote>>LM:ReleaseObject ${1:obj})"
+		],
+		"description": "Releases a VLA Object from memory via plentiful error\ntrapping\nAuthor: Lee Mac, Copyright © 2010 - www.lee-mac.com\nArguments:\nobj - VLA Object to be released from memory\nReturns:  T if Object Released, else nil"
+	},
+	"(Apply) Release Object": {
+		"prefix": "Remote>>LM:ReleaseObject/a",
+		"body": [
+			"(apply 'Remote>>LM:ReleaseObject ${1:lst})"
+		],
+		"description": "Apply LM:ReleaseObject to an argument list (obj)"
+	},
+	// region Remove Items
+	"Remove Items (2)": {
+		"prefix": "Remote>>LM:RemoveItems-r",
+		"body": [
+			"(Remote>>LM:RemoveItems-r ${1:items} ${2:lst})"
+		],
+		"description": "Removes the items at specified indexes from a list\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nitems - list of zero-based indexes to remove\nlst   - list from which items are to be removed\nReturns:  List with items removed\nRecursive"
+	},
+	"(Apply) Remove Items (2)": {
+		"prefix": "Remote>>LM:RemoveItems-r/a",
+		"body": [
+			"(apply 'Remote>>LM:RemoveItems-r ${1:lst})"
+		],
+		"description": "Apply LM:RemoveItems-r to an argument list (items lst)"
+	},
+	"Remove Items (3)": {
+		"prefix": "Remote>>LM:RemoveItems",
+		"body": [
+			"(Remote>>LM:RemoveItems ${1:items} ${2:lst})"
+		],
+		"description": "Removes the items at specified indexes from a list\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nitems - list of zero-based indexes to remove\nlst   - list from which items are to be removed\nReturns:  List with items removed\nIterative"
+	},
+	"(Apply) Remove Items (3)": {
+		"prefix": "Remote>>LM:RemoveItems/a",
+		"body": [
+			"(apply 'Remote>>LM:RemoveItems ${1:lst})"
+		],
+		"description": "Apply LM:RemoveItems to an argument list (items lst)"
+	},
+	// region Remove Nth
+	"Remove Nth": {
+		"prefix": "Remote>>LM:RemoveNth",
+		"body": [
+			"(Remote>>LM:RemoveNth ${1:n} ${2:l})"
+		],
+		"description": "Removes the item at the nth index in a supplied list\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nn - index of item to remove (zero based)\nl - list from which item is to be removed\nReturns:  List with item at index n removed"
+	},
+	"(Apply) Remove Nth": {
+		"prefix": "Remote>>LM:RemoveNth/a",
+		"body": [
+			"(apply 'Remote>>LM:RemoveNth ${1:lst})"
+		],
+		"description": "Apply LM:RemoveNth to an argument list (n l)"
+	},
+	// region Rounding Functions
+	"Round": {
+		"prefix": "Remote>>LM:round",
+		"body": [
+			"(Remote>>LM:round ${1:n})"
+		],
+		"description": "Rounds 'n' to the nearest integer"
+	},
+	"(Apply) Round": {
+		"prefix": "Remote>>LM:round/a",
+		"body": [
+			"(apply 'Remote>>LM:round ${1:lst})"
+		],
+		"description": "Apply LM:round to an argument list (n)"
+	},
+	"Round Multiple": {
+		"prefix": "Remote>>LM:roundm",
+		"body": [
+			"(Remote>>LM:roundm ${1:n} ${2:m})"
+		],
+		"description": "Rounds 'n' to the nearest multiple of 'm'"
+	},
+	"(Apply) Round Multiple": {
+		"prefix": "Remote>>LM:roundm/a",
+		"body": [
+			"(apply 'Remote>>LM:roundm ${1:lst})"
+		],
+		"description": "Apply LM:roundm to an argument list (n m)"
+	},
+	"Round To": {
+		"prefix": "Remote>>LM:roundto",
+		"body": [
+			"(Remote>>LM:roundto ${1:n} ${2:p})"
+		],
+		"description": "Rounds 'n' to 'p' decimal places"
+	},
+	"(Apply) Round To": {
+		"prefix": "Remote>>LM:roundto/a",
+		"body": [
+			"(apply 'Remote>>LM:roundto ${1:lst})"
+		],
+		"description": "Apply LM:roundto to an argument list (n p)"
+	},
+	"Round Up": {
+		"prefix": "Remote>>LM:roundup",
+		"body": [
+			"(Remote>>LM:roundup ${1:n} ${2:m})"
+		],
+		"description": "Rounds 'n' up to the nearest 'm'"
+	},
+	"(Apply) Round Up": {
+		"prefix": "Remote>>LM:roundup/a",
+		"body": [
+			"(apply 'Remote>>LM:roundup ${1:lst})"
+		],
+		"description": "Apply LM:roundup to an argument list (n m)"
+	},
+	"Round Down": {
+		"prefix": "Remote>>LM:rounddown",
+		"body": [
+			"(Remote>>LM:rounddown ${1:n} ${2:m})"
+		],
+		"description": "Rounds 'n' down to the nearest 'm'"
+	},
+	"(Apply) Round Down": {
+		"prefix": "Remote>>LM:rounddown/a",
+		"body": [
+			"(apply 'Remote>>LM:rounddown ${1:lst})"
+		],
+		"description": "Apply LM:rounddown to an argument list (n m)"
+	},
+	// region Select If
+	"Select if": {
+		"prefix": "Remote>>LM:SelectIf",
+		"body": [
+			"(Remote>>LM:SelectIf ${1:msg} ${2:pred} ${3:func} ${4:keyw})"
+		],
+		"description": "Provides continuous selection prompts until either a\npredicate function is validated or a keyword is supplied.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nmsg  - prompt string\npred - optional predicate function [selection list arg]\nfunc - selection function to invoke\nkeyw - optional initget argument list\nReturns:  Entity selection list, keyword, or nil"
+	},
+	"(Apply) Select if": {
+		"prefix": "Remote>>LM:SelectIf/a",
+		"body": [
+			"(apply 'Remote>>LM:SelectIf ${1:lst})"
+		],
+		"description": "Apply LM:SelectIf to an argument list (msg pred func keyw)"
+	},
+	// region Selection Set Bounding Box
+	"Selection Set Bounding Box": {
+		"prefix": "Remote>>LM:ssboundingbox",
+		"body": [
+			"(Remote>>LM:ssboundingbox ${1:sel})"
+		],
+		"description": "Returns a list of the lower-left and upper-right WCS coordinates of a\nrectangular frame bounding all objects in a supplied selection set.\nsel - [sel] Selection set for which to return bounding box"
+	},
+	"(Apply) Selection Set Bounding Box": {
+		"prefix": "Remote>>LM:ssboundingbox/a",
+		"body": [
+			"(apply 'Remote>>LM:ssboundingbox ${1:lst})"
+		],
+		"description": "Apply LM:ssboundingbox to an argument list (sel)"
+	},
+	"Selection Set Bounding Box (2)": {
+		"prefix": "Remote>>LM:ssboundingbox~",
+		"body": [
+			"(Remote>>LM:ssboundingbox~ ${1:sel})"
+		],
+		"description": "Returns a list of the lower-left and upper-right WCS coordinates of a\nrectangular frame bounding all objects in a supplied selection set.\nsel - [sel] Selection set for which to return bounding box\nAlternative to the above function"
+	},
+	"(Apply) Selection Set Bounding Box (2)": {
+		"prefix": "Remote>>LM:ssboundingbox~/a",
+		"body": [
+			"(apply 'Remote>>LM:ssboundingbox~ ${1:lst})"
+		],
+		"description": "Apply LM:ssboundingbox~ to an argument list (sel)"
+	},
+	// region Selection Set to List
+	"SelectionSet -> Entities": {
+		"prefix": "Remote>>LM:ss->ent",
+		"body": [
+			"(Remote>>LM:ss->ent ${1:ss})"
+		],
+		"description": "Converts a SelectionSet to a list of Entities\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nss - Valid SelectionSet (Pickset)\nReturns:  List of Entity names, else nil"
+	},
+	"(Apply) SelectionSet -> Entities": {
+		"prefix": "Remote>>LM:ss->ent/a",
+		"body": [
+			"(apply 'Remote>>LM:ss->ent ${1:lst})"
+		],
+		"description": "Apply LM:ss->ent to an argument list (ss)"
+	},
+	"SelectionSet -> VLA Objects": {
+		"prefix": "Remote>>LM:ss->vla",
+		"body": [
+			"(Remote>>LM:ss->vla ${1:ss})"
+		],
+		"description": "Converts a SelectionSet to a list of VLA Objects\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nss - Valid SelectionSet (Pickset)\nReturns:  List of VLA Objects, else nil"
+	},
+	"(Apply) SelectionSet -> VLA Objects": {
+		"prefix": "Remote>>LM:ss->vla/a",
+		"body": [
+			"(apply 'Remote>>LM:ss->vla ${1:lst})"
+		],
+		"description": "Apply LM:ss->vla to an argument list (ss)"
+	},
+	// region String Subst
+	"String Subst": {
+		"prefix": "Remote>>LM:StringSubst",
+		"body": [
+			"(Remote>>LM:StringSubst ${1:new} ${2:old} ${3:str})"
+		],
+		"description": "Substitutes a string for all occurrences of another\nstring within a string.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nnew - string to be substituted for 'old'\nold - string to be replaced\nstr - the string to be searched\nReturns:  String with 'old' replaced with 'new'"
+	},
+	"(Apply) String Subst": {
+		"prefix": "Remote>>LM:StringSubst/a",
+		"body": [
+			"(apply 'Remote>>LM:StringSubst ${1:lst})"
+		],
+		"description": "Apply LM:StringSubst to an argument list (new old str)"
+	},
+	// region String to List
+	"String to List": {
+		"prefix": "Remote>>LM:str->lst-r",
+		"body": [
+			"(Remote>>LM:str->lst-r ${1:str} ${2:del})"
+		],
+		"description": "Separates a string using a given delimiter\nstr - [str] String to process\ndel - [str] Delimiter by which to separate the string\nReturns: [lst] List of strings\nRecursive"
+	},
+	"(Apply) String to List": {
+		"prefix": "Remote>>LM:str->lst-r/a",
+		"body": [
+			"(apply 'Remote>>LM:str->lst-r ${1:lst})"
+		],
+		"description": "Apply LM:str->lst-r to an argument list (str del)"
+	},
+	"String to List (2)": {
+		"prefix": "Remote>>LM:str->lst",
+		"body": [
+			"(Remote>>LM:str->lst ${1:str} ${2:del})"
+		],
+		"description": "Separates a string using a given delimiter\nstr - [str] String to process\ndel - [str] Delimiter by which to separate the string\nReturns: [lst] List of strings\nIterative"
+	},
+	"(Apply) String to List (2)": {
+		"prefix": "Remote>>LM:str->lst/a",
+		"body": [
+			"(apply 'Remote>>LM:str->lst ${1:lst})"
+		],
+		"description": "Apply LM:str->lst to an argument list (str del)"
+	},
+	// region String Wrap
+	"String Wrap": {
+		"prefix": "Remote>>LM:StringWrap",
+		"body": [
+			"(Remote>>LM:StringWrap ${1:str} ${2:len})"
+		],
+		"description": "Breaks a string at spaces (if possible) into a list of\nsubstrings of a specified length or less.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nstr - String to wrap to a specific length\nlen - Maximum length of each substring\nReturns:  List of substrings of specified length or less"
+	},
+	"(Apply) String Wrap": {
+		"prefix": "Remote>>LM:StringWrap/a",
+		"body": [
+			"(apply 'Remote>>LM:StringWrap ${1:lst})"
+		],
+		"description": "Apply LM:StringWrap to an argument list (str len)"
+	},
+	// region Sublist
+	"Sublst": {
+		"prefix": "Remote>>LM:sublst-r",
+		"body": [
+			"(Remote>>LM:sublst-r ${1:lst} ${2:idx} ${3:len})"
+		],
+		"description": "The list analog of the substr function\nlst - [lst] List from which sublist is to be returned\nidx - [int] Zero-based index at which to start the sublist\nlen - [int] Length of the sublist or nil to return all items following idx\nRecursive"
+	},
+	"(Apply) Sublst": {
+		"prefix": "Remote>>LM:sublst-r/a",
+		"body": [
+			"(apply 'Remote>>LM:sublst-r ${1:lst})"
+		],
+		"description": "Apply LM:sublst-r to an argument list (lst idx len)"
+	},
+	"Sublst (2)": {
+		"prefix": "Remote>>LM:sublst",
+		"body": [
+			"(Remote>>LM:sublst ${1:lst} ${2:idx} ${3:len})"
+		],
+		"description": "The list analog of the substr function\nlst - [lst] List from which sublist is to be returned\nidx - [int] Zero-based index at which to start the sublist\nlen - [int] Length of the sublist or nil to return all items following idx\nIterative"
+	},
+	"(Apply) Sublst (2)": {
+		"prefix": "Remote>>LM:sublst/a",
+		"body": [
+			"(apply 'Remote>>LM:sublst ${1:lst})"
+		],
+		"description": "Apply LM:sublst to an argument list (lst idx len)"
+	},
+	// region Subst Once
+	"Subst Once": {
+		"prefix": "Remote>>LM:SubstOnce-r",
+		"body": [
+			"(Remote>>LM:SubstOnce-r ${1:a} ${2:b} ${3:l})"
+		],
+		"description": "Substitutes the first occurrence of item 'b' for item 'a'\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\na - item to be substituted\nb - item to be replaced\nl - list in which to make the substitution\nReturns:  Resultant list following the substitution"
+	},
+	"(Apply) Subst Once": {
+		"prefix": "Remote>>LM:SubstOnce-r/a",
+		"body": [
+			"(apply 'Remote>>LM:SubstOnce-r ${1:lst})"
+		],
+		"description": "Apply LM:SubstOnce-r to an argument list (a b l)"
+	},
+	"Subst Once (2)": {
+		"prefix": "Remote>>LM:SubstOnce",
+		"body": [
+			"(Remote>>LM:SubstOnce ${1:a} ${2:b} ${3:l})"
+		],
+		"description": "Substitutes the first occurrence of item 'b' for item 'a'\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\na - item to be substituted\nb - item to be replaced\nl - list in which to make the substitution\nReturns:  Resultant list following the substitution"
+	},
+	"(Apply) Subst Once (2)": {
+		"prefix": "Remote>>LM:SubstOnce/a",
+		"body": [
+			"(apply 'Remote>>LM:SubstOnce ${1:lst})"
+		],
+		"description": "Apply LM:SubstOnce to an argument list (a b l)"
+	},
+	// region Subst Nth
+	"Subst Nth": {
+		"prefix": "Remote>>LM:SubstNth-r",
+		"body": [
+			"(Remote>>LM:SubstNth-r ${1:a} ${2:n} ${3:l})"
+		],
+		"description": "Substitutes an item at the nth position in a list.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\na - item to substitute\nn - position in list to make the substitution\nl - list in which to make the substitution\nReturns:  Resultant list following the substitution\nRecursive"
+	},
+	"(Apply) Subst Nth": {
+		"prefix": "Remote>>LM:SubstNth-r/a",
+		"body": [
+			"(apply 'Remote>>LM:SubstNth-r ${1:lst})"
+		],
+		"description": "Apply LM:SubstNth-r to an argument list (a n l)"
+	},
+	"Subst Nth (2)": {
+		"prefix": "Remote>>LM:SubstNth",
+		"body": [
+			"(Remote>>LM:SubstNth ${1:a} ${2:n} ${3:l})"
+		],
+		"description": "Substitutes an item at the nth position in a list.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\na - item to substitute\nn - position in list to make the substitution\nl - list in which to make the substitution\nReturns:  Resultant list following the substitution\nIterative"
+	},
+	"(Apply) Subst Nth (2)": {
+		"prefix": "Remote>>LM:SubstNth/a",
+		"body": [
+			"(apply 'Remote>>LM:SubstNth ${1:lst})"
+		],
+		"description": "Apply LM:SubstNth to an argument list (a n l)"
+	},
+	// region Text Case Functions
+	"Sentence Case": {
+		"prefix": "Remote>>LM:SentenceCase",
+		"body": [
+			"(Remote>>LM:SentenceCase ${1:s})"
+		],
+		"description": "Returns the supplied string converted to Sentence Case"
+	},
+	"(Apply) Sentence Case": {
+		"prefix": "Remote>>LM:SentenceCase/a",
+		"body": [
+			"(apply 'Remote>>LM:SentenceCase ${1:lst})"
+		],
+		"description": "Apply LM:SentenceCase to an argument list (s)"
+	},
+	"Title Case": {
+		"prefix": "Remote>>LM:TitleCase",
+		"body": [
+			"(Remote>>LM:TitleCase ${1:s})"
+		],
+		"description": "Returns the supplied string converted to Title Case"
+	},
+	"(Apply) Title Case": {
+		"prefix": "Remote>>LM:TitleCase/a",
+		"body": [
+			"(apply 'Remote>>LM:TitleCase ${1:lst})"
+		],
+		"description": "Apply LM:TitleCase to an argument list (s)"
+	},
+	"Toggle Case": {
+		"prefix": "Remote>>LM:ToggleCase",
+		"body": [
+			"(Remote>>LM:ToggleCase ${1:s})"
+		],
+		"description": "Returns the supplied string with the text case of each character switched"
+	},
+	"(Apply) Toggle Case": {
+		"prefix": "Remote>>LM:ToggleCase/a",
+		"body": [
+			"(apply 'Remote>>LM:ToggleCase ${1:lst})"
+		],
+		"description": "Apply LM:ToggleCase to an argument list (s)"
+	},
+	// region UnFormat String
+	"UnFormat String": {
+		"prefix": "Remote>>LM:UnFormat",
+		"body": [
+			"(Remote>>LM:UnFormat ${1:str} ${2:mtx})"
+		],
+		"description": "Returns a string with all MText formatting codes removed.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\nstr - String to Process\nmtx - MText Flag (T if string is for use in MText)\nReturns:  String with formatting codes removed"
+	},
+	"(Apply) UnFormat String": {
+		"prefix": "Remote>>LM:UnFormat/a",
+		"body": [
+			"(apply 'Remote>>LM:UnFormat ${1:lst})"
+		],
+		"description": "Apply LM:UnFormat to an argument list (str mtx)"
+	},
+	// region Unique & Duplicate List Functions
+	"Unique": {
+		"prefix": "Remote>>LM:Unique-r",
+		"body": [
+			"(Remote>>LM:Unique-r ${1:l})"
+		],
+		"description": "Returns a list with duplicate elements removed.\nRecursive"
+	},
+	"(Apply) Unique": {
+		"prefix": "Remote>>LM:Unique-r/a",
+		"body": [
+			"(apply 'Remote>>LM:Unique-r ${1:lst})"
+		],
+		"description": "Apply LM:Unique-r to an argument list (l)"
+	},
+	"Unique (2)": {
+		"prefix": "Remote>>LM:Unique",
+		"body": [
+			"(Remote>>LM:Unique ${1:l})"
+		],
+		"description": "Returns a list with duplicate elements removed.\nIterative"
+	},
+	"(Apply) Unique (2)": {
+		"prefix": "Remote>>LM:Unique/a",
+		"body": [
+			"(apply 'Remote>>LM:Unique ${1:lst})"
+		],
+		"description": "Apply LM:Unique to an argument list (l)"
+	},
+	"Unique-p": {
+		"prefix": "Remote>>LM:Unique-p-r",
+		"body": [
+			"(Remote>>LM:Unique-p-r ${1:l})"
+		],
+		"description": "Returns T if the supplied list contains distinct items.\nRecursive"
+	},
+	"(Apply) Unique-p": {
+		"prefix": "Remote>>LM:Unique-p-r/a",
+		"body": [
+			"(apply 'Remote>>LM:Unique-p-r ${1:lst})"
+		],
+		"description": "Apply LM:Unique-p-r to an argument list (l)"
+	},
+	"Unique-p (2)": {
+		"prefix": "Remote>>LM:Unique-p",
+		"body": [
+			"(Remote>>LM:Unique-p ${1:l})"
+		],
+		"description": "Returns T if the supplied list contains distinct items.\nIterative"
+	},
+	"(Apply) Unique-p (2)": {
+		"prefix": "Remote>>LM:Unique-p/a",
+		"body": [
+			"(apply 'Remote>>LM:Unique-p ${1:lst})"
+		],
+		"description": "Apply LM:Unique-p to an argument list (l)"
+	},
+	"Unique with Fuzz": {
+		"prefix": "Remote>>LM:UniqueFuzz-r",
+		"body": [
+			"(Remote>>LM:UniqueFuzz-r ${1:l} ${2:f})"
+		],
+		"description": "Returns a list with all elements considered duplicate to\na given tolerance removed.\nRecursive"
+	},
+	"(Apply) Unique with Fuzz": {
+		"prefix": "Remote>>LM:UniqueFuzz-r/a",
+		"body": [
+			"(apply 'Remote>>LM:UniqueFuzz-r ${1:lst})"
+		],
+		"description": "Apply LM:UniqueFuzz-r to an argument list (l f)"
+	},
+	"Unique-p with Fuzz": {
+		"prefix": "Remote>>LM:UniqueFuzz-p-r",
+		"body": [
+			"(Remote>>LM:UniqueFuzz-p-r ${1:l} ${2:f})"
+		],
+		"description": "Returns T if a list contains items considered distinct to\na given tolerance\nRecursive"
+	},
+	"(Apply) Unique-p with Fuzz": {
+		"prefix": "Remote>>LM:UniqueFuzz-p-r/a",
+		"body": [
+			"(apply 'Remote>>LM:UniqueFuzz-p-r ${1:lst})"
+		],
+		"description": "Apply LM:UniqueFuzz-p-r to an argument list (l f)"
+	},
+	"Unique-p with Fuzz (2)": {
+		"prefix": "Remote>>LM:UniqueFuzz-p",
+		"body": [
+			"(Remote>>LM:UniqueFuzz-p ${1:l} ${2:f})"
+		],
+		"description": "Returns T if a list contains items considered distinct to\na given tolerance\nIterative"
+	},
+	"(Apply) Unique-p with Fuzz (2)": {
+		"prefix": "Remote>>LM:UniqueFuzz-p/a",
+		"body": [
+			"(apply 'Remote>>LM:UniqueFuzz-p ${1:lst})"
+		],
+		"description": "Apply LM:UniqueFuzz-p to an argument list (l f)"
+	},
+	"Unique with Fuzz (2)": {
+		"prefix": "Remote>>LM:UniqueFuzz",
+		"body": [
+			"(Remote>>LM:UniqueFuzz ${1:l} ${2:f})"
+		],
+		"description": "Returns a list with all elements considered duplicate to\na given tolerance removed.\nIterative"
+	},
+	"(Apply) Unique with Fuzz (2)": {
+		"prefix": "Remote>>LM:UniqueFuzz/a",
+		"body": [
+			"(apply 'Remote>>LM:UniqueFuzz ${1:lst})"
+		],
+		"description": "Apply LM:UniqueFuzz to an argument list (l f)"
+	},
+	"List Duplicates": {
+		"prefix": "Remote>>LM:ListDupes-r",
+		"body": [
+			"(Remote>>LM:ListDupes-r ${1:l})"
+		],
+		"description": "Returns a list of items appearing more than once in a supplied list\nRecursive"
+	},
+	"(Apply) List Duplicates": {
+		"prefix": "Remote>>LM:ListDupes-r/a",
+		"body": [
+			"(apply 'Remote>>LM:ListDupes-r ${1:lst})"
+		],
+		"description": "Apply LM:ListDupes-r to an argument list (l)"
+	},
+	"List Duplicates (2)": {
+		"prefix": "Remote>>LM:ListDupes",
+		"body": [
+			"(Remote>>LM:ListDupes ${1:l})"
+		],
+		"description": "Returns a list of items appearing more than once in a supplied list\nIterative"
+	},
+	"(Apply) List Duplicates (2)": {
+		"prefix": "Remote>>LM:ListDupes/a",
+		"body": [
+			"(apply 'Remote>>LM:ListDupes ${1:lst})"
+		],
+		"description": "Apply LM:ListDupes to an argument list (l)"
+	},
+	"Count Items": {
+		"prefix": "Remote>>LM:CountItems-r",
+		"body": [
+			"(Remote>>LM:CountItems-r ${1:l})"
+		],
+		"description": "Returns a list of dotted pairs detailing the number of\noccurrences of each item in a supplied list.\nRecursive"
+	},
+	"(Apply) Count Items": {
+		"prefix": "Remote>>LM:CountItems-r/a",
+		"body": [
+			"(apply 'Remote>>LM:CountItems-r ${1:lst})"
+		],
+		"description": "Apply LM:CountItems-r to an argument list (l)"
+	},
+	"Count Items (2)": {
+		"prefix": "Remote>>LM:CountItems",
+		"body": [
+			"(Remote>>LM:CountItems ${1:l})"
+		],
+		"description": "Returns a list of dotted pairs detailing the number of\noccurrences of each item in a supplied list.\nIterative"
+	},
+	"(Apply) Count Items (2)": {
+		"prefix": "Remote>>LM:CountItems/a",
+		"body": [
+			"(apply 'Remote>>LM:CountItems ${1:lst})"
+		],
+		"description": "Apply LM:CountItems to an argument list (l)"
+	},
+	// region Write CSV
+	"Write CSV": {
+		"prefix": "Remote>>LM:writecsv",
+		"body": [
+			"(Remote>>LM:writecsv ${1:lst} ${2:csv})"
+		],
+		"description": "Writes a matrix list of cell values to a CSV file.\nlst - [lst] list of lists, sublist is row of cell values\ncsv - [str] filename of CSV file to write\nReturns T if successful, else nil"
+	},
+	"(Apply) Write CSV": {
+		"prefix": "Remote>>LM:writecsv/a",
+		"body": [
+			"(apply 'Remote>>LM:writecsv ${1:lst})"
+		],
+		"description": "Apply LM:writecsv to an argument list (lst csv)"
+	},
+	"List -> CSV": {
+		"prefix": "Remote>>LM:lst->csv",
+		"body": [
+			"(Remote>>LM:lst->csv ${1:lst} ${2:sep})"
+		],
+		"description": "Concatenates a row of cell values to be written to a CSV file.\nlst - [lst] list containing row of CSV cell values\nsep - [str] CSV separator token"
+	},
+	"(Apply) List -> CSV": {
+		"prefix": "Remote>>LM:lst->csv/a",
+		"body": [
+			"(apply 'Remote>>LM:lst->csv ${1:lst})"
+		],
+		"description": "Apply LM:lst->csv to an argument list (lst sep)"
+	},
+	"csv-addquotes": {
+		"prefix": "Remote>>LM:csv-addquotes",
+		"body": [
+			"(Remote>>LM:csv-addquotes ${1:str} ${2:sep})"
+		],
+		"description": ""
+	},
+	"(Apply) csv-addquotes": {
+		"prefix": "Remote>>LM:csv-addquotes/a",
+		"body": [
+			"(apply 'Remote>>LM:csv-addquotes ${1:lst})"
+		],
+		"description": "Apply LM:csv-addquotes to an argument list (str sep)"
+	},
+	// region XRef Path Conversion
+	"Relative Path to Full Path": {
+		"prefix": "Remote>>LM:XRef:Relative->Full",
+		"body": [
+			"(Remote>>LM:XRef:Relative->Full ${1:dir} ${2:path})"
+		],
+		"description": "Converts a Relative XRef path to a Full Path.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\ndir  - Directory of the Drawing in which the Xref resides\npath - Relative Xref Path\nReturns:  Full XRef Path"
+	},
+	"(Apply) Relative Path to Full Path": {
+		"prefix": "Remote>>LM:XRef:Relative->Full/a",
+		"body": [
+			"(apply 'Remote>>LM:XRef:Relative->Full ${1:lst})"
+		],
+		"description": "Apply LM:XRef:Relative->Full to an argument list (dir path)"
+	},
+	"Full Path to Relative Path": {
+		"prefix": "Remote>>LM:XRef:Full->Relative",
+		"body": [
+			"(Remote>>LM:XRef:Full->Relative ${1:dir} ${2:path})"
+		],
+		"description": "Converts a Full XRef path to a Relative Path.\nAuthor: Lee Mac, Copyright © 2011 - www.lee-mac.com\nArguments:\ndir  - Directory of the Drawing in which the Xref resides\npath - Full Xref Path\nReturns:  Relative XRef Path"
+	},
+	"(Apply) Full Path to Relative Path": {
+		"prefix": "Remote>>LM:XRef:Full->Relative/a",
+		"body": [
+			"(apply 'Remote>>LM:XRef:Full->Relative ${1:lst})"
+		],
+		"description": "Apply LM:XRef:Full->Relative to an argument list (dir path)"
+	},
+	// region ungroup
+	"Application Object": {
+		"prefix": "Remote>>LM:acapp",
+		"body": [
+			"(Remote>>LM:acapp)"
+		],
+		"description": "Returns the VLA Application Object"
+	},
+	"Get Owner": {
+		"prefix": "Remote>>LM:getowner",
+		"body": [
+			"(Remote>>LM:getowner ${1:obj})"
+		],
+		"description": "A wrapper for the objectidtoobject method & ownerid property to enable\ncompatibility with 32-bit & 64-bit systems"
+	},
+	"(Apply) Get Owner": {
+		"prefix": "Remote>>LM:getowner/a",
+		"body": [
+			"(apply 'Remote>>LM:getowner ${1:lst})"
+		],
+		"description": "Apply LM:getowner to an argument list (obj)"
+	},
+	"Catch Apply": {
+		"prefix": "Remote>>LM:catchapply",
+		"body": [
+			"(Remote>>LM:catchapply ${1:fnc} ${2:prm})"
+		],
+		"description": "Applies a function to a list of parameters and catches any exceptions."
+	},
+	"(Apply) Catch Apply": {
+		"prefix": "Remote>>LM:catchapply/a",
+		"body": [
+			"(apply 'Remote>>LM:catchapply ${1:lst})"
+		],
+		"description": "Apply LM:catchapply to an argument list (fnc prm)"
+	},
+	"Sortents Table": {
+		"prefix": "Remote>>LM:sortentstable",
+		"body": [
+			"(Remote>>LM:sortentstable ${1:obj})"
+		],
+		"description": "Retrieves the Sortents Table object.\nobj - [vla] Block Container Object"
+	},
+	"(Apply) Sortents Table": {
+		"prefix": "Remote>>LM:sortentstable/a",
+		"body": [
+			"(apply 'Remote>>LM:sortentstable ${1:lst})"
+		],
+		"description": "Apply LM:sortentstable to an argument list (obj)"
+	},
+	"Safearray Variant": {
+		"prefix": "Remote>>LM:safearrayvariant",
+		"body": [
+			"(Remote>>LM:safearrayvariant ${1:typ} ${2:lst})"
+		],
+		"description": "Returns a populated safearray variant of a specified data type\ntyp - [int] Variant type enum (e.g. vlax-vbdouble)\nlst - [lst] List of static type data"
+	},
+	"(Apply) Safearray Variant": {
+		"prefix": "Remote>>LM:safearrayvariant/a",
+		"body": [
+			"(apply 'Remote>>LM:safearrayvariant ${1:lst})"
+		],
+		"description": "Apply LM:safearrayvariant to an argument list (typ lst)"
+	},
+	"Active Document": {
+		"prefix": "Remote>>LM:acdoc",
+		"body": [
+			"(Remote>>LM:acdoc)"
+		],
+		"description": "Returns the VLA Active Document Object"
+	},
+	"ObjectID": {
+		"prefix": "Remote>>LM:ObjectID",
+		"body": [
+			"(Remote>>LM:ObjectID ${1:obj})"
+		],
+		"description": "Returns a string containing the ObjectID of a supplied VLA-Object\nCompatible with 32-bit & 64-bit systems"
+	},
+	"(Apply) ObjectID": {
+		"prefix": "Remote>>LM:ObjectID/a",
+		"body": [
+			"(apply 'Remote>>LM:ObjectID ${1:lst})"
+		],
+		"description": "Apply LM:ObjectID to an argument list (obj)"
+	},
+	"Linetypes Collection": {
+		"prefix": "Remote>>LM:aclin",
+		"body": [
+			"(Remote>>LM:aclin)"
+		],
+		"description": "Returns the VLA Linetypes Collection for the Active Document"
+	},
+	"Object List Bounding Box": {
+		"prefix": "Remote>>LM:objlstboundingbox",
+		"body": [
+			"(Remote>>LM:objlstboundingbox ${1:lst})"
+		],
+		"description": "Returns the lower-left and upper-right points of a rectangle bounding a list of objects"
+	},
+	"(Apply) Object List Bounding Box": {
+		"prefix": "Remote>>LM:objlstboundingbox/a",
+		"body": [
+			"(apply 'Remote>>LM:objlstboundingbox ${1:lst})"
+		],
+		"description": "Apply LM:objlstboundingbox to an argument list (lst)"
+	},
+	"Rotate Points": {
+		"prefix": "Remote>>LM:rotatepoints",
+		"body": [
+			"(Remote>>LM:rotatepoints ${1:lst} ${2:bpt} ${3:ang})"
+		],
+		"description": "Rotates a list of points about a supplied point by a given angle"
+	},
+	"(Apply) Rotate Points": {
+		"prefix": "Remote>>LM:rotatepoints/a",
+		"body": [
+			"(apply 'Remote>>LM:rotatepoints ${1:lst})"
+		],
+		"description": "Apply LM:rotatepoints to an argument list (lst bpt ang)"
+	},
+	"Remove With Fuzz": {
+		"prefix": "Remote>>LM:RemoveWithFuzz",
+		"body": [
+			"(Remote>>LM:RemoveWithFuzz ${1:l1} ${2:l2} ${3:fz})"
+		],
+		"description": "Removes items from a list which are equal to a supplied tolerance"
+	},
+	"(Apply) Remove With Fuzz": {
+		"prefix": "Remote>>LM:RemoveWithFuzz/a",
+		"body": [
+			"(apply 'Remote>>LM:RemoveWithFuzz ${1:lst})"
+		],
+		"description": "Apply LM:RemoveWithFuzz to an argument list (l1 l2 fz)"
+	},
+	"Get Inside Angle": {
+		"prefix": "Remote>>LM:GetInsideAngle",
+		"body": [
+			"(Remote>>LM:GetInsideAngle ${1:p1} ${2:p2} ${3:p3})"
+		],
+		"description": "Returns the smaller angle subtended by three points with vertex at p2"
+	},
+	"(Apply) Get Inside Angle": {
+		"prefix": "Remote>>LM:GetInsideAngle/a",
+		"body": [
+			"(apply 'Remote>>LM:GetInsideAngle ${1:lst})"
+		],
+		"description": "Apply LM:GetInsideAngle to an argument list (p1 p2 p3)"
+	}
+}

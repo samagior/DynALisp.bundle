@@ -1,0 +1,15 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+$$,Elev,Bgrd,0000,----,Elevation: Standard Line As Background Filler (Hidden From Top View)
+$$,Elev,Blin,0000,----,Elevation: Baseline
+$$,Elev,Eqpm,0000,----,Elevation: Equipment
+$$,Elev,Grph,0000,----,Elevation: Graphics
+$$,Elev,Hidd,0000,----,Elevation: Standard Line (Hidden From Top View)
+$$,Elev,Line,0000,----,Elevation: Standard Line
+$$,Elev,Main,0000,----,Elevation: Mainline
+$$,Elev,Mcut,0000,----,Elevation: Material Pattern Cut By The View (Always Black Pattern)
+$$,Elev,Nplt,0000,----,Elevation: Non-Plotting Graphic Information
+$$,Elev,Otln,0000,----,Elevation: Outline
+$$,Elev,Patt,0000,----,Elevation: Texture Or Hatch Patterns
+$$,Elev,Redl,0000,----,Elevation: Redlines
+$$,Elev,Sect,0000,----,Elevation: Section Lines
+$$,Elev,Scrn,0000,----,Elevation: Standard Line As Screening Of Coordination Objects

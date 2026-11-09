@@ -1,0 +1,46 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+C?,Afld,----,----,----,Airfields
+C?,Bldg,----,----,----,Buildings And Primary Structures
+C?,Blin,----,----,----,Baseline
+C?,Bore,----,----,----,Borings
+C?,Brdg,----,----,----,Bridge
+C?,Catv,----,----,----,Cable Television System
+C?,Ceme,----,----,----,Cemetery
+C?,Chan,----,----,----,Navigable Channels
+C?,Comm,----,----,----,Communications
+C?,Ctrl,----,----,----,Control Points
+C?,Dfld,----,----,----,Drain Fields
+C?,Driv,----,----,----,Driveways
+C?,Dtch,----,----,----,Ditches Or Washes
+C?,Eros,----,----,----,Erosion And Sediment Control
+C?,Esmt,----,----,----,Easements
+C?,Fenc,----,----,----,Fences
+C?,Fire,----,----,----,Fire Protection
+C?,Flha,----,----,----,Flood Hazard Area
+C?,Fuel,----,----,----,Fuel Systems
+C?,Hydr,----,----,----,Hydraulic Structure
+C?,Locn,----,----,----,Limits Of Construction
+C?,Ngas,----,----,----,Natural Gas Systems
+C?,Perc,----,----,----,Perc Testing
+C?,Pond,----,----,----,Ponds
+C?,Powr,----,----,----,Power
+C?,Prkg,----,----,----,Parking Lots
+C?,Prop,----,----,----,Property
+C?,Pvmt,----,----,----,Pavement
+C?,Rail,----,----,----,Railroad
+C?,Rivr,----,----,----,River
+C?,Road,----,----,----,Roadways
+C?,Rrap,----,----,----,Riprap
+C?,Sght,----,----,----,Sight Distance
+C?,Soil,----,----,----,Soils
+C?,Sswr,----,----,----,Sanitary Sewer
+C?,Stem,----,----,----,Steam System
+C?,Strm,----,----,----,Storm Sewer
+C?,Swlk,----,----,----,Sidewalks
+C?,Tinn,----,----,----,Triangulated Irregular Network
+C?,Topo,----,----,----,Topographic Feature
+C?,Tral,----,----,----,Trails Or Paths
+C?,Wall,----,----,----,Walls
+C?,Watr,----,----,----,Water Supply
+C?,Wetl,----,----,----,Wetlands
+C?,Wway,----,----,----,Waterway

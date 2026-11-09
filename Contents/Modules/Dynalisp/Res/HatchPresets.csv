@@ -1,0 +1,43 @@
+Type,Key,Pattname,Metric,Imperial,Angle,Description
+Drafting,BrickModular,CONCRETE_C,1.0,2.5,0,Brick modular
+Drafting,CutAluminium,ANSI38,0.5,0.5,0,Aluminium section
+Drafting,CutAsphalt,SITEWORK_ASPHALT,1.0,25.4,90.0,Asphalt section
+Drafting,CutBackFill,SITEWORK_EARTH,1.0,25.4,45.0,Ground backfill section
+Drafting,CutBrick,ANSI31,1.0,1.0,0,Brick section
+Drafting,CutBronze,ANSI33,0.5,0.5,0,Bronze section
+Drafting,CutCMU,ANSI37,1.0,1.0,0,CMU section
+Drafting,CutConc,CONCRETE_C,1.0,2.5,0,Concrete section
+Drafting,CutConCPanel,CONCRETE,1.0,2.5,0,Lightweight concrete panel
+Drafting,CutFireBrick,ANSI35,0.5,0.5,0,Fire brick section
+Drafting,CutGrout,GENERAL_STIPPLE,2.0,50.8,0,Grout section
+Drafting,CutGypsum,GENERAL_TEXTURE,0.5,12.7,0,Gypsum section
+Drafting,CutHardboard,ANSI31,1.0,1.0,0,Hardboard section
+Drafting,CutIron,ANSI31,0.5,0.5,0,Iron section
+Drafting,CutLead,ANSI37,0.5,0.5,0,Lead section
+Drafting,CutLooseInsul,NET3,1.0,1.0,0,Loose insulation section
+Drafting,CutMarble,ANSI36,0.5,0.5,0,Marble section
+Drafting,CutMortar,GENERAL_STIPPLE,1.0,2.54,0,Mortar section
+Drafting,CutParticleBoard,GENERAL_TEXTURE,3.0,76.2,0,Particle board section
+Drafting,CutPlaster,GENERAL_TEXTURE,3.0,76.2,0,Plaster section
+Drafting,CutPlastic,ANSI34,0.5,0.5,0,Plastic section
+Drafting,CutPlywood,WOOD_GLU-LAMBEAM,1.0,1.0,0,Plywood section
+Drafting,CutRigidInsul,ANSI37,1.0,1.0,45,Rigid insulation section
+Drafting,CutSand,GENERAL_STIPPLE,1.0,25.4,0.0,Sand section
+Drafting,CutSprayInsul,HONEY,0.5,0.5,0,Spray insulation section
+Drafting,CutSteel,ANSI32,0.5,0.5,0,Steel section
+Drafting,CutStone,ANSI33,1.0,1.0,0,Stone section
+Drafting,CutTopSoil,SITEWORK_EARTH,1.0,25.4,0.0,Ground topsoil section
+Drafting,CutWoodframe,WOOD_1,0.75,7.5,0,Wood frame section
+Drafting,CutWoodplank,WOOD_2,0.1875,7.8,0,Wood plank section
+Drafting,Demolition,ANSI31,0.5,0.5,90.0,Demolition
+Drafting,OutOfContract,ANSI31,1.5,1.5,90.0,Out of Contract
+Drafting,Shingle,CONCRETE_C,1.0,2.5,0,Roof shingle
+Model,Cut350HoriBatt,BATT-INSULATION,3.5,89.0,0.0,89mm (3.5") horizontal batt insulation
+Model,Cut350VertiBatt,BATT-INSULATION,3.5,89.0,90.0,89mm (3.5") vertical batt insulation
+Model,CutChrushedStone,SITEWORK_GRAVEL,6.0,152.4,22.5,Ground crushed stone
+Model,CutCrushedGravel1,SITEWORK_GRAVEL,3.0,76.2,22.5,Crushed gravel section
+Model,CutCrushedGravel2,SITEWORK_GRAVEL,3.0,76.2,22.5,Crushed gravel section
+Model,CutCrushedGravel3,SITEWORK_GRAVEL,3.0,76.2,22.5,Crushed gravel section
+Model,CutScreening,SITEWORK_GRAVEL,3.0,76.2,22.5,Ground screening
+Model,CutSettingBed,SITEWORK_GRAVEL,3.0,76.2,22.5,Ground Setting bed
+Model,Screening,SOLID,1.0,1.0,0,Background grey solid fill

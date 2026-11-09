@@ -1,0 +1,300 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+C?,Afld,----,----,----,Airfields
+C?,Afld,Asph,----,----,Airfields: Asphalt
+C?,Afld,Cntr,----,----,Airfields: Center
+C?,Afld,Conc,----,----,Airfields: Concrete
+C?,Afld,Flne,----,----,Airfields: Fire Lane
+C?,Afld,Flne,Mrkg,----,Airfields: Fire Lane: Pavement Markings 
+C?,Afld,Flne,Sign,----,Airfields: Fire Lane: Signage
+C?,Afld,Grvl,----,----,Airfields: Gravel
+C?,Afld,Mrkg,----,----,Airfields: Pavement Markings
+C?,Afld,Sign,----,----,Airfields: Signage
+C?,Afld,Stan,----,----,Airfields: Stationing
+C?,Afld,Whit,----,----,Airfields: White Paint
+C?,Afld,Whit,Tick,----,Airfields: White Paint: Tick Marks 
+C?,Afld,Yelo,----,----,Airfields: Yellow Paint
+C?,Afld,Yelo,Tick,----,Airfields: Yellow Paint: Tick Marks 
+C?,Bldg,----,----,----,Buildings And Primary Structures
+C?,Bldg,Deck,----,----,Buildings And Primary Structures: Deck (Attached/No Roof Overhead)
+C?,Bldg,Otln,----,----,Buildings And Primary Structures: Outline
+C?,Bldg,Ovhd,----,----,Buildings And Primary Structures: Overhead
+C?,Bldg,Prch,----,----,Buildings And Primary Structures: Porch (Attached/Roof Overhead)
+C?,Blin,----,----,----,Baseline
+C?,Blin,Stan,----,----,Baseline: Stationing
+C?,Bore,----,----,----,Borings
+C?,Brdg,----,----,----,Bridge
+C?,Brdg,Cntj,----,----,Bridge: Construction Joint
+C?,Brdg,Cntr,----,----,Bridge: Center
+C?,Brdg,Deck,----,----,Bridge: Deck
+C?,Brdg,Expj,----,----,Bridge: Expansion Joint
+C?,Brdg,Falt,----,----,Bridge: Fault/Break Line
+C?,Brdg,Hidd,----,----,Bridge: Objects Or Lines Hidden From View
+C?,Brdg,Objt,----,----,Bridge: Objects
+C?,Brdg,Objt,Prim,----,Bridge: Objects: Primary 
+C?,Brdg,Objt,Secd,----,Bridge: Objects: Secondary 
+C?,Brdg,Rbar,----,----,Bridge: Reinforcing Bar
+C?,Catv,----,----,----,Cable Television System
+C?,Catv,Ovhd,----,----,Cable Television System: Overhead
+C?,Catv,Pole,----,----,Cable Television System: Pole
+C?,Catv,Ugnd,----,----,Cable Television System: Underground
+C?,Ceme,----,----,----,Cemetery
+C?,Chan,----,----,----,Navigable Channels
+C?,Chan,Bwtr,----,----,Navigable Channels: Breakwater
+C?,Chan,Cntr,----,----,Navigable Channels: Center
+C?,Chan,Dacl,----,----,Navigable Channels: De-Authorized Channel Limits/Anchorages/Etc.
+C?,Chan,Dock,----,----,Navigable Channels: Decks/Docks/Floats/Piers 
+C?,Chan,Naid,----,----,Navigable Channels: Navigation Aids
+C?,Comm,----,----,----,Communications
+C?,Comm,Ovhd,----,----,Communications: Overhead
+C?,Comm,Pole,----,----,Communications: Pole
+C?,Comm,Ugnd,----,----,Communications: Underground
+C?,Ctrl,----,----,----,Control Points
+C?,Ctrl,Bmrk,----,----,Control Points: Benchmarks
+C?,Ctrl,Flys,----,----,Control Points: Fly Station
+C?,Ctrl,Grid,----,----,Control Points: Grid
+C?,Ctrl,Horz,----,----,Control Points: Horizontal
+C?,Ctrl,Hvpt,----,----,Control Points: Horizontal/Vertical
+C?,Ctrl,Pnpt,----,----,Control Points: Panel Points
+C?,Ctrl,Trav,----,----,Control Points: Transverse
+C?,Ctrl,Vert,----,----,Control Points: Vertical
+C?,Dfld,----,----,----,Drain Fields
+C?,Dfld,Otln,----,----,Drain Fields: Outline
+C?,Dfld,Prof,----,----,Drain Fields: Profile
+C?,Driv,----,----,----,Driveways
+C?,Driv,Asph,----,----,Driveways: Asphalt
+C?,Driv,Cntr,----,----,Driveways: Center
+C?,Driv,Conc,----,----,Driveways: Concrete
+C?,Driv,Curb,----,----,Driveways: Curb
+C?,Driv,Curb,Back,----,Driveways: Curb: Back 
+C?,Driv,Curb,Face,----,Driveways: Curb: Face 
+C?,Driv,Flne,----,----,Driveways: Fire Lane
+C?,Driv,Flne,Mrkg,----,Driveways: Fire Lane: Pavement Markings
+C?,Driv,Flne,Sign,----,Driveways: Fire Lane: Signage 
+C?,Driv,Grvl,----,----,Driveways: Gravel
+C?,Driv,Mrkg,----,----,Driveways: Pavement Markings
+C?,Driv,Sign,----,----,Driveways: Signage
+C?,Driv,Upvd,----,----,Driveways: Unpaved Surface
+C?,Driv,Whit,----,----,Driveways: White Paint
+C?,Driv,Whit,Tick,----,Driveways: White Paint: Tick Marks 
+C?,Driv,Yelo,----,----,Driveways: Yellow Paint
+C?,Driv,Yelo,Tick,----,Driveways: Yellow Paint: Tick Marks 
+C?,Dtch,----,----,----,Ditches Or Washes
+C?,Dtch,Botm,----,----,Ditches Or Washes: Bottom
+C?,Dtch,Cntr,----,----,Ditches Or Washes: Center
+C?,Dtch,Ewat,----,----,Ditches Or Washes: Edge Of Water
+C?,Dtch,Top~,----,----,Ditches Or Washes: Top
+C?,Eros,----,----,----,Erosion And Sediment Control
+C?,Eros,Cipr,----,----,Erosion And Sediment Control: Culvert Inlet Protection 
+C?,Eros,Cnte,----,----,Erosion And Sediment Control: Construction Entrance 
+C?,Eros,Ddiv,----,----,Erosion And Sediment Control: Drainage Divides
+C?,Eros,Dvdk,----,----,Erosion And Sediment Control: Diversion Dike 
+C?,Eros,Inpr,----,----,Erosion And Sediment Control: Inlet Protection
+C?,Eros,Silt,----,----,Erosion And Sediment Control: Silt Fence
+C?,Eros,Sslt,----,----,Erosion And Sediment Control: Super Silt Fence
+C?,Esmt,----,----,----,Easements
+C?,Esmt,Accs,----,----,Easements: Access (Pedestrian Only; Private Access) 
+C?,Esmt,Catv,----,----,Easements: Utility/Cable Television System
+C?,Esmt,Cons,----,----,Easements: Conservation
+C?,Esmt,Cstg,----,----,Easements: Construction/Grading
+C?,Esmt,Elec,----,----,Easements: Electrical
+C?,Esmt,Fdpl,----,----,Easements: Flood Plain
+C?,Esmt,Ineg,----,----,Easements: Ingress/Egress (Vehicles; Private Access) 
+C?,Esmt,Lscp,----,----,Easements: Landscape
+C?,Esmt,Ngas,----,----,Easements: Natural Gas Line
+C?,Esmt,Phon,----,----,Easements: Telephone Line
+C?,Esmt,Road,----,----,Easements: Roadway
+C?,Esmt,Road,Perm,----,Easements: Roadway: Permanent 
+C?,Esmt,Road,Temp,----,Easements: Roadway: Temporary
+C?,Esmt,Rway,----,----,Easements: Right-Of-Way (Public Access)
+C?,Esmt,Sght,----,----,Easements: Sight Distance
+C?,Esmt,Sswr,----,----,Easements: Sanitary Sewer
+C?,Esmt,Strm,----,----,Easements: Storm Sewer
+C?,Esmt,Swmt,----,----,Easements: Storm Water Management
+C?,Esmt,Tral,----,----,Easements: Trail Or Path (Public Access)
+C?,Esmt,Util,----,----,Easements: Utility Lines
+C?,Esmt,Watr,----,----,Easements: Water Supply
+C?,Fenc,----,----,----,Fences
+C?,Fenc,Gral,----,----,Fences: Guard Rail
+C?,Fenc,Post,----,----,Fences: Posts
+C?,Fenc,Stel,----,----,Fences: Steel (Barbed Wire And/Or Chain Link)
+C?,Fenc,Wood,----,----,Fences: Wood
+C?,Fire,----,----,----,Fire Protection
+C?,Fire,Hydt,----,----,Fire Protection: Hydrants And Connections
+C?,Fire,Pipe,----,----,Fire Protection: Piping
+C?,Fire,Ugnd,----,----,Fire Protection: Underground
+C?,Flha,----,----,----,Flood Hazard Area
+C?,Flha,025y,----,----,Flood Hazard Area: 25 Year Mark
+C?,Flha,050y,----,----,Flood Hazard Area: 50 Year Mark
+C?,Flha,100y,----,----,Flood Hazard Area: 100 Year Mark
+C?,Flha,200y,----,----,Flood Hazard Area: 200 Year Mark
+C?,Fuel,----,----,----,Fuel Systems
+C?,Fuel,Eqpm,----,----,Fuel Systems: Equipment (Pumps/Motors)
+C?,Fuel,Inst,----,----,Fuel Systems: Instrumentation (Meters/Valves/Etc.)
+C?,Fuel,Mhol,----,----,Fuel Systems: Manhole
+C?,Fuel,Pipe,----,----,Fuel Systems: Piping
+C?,Fuel,Tank,----,----,Fuel Systems: Storage Tanks
+C?,Fuel,Ugnd,----,----,Fuel Systems: Underground
+C?,Hydr,----,----,----,Hydraulic Structure
+C?,Hydr,Bafl,----,----,Hydraulic Structure: Baffle Block And Splash Pad 
+C?,Hydr,Basn,----,----,Hydraulic Structure: Stilling And Settling Basins
+C?,Hydr,Cndt,----,----,Hydraulic Structure: Diversion/Bypass Conduits/Culvers 
+C?,Hydr,Coff,----,----,Hydraulic Structure: Coffer Dam
+C?,Hydr,Dam~,----,----,Hydraulic Structure: Dam
+C?,Hydr,Fish,----,----,Hydraulic Structure: Fish Ladder/Passage
+C?,Hydr,Flum,----,----,Hydraulic Structure: Flume
+C?,Hydr,Intk,----,----,Hydraulic Structure: Intake
+C?,Hydr,Novr,----,----,Hydraulic Structure: Non-Overflow Structure 
+C?,Hydr,Pens,----,----,Hydraulic Structure: Penstock
+C?,Locn,----,----,----,Limits Of Construction
+C?,Ngas,----,----,----,Natural Gas Systems
+C?,Ngas,Eqpm,----,----,Natural Gas Systems: Equipment (Pumps/Motors)
+C?,Ngas,Inst,----,----,Natural Gas Systems: Instrumentation (Meters/Valves/Etc.)
+C?,Ngas,Mhol,----,----,Natural Gas Systems: Manhole
+C?,Ngas,Pipe,----,----,Natural Gas Systems: Piping
+C?,Ngas,Tank,----,----,Natural Gas Systems: Storage Tanks
+C?,Ngas,Ugnd,----,----,Natural Gas Systems: Underground
+C?,Perc,----,----,----,Perc Testing
+C?,Perc,Hole,----,----,Perc Testing: Holes
+C?,Pond,----,----,----,Ponds
+C?,Pond,Edge,----,----,Ponds: Edge
+C?,Pond,Sway,----,----,Ponds: Spillway
+C?,Pond,Topb,----,----,Ponds: Top Of Bank
+C?,Powr,----,----,----,Power
+C?,Powr,Fenc,----,----,Power: Fences
+C?,Powr,Inst,----,----,Power: Instrumentation (Meters/Transformers) 
+C?,Powr,Mhol,----,----,Power: Manhole
+C?,Powr,Ovhd,----,----,Power: Overhead
+C?,Powr,Pole,----,----,Power: Pole
+C?,Powr,Strc,----,----,Power: Structures
+C?,Powr,Ugnd,----,----,Power: Underground
+C?,Prkg,----,----,----,Parking Lots
+C?,Prkg,Asph,----,----,Parking Lots: Asphalt
+C?,Prkg,Cars,----,----,Parking Lots: Cars And Other Vehicles
+C?,Prkg,Conc,----,----,Parking Lots: Concrete
+C?,Prkg,Curb,----,----,Parking Lots: Curb
+C?,Prkg,Curb,Back,----,Parking Lots: Curb: Back 
+C?,Prkg,Curb,Face,----,Parking Lots: Curb: Face
+C?,Prkg,Dran,----,----,Parking Lots: Drainage Slope Indications
+C?,Prkg,Fixt,----,----,Parking Lots: Fixtures (Wheel Stops/Parking Meters/Etc.) 
+C?,Prkg,Flne,----,----,Parking Lots: Fire Lane
+C?,Prkg,Flne,Mrkg,----,Parking Lots: Fire Lane: Pavement Markings 
+C?,Prkg,Flne,Sign,----,Parking Lots: Fire Lane: Signage
+C?,Prkg,Grvl,----,----,Parking Lots: Gravel
+C?,Prkg,Mrkg,----,----,Parking Lots: Pavement Markings
+C?,Prkg,Sign,----,----,Parking Lots: Signage
+C?,Prkg,Strp,----,----,Parking Lots: Striping
+C?,Prkg,Upvd,----,----,Parking Lots: Unpaved Surface
+C?,Prkg,Whit,----,----,Parking Lots: White Paint
+C?,Prkg,Whit,Tick,----,Parking Lots: White Paint: Tick Marks 
+C?,Prkg,Yelo,----,----,Parking Lots: Yellow Paint
+C?,Prkg,Yelo,Tick,----,Parking Lots: Yellow Paint: Tick Marks
+C?,Prop,----,----,----,Property
+C?,Prop,Line,----,----,Property: Lines
+C?,Prop,Sbck,----,----,Property: Setback Lines
+C?,Pvmt,----,----,----,Pavement
+C?,Pvmt,Asph,----,----,Pavement: Asphalt
+C?,Pvmt,Conc,----,----,Pavement: Concrete
+C?,Pvmt,Grvl,----,----,Pavement: Gravel
+C?,Rail,----,----,----,Railroad
+C?,Rail,Cntr,----,----,Railroad: Center
+C?,Rail,Eqpm,----,----,Railroad: Equipment (Gates/Signals/Etc.)
+C?,Rail,Trak,----,----,Railroad: Track
+C?,Rivr,----,----,----,River
+C?,Rivr,Botm,----,----,River: Bottom
+C?,Rivr,Cntr,----,----,River: Center
+C?,Rivr,Edge,----,----,River: Edge
+C?,Rivr,Topb,----,----,River: Top Of Bank
+C?,Road,----,----,----,Roadways
+C?,Road,Asph,----,----,Roadways: Asphalt
+C?,Road,Cntr,----,----,Roadways: Center
+C?,Road,Conc,----,----,Roadways: Concrete
+C?,Road,Curb,----,----,Vroadways: Curb
+C?,Road,Curb,Back,----,Roadways: Curb: Back 
+C?,Road,Curb,Face,----,Roadways: Curb: Face 
+C?,Road,Flne,----,----,Roadways: Fire Lane
+C?,Road,Flne,Mrkg,----,Roadways: Fire Lane: Pavement Markings 
+C?,Road,Flne,Sign,----,Roadways: Fire Lane: Signage
+C?,Road,Grvl,----,----,Roadways: Gravel
+C?,Road,Mrkg,----,----,Roadways: Pavement Markings
+C?,Road,Prof,----,----,Roadways: Profile
+C?,Road,Sign,----,----,Roadways: Signage
+C?,Road,Stan,----,----,Roadways: Stationing
+C?,Road,Upvd,----,----,Roadways: Unpaved Surface
+C?,Road,Whit,----,----,Roadways: White Paint
+C?,Road,Whit,Tick,----,Roadways: White Paint: Tick Marks 
+C?,Road,Yelo,----,----,Roadways: Yellow Paint
+C?,Road,Yelo,Tick,----,Roadways: Yellow Paint: Tick Marks 
+C?,Rrap,----,----,----,Riprap
+C?,Sght,----,----,----,Sight Distance
+C?,Sght,Prof,----,----,Sight Distance: Profile
+C?,Soil,----,----,----,Soils
+C?,Sswr,----,----,----,Sanitary Sewer
+C?,Sswr,Diag,----,----,Sanitary Sewer: Diagrams
+C?,Sswr,Forc,----,----,Sanitary Sewer: Force Main
+C?,Sswr,Latl,----,----,Sanitary Sewer: Lateral Line
+C?,Sswr,Mhol,----,----,Sanitary Sewer: Manhole
+C?,Sswr,Pipe,----,----,Sanitary Sewer: Piping
+C?,Sswr,Pipe,Rcon,----,Sanitary Sewer: Piping: Reinforced Concrete 
+C?,Sswr,Pipe,Stel,----,Sanitary Sewer: Piping: Steel
+C?,Sswr,Prof,----,----,Sanitary Sewer: Profile
+C?,Sswr,Stan,----,----,Sanitary Sewer: Stationing
+C?,Sswr,Strc,----,----,Sanitary Sewer: Structures
+C?,Sswr,Ugnd,----,----,Sanitary Sewer: Underground
+C?,Stem,----,----,----,Steam System
+C?,Stem,Inst,----,----,Steam System: Instrumentation (Meters/Valves/Etc.) 
+C?,Stem,Mhol,----,----,Steam System: Manhole
+C?,Stem,Pipe,----,----,Steam System: Piping
+C?,Stem,Strc,----,----,Steam System: Structures
+C?,Stem,Ugnd,----,----,Steam System: Underground
+C?,Strm,----,----,----,Storm Sewer
+C?,Strm,Cntr,----,----,Storm Sewer: Center
+C?,Strm,Diag,----,----,Storm Sewer: Diagrams
+C?,Strm,Hwal,----,----,Storm Sewer: Headwall
+C?,Strm,Mhol,----,----,Storm Sewer: Manhole
+C?,Strm,Pipe,----,----,Storm Sewer: Piping
+C?,Strm,Pipe,Cmtl,----,Storm Sewer: Piping: Corrugated Metal 
+C?,Strm,Pipe,Rcon,----, Storm Sewer: Piping: Reinforced Concrete 
+C?,Strm,Prof,----,----,Storm Sewer: Profile
+C?,Strm,Stan,----,----,Storm Sewer: Stationing
+C?,Strm,Strc,----,----,Storm Sewer: Structures
+C?,Strm,Ugnd,----,----,Storm Sewer: Underground
+C?,Swlk,----,----,----,Sidewalks
+C?,Swlk,Asph,----,----,Sidewalks: Asphalt
+C?,Swlk,Conc,----,----,Sidewalks: Concrete
+C?,Tinn,----,----,----,Triangulated Irregular Network
+C?,Tinn,Bndy,----,----,Triangulated Irregular Network: Boundary
+C?,Tinn,Falt,----,----,Triangulated Irregular Network: Fault/Break Lines
+C?,Tinn,View,----,----,Triangulated Irregular Network: Triangulation View
+C?,Tinn,Void,----,----,Triangulated Irregular Network: Void Regions
+C?,Topo,----,----,----,Topographic Feature
+C?,Topo,Depr,----,----,Topographic Feature: Depression
+C?,Topo,Majr,----,----,Topographic Feature: Major (Contours)
+C?,Topo,Minr,----,----,Topographic Feature: Minor (Contours)
+C?,Topo,Spot,----,----,Topographic Feature: Spot Elevations
+C?,Topo,Tpit,----,----,Topographic Feature: Test Pits
+C?,Tral,----,----,----,Trails Or Paths
+C?,Tral,Asph,----,----,Trails Or Paths: Asphalt
+C?,Tral,Conc,----,----,Trails Or Paths: Concrete
+C?,Tral,Grvl,----,----,Trails Or Paths: Gravel
+C?,Tral,Mrkg,----,----,Trails Or Paths: Pavement Markings
+C?,Tral,Sign,----,----,Trails Or Paths: Signage
+C?,Tral,Upvd,----,----,Trails Or Paths: Unpaved Surface
+C?,Wall,----,----,----,Walls
+C?,Wall,Ctlj,----,----,Walls: Control Joint
+C?,Wall,Nsbr,----,----,Walls: Noise Barrier
+C?,Wall,Rtwl,----,----,Walls: Retaining Wall
+C?,Wall,Shea,----,----,Walls: Structural Bearing Or Shear Walls
+C?,Watr,----,----,----,Water Supply
+C?,Watr,Diag,----,----,Water Supply: Diagrams
+C?,Watr,Inst,----,----,Water Supply: Instrumentation (Meters/Valves/Etc.) 
+C?,Watr,Pipe,----,----,Water Supply: Piping
+C?,Watr,Prof,----,----,Water Supply: Profile
+C?,Watr,Stan,----,----,Water Supply: Stationing
+C?,Watr,Strc,----,----,Water Supply: Structures
+C?,Watr,Ugnd,----,----,Water Supply: Underground
+C?,Watr,Well,----,----,Water Supply: Well
+C?,Wetl,----,----,----,Wetlands
+C?,Wway,----,----,----,Waterway
+C?,Wway,Dlph,----,----,Waterway: Dolphin
+C?,Wway,Fend,----,----,Waterway: Fender
+C?,Wway,Moor,----,----,Waterway: Mooring

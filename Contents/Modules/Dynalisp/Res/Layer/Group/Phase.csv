@@ -1,0 +1,6 @@
+Key,WildcardLayerList
+Existing+New,"*-E" "*-X" "*-N" "*-R" "*-M"
+Existing+Demo,"*-E" "*-X" "*-D" "*-S" "*-T"
+Existing,"*-E" "*-X"
+New,"*-N" "*-R" "*-M"
+Demo,"*-D" "*-S" "*-T"

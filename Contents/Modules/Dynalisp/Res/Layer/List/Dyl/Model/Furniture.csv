@@ -1,0 +1,38 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A,Furn,----,----,----,Furnishings
+A,Furn,File,----,----,Furnishings: File Cabinets
+A,Furn,Fixd,----,----,Furnishings: Fixed
+A,Furn,Free,----,----,Furnishings: Freestanding
+A,Furn,Plnt,----,----,Furnishings: Plants
+A,Furn,Pnls,----,----,Furnishings: System Panels
+A,Furn,Seat,----,----,Furnishings: Seating
+A,Furn,Stor,----,----,Furnishings: Storage (Component System)
+A,Furn,Wksf,----,----,Furnishings: Work Surface (Component System) 
+A,Glaz,----,----,----,Glazing
+A,Glaz,Full,----,----,Glazing: Full-Height
+A,Glaz,Prht,----,----,Glazing: Partial-Height
+A,Glaz,Sill,----,----,Glazing: Window Sills
+A,Hvac,----,----,----,Hvac Systems
+A,Hvac,Rdff,----,----,Hvac Systems: Return Air Diffusers
+A,Hvac,Sdff,----,----,Hvac Systems: Supply Diffusers
+A,Lite,----,----,----,Lighting
+A,Roof,----,----,----,Roof
+A,Roof,Hral,----,----,Roof: Handrails/Guard Rails
+A,Roof,Levl,----,----,Roof: Level Changes
+A,Roof,Otln,----,----,Roof: Outline
+A,Roof,Risr,----,----,Roof: Risers
+A,Roof,Strs,----,----,Roof: Stair Treads (Ladders)
+A,Wall,----,----,----,Walls
+A,Wall,Cavi,----,----,Walls: Cavity
+A,Wall,Cntr,----,----,Walls: Center
+A,Wall,Curt,----,----,Walls: Curtain
+A,Wall,Fire,----,----,Walls: Fire Protection
+A,Wall,Full,----,----,Walls: Full-Height
+A,Wall,Full,Extr,----,Walls: Full-Height: Exterior 
+A,Wall,Full,Intr,----,Walls: Full-Height: Interior
+A,Wall,Head,----,----,Walls: Door And Window Headers
+A,Wall,Jamb,----,----,Walls: Door And Window Jambs
+A,Wall,Mesh,----,----,Walls: Mesh Or Wire
+A,Wall,Move,----,----,Walls: Moveable
+A,Wall,Patt,----,----,Walls: Texture And Hatch Patterns
+A,Wall,Prht,----,----,Walls: Partial-Height

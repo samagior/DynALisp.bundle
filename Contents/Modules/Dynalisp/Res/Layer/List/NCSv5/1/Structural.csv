@@ -1,0 +1,26 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+S?,Algn,----,----,----,Alignment
+S?,Beam,----,----,----,Beams
+S?,Brcg,----,----,----,Bracing
+S?,Cols,----,----,----,Columns
+S?,Deck,----,----,----,Deck
+S?,Detl,----,----,----,Detail
+S?,Fndn,----,----,----,Foundation
+S?,Fram,----,----,----,Braced Frame Or Moment Frame
+S?,Fstn,----,----,----,Fasteners And Connections
+S?,Gate,----,----,----,Gate
+S?,Grid,----,----,----,Grids
+S?,Grln,----,----,----,Grade Line
+S?,Grtg,----,----,----,Grating
+S?,Hydr,----,----,----,Hydraulic Structure
+S?,Jnts,----,----,----,Joints
+S?,Jois,----,----,----,Joists
+S?,Lntl,----,----,----,Lintels
+S?,Pads,----,----,----,Pads
+S?,Plat,----,----,----,Platform
+S?,Sign,----,----,----,Sign
+S?,Slab,----,----,----,Slab
+S?,Stif,----,----,----,Stiffener
+S?,Strs,----,----,----,Stairs
+S?,Trus,----,----,----,Trusses
+S?,Wall,----,----,----,Walls

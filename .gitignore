@@ -1,0 +1,22 @@
+# Personal and company tools module (MyTools, including JCA), never committed:
+Contents/Modules/MyTools/
+
+# User copies of the editable files (aliases, Startup Suite, presets...), see Dyl-UserFiles.
+# Their defaults under Contents are the ones committed:
+/User/
+
+# CAD files:
+*.bak
+*.dwl
+
+# Lisp compilation files:
+*.ob
+*.pdb
+*.prj
+
+# Lisp application files:
+*.fas
+*.vlx
+
+# Setups built by Installer\Build.ps1 (published as GitHub release assets):
+/Releases/

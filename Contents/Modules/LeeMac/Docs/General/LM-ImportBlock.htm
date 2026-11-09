@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Import Block</title>
+    <link rel="stylesheet" href="../../../../Resources/docs.css">
+</head>
+
+<body>
+    <div id="header">
+        <p>DynALisp <span>Docs</span></p>
+    </div>
+
+    <div id="content">
+        <h1>Import Block</h1>
+
+        <p class="note">This page is a copy of the original help page on Lee Mac's website, included here for offline
+            reference. For the latest version, see the original page:
+            <a href="https://lee-mac.com/copyblockfromdrawing.html" target="_blank">https://lee-mac.com/copyblockfromdrawing.html</a></p>
+
+<p><em>See also: <a href="LM-Steal.htm" title="Steal from Drawing">Steal from Drawing</a> &amp; 
+                <a href="LM-CopyRenameBlock.htm" title="Copy or Rename Block Reference">Copy or Rename Block Reference</a>.</em></p>
+<div class="programs">
+<table>
+<tr class="alt">
+<td>Function Syntax</td>
+<td><span class="fixw">LM-ImportBlock</span> &ndash; original syntax: IB (see <a href="#aliases">aliases</a>)</td>
+</tr>
+<tr>
+<td>Current Version</td>
+<td>1.2</td>
+</tr>
+
+
+<tr class="alt">
+<td>Compatible with AutoCAD for Mac?</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Compatible with AutoCAD LT?</td>
+<td>No</td>
+</tr>
+
+<tr class="alt"><td>Original Page</td><td><a href="https://lee-mac.com/copyblockfromdrawing.html" target="_blank">lee-mac.com/copyblockfromdrawing.html</a></td></tr></table>
+</div>
+<h2>Program Description</h2>
+<p>This program is the precursor of my more generalised and extensively developed 
+                <a href="LM-Steal.htm" title="Steal from Drawing">Steal from Drawing</a> program. This program allows a user to import a 
+                block from a selected drawing file into the active drawing, without opening the external file.</p>
+<p>Upon issuing the command syntax <span class="fixw">IB</span> at the AutoCAD command line, the user is prompted to 
+                select a drawing file (dwg/dwt/dws) from which to source the block to be imported.</p>
+<p>Following a valid response, a dialog is displayed prompting the user to select a block from the list of blocks defined 
+                in the selected drawing file and not already present in the current drawing.</p>
+<p>Following selection, the definition of the chosen block is imported into the active drawing and the user is prompted
+                to specify an insertion point at which a reference of the imported block will be inserted.</p>
+<p>The program will perform successfully in all UCS/Views and is also compatible with Dynamic Blocks.</p>
+<p><em>See also: <a href="LM-Steal.htm" title="Steal from Drawing">Steal from Drawing</a> &amp; 
+                <a href="LM-CopyRenameBlock.htm" title="Copy or Rename Block Reference">Copy or Rename Block Reference</a>.</em></p>
+        <details class="bundled">
+            <summary>Bundled program notes</summary>
+            <pre>;;-------------------------=={ Import Block }==-------------------------;;
+;;                                                                      ;;
+;;  This program allows a user to import a block from a selected        ;;
+;;  drawing into the active drawing, without opening the external file. ;;
+;;                                                                      ;;
+;;  Upon calling the program with &#x27;IB&#x27; at the command line, the user    ;;
+;;  is prompted to select a drawing file from which to source the       ;;
+;;  block to be imported.                                               ;;
+;;                                                                      ;;
+;;  Following a valid response, a dialog is displayed prompting the     ;;
+;;  user to select a block from the list of blocks defined in the       ;;
+;;  selected drawing and not already present in the current drawing.    ;;
+;;                                                                      ;;
+;;  Following selection, the definition of the chosen block is imported ;;
+;;  into the drawing and the user is prompted to specify a block        ;;
+;;  insertion point at which a block reference of the imported block    ;;
+;;  is inserted.                                                        ;;
+;;                                                                      ;;
+;;  The program will perform successfully in all UCS/Views and is also  ;;
+;;  compatible with Dynamic Blocks.                                     ;;
+;;----------------------------------------------------------------------;;
+;;  Author:  Lee Mac, Copyright © 2013  -  www.lee-mac.com              ;;
+;;----------------------------------------------------------------------;;
+;;  Version 1.2    -    16-06-2013                                      ;;
+;;----------------------------------------------------------------------;;</pre>
+        </details>
+<!-- dyl:aliases -->
+<h2 id="aliases">Command Names And Aliases</h2>
+<p>This page is a copy of Lee Mac's page: the commands keep their original names as aliases. Each program has one main command starting with <span class="fixw">LM-</span>. The short names are its aliases: they run the same command, and can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (saved in <span class="fixw">Resources\Aliases.csv</span>).</p>
+<div class="programs commands wide">
+<table>
+<tr><th>Command</th><th>Aliases</th><th>Name</th></tr>
+<tr><td><span class="fixw">LM-ImportBlock</span></td><td><span class="fixw">IB</span></td><td>Import Block</td></tr>
+</table>
+</div>
+<!-- /dyl:aliases -->
+
+
+    </div>
+
+    <div id="footer">
+        <p>Author: Lee Mac, Copyright &copy; 2013 &ndash;
+            <a href="https://www.lee-mac.com" target="_blank">www.lee-mac.com</a></p>
+    </div>
+</body>
+
+</html>

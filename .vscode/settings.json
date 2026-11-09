@@ -1,0 +1,41 @@
+{
+    "files.exclude": {
+        "*.fas": true,
+        "*.ob": true,
+        "*.pdb": true,
+        "*.vlx": true
+    },
+    "cSpell.words": [
+        "acad",
+        "acaddoc",
+        "activedoc",
+        "Autocad",
+        "cmdlist",
+        "confimation",
+        "defun",
+        "DYLB",
+        "dynalisp",
+        "fileprefs",
+        "findfile",
+        "getvar",
+        "Horz",
+        "layergroup",
+        "layerlist",
+        "layerstandard",
+        "lmapps",
+        "lofl",
+        "plotstyle",
+        "princ",
+        "progn",
+        "secureload",
+        "setq",
+        "setvar",
+        "sfsp",
+        "strcat",
+        "TBLWATCH",
+        "TRUSTEDPATHS",
+        "vlax",
+        "wcmatch",
+        "writecsv"
+    ]
+}

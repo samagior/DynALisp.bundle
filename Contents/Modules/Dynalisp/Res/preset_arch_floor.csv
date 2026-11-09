@@ -1,0 +1,1047 @@
+﻿Layer Name,Color,Lineweight,Linetype,Plot,Transparency,On/Off,Freeze,New VP Freeze,Description
+0,White/Black (7),Default,Continuous,Yes,0%,On,Thawed,VP Thawed,
+4,White/Black (7),Default,Continuous,Yes,0%,On,Thawed,VP Thawed,
+5,Red (1),Default,Continuous,Yes,0%,On,Thawed,VP Thawed,
+A-Area,Cyan (4),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Area
+A-Area-Iden,Yellow (2),0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Area: Identifications
+A-Area-Occp,Cyan (4),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Area: Occupant Or Employee Names
+A-Barr,ACI 170,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Barrier
+A-Barr-Air~,ACI 170,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Barrier: Air
+A-Clng,ACI 41,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ceiling
+A-Clng-Accs,ACI 41,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ceiling: Access
+A-Clng-Grid,ACI 41,0.18 mm,CENTER2,Yes,0%,On,Thawed,VP Thawed,Ceiling: Grid
+A-Clng-Opng,ACI 41,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ceiling: Openings
+A-Clng-Susp,ACI 41,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ceiling: Suspended Elements
+A-Clng-Tees,ACI 41,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ceiling: Main Tees
+A-Cols,ACI 61,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Columns
+A-Cols-Iden,Yellow (2),0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Columns: Identifications
+A-Conv,ACI 101,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Conveying Systems
+A-Door,ACI 101,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Doors
+A-Door-Full,ACI 102,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Doors: Full-Height (Swing And Leaf)
+A-Door-Iden,Yellow (2),0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Doors: Identifications
+A-Door-Prht,ACI 101,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Doors: Partial-Height (Swing And Leaf)
+A-Eqpm,ACI 161,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Equipment
+A-Eqpm-Accs,ACI 161,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Equipment: Access
+A-Eqpm-Fixd,ACI 161,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Equipment: Fixed
+A-Eqpm-Iden,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Equipment: Identifications
+A-Eqpm-Ovhd,ACI 161,0.18 mm,DASHED,Yes,0%,On,Thawed,VP Thawed,Equipment: Overhead
+A-Flor,ACI 181,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor
+A-Flor-Cswk,ACI 181,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Casework
+A-Flor-Evtr,ACI 181,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Elevator Cars And Equipment
+A-Flor-Fixt,ACI 181,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Fixtures (Plumbing)
+A-Flor-Hral,ACI 181,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Handrails/Guard Rails
+A-Flor-Iden,Yellow (2),0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Identifications
+A-Flor-Levl,ACI 181,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Level Changes (Ramps/Pits/Depressions)
+A-Flor-Otln,ACI 181,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Outline
+A-Flor-Ovhd,ACI 181,0.18 mm,DASHED,Yes,0%,On,Thawed,VP Thawed,Floor: Overhead
+A-Flor-Rais,ACI 181,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Raised
+A-Flor-Risr,ACI 181,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Risers
+A-Flor-Sign,ACI 181,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Signage
+A-Flor-Spcl,ACI 181,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Specialties (Toilet Room Accessories/Display Cases) 
+A-Flor-Strs,ACI 181,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Stair Treads (Escalators/Ladders)
+A-Flor-Tptn,ACI 181,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Toilet Partitions
+A-Flor-Wdwk,ACI 181,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Architectural Woodwork
+A-Furn,ACI 241,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings
+A-Furn-File,ACI 241,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: File Cabinets
+A-Furn-Fixd,ACI 241,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: Fixed
+A-Furn-Free,ACI 241,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: Freestanding
+A-Furn-Iden,Yellow (2),0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: Identifications
+A-Furn-Plnt,ACI 241,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: Plants
+A-Furn-Pnls,ACI 241,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: System Panels
+A-Furn-Seat,ACI 241,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: Seating
+A-Furn-Stor,ACI 241,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: Storage (Component System)
+A-Furn-Wksf,ACI 241,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: Work Surface (Component System) 
+A-Glaz,ACI 21,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glazing
+A-Glaz-Full,ACI 22,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glazing: Full-Height
+A-Glaz-Iden,Yellow (2),0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glazing: Identifications
+A-Glaz-Prht,ACI 21,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glazing: Partial-Height
+A-Glaz-Sill,ACI 21,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glazing: Window Sills
+A-Hvac,ACI 41,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hvac Systems
+A-Hvac-Iden,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hvac Systems: Identifications
+A-Hvac-Rdff,ACI 41,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hvac Systems: Return Air Diffusers
+A-Hvac-Sdff,ACI 41,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hvac Systems: Supply Diffusers
+A-Lite,ACI 61,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting
+A-Lite-Iden,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: Identifications
+A-Roof,ACI 101,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roof
+A-Roof-Hral,ACI 101,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roof: Handrails/Guard Rails
+A-Roof-Iden,Yellow (2),0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roof: Identifications
+A-Roof-Levl,ACI 101,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roof: Level Changes
+A-Roof-Otln,ACI 101,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roof: Outline
+A-Roof-Risr,ACI 101,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roof: Risers
+A-Roof-Strs,ACI 101,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roof: Stair Treads (Ladders)
+A-Wall,ACI 162,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls
+A-Wall-Cavi,ACI 161,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Cavity
+A-Wall-Cntr,ACI 161,0.18 mm,CENTER,Yes,0%,On,Thawed,VP Thawed,Walls: Center
+A-Wall-Curt,ACI 161,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Curtain
+A-Wall-Fire,ACI 161,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Fire Protection
+A-Wall-Full,ACI 163,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Full-Height
+A-Wall-Full-Extr,ACI 163,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Full-Height: Exterior 
+A-Wall-Full-Intr,ACI 32,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Full-Height: Interior
+A-Wall-Head,ACI 101,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Door And Window Headers
+A-Wall-Iden,Yellow (2),0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Identifications
+A-Wall-Jamb,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Door And Window Jambs
+A-Wall-Mesh,ACI 101,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Mesh Or Wire
+A-Wall-Move,ACI 101,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Moveable
+A-Wall-Patt,ACI 101,0.13 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Texture And Hatch Patterns
+A-Wall-Prht,ACI 101,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Partial-Height
+C-Afld,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Airfields
+C-Afld-Asph,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Airfields: Asphalt
+C-Afld-Cntr,ACI 8,0.18 mm,CENTER,Yes,0%,On,Thawed,VP Thawed,Airfields: Center
+C-Afld-Conc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Airfields: Concrete
+C-Afld-Flne,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Airfields: Fire Lane
+C-Afld-Flne-Mrkg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Airfields: Fire Lane: Pavement Markings 
+C-Afld-Flne-Sign,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Airfields: Fire Lane: Signage
+C-Afld-Grvl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Airfields: Gravel
+C-Afld-Mrkg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Airfields: Pavement Markings
+C-Afld-Sign,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Airfields: Signage
+C-Afld-Stan,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Airfields: Stationing
+C-Afld-Whit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Airfields: White Paint
+C-Afld-Whit-Tick,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Airfields: White Paint: Tick Marks 
+C-Afld-Yelo,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Airfields: Yellow Paint
+C-Afld-Yelo-Tick,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Airfields: Yellow Paint: Tick Marks 
+C-Bldg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Buildings And Primary Structures
+C-Bldg-Deck,ACI 8,0.13 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Buildings And Primary Structures: Deck (Attached/No Roof Overhead)
+C-Bldg-Otln,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Buildings And Primary Structures: Outline
+C-Bldg-Ovhd,ACI 8,0.18 mm,DASHED,Yes,0%,On,Thawed,VP Thawed,Buildings And Primary Structures: Overhead
+C-Bldg-Prch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Buildings And Primary Structures: Porch (Attached/Roof Overhead)
+C-Blin,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Baseline
+C-Blin-Stan,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Baseline: Stationing
+C-Bore,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Borings
+C-Brdg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bridge
+C-Brdg-Cntj,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bridge: Construction Joint
+C-Brdg-Cntr,ACI 8,0.18 mm,CENTER,Yes,0%,On,Thawed,VP Thawed,Bridge: Center
+C-Brdg-Deck,ACI 8,0.13 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bridge: Deck
+C-Brdg-Expj,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bridge: Expansion Joint
+C-Brdg-Falt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bridge: Fault/Break Line
+C-Brdg-Hidd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bridge: Objects Or Lines Hidden From View
+C-Brdg-Objt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bridge: Objects
+C-Brdg-Objt-Prim,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bridge: Objects: Primary 
+C-Brdg-Objt-Secd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bridge: Objects: Secondary 
+C-Brdg-Rbar,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bridge: Reinforcing Bar
+C-Catv,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Cable Television System
+C-Catv-Ovhd,ACI 8,0.18 mm,DASHED,Yes,0%,On,Thawed,VP Thawed,Cable Television System: Overhead
+C-Catv-Pole,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Cable Television System: Pole
+C-Catv-Ugnd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Cable Television System: Underground
+C-Ceme,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Cemetery
+C-Chan,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Navigable Channels
+C-Chan-Bwtr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Navigable Channels: Breakwater
+C-Chan-Cntr,ACI 8,0.18 mm,CENTER,Yes,0%,On,Thawed,VP Thawed,Navigable Channels: Center
+C-Chan-Dacl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Navigable Channels: De-Authorized Channel Limits/Anchorages/Etc.
+C-Chan-Dock,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Navigable Channels: Decks/Docks/Floats/Piers 
+C-Chan-Naid,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Navigable Channels: Navigation Aids
+C-Comm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Communications
+C-Comm-Ovhd,ACI 8,0.18 mm,DASHED,Yes,0%,On,Thawed,VP Thawed,Communications: Overhead
+C-Comm-Pole,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Communications: Pole
+C-Comm-Ugnd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Communications: Underground
+C-Ctrl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Control Points
+C-Ctrl-Bmrk,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Control Points: Benchmarks
+C-Ctrl-Flys,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Control Points: Fly Station
+C-Ctrl-Grid,ACI 8,0.18 mm,CENTER2,Yes,0%,On,Thawed,VP Thawed,Control Points: Grid
+C-Ctrl-Horz,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Control Points: Horizontal
+C-Ctrl-Hvpt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Control Points: Horizontal/Vertical
+C-Ctrl-Pnpt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Control Points: Panel Points
+C-Ctrl-Trav,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Control Points: Transverse
+C-Ctrl-Vert,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Control Points: Vertical
+C-Dfld,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Drain Fields
+C-Dfld-Otln,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Drain Fields: Outline
+C-Dfld-Prof,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Drain Fields: Profile
+C-Driv,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways
+C-Driv-Asph,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: Asphalt
+C-Driv-Cntr,ACI 8,0.18 mm,CENTER,Yes,0%,On,Thawed,VP Thawed,Driveways: Center
+C-Driv-Conc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: Concrete
+C-Driv-Curb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: Curb
+C-Driv-Curb-Back,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: Curb: Back 
+C-Driv-Curb-Face,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: Curb: Face 
+C-Driv-Flne,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: Fire Lane
+C-Driv-Flne-Mrkg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: Fire Lane: Pavement Markings
+C-Driv-Flne-Sign,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: Fire Lane: Signage 
+C-Driv-Grvl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: Gravel
+C-Driv-Mrkg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: Pavement Markings
+C-Driv-Sign,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: Signage
+C-Driv-Upvd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: Unpaved Surface
+C-Driv-Whit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: White Paint
+C-Driv-Whit-Tick,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: White Paint: Tick Marks 
+C-Driv-Yelo,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: Yellow Paint
+C-Driv-Yelo-Tick,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Driveways: Yellow Paint: Tick Marks 
+C-Dtch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ditches Or Washes
+C-Dtch-Botm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ditches Or Washes: Bottom
+C-Dtch-Cntr,ACI 8,0.18 mm,CENTER,Yes,0%,On,Thawed,VP Thawed,Ditches Or Washes: Center
+C-Dtch-Ewat,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ditches Or Washes: Edge Of Water
+C-Dtch-Top~,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ditches Or Washes: Top
+C-Eros,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Erosion And Sediment Control
+C-Eros-Cipr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Erosion And Sediment Control: Culvert Inlet Protection 
+C-Eros-Cnte,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Erosion And Sediment Control: Construction Entrance 
+C-Eros-Ddiv,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Erosion And Sediment Control: Drainage Divides
+C-Eros-Dvdk,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Erosion And Sediment Control: Diversion Dike 
+C-Eros-Inpr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Erosion And Sediment Control: Inlet Protection
+C-Eros-Silt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Erosion And Sediment Control: Silt Fence
+C-Eros-Sslt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Erosion And Sediment Control: Super Silt Fence
+C-Esmt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements
+C-Esmt-Accs,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Access (Pedestrian Only; Private Access) 
+C-Esmt-Catv,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Utility/Cable Television System
+C-Esmt-Cons,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Conservation
+C-Esmt-Cstg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Construction/Grading
+C-Esmt-Elec,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Electrical
+C-Esmt-Fdpl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Flood Plain
+C-Esmt-Ineg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Ingress/Egress (Vehicles; Private Access) 
+C-Esmt-Lscp,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Landscape
+C-Esmt-Ngas,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Natural Gas Line
+C-Esmt-Phon,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Telephone Line
+C-Esmt-Road,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Roadway
+C-Esmt-Road-Perm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Roadway: Permanent 
+C-Esmt-Road-Temp,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Roadway: Temporary
+C-Esmt-Rway,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Right-Of-Way (Public Access)
+C-Esmt-Sght,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Sight Distance
+C-Esmt-Sswr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Sanitary Sewer
+C-Esmt-Strm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Storm Sewer
+C-Esmt-Swmt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Storm Water Management
+C-Esmt-Tral,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Trail Or Path (Public Access)
+C-Esmt-Util,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Utility Lines
+C-Esmt-Watr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Easements: Water Supply
+C-Fenc,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fences
+C-Fenc-Gral,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fences: Guard Rail
+C-Fenc-Iden,Yellow (2),0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fences: Identifications
+C-Fenc-Post,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fences: Posts
+C-Fenc-Stel,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fences: Steel (Barbed Wire And/Or Chain Link)
+C-Fenc-Wood,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fences: Wood
+C-Fire,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fire Protection
+C-Fire-Hydt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fire Protection: Hydrants And Connections
+C-Fire-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fire Protection: Piping
+C-Fire-Ugnd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fire Protection: Underground
+C-Flha,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Flood Hazard Area
+C-Flha-025y,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Flood Hazard Area: 25 Year Mark
+C-Flha-050y,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Flood Hazard Area: 50 Year Mark
+C-Flha-100y,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Flood Hazard Area: 100 Year Mark
+C-Flha-200y,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Flood Hazard Area: 200 Year Mark
+C-Fuel,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel Systems
+C-Fuel-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel Systems: Equipment (Pumps/Motors)
+C-Fuel-Inst,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel Systems: Instrumentation (Meters/Valves/Etc.)
+C-Fuel-Mhol,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel Systems: Manhole
+C-Fuel-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel Systems: Piping
+C-Fuel-Tank,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel Systems: Storage Tanks
+C-Fuel-Ugnd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel Systems: Underground
+C-Hydr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hydraulic Structure
+C-Hydr-Bafl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hydraulic Structure: Baffle Block And Splash Pad 
+C-Hydr-Basn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hydraulic Structure: Stilling And Settling Basins
+C-Hydr-Cndt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hydraulic Structure: Diversion/Bypass Conduits/Culvers 
+C-Hydr-Coff,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hydraulic Structure: Coffer Dam
+C-Hydr-Dam~,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hydraulic Structure: Dam
+C-Hydr-Fish,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hydraulic Structure: Fish Ladder/Passage
+C-Hydr-Flum,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hydraulic Structure: Flume
+C-Hydr-Intk,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hydraulic Structure: Intake
+C-Hydr-Novr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hydraulic Structure: Non-Overflow Structure 
+C-Hydr-Pens,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hydraulic Structure: Penstock
+C-Locn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Limits Of Construction
+C-Ngas,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Natural Gas Systems
+C-Ngas-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Natural Gas Systems: Equipment (Pumps/Motors)
+C-Ngas-Inst,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Natural Gas Systems: Instrumentation (Meters/Valves/Etc.)
+C-Ngas-Mhol,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Natural Gas Systems: Manhole
+C-Ngas-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Natural Gas Systems: Piping
+C-Ngas-Tank,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Natural Gas Systems: Storage Tanks
+C-Ngas-Ugnd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Natural Gas Systems: Underground
+C-Perc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Perc Testing
+C-Perc-Hole,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Perc Testing: Holes
+C-Pond,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ponds
+C-Pond-Edge,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ponds: Edge
+C-Pond-Sway,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ponds: Spillway
+C-Pond-Topb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ponds: Top Of Bank
+C-Powr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power
+C-Powr-Fenc,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: Fences
+C-Powr-Inst,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: Instrumentation (Meters/Transformers) 
+C-Powr-Mhol,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: Manhole
+C-Powr-Ovhd,ACI 8,0.18 mm,DASHED,Yes,0%,On,Thawed,VP Thawed,Power: Overhead
+C-Powr-Pole,Red (1),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: Pole
+C-Powr-Strc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: Structures
+C-Powr-Ugnd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: Underground
+C-Prkg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots
+C-Prkg-Asph,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Asphalt
+C-Prkg-Cars,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Cars And Other Vehicles
+C-Prkg-Conc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Concrete
+C-Prkg-Curb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Curb
+C-Prkg-Curb-Back,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Curb: Back 
+C-Prkg-Curb-Face,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Curb: Face
+C-Prkg-Dran,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Drainage Slope Indications
+C-Prkg-Fixt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Fixtures (Wheel Stops/Parking Meters/Etc.) 
+C-Prkg-Flne,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Fire Lane
+C-Prkg-Flne-Mrkg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Fire Lane: Pavement Markings 
+C-Prkg-Flne-Sign,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Fire Lane: Signage
+C-Prkg-Grvl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Gravel
+C-Prkg-Mrkg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Pavement Markings
+C-Prkg-Sign,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Signage
+C-Prkg-Strp,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Striping
+C-Prkg-Upvd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Unpaved Surface
+C-Prkg-Whit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: White Paint
+C-Prkg-Whit-Tick,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: White Paint: Tick Marks 
+C-Prkg-Yelo,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Yellow Paint
+C-Prkg-Yelo-Tick,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Parking Lots: Yellow Paint: Tick Marks
+C-Prop,Cyan (4),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Property
+C-Prop-Line,Cyan (4),0.18 mm,DIVIDE,Yes,0%,On,Thawed,VP Thawed,Property: Lines
+C-Prop-Sbck,Cyan (4),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Property: Setback Lines
+C-Pvmt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement
+C-Pvmt-Asph,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Asphalt
+C-Pvmt-Conc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Concrete
+C-Pvmt-Grvl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Gravel
+C-Pvmt-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Identifications
+C-Rail,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Railroad
+C-Rail-Cntr,ACI 8,0.18 mm,CENTER,Yes,0%,On,Thawed,VP Thawed,Railroad: Center
+C-Rail-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Railroad: Equipment (Gates/Signals/Etc.)
+C-Rail-Trak,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Railroad: Track
+C-Rivr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,River
+C-Rivr-Botm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,River: Bottom
+C-Rivr-Cntr,ACI 8,0.18 mm,CENTER,Yes,0%,On,Thawed,VP Thawed,River: Center
+C-Rivr-Edge,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,River: Edge
+C-Rivr-Topb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,River: Top Of Bank
+C-Road,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways
+C-Road-Asph,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Asphalt
+C-Road-Cntr,ACI 8,0.18 mm,CENTER,Yes,0%,On,Thawed,VP Thawed,Roadways: Center
+C-Road-Conc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Concrete
+C-Road-Curb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Vroadways: Curb
+C-Road-Curb-Back,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Curb: Back 
+C-Road-Curb-Face,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Curb: Face 
+C-Road-Flne,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Fire Lane
+C-Road-Flne-Mrkg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Fire Lane: Pavement Markings 
+C-Road-Flne-Sign,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Fire Lane: Signage
+C-Road-Grvl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Gravel
+C-Road-Mrkg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Pavement Markings
+C-Road-Prof,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Profile
+C-Road-Sign,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Signage
+C-Road-Stan,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Stationing
+C-Road-Upvd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Unpaved Surface
+C-Road-Whit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: White Paint
+C-Road-Whit-Tick,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: White Paint: Tick Marks 
+C-Road-Yelo,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Yellow Paint
+C-Road-Yelo-Tick,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roadways: Yellow Paint: Tick Marks 
+C-Rrap,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Riprap
+C-Sght,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sight Distance
+C-Sght-Prof,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sight Distance: Profile
+C-Soil,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Soils
+C-Sswr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary Sewer
+C-Sswr-Diag,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary Sewer: Diagrams
+C-Sswr-Forc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary Sewer: Force Main
+C-Sswr-Latl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary Sewer: Lateral Line
+C-Sswr-Mhol,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary Sewer: Manhole
+C-Sswr-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary Sewer: Piping
+C-Sswr-Pipe-Rcon,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary Sewer: Piping: Reinforced Concrete 
+C-Sswr-Pipe-Stel,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary Sewer: Piping: Steel
+C-Sswr-Prof,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary Sewer: Profile
+C-Sswr-Stan,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary Sewer: Stationing
+C-Sswr-Strc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary Sewer: Structures
+C-Sswr-Ugnd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary Sewer: Underground
+C-Stem,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam System
+C-Stem-Inst,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam System: Instrumentation (Meters/Valves/Etc.) 
+C-Stem-Mhol,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam System: Manhole
+C-Stem-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam System: Piping
+C-Stem-Strc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam System: Structures
+C-Stem-Ugnd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam System: Underground
+C-Strm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Storm Sewer
+C-Strm-Cntr,ACI 8,0.18 mm,CENTER,Yes,0%,On,Thawed,VP Thawed,Storm Sewer: Center
+C-Strm-Diag,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Storm Sewer: Diagrams
+C-Strm-Hwal,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Storm Sewer: Headwall
+C-Strm-Mhol,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Storm Sewer: Manhole
+C-Strm-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Storm Sewer: Piping
+C-Strm-Pipe-Cmtl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Storm Sewer: Piping: Corrugated Metal 
+C-Strm-Pipe-Rcon,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed, Storm Sewer: Piping: Reinforced Concrete 
+C-Strm-Prof,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Storm Sewer: Profile
+C-Strm-Stan,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Storm Sewer: Stationing
+C-Strm-Strc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Storm Sewer: Structures
+C-Strm-Ugnd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Storm Sewer: Underground
+C-Swlk,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sidewalks
+C-Swlk-Asph,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sidewalks: Asphalt
+C-Swlk-Conc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sidewalks: Concrete
+C-Tinn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Triangulated Irregular Network
+C-Tinn-Bndy,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Triangulated Irregular Network: Boundary
+C-Tinn-Falt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Triangulated Irregular Network: Fault/Break Lines
+C-Tinn-View,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Triangulated Irregular Network: Triangulation View
+C-Tinn-Void,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Triangulated Irregular Network: Void Regions
+C-Topo,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Topographic Feature
+C-Topo-Depr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Topographic Feature: Depression
+C-Topo-Majr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Topographic Feature: Major (Contours)
+C-Topo-Minr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Topographic Feature: Minor (Contours)
+C-Topo-Spot,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Topographic Feature: Spot Elevations
+C-Topo-Tpit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Topographic Feature: Test Pits
+C-Tral,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Trails Or Paths
+C-Tral-Asph,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Trails Or Paths: Asphalt
+C-Tral-Conc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Trails Or Paths: Concrete
+C-Tral-Grvl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Trails Or Paths: Gravel
+C-Tral-Mrkg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Trails Or Paths: Pavement Markings
+C-Tral-Sign,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Trails Or Paths: Signage
+C-Tral-Upvd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Trails Or Paths: Unpaved Surface
+C-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls
+C-Wall-Ctlj,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Control Joint
+C-Wall-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Identifications
+C-Wall-Nsbr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Noise Barrier
+C-Wall-Rtwl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Retaining Wall
+C-Wall-Shea,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Structural Bearing Or Shear Walls
+C-Watr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Water Supply
+C-Watr-Diag,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Water Supply: Diagrams
+C-Watr-Inst,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Water Supply: Instrumentation (Meters/Valves/Etc.) 
+C-Watr-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Water Supply: Piping
+C-Watr-Prof,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Water Supply: Profile
+C-Watr-Stan,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Water Supply: Stationing
+C-Watr-Strc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Water Supply: Structures
+C-Watr-Ugnd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Water Supply: Underground
+C-Watr-Well,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Water Supply: Well
+C-Wetl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Wetlands
+C-Wway,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Waterway
+C-Wway-Dlph,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Waterway: Dolphin
+C-Wway-Fend,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Waterway: Fender
+C-Wway-Moor,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Waterway: Mooring
+Defpoints,ACI 140,Default,Continuous,No,0%,On,Thawed,VP Thawed,
+E-Alrm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Alarm system
+E-Area,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Area
+E-Area-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Area: Identifications
+E-Area-Ofst,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Area: offset zones
+E-Area-Shad,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Area: shade zones
+E-Auxl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Auxiliary systems
+E-Bell,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bell system
+E-Cabl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Cable systems
+E-Cabl-Coax,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Cable systems: coax cable
+E-Cabl-Fibr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Cable systems: fiber optics cable
+E-Cabl-Mult,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Cable systems: multi-conductor cable
+E-Cabl-Tray,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Cable systems: cabletray and wireways
+E-Cath,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Cathodic protection system
+E-Cath-Anod,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Cathodic protection system: sacrificial anode
+E-Cath-Curr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Cathodic protection system: impress current
+E-Cath-Test,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Cathodic protection system: test stations
+E-Cctv,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Closed-circuit television system
+E-Clok,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Clock system
+E-Clok-Circ,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Clock system: circuits
+E-Clok-Clng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Clock system: ceiling
+E-Clok-Cnmb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Clock system: circuit number
+E-Clok-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Clock system: equipment
+E-Clok-Flor,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Clock system: floor
+E-Clok-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Clock system: wall
+E-Comm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Communications
+E-Comm-Circ,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Communications: circuits
+E-Comm-Clng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Communications: ceiling
+E-Comm-Cnmb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Communications: circuit number
+E-Comm-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Communications: equipment
+E-Comm-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Communications: wall
+E-Cont,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Controls and instrumentation
+E-Cont-Devc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Controls and instrumentation: devices
+E-Cont-Wire,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Controls and instrumentation: wiring
+E-Data,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Data/LAN system
+E-Data-Circ,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Data/LAN system: circuits
+E-Data-Clng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Data/LAN system: ceiling
+E-Data-Cnmb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Data/LAN system: circuit number
+E-Data-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Data/LAN system: equipment
+E-Data-Flor,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Data/LAN system: floor
+E-Data-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Data/LAN system: wall
+E-Diag,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Diagrams
+E-Diag-Bkrs,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Diagrams: breakers
+E-Diag-Buss,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Diagrams: bus duct
+E-Diag-Encl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Diagrams: equipment enclosures
+E-Diag-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Diagrams: equipment
+E-Diag-Feed,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Diagrams: feeders
+E-Diag-Flor,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Diagrams: floor
+E-Diag-Grnd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Diagrams: ground
+E-Diag-Swch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Diagrams: switches
+E-Diag-Xfmr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Diagrams: transformers
+E-Dict,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Dictation system
+E-Dict-Circ,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Dictation system: circuits
+E-Dict-Clng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Dictation system: ceiling
+E-Dict-Cnmb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Dictation system: circuit number
+E-Dict-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Dictation system: equipment
+E-Dict-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Dictation system: wall
+E-Fire,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fire protection
+E-Fire-Barr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fire protection: barrier
+E-Fire-Circ,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fire protection: circuits
+E-Fire-Clng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fire protection: ceiling
+E-Fire-Cnmb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fire protection: circuit number
+E-Fire-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fire protection: equipment
+E-Fire-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fire protection: wall
+E-Grnd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ground system
+E-Grnd-Circ,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ground system: circuits
+E-Grnd-Clng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ground system: ceiling
+E-Grnd-Cnmb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ground system: circuit number
+E-Grnd-Diag,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ground system: diagrams
+E-Grnd-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ground system: equipment
+E-Grnd-Equi,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ground system: equipotential
+E-Grnd-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ground system: wall
+E-Inst,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Instrumentation system
+E-Inst-Circ,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Instrumentation system: circuits
+E-Inst-Clng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Instrumentation system: ceiling
+E-Inst-Cnmb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Instrumentation system: circuit number
+E-Inst-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Instrumentation system: equipment
+E-Inst-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Instrumentation system: wall
+E-Intc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Intercom/PA systems
+E-Lite,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting
+E-Lite-Circ,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: circuits
+E-Lite-Circ-Crit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: circuits: critical
+E-Lite-Circ-Emer,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: circuits: emergency
+E-Lite-Clng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: ceiling
+E-Lite-Clng-Crit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: ceiling: critical
+E-Lite-Clng-Emer,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: ceiling: emergency
+E-Lite-Clng-Exit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: ceiling: exit
+E-Lite-Cnmb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: circuit number
+E-Lite-Cnmb-Crit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: circuit number: critical
+E-Lite-Cnmb-Emer,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: circuit number: emergency
+E-Lite-Emer,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: emergency
+E-Lite-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: equipment
+E-Lite-Eqpm-Crit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: equipment: critical
+E-Lite-Eqpm-Emer,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: equipment: emergency
+E-Lite-Exit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: exit
+E-Lite-Extr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: exterior
+E-Lite-Flor,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: floor
+E-Lite-Iden,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: Identifications
+E-Lite-Jbox,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: junction box
+E-Lite-Otln,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: outline
+E-Lite-Roof,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: roof
+E-Lite-Spcl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: special
+E-Lite-Swch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: switches
+E-Lite-Swch-Crit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: switches: critical
+E-Lite-Swch-Emer,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: switches: emergency
+E-Lite-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: wall
+E-Lite-Wall-Crit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: wall: critical
+E-Lite-Wall-Emer,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: wall: emergency
+E-Lite-Wall-Exit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lighting: wall: exit
+E-Ltng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lightning protection system
+E-Ltng-Circ,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lightning protection system: circuits
+E-Ltng-Clng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lightning protection system: ceiling
+E-Ltng-Cnmb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lightning protection system: circuit number
+E-Ltng-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lightning protection system: equipment
+E-Ltng-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lightning protection system: wall
+E-Mntg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Mounting system
+E-Nurs,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Nurse call system
+E-Nurs-Circ,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Nurse call system: circuits
+E-Nurs-Clng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Nurse call system: ceiling
+E-Nurs-Cnmb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Nurse call system: circuit number
+E-Nurs-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Nurse call system: equipment
+E-Nurs-Flor,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Nurse call system: floor
+E-Nurs-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Nurse call system: wall
+E-Obst,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Obstructions
+E-Pgng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Paging system
+E-Powr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power
+E-Powr-Busw,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: busways
+E-Powr-Cabl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: cable systems
+E-Powr-Cbox,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: combiner box
+E-Powr-Cbox-Ftpt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: combiner box: area footprints 
+E-Powr-Circ,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: circuits
+E-Powr-Circ-Crit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: circuits: critical
+E-Powr-Clng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: ceiling
+E-Powr-Clng-Crit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: ceiling: critical
+E-Powr-Cndt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: conduit
+E-Powr-Cnmb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: circuit number
+E-Powr-Cnmb-Crit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: circuit number: critical
+E-Powr-Devc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: devices
+E-Powr-Dsco,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: disconnect switches
+E-Powr-Dsco-Acfu,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: disconnect switches: fused ac
+E-Powr-Dsco-Acnf,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: disconnect switches: unfused ac
+E-Powr-Dsco-Dcfu,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: disconnect switches: fused dc
+E-Powr-Dsco-Dcnf,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: disconnect switches: unfused dc
+E-Powr-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: equipment
+E-Powr-Eqpm-Crit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: equipment: critical
+E-Powr-Extr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: exterior
+E-Powr-Feed,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: feeders
+E-Powr-Flor,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: floor
+E-Powr-Flor-Crit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: floor: critical
+E-Powr-Jbox,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: junction box
+E-Powr-Panl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: panels
+E-Powr-Pocc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: point of common coupling
+E-Powr-Poi~,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: point of interconnection
+E-Powr-Roof,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: roof
+E-Powr-Swbd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: switchboards
+E-Powr-Ucpt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: under-carpet wiring
+E-Powr-Urac,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: underfloor raceways
+E-Powr-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: wall
+E-Powr-Wall-Crit,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: wall: critical
+E-Powr-Xfmr-Padm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: transformers: pad-mounted
+E-Powr-Xfmr-Polm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Power: transformers: pole-mounted
+E-Pvmd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Photovoltaic modules
+E-Site,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site features
+E-Site-Ovhd,ACI 8,0.18 mm,DASHED,Yes,0%,On,Thawed,VP Thawed,Site features: overhead
+E-Site-Pole,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site features: pole
+E-Site-Ugnd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site features: underground
+E-Soun,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sound system
+E-Util,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Utilities
+Equipement,ACI 133,0.20 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,
+G-Anno-Iden,ACI 152,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Annotation: identifications:  (Unphased)
+G-Anno-Nplt,ACI 140,0.18 mm,Continuous,No,0%,On,Thawed,VP Thawed,
+I-Area,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Area
+I-Area-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Area: Identifications
+I-Area-Occp,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Area: Occupant Or Employee Names
+I-Clng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ceiling
+I-Clng-Accs,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ceiling: Access
+I-Clng-Opng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ceiling: Openings
+I-Clng-Susp,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ceiling: Suspended Elements
+I-Clng-Tees,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Ceiling: Main Tees
+I-Cols,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Columns
+I-Cols-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Columns: Identifications
+I-Crpt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Carpet/Carpet Tile
+I-Cswk,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Casework
+I-Cswk-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Casework: Identifications
+I-Door,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Doors
+I-Door-Full,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Doors: Full-Height
+I-Door-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Doors: Identifications
+I-Door-Prht,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Doors: Partial-Height
+I-Eqpm,ACI 8,0.18 mm,Continuous,No,0%,On,Thawed,VP Thawed,Equipment
+I-Eqpm-Accs,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Equipment: Access
+I-Eqpm-Fixd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Equipment: Fixed
+I-Eqpm-Iden,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Equipment: Identifications
+I-Eqpm-Ovhd,ACI 8,0.18 mm,DASHED,Yes,0%,On,Thawed,VP Thawed,Equipment: Overhead
+I-Eqpm-Stor,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Equipment: Storage
+I-Flor,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor
+I-Flor-Evtr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Elevator Cars And Equipment
+I-Flor-Fixt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Fixtures (Plumbing)
+I-Flor-Hral,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Handrails/Guard Rails
+I-Flor-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Identifications
+I-Flor-Levl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Level Changes (Ramps/Pits/Depressions)
+I-Flor-Otln,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Outline
+I-Flor-Ovhd,ACI 8,0.18 mm,DASHED,Yes,0%,On,Thawed,VP Thawed,Floor: Overhead
+I-Flor-Rais,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Raised
+I-Flor-Risr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Risers
+I-Flor-Sign,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Signage
+I-Flor-Spcl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Architectural Specialties (Toilet Room Accessories/Display Cases)
+I-Flor-Strs,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Stair Treads (Escalators/Ladders)
+I-Flor-Tptn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Toilet Partitions
+I-Flor-Wdwk,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Architectural Woodwork
+I-Fnsh,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Finishes
+I-Fnsh-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Finishes: Identifications
+I-Furn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings
+I-Furn-File,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: File Cabinets
+I-Furn-Free,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: Freestanding
+I-Furn-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: Identifications
+I-Furn-Plnt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: Plants
+I-Furn-Pnls,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: System Panels
+I-Furn-Seat,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: Seating
+I-Furn-Stor,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: Storage (Component System)
+I-Furn-Wksf,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Furnishings: Work Surface (Component System)
+I-Glaz,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glazing
+I-Glaz-Full,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glazing: Full-Height
+I-Glaz-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glazing: Identifications
+I-Glaz-Prht,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glazing: Partial-Height
+I-Glaz-Sill,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glazing: Window Sills
+I-Hvac,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hvac Systems
+I-Hvac-Iden,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hvac Systems: Identifications
+I-Hvac-Rdff,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hvac Systems: Return Air Diffusers
+I-Hvac-Sdff,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hvac Systems: Supply Diffusers
+I-Mill,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Millwork
+I-Prtn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Partitions
+I-Prtn-Fire,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Partitions: Fire Protection
+I-Prtn-Full,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Partitions: Full-Height
+I-Prtn-Head,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Partitions: Door And Window Headers
+I-Prtn-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Partitions: Identifications
+I-Prtn-Jamb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Partitions: Door And Window Jambs
+I-Prtn-Move,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Partitions: Moveable
+I-Prtn-Prht,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Partitions: Partial-Height
+I-Tile,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Tile
+L-Fenc,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fences
+L-Fenc-Iden,Yellow (2),0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fences: Identifications
+L-Fenc-Link,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fences: Chain Link
+L-Fenc-Link-04ft,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fences: Chain Link: Four Feet High 
+L-Fenc-Link-06ft,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fences: Chain Link: Six Feet High 
+L-Fenc-Prvc,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fences: Privacy
+L-Fenc-Wood,Yellow (2),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fences: Wood
+L-Irrg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Irrigation
+L-Irrg-Covr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Irrigation: Coverage
+L-Irrg-Drip,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Irrigation: Drip Irrigation Tubing
+L-Irrg-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Irrigation: Equipment (Pumps/Valves/And Controllers) 
+L-Irrg-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Irrigation: Identifications
+L-Irrg-Ltrl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Irrigation: Lateral Pipe
+L-Irrg-Main,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Irrigation: Mainline
+L-Irrg-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Irrigation: Piping
+L-Irrg-Slve,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Irrigation: Pipe Sleeve
+L-Irrg-Spkl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Irrigation: Sprinklers (Rotors/Heads)
+L-Irrg-Valv,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Irrigation: Valves
+L-Plnt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material
+L-Plnt-Beds,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Perennial And Annual Beds 
+L-Plnt-Bush,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Bushes And Shrubs
+L-Plnt-Coni,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Coniferous Trees
+L-Plnt-Ctnr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Container Or Planter 
+L-Plnt-Edgr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Planting Bed Edger
+L-Plnt-Evgr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Evergreen Trees - Broadleaf 
+L-Plnt-Gcvr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Ground Cover
+L-Plnt-Iden,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Identifications
+L-Plnt-Mlch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Mulches - Organic And Inorganic 
+L-Plnt-Palm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Palm Trees
+L-Plnt-Plnt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Plants
+L-Plnt-Seed,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Seeding Areas
+L-Plnt-Shad,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Shadow Area
+L-Plnt-Tree,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Trees
+L-Plnt-Turf,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Lawn Areas
+L-Plnt-Vine,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Plant And Landscape Material: Vines
+L-Pvmt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement
+L-Pvmt-Asph,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Asphalt
+L-Pvmt-Brck,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Brick
+L-Pvmt-Conc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Concrete
+L-Pvmt-Conc-Aggr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Concrete: Exposed Aggregate 
+L-Pvmt-Grvl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Gravel
+L-Pvmt-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Identifications
+L-Pvmt-Jntc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Control Joint
+L-Pvmt-Jnte,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Expansion Joint (For Concrete Only)
+L-Pvmt-Pavr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Unit Pavers
+L-Pvmt-Ramp,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Accessible Ramp
+L-Pvmt-Strs,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pavement: Stair Treads
+L-Site,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features
+L-Site-Brdg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Bridge (Pedestrian)
+L-Site-Curb,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Curb
+L-Site-Curb-Back,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Curb: Back 
+L-Site-Curb-Face,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Curb: Face
+L-Site-Deck,ACI 8,0.13 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Deck
+L-Site-Furn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Furnishings
+L-Site-Play,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Play Structures
+L-Site-Play-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Play Structures: Equipment 
+L-Site-Play-Zone,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Play Structures: Zoning
+L-Site-Pool,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Pools And Spas
+L-Site-Pool-Back,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Pools And Spas: Back Of Pool Wall 
+L-Site-Pool-Face,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Pools And Spas: Face Of Pool Wall 
+L-Site-Prkg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Parking
+L-Site-Prkg-Strp,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Parking: Striping
+L-Site-Road,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Edge Of Roadway Line
+L-Site-Rock,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Large Rocks And Rock Outcroppings
+L-Site-Rrap,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Riprap
+L-Site-Rtwl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Retaining Wall
+L-Site-Sprt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Sports Fields
+L-Site-Sprt-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Sports Fields: Equipment 
+L-Site-Sprt-Peri,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Sports Fields: Perimeter 
+L-Site-Step,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Steps
+L-Site-Swlk,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Sidewalks And Steps
+L-Site-Tral,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Trail Or Path
+L-Site-Tral-Asph,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Trail Or Path: Asphalt 
+L-Site-Tral-Conc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Trail Or Path: Concrete 
+L-Site-Tral-Grvl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Trail Or Path: Gravel 
+L-Site-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Walls
+L-Site-Weir,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Site Features: Pool Weir
+L-Topo,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Topographic Feature
+L-Topo-Limi,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Topographic Feature: Limit Of Earthwork
+L-Topo-Spot,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Topographic Feature: Spot Elevations
+M-Brin-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Brine systems: equipment
+M-Brin-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Brine systems: piping
+M-Chim,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Chimneys and stacks
+M-Cmpa,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Compressed/processed air systems
+M-Cmpa-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Compressed/processed air systems: equipment
+M-Cmpa-Peqp,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Compressed/processed air systems: process equipment
+M-Cmpa-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Compressed/processed air systems: piping
+M-Cmpa-Ppip,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Compressed/processed air systems: process piping
+M-Cndw,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Condenser water systems
+M-Cndw-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Condenser water systems: equipment
+M-Cndw-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Condenser water systems: piping
+M-Cndw-Retn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Condenser water systems: return
+M-Cndw-Retn-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Condenser water systems: return: piping
+M-Cndw-Retn-Skch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Condenser water systems: return: sketch
+M-Cndw-Sply,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Condenser water systems: supply
+M-Cndw-Sply-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Condenser water systems: supply: piping
+M-Cndw-Sply-Skch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Condenser water systems: supply: sketch
+M-Cont,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Controls and instrumentation
+M-Cont-Ther,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Controls and instrumentation: thermostats
+M-Cont-Wire,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Controls and instrumentation: wiring (low voltage)
+M-Cwtr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Chilled water systems
+M-Cwtr-Cnds,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Chilled water systems: condensate piping
+M-Cwtr-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Chilled water systems: equipment
+M-Cwtr-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Chilled water systems: piping
+M-Cwtr-Retn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Chilled water systems: return
+M-Cwtr-Retn-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Chilled water systems: return: piping
+M-Cwtr-Retn-Skch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Chilled water systems: return: sketch
+M-Cwtr-Sply,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Chilled water systems: supply
+M-Cwtr-Sply-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Chilled water systems: supply: piping
+M-Cwtr-Sply-Skch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Chilled water systems: supply: sketch
+M-Domw,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Domestic water systems
+M-Domw-Mkup,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Domestic water systems: make-up water
+M-Dual,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Dual temperature systems
+M-Dual-Retn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Dual temperature systems: return
+M-Dual-Retn-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Dual temperature systems: return: piping
+M-Dual-Retn-Skch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Dual temperature systems: return: sketch
+M-Dual-Sply,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Dual temperature systems: supply
+M-Dual-Sply-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Dual temperature systems: supply: piping
+M-Dust-Duct,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Dust and fume collection systems: ductwork
+M-Dust-Duct-Cntr,ACI 8,0.18 mm,CENTER,Yes,0%,On,Thawed,VP Thawed,Dust and fume collection systems: ductwork: center
+M-Dust-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Dust and fume collection systems: equipment
+M-Elht,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Electric heat
+M-Elht-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Electric heat: equipment
+M-Ener,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Energy management systems
+M-Ener-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Energy management systems: equipment
+M-Ener-Wire,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Energy management systems: wiring
+M-Exhs,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Exhaust system
+M-Exhs-Cdff,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Exhaust system: ceiling diffusers
+M-Exhs-Duct,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Exhaust system: ductwork
+M-Exhs-Duct-Cntr,ACI 8,0.18 mm,CENTER,Yes,0%,On,Thawed,VP Thawed,Exhaust system: ductwork: center
+M-Exhs-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Exhaust system: equipment
+M-Exhs-Rfeq,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Exhaust system: rooftop equipment
+M-Flor,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor
+M-Flor-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Identifications
+M-Flor-Pene,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: penetrations
+M-Fuel,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems
+M-Fuel-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: equipment
+M-Fuel-Ggep,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: gas general piping
+M-Fuel-Ggep-Hpip,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: gas general piping: high pressure piping
+M-Fuel-Ggep-Lpip,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: gas general piping: low-pressure piping
+M-Fuel-Ggep-Lqpg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: gas general piping: liquid petroleum gas
+M-Fuel-Ggep-Mpip,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: gas general piping: medium-pressure piping
+M-Fuel-Gprp,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: gas process piping
+M-Fuel-Ogep,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: oil general piping
+M-Fuel-Ogep-Disc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: oil general piping: discharge
+M-Fuel-Ogep-Fllw,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: oil general piping: flow
+M-Fuel-Ogep-Gage,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: oil general piping: gauge
+M-Fuel-Ogep-Retn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: oil general piping: return
+M-Fuel-Ogep-Sply,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: oil general piping: supply
+M-Fuel-Ogep-Vent,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: oil general piping: vents
+M-Fuel-Oprp,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fuel systems: oil process piping
+M-Fume,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fume hood
+M-Fume-Duct,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fume hood: ductwork
+M-Fume-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fume hood: equipment
+M-Glyc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glycol systems
+M-Glyc-Retn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glycol systems: return
+M-Glyc-Retn-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glycol systems: return: piping
+M-Glyc-Sply-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glycol systems: supply: piping
+M-Glyc-Sply-Skch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Glycol systems: supply: sketch
+M-Hvac,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems
+M-Hvac-Boxd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: mixing box dual duct
+M-Hvac-Boxs,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: mixing box single duct
+M-Hvac-Cdff,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: ceiling diffusers
+M-Hvac-Clda,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: cold air
+M-Hvac-Clda-Duct,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: cold air: ductwork
+M-Hvac-Clda-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: cold air: equipment
+M-Hvac-Clda-Rsch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: cold air: sketch line round or oval duct
+M-Hvac-Clda-Sect,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: cold air: section
+M-Hvac-Clda-Size,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: cold air: ductwork size
+M-Hvac-Clda-Ssch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: cold air: sketch line rectangular duct
+M-Hvac-Dmpr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: fire/smoke/volume damper
+M-Hvac-Door,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: equipment doors
+M-Hvac-Efan,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: equipment with electric fans
+M-Hvac-Epdu,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: equipment with piping/ductwork and electricity
+M-Hvac-Epip,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: equipment with piping and electricity
+M-Hvac-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: equipment
+M-Hvac-Exhs,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: exhaust air
+M-Hvac-Exhs-Duct,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: exhaust air: ductwork
+M-Hvac-Exhs-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: exhaust air: equipment
+M-Hvac-Exhs-Gril,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: exhaust air: grilles
+M-Hvac-Exhs-Rsch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: exhaust air: sketch line round or oval duct
+M-Hvac-Exhs-Sect,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: exhaust air: section
+M-Hvac-Exhs-Size,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: exhaust air: ductwork size
+M-Hvac-Exhs-Ssch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: exhaust air: sketch line rectangular duct
+M-Hvac-Hota,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: hot air
+M-Hvac-Hota-Duct,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: hot air: ductwork
+M-Hvac-Hota-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: hot air: equipment
+M-Hvac-Hota-Rsch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: hot air: sketch line round or oval duct
+M-Hvac-Hota-Sect,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: hot air: section
+M-Hvac-Hota-Size,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: hot air: ductwork size
+M-Hvac-Hota-Ssch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: hot air: sketch line rectangular duct
+M-Hvac-Iden,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: Identifications
+M-Hvac-Odff,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: other diffusers
+M-Hvac-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: piping
+M-Hvac-Rdff,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: return air diffusers
+M-Hvac-Retn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: return
+M-Hvac-Retn-Rsch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: return: sketch line round or oval duct
+M-Hvac-Retn-Sect,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: return: section
+M-Hvac-Retn-Size,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: return: ductwork size
+M-Hvac-Retn-Ssch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: return: sketch line rectangular duct
+M-Hvac-Sdff,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: supply diffusers
+M-Hvac-Sply,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: supply
+M-Hvac-Sply-Cntr,ACI 8,0.18 mm,CENTER,Yes,0%,On,Thawed,VP Thawed,HVAC systems: supply: center
+M-Hvac-Sply-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: supply: equipment
+M-Hvac-Sply-Rsch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: supply: sketch line round or oval duct
+M-Hvac-Sply-Sect,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: supply: section
+M-Hvac-Sply-Size,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: supply: ductwork size
+M-Hvac-Sply-Ssch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,HVAC systems: supply: sketch line rectangular duct
+M-Hwtr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hot water heating system
+M-Hwtr-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hot water heating system: equipment
+M-Hwtr-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hot water heating system: piping
+M-Hwtr-Retn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hot water heating system: return
+M-Hwtr-Retn-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hot water heating system: return: piping
+M-Hwtr-Retn-Skch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hot water heating system: return: sketch
+M-Hwtr-Sply,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hot water heating system: supply
+M-Hwtr-Sply-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hot water heating system: supply: piping
+M-Hwtr-Sply-Skch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hot water heating system: supply: sketch
+M-Lgas,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Laboratory gas systems
+M-Lgas-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Laboratory gas systems: equipment
+M-Lgas-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Laboratory gas systems: piping
+M-Mach,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Machine shop
+M-Mdgs,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems
+M-Mdgs-Cair,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: compressed air
+M-Mdgs-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: equipment
+M-Mdgs-Nitg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: nitrogen
+M-Mdgs-Noxg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: nitrous oxide
+M-Mdgs-Oxyg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: pure O2
+M-Mdgs-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: piping
+M-Mdgs-Sair,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: scavenge air
+M-Mdgs-Vacu,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: vacuum
+M-Mkup,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Make-up air systems
+M-Mkup-Cdff,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Make-up air systems: ceiling diffusers
+M-Mkup-Duct,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Make-up air systems: ductwork
+M-Mkup-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Make-up air systems: equipment
+M-Ngas,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Natural gas systems
+M-Ngas-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Natural gas systems: equipment
+M-Ngas-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Natural gas systems: piping
+M-Proc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Process systems
+M-Proc-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Process systems: equipment
+M-Proc-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Process systems: piping
+M-Rair,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Relief air systems
+M-Rcov,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Energy recovery systems
+M-Rcov-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Energy recovery systems: equipment
+M-Rcov-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Energy recovery systems: piping
+M-Refg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Refrigeration systems
+M-Refg-Disc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Refrigeration systems: discharge
+M-Refg-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Refrigeration systems: equipment
+M-Refg-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Refrigeration systems: piping
+M-Refg-Retn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Refrigeration systems: return
+M-Refg-Sply,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Refrigeration systems: supply
+M-Roof,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roof
+M-Roof-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roof: Identifications
+M-Roof-Pene,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roof: penetrations
+M-Smok,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Smoke extraction systems
+M-Smok-Cdff,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Smoke extraction systems: ceiling diffusers
+M-Smok-Duct,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Smoke extraction systems: ductwork
+M-Smok-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Smoke extraction systems: equipment
+M-Spcl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Special systems
+M-Spcl-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Special systems: equipment
+M-Spcl-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Special systems: piping
+M-Stem,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam system
+M-Stem-Blbd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam system: boiler blow down piping
+M-Stem-Blbd-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam system: boiler blow down piping: piping
+M-Stem-Cnds,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam system: condensate piping
+M-Stem-Cnds-Skch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam system: condensate piping: sketch
+M-Stem-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam system: equipment
+M-Stem-Hpip,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam system: high-pressure piping
+M-Stem-Hpip-Skch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam system: high-pressure piping: sketch
+M-Stem-Lpip,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam system: low-pressure piping
+M-Stem-Lpip-Skch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam system: low-pressure piping: sketch
+M-Stem-Mpip,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam system: medium-pressure piping
+M-Stem-Mpip-Skch,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Steam system: medium-pressure piping: sketch
+M-Test,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Test equipment
+Muret,ACI 122,0.20 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,
+Mur_ext,Red (1),0.35 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,
+P-Acid,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Acid waste systems
+P-Acid-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Acid waste systems: equipment
+P-Acid-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Acid waste systems: piping
+P-Acid-Vent,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Acid waste systems: vents
+P-Domw,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Domestic water systems
+P-Domw-Cpip,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Domestic water systems: cold water piping
+P-Domw-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Domestic water systems: equipment
+P-Domw-Hpip,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Domestic water systems: hot water piping
+P-Domw-Risr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Domestic water systems: risers
+P-Domw-Rpip,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Domestic water systems: recirculation piping
+P-Flor,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor
+P-Flor-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: Identifications
+P-Flor-Pene,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Floor: penetrations
+P-Mdgs,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems
+P-Mdgs-Cair,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: compressed air
+P-Mdgs-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: equipment
+P-Mdgs-Nitg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: nitrogen
+P-Mdgs-Noxg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: nitrous oxide
+P-Mdgs-Oxyg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: pure O2
+P-Mdgs-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: piping
+P-Mdgs-Sair,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: scavenge air
+P-Mdgs-Vacu,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Medical gas systems: vacuum
+P-Roof,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roof
+P-Roof-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roof: Identifications
+P-Roof-Pene,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Roof: penetrations
+P-Sswr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary sewer
+P-Sswr-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary sewer: equipment
+P-Sswr-Fixt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary sewer: fixtures
+P-Sswr-Fldr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary sewer: floor drains
+P-Sswr-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary sewer: piping
+P-Sswr-Risr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary sewer: risers
+P-Sswr-Vent,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sanitary sewer: vents
+P-Strm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Storm sewer
+P-Strm-Pipe,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Storm sewer: piping
+P-Strm-Rfdr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Storm sewer: roof drains
+P-Strm-Risr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Storm sewer: risers
+P-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Wall
+P-Wall-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Wall: Identifications
+P-Wall-Pene,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Wall: penetrations
+S-Algn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Alignment
+S-Beam,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Beams
+S-Beam-Alum,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Beams: Aluminum
+S-Beam-Conc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Beams: Concrete
+S-Beam-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Beams: Identifications
+S-Beam-Stel,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Beams: Steel
+S-Beam-Wood,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Beams: Wood
+S-Brcg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bracing
+S-Brcg-Alum,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bracing: Aluminum
+S-Brcg-Alum-Horz,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bracing: Aluminum: Horizontal
+S-Brcg-Alum-Vert,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bracing: Aluminum: Vertical
+S-Brcg-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bracing: Identifications
+S-Brcg-Metl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bracing: Metal
+S-Brcg-Stel,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bracing: Steel
+S-Brcg-Stel-Horz,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bracing: Steel: Horizontal
+S-Brcg-Stel-Vert,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bracing: Steel: Vertical
+S-Brcg-Wood,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bracing: Wood
+S-Brcg-Wood-Horz,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bracing: Wood: Horizontal 
+S-Brcg-Wood-Vert,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Bracing: Wood: Vertical
+S-Cols,Red (1),0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Columns
+S-Cols-Ablt,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Columns: Anchor Bolts
+S-Cols-Alum,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Columns: Aluminum
+S-Cols-Conc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Columns: Concrete
+S-Cols-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Columns: Identifications
+S-Cols-Stel,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Columns: Steel
+S-Cols-Wood,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Columns: Wood
+S-Deck,ACI 8,0.13 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Deck
+S-Deck-Flor,ACI 8,0.13 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Deck: Floor
+S-Deck-Flor-Opng,ACI 8,0.13 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Deck: Floor: Openings
+S-Deck-Iden,ACI 8,0.13 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Deck: Identifications
+S-Deck-Roof,ACI 8,0.13 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Deck: Roof
+S-Deck-Roof-Opng,ACI 8,0.13 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Deck: Roof: Openings
+S-Detl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Detail
+S-Detl-Hsss,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Detail: Hollow Structural Steel
+S-Detl-Plyw,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Detail: Plywood
+S-Detl-W2xs,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Detail: Dimension Lumber
+S-Fndn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Foundation
+S-Fndn-Ftng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Foundation: Footings
+S-Fndn-Grbm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Foundation: Grade Beams
+S-Fndn-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Foundation: Identifications
+S-Fndn-Pcap,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Foundation: Pile Caps
+S-Fndn-Pier,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Foundation: Drilled Piers
+S-Fndn-Pile,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Foundation: Piles
+S-Fndn-Rbar,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Foundation: Reinforcing Bar
+S-Fndn-Rbar-Bot1,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Foundation: Reinforcing Bar: Bottom Group 1
+S-Fndn-Rbar-Bot2,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Foundation: Reinforcing Bar: Bottom Group 2
+S-Fndn-Rbar-Top1,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Foundation: Reinforcing Bar: Top Group 1
+S-Fndn-Rbar-Top2,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Foundation: Reinforcing Bar: Top Group 2 
+S-Fram,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Braced Frame Or Moment Frame
+S-Fstn,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Fasteners And Connections
+S-Gate,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Gate
+S-Grid,ACI 8,0.18 mm,CENTER2,Yes,0%,On,Thawed,VP Thawed,Grids
+S-Grid-Extr,ACI 8,0.18 mm,CENTER2,Yes,0%,On,Thawed,VP Thawed,Grids: Exterior
+S-Grid-Intr,ACI 8,0.18 mm,CENTER2,Yes,0%,On,Thawed,VP Thawed,Grids: Interior
+S-Grln,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Grade Line
+S-Grln-Surf,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Grade Line: Surface Areas
+S-Grtg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Grating
+S-Grtg-Ovhd,ACI 8,0.18 mm,DASHED,Yes,0%,On,Thawed,VP Thawed,Grating: Overhead
+S-Hydr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Hydraulic Structure
+S-Jnts,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Joints
+S-Jnts-Cntj,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Joints: Construction Joint
+S-Jnts-Ctlj,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Joints: Control Joint
+S-Jnts-Expj,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Joints: Expansion Joint
+S-Jois,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Joists
+S-Jois-Brgx,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Joists: Bridging
+S-Jois-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Joists: Identifications
+S-Lntl,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lintels
+S-Lntl-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Lintels: Identifications
+S-Pads,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pads
+S-Pads-Eqpm,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Pads: Equipment
+S-Plat,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Platform
+S-Plat-Frmg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Platform: Framing
+S-Plat-Grtg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Platform: Grating
+S-Sign,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sign
+S-Sign-Bouy,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sign: Bouy
+S-Sign-Frmg,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sign: Framing
+S-Sign-Gage,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sign: Gauge (Staff)
+S-Sign-Text,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sign: Signage Text
+S-Sign-Xtru,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Sign: Extrusion
+S-Slab,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Slab
+S-Slab-Conc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Slab: Concrete
+S-Slab-Edge,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Slab: Edge
+S-Slab-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Slab: Identifications
+S-Slab-Opng,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Slab: Openings (And Depressions)
+S-Slab-Opnx,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Slab: Opening Indication
+S-Slab-Stel,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Slab: Steel
+S-Slab-Wood,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Slab: Wood
+S-Stif,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Stiffener
+S-Stif-Long,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Stiffener: Longitudinal
+S-Stif-Trav,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Stiffener: Transverse
+S-Strs,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Stairs
+S-Strs-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Stairs: Identifications
+S-Strs-Ladd,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Stairs: Ladders & Ladder Assemblies
+S-Trus,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Trusses
+S-Trus-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Trusses: Identifications
+S-Wall,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls
+S-Wall-Abov,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Above
+S-Wall-Cmuw,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Concrete Masonry Unit
+S-Wall-Conc,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Concrete
+S-Wall-Iden,ACI 8,0.25 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Identifications
+S-Wall-Msnw,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Masonry
+S-Wall-Pcst,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Pre-Cast Concrete
+S-Wall-Shea,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Structural Bearing Or Shear Walls
+S-Wall-Stel,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Steel Stud
+S-Wall-Venr,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Veneer
+S-Wall-Wood,ACI 8,0.18 mm,Continuous,Yes,0%,On,Thawed,VP Thawed,Walls: Wood

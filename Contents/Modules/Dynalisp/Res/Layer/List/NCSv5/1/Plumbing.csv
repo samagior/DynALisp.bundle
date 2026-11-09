@@ -1,0 +1,9 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+P?,Acid,----,----,----,Acid waste systems
+P?,Domw,----,----,----,Domestic water systems
+P?,Flor,----,----,----,Floor
+P?,Mdgs,----,----,----,Medical gas systems
+P?,Roof,----,----,----,Roof
+P?,Sswr,----,----,----,Sanitary sewer
+P?,Strm,----,----,----,Storm sewer
+P?,Wall,----,----,----,Wall

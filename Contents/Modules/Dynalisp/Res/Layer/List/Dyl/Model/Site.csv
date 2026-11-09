@@ -1,0 +1,12 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A,Topo,----,----,----,Topographic Feature
+L,Site,----,----,----,Site Features
+L,Site,Prkg,----,----,Site Features: Parking
+L,Site,Rtwl,----,----,Site Features: Retaining Wall
+L,Site,Deck,----,----,Site Features: Deck
+L,Site,Furn,----,----,Site Features: Furnishings
+L,Pvmt,----,----,----,Pavement
+L,Pvmt,Jntc,----,----,Pavement: Control Joint
+L,Pvmt,Jnte,----,----,Pavement: Expansion Joint (For Concrete Only)
+L,Pvmt,Ramp,----,----,Pavement: Accessible Ramp
+L,Pvmt,Strs,----,----,Pavement: Stair Treads

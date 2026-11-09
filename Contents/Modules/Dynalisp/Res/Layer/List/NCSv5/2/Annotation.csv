@@ -1,0 +1,25 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+??,Anno,----,----,----,Annotation
+??,Anno,Brng,----,----,Annotation: Bearings And Distance Labels (Survey Coordinates)
+??,Anno,Dims,----,----,Annotation: Dimensions
+??,Anno,Iden,----,----,Annotation: Identification Tags
+??,Anno,Keyn,----,----,Annotation: Keynotes
+??,Anno,Labl,----,----,Annotation: Labels
+??,Anno,Legn,----,----,Annotation: Legends/Symbol Keys
+??,Anno,Logo,----,----,Annotation: Company Logo
+??,Anno,Mark,----,----,Annotation: Markers/Break Marks/Leaders
+??,Anno,Matc,----,----,Annotation: Match Lines
+??,Anno,Note,----,----,Annotation: Notes
+??,Anno,Nplt,----,----,Annotation: Non-Plotting Graphic Information
+??,Anno,Pros,----,----,Annotation: Date/Time/File Name Stamp
+??,Anno,Rdme,----,----,Annotation: Read-Me Layer (Not Plotted)
+??,Anno,Redl,----,----,Annotation: Redlines
+??,Anno,Refr,----,----,Annotation: Reference/External Files
+??,Anno,Revc,----,----,Annotation: Revision Clouds
+??,Anno,Revs,----,----,Annotation: Revision Indicators And Text
+??,Anno,Schd,----,----,Annotation: Schedules
+??,Anno,Symb,----,----,Annotation: Reference Symbols
+??,Anno,Tabl,----,----,Annotation: Data Tables
+??,Anno,Text,----,----,Annotation: Text
+??,Anno,Titl,----,----,Annotation: Drawing Or Detail Titles
+??,Anno,Ttlb,----,----,Annotation: Border And Title Block

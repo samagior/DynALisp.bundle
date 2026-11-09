@@ -1,0 +1,37 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+P?,Acid,----,----,----,Acid waste systems
+P?,Acid,Eqpm,----,----,Acid waste systems: equipment
+P?,Acid,Pipe,----,----,Acid waste systems: piping
+P?,Acid,Vent,----,----,Acid waste systems: vents
+P?,Domw,----,----,----,Domestic water systems
+P?,Domw,Cpip,----,----,Domestic water systems: cold water piping
+P?,Domw,Eqpm,----,----,Domestic water systems: equipment
+P?,Domw,Hpip,----,----,Domestic water systems: hot water piping
+P?,Domw,Risr,----,----,Domestic water systems: risers
+P?,Domw,Rpip,----,----,Domestic water systems: recirculation piping
+P?,Flor,----,----,----,Floor
+P?,Flor,Pene,----,----,Floor: penetrations
+P?,Mdgs,----,----,----,Medical gas systems
+P?,Mdgs,Cair,----,----,Medical gas systems: compressed air
+P?,Mdgs,Eqpm,----,----,Medical gas systems: equipment
+P?,Mdgs,Nitg,----,----,Medical gas systems: nitrogen
+P?,Mdgs,Noxg,----,----,Medical gas systems: nitrous oxide
+P?,Mdgs,Oxyg,----,----,Medical gas systems: pure O2
+P?,Mdgs,Pipe,----,----,Medical gas systems: piping
+P?,Mdgs,Sair,----,----,Medical gas systems: scavenge air
+P?,Mdgs,Vacu,----,----,Medical gas systems: vacuum
+P?,Roof,----,----,----,Roof
+P?,Roof,Pene,----,----,Roof: penetrations
+P?,Sswr,----,----,----,Sanitary sewer
+P?,Sswr,Eqpm,----,----,Sanitary sewer: equipment
+P?,Sswr,Fixt,----,----,Sanitary sewer: fixtures
+P?,Sswr,Fldr,----,----,Sanitary sewer: floor drains
+P?,Sswr,Pipe,----,----,Sanitary sewer: piping
+P?,Sswr,Risr,----,----,Sanitary sewer: risers
+P?,Sswr,Vent,----,----,Sanitary sewer: vents
+P?,Strm,----,----,----,Storm sewer
+P?,Strm,Pipe,----,----,Storm sewer: piping
+P?,Strm,Rfdr,----,----,Storm sewer: roof drains
+P?,Strm,Risr,----,----,Storm sewer: risers
+P?,Wall,----,----,----,Wall
+P?,Wall,Pene,----,----,Wall: penetrations

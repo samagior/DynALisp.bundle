@@ -1,0 +1,29 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+E?,Alrm,----,----,----,Alarm system
+E?,Area,----,----,----,Area
+E?,Auxl,----,----,----,Auxiliary systems
+E?,Bell,----,----,----,Bell system
+E?,Cabl,----,----,----,Cable systems
+E?,Cath,----,----,----,Cathodic protection system
+E?,Cctv,----,----,----,Closed-circuit television system
+E?,Clok,----,----,----,Clock system
+E?,Comm,----,----,----,Communications
+E?,Cont,----,----,----,Controls and instrumentation
+E?,Data,----,----,----,Data/LAN system
+E?,Diag,----,----,----,Diagrams
+E?,Dict,----,----,----,Dictation system
+E?,Fire,----,----,----,Fire protection
+E?,Grnd,----,----,----,Ground system
+E?,Inst,----,----,----,Instrumentation system
+E?,Intc,----,----,----,Intercom/PA systems
+E?,Lite,----,----,----,Lighting
+E?,Ltng,----,----,----,Lightning protection system
+E?,Mntg,----,----,----,Mounting system
+E?,Nurs,----,----,----,Nurse call system
+E?,Obst,----,----,----,Obstructions
+E?,Pgng,----,----,----,Paging system
+E?,Powr,----,----,----,Power
+E?,Pvmd,----,----,----,Photovoltaic modules
+E?,Site,----,----,----,Site features
+E?,Soun,----,----,----,Sound system
+E?,Util,----,----,----,Utilities

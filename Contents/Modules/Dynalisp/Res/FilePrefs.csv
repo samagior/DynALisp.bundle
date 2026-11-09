@@ -1,0 +1,28 @@
+Setting;Classification;Units;Language;Value
+Files:TemplateDwgPath;*;*;*;{DYL}\Templates\Model
+Files:QNewTemplateFile;*;Metric;*;{DYL}\Templates\Model\Acad (Metric Ctb).dwt
+Files:QNewTemplateFile;*;Imperial;*;{DYL}\Templates\Model\Acad (Imperial Ctb).dwt
+Files:QNewTemplateFile;*;Imperial;*;{DYL}\Templates\Model\Acad (Imperial Stb).dwt
+Files:CustomDictionary;*;*;French;{DYLU}\Dictionaries\fra.cus
+Reg:Preferences\AecDcArch80|DCAecContentRoot;*;*;*;{ACA}\AEC Content
+Reg:Preferences\AecIfc|IfcContentRoot;*;*;*;{ACA}\Styles\
+Aec:General\Tools|ToolContentRoot;*;*;*;{ACA}\
+Reg:Preferences\AecGuiBase80|SILocationRoot;*;Metric;French;{ACA}\Styles\Metric FRA
+Reg:Preferences\AecGuiBase80|SILocationRoot;*;Metric;*;{ACA}\Styles\Global
+Reg:Preferences\AecGuiBase80|SILocationRoot;*;Metric;*;{ACA}\Styles\Metric
+Reg:Preferences\AecGuiBase80|SILocationRoot;*;Imperial;*;{ACA}\Styles\Imperial
+Reg:Preferences\AecProject80|Element Template,XrefGroup Template,Model View Template,Section/Elevation View Template,Detail View Template;*;Metric;*;{ACA}\Template\Aec Model (Global Ctb).dwt
+Reg:Preferences\AecProject80|Element Template,XrefGroup Template,Model View Template,Section/Elevation View Template,Detail View Template;*;Metric;*;{ACA}\Template\Aec Model (Metric Ctb).dwt
+Reg:Preferences\AecProject80|Element Template,XrefGroup Template,Model View Template,Section/Elevation View Template,Detail View Template;*;Imperial;*;{ACA}\Template\Aec Model (Imperial Ctb).dwt
+Db:Components;CAWS;Metric;*;{ACA*}\Details\Details (Global)\AecDtlComponents*.mdb
+Db:Components;CAWS;*;*;{ACA*}\Details\Details (UK)\AecDtlComponents*.mdb
+Db:Components;CAWS;*;*;{ACA*}\Details\Details (Global)\AecDtlComponents*.mdb
+Db:Components;MasterFormat;*;French;{ACA*}\Details\Details (FR)\AecDtlComponents*.mdb
+Db:Components;MasterFormat;*;*;{ACA*}\Details\Details (US)\AecDtlComponents*.mdb
+Db:Components;MasterFormat;*;*;{ACA*}\Details\Details (FR)\AecDtlComponents*.mdb
+Db:Keynotes;CAWS;Metric;*;{ACA*}\Details\Details (Global)\AecKeynotes*.mdb
+Db:Keynotes;CAWS;*;*;{ACA*}\Details\Details (UK)\AecKeynotes*.mdb
+Db:Keynotes;CAWS;*;*;{ACA*}\Details\Details (Global)\AecKeynotes*.mdb
+Db:Keynotes;MasterFormat;*;French;{ACA*}\Details\Details (FR)\AecKeynotes*.mdb
+Db:Keynotes;MasterFormat;*;*;{ACA*}\Details\Details (US)\AecKeynotes*.mdb
+Db:Keynotes;MasterFormat;*;*;{ACA*}\Details\Details (FR)\AecKeynotes*.mdb

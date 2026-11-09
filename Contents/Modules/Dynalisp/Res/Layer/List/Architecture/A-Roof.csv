@@ -1,0 +1,41 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A,Roof,Accs,0000,----,Roof: Access
+A,Roof,Barr,0000,----,Roof: Barrier
+A,Roof,Blin,0000,----,Roof: Baseline (Adjacent Floor Wall)
+A,Roof,Ctnr,0000,----,Roof: Container Or Planter
+A,Roof,Deck,0000,----,Roof: Deck
+A,Roof,Dran,0000,----,Roof: Drainage Slope Indications
+A,Roof,Drns,0000,----,Roof: Drains
+A,Roof,Edgr,0000,----,Roof: Planting Bed Edger
+A,Roof,Eqpm,0000,----,Roof: Equipments
+A,Roof,Exst,0000,----,Roof: Existing Background Hatch
+A,Roof,Gcvr,0000,----,Roof: Ground Cover
+A,Roof,Hral,0000,----,Roof: Handrails/Guard Rails
+A,Roof,Levl,0000,----,Roof: Level Changes
+A,Roof,Otln,0000,----,Roof: Outline
+A,Roof,Ovhd,0000,----,Roof: Overhead
+A,Roof,Patt,0000,----,Roof: Hatch Patterns (Generic)
+A,Roof,Plnt,0000,----,Roof: Plants
+A,Roof,Prot,0000,----,Roof: Protection Systems
+A,Roof,Prpt,0000,----,Roof: Parapet
+A,Roof,Risr,0000,----,Roof: Risers
+A,Roof,Scrn,0000,----,Roof: Screening Of Coordination Objects And Background
+A,Roof,Sert,0000,----,Roof: Security Systems
+A,Roof,Strs,0000,----,Roof: Stair Treads (Ladders)
+A,Roof,Tray,0000,----,Roof: Cabletray And Wireways (Below Deck)
+A,Roof,Vent,0000,----,Roof: Vents
+A,Wall,Full,0000,----,Walls: Full-Height
+A,Wall,Head,0000,----,Walls: Door And Window Headers
+A,Wall,Jamb,0000,----,Walls: Door And Window Jambs
+A,Door,Full,0000,----,Doors: Full-Height (Swing And Leaf)
+A,Door,Prht,0000,----,Doors: Partial-Height (Swing And Leaf)
+A,Door,Sill,0000,----,Doors: Sill
+S,Beam,0000,----,----,Beam
+S,Grid,0000,----,----,Grids
+S,Cols,0000,----,----,Column
+S,Fndn,0000,----,----,Foundation
+S,Slab,0000,----,----,Slab
+S,Strs,0000,----,----,Stairs
+S,Plat,0000,----,----,Platform
+S,Trus,0000,----,----,Trusses
+S,Wall,0000,----,----,Walls

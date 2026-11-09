@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Layer Keys</title>
+    <link rel="stylesheet" href="../../../../Resources/docs.css">
+</head>
+
+<body>
+    <div id="header">
+        <p>DynALisp <span>Docs</span></p>
+    </div>
+
+    <div id="content">
+        <h1>Layer Keys</h1>
+
+<div class="programs">
+<table>
+<tr class="alt">
+<td>Function Syntax</td>
+<td><span class="fixw">DYL-LAYERKEYS</span></td>
+</tr>
+<tr>
+<td>Source File</td>
+<td><span class="fixw">Modules\Dynalisp\Apps\Layer\Dyl-LayerKeys.lsp</span> (command) and <span class="fixw">Modules\Dynalisp\Remote\Dyl-LayerKey.lsp</span> (layer keys, loaded at startup)</td>
+</tr>
+<tr class="alt">
+<td>Requires</td>
+<td>AutoCAD for Windows (ActiveX / Visual LISP)</td>
+</tr>
+<tr>
+<td>Licence</td>
+<td>GNU General Public License v3</td>
+</tr>
+</table>
+</div>
+<h2>Program Description</h2>
+<p>Dynalisp layer keys work like the AutoCAD Architecture layer keys, but in any AutoCAD. A layer key is a short name, such as <span class="fixw">THIN</span> or <span class="fixw">HATCH</span>, that an App uses instead of a layer name. Each key gives the layer to use and the properties to create that layer with when the drawing does not have it yet. Changing the layer of a key changes where every App that uses the key draws, without editing the Apps.</p>
+<p>The keys are saved to <span class="fixw">Modules\Dynalisp\Res\LayerKeys.csv</span>. <span class="fixw">DYL-LAYERKEYS</span> opens the Layer Keys dialog to create and edit them. The same dialog opens from the <em>Edit layer keys...</em> button of the <a href="../Draw/Dyl-QuickDraw.htm#materials">Materials</a> dialog (Quick Draw).</p>
+<h2>Layer Keys Dialog</h2>
+<div class="spacedbullets">
+<ul>
+<li><strong>Layer key list</strong> &ndash; key, layer and status (blank = default values, <em>modified</em> = edited default key, <em>custom</em> = key created by the user).</li>
+<li><strong>Key</strong> &ndash; the name used by the Apps (upper case). The name of a default key cannot be changed.</li>
+<li><strong>Layer name, Description, Color, Linetype, Lineweight, Plot</strong> &ndash; the layer and the properties it is created with. Click the color swatch to pick a color in the AutoCAD color dialog. The linetype is picked from the <span class="fixw">.lin</span> files of the support path and the linetypes already in the drawing.</li>
+<li><strong>Phased</strong> &ndash; while auto-phase is on, the key gives its layer in the active phase of the drawing (see <a href="Dyl-LayerPhase.htm">Layer Phase</a>): <span class="fixw">A-Detl-Thin-E</span> in existing, <span class="fixw">A-Detl-Thin-N</span> in new work, <span class="fixw">A-Detl-Thin</span> when auto-phase is off or the drawing has no active phase. Phased keys are listed as <span class="fixw">Layer-[phase]</span>.</li>
+<li>Under the values, the dialog says whether the layer already exists in the current drawing (used as is) or will be created when a key is used.</li>
+<li><strong>New</strong> &ndash; adds a custom key. <strong>Copy</strong> &ndash; adds a custom key with the values of the selected one. <strong>Delete</strong> &ndash; removes the selected custom key (the layer itself is not deleted).</li>
+<li><strong>Reset key</strong> &ndash; restores the default values of the selected default key. <strong>Restore defaults</strong> &ndash; restores every default key; custom keys are kept.</li>
+<li><strong>OK</strong> saves <span class="fixw">LayerKeys.csv</span>, <strong>Cancel</strong> discards every change. <strong>Open Docs</strong> opens this page.</li>
+</ul>
+</div>
+<h2>How It Works</h2>
+<div class="spacedbullets">
+<ol>
+<li>When an App uses a key, the key is looked up in <span class="fixw">LayerKeys.csv</span>. Default keys missing from the file use their default values.</li>
+<li>If the layer of the key exists in the drawing, it is used as is: its properties are never changed.</li>
+<li>If it does not exist, it is created with the color, linetype, lineweight, plot setting and description of the key. A linetype that is not loaded yet is loaded from <span class="fixw">acad.lin</span> (imperial) or <span class="fixw">acadiso.lin</span> (metric); if it cannot be loaded, the layer stays <span class="fixw">Continuous</span>.</li>
+<li>While auto-phase is on, a phased key adds the active phase to its layer name; that layer is created with the phase color (<span class="fixw">2#</span> for existing to demolish, <span class="fixw">20#</span> for existing to remain, the key color otherwise). With auto-phase on, objects created on the layer of a phased key also go to the active phase.</li>
+<li>A key that is not defined uses a layer of the same name, created as color 7, Continuous, default lineweight; a message names the key on the command line.</li>
+</ol>
+</div>
+<h2 id="commands">Default Layer Keys</h2>
+<div class="programs commands wide">
+<table>
+<tr><th>Key</th><th>Layer</th><th>Color</th><th>Linetype</th><th>Lineweight</th><th>Description</th></tr>
+<tr><td><span class="fixw">FINE</span></td><td><span class="fixw">A-Detl-Fine</span></td><td>1</td><td>Continuous</td><td>0.18 mm</td><td>Detail: Fine Lines</td></tr>
+<tr><td><span class="fixw">THIN</span></td><td><span class="fixw">A-Detl-Thin</span></td><td>2</td><td>Continuous</td><td>0.25 mm</td><td>Detail: Thin Lines</td></tr>
+<tr><td><span class="fixw">MED</span></td><td><span class="fixw">A-Detl-Medm</span></td><td>3</td><td>Continuous</td><td>0.35 mm</td><td>Detail: Medium Lines</td></tr>
+<tr><td><span class="fixw">WIDE</span></td><td><span class="fixw">A-Detl-Wide</span></td><td>4</td><td>Continuous</td><td>0.50 mm</td><td>Detail: Wide Lines</td></tr>
+<tr><td><span class="fixw">XLINE</span></td><td><span class="fixw">A-Detl-XFin</span></td><td>8</td><td>Continuous</td><td>0.13 mm</td><td>Detail: Extra Fine Lines</td></tr>
+<tr><td><span class="fixw">HATCH</span></td><td><span class="fixw">A-Detl-Patt</span></td><td>8</td><td>Continuous</td><td>0.18 mm</td><td>Detail: Texture Or Hatch Patterns</td></tr>
+<tr><td><span class="fixw">G-DS-ANNO-STD-BACKGROUND_SCREEN</span></td><td><span class="fixw">A-Detl-Scrn</span></td><td>254</td><td>Continuous</td><td>0.18 mm</td><td>Detail: Screening Of Coordination Objects And Backgrounds</td></tr>
+</table>
+</div>
+<p>All default layers plot, and all default keys are phased except <span class="fixw">G-DS-ANNO-STD-BACKGROUND_SCREEN</span>. The key names match the AutoCAD Architecture keys the Apps used before, so existing presets keep working.</p>
+<h2>Using Layer Keys In An App</h2>
+<div class="spacedbullets">
+<ul>
+<li><span class="fixw">(Remote&gt;&gt;Dyl:LayerKeyLayer "THIN")</span> &ndash; returns the layer of the key, created if missing.</li>
+<li><span class="fixw">(Remote&gt;&gt;Dyl:LayerKeyApply (entlast) "THIN")</span> &ndash; puts an object on the layer of the key.</li>
+<li><span class="fixw">(Remote&gt;&gt;Dyl:LayerKeyRead)</span> &ndash; returns every key: <span class="fixw">(key layer color linetype lineweight plot description phased)</span>.</li>
+<li><span class="fixw">(Remote&gt;&gt;Dyl:LayerKeyDialog key)</span> &ndash; opens the Layer Keys dialog on a key; returns T when the keys were saved.</li>
+</ul>
+</div>
+<h2>Known Limitations</h2>
+<div class="spacedbullets">
+<ul>
+<li>Colors are AutoCAD Color Index values (1&ndash;255); true colors and color books are not supported.</li>
+<li>Editing a key does not update layers already created in drawings.</li>
+<li><span class="fixw">LayerKeys.csv</span> cannot be saved while it is open in Excel: an alert is shown and the changes are lost.</li>
+</ul>
+</div>
+<!-- dyl:aliases -->
+<h2 id="aliases">Command Names And Aliases</h2>
+<p>Each program has one main command starting with <span class="fixw">Dyl-</span>. The short names are its aliases: they run the same command, and can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (saved in <span class="fixw">Resources\Aliases.csv</span>).</p>
+<div class="programs commands wide">
+<table>
+<tr><th>Command</th><th>Aliases</th><th>Name</th></tr>
+<tr><td><span class="fixw">Dyl-LayerKeys</span></td><td>&ndash;</td><td>Layer Keys</td></tr>
+</table>
+</div>
+<!-- /dyl:aliases -->
+<p><a href="../index.htm">&larr; Dynalisp module docs index</a></p>
+
+    </div>
+
+    <div id="footer">
+        <p>Author: Samuel Martineau, Copyright &copy; 2026 &ndash; released under the GNU General Public License v3</p>
+    </div>
+</body>
+
+</html>

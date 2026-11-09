@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Quick Draw</title>
+    <link rel="stylesheet" href="../../../../Resources/docs.css">
+</head>
+
+<body>
+    <div id="header">
+        <p>DynALisp <span>Docs</span></p>
+    </div>
+
+    <div id="content">
+        <h1>Quick Draw</h1>
+
+<div class="programs">
+<table>
+<tr class="alt">
+<td>Function Syntax</td>
+<td><span class="fixw">DYL-QUICKDRAW</span> (preset dialog) + 35 preset commands &ndash; see <a href="#commands">Commands</a></td>
+</tr>
+<tr>
+<td>Source File</td>
+<td><span class="fixw">Modules\Dynalisp\Apps\Draw\Dyl-QuickDraw.lsp</span></td>
+</tr>
+<tr class="alt">
+<td>Requires</td>
+<td>AutoCAD for Windows (ActiveX / Visual LISP); the hatch patterns listed below on the support path; Dynalisp layer keys (<a href="../Layer/Dyl-LayerKeys.htm">Layer Keys</a>) and preset engine (<span class="fixw">Remote\Dyl-Presets.lsp</span>) and materials (<span class="fixw">Remote\Dyl-Materials.lsp</span>), loaded at startup</td>
+</tr>
+<tr>
+<td>Licence</td>
+<td>GNU General Public License v3</td>
+</tr>
+</table>
+</div>
+<h2>Program Description</h2>
+<p>Thirty-five draw-and-fill commands for phase screens and section materials. Each command makes a closed outline with a standard AutoCAD drawing tool (polyline, rectangle, circle&hellip; see <a href="#drawwith">Draw With</a>), puts it on the layer of the outline layer key of its <a href="#materials">material</a>, and fills it with a hatch (associative or not, as set in the material) using the pattern, scale, angle and hatch layer key of the material. The hatch scale switches automatically between imperial and metric values.</p>
+<p>The main command <span class="fixw">DYL-QUICKDRAW</span> opens a preset editor: a preset is a name, a <a href="#materials">material</a> and a <a href="#drawwith">Draw with</a> method. Several presets can share one material: <span class="fixw">QD-BRICK</span> (asks the method) and a <span class="fixw">PL-BRICK</span> preset drawn with a polyline both use the <em>Brick</em> material, so editing the material changes both. Presets can be edited, created, and reset to their default values. The presets are saved to <span class="fixw">Modules\Dynalisp\Res\QuickDraw.csv</span>, the materials to <span class="fixw">Materials.csv</span>; the <span class="fixw">QD-*</span> commands use the values saved there, so a default preset edited in the dialog changes its command too. Each custom preset gets a command too, <span class="fixw">Pst-QuickDrawCustom&lt;Name&gt;</span> (e.g. <span class="fixw">Pst-QuickDrawCustomTest</span>): it is listed in <span class="fixw">Dyl-Suite</span> under <span class="fixw">DYL-QUICKDRAW</span>, where aliases can be added to it, and it keeps working when the preset is renamed (its id is saved in the Id column).</p>
+<h2>Preset Dialog</h2>
+<div class="spacedbullets">
+<ul>
+<li><strong>Filter</strong> / <strong>Sort by</strong> &ndash; above the list (same in the Materials and Quick Shape windows): type a part of a group, name, alias, status or material (the pattern in the Materials window) and press Enter to list only the presets that have it (any case; empty: every preset), the number listed shown next to it. The selected preset stays listed; when it does not match, the first one that does is selected. <em>Sort by</em> lists them in file order, by group then name, by name or by status (custom, modified, then default), kept for the session.</li>
+<li><strong>Preset list</strong> &ndash; one column each, titled at the top: group, name, aliases (the short names that run the preset) and status (blank = default values, <em>modified</em> = edited default preset, <em>custom</em> = preset created by the user). Double-click a preset to draw it.</li>
+<li><strong>Parameters</strong> &ndash; name, group, <strong>Material</strong> (list of the <a href="#materials">materials</a>, <em>group - name</em>, with a summary of the selected material below it) and the <a href="#drawwith">Draw with</a> method. Each value is checked when the field is left (unique name, no empty field, existing material); an invalid value must be fixed before another preset can be selected. A material that was deleted stays in the list, marked <em>(missing material)</em>, until another one is picked.</li>
+<li><strong>Edit materials...</strong> &ndash; opens the <a href="#materials">Materials</a> dialog on the material of the preset. The material selected there when it is closed with OK is given to the preset, so a new material can be made and picked in one go. The Materials dialog saves <span class="fixw">Materials.csv</span> on its own OK, even if the preset dialog is then cancelled.</li>
+<li><strong>New</strong> &ndash; adds a custom preset after the selected one, in the same group. <strong>Copy</strong> &ndash; adds a custom preset with the values of the selected one.</li>
+<li><strong>Delete</strong> &ndash; removes the selected custom preset and its aliases (default presets cannot be deleted, only reset).</li>
+<li><strong>Aliases of the preset command</strong> &ndash; the aliases of the selected preset (the short names that run it, e.g. <span class="fixw">QD-BRICK</span>), as in <span class="fixw">Dyl-Suite</span>: <strong>Add</strong> creates the alias typed, <strong>Rename</strong> gives the alias picked the name typed, <strong>Remove</strong> deletes the alias picked. The box starts with <span class="fixw">PL-</span> for a preset drawn with a polyline, <span class="fixw">QD-</span> otherwise. An alias cannot be the name of a command, another alias or an AutoCAD command. A new custom preset gets its command (from its name) with its first alias. The aliases are saved to <span class="fixw">Resources\Aliases.csv</span> with Draw or Save, and Cancel discards them.</li>
+<li><strong>Reset Selected</strong> &ndash; (bottom left) restores the default values of the selected default preset. <strong>Reset All</strong> &ndash; restores the default values of every default preset; custom presets are kept (renamed if a restored name is already used).</li>
+<li><strong>Draw</strong> saves the presets and draws the selected one, <strong>Save</strong> saves without drawing, <strong>Cancel</strong> discards every change made in the dialog.</li>
+<li><strong>Open Docs</strong> &ndash; opens the docs page of the tool (this page for Quick Draw, the Materials page in the Materials window); the dialog stays open.</li>
+</ul>
+</div>
+<p>The dialog reopens on the last preset used during the session.</p>
+<h2 id="materials">Materials</h2>
+<p>Every parameter of a material, and the list of the default materials, is described on the <a href="Dyl-Materials.htm">Materials</a> page.</p>
+<p>A material is the hatch of an outline, shared by every preset that uses it, of Quick Draw and of <a href="Dyl-QuickShape.htm">Quick Shape</a>. The Materials dialog has the same list and buttons as the preset dialog (New, Copy, Delete, Reset Selected, Reset All), without aliases: <strong>OK</strong> saves the materials and gives the selected one to the preset, <strong>Cancel</strong> discards the changes. Each default preset uses the default material of the same name (<span class="fixw">QD-BRICK</span> &rarr; <em>Brick</em>).</p>
+<div class="spacedbullets">
+<ul>
+<li><strong>Group</strong> &ndash; picked from a list, by the kind of drawing the material is used in: <em>Floor, Ceiling, Roof, Finish, Structural, Site</em> (plans, by their type), <em>Elevation, Section, Detail, Annotation, Phase, Area, Generic</em>. A group typed in <span class="fixw">Materials.csv</span> that is not in this list stays selectable (the case of a listed group is corrected, e.g. <em>section</em> &rarr; <em>Section</em>).</li>
+<li><strong>Parameters</strong> &ndash; name and group, then three groups. The basic settings are always used; every other setting has a checkbox and its value stays greyed out until it is checked (unchecked: the layer of the layer key, or the AutoCAD default, is kept):
+<ul>
+<li><strong>Hatch settings</strong> &ndash; pattern, imperial and metric scales, angle and hatch layer key (basic); then <em>Color</em>, <em>Background color</em>, <em>Existing phase background</em> (used in place of the background color while <a href="../Layer/Dyl-LayerPhase.htm">auto-phase</a> is on and the active phase is <span class="fixw">E</span>, existing to remain; <span class="fixw">PH-AUTO</span>, with the DynALisp reactors on), <em>Lineweight</em> and <em>Transparency (0-90)</em>. A color is an AutoCAD color number (1-255) or a true color <span class="fixw">r,g,b</span>; its <em>...</em> button opens the AutoCAD color dialog. Then how the hatch is scaled and made: <em>Annotative hatch</em>; <em>Follow the drawing scale</em> with the drawing scale its scales were set for (see <a href="#drawscale">Drawing Scale</a>); <em>Associative hatch</em> (checked by default); <em>Hatch behind its border</em> (draw order). Scales must be &gt; 0 and the angle numeric. For <span class="fixw">SOLID</span>, the scales, the angle, the background colors, the lineweight, annotative, the drawing scale and the Linear hatch scale and origin are greyed out and not used.</li>
+<li><strong>Border settings</strong> &ndash; outline layer key (basic); then <em>Color</em>, <em>Linetype</em> (loaded from <span class="fixw">acad.lin</span> or <span class="fixw">acadiso.lin</span> when the drawing does not have it), <em>Linetype scale</em>, <em>Lineweight</em> and <em>Transparency (0-90)</em>, given to the outlines; <em>No border</em>: the closed outlines are erased once hatched (the hatch is then not associative, the other border settings, <em>Associative</em> and <em>behind its border</em> are greyed out; the objects selected with <em>Select closed objects</em> are kept).</li>
+<li><strong>Material behaviors</strong> &ndash; how Quick Draw draws the material: <em>Draw with</em>, its input method (see <a href="#drawwith">Draw With</a>; <em>Ask when drawn</em> by default), the <em>Width</em> and <em>Line on the</em> of the <a href="#linear">Linear</a> method (empty width: the last one used; several widths divided by commas: asked among them when drawn) , <em>Hatch scale = width x</em> and <em>Hatch origin on the line</em> of the Linear method (see <a href="#linear">Linear</a>) and the <em>Sides</em> of the Polygon method (empty: asked by <span class="fixw">POLYGON</span>) and the <em>Gap override (Shrinkwrap)</em> of the Shrinkwrap method (off: from 0 with the gap step of Dyl-Settings; on: the <em>Imperial</em> or <em>Metric</em> gap, asked when empty; see <a href="Dyl-Shrinkwrap.htm#gap">Shrinkwrap</a>). Each one is greyed out unless its method, or <em>Ask when drawn</em>, is picked: the method picked when drawn (or the one of a preset) uses them too.</li>
+</ul>
+</li>
+<li><strong>Pattern</strong> &ndash; picked from a list of every pattern defined in the <span class="fixw">.pat</span> files of the support path (<span class="fixw">acad.pat</span>, <span class="fixw">acadiso.pat</span> and custom pattern files). A pattern used by a material but not found in any file stays in the list, marked <em>(not found on the support path)</em>.</li>
+<li><strong>Outline / Hatch layer key</strong> &ndash; picked from the Dynalisp <a href="../Layer/Dyl-LayerKeys.htm">layer keys</a>, shown with their layer. A key used by a material but not defined stays in the list, marked <em>(not defined)</em>: it draws on a layer of the same name. <strong>Edit layer keys...</strong> opens the Layer Keys dialog to create or edit keys; it saves <span class="fixw">LayerKeys.csv</span> on its own OK.</li>
+<li><strong>Delete</strong> &ndash; removes a custom material. The presets that use it stay, marked <em>(missing material)</em>: drawing them shows an alert until another material is picked.</li>
+</ul>
+</div>
+<h2 id="drawscale">Drawing Scale</h2>
+<p>A hatch that is not annotative keeps the scale of its material in every drawing. With <em>Follow the drawing scale</em> checked (in the <strong>Hatch scale</strong> box, greyed out while <em>Annotative hatch</em> is checked), its scale follows the drawing scale: the annotation scale of the drawing (<span class="fixw">CANNOSCALE</span>, set by <span class="fixw">Dyl-SwitchDrawingScale</span>).</p>
+<p><em>Scales set for a drawing scale of 1:</em> is the drawing scale the imperial and metric scales of the material were set for: <span class="fixw">10</span> when they look right at 1:10. When the hatch is drawn, its scale is multiplied by the drawing scale divided by that number: set for 1:10 and drawn at 1:50, the scale is multiplied by 5; drawn at 1:5, by 0.5. The line under it gives the factor in the current drawing (<em>This drawing is at 1:50: hatch scale x5.</em>). A new material is set for 1:1.</p>
+<p>The hatch is not updated when the drawing scale changes afterwards: it keeps the scale it was drawn with. The preset summary shows <em>follows the drawing scale (set for 1:10)</em> for such a material.</p>
+<h2 id="drawwith">Draw With</h2>
+<p>A material draws with the <em>Draw with</em> method of its behaviors (Method column of <span class="fixw">Materials.csv</span>). The <strong>Draw with</strong> list of a preset (Method column of <span class="fixw">QuickDraw.csv</span>) keeps <em>Method of the material</em> (empty, the default of every default preset) or picks another method for that preset only. With no method in the preset nor in the material, the method is asked on the command line each time the preset is drawn: <span class="fixw">Draw with [Polyline/Rectangle/Circle/pOlygon/Ellipse/sHrinkwrap/pIck/Select/Linear] &lt;Polyline&gt;:</span>. Enter keeps the method given last time (saved for the next sessions).</p>
+<div class="programs commands wide">
+<table>
+<tr><th>Draw with</th><th>Outline</th></tr>
+<tr><td>Method of the material / Ask when drawn</td><td>The method of the material, or ask for one of the methods below on the command line when the material has none.</td></tr>
+<tr><td>Polyline</td><td>Draw a polyline with <span class="fixw">PLINE</span> and close it.</td></tr>
+<tr><td>Rectangle</td><td>Draw a rectangle with <span class="fixw">RECTANG</span>.</td></tr>
+<tr><td>Circle</td><td>Draw a circle with <span class="fixw">CIRCLE</span>.</td></tr>
+<tr><td>Polygon</td><td>Draw a regular polygon with <span class="fixw">POLYGON</span>, with the number of sides of the material (asked when it has none).</td></tr>
+<tr><td>Ellipse</td><td>Draw an ellipse with <span class="fixw">ELLIPSE</span> (an elliptical arc is open and is erased).</td></tr>
+<tr><td>Shrinkwrap (select objects)</td><td>Select objects: closed polylines are drawn around their outside with the Dynalisp <a href="Dyl-Shrinkwrap.htm">Shrinkwrap</a> (texts included), one per group of touching objects. Replaces the former Shrink-Wrap Hatch tool (<span class="fixw">SW-SOLIDSCREEN</span>): the <em>Existing</em> preset with Shrinkwrap gives the same background screen.</td></tr>
+<tr><td>Pick internal points</td><td>Pick points inside closed areas with <span class="fixw">-BOUNDARY</span>: one polyline per area, plus its islands (island detection as set in <span class="fixw">BOUNDARY</span>).</td></tr>
+<tr><td>Select closed objects</td><td>Select existing closed polylines, circles, ellipses or splines: they are used as the outlines, moved to the outline layer key. Open objects are skipped, not erased.</td></tr>
+<tr><td>Linear (band along a line)</td><td>Draw a line: a band of the width of the preset is made along it, one closed outline per segment, each hatched along its segment (see <a href="#linear">Linear</a>).</td></tr>
+</table>
+</div>
+<h2 id="linear">Linear</h2>
+<p>The <em>Linear (band along a line)</em> method draws a band of a given width from a line, like a wall, a strip of insulation or a curb, and turns its hatch to follow the line. Its material gives (<em>Material behaviors</em>) the default <strong>Width</strong> (drawing units; empty: the last width used, asked the first time; several widths divided by commas, <span class="fixw">100,150,200</span>: asked each time among them, <span class="fixw">Width [100/150/200] &lt;100&gt;:</span>, the last width used by default) and where the line is in the band, <strong>Line on the</strong>: <em>Ask when drawn</em> (asked before the start point, the last one given by default), <em>Center</em> (on the line), <em>Left border</em> or <em>Right border</em> (looking from the start point, the band is then on the right or on the left of the line).</p>
+<div class="spacedbullets">
+<ul>
+<li><span class="fixw">Start point or [Width/Justification]</span> &ndash; pick the start of the line, or change the width or the justification for this band only (the material keeps its own; the width typed becomes the last width used).</li>
+<li><span class="fixw">Next point or [Undo]</span> &ndash; pick the next points: the line and the borders of the band are shown while they are picked. <span class="fixw">Undo</span> removes the last point, Enter ends the line.</li>
+<li>Each segment becomes a closed outline, mitered with the next one at the corners, with its own hatch: its angle is the angle of the material plus the angle of the segment, so the pattern follows the line (a straight band is one outline and one hatch).</li>
+<li><em>Hatch scale = width x</em> (Material behaviors, checked) &ndash; the hatch scale is the width of the band times the factor typed (1: the width), in place of the scales of the material and of the drawing scale: a 100 wide band with a factor of 0.01 is hatched at the scale 1, a 200 wide one at 2, so the pattern fits the band whatever its width.</li>
+<li><em>Hatch origin on the line</em> (Material behaviors, checked) &ndash; the pattern of each segment starts at the start of the segment on the line, moved across the line by the offset typed (0: on the line; positive: into the band, to the left of the line for <em>Center</em>), so the pattern lines up with the line (e.g. the edge of an insulation pattern on the border of the band).</li>
+</ul>
+</div>
+<h2>How It Works</h2>
+<div class="spacedbullets">
+<ol>
+<li>The hatch scale is picked from the drawing units: <span class="fixw">MEASUREMENT</span> = 1 (metric) uses the metric scale, otherwise the imperial scale.</li>
+<li>The layer of the outline layer key is made current (created first with the key properties when the drawing does not have it), then the outlines are made with the <a href="#drawwith">Draw with</a> method of the preset (asked first when the preset has none). The current layer is restored afterwards, also when the command is cancelled.</li>
+<li>Only closed polylines, circles, ellipses and splines are kept: an open outline that was drawn is erased (a selected one is skipped) and an alert is shown.</li>
+<li>The outlines are put on the layer of the outline layer key.</li>
+<li>One hatch is created on all the outlines with <span class="fixw">-HATCH</span> (Select objects), associative or not and annotative or not as set in the material, using the pattern, scale and angle of the material (the scale multiplied by the drawing scale divided by the one it was set for, when the material follows it) (<span class="fixw">SOLID</span> uses neither scale nor angle). Since the outlines are hatched together, an outline inside another one stays open (island). The hatch is then put on the layer of the hatch layer key (created if missing).</li>
+<li>Outlines and hatch are one undo step. If nothing was made, nothing is hatched.</li>
+</ol>
+</div>
+<h2 id="commands">Commands</h2>
+<p>Default presets and the default values of their material (restored by <em>Reset Selected</em> / <em>Reset All</em> of the Materials dialog). Scale is given as imperial / metric. <em>Anno.</em> = annotative hatch. Every default preset draws with the method of its material: <em>Ask when drawn</em>, except <span class="fixw">QD-RIGIDINSULATION</span> (Linear). See <a href="Dyl-Materials.htm#defaults">Materials &ndash; Default Materials</a> for the other settings of each material.</p>
+<div class="programs commands wide">
+<table>
+<tr><th>Command</th><th>Material / Phase</th><th>Pattern</th><th>Scale</th><th>Angle</th><th>Outline key</th><th>Hatch key</th><th>Anno.</th></tr>
+<tr><td><span class="fixw">QD-DEMO</span></td><td>Demolition</td><td><span class="fixw">ANSI31</span></td><td>0.5&nbsp;/&nbsp;0.5</td><td>90.0</td><td><span class="fixw">THIN</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-XNOT</span></td><td>Not In Contract</td><td><span class="fixw">ANSI31</span></td><td>1.5&nbsp;/&nbsp;1.5</td><td>90.0</td><td><span class="fixw">XLINE</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-EXST</span></td><td>Existing</td><td><span class="fixw">SOLID</span></td><td>&ndash;</td><td>&ndash;</td><td><span class="fixw">XLINE</span></td><td><span class="fixw">G-DS-ANNO-STD-BACKGROUND_SCREEN</span></td><td>No</td></tr>
+<tr><td><span class="fixw">QD-CONCRETE</span></td><td>Concrete</td><td><span class="fixw">CONCRETE_C</span></td><td>1.0&nbsp;/&nbsp;2.5</td><td>0</td><td><span class="fixw">WIDE</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-LIGHTCONCRETE</span></td><td>Lightweight Concrete</td><td><span class="fixw">CONCRETE</span></td><td>1.0&nbsp;/&nbsp;2.5</td><td>0</td><td><span class="fixw">THIN</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-MORTAR</span></td><td>Mortar</td><td><span class="fixw">GENERAL_STIPPLE</span></td><td>1.0&nbsp;/&nbsp;2.54</td><td>0</td><td><span class="fixw">FINE</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-BRICK</span></td><td>Brick</td><td><span class="fixw">ANSI31</span></td><td>1.0&nbsp;/&nbsp;1.0</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-STONE</span></td><td>Stone</td><td><span class="fixw">ANSI33</span></td><td>1.0&nbsp;/&nbsp;1.0</td><td>0</td><td><span class="fixw">WIDE</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-CMU</span></td><td>CMU</td><td><span class="fixw">ANSI37</span></td><td>1.0&nbsp;/&nbsp;1.0</td><td>0</td><td><span class="fixw">WIDE</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-FIREBRIC</span></td><td>Firebrick</td><td><span class="fixw">ANSI35</span></td><td>0.5&nbsp;/&nbsp;0.5</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-MARBLE</span></td><td>Marble</td><td><span class="fixw">ANSI36</span></td><td>0.5&nbsp;/&nbsp;0.5</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-GROUT</span></td><td>Grout</td><td><span class="fixw">GENERAL_STIPPLE</span></td><td>2.0&nbsp;/&nbsp;50.8</td><td>0</td><td><span class="fixw">XLINE</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-IRON</span></td><td>Iron</td><td><span class="fixw">ANSI31</span></td><td>0.5&nbsp;/&nbsp;0.5</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-STEEL</span></td><td>Steel</td><td><span class="fixw">ANSI32</span></td><td>0.5&nbsp;/&nbsp;0.5</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-BRONZE</span></td><td>Bronze</td><td><span class="fixw">ANSI33</span></td><td>0.5&nbsp;/&nbsp;0.5</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-LEAD</span></td><td>Lead</td><td><span class="fixw">ANSI37</span></td><td>0.5&nbsp;/&nbsp;0.5</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-ALUMINIUM</span></td><td>Aluminium</td><td><span class="fixw">ANSI38</span></td><td>0.5&nbsp;/&nbsp;0.5</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-PLYWOOD</span></td><td>Plywood</td><td><span class="fixw">WOOD_GLU-LAMBEAM</span></td><td>1.0&nbsp;/&nbsp;1.0</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-WOODPLANK</span></td><td>Wood Plank</td><td><span class="fixw">WOOD_2</span></td><td>0.1875&nbsp;/&nbsp;7.8</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-WOODFRAME</span></td><td>Wood Frame</td><td><span class="fixw">WOOD_1</span></td><td>0.75&nbsp;/&nbsp;7.5</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-PARTICLEBOARD</span></td><td>Particleboard</td><td><span class="fixw">GENERAL_TEXTURE</span></td><td>3.0&nbsp;/&nbsp;76.2</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-HARDBOARD</span></td><td>Hardboard</td><td><span class="fixw">ANSI31</span></td><td>1.0&nbsp;/&nbsp;1.0</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-PLASTIC</span></td><td>Plastic</td><td><span class="fixw">ANSI34</span></td><td>0.5&nbsp;/&nbsp;0.5</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-LOOSEINSULATION</span></td><td>Loose Insulation</td><td><span class="fixw">NET3</span></td><td>1.0&nbsp;/&nbsp;1.0</td><td>0</td><td><span class="fixw">HATCH</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-SPRAYINSULATION</span></td><td>Spray Insulation</td><td><span class="fixw">HONEY</span></td><td>0.5&nbsp;/&nbsp;0.5</td><td>0</td><td><span class="fixw">HATCH</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-RIGIDINSULATION</span></td><td>Rigid Insulation</td><td><span class="fixw">THERMAL_INSULATION</span></td><td>0.5&nbsp;/&nbsp;0.5</td><td>90</td><td><span class="fixw">THIN</span></td><td><span class="fixw">HATCH</span></td><td>No</td></tr>
+<tr><td><span class="fixw">QD-GYPSUM</span></td><td>Gypsum</td><td><span class="fixw">GENERAL_TEXTURE</span></td><td>0.5&nbsp;/&nbsp;12.7</td><td>0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-PLASTER</span></td><td>Plaster</td><td><span class="fixw">GENERAL_TEXTURE</span></td><td>3.0&nbsp;/&nbsp;76.2</td><td>0</td><td><span class="fixw">THIN</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-COMPACTEDSOIL</span></td><td>Compacted Soil</td><td><span class="fixw">SITEWORK_EARTH</span></td><td>1.0&nbsp;/&nbsp;25.4</td><td>45.0</td><td><span class="fixw">XLINE</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-TOPSOIL</span></td><td>Topsoil</td><td><span class="fixw">SITEWORK_EARTH</span></td><td>1.0&nbsp;/&nbsp;25.4</td><td>0.0</td><td><span class="fixw">XLINE</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-UNDISTURBEDSOIL</span></td><td>Undisturbed Soil</td><td><span class="fixw">SITEWORK_EARTH</span></td><td>1.0&nbsp;/&nbsp;25.4</td><td>0.0</td><td><span class="fixw">XLINE</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-SAND</span></td><td>Sand</td><td><span class="fixw">GENERAL_STIPPLE</span></td><td>1.0&nbsp;/&nbsp;25.4</td><td>0.0</td><td><span class="fixw">FINE</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-ASPHALT</span></td><td>Asphalt</td><td><span class="fixw">SITEWORK_ASPHALT</span></td><td>1&nbsp;/&nbsp;25.4</td><td>90.0</td><td><span class="fixw">MED</span></td><td><span class="fixw">HATCH</span></td><td>Yes</td></tr>
+<tr><td><span class="fixw">QD-GRAVEL</span></td><td>Gravel</td><td><span class="fixw">SITEWORK_GRAVEL</span></td><td>3.0&nbsp;/&nbsp;76.2</td><td>22.5</td><td><span class="fixw">FINE</span></td><td><span class="fixw">HATCH</span></td><td>No</td></tr>
+<tr><td><span class="fixw">QD-CRUSHEDSTONE</span></td><td>Crushed Stone</td><td><span class="fixw">SITEWORK_GRAVEL</span></td><td>3.0&nbsp;/&nbsp;76.2</td><td>22.5</td><td><span class="fixw">FINE</span></td><td><span class="fixw">HATCH</span></td><td>No</td></tr>
+</table>
+</div>
+<p><span class="fixw">QD-DEMO</span>, <span class="fixw">QD-XNOT</span> and <span class="fixw">QD-EXST</span> are the phase commands (demolition, not in contract, existing background screen); the others are section materials.</p>
+<h2>Known Limitations</h2>
+<div class="spacedbullets">
+<ul>
+<li>Patterns such as CONCRETE_C, WOOD_*, SITEWORK_* and GENERAL_* are not part of acad.pat: they must be available in a folder of the support path.</li>
+<li>Patterns are only listed from the folders of the support path.</li>
+<li>A layer that already exists in the drawing is used as is: the layer key properties only apply when the layer is created. Objects drawn on a layer that is off or frozen are not visible.</li>
+<li><span class="fixw">QuickDraw.csv</span> and <span class="fixw">Materials.csv</span> cannot be saved while they are open in Excel: an alert is shown and the changes are lost.</li>
+</ul>
+</div>
+<!-- dyl:aliases -->
+<h2 id="aliases">Command Names And Aliases</h2>
+<p>Each program has one main command starting with <span class="fixw">Dyl-</span>. The short names are its aliases: they run the same command, and can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (saved in <span class="fixw">Resources\Aliases.csv</span>). The rows marked &#8627; are child commands of <span class="fixw">Dyl-QuickDraw</span>: they are run by their alias, or picked from <span class="fixw">Dyl-QuickDraw</span> when it lists them (their command is named <span class="fixw">Pst-*</span>).</p>
+<div class="programs commands wide">
+<table>
+<tr><th>Command</th><th>Aliases</th><th>Name</th></tr>
+<tr><td><span class="fixw">Dyl-QuickDraw</span></td><td>&ndash;</td><td>Quick Draw</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-DEMO</span></td><td>&ndash;</td><td>Quick Draw Demolition</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-XNOT</span></td><td>&ndash;</td><td>Quick Draw Not In Contract</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-EXST</span></td><td>&ndash;</td><td>Quick Draw Existing</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-CONCRETE</span></td><td>&ndash;</td><td>Quick Draw Concrete</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-LIGHTCONCRETE</span></td><td>&ndash;</td><td>Quick Draw Lightweight Concrete</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-MORTAR</span></td><td>&ndash;</td><td>Quick Draw Mortar</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-BRICK</span></td><td>&ndash;</td><td>Quick Draw Brick</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-STONE</span></td><td>&ndash;</td><td>Quick Draw Stone</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-CMU</span></td><td>&ndash;</td><td>Quick Draw CMU</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-FIREBRIC</span></td><td>&ndash;</td><td>Quick Draw Firebrick</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-MARBLE</span></td><td>&ndash;</td><td>Quick Draw Marble</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-GROUT</span></td><td>&ndash;</td><td>Quick Draw Grout</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-IRON</span></td><td>&ndash;</td><td>Quick Draw Iron</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-STEEL</span></td><td>&ndash;</td><td>Quick Draw Steel</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-BRONZE</span></td><td>&ndash;</td><td>Quick Draw Bronze</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-LEAD</span></td><td>&ndash;</td><td>Quick Draw Lead</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-ALUMINIUM</span></td><td>&ndash;</td><td>Quick Draw Aluminium</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-PLYWOOD</span></td><td>&ndash;</td><td>Quick Draw Plywood</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-WOODPLANK</span></td><td>&ndash;</td><td>Quick Draw Wood Plank</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-WOODFRAME</span></td><td>&ndash;</td><td>Quick Draw Wood Frame</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-PARTICLEBOARD</span></td><td>&ndash;</td><td>Quick Draw Particleboard</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-HARDBOARD</span></td><td>&ndash;</td><td>Quick Draw Hardboard</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-PLASTIC</span></td><td>&ndash;</td><td>Quick Draw Plastic</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-LOOSEINSULATION</span></td><td>&ndash;</td><td>Quick Draw Loose Insulation</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-SPRAYINSULATION</span></td><td>&ndash;</td><td>Quick Draw Spray Insulation</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-RIGIDINSULATION</span></td><td>&ndash;</td><td>Quick Draw Rigid Insulation</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-GYPSUM</span></td><td>&ndash;</td><td>Quick Draw Gypsum</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-PLASTER</span></td><td>&ndash;</td><td>Quick Draw Plaster</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-COMPACTEDSOIL</span></td><td>&ndash;</td><td>Quick Draw Compacted Soil</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-TOPSOIL</span></td><td>&ndash;</td><td>Quick Draw Topsoil</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-UNDISTURBEDSOIL</span></td><td>&ndash;</td><td>Quick Draw Undisturbed Soil</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-SAND</span></td><td>&ndash;</td><td>Quick Draw Sand</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-ASPHALT</span></td><td>&ndash;</td><td>Quick Draw Asphalt</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-GRAVEL</span></td><td>&ndash;</td><td>Quick Draw Gravel</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">QD-CRUSHEDSTONE</span></td><td>&ndash;</td><td>Quick Draw Crushed Stone</td></tr>
+</table>
+</div>
+<!-- /dyl:aliases -->
+<p><a href="../index.htm">&larr; Dynalisp module docs index</a></p>
+
+    </div>
+
+    <div id="footer">
+        <p>Author: Samuel Martineau, Copyright &copy; 2023 &ndash; released under the GNU General Public License v3</p>
+    </div>
+</body>
+
+</html>

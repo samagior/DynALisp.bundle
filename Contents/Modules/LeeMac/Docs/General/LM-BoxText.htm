@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Box Text</title>
+    <link rel="stylesheet" href="../../../../Resources/docs.css">
+</head>
+
+<body>
+    <div id="header">
+        <p>DynALisp <span>Docs</span></p>
+    </div>
+
+    <div id="content">
+        <h1>Box Text</h1>
+
+        <p class="note">This page is a copy of the original help page on Lee Mac's website, included here for offline
+            reference. For the latest version, see the original page:
+            <a href="https://lee-mac.com/boxtext.html" target="_blank">https://lee-mac.com/boxtext.html</a></p>
+
+<div class="programs">
+<table>
+<tr class="alt">
+<td>Function Syntax</td>
+<td><span class="fixw">LM-BoxText</span> &ndash; original syntax: BT (see <a href="#aliases">aliases</a>)</td>
+</tr>
+<tr>
+<td>Current Version</td>
+<td>1.3</td>
+</tr>
+
+
+<tr class="alt">
+<td>Compatible with AutoCAD for Mac?</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Compatible with AutoCAD LT?</td>
+<td>Yes</td>
+</tr>
+
+<tr class="alt"><td>Original Page</td><td><a href="https://lee-mac.com/boxtext.html" target="_blank">lee-mac.com/boxtext.html</a></td></tr></table>
+</div>
+<h2>Program Description</h2>
+<p>This program performs in much the same way as the Express Tools' <em>TCircle</em> command: enabling the user to create a
+                2D polyline rectangular frame around selected Text &amp; MText objects, with a user-defined offset. The program will also
+                perform successfully with Text or MText defined in any construction plane, and under all UCS &amp; view settings.</p>
+<p>Upon issuing the command syntax <span class="fixw">BT</span> at the AutoCAD command-line, the program first prompts
+                the user to specify an offset factor for the text frame. This factor is multiplied by the text height for every selected text object
+                to determine the offset of the rectangular frame from the text. At this prompt, the last used value is available as a default option.</p>
+<p>If the offset factor is greater than zero, the program will also offer to apply an optional fillet to the text box, with the 
+                fillet radius being equal to the offset factor multiplied by the text height.</p>
+<p>The program then prompts the user to make a selection of text and/or mtext objects. Following a valid selection, the program
+                iterates over the selection and constructs a rectangular frame surrounding each object, offset by a distance determined by the
+                given offset factor. The generated text box will inherit the basic properties of the enclosed text object 
+                (e.g. Layer, Linetype, Lineweight etc.).</p>
+<p>Writing this program provided a fantastic learning opportunity into the methods of making a program compatible for use in
+                all Views &amp; User Coordinate Systems (UCS); and I would furthermore like to thank Gilles Chanteau (gile) for his help and advice 
+                on the subject.</p>
+<div class="cent">
+<h3>Example of Usage</h3>
+<img alt="BoxText.gif" height="232" src="images/LM-BoxText.gif" width="500"/>
+</div>
+        <details class="bundled">
+            <summary>Bundled program notes</summary>
+            <pre>;;----------------------------=={ Box Text }==--------------------------;;
+;;                                                                      ;;
+;;  This program performs in much the same way as the Express Tools&#x27;    ;;
+;;  &#x27;TCircle&#x27; command: enabling the user to create a 2D polyline        ;;
+;;  rectangular frame around selected Text &amp; MText objects, with a      ;;
+;;  user-defined offset.                                                ;;
+;;                                                                      ;;
+;;  Upon issuing the command syntax &#x27;BT&#x27; at the AutoCAD command-line,   ;;
+;;  the program first prompts the user to specify an offset factor      ;;
+;;  for the text frame. This factor is multiplied by the text height    ;;
+;;  for every selected text object to determine the offset of the       ;;
+;;  rectangular frame from the text. At this prompt, the last used      ;;
+;;  value is available as a default option.                             ;;
+;;                                                                      ;;
+;;  The program then prompts the user to make a selection of text       ;;
+;;  and/or mtext objects. Following a valid selection, the program      ;;
+;;  iterates over the selection and constructs a rectangular frame      ;;
+;;  surrounding each object, offset by a distance determined by the     ;;
+;;  given offset factor. The generated text box will inherit the        ;;
+;;  basic properties of the enclosed text object (e.g. Layer, Linetype, ;;
+;;  Lineweight etc.).                                                   ;;
+;;                                                                      ;;
+;;  The program will also perform successfully with Text or MText       ;;
+;;  defined in any construction plane, and under all UCS &amp; view         ;;
+;;  settings.                                                           ;;
+;;----------------------------------------------------------------------;;
+;;  Author:  Lee Mac, Copyright © 2010  -  www.lee-mac.com              ;;
+;;----------------------------------------------------------------------;;
+;;  Version 1.2    -    2015-02-22                                      ;;
+;;----------------------------------------------------------------------;;</pre>
+        </details>
+<!-- dyl:aliases -->
+<h2 id="aliases">Command Names And Aliases</h2>
+<p>This page is a copy of Lee Mac's page: the commands keep their original names as aliases. Each program has one main command starting with <span class="fixw">LM-</span>. The short names are its aliases: they run the same command, and can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (saved in <span class="fixw">Resources\Aliases.csv</span>).</p>
+<div class="programs commands wide">
+<table>
+<tr><th>Command</th><th>Aliases</th><th>Name</th></tr>
+<tr><td><span class="fixw">LM-BoxText</span></td><td><span class="fixw">BT</span></td><td>Box Text</td></tr>
+</table>
+</div>
+<!-- /dyl:aliases -->
+
+
+    </div>
+
+    <div id="footer">
+        <p>Author: Lee Mac, Copyright &copy; 2010 &ndash;
+            <a href="https://www.lee-mac.com" target="_blank">www.lee-mac.com</a></p>
+    </div>
+</body>
+
+</html>

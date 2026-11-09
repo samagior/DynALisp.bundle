@@ -1,0 +1,8 @@
+IMPORTANT: do not move this file from the Resources folder !!
+
+This is the DYNALISP BEACON file.
+All link are made relatively to this file using the "findfile" function.
+
+see: 
+- dynalisp.mnl for the main startup routine
+- PackageContents.xml for the support path (required for findfile to locate the DYLB.txt file)

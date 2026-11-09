@@ -1,0 +1,139 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+E?,Alrm,----,----,----,Alarm system
+E?,Area,----,----,----,Area
+E?,Area,Ofst,----,----,Area: offset zones
+E?,Area,Shad,----,----,Area: shade zones
+E?,Auxl,----,----,----,Auxiliary systems
+E?,Bell,----,----,----,Bell system
+E?,Cabl,----,----,----,Cable systems
+E?,Cabl,Coax,----,----,Cable systems: coax cable
+E?,Cabl,Fibr,----,----,Cable systems: fiber optics cable
+E?,Cabl,Mult,----,----,Cable systems: multi-conductor cable
+E?,Cabl,Tray,----,----,Cable systems: cabletray and wireways
+E?,Cath,----,----,----,Cathodic protection system
+E?,Cath,Anod,----,----,Cathodic protection system: sacrificial anode
+E?,Cath,Curr,----,----,Cathodic protection system: impress current
+E?,Cath,Test,----,----,Cathodic protection system: test stations
+E?,Cctv,----,----,----,Closed-circuit television system
+E?,Clok,----,----,----,Clock system
+E?,Clok,Circ,----,----,Clock system: circuits
+E?,Clok,Clng,----,----,Clock system: ceiling
+E?,Clok,Cnmb,----,----,Clock system: circuit number
+E?,Clok,Eqpm,----,----,Clock system: equipment
+E?,Clok,Flor,----,----,Clock system: floor
+E?,Clok,Wall,----,----,Clock system: wall
+E?,Comm,----,----,----,Communications
+E?,Comm,Circ,----,----,Communications: circuits
+E?,Comm,Clng,----,----,Communications: ceiling
+E?,Comm,Cnmb,----,----,Communications: circuit number
+E?,Comm,Eqpm,----,----,Communications: equipment
+E?,Comm,Wall,----,----,Communications: wall
+E?,Cont,----,----,----,Controls and instrumentation
+E?,Cont,Devc,----,----,Controls and instrumentation: devices
+E?,Cont,Wire,----,----,Controls and instrumentation: wiring
+E?,Data,----,----,----,Data/LAN system
+E?,Data,Circ,----,----,Data/LAN system: circuits
+E?,Data,Clng,----,----,Data/LAN system: ceiling
+E?,Data,Cnmb,----,----,Data/LAN system: circuit number
+E?,Data,Eqpm,----,----,Data/LAN system: equipment
+E?,Data,Flor,----,----,Data/LAN system: floor
+E?,Data,Wall,----,----,Data/LAN system: wall
+E?,Diag,----,----,----,Diagrams
+E?,Diag,Bkrs,----,----,Diagrams: breakers
+E?,Diag,Buss,----,----,Diagrams: bus duct
+E?,Diag,Encl,----,----,Diagrams: equipment enclosures
+E?,Diag,Eqpm,----,----,Diagrams: equipment
+E?,Diag,Feed,----,----,Diagrams: feeders
+E?,Diag,Flor,----,----,Diagrams: floor
+E?,Diag,Grnd,----,----,Diagrams: ground
+E?,Diag,Swch,----,----,Diagrams: switches
+E?,Diag,Xfmr,----,----,Diagrams: transformers
+E?,Dict,----,----,----,Dictation system
+E?,Dict,Circ,----,----,Dictation system: circuits
+E?,Dict,Clng,----,----,Dictation system: ceiling
+E?,Dict,Cnmb,----,----,Dictation system: circuit number
+E?,Dict,Eqpm,----,----,Dictation system: equipment
+E?,Dict,Wall,----,----,Dictation system: wall
+E?,Fire,----,----,----,Fire protection
+E?,Fire,Barr,----,----,Fire protection: barrier
+E?,Fire,Circ,----,----,Fire protection: circuits
+E?,Fire,Clng,----,----,Fire protection: ceiling
+E?,Fire,Cnmb,----,----,Fire protection: circuit number
+E?,Fire,Eqpm,----,----,Fire protection: equipment
+E?,Fire,Wall,----,----,Fire protection: wall
+E?,Grnd,----,----,----,Ground system
+E?,Grnd,Circ,----,----,Ground system: circuits
+E?,Grnd,Clng,----,----,Ground system: ceiling
+E?,Grnd,Cnmb,----,----,Ground system: circuit number
+E?,Grnd,Diag,----,----,Ground system: diagrams
+E?,Grnd,Eqpm,----,----,Ground system: equipment
+E?,Grnd,Equi,----,----,Ground system: equipotential
+E?,Grnd,Wall,----,----,Ground system: wall
+E?,Inst,----,----,----,Instrumentation system
+E?,Inst,Circ,----,----,Instrumentation system: circuits
+E?,Inst,Clng,----,----,Instrumentation system: ceiling
+E?,Inst,Cnmb,----,----,Instrumentation system: circuit number
+E?,Inst,Eqpm,----,----,Instrumentation system: equipment
+E?,Inst,Wall,----,----,Instrumentation system: wall
+E?,Intc,----,----,----,Intercom/PA systems
+E?,Lite,----,----,----,Lighting
+E?,Lite,Circ,----,----,Lighting: circuits
+E?,Lite,Clng,----,----,Lighting: ceiling
+E?,Lite,Cnmb,----,----,Lighting: circuit number
+E?,Lite,Emer,----,----,Lighting: emergency
+E?,Lite,Eqpm,----,----,Lighting: equipment
+E?,Lite,Exit,----,----,Lighting: exit
+E?,Lite,Extr,----,----,Lighting: exterior
+E?,Lite,Flor,----,----,Lighting: floor
+E?,Lite,Jbox,----,----,Lighting: junction box
+E?,Lite,Otln,----,----,Lighting: outline
+E?,Lite,Roof,----,----,Lighting: roof
+E?,Lite,Spcl,----,----,Lighting: special
+E?,Lite,Swch,----,----,Lighting: switches
+E?,Lite,Wall,----,----,Lighting: wall
+E?,Ltng,----,----,----,Lightning protection system
+E?,Ltng,Circ,----,----,Lightning protection system: circuits
+E?,Ltng,Clng,----,----,Lightning protection system: ceiling
+E?,Ltng,Cnmb,----,----,Lightning protection system: circuit number
+E?,Ltng,Eqpm,----,----,Lightning protection system: equipment
+E?,Ltng,Wall,----,----,Lightning protection system: wall
+E?,Mntg,----,----,----,Mounting system
+E?,Nurs,----,----,----,Nurse call system
+E?,Nurs,Circ,----,----,Nurse call system: circuits
+E?,Nurs,Clng,----,----,Nurse call system: ceiling
+E?,Nurs,Cnmb,----,----,Nurse call system: circuit number
+E?,Nurs,Eqpm,----,----,Nurse call system: equipment
+E?,Nurs,Flor,----,----,Nurse call system: floor
+E?,Nurs,Wall,----,----,Nurse call system: wall
+E?,Obst,----,----,----,Obstructions
+E?,Pgng,----,----,----,Paging system
+E?,Powr,----,----,----,Power
+E?,Powr,Busw,----,----,Power: busways
+E?,Powr,Cabl,----,----,Power: cable systems
+E?,Powr,Cbox,----,----,Power: combiner box
+E?,Powr,Circ,----,----,Power: circuits
+E?,Powr,Clng,----,----,Power: ceiling
+E?,Powr,Cndt,----,----,Power: conduit
+E?,Powr,Cnmb,----,----,Power: circuit number
+E?,Powr,Devc,----,----,Power: devices
+E?,Powr,Dsco,----,----,Power: disconnect switches
+E?,Powr,Eqpm,----,----,Power: equipment
+E?,Powr,Extr,----,----,Power: exterior
+E?,Powr,Feed,----,----,Power: feeders
+E?,Powr,Flor,----,----,Power: floor
+E?,Powr,Jbox,----,----,Power: junction box
+E?,Powr,Panl,----,----,Power: panels
+E?,Powr,Pocc,----,----,Power: point of common coupling
+E?,Powr,Poi~,----,----,Power: point of interconnection
+E?,Powr,Roof,----,----,Power: roof
+E?,Powr,Swbd,----,----,Power: switchboards
+E?,Powr,Ucpt,----,----,Power: under-carpet wiring
+E?,Powr,Urac,----,----,Power: underfloor raceways
+E?,Powr,Wall,----,----,Power: wall
+E?,Pvmd,----,----,----,Photovoltaic modules
+E?,Site,----,----,----,Site features
+E?,Site,Ovhd,----,----,Site features: overhead
+E?,Site,Pole,----,----,Site features: pole
+E?,Site,Ugnd,----,----,Site features: underground
+E?,Soun,----,----,----,Sound system
+E?,Util,----,----,----,Utilities

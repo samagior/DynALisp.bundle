@@ -1,0 +1,1269 @@
+Abbreviation,ColorGroup,ColorIndex,Lineweight,Linetype,Description
+0001,01,1,0.18,Continuous,Number 0001
+0002,03,1,0.18,Continuous,Number 0002
+0003,05,1,0.18,Continuous,Number 0003
+0004,07,1,0.18,Continuous,Number 0004
+0005,09,1,0.18,Continuous,Number 0005
+0006,11,1,0.18,Continuous,Number 0006
+0007,13,1,0.18,Continuous,Number 0007
+0008,15,1,0.18,Continuous,Number 0008
+0009,17,1,0.18,Continuous,Number 0009
+0010,19,1,0.18,Continuous,Number 0010
+0024,10,1,0.18,Continuous,Half Scale
+003c,10,1,0.18,Continuous,3 Deg C
+0048,10,1,0.18,Continuous,Quarter Scale
+004c,10,1,0.18,Continuous,4 Deg C
+006c,10,1,0.18,Continuous,6 Deg C
+007c,10,1,0.18,Continuous,7 Deg C
+008c,10,1,0.18,Continuous,8 Deg C
+0096,10,1,0.18,Continuous,Eighth Scale
+009c,10,1,0.18,Continuous,9 Deg C
+0100,10,1,0.18,Continuous,Class 100
+010c,10,1,0.18,Continuous,10 Deg C
+010k,10,1,0.18,Continuous,Class 10.000
+011c,10,1,0.18,Continuous,11 Deg C
+012c,10,1,0.18,Continuous,12 Deg C
+012v,10,1,0.18,Continuous,12 Volt Control
+013c,10,1,0.18,Continuous,13 Deg C
+014c,10,1,0.18,Continuous,14 Deg C
+016c,10,1,0.18,Continuous,16 Deg C
+0192,10,1,0.18,Continuous,Sixteenth Scale
+01ft,10,1,0.18,Continuous,One Foot High (12 inches)
+01hr,10,1,0.18,Continuous,1-Hour
+01ps,10,1,0.18,Continuous,One Pipe System
+021c,10,1,0.18,Continuous,21 Deg C
+025y,10,1,0.18,Continuous,25-Year Mark
+027c,10,1,0.18,Continuous,27 Deg C
+029c,10,1,0.18,Continuous,29 Deg C
+02ft,10,1,0.18,Continuous,Two Feet High (24 inches)
+02hr,10,1,0.18,Continuous,2-Hour
+02ps,10,1,0.18,Continuous,Two Pipe System
+032c,10,1,0.18,Continuous,32 Deg C
+035c,10,1,0.18,Continuous,35 Deg C
+038c,10,1,0.18,Continuous,38 Deg C
+038f,10,1,0.18,Continuous,38 Deg F
+03ft,10,1,0.18,Continuous,Three Feet High (36 inches)
+03hr,10,1,0.18,Continuous,3-Hour
+03in,10,1,0.18,Continuous,One-Quarter Foot High (3 inches)
+03ps,10,1,0.18,Continuous,Three Pipe System
+040f,10,1,0.18,Continuous,40 Deg F
+041c,10,1,0.18,Continuous,41 Deg C
+042f,10,1,0.18,Continuous,42 Deg F
+043c,10,1,0.18,Continuous,43 Deg C
+044f,10,1,0.18,Continuous,44 Deg F
+045f,10,1,0.18,Continuous,45 Deg F
+046c,10,1,0.18,Continuous,46 Deg C
+046f,10,1,0.18,Continuous,46 Deg F
+048f,10,1,0.18,Continuous,48 Deg F
+049c,10,1,0.18,Continuous,49 Deg C
+04ft,10,1,0.18,Continuous,Four Feet High (48 inches)
+04hr,10,1,0.18,Continuous,4-Hour
+04in,10,1,0.18,Continuous,One-Third Foot High (4 inches)
+04ps,10,1,0.18,Continuous,Four Pipe System
+050f,10,1,0.18,Continuous,50 Deg F
+050y,10,1,0.18,Continuous,50-Year Mark
+052f,10,1,0.18,Continuous,52 Deg F
+054c,10,1,0.18,Continuous,54 Deg C
+054f,10,1,0.18,Continuous,54 Deg F
+055f,10,1,0.18,Continuous,55 Deg F
+056f,10,1,0.18,Continuous,56 Deg F
+058f,10,1,0.18,Continuous,58 Deg F
+05ft,10,1,0.18,Continuous,Five Feet High (60 inches)
+060c,10,1,0.18,Continuous,60 Deg C
+060f,10,1,0.18,Continuous,60 Deg F
+063c,10,1,0.18,Continuous,63 Deg C
+066c,10,1,0.18,Continuous,66 Deg C
+068c,10,1,0.18,Continuous,68 Deg C
+06ft,10,1,0.18,Continuous,Six Feet High (72 inches)
+06in,10,1,0.18,Continuous,Half-Foot High (6 inches)
+070f,10,1,0.18,Continuous,70 Def F
+071c,10,1,0.18,Continuous,71 Deg C
+074c,10,1,0.18,Continuous,74 Deg C
+077c,10,1,0.18,Continuous,77 Deg C
+079c,10,1,0.18,Continuous,79 Deg C
+07ft,10,1,0.18,Continuous,Seven Feet High (84 inches)
+080f,10,1,0.18,Continuous,80 Deg F
+082c,10,1,0.18,Continuous,82 Deg C
+085c,10,1,0.18,Continuous,85 Deg C
+085f,10,1,0.18,Continuous,85 Deg F
+088c,10,1,0.18,Continuous,88 Deg C
+08ft,10,1,0.18,Continuous,Eight Feet High (96 inches)
+08in,10,1,0.18,Continuous,Two-Third  Foot High (8 inches)
+090f,10,1,0.18,Continuous,90 Deg F
+091c,10,1,0.18,Continuous,91 Deg C
+093c,10,1,0.18,Continuous,93 Deg C
+095f,10,1,0.18,Continuous,95 Deg F
+096c,10,1,0.18,Continuous,96 Deg C
+099c,10,1,0.18,Continuous,99 Deg C
+09ft,10,1,0.18,Continuous,Nine Feet High (108 inches)
+09in,10,1,0.18,Continuous,Three-Third Foot High (9 inches)
+1000,10,1,0.18,Continuous,Class 1.000
+100f,10,1,0.18,Continuous,100 Deg F
+100k,10,1,0.18,Continuous,Class 100.000
+100y,10,1,0.18,Continuous,100-Year Mark
+105f,10,1,0.18,Continuous,105 Deg F
+10ft,10,1,0.18,Continuous,Ten Feet High (120 inches)
+10in,10,1,0.18,Continuous,Ten Inches High (10 inches)
+110f,10,1,0.18,Continuous,110 Deg F
+115f,10,1,0.18,Continuous,115 Deg F
+11ft,10,1,0.18,Continuous,Eleven Feet High (132 inches)
+120f,10,1,0.18,Continuous,120 Deg F
+120v,10,1,0.18,Continuous,120 Volt
+12ft,10,1,0.18,Continuous,Twelve Feet High (144 inches)
+130f,10,1,0.18,Continuous,130 Deg F
+13ft,10,1,0.18,Continuous,Thirteen Feet High (156 inches)
+140f,10,1,0.18,Continuous,140 Deg F
+145f,10,1,0.18,Continuous,145 Deg F
+14ft,10,1,0.18,Continuous,Fourteen Feet High (168 inches)
+14in,10,1,0.18,Continuous,Fourteen Inches High (14 inches)
+150f,10,1,0.18,Continuous,150 Deg F
+155f,10,1,0.18,Continuous,155 Def F
+15ft,10,1,0.18,Continuous,Fifteen Feet High (180 inches)
+160f,10,1,0.18,Continuous,160 Deg F
+165f,10,1,0.18,Continuous,165 Deg F
+16ft,10,1,0.18,Continuous,Sixteen Feet High (192 inches)
+170f,10,1,0.18,Continuous,150 Deg F
+175f,10,1,0.18,Continuous,175 Deg F
+180f,10,1,0.18,Continuous,180 Deg F
+185f,10,1,0.18,Continuous,185 Deg F
+18ft,10,1,0.18,Continuous,Eighteen Feet High (216 inches)
+18in,10,1,0.18,Continuous,One And One-Half Foot High (18 inches)
+190f,10,1,0.18,Continuous,190 Deg F
+195f,10,1,0.18,Continuous,195 Deg F
+1hhr,10,1,0.18,Continuous,One And One-Half Hour Fire Rating
+1phs,10,1,0.18,Continuous,Single Phase
+1thr,10,1,0.18,Continuous,One-Third Hour Fire Rating
+1wir,10,1,0.18,Continuous,One Wire
+200f,10,1,0.18,Continuous,200 Deg F
+200y,10,1,0.18,Continuous,200-Year Mark
+205f,10,1,0.18,Continuous,205 Deg F
+208v,10,1,0.18,Continuous,208 Volt
+20ft,10,1,0.18,Continuous,Twenty Feet High (240 inches)
+210f,10,1,0.18,Continuous,210 Deg F
+240v,10,1,0.18,Continuous,240 Volt
+24in,10,1,0.18,Continuous,Twenty Inches High (24 inches)
+277v,10,1,0.18,Continuous,277 Volt
+2phs,10,1,0.18,Continuous,Two Phase
+2way,10,1,0.18,Continuous,2-Way Type
+2wir,10,1,0.18,Continuous,Two Wire
+30in,10,1,0.18,Continuous,Thirty Inches High (30 inches)
+3a~~,10,1,0.18,Continuous,Three A Waste
+3phs,10,1,0.18,Continuous,Three Phase
+3qhr,10,1,0.18,Continuous,Three-Quarter Hour Fire Rating
+3way,10,1,0.18,Continuous,3-Way Type
+3wir,10,1,0.18,Continuous,Three Wire
+480v,10,1,0.18,Continuous,480 Volt
+4wir,10,1,0.18,Continuous,Four Wire
+600v,10,1,0.18,Continuous,600 Volt
+Aa~~,10,1,0.18,Continuous,Agitation Air-System
+Ablt,10,1,0.18,Continuous,Anchor Bolts
+Abov,10,1,0.18,Continuous,Above
+Absr,10,1,0.18,Continuous,Absorber
+Abut,10,1,0.18,Continuous,Abutment
+Ac~~,10,1,0.18,Continuous,Air Cooler/Color Override Layer
+Accs,10,1,0.18,Continuous,Access
+Accu,10,1,0.18,Continuous,Air Cooled Condensing Unit
+Acet,10,1,0.18,Continuous,Acetylene
+Acfu,10,1,0.18,Continuous,Fused Ac
+Acid,10,1,0.18,Continuous,Acid Waste System
+Aclt,10,1,0.18,Continuous,Aerial Horizontal And Vertical Control Points
+Acnf,10,1,0.18,Continuous,Unfused Ac
+Adtv,10,1,0.18,Continuous,Additive Elements
+Aff~,10,1,0.18,Continuous,Above Finished Floor
+Afff,10,1,0.18,Continuous,Aqueous Film-Forming Foam System
+Afrz,10,1,0.18,Continuous,Anti-Freeze
+Aggr,10,1,0.18,Continuous,Exposed Aggregate
+Ahu~,10,1,0.18,Continuous,Air Handling Unit
+Air~,10,1,0.18,Continuous,Air
+Aloc,10,1,0.18,Continuous,Allocation
+Alrm,10,1,0.18,Continuous,Alarm
+Alum,10,1,0.18,Continuous,Aluminium
+Amex,10,1,0.18,Continuous,Ammonia Exhaust-System
+Ammo,10,1,0.18,Continuous,Ammonia
+Amw~,10,1,0.18,Continuous,Ammonia Waste-System
+Anlg,10,1,0.18,Continuous,Analog
+Annn,10,1,0.18,Continuous,TO BE EDITED / A=Letter/N=Number
+Anno,10,1,0.18,Continuous,Annotation
+Anod,10,1,0.18,Continuous,Sacrificial Anode
+Anta,10,1,0.18,Continuous,Antenna
+Appl,10,1,0.18,Continuous,Appliances
+Ar~~,10,1,0.18,Continuous,Argon-System
+Arat,10,1,0.18,Continuous,Aeration
+Arb~,10,1,0.18,Continuous,Argon Bulk-System
+Arc~,10,1,0.18,Continuous,Regenerative Caustic-System
+Arex,10,1,0.18,Continuous,Arsenic Exhaust-System
+Asph,10,1,0.18,Continuous,Asphalt
+Assm,10,1,0.18,Continuous,Assemblies
+Ats~,10,1,0.18,Continuous,Automatic Transfer Switches
+Aud~,10,1,0.18,Continuous,Audio
+Auxl,10,1,0.18,Continuous,Auxiliary
+Av~~,10,1,0.18,Continuous,Audio Video
+Ba~~,10,1,0.18,Continuous,Breathable Air-System
+Back,10,1,0.18,Continuous,Back
+Bafl,10,1,0.18,Continuous,Baffle Block And Splash Pad
+Ball,10,1,0.18,Continuous,Ball Type
+Baln,10,1,0.18,Continuous,Balance/Equalization
+Barr,10,1,0.18,Continuous,Barrier
+Bas~,10,1,0.18,Continuous,Building Automation System
+Base,10,1,0.18,Continuous,Base Mounted
+Basn,10,1,0.18,Continuous,Stilling And Setting Basin
+Bath,10,1,0.18,Continuous,Bath
+Batt,10,1,0.18,Continuous,Batting
+Bbac,10,1,0.18,Continuous,Battery Backup
+Bbh~,10,1,0.18,Continuous,Baseboard Heater
+Bbs~,10,1,0.18,Continuous,Battery Backup Service
+Bdd~,10,1,0.18,Continuous,Backdraft Damper
+Beds,10,1,0.18,Continuous,Perennial And Annual Beds
+Bell,10,1,0.18,Continuous,Bell
+Bent,10,1,0.18,Continuous,Top Of Bent
+Bflo,10,1,0.18,Continuous,Backflow Type
+Bfly,10,1,0.18,Continuous,Butterfly Type
+Bfw~,10,1,0.18,Continuous,Boiler Feed Water-System
+Bidt,10,1,0.18,Continuous,Bidet
+Bkrs,10,1,0.18,Continuous,Breakers
+Bkup,10,1,0.18,Continuous,Backup
+Blbd,10,1,0.18,Continuous,Boiler Blow Down Piping
+Blck,10,1,0.18,Continuous,Black
+Bldg,10,1,0.18,Continuous,Building Points
+Blin,10,1,0.18,Continuous,Baseline
+Blo~,10,1,0.18,Continuous,Blower
+Blow,10,1,0.18,Continuous,Below
+Bmrk,10,1,0.18,Continuous,Benchmarks
+Bms~,10,1,0.18,Continuous,Building Management System
+Bndy,10,1,0.18,Continuous,Boundary
+Boil,10,1,0.18,Continuous,Boiler
+Bold,10,1,0.18,Continuous,Bold Line
+Boro,10,1,0.18,Continuous,Borough
+Bot1,10,1,0.18,Continuous,Bottom Group 1
+Bot2,10,1,0.18,Continuous,Bottom Group 2
+Botb,10,1,0.18,Continuous,Bottom Of Bank
+Botm,10,1,0.18,Continuous,Bottom
+Boxd,10,1,0.18,Continuous,Mixing Box/Dual Duct
+Boxs,10,1,0.18,Continuous,Mixing Box/Single Duct
+Bpas,10,1,0.18,Continuous,By-Pass/Hot Gas By-Pass Refrigerant
+Brcg,10,1,0.18,Continuous,Bracing
+Brch,10,1,0.18,Continuous,Fire Sprinkler Branch
+Brck,10,1,0.18,Continuous,Brick
+Brdg,10,1,0.18,Continuous,Bridge
+Brdr,10,1,0.18,Continuous,Border
+Brgx,10,1,0.18,Continuous,Bridging
+Brin,10,1,0.18,Continuous,Brine
+Brkl,10,1,0.18,Continuous,Break Lines
+Brng,10,1,0.18,Continuous,Bearings And Distance Labels
+Brow,10,1,0.18,Continuous,Brush Row points
+Brsh,10,1,0.18,Continuous,Brush Points
+Brss,10,1,0.18,Continuous,Brass
+Brwn,10,1,0.18,Continuous,Brown
+Bt~~,10,1,0.18,Continuous,Bath Tub
+Bubl,10,1,0.18,Continuous,Bubbles
+Buoy,10,1,0.18,Continuous,Buoy
+Bush,10,1,0.18,Continuous,Bushes And Shrubs
+Buss,10,1,0.18,Continuous,Bus Duct
+Busw,10,1,0.18,Continuous,Busways
+But~,10,1,0.18,Continuous,Buthane-System
+Bwtr,10,1,0.18,Continuous,Breakwater
+C~~~,10,1,0.18,Continuous,Caustic-System
+Ca~~,10,1,0.18,Continuous,Compressed Air-System
+Cabl,10,1,0.18,Continuous,Cable
+Cabn,10,1,0.18,Continuous,Cabinet
+Cair,10,1,0.18,Continuous,Compressed Air
+Cars,10,1,0.18,Continuous,Cars And Other Vehicles
+Cast,10,1,0.18,Continuous,Cast Iron
+Cath,10,1,0.18,Continuous,Cathodic Protection
+Catv,10,1,0.18,Continuous,Cable Television
+Cav~,10,1,0.18,Continuous,Constant Air Volume Type
+Cavi,10,1,0.18,Continuous,Cavity
+Cbox,10,1,0.18,Continuous,Combiner Box
+Cc~~,10,1,0.18,Continuous,Cooling Coil
+Cctv,10,1,0.18,Continuous,Closed-Circuit Television
+Cd~~,10,1,0.18,Continuous,Condensate Drain-System
+Cda~,10,1,0.18,Continuous,Clean Dry Air-System
+Cdff,10,1,0.18,Continuous,Ceiling Diffusers
+Cds~,10,1,0.18,Continuous,Central Detergent System
+Cdw~,10,1,0.18,Continuous,Childed Drinking Water
+Cell,10,1,0.18,Continuous,Cellular
+Cent,10,1,0.18,Continuous,Centrate - Water Leaving A Centrifuge
+Cfl~,10,1,0.18,Continuous,Compact Fluorescent Type
+Cfo~,10,1,0.18,Continuous,Cold Fuel Oil
+Cfug,10,1,0.18,Continuous,Centrifugal
+Cgen,10,1,0.18,Continuous,Cogen Energy
+Ch~~,10,1,0.18,Continuous,Chiller
+Char,10,1,0.18,Continuous,Charcoal Filter Type
+Chas,10,1,0.18,Continuous,In Chase
+Chcf,10,1,0.18,Continuous,Chilled Water Chemical Feed
+Chek,10,1,0.18,Continuous,Check Type
+Chem,10,1,0.18,Continuous,Chemical Treatment/Fire Protection Chemical
+Chim,10,1,0.18,Continuous,Chimney
+Cip~,10,1,0.18,Continuous,Clean In Place Waste
+Cipr,10,1,0.18,Continuous,Culvent Inlet Protection
+Circ,10,1,0.18,Continuous,Circuits
+City,10,1,0.18,Continuous,City
+Cl~~,10,1,0.18,Continuous,Chlorine
+Clac,10,1,0.18,Continuous,Classroom Air Conditioning
+Clas,10,1,0.18,Continuous,Classifications
+Clay,10,1,0.18,Continuous,Vitreous Clay
+Clda,10,1,0.18,Continuous,Cold Air
+Clen,10,1,0.18,Continuous,Clean Power/Clean Steam
+Clg~,10,1,0.18,Continuous,Chlorine Gas-System
+Clhd,10,1,0.18,Continuous,Ceiling Heads
+Clnc,10,1,0.18,Continuous,Clearances
+Clng,10,1,0.18,Continuous,Ceiling
+Clok,10,1,0.18,Continuous,Clock
+Clos,10,1,0.18,Continuous,Close Coupled
+Cls1,10,1,0.18,Continuous,Class 1
+Cls2,10,1,0.18,Continuous,Class 2
+Cls3,10,1,0.18,Continuous,Class 3
+Clth,10,1,0.18,Continuous,Clothes
+Clv~,10,1,0.18,Continuous,Chlorine Vaccum-System
+Clw~,10,1,0.18,Continuous,Concentrated Lead Waste-System
+Cmbo,10,1,0.18,Continuous,Combination San Stm Waste Vent
+Cmnt,10,1,0.18,Continuous,Cement
+Cmtl,10,1,0.18,Continuous,Corrugated Metal
+Cmuw,10,1,0.18,Continuous,Concrete Masonry Unit
+Cmw~,10,1,0.18,Continuous,Concentrated Metal Waste-System
+Cncl,10,1,0.18,Continuous,Concealed
+Cnds,10,1,0.18,Continuous,Condensate Piping
+Cndt,10,1,0.18,Continuous,Diversionary / bypass Conduit / Culvert
+Cndw,10,1,0.18,Continuous,Condenser Water
+Cnmb,10,1,0.18,Continuous,Circuit Numbers
+Cnt2,10,1,0.18,Continuous,Centerline 2
+Cnte,10,1,0.18,Continuous,Construction Entrance
+Cntj,10,1,0.18,Continuous,Construction Joint
+Cntr,10,1,0.18,Continuous,Centerline
+Cnty,10,1,0.18,Continuous,Country
+Co2s,10,1,0.18,Continuous,CO2 System
+Coax,10,1,0.18,Continuous,Coax Cable
+Coff,10,1,0.18,Continuous,Coffer Dam
+Cold,10,1,0.18,Continuous,Cold
+Comb,10,1,0.18,Continuous,Combustion Air
+Comm,10,1,0.18,Continuous,Communications
+Comn,10,1,0.18,Continuous,Common Pipe
+Comp,10,1,0.18,Continuous,Internal Components / Conpressor
+Conc,10,1,0.18,Continuous,Concrete
+Cond,10,1,0.18,Continuous,Electrical Conductors
+Coni,10,1,0.18,Continuous,Coniferous Trees
+Conn,10,1,0.18,Continuous,Connections
+Cons,10,1,0.18,Continuous,Conversation
+Conv,10,1,0.18,Continuous,Conveying Systems
+Cool,10,1,0.18,Continuous,Hydronic/Electric Cooling
+Copr,10,1,0.18,Continuous,Copper
+Corp,10,1,0.18,Continuous,Corporation
+Cp~~,10,1,0.18,Continuous,Condensate Pump System
+Cpip,10,1,0.18,Continuous,Cold Water Piping
+Crac,10,1,0.18,Continuous,Computer Room Unit
+Crit,10,1,0.18,Continuous,Critical
+Crkt,10,1,0.18,Continuous,Crickets
+Cryo,10,1,0.18,Continuous,Cryogenic Liquid
+Cstg,10,1,0.18,Continuous,Construction / Grading
+Cswk,10,1,0.18,Continuous,Casework
+Ctla,10,1,0.18,Continuous,Controlled Access
+Ctlg,10,1,0.18,Continuous,Control Joint
+Ctnr,10,1,0.18,Continuous,Container Or Planter
+Ctrl,10,1,0.18,Continuous,Control Points
+Ctwr,10,1,0.18,Continuous,Cooling Power Water
+Cuh~,10,1,0.18,Continuous,Cabinet Unit Heater
+Cupw,10,1,0.18,Continuous,Copper Plating Waste-System
+Cur~,10,1,0.18,Continuous,Air Curtains
+Curb,10,1,0.18,Continuous,Curbs
+Curr,10,1,0.18,Continuous,Impress Current
+Curt,10,1,0.18,Continuous,Curtain
+Curv,10,1,0.18,Continuous,Curve
+Curw,10,1,0.18,Continuous,Copper Rinse Waste-System
+Cusw,10,1,0.18,Continuous,Cabinet Wall
+Cuv~,10,1,0.18,Continuous,Cabinet Unit Ventilator
+Cv~~,10,1,0.18,Continuous,Chemical Vacuum-System
+Cwal,10,1,0.18,Continuous,Critical Wall
+Cwc~,10,1,0.18,Continuous,Chilled Water Coil
+Cwtr,10,1,0.18,Continuous,Chilled Water
+Cyc~,10,1,0.18,Continuous,Cyclones
+Dacl,10,1,0.18,Continuous,De-Authorized Channel Limits/Anchorages/etc.
+Dam~,10,1,0.18,Continuous,Dam
+Das2,10,1,0.18,Continuous,Dashed 2 Lines
+Dash,10,1,0.18,Continuous,Dashed Lines
+Dasp,10,1,0.18,Continuous,Description Attributes For Survey Points
+Data,10,1,0.18,Continuous,Data
+Date,10,1,0.18,Continuous,Date
+Dble,10,1,0.18,Continuous,Double Wall
+Dbnk,10,1,0.18,Continuous,Underground Ductbank
+Dcfu,10,1,0.18,Continuous,Fused Dc
+Dcnf,10,1,0.18,Continuous,Unfused Dc
+Ddc~,10,1,0.18,Continuous,Direct Digital Controls
+Ddeh,10,1,0.18,Continuous,Dessicant Dehumidifier
+Ddiv,10,1,0.18,Continuous,Drainage Divides
+Deck,10,1,0.18,Continuous,Deck
+Dedi,10,1,0.18,Continuous,Isolated Dedicated Circuit
+Deh~,10,1,0.18,Continuous,Dehumidifier
+Demo,10,1,0.18,Continuous,Demolition Line
+Depr,10,1,0.18,Continuous,Depression
+Detc,10,1,0.18,Continuous,Detection
+Detl,10,1,0.18,Continuous,Detail
+Dev~,10,1,0.18,Continuous,Developer-System
+Devc,10,1,0.18,Continuous,Devices
+Dfee,10,1,0.18,Continuous,Disposed Fee
+Dfue,10,1,0.18,Continuous,Defuel Line
+Dgtl,10,1,0.18,Continuous,Digital
+Di~~,10,1,0.18,Continuous,De-Ionized Water
+Diag,10,1,0.18,Continuous,Diagrams
+Dict,10,1,0.18,Continuous,Dictation
+Dies,10,1,0.18,Continuous,Diesel Fuel
+Diff,10,1,0.18,Continuous,Diffuser
+Dimr,10,1,0.18,Continuous,Dimmer Lighting
+Dims,10,1,0.18,Continuous,Dimensions
+Dir~,10,1,0.18,Continuous,Deionized Water Return-System
+Dirc,10,1,0.18,Continuous,Deionized Water Reclaim-System
+Dirt,10,1,0.18,Continuous,Dirt
+Dis~,10,1,0.18,Continuous,Deionized Water Supply-System
+Disc,10,1,0.18,Continuous,Discharge
+Dish,10,1,0.18,Continuous,Dish
+Disp,10,1,0.18,Continuous,Display
+Divd,10,1,0.18,Continuous,Divided Detail Line
+Diwp,10,1,0.18,Continuous,Deionized Water Polishing Loop-System
+Dlph,10,1,0.18,Continuous,Dolphin
+Dlw~,10,1,0.18,Continuous,Dilute Waste-System
+Dmpr,10,1,0.18,Continuous,Damper (Fire/Smoke/Volume)
+Dnbl,10,1,0.18,Continuous,Downblast Type
+Dock,10,1,0.18,Continuous,Decks/Docks/Floats/Piers
+Domc,10,1,0.18,Continuous,Domestic Cold Water
+Domh,10,1,0.18,Continuous,Domestic Hot Water
+Door,10,1,0.18,Continuous,Equipment Doors
+Dot2,10,1,0.18,Continuous,Dotted 2 Lines
+Dotd,10,1,0.18,Continuous,Dotted Linetype
+Down,10,1,0.18,Continuous,Down Lighting
+Dphr,10,1,0.18,Continuous,Diaphragm
+Dran,10,1,0.18,Continuous,Drainage Slope Indications
+Drip,10,1,0.18,Continuous,Drip Irrigation Tubing
+Driv,10,1,0.18,Continuous,Driveway Point
+Drnk,10,1,0.18,Continuous,Drinking Fountain
+Drns,10,1,0.18,Continuous,Drains
+Dry~,10,1,0.18,Continuous,Dry
+Dryc,10,1,0.18,Continuous,Dry Condensate Return
+Dryr,10,1,0.18,Continuous,Dryer
+Dsco,10,1,0.18,Continuous,Disconnect Switches
+Dsh2,10,1,0.18,Continuous,Dashed 2 Detail Lines
+Dshd,10,1,0.18,Continuous,Dashed Detail Lines
+Dtch,10,1,0.18,Continuous,Ditches Or Washes
+Dual,10,1,0.18,Continuous,Dual Duct Type; Dual Temperature Water
+Dubl,10,1,0.18,Continuous,Double Wall
+Duct,10,1,0.18,Continuous,Ductwork
+Dust,10,1,0.18,Continuous,Dust And Fume Collection
+Dvdk,10,1,0.18,Continuous,Diversion Dike
+Dvdr,10,1,0.18,Continuous,Thin Dividers
+Dwc~,10,1,0.18,Continuous,Domestic Water Chiller/Cold Deck
+Dwh~,10,1,0.18,Continuous,Domestic Water Heater
+Dwtr,10,1,0.18,Continuous,De-Watering
+Dxc~,10,1,0.18,Continuous,Dx-Coil
+Easp,10,1,0.18,Continuous,Elevation Attributes For Survey Points
+Econ,10,1,0.18,Continuous,Economizer
+Edge,10,1,0.18,Continuous,Edge
+Edgr,10,1,0.18,Continuous,Planting Bed Edger
+Efan,10,1,0.18,Continuous,Equipment With Electric Fans
+Effl,10,1,0.18,Continuous,Effluent
+Eg~~,10,1,0.18,Continuous,Ethylene Glycol-System
+Egrs,10,1,0.18,Continuous,Egress
+Egw~,10,1,0.18,Continuous,Ethylene Glycol Waste-System
+Elc~,10,1,0.18,Continuous,Electric Coil
+Elec,10,1,0.18,Continuous,Electrical
+Elev,10,1,0.18,Continuous,Elevation
+Elht,10,1,0.18,Continuous,Electric Heat
+Emcs,10,1,0.18,Continuous,Emergency Monitoring Control System
+Emer,10,1,0.18,Continuous,Emergency
+Encl,10,1,0.18,Continuous,Equipment Enclosures
+Encs,10,1,0.18,Continuous,Energy Monitoring Control System
+Ener,10,1,0.18,Continuous,Energy Management
+Engr,10,1,0.18,Continuous,Engineering Information
+Epdu,10,1,0.18,Continuous,Equipment With Piping/Ductwork And Electricity
+Epip,10,1,0.18,Continuous,Equipment With Piping And Electricity
+Eqpm,10,1,0.18,Continuous,Equipment
+Equi,10,1,0.18,Continuous,Equipotential
+Erth,10,1,0.18,Continuous,Earth
+Esfr,10,1,0.18,Continuous,Early Suppression Fast Response Fire Sprinkler System
+Esmt,10,1,0.18,Continuous,Easement
+Essn,10,1,0.18,Continuous,Essential
+Ev~~,10,1,0.18,Continuous,Equipment Vacuum-System
+Evac,10,1,0.18,Continuous,Evacuation Plan
+Evgr,10,1,0.18,Continuous,Evergreen Trees - Broadleaf
+Evtr,10,1,0.18,Continuous,Elevator Cars And Equipment
+Ewal,10,1,0.18,Continuous,Emergency Wall
+Ewat,10,1,0.18,Continuous,Edge Of Water
+Ewc~,10,1,0.18,Continuous,Electric Water Cooler
+Exhs,10,1,0.18,Continuous,Exhaust Air
+Exit,10,1,0.18,Continuous,Exit
+Expj,10,1,0.18,Continuous,Expansion Joint
+Expn,10,1,0.18,Continuous,Expansion Type
+Expo,10,1,0.18,Continuous,Exposed
+Exst,10,1,0.18,Continuous,Existing
+Exti,10,1,0.18,Continuous,Extinguishers
+Extr,10,1,0.18,Continuous,Exterior
+Eye~,10,1,0.18,Continuous,Eye Wash
+Fabr,10,1,0.18,Continuous,Fabric
+Face,10,1,0.18,Continuous,Face
+Falt,10,1,0.18,Continuous,Fault / Break Line
+Fan~,10,1,0.18,Continuous,Fan
+Fasc,10,1,0.18,Continuous,Fascias
+Fauc,10,1,0.18,Continuous,Faucet
+Fcu~,10,1,0.18,Continuous,Fan Coil Unit
+Fdta,10,1,0.18,Continuous,Field Data
+Fee~,10,1,0.18,Continuous,Fee
+Feed,10,1,0.18,Continuous,Feeders
+Fenc,10,1,0.18,Continuous,Fences
+Fend,10,1,0.18,Continuous,Fender
+Fext,10,1,0.18,Continuous,Fire Extinguisher
+Fibr,10,1,0.18,Continuous,Fiber Optics Cable
+File,10,1,0.18,Continuous,File Cabinets
+Fill,10,1,0.18,Continuous,Fil And cover Material
+Filt,10,1,0.18,Continuous,Filter/Filtrate
+Fine,10,1,0.18,Continuous,Fine Lines
+Fire,10,1,0.18,Continuous,Fire Protection
+Fish,10,1,0.18,Continuous,Fish Ladder / Passage
+Fitt,10,1,0.18,Continuous,Fitting
+Fixd,10,1,0.18,Continuous,Fixed
+Fixt,10,1,0.18,Continuous,Fixtures
+Fldr,10,1,0.18,Continuous,Floor Drains
+Flex,10,1,0.18,Continuous,Flexible Duct/Pipe/Connections
+Fllw,10,1,0.18,Continuous,Flow
+Flmt,10,1,0.18,Continuous,Lamp Flament
+Flne,10,1,0.18,Continuous,Fire Lane
+Flod,10,1,0.18,Continuous,Flood Lights
+Flor,10,1,0.18,Continuous,Floor
+Flow,10,1,0.18,Continuous,Flowline
+Flpl,10,1,0.18,Continuous,Ragpole
+Flsh,10,1,0.18,Continuous,Flush
+Flue,10,1,0.18,Continuous,Flue
+Flum,10,1,0.18,Continuous,Flume
+Fluo,10,1,0.18,Continuous,Fluorescent
+Flys,10,1,0.18,Continuous,Fly Station
+Fndn,10,1,0.18,Continuous,Foundation
+Fnsh,10,1,0.18,Continuous,Finishes
+Fntn,10,1,0.18,Continuous,Fountain
+Foam,10,1,0.18,Continuous,Fire Protection Foam Pipe
+Forc,10,1,0.18,Continuous,Force Main
+Fpb~,10,1,0.18,Continuous,Fan Powered Box Type
+Free,10,1,0.18,Continuous,Freestanding
+Frmg,10,1,0.18,Continuous,Framing
+Frnt,10,1,0.18,Continuous,Front
+Ftng,10,1,0.18,Continuous,Footings
+Ftpt,10,1,0.18,Continuous,Area Footprint
+Fuel,10,1,0.18,Continuous,Fuel Line
+Full,10,1,0.18,Continuous,Full-Height
+Fume,10,1,0.18,Continuous,Fume Hood
+Fur~,10,1,0.18,Continuous,Furnace
+Furn,10,1,0.18,Continuous,Furnishings
+Fw~~,10,1,0.18,Continuous,Fire Water-System
+Gage,10,1,0.18,Continuous,Gauge
+Gas~,10,1,0.18,Continuous,Gas
+Gate,10,1,0.18,Continuous,Gate
+Gcvr,10,1,0.18,Continuous,Ground Cover
+Gear,10,1,0.18,Continuous,Gear Actuated
+Genf,10,1,0.18,Continuous,General Featured
+Genr,10,1,0.18,Continuous,General
+Gens,10,1,0.18,Continuous,Generator
+Geot,10,1,0.18,Continuous,Geothermal Energy
+Gest,10,1,0.18,Continuous,Digest
+Ggep,10,1,0.18,Continuous,Gas General Piping
+Glaz,10,1,0.18,Continuous,Glazing
+Glob,10,1,0.18,Continuous,Globe Type
+Glyc,10,1,0.18,Continuous,Glycol
+Gndw,10,1,0.18,Continuous,Ground Water
+Gprp,10,1,0.18,Continuous,Gas Process Piping
+Gral,10,1,0.18,Continuous,Guard Rail
+Grav,10,1,0.18,Continuous,Gravity Return
+Gray,10,1,0.18,Continuous,Gray Water
+Grbm,10,1,0.18,Continuous,Grade Beams
+Grey,10,1,0.18,Continuous,Grey
+Grid,10,1,0.18,Continuous,Grid
+Gril,10,1,0.18,Continuous,Grilles
+Grit,10,1,0.18,Continuous,Grit
+Grnd,10,1,0.18,Continuous,Ground
+Grph,10,1,0.18,Continuous,Graphics
+Grps,10,1,0.18,Continuous,Groups
+Grse,10,1,0.18,Continuous,Grease Waste
+Grtg,10,1,0.18,Continuous,Grating
+Grvl,10,1,0.18,Continuous,Gravel
+H2~~,10,1,0.18,Continuous,Hydrogen-System
+H2o2,10,1,0.18,Continuous,Hydrogen Peroxide-System
+Haln,10,1,0.18,Continuous,Halon System
+Halo,10,1,0.18,Continuous,Halogen Type
+Hand,10,1,0.18,Continuous,Handicapped
+Hang,10,1,0.18,Continuous,Hanger
+Hard,10,1,0.18,Continuous,Hard Ceiling
+Hazd,10,1,0.18,Continuous,Hazardeous
+Hbtm,10,1,0.18,Continuous,Header Bottom
+Hca~,10,1,0.18,Continuous,High Pressure Compressed Air
+Hcda,10,1,0.18,Continuous,High Pressure Clean Dry Air-System
+Hcl~,10,1,0.18,Continuous,Hydrochloric Acid-System
+Hdir,10,1,0.18,Continuous,Hot deionized Water Return-System
+Hdis,10,1,0.18,Continuous,Hot deionized Water Supply-System
+Hdln,10,1,0.18,Hidden,Hidden Line
+Hdrc,10,1,0.18,Continuous,Hot Deionized Water Return-System
+He~~,10,1,0.18,Continuous,Hot Deionized Water Supply-System
+Head,10,1,0.18,Continuous,Door And Window Headers
+Heat,10,1,0.18,Continuous,Hydronic/Electric Heating
+Hepa,10,1,0.18,Continuous,High Efficiency Particulate Air Filter Type
+Hevy,10,1,0.18,Continuous,Heavy Lines
+Hex~,10,1,0.18,Continuous,Heat Exchanger
+Hexf,10,1,0.18,Continuous,Heat Exchanger Fluid
+Hexs,10,1,0.18,Continuous,Heat Exchanger Steam
+Hexw,10,1,0.18,Continuous,Heat Exchanger Water
+Hf~~,10,1,0.18,Continuous,Hydrofluoric Acid-System
+Hfo~,10,1,0.18,Continuous,Hot Fuel Oil
+Hfw~,10,1,0.18,Continuous,Hydrofluoric Waste-System
+Hid~,10,1,0.18,Continuous,High Intensity Discharge Type
+Hid2,10,1,0.18,Hidden2,Hidden 2 Detail Lines
+Hidd,10,1,0.18,Continuous,Objects Or Lines Hidden From View
+High,10,1,0.18,Continuous,High
+Hole,10,1,0.18,Continuous,Holes
+Home,10,1,0.18,Continuous,Schematic Wire Home Runs
+Hood,10,1,0.18,Continuous,Hood
+Horz,10,1,0.18,Continuous,Horizontal
+Hose,10,1,0.18,Continuous,Hoses
+Hot~,10,1,0.18,Continuous,Hot
+Hota,10,1,0.18,Continuous,Hot Air
+Hotg,10,1,0.18,Continuous,Hot Gas
+Hpa~,10,1,0.18,Continuous,High Pressure Air
+Hpc~,10,1,0.18,Continuous,High Pressure Condensate
+Hpdr,10,1,0.18,Continuous,High Ph Dionized Water Return-System
+Hpds,10,1,0.18,Continuous,High Ph Dionized Water Supply-System
+Hpip,10,1,0.18,Continuous,Hot Water / High-Pressure Piping
+Hpmp,10,1,0.18,Continuous,Heat Pump
+Hpn2,10,1,0.18,Continuous,High Purity Nitrogen-System
+Hpo2,10,1,0.18,Continuous,High Purity Oxygen-System
+Hpr~,10,1,0.18,Continuous,High Pressure Refrigerant
+Hprs,10,1,0.18,Continuous,High Pressure Duct
+Hpw~,10,1,0.18,Continuous,High Purity Water
+Hral,10,1,0.18,Continuous,Handrails / Guard Rails
+Hrdw,10,1,0.18,Continuous,Hardware
+Hrs~,10,1,0.18,Continuous,Heat Recovery System
+Hsss,10,1,0.18,Continuous,Hollow Structural Steel
+Hstm,10,1,0.18,Continuous,High Pressure Steam
+Htch,10,1,0.18,Continuous,Hatch
+Htex,10,1,0.18,Continuous,Heat Exhaust-System
+Htr~,10,1,0.18,Continuous,Heater
+Htub,10,1,0.18,Continuous,Hot Tub
+Htw~,10,1,0.18,Continuous,High Temperature Water
+Hum~,10,1,0.18,Continuous,Humidifier
+Humd,10,1,0.18,Continuous,Humidification/Humidity
+Hv~~,10,1,0.18,Continuous,Hose Vacuum-System
+Hva~,10,1,0.18,Continuous,Arsenic House Vacuum-System
+Hvac,10,1,0.18,Continuous,HVAC System
+Hvel,10,1,0.18,Continuous,High Velocity Duct
+Hvlt,10,1,0.18,Continuous,High Voltage
+Hvpt,10,1,0.18,Continuous,Horizontal / Vertical
+Hwal,10,1,0.18,Continuous,Headwall
+Hwc~,10,1,0.18,Continuous,Hot Water Coil
+Hwhw,10,1,0.18,Continuous,Hot Water To Hot Water Converter
+Hwtr,10,1,0.18,Continuous,Hot Water Heating
+Hydr,10,1,0.18,Continuous,Hydrolic/Hydronic
+Hydt,10,1,0.18,Continuous,Hydrants And Connections
+Ia~~,10,1,0.18,Continuous,Instrument Air-System
+Icw~,10,1,0.18,Continuous,Industrial City Water-System
+Iden,10,2,0.25,Continuous,Identification Tags
+Igas,10,1,0.18,Continuous,Inert Gas System
+Imag,10,1,0.18,Continuous,Images
+Inca,10,1,0.18,Continuous,Incandescent Type
+Indc,10,1,0.18,Continuous,Indicating
+Indr,10,1,0.18,Continuous,Indirect
+Indu,10,1,0.18,Continuous,Industrial Gas
+Ineg,10,1,0.18,Continuous,Ingress / Egress
+Infl,10,1,0.18,Continuous,Influent
+Init,10,1,0.18,Continuous,Initiation
+Inln,10,1,0.18,Continuous,In-Line Type
+Inlt,10,1,0.18,Continuous,Inlet
+Inpr,10,1,0.18,Continuous,Inlet Protection
+Insl,10,1,0.18,Continuous,Insulated
+Inst,10,1,0.18,Continuous,Instrumentation
+Intc,10,1,0.18,Continuous,Intercom
+Intk,10,1,0.18,Continuous,Intake
+Intr,10,1,0.18,Continuous,Interior
+Ipa~,10,1,0.18,Continuous,Isopropyl Alcohol-System
+Ir~~,10,1,0.18,Continuous,Infra-Red Heater
+Iron,10,1,0.18,Continuous,Iron
+Irrg,10,1,0.18,Continuous,Irrigation
+Iso~,10,1,0.18,Continuous,Isometric Line Schematic
+Ito~,10,1,0.18,Continuous,Insulating Transformer Oil
+Iw~~,10,1,0.18,Continuous,Industrial Water System
+Jack,10,1,0.18,Continuous,Jacks
+Jamb,10,1,0.18,Continuous,Door And Window Jambs
+Jbox,10,1,0.18,Continuous,Junction Box
+Jntc,10,1,0.18,Continuous,Control Joint
+Jnte,10,1,0.18,Continuous,Expansion Joint
+Jnts,10,1,0.18,Continuous,Joints
+Keyn,10,2,0.25,Continuous,Keynotes
+Keyt,10,2,0.25,Continuous,Key Tags
+Ktch,10,1,0.18,Continuous,Kitchen
+L~~~,10,1,0.18,Continuous,Louver
+Labl,10,1,0.18,Continuous,Labels
+Ladd,10,1,0.18,Continuous,Ladders And Ladders Assemblies
+Latl,10,1,0.18,Continuous,Lateral Line
+Latn,10,1,0.18,Continuous,Latent
+Lav~,10,1,0.18,Continuous,Lavatories
+Lca~,10,1,0.18,Continuous,Low Pressure Compressed Air
+Lche,10,1,0.18,Continuous,Leak Check Helium-System
+Lchw,10,1,0.18,Continuous,Latent Chilled Water
+Ldta,10,1,0.18,Continuous,Laboratory Data
+Leak,10,1,0.18,Continuous,Water Leak Detection
+Leas,10,1,0.18,Continuous,Lease
+Led~,10,1,0.18,Continuous,LED Type
+Ledr,10,1,0.18,Continuous,Leaders
+Left,10,1,0.18,Continuous,Left
+Legn,10,1,0.18,Continuous,Legend/Symbol Keys
+Levl,10,1,0.18,Continuous,Level Changes
+Levr,10,1,0.18,Continuous,Lever Actuated
+Lfee,10,1,0.18,Continuous,Disposed Less Than Fee
+Lgas,10,1,0.18,Continuous,Laboratory Gas
+Lght,10,1,0.18,Continuous,Light Line
+Licn,10,1,0.18,Continuous,License
+Life,10,1,0.18,Continuous,Life Safety
+Limi,10,1,0.18,Continuous,Limit Earthwork
+Line,10,1,0.18,Continuous,Lines
+Link,10,1,0.18,Continuous,Chain Link
+Linr,10,1,0.18,Continuous,Linear/Liner
+Liqd,10,1,0.18,Continuous,Liquid
+Lite,10,1,0.18,Continuous,Lighting Fixtures
+Lmta,10,1,0.18,Continuous,Limited Access
+Lo~~,10,1,0.18,Continuous,Lube Oil-System
+Logo,10,1,0.18,Continuous,Company Logo
+Long,10,1,0.18,Continuous,Longitudinal
+Loop,10,1,0.18,Continuous,Loop
+Low~,10,1,0.18,Continuous,Low
+Lowr,10,1,0.18,Continuous,Lower
+Lox~,10,1,0.18,Continuous,Liquid Oxygen
+Loxy,10,1,0.18,Continuous,Liquid Oxygen
+Lpa~,10,1,0.18,Continuous,Low Pressure Air
+Lpc~,10,1,0.18,Continuous,Low Pressure Condensate
+Lpg~,10,1,0.18,Continuous,Liquid Petroleum Gas-System
+Lpip,10,1,0.18,Continuous,Low Pressure Piping
+Lpr~,10,1,0.18,Continuous,Low Pressure Refrigerant
+Lprs,10,1,0.18,Continuous,Low Pressure Duct
+Lqpg,10,1,0.18,Continuous,Liquid Petroleum Gas
+Lscp,10,1,0.18,Continuous,Landscape
+Lstm,10,1,0.18,Continuous,Low Pressure Steam
+Ltng,10,1,0.18,Continuous,Lightning Protection
+Ltrl,10,1,0.18,Continuous,Lateral Pipe
+Ltyp,10,1,0.18,Continuous,Linework By Line Type
+Lube,10,1,0.18,Continuous,Lubrication
+Lvel,10,1,0.18,Continuous,Low Velocity Duct
+Lvlt,10,1,0.18,Continuous,Low Voltage
+Lwgh,10,1,0.18,Continuous,Linework By Line Weight
+Main,10,1,0.18,Continuous,Mainline
+Mair,10,1,0.18,Continuous,Medical Air
+Majr,10,1,0.18,Continuous,Major
+Mark,10,1,0.18,Continuous,Markers/Break Marks/Leaders
+Mass,10,1,0.18,Continuous,Massing Elements
+Matc,10,1,0.18,Continuous,Match Lines
+Mau~,10,1,0.18,Continuous,Make-Up Air Unit
+Mbnd,10,1,0.18,Continuous,Material Beyond Cut
+Mca~,10,1,0.18,Continuous,Medium Pressure Compressed Air
+Mcc~,10,1,0.18,Continuous,Motor Control Center
+Mcut,10,1,0.18,Continuous,Material Cut By The View
+Mdgs,10,1,0.18,Continuous,Medical Gas System
+Medc,10,1,0.18,Continuous,Medical
+Medm,10,3,0.35,Continuous,Medium Lines
+Mesh,10,1,0.18,Continuous,Mesh Or Wire
+Metl,10,1,0.18,Continuous,Metal
+Metr,10,1,0.18,Continuous,Meters
+Mfld,10,1,0.18,Continuous,Manifold
+Mgmt,10,1,0.18,Continuous,Management System
+Mhol,10,1,0.18,Continuous,Manhole
+Minr,10,1,0.18,Continuous,Minor
+Misc,10,1,0.18,Continuous,Miscellaneous
+Mixd,10,1,0.18,Continuous,Mixed Air
+Mkup,10,1,0.18,Continuous,Make-Up Water
+Mlch,10,1,0.18,Continuous,Mulches - Organic And Inorganic
+Mmed,10,1,0.18,Continuous,Multimedia
+Mntg,10,1,0.18,Continuous,Mounting System
+Moor,10,1,0.18,Continuous,Mooring
+Motn,10,1,0.18,Continuous,Motion Detector
+Motr,10,1,0.18,Continuous,Motorized
+Move,10,1,0.18,Continuous,Movable
+Mpa~,10,1,0.18,Continuous,Medium Pressure Air
+Mpc~,10,1,0.18,Continuous,Medium Pressure Condensate
+Mpip,10,1,0.18,Continuous,Medium-Pressure Piping
+Mprs,10,1,0.18,Continuous,Medium Pressure Duct
+Mrkg,10,1,0.18,Continuous,Pavement Marking
+Mrkr,10,1,0.18,Continuous,Marker
+Msnw,10,1,0.18,Continuous,Masonry
+Mst~,10,1,0.18,Continuous,Motor Starters
+Mstm,10,1,0.18,Continuous,Medium Pressure Steam
+Mtrl,10,1,0.18,Continuous,Materials
+Mtrx,10,1,0.18,Continuous,Matrix
+Mult,10,1,0.18,Continuous,Multi-Conductor Cable
+Mvel,10,1,0.18,Continuous,Medium Velocity Duct
+Mvlt,10,1,0.18,Continuous,Medium Voltage
+Mvng,10,1,0.18,Continuous,Moving / Suspended
+Mw~~,10,1,0.18,Continuous,Metal Waste-System
+N2~~,10,1,0.18,Continuous,Nitrogen-System
+N2o~,10,1,0.18,Continuous,Nitrous Oxide-System
+Na~~,10,1,0.18,Continuous,Sodium
+Naid,10,1,0.18,Continuous,Navigation Aids
+Natl,10,1,0.18,Continuous,National
+Nc~~,10,1,0.18,Continuous,Normally Closed
+Nedl,10,1,0.18,Continuous,Needle Type
+Netw,10,1,0.18,Continuous,Network
+Nfee,10,1,0.18,Continuous,Non-Fee
+Ng~~,10,1,0.18,Continuous,Natural Gas-System
+Ngas,10,1,0.18,Continuous,Natural Gas Line
+Nght,10,1,0.18,Continuous,Night Lighting
+Nitg,10,1,0.18,Continuous,Nitrogen
+No~~,10,1,0.18,Continuous,Normally Open
+Node,10,1,0.18,Continuous,Node
+Note,10,2,0.25,Continuous,Notes
+Novr,10,1,0.18,Continuous,Non-Overflow Structure
+Noxg,10,1,0.18,Continuous,Nitrous Oxide
+Nplt,10,1,0.18,Continuous,Non-Plotting Graphic Information
+Npw~,10,1,0.18,Continuous,Non-Potable Water-System
+Npwr,10,1,0.18,Continuous,Non-Potable Water Reuse-System
+Nrml,10,1,0.18,Continuous,Normal
+Nsbr,10,1,0.18,Continuous,Noise Barrior
+Ntfy,10,1,0.18,Continuous,Notification
+Nurs,10,1,0.18,Continuous,Nurse Call
+O2~~,10,1,0.18,Continuous,Oxygen-System
+Oa~~,10,1,0.18,Continuous,Outside Air-System
+Objt,10,1,0.18,Continuous,Objects
+Occp,10,1,0.18,Continuous,Occupant Or Employee Names
+Ocl~,10,1,0.18,Continuous,Hypochlorite - Oxygen + Chlorine
+Odff,10,1,0.18,Continuous,Other Diffusers
+Odor,10,1,0.18,Continuous,Odor Control
+Ofa~,10,1,0.18,Continuous,Oil Free Air
+Oflw,10,1,0.18,Continuous,Overflow
+Ofrm,10,1,0.18,Continuous,Outer Frame
+Ofst,10,1,0.18,Continuous,Offset Zones
+Ogep,10,1,0.18,Continuous,Oil General Piping
+Oil~,10,1,0.18,Continuous,Oil
+Oilt,10,1,0.18,Continuous,Oil Trap
+Oiw~,10,1,0.18,Continuous,Organic Industrial Waste-System
+Olw~,10,1,0.18,Continuous,Organic Liquid Waste-System
+Opng,10,1,0.18,Continuous,Openings
+Opnx,10,1,0.18,Continuous,Opening Indication
+Oprp,10,1,0.18,Continuous,Oil Process Piping
+Osha,10,1,0.18,Continuous,Osha Information
+Osny,10,1,0.18,Continuous,OS&Y Type
+Osw~,10,1,0.18,Continuous,Organic Solvent Waste-System
+Othd,10,1,0.18,Continuous,Other Heads
+Othr,10,1,0.18,Continuous,Other
+Otln,10,1,0.18,Continuous,Outline
+Outd,10,1,0.18,Continuous,Schedule Out Of Date
+Outl,10,1,0.18,Continuous,Outlet
+Outs,10,1,0.18,Continuous,Outside
+Oval,10,1,0.18,Continuous,Oval
+Over,10,1,0.18,Continuous,Crossover Bridge
+Ovhd,10,1,0.18,Continuous,Overhead
+Oxyg,10,1,0.18,Continuous,Pure Oxygen
+P~~~,10,1,0.18,Continuous,Pump
+Pa~~,10,1,0.18,Continuous,Plant Air-System
+Pack,10,1,0.18,Continuous,Packaged Type
+Pact,10,1,0.18,Continuous,Fire Protection Pre-Action Pipe
+Padm,10,1,0.18,Continuous,Pad-Mounted
+Pads,10,1,0.18,Continuous,Pads
+Palm,10,1,0.18,Continuous,Palm Trees
+Panl,10,1,0.18,Continuous,Panels
+Para,10,1,0.18,Continuous,Parallel Circuits
+Pasp,10,1,0.18,Continuous,Point Number Attributes For Survey Points
+Patt,10,1,0.18,Continuous,Texture Or Hatch Patterns
+Pavr,10,1,0.18,Continuous,Unit Pavers
+Pbrd,10,1,0.18,Continuous,Panelboard
+Pcap,10,1,0.18,Continuous,Pile Caps
+Pcs~,10,1,0.18,Continuous,Pcs Equipment
+Pcst,10,1,0.18,Continuous,Pre-Cast Concrete
+Pcwr,10,1,0.18,Continuous,Cooling Water Return-System
+Pcws,10,1,0.18,Continuous,Cooling Water Supply-System
+Pdfs,10,1,0.18,Continuous,Pdf files
+Pene,10,1,0.18,Continuous,Penetrations
+Pens,10,1,0.18,Continuous,Penstock
+Pepl,10,1,0.18,Continuous,People
+Peqp,10,1,0.18,Continuous,Process Equipment
+Peri,10,1,0.18,Continuous,Perimiter
+Perm,10,1,0.18,Continuous,Permanent; Permeate
+Pgng,10,1,0.18,Continuous,Paging
+Phn2,10,1,0.18,Continuous,Phantom 2 Line
+Phnt,10,1,0.18,Continuous,Phantom Lines
+Phon,10,1,0.18,Continuous,Telephone Line
+Phos,10,1,0.18,Continuous,Phosphoric Acid-System
+Phrc,10,1,0.18,Continuous,Phosphoric Acid Reclaim-System
+Pier,10,1,0.18,Continuous,Drilled Piers
+Pile,10,1,0.18,Continuous,Piles
+Pipe,10,1,0.18,Continuous,Piping
+Plas,10,1,0.18,Continuous,Plastic
+Play,10,1,0.18,Continuous,Play Structures
+Plen,10,1,0.18,Continuous,Plenum Adapter
+Plnt,10,1,0.18,Continuous,Plants
+Plug,10,1,0.18,Continuous,Plug Type
+Plyw,10,1,0.18,Continuous,Plywood
+Pmit,10,1,0.18,Continuous,Permit
+Pndt,10,1,0.18,Continuous,Pendant Type
+Pneu,10,1,0.18,Continuous,Pneumatic
+Pnhs,10,1,0.18,Continuous,Penthouse
+Pnls,10,1,0.18,Continuous,System Panels
+Pnpt,10,1,0.18,Continuous,Panel Points
+Pocc,10,1,0.18,Continuous,Point Of Common Coupling
+Poi~,10,1,0.18,Continuous,Point Of Interconnection
+Pole,10,1,0.18,Continuous,Poles
+Poly,10,1,0.18,Continuous,Polymers
+Pond,10,1,0.18,Continuous,Retention Pond
+Pool,10,1,0.18,Continuous,Pools And Spas
+Post,10,1,0.18,Continuous,Posts
+Powr,10,1,0.18,Continuous,Power
+Ppip,10,1,0.18,Continuous,Process piping
+Prch,10,1,0.18,Continuous,Porch
+Prcl,10,1,0.18,Continuous,Parcels
+Pres,10,1,0.18,Continuous,Pressure
+Prht,10,1,0.18,Continuous,Partial-Height
+Prim,10,1,0.18,Continuous,Primary
+Prkg,10,1,0.18,Continuous,Parking
+Prmr,10,1,0.18,Continuous,Primer Line
+Pro~,10,1,0.18,Continuous,Propane-System
+Proc,10,1,0.18,Continuous,Process
+Prof,10,1,0.18,Continuous,Profile
+Proj,10,1,0.18,Continuous,Projector
+Prop,10,1,0.18,Continuous,Property Boundary
+Pros,10,1,0.18,Continuous,Date / Time / File Name Stamp
+Prot,10,1,0.18,Continuous,Protection
+Prov,10,1,0.18,Continuous,Province
+Prpt,10,1,0.18,Continuous,Parapet
+Prvc,10,1,0.18,Continuous,Privacy
+Prvs,10,1,0.18,Continuous,Pressure Regulator Type
+Psw~,10,1,0.18,Continuous,Photo Solvent Waste-System
+Ptac,10,1,0.18,Continuous,Ptac Unit
+Pure,10,1,0.18,Continuous,Pure Steam / Pure Water
+Pv~~,10,1,0.18,Continuous,Vacuum-System
+Pvc~,10,1,0.18,Continuous,Pvc
+Pvmt,10,1,0.18,Continuous,Pavement
+Pw~~,10,1,0.18,Continuous,Potable Water-System
+Qtrs,10,1,0.18,Continuous,Quarter Section
+Quik,10,1,0.18,Continuous,Quick Action Type
+Rack,10,1,0.18,Continuous,In Rack
+Racw,10,1,0.18,Continuous,Raceways
+Rad~,10,1,0.18,Continuous,Radiant Heater
+Rado,10,1,0.18,Continuous,Radioisotope Waste
+Rair,10,1,0.18,Continuous,Relief Air
+Rais,10,1,0.18,Continuous,Raised
+Ramp,10,1,0.18,Continuous,Accessible Ramp
+Rate,10,1,0.18,Continuous,Ratings
+Raw~,10,1,0.18,Continuous,Raw Water
+Rbar,10,1,0.18,Continuous,Reinforcing Bar
+Rcon,10,1,0.18,Continuous,Reinforced Concrete
+Rcov,10,1,0.18,Continuous,Energy Recovery
+Rcrc,10,1,0.18,Continuous,Recirculation
+Rcyc,10,1,0.18,Continuous,Recycle
+Rdff,10,1,0.18,Continuous,Return Air Diffusers
+Rdge,10,1,0.18,Continuous,Roof Ridges
+Rdme,10,1,0.18,Continuous,Read-Me Layer (Non-Plotted)
+Recp,10,1,0.18,Continuous,Receptacle
+Recs,10,1,0.18,Continuous,Recessed
+Rect,10,1,0.18,Continuous,Rectangular
+Redl,10,1,0.18,Continuous,Redlines
+Refl,10,1,0.18,Continuous,Reflected Plans
+Refr,10,1,0.18,Continuous,Reference/External Files
+Reg~,10,1,0.18,Continuous,Pressure Regulator
+Regr,10,1,0.18,Continuous,Register
+Rer~,10,1,0.18,Continuous,Solvent-System
+Retn,10,1,0.18,Continuous,Return
+Revc,10,1,0.18,Continuous,Revision Clouds
+Revs,10,1,0.18,Continuous,Revision Indicators And Text
+Rfdr,10,1,0.18,Continuous,Roof Drain
+Rfeq,10,1,0.18,Continuous,Rooftop Equipment
+Rght,10,1,0.18,Continuous,Right
+Rhc~,10,1,0.18,Continuous,Reheat Coil
+Risr,10,1,0.18,Continuous,Risers
+Rlif,10,1,0.18,Continuous,Relief
+Rnge,10,1,0.18,Continuous,Range
+Ro~~,10,1,0.18,Continuous,Reverse Osmosis Water-System
+Road,10,1,0.18,Continuous,Roadway
+Rock,10,1,0.18,Continuous,Large Rocks And Rock Outcroppings
+Roof,10,1,0.18,Continuous,Roof
+Room,10,1,0.18,Continuous,Rooms
+Ror~,10,1,0.18,Continuous,Reverse Osmosis Reject Water-System
+Roun,10,1,0.18,Continuous,Round
+Rows,10,1,0.18,Continuous,Row Linework
+Rpip,10,1,0.18,Continuous,Recirculation Piping
+Rrap,10,1,0.18,Continuous,Riprap
+Rsch,10,1,0.18,Continuous,Sketch Line Round Or Oval Duct
+Rsrv,10,1,0.18,Continuous,Reservation
+Rtu~,10,1,0.18,Continuous,Rooftop Unit
+Rtwl,10,1,0.18,Continuous,Retaining Wall
+Rubr,10,1,0.18,Continuous,Rubber
+Rway,10,1,0.18,Continuous,Right-Of-Way
+Safe,10,1,0.18,Continuous,Fire Safety; Safety Type
+Sair,10,1,0.18,Continuous,Scanvenge Air
+Sand,10,1,0.18,Continuous,Sand Filter Type
+Satd,10,1,0.18,Continuous,Satelite Dishes
+Saud,10,1,0.18,Continuous,Audio Signal
+Sbck,10,1,0.18,Continuous,Setback Lines
+Sbst,10,1,0.18,Continuous,Substations
+Scal,10,1,0.18,Continuous,Graphical Drawing Scales
+Scex,10,1,0.18,Continuous,Scrubber Exhaust-System
+Schd,10,1,0.18,Continuous,Schedules
+Schm,10,1,0.18,Continuous,Schematic Lines
+Schw,10,1,0.18,Continuous,Sensible Chilled Water
+Scom,10,1,0.18,Continuous,Communications Signal
+Scrb,10,1,0.18,Continuous,Scrub Type
+Scrn,10,1,0.18,Continuous,Screening Of Coordination Objects And Background
+Scrw,10,1,0.18,Continuous,Screw
+Sctl,10,1,0.18,Continuous,Control Signal
+Scum,10,1,0.18,Continuous,Scum
+Sdat,10,1,0.18,Continuous,Data Signal
+Sdd~,10,1,0.18,Continuous,Scrubber Duct Drains-System
+Sdff,10,1,0.18,Continuous,Supply Diffusers
+Sdga,10,1,0.18,Continuous,Digital Audio Signal
+Sdgv,10,1,0.18,Continuous,Digital Video Signal
+Seal,10,1,0.18,Continuous,Seal
+Seat,10,1,0.18,Continuous,Seating
+Secd,10,1,0.18,Continuous,Secondary
+Sect,10,1,0.18,Continuous,Section
+Seed,10,1,0.18,Continuous,Seeding Areas
+Semi,10,1,0.18,Continuous,Semi-Recessed
+Sens,10,1,0.18,Continuous,Sensible Chilled Water
+Sep~,10,1,0.18,Continuous,Separator
+Sers,10,1,0.18,Continuous,Series Circuits
+Sert,10,1,0.18,Continuous,Security
+Serv,10,1,0.18,Continuous,Service Piping
+Setr,10,1,0.18,Continuous,Circuit Setter Type
+Sewg,10,1,0.18,Continuous,Sewage
+Sfit,10,1,0.18,Continuous,Soffit
+Sg~~,10,1,0.18,Continuous,Speciality Gas-System
+Sght,10,1,0.18,Continuous,Sight Distance
+Shad,10,1,0.18,Continuous,Shadow Area
+Shea,10,1,0.18,Continuous,Structural Bearing Or Shear Wall
+Shlf,10,1,0.18,Continuous,Wall-Mounted Shelving
+Show,10,1,0.18,Continuous,Showers
+Shut,10,1,0.18,Continuous,Shut-Off
+Side,10,1,0.18,Continuous,Side
+Sign,10,1,0.18,Continuous,Signage
+Sill,10,1,0.18,Continuous,Window Sill
+Silt,10,1,0.18,Continuous,Silt Fence
+Sink,10,1,0.18,Continuous,Sinks
+Site,10,1,0.18,Continuous,Key Plan (Site Plan)
+Size,10,1,0.18,Continuous,Ductwork Size
+Skch,10,1,0.18,Continuous,Sketch
+Sktl,10,1,0.18,Continuous,Skylight
+Slab,10,1,0.18,Continuous,Slab
+Slce,10,1,0.18,Continuous,Slices
+Slop,10,1,0.18,Continuous,Schematic Slope
+Slot,10,1,0.18,Continuous,Linear Slot
+Slr~,10,1,0.18,Continuous,Slurry Return-System
+Slry,10,1,0.18,Continuous,Slurrey Ice
+Sls~,10,1,0.18,Continuous,Slurry Supply-System
+Slud,10,1,0.18,Continuous,Sludge
+Slve,10,1,0.18,Continuous,Pipe Sleeve
+Slw~,10,1,0.18,Continuous,Slurry Waste-System
+Smic,10,1,0.18,Continuous,Microphone Signal
+Smok,10,1,0.18,Continuous,Smoke Detector / Heat Sensors
+Snow,10,1,0.18,Continuous,Snow-Ice Melting System
+Snsr,10,1,0.18,Continuous,Sensor
+Soda,10,1,0.18,Continuous,Soda Fountain
+Soft,10,1,0.18,Continuous,Soft Water
+Sole,10,1,0.18,Continuous,Solenoid Actuated
+Solr,10,1,0.18,Continuous,Solar Heated Water
+Solu,10,1,0.18,Continuous,Solution
+Soun,10,1,0.18,Continuous,Soundings
+Spa~,10,1,0.18,Continuous,Whirlpool Spa
+Spce,10,1,0.18,Continuous,Space
+Spcl,10,1,0.18,Continuous,Special / Speciality
+Spkl,10,1,0.18,Continuous,Sprinklers
+Spkr,10,1,0.18,Continuous,Speaker
+Spln,10,1,0.18,Continuous,Spline Ceiling
+Splt,10,1,0.18,Continuous,Horizontal Split Case
+Sply,10,1,0.18,Continuous,Supply Diffusers
+Spot,10,1,0.18,Continuous,Spot Elevations
+Sprl,10,1,0.18,Continuous,Spiral Type
+Sprt,10,1,0.18,Continuous,Sports Fields
+Spry,10,1,0.18,Continuous,Spray Water
+Spwr,10,1,0.18,Continuous,Power Signal
+Sqre,10,1,0.18,Continuous,Square
+Srce,10,1,0.18,Continuous,Source
+Srfi,10,1,0.18,Continuous,RF Signal
+Srgb,10,1,0.18,Continuous,RGB And Component Video Signal
+Ssch,10,1,0.18,Continuous,Sketch Line Rectangular Duct
+Sslt,10,1,0.18,Continuous,Ssuper Silt Fence
+Sstl,10,1,0.18,Continuous,Stainless Steel
+Sswr,10,1,0.18,Continuous,Sanitary Sewer
+Ssyn,10,1,0.18,Continuous,Sync Signal
+Stag,10,1,0.18,Continuous,Stage Lighting
+Stan,10,1,0.18,Continuous,Stationing
+Stat,10,1,0.18,Continuous,State
+Stby,10,1,0.18,Continuous,Standby
+Stc~,10,1,0.18,Continuous,Steam Coil
+Stck,10,1,0.18,Continuous,Stack
+Stel,10,1,0.18,Continuous,Steel
+Stem,10,1,0.18,Continuous,Steam System
+Step,10,1,0.18,Continuous,Steps
+Ster,10,1,0.18,Continuous,Sterile
+Sthw,10,1,0.18,Continuous,Steam To Hot Water Converter
+Stil,10,1,0.18,Continuous,Distilled Water
+Stmp,10,1,0.18,Continuous,Professional Stamp
+Stnd,10,1,0.18,Continuous,Standard/Common/Generic / Details
+Stor,10,1,0.18,Continuous,Storage
+Str~,10,1,0.18,Continuous,Strainers/Structural
+Strb,10,1,0.18,Continuous,Strobic Type
+Strc,10,1,0.18,Continuous,Structures
+Strm,10,1,0.18,Continuous,Storm Sewer
+Strp,10,1,0.18,Continuous,Striping
+Strs,10,1,0.18,Continuous,Stair Treads
+Stst,10,1,0.18,Continuous,Steam To Steam Converter
+Suba,10,1,0.18,Continuous,Cabinet Sub-Assemblies/Drawer Boxes
+Subd,10,1,0.18,Continuous,Subdivision (Interior) Lines
+Subm,10,1,0.18,Continuous,Submersible Type
+Subs,10,1,0.18,Continuous,Sub-Surface Areas
+Subt,10,1,0.18,Continuous,Substractive Elements
+Suct,10,1,0.18,Continuous,Suction
+Sulf,10,1,0.18,Continuous,Sulfuric Acid-System
+Sulr,10,1,0.18,Continuous,Sulfuric Acid Return-System
+Sump,10,1,0.18,Continuous,Sump
+Supt,10,1,0.18,Continuous,Support
+Surf,10,1,0.18,Continuous,Surface Aress
+Surg,10,1,0.18,Continuous,Medical - Surgical Vacuum
+Susp,10,1,0.18,Continuous,Suspended Elements
+Svex,10,1,0.18,Continuous,Solvent Exhaust-System
+Svid,10,1,0.18,Continuous,Video Signal
+Sw~~,10,1,0.18,Continuous,Solvent Waste-System
+Sway,10,1,0.18,Continuous,Spilway
+Swbd,10,1,0.18,Continuous,Switchboard
+Swch,10,1,0.18,Continuous,Switches
+Swf~,10,1,0.18,Continuous,Solvent Waste Fammable-System
+Swgr,10,1,0.18,Continuous,Switch Gear
+Swlk,10,1,0.18,Continuous,Sidewalks
+Swmt,10,1,0.18,Continuous,Storm Water Management
+Swnf,10,1,0.18,Continuous,Solvent Waste Non-Flammable-System
+Sxts,10,1,0.18,Continuous,Sixteeth Section
+Symb,10,1,0.18,Continuous,Reference Symbols
+Syst,10,1,0.18,Continuous,System
+Tabl,10,1,0.18,Continuous,Data Tables
+Tags,10,2,0.25,Continuous,Circuit/Equipment Tags
+Take,10,1,0.18,Continuous,Taking Line
+Tank,10,1,0.18,Continuous,Storage Tanks
+Tbox,10,1,0.18,Continuous,Termination Box
+Tdir,10,1,0.18,Continuous,Tempered Deionized Water-Return-System
+Tdis,10,1,0.18,Continuous,Tempered Deionized Water Supply-System
+Tees,10,1,0.18,Continuous,Main Tees
+Temp,10,1,0.18,Continuous,Temporary
+Tert,10,1,0.18,Continuous,Tertiary Loop
+Test,10,1,0.18,Continuous,Test Stations
+Text,10,1,0.18,Continuous,Texture Or Hatch Patterns
+Tght,10,1,0.18,Continuous,Gas Tight
+Thck,10,1,0.18,Continuous,Thickened
+Them,10,1,0.18,Continuous,Display Theme
+Ther,10,1,0.18,Continuous,Thermostats
+Thin,10,2,0.25,Continuous,Thin Line
+Thld,10,1,0.18,Continuous,Thresholds
+Tick,10,1,0.18,Continuous,Tick Marks
+Time,10,1,0.18,Continuous,Time Clock
+Titl,10,1,0.18,Continuous,Drawing or Detail Titles
+Tlt~,10,1,0.18,Continuous,Toilets
+Tmah,10,1,0.18,Continuous,TMAH System
+Toil,10,1,0.18,Continuous,Toilet Type
+Top~,10,1,0.18,Continuous,Top
+Top1,10,1,0.18,Continuous,Top Group 1
+Top2,10,1,0.18,Continuous,Top Group 2
+Topb,10,1,0.18,Continuous,Top Of Bank
+Totl,10,1,0.18,Continuous,Total
+Towr,10,1,0.18,Continuous,Towers
+Tpit,10,1,0.18,Continuous,Test Pits
+Tpnt,10,1,0.18,Continuous,Toilet Partitions
+Trac,10,1,0.18,Continuous,Tract Lines
+Trak,10,1,0.18,Continuous,Track
+Tral,10,1,0.18,Continuous,Trail Or Path
+Tran,10,1,0.18,Continuous,Transmission System
+Trap,10,1,0.18,Continuous,Grease Trap; Steam Trap
+Trav,10,1,0.18,Continuous,Transverse
+Tray,10,1,0.18,Continuous,Cabletray And Wireways
+Tree,10,1,0.18,Continuous,Trees
+Trid,10,1,0.18,Continuous,Triple Duty Type
+Trow,10,1,0.18,Continuous,Tree Row
+Tshp,10,1,0.18,Continuous,Town Or Township
+Ttlb,10,1,0.18,Continuous,Border And Titleblock
+Tube,10,1,0.18,Continuous,Tubing; Tube Axial Type
+Tubs,10,1,0.18,Continuous,Bathtubs
+Tunl,10,1,0.18,Continuous,In Tunnel
+Turf,10,1,0.18,Continuous,Lawn Areas
+Tvan,10,1,0.18,Continuous,Television Antenna
+Tw~~,10,1,0.18,Continuous,Tempered Water-System
+Ubs~,10,1,0.18,Continuous,Utility Backup Service
+Uchw,10,1,0.18,Continuous,Utility Chilled Water (District Cooling)
+Ucpt,10,1,0.18,Continuous,Under-Carpet Wiring
+Uctr,10,1,0.18,Continuous,Under Counter
+Udcw,10,1,0.18,Continuous,Utility Domestic Cold Water
+Uele,10,1,0.18,Continuous,Utility Electric Service
+Ufir,10,1,0.18,Continuous,Utility Fire Main
+Uflr,10,1,0.18,Continuous,Under Floor
+Ugas,10,1,0.18,Continuous,Utility Gas Service
+Ugnd,10,1,0.18,Continuous,Underground Ductbank
+Uh~~,10,1,0.18,Continuous,Unit Heaters
+Uhhw,10,1,0.18,Continuous,Utility Heating Hot Water (Distric Heating)
+Ulpa,10,1,0.18,Continuous,Ultra Low Penetration Air Filter Type
+Un2~,10,1,0.18,Continuous,Utility Nitrogen-System
+Undr,10,1,0.18,Continuous,Under
+Unit,10,1,0.18,Continuous,Unit
+Up~~,10,1,0.18,Continuous,Up / Up Lighting
+Upbl,10,1,0.18,Continuous,Upblast Type
+Uppr,10,1,0.18,Continuous,Upper
+Uprt,10,1,0.18,Continuous,Upright Type
+Uprw,10,1,0.18,Continuous,Ultra-Pure Recycle Water-System
+Ups~,10,1,0.18,Continuous,Uninterruptible Power Supply
+Upvd,10,1,0.18,Continuous,Unpaved Surface
+Upw~,10,1,0.18,Continuous,Ultra-Pure Water-System
+Urac,10,1,0.18,Continuous,Under-Floor Raceways
+Urin,10,1,0.18,Continuous,Urinals
+Uslb,10,1,0.18,Continuous,Underneath Slab
+Uspp,10,1,0.18,Continuous,United States Pharm. Purified Water
+Ustm,10,1,0.18,Continuous,Utility High Pressure Steam (District Heating)
+Util,10,1,0.18,Continuous,Utility Lines
+Uwtr,10,1,0.18,Continuous,Utility Water Service (Fire Plus Domestic Cold Water)
+V~~~,10,1,0.18,Continuous,Vent-System
+Vacu,10,1,0.18,Continuous,Vacuum
+Valv,10,1,0.18,Continuous,Valves
+Vapr,10,1,0.18,Continuous,Vapor
+Vav~,10,1,0.18,Continuous,Variable Air Volume Terminal Units
+Vege,10,1,0.18,Continuous,Trees/Shrubs And Other Vegetation
+Velo,10,1,0.18,Continuous,Velocity
+Venr,10,1,0.18,Continuous,Veneer
+Vent,10,1,0.18,Continuous,Vents
+Vert,10,1,0.18,Continuous,Vertical
+Vfd~,10,1,0.18,Continuous,Variable Frequency Drive
+Vhcl,10,1,0.18,Continuous,Vehicles
+Vido,10,1,0.18,Continuous,Video Projection System
+View,10,1,0.18,Continuous,Triangulation View
+Vine,10,1,0.18,Continuous,Vines
+Vitr,10,1,0.18,Continuous,Vitrified Clay
+Vn2~,10,1,0.18,Continuous,Venturi Nitrogen-System
+Voic,10,1,0.18,Continuous,Voice Data
+Void,10,1,0.18,Continuous,Void Regions
+Volt,10,1,0.18,Continuous,Voltage
+Voxg,10,1,0.18,Continuous,Vox Gas
+Vtr~,10,1,0.18,Continuous,Vent Thru Roof
+Vvt~,10,1,0.18,Continuous,Variable Volume Temperature Type
+W2xs,10,1,0.18,Continuous,Dimension Lumber
+Wagd,10,1,0.18,Continuous,Waste Anesthetic Gas Disposal Vacuum
+Walk,10,1,0.18,Continuous,Sidewalks
+Wall,10,1,0.18,Continuous,Wall
+War~,10,1,0.18,Continuous,Weld Argon-System
+Wash,10,1,0.18,Continuous,Wash
+Wast,10,1,0.18,Continuous,Waste
+Watr,10,1,0.18,Continuous,Water Supply
+Wc~~,10,1,0.18,Continuous,Water Closet
+Wccu,10,1,0.18,Continuous,Water Cooled Condensing Unit
+Wdwk,10,1,0.18,Continuous,Architectural Woodwork
+Weir,10,1,0.18,Continuous,Pool Weir
+Well,10,1,0.18,Continuous,Well
+Wet~,10,1,0.18,Continuous,Wet
+Wetc,10,1,0.18,Continuous,Wet Condensate Return
+Wfi~,10,1,0.18,Continuous,Water For Injection
+Whit,10,1,0.18,Continuous,White Paint
+Wht~,10,1,0.18,Continuous,Wall Heater
+Wide,10,4,0.50,Continuous,Wide Line
+Wind,10,1,0.18,Continuous,Wind Powered
+Wire,10,1,0.18,Continuous,Wiring
+Wksf,10,1,0.18,Continuous,Worksurface
+Wles,10,1,0.18,Continuous,Wireless
+Wood,10,1,0.18,Continuous,Wood
+Work,10,1,0.18,Continuous,Work Type
+X~~~,10,5,0.70,Continuous,Extra Wide Lines
+Xfer,10,1,0.18,Continuous,Transfer
+Xfin,10,0,0.13,Continuous,Extra Fine Detail Lines
+Xfmr,10,1,0.18,Continuous,Transformers
+Xref,10,1,0.18,Continuous,External Reference
+Xtra,10,1,0.18,Continuous,Extra
+Xtru,10,1,0.18,Continuous,Extrusion
+Xx~~,10,6,1.00,Continuous,XX Wide Lines
+Xxx~,10,7,1.40,Continuous,XXX Wide Lines
+Xxxx,10,8,2.00,Continuous,XXXX Wide Lines
+Yelo,10,1,0.18,Continuous,Yellow Paint
+Zone,10,1,0.18,Continuous,Zoning

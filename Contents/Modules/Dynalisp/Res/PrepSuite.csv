@@ -1,0 +1,9 @@
+Step;Description;SAVE;PLOT;PREVIEW;REGEN
+LAYERS;Turn on and thaw all layers;1;0;0;0
+UNHIDE;Unhide hidden / isolated objects;1;0;0;0
+XREFS;Reload all xrefs;0;1;1;0
+DATALINKS;Update all data links;0;1;1;0
+TABLES;Fit table row heights;0;1;1;0
+DRAWORDER;Apply the draw order preset (while auto draw order is on);0;0;0;1
+DRAWORDERCLEAN;Rebuild the draw order from scratch (while auto draw order is on);0;0;0;0
+REGEN;Regenerate the drawing (REGENALL);0;0;0;0

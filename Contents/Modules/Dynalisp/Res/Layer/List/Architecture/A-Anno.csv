@@ -1,0 +1,22 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A,Anno,Brng,0000,----,Annotation: Bearings And Distance Labels (Survey Coordinates)
+A,Anno,Dims,0000,----,Annotation: Dimensions
+A,Anno,Grid,0000,----,Annotation: Grids
+A,Anno,Iden,0000,----,Annotation: Identification Tags
+A,Anno,Keyn,0000,----,Annotation: Keynotes
+A,Anno,Labl,0000,----,Annotation: Labels
+A,Anno,Legn,0000,----,Annotation: Legends/Symbol Keys
+A,Anno,Mark,0000,----,Annotation: Markers/Break Marks/Leaders
+A,Anno,Matc,0000,----,Annotation: Match Lines
+A,Anno,Note,0000,----,Annotation: Notes
+A,Anno,Rdme,0000,----,Annotation: Read-Me Layer (Not Plotted)
+A,Anno,Redl,0000,----,Annotation: Redlines
+A,Anno,Refr,0000,----,Annotation: Reference/External Files
+A,Anno,Revc,0000,----,Annotation: Revision Clouds
+A,Anno,Revs,0000,----,Annotation: Revision Indicators And Text
+A,Anno,Schd,0000,----,Annotation: Schedules
+A,Anno,Symb,0000,----,Annotation: Reference Symbols
+A,Anno,Tabl,0000,----,Annotation: Data Tables
+A,Anno,Text,0000,----,Annotation: Text
+A,Anno,Titl,0000,----,Annotation: Drawing Or Detail Titles
+A,Anno,Ttlb,0000,----,Annotation: Border And Title Block

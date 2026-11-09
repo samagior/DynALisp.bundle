@@ -1,0 +1,72 @@
+Designator,Major,Minor1,Minor2,Minor3,Description
+A?,Area,Occp,----,----,Area: Occupant Or Employee Names
+A?,Area,----,----,----,Area
+A?,Barr,----,----,----,Barrier
+A?,Barr,Air~,----,----,Barrier: Air
+A?,Clng,----,----,----,Ceiling
+A?,Clng,Accs,----,----,Ceiling: Access
+A?,Clng,Grid,----,----,Ceiling: Grid
+A?,Clng,Opng,----,----,Ceiling: Openings
+A?,Clng,Susp,----,----,Ceiling: Suspended Elements
+A?,Clng,Tees,----,----,Ceiling: Main Tees
+A?,Cols,----,----,----,Columns
+A?,Conv,----,----,----,Conveying Systems
+A?,Door,----,----,----,Doors
+A?,Door,Full,----,----,Doors: Full-Height (Swing And Leaf)
+A?,Door,Prht,----,----,Doors: Partial-Height (Swing And Leaf)
+A?,Eqpm,----,----,----,Equipment
+A?,Eqpm,Accs,----,----,Equipment: Access
+A?,Eqpm,Fixd,----,----,Equipment: Fixed
+A?,Eqpm,Ovhd,----,----,Equipment: Overhead
+A?,Flor,----,----,----,Floor
+A?,Flor,Cswk,----,----,Floor: Casework
+A?,Flor,Evtr,----,----,Floor: Elevator Cars And Equipment
+A?,Flor,Fixt,----,----,Floor: Fixtures (Plumbing)
+A?,Flor,Hral,----,----,Floor: Handrails/Guard Rails
+A?,Flor,Levl,----,----,Floor: Level Changes (Ramps/Pits/Depressions)
+A?,Flor,Otln,----,----,Floor: Outline
+A?,Flor,Ovhd,----,----,Floor: Overhead
+A?,Flor,Rais,----,----,Floor: Raised
+A?,Flor,Risr,----,----,Floor: Risers
+A?,Flor,Sign,----,----,Floor: Signage
+A?,Flor,Spcl,----,----,Floor: Specialties (Toilet Room Accessories/Display Cases) 
+A?,Flor,Strs,----,----,Floor: Stair Treads (Escalators/Ladders)
+A?,Flor,Tptn,----,----,Floor: Toilet Partitions
+A?,Flor,Wdwk,----,----,Floor: Architectural Woodwork
+A?,Furn,----,----,----,Furnishings
+A?,Furn,File,----,----,Furnishings: File Cabinets
+A?,Furn,Fixd,----,----,Furnishings: Fixed
+A?,Furn,Free,----,----,Furnishings: Freestanding
+A?,Furn,Plnt,----,----,Furnishings: Plants
+A?,Furn,Pnls,----,----,Furnishings: System Panels
+A?,Furn,Seat,----,----,Furnishings: Seating
+A?,Furn,Stor,----,----,Furnishings: Storage (Component System)
+A?,Furn,Wksf,----,----,Furnishings: Work Surface (Component System) 
+A?,Glaz,----,----,----,Glazing
+A?,Glaz,Full,----,----,Glazing: Full-Height
+A?,Glaz,Prht,----,----,Glazing: Partial-Height
+A?,Glaz,Sill,----,----,Glazing: Window Sills
+A?,Hvac,----,----,----,Hvac Systems
+A?,Hvac,Rdff,----,----,Hvac Systems: Return Air Diffusers
+A?,Hvac,Sdff,----,----,Hvac Systems: Supply Diffusers
+A?,Lite,----,----,----,Lighting
+A?,Roof,----,----,----,Roof
+A?,Roof,Hral,----,----,Roof: Handrails/Guard Rails
+A?,Roof,Levl,----,----,Roof: Level Changes
+A?,Roof,Otln,----,----,Roof: Outline
+A?,Roof,Risr,----,----,Roof: Risers
+A?,Roof,Strs,----,----,Roof: Stair Treads (Ladders)
+A?,Wall,----,----,----,Walls
+A?,Wall,Cavi,----,----,Walls: Cavity
+A?,Wall,Cntr,----,----,Walls: Center
+A?,Wall,Curt,----,----,Walls: Curtain
+A?,Wall,Fire,----,----,Walls: Fire Protection
+A?,Wall,Full,----,----,Walls: Full-Height
+A?,Wall,Full,Extr,----,Walls: Full-Height: Exterior 
+A?,Wall,Full,Intr,----,Walls: Full-Height: Interior
+A?,Wall,Head,----,----,Walls: Door And Window Headers
+A?,Wall,Jamb,----,----,Walls: Door And Window Jambs
+A?,Wall,Mesh,----,----,Walls: Mesh Or Wire
+A?,Wall,Move,----,----,Walls: Moveable
+A?,Wall,Patt,----,----,Walls: Texture And Hatch Patterns
+A?,Wall,Prht,----,----,Walls: Partial-Height

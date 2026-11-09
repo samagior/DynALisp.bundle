@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Centered Measure</title>
+    <link rel="stylesheet" href="../../../../Resources/docs.css">
+</head>
+
+<body>
+    <div id="header">
+        <p>DynALisp <span>Docs</span></p>
+    </div>
+
+    <div id="content">
+        <h1>Centered Measure</h1>
+
+        <p class="note">This page is a copy of the original help page on Lee Mac's website, included here for offline
+            reference. For the latest version, see the original page:
+            <a href="https://lee-mac.com/centeredmeasure.html" target="_blank">https://lee-mac.com/centeredmeasure.html</a></p>
+
+<div class="programs">
+<table>
+<tr class="alt">
+<td>Function Syntax</td>
+<td><span class="fixw">LM-CenteredMeasure</span> &ndash; original syntax: CMeasure (see <a href="#aliases">aliases</a>)</td>
+</tr>
+<tr>
+<td>Current Version</td>
+<td>1.0</td>
+</tr>
+
+
+<tr class="alt">
+<td>Compatible with AutoCAD for Mac?</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Compatible with AutoCAD LT?</td>
+<td>Yes</td>
+</tr>
+
+<tr class="alt"><td>Original Page</td><td><a href="https://lee-mac.com/centeredmeasure.html" target="_blank">lee-mac.com/centeredmeasure.html</a></td></tr></table>
+</div>
+<h2>Program Description</h2>
+<p>This program is designed to emulate the behaviour of the standard AutoCAD <em>Measure</em> command, however, the resultant 
+                measured intervals are centered on the selected object, as opposed to extending along the object from one end.</p>
+<p>As per the standard Measure command, the user has the option to place either Point objects or Blocks at measured divisons along 
+                the selected object, with the additional option to align the rotation of each block with the direction of the object at 
+                each point.</p>
+<div class="cent">
+<h3>Example of Centered Measure Result</h3>
+<p>
+<img alt="CMeasure1.png" height="180" src="images/LM-CMeasure1.png" width="430"/>
+<img alt="CMeasure2.png" height="180" src="images/LM-CMeasure2.png" width="430"/>
+</p>
+</div>
+        <details class="bundled">
+            <summary>Bundled program notes</summary>
+            <pre>;;-------------------=={ Centered Measure }==-----------------;;
+;;                                                            ;;
+;;  Emulates the behaviour of the standard &#x27;Measure&#x27; command  ;;
+;;  however centering the divisions along the selected object ;;
+;;------------------------------------------------------------;;
+;;  Author: Lee Mac, Copyright © 2011 - www.lee-mac.com       ;;
+;;------------------------------------------------------------;;</pre>
+        </details>
+<!-- dyl:aliases -->
+<h2 id="aliases">Command Names And Aliases</h2>
+<p>This page is a copy of Lee Mac's page: the commands keep their original names as aliases. Each program has one main command starting with <span class="fixw">LM-</span>. The short names are its aliases: they run the same command, and can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (saved in <span class="fixw">Resources\Aliases.csv</span>).</p>
+<div class="programs commands wide">
+<table>
+<tr><th>Command</th><th>Aliases</th><th>Name</th></tr>
+<tr><td><span class="fixw">LM-CenteredMeasure</span></td><td><span class="fixw">CMEASURE</span></td><td>Centered Measure</td></tr>
+</table>
+</div>
+<!-- /dyl:aliases -->
+
+
+    </div>
+
+    <div id="footer">
+        <p>Author: Lee Mac, Copyright &copy; 2011 &ndash;
+            <a href="https://www.lee-mac.com" target="_blank">www.lee-mac.com</a></p>
+    </div>
+</body>
+
+</html>

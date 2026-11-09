@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Catalog FileRevision="19.0.0" Revision="19.0.0" option="0">
+    <ItemID idValue="{DD0577B8-737D-4cd1-B297-D625D20FD8E9}" />
+    <Properties>
+        <ItemName>Template Project (Global)</ItemName>
+        <Images option="0" />
+        <Description>Tool palettes for the Template Project</Description>
+        <Time createdUniversalDateTime="2005-02-01T23:33:19" modifiedUniversalDateTime="2005-02-01T23:33:19" />
+    </Properties>
+    <Source />
+    <Tools />
+    <Palettes>
+        <Palette Revision="19.0.0" option="0">
+            <ItemID idValue="{7B397CBB-B651-4323-94FC-7CE699E0B2AF}" />
+            <Url href=".\Palettes\Palette_7B397CBB-B651-4323-94FC-7CE699E0B2AF.atc" />
+            <Properties>
+                <ItemName>Project Tools</ItemName>
+                <Images option="0" />
+            </Properties>
+            <Source />
+        </Palette>
+    </Palettes>
+    <Packages />
+    <Categories />
+    <StockTools />
+    <Catalogs />
+</Catalog>

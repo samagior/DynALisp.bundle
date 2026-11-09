@@ -1,0 +1,9 @@
+Key,WildcardLayerList
+AllViewType,"@-Plan-*" "@@-Plan-*" "@-Elev-*" "@@-Elev-*" "@-Sect-*" "@@-Sect-*" "@-Detl-*" "@@-Detl-*"
+Architectural,"A-*" "A@-*"
+Detl,"@-Detl-*" "@@-Detl-*"
+Elev,"@-Elev-*" "@@-Elev-*"
+Interior,"I-*" "I@-*"
+Plan,"@-Plan-*" "@@-Plan-*"
+Sect,"@-Sect-*" "@@-Sect-*"
+Strutural,"S-*" "S@-*"

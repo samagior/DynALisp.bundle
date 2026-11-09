@@ -1,0 +1,60 @@
+Abbreviation,ColorGroup,ColorIndex,Lineweight,Linetype,Description
+Accs,--,-,----,------,Access Plan
+Acid,--,-,----,------,Acid Water System
+Aeri,--,-,----,------,Aerial Survey
+Afff,--,-,----,------,Aqueous Film Forming Foam System
+Afld,--,-,----,------,Airfields
+Air~,--,-,----,------,Air
+Algn,--,-,----,------,Alignment
+Alrm,--,-,----,------,Alarm
+Anch,--,-,----,------,Anchor
+Anno,--,-,----,------,Annotation
+Appl,--,-,----,------,Bearings And Distance Labels
+Area,--,-,----,------,Area
+Arow,--,-,----,------,North Arrow
+Auxl,--,-,----,------,Auxiliary
+Barr,--,-,----,------,Barrier
+Bcst,--,-,----,------,Broadcast Related System (Radio or TV)
+Beam,--,-,----,------,Beam
+Bell,--,-,----,------,Bell
+Bgrd,--,-,----,------,Background
+Bldg,--,-,----,------,Building And Primary Structures
+Blin,--,-,----,------,Boundary Line
+Bloc,--,-,----,------,Block
+Bndy,--,-,----,------,Boundary
+Bore,--,-,----,------,Borings
+Brcg,--,-,----,------,Bracing
+Brdg,--,-,----,------,Bridge
+Brin,--,-,----,------,Brine
+Brkl,--,-,----,------,Break / Fault Line
+Brln,--,-,----,------,Building Restriction Line
+Bzna,--,-,----,------,Buffer Zone Aera
+Elev,--,-,----,------,Elevation
+Sect,--,-,----,------,Section
+Detl,--,-,----,------,Detail
+Plan,--,-,----,------,Plan
+Flor,--,-,----,------,Floor
+Fnsh,--,-,----,------,Finishes Plan
+Furn,--,-,----,------,Furnishing Plan
+Strc,--,-,----,------,Structural Plan
+Elec,--,-,----,------,Electrical Plan
+Hvac,--,-,----,------,Hvac Plan
+Clng,--,-,----,------,Ceiling Plan
+Code,--,-,----,------,Code Compliance Plan
+Door,--,-,----,------,Doors
+Glaz,--,-,----,------,Glazing
+Wall,--,-,----,------,Wall
+Roof,--,-,----,------,Roof
+Cols,--,-,----,------,Columns
+Conv,--,-,----,------,Conveying systems
+Clng,--,-,----,------,Ceiling
+Hvac,--,-,----,------,Hvac systems
+Furn,--,-,----,------,Furnishings
+Eqpm,--,-,----,------,Equipment
+Lite,--,-,----,------,Lighting
+Fenc,--,-,----,------,Fences
+Irrg,--,-,----,------,Irrigation
+Plnt,--,-,----,------,Plant and landascape material
+Pvmt,--,-,----,------,Pavement
+Site,--,-,----,------,Site features
+Topo,--,-,----,------,Topographic features
