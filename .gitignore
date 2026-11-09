@@ -5,9 +5,22 @@ Contents/Modules/MyTools/
 # Their defaults under Contents are the ones committed:
 /User/
 
-# CAD files:
+# AutoCAD backup files (.bak of a drawing, .bk1-.bk9 of a template or standards file):
 *.bak
+*.bk[1-9]
+
+# AutoCAD temporary files: drawing locks, automatic saves, recovery and temp files,
+# error, audit and plot reports:
 *.dwl
+*.dwl2
+*.sv$
+*.ac$
+*.$a
+*.$ac
+*.adt
+*.tmp
+*.err
+plot.log
 
 # Lisp compilation files:
 *.ob
