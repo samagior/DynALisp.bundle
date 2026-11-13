@@ -39,6 +39,12 @@
 ;;;      roaming folder of the running product, release and language
 ;;;      (AutoCAD, ACA, etc.). It is created if needed.
 ;;;
+;;; Used by other files:
+;;;   rpat:rebuild-hatch - rebuilds the pattern of one hatch, without asking;
+;;;                        the Pick hatch... button of the Hatch Presets window
+;;;                        loads this file to call it (see
+;;;                        Remote>>Dyl:MaterialPatRebuild).
+;;;
 ;;; Notes:
 ;;;   - The drawing itself is not modified.
 ;;;   - If the target folder is not in the support file search path, it is
@@ -618,6 +624,63 @@
        (not (vl-catch-all-error-p def))
        (rpat:write-pat-file path pat-name def)
   )
+)
+
+;;; --------------------------------------------------------------------------
+;;; rpat:rebuild-hatch
+;;;   Rebuilds the pattern of one hatch when it is missing, as Dyl-RebuildPat
+;;;   does, without asking anything: written to <name>.pat in the target
+;;;   folder (a file already there is kept), the folder added to the support
+;;;   path. Used by the Pick hatch... button of the Hatch Presets window
+;;;   (Remote>>Dyl:MaterialPickHatch).
+;;;   Arguments : ename - hatch entity name
+;;;   Returns   : full path of the .pat file, nil (with a message) when it
+;;;               could not be rebuilt
+;;; --------------------------------------------------------------------------
+(defun rpat:rebuild-hatch (ename / obj ed name folder existing path old-dimzin res)
+  (setq obj    (vlax-ename->vla-object ename)
+        folder (rpat:get-target-folder)
+  )
+  (cond
+    ((not (setq ed (rpat:get-pattern-data obj)))
+     (princ "\nDyl-RebuildPat: this hatch has no pattern to rebuild.")
+    )
+    ((not (rpat:ensure-folder folder))
+     (princ (strcat "\nDyl-RebuildPat: cannot access or create folder " folder))
+    )
+    (T
+     (setq name     (cdr (assoc 2 ed))
+           existing (rpat:find-existing-pat name folder)
+           path     (strcat folder name ".pat")
+     )
+     (cond
+       ;; Already in the target folder (not yet in the support path): kept
+       ((and existing (= "FILE" (car existing)))
+        (setq res (cadr existing))
+       )
+       (existing
+        (princ (strcat "\nDyl-RebuildPat: pattern " name " is already in " (cadr existing) "."))
+       )
+       (T
+        ;; DIMZIN 0 so rtos keeps leading zeros (0.5, not .5)
+        (setq old-dimzin (getvar "DIMZIN"))
+        (setvar "DIMZIN" 0)
+        (if (rpat:rebuild-to obj ed name path) (setq res path))
+        (setvar "DIMZIN" old-dimzin)
+        (if (not res) (princ (strcat "\nDyl-RebuildPat: " path " could not be written.")))
+       )
+     )
+     (if res
+       (progn
+         (if (rpat:ensure-in-support-path folder)
+           (princ (strcat "\nDyl-RebuildPat: folder added to the support path: " folder))
+         )
+         (princ (strcat "\nDyl-RebuildPat: pattern " name (if existing " found: " " rebuilt: ") res))
+       )
+     )
+    )
+  )
+  res
 )
 
 ;;; --------------------------------------------------------------------------

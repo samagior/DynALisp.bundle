@@ -2397,10 +2397,21 @@
   ;; Question of up to 3 lines in the dyl_suite_ask dialog of Dyl-Suite.dcl, with
   ;; the labels of its two buttons (asked on the command line if the dialog
   ;; cannot be shown). Returns T for the first button:
-  (defun Dyl:SuiteAsk (lines yes no / dch res)
+  (defun Dyl:SuiteAsk (lines yes no)
+    (Dyl:AskIn "dyl_suite_ask" lines yes no)
+  )
+
+  ;; The same question in the dyl_ask dialog (titled DynALisp), for a question that
+  ;; is not about the Startup Suite:
+  (defun Dyl:Ask (lines yes no)
+    (Dyl:AskIn "dyl_ask" lines yes no)
+  )
+
+  ;; The question in the dialog nam of Dyl-Suite.dcl (dyl_suite_ask or dyl_ask):
+  (defun Dyl:AskIn (nam lines yes no / dch res)
     (if
       (and (< 0 (setq dch (load_dialog (strcat *dyl:res "\\Dyl-Suite.dcl"))))
-           (new_dialog "dyl_suite_ask" dch)
+           (new_dialog nam dch)
       )
       (progn
         (foreach k '("l1" "l2" "l3")
@@ -2437,6 +2448,36 @@
       )
     )
     ok
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; The functions of an Apps file used by another file (a Remote function, an
+  ;;; App): pth is its PATH in StartupSuite.csv ("Dynalisp\\Apps\\...\\X.lsp").
+  ;;; A file turned on is only autoloaded (see Dyl:autoload): its functions are
+  ;;; defined once one of its commands has run, so the caller loads it first.
+  ;;; ---------------------------------------------------------------------------
+
+  ;; T when a command of the Apps file pth is turned on in the Startup Suite:
+  (defun Dyl:SuiteFileOn-p (pth)
+    (vl-some '(lambda (r) (and (= "1" (car r)) (= (strcase pth) (strcase (nth 3 r))))) (Dyl:Suite nil))
+  )
+
+  ;; Turn on every command of the Apps file pth in StartupSuite.csv (asked again
+  ;; while the file is open in another program) and apply it to this drawing
+  ;; (Dyl:autoload, as Dyl-Suite does). Returns T once saved:
+  (defun Dyl:SuiteFileOn (pth / recs)
+    (setq recs (mapcar '(lambda (r) (if (= (strcase pth) (strcase (nth 5 r))) (cons "1" (cdr r)) r)) (Dyl:SuiteRecs)))
+    (if (Dyl:SuiteSave '(lambda () (Dyl:SuiteWrite recs)) "StartupSuite.csv")
+      (progn (Dyl:autoload) T)
+    )
+  )
+
+  ;; Load the Apps file pth, so its functions are defined. Returns T when loaded:
+  (defun Dyl:SuiteFileLoad (pth / ful)
+    (setq ful (strcat *dyl:module "\\" pth))
+    (and (findfile ful)
+         (not (vl-catch-all-error-p (vl-catch-all-apply 'load (list ful))))
+    )
   )
 
   ;;; ---------------------------------------------------------------------------

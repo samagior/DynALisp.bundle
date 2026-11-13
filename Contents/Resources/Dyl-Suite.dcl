@@ -103,6 +103,19 @@ dyl_vscode
 }
 
 // Question of up to 3 lines, the labels of both buttons are set by Dyl:SuiteAsk
+dyl_ask
+: dialog {label = "DynALisp";
+  : text {key = "l1"; width = 60;}
+  : text {key = "l2"; width = 60;}
+  : text {key = "l3"; width = 60;}
+  : row {
+    : spacer {width = 1;}
+    : button {key = "accept"; label = "Yes"; width = 12; fixed_width = true; is_default = true;}
+    : button {key = "cancel"; label = "No"; width = 12; fixed_width = true; is_cancel = true;}
+    : spacer {width = 1;}
+  }
+}
+
 dyl_suite_ask
 : dialog {label = "DynALisp - Startup Suite";
   : text {key = "l1"; width = 60;}
