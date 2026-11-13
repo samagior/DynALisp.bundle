@@ -2307,14 +2307,82 @@
   )
 )
 
+;;  The Apps file of Dyl-RebuildPat (its PATH in StartupSuite.csv), whose rpat:rebuild-hatch
+;;  rebuilds the pattern of a hatch picked that no .pat file has:
+(setq *mt:rebuildpat* "Dynalisp\\Apps\\Utilities\\Dyl-RebuildPat.lsp")
+
+;;  Pick hatch...: the pattern pat of the hatch e is in no .pat file of the support path, so a
+;;  hatch preset could not draw it. Asked whether to rebuild it from the hatch (see
+;;  Dyl-RebuildPat); when Dyl-RebuildPat is turned off in the Startup Suite, asked to turn it
+;;  on (and it is loaded: an App turned on is only autoloaded, see Dyl:SuiteFileLoad). The
+;;  pattern rebuilt is read again (its units, its preview). Returns T when it was rebuilt:
+(defun Remote>>Dyl:MaterialPatRebuild (e pat / key)
+  (cond
+    ((not (Dyl:Ask (list (strcat "Pattern " pat " is missing: no .pat file of the support path has it.")
+                         (strcat "Rebuild " pat ".pat from the lines stored in this hatch?")
+                         "Unexpected results may happen: check the hatches it draws."
+                   )
+                   "Yes"
+                   "No"
+          )
+     )
+     (princ (strcat "\nPattern " pat " not rebuilt: a hatch preset cannot draw it until a .pat file has it (see RPAT)."))
+     nil
+    )
+    ((not (or (Dyl:SuiteFileOn-p *mt:rebuildpat*)
+              (and (Dyl:SuiteAsk (list "Rebuild Patterns (Dyl-RebuildPat) is turned off in the Startup Suite."
+                                       (strcat "Turn it on and load it, then rebuild " pat ".pat?")
+                                 )
+                                 "Yes"
+                                 "No"
+                   )
+                   (Dyl:SuiteFileOn *mt:rebuildpat*)
+              )
+          )
+     )
+     (princ (strcat "\nPattern " pat " not rebuilt: Dyl-RebuildPat is turned off in the Startup Suite (Dyl-Suite)."))
+     nil
+    )
+    ((not (or rpat:rebuild-hatch (and (Dyl:SuiteFileLoad *mt:rebuildpat*) rpat:rebuild-hatch)))
+     (princ (strcat "\nPattern " pat " not rebuilt: " *mt:rebuildpat* " could not be loaded."))
+     nil
+    )
+    ((rpat:rebuild-hatch e)
+     ;;  Its units and its lines read again from the new file (they were kept as not found):
+     (setq key           (strcase pat)
+           *mt:patunits* (vl-remove-if '(lambda (x) (= (strcat key "|") (substr (car x) 1 (1+ (strlen key))))) *mt:patunits*)
+     )
+     (vl-bb-set '*mt:patdefs* (vl-remove (assoc key (vl-bb-ref '*mt:patdefs*)) (vl-bb-ref '*mt:patdefs*)))
+     (if (not (member key mt:found)) (setq mt:found (cons key mt:found)))
+     T
+    )
+  )
+)
+
 ;;  Pick hatch...: a hatch picked in the drawing gives its hatch settings to the hatch presets
-;;  selected (see Remote>>Dyl:MaterialFromHatch, Remote>>Dyl:PresetDlgPut). Its pattern is
-;;  added to the Pattern popup when the list does not have it:
-(defun Remote>>Dyl:MaterialPickHatch (r / e vals)
+;;  selected (see Remote>>Dyl:MaterialFromHatch, Remote>>Dyl:PresetDlgPut). A pattern that no
+;;  .pat file has can be rebuilt first (see Remote>>Dyl:MaterialPatRebuild), so its scale is
+;;  read in the units of the file rebuilt. Its pattern is added to the Pattern popup when the
+;;  list does not have it:
+(defun Remote>>Dyl:MaterialPickHatch (r / e o pat vals)
   (while (and (not e) (progn (setvar "ERRNO" 0) (or (setq e (entsel "\nSelect a hatch to copy <cancel>: ")) (= 7 (getvar "ERRNO")))))
     (cond
       ((not e) (princ "\nNothing selected."))
       ((/= "HATCH" (cdr (assoc 0 (entget (car e))))) (princ "\nThat is not a hatch.") (setq e nil))
+    )
+  )
+  (if e
+    (progn
+      (setq o   (vlax-ename->vla-object (car e))
+            pat (strcase (vla-get-PatternName o))
+      )
+      (if (and (/= 1 (vla-get-HatchObjectType o))
+               (/= acHatchPatternTypeUserDefined (vla-get-PatternType o))
+               (not (member pat '("SOLID" "_USER" "")))
+               (not (cdr (Remote>>Dyl:MaterialPatUnits pat)))
+          )
+        (Remote>>Dyl:MaterialPatRebuild (car e) pat)
+      )
     )
   )
   (if (and e (setq vals (Remote>>Dyl:MaterialFromHatch (car e) r)))
