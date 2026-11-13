@@ -2952,8 +2952,10 @@
   )
 )
 
-;;  Show the group g (All: every preset), on its page pg:
-(defun Dyl:QuickDrawGalleryShow (g pg / n pages i x k)
+;;  Show the group g (All: every preset), on its page pg. foc: the page button clicked ("prv"
+;;  or "nxt", nil otherwise), which has the focus: greying out the tile that has the focus
+;;  closes the window, so the focus goes to the other page button (or the Group list) first:
+(defun Dyl:QuickDrawGalleryShow (g pg foc / n pages i x k on)
   (setq qg:grp  g
         qg:lst  (if (= "All" g)
                   qg:all
@@ -2966,8 +2968,12 @@
   (set_tile "grp" (itoa (cond ((vl-position g qg:grps)) (0))))
   (set_tile "cnt" (strcat (itoa n) (if (= 1 n) " preset" " presets")))
   (set_tile "pg" (strcat "Page " (itoa (1+ qg:page)) " of " (itoa pages)))
-  (mode_tile "prv" (if (< 0 qg:page) 0 1))
-  (mode_tile "nxt" (if (< (1+ qg:page) pages) 0 1))
+  (setq on (list (cons "prv" (< 0 qg:page)) (cons "nxt" (< (1+ qg:page) pages))))
+  (foreach b on (if (cdr b) (mode_tile (car b) 0)))
+  (if (and foc (not (cdr (assoc foc on))))
+    (mode_tile (if (cdr (assoc (if (= "prv" foc) "nxt" "prv") on)) (if (= "prv" foc) "nxt" "prv") "grp") 2)
+  )
+  (foreach b on (if (not (cdr b)) (mode_tile (car b) 1)))
   (setq i 0)
   (repeat *qd:gtiles*
     (setq k (itoa i)
@@ -3021,11 +3027,11 @@
       (start_list "grp")
       (foreach x qg:grps (add_list x))
       (end_list)
-      (Dyl:QuickDrawGalleryShow g 0)
+      (Dyl:QuickDrawGalleryShow g 0 nil)
       (Dyl:DocsTile "Draw\\Dyl-QuickDrawGallery.htm")
-      (action_tile "grp" "(Dyl:QuickDrawGalleryShow (nth (atoi $value) qg:grps) 0)")
-      (action_tile "prv" "(Dyl:QuickDrawGalleryShow qg:grp (1- qg:page))")
-      (action_tile "nxt" "(Dyl:QuickDrawGalleryShow qg:grp (1+ qg:page))")
+      (action_tile "grp" "(Dyl:QuickDrawGalleryShow (nth (atoi $value) qg:grps) 0 nil)")
+      (action_tile "prv" "(Dyl:QuickDrawGalleryShow qg:grp (1- qg:page) \"prv\")")
+      (action_tile "nxt" "(Dyl:QuickDrawGalleryShow qg:grp (1+ qg:page) \"nxt\")")
       (action_tile "mgr" "(done_dialog 2)")
       (setq i 0)
       (repeat *qd:gtiles*
