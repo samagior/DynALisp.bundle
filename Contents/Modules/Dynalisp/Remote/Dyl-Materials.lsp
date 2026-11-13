@@ -1513,6 +1513,8 @@
   (action_tile "hkp" "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog 5))")
   ;;  Draw legend...: close the dialog with *mt:legendcode*, see Remote>>Dyl:MaterialDlgStatus:
   (action_tile "leg" (strcat "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog " (itoa *mt:legendcode*) "))"))
+  ;;  Pick hatch...: close the dialog with *mt:hatchpickcode*, see Remote>>Dyl:MaterialDlgStatus:
+  (action_tile "hpk" (strcat "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog " (itoa *mt:hatchpickcode*) "))"))
   (action_tile "suo" "(Remote>>Dyl:MaterialPatOpen (nth 3 (nth pst:idx pst:lst)))")
   ;;  The dividing line over the title of the sub-section (dynalisp.mnl):
   (Dyl:LineTile "hsep")
@@ -2215,6 +2217,117 @@
   )
 )
 
+;;-------------------------=={ Pick hatch }==------------------------;;
+
+;;  Code the Pick hatch... button of the Hatch Presets window closes it with (see
+;;  Remote>>Dyl:MaterialDlgStatus; 8 and 9 are the codes of the preset engine):
+(setq *mt:hatchpickcode* 10)
+
+;;  The color of the hatch o as a color of a material ("n" or "r,g,b"), nil when it is
+;;  ByLayer, ByBlock or none. bg T: its background color:
+(defun Remote>>Dyl:MaterialColorOf (o bg / c m)
+  (setq c (vl-catch-all-apply (if bg 'vla-get-BackgroundColor 'vla-get-TrueColor) (list o)))
+  (if (not (vl-catch-all-error-p c))
+    (cond
+      ((= acColorMethodByRGB (setq m (vla-get-ColorMethod c)))
+       (strcat (itoa (vla-get-Red c)) "," (itoa (vla-get-Green c)) "," (itoa (vla-get-Blue c)))
+      )
+      ((and (= acColorMethodByACI m) (<= 1 (vla-get-ColorIndex c) 255)) (itoa (vla-get-ColorIndex c)))
+    )
+  )
+)
+
+;;  The material r with the hatch settings of the hatch e: its pattern, scale (in the units of
+;;  the pattern, at 1:1 when the material follows the drawing scale: the inverse of
+;;  Remote>>Dyl:MaterialScale), angle, annotative and associative, the layer key whose layer
+;;  is its layer (in any phase; kept when there is none, with a message), the layer key
+;;  overrides and the background color it has (off when it has none). The other values of r
+;;  (name, group, adaptive scaling, existing phase background) are kept. Returns
+;;  ((index . value) ...), the values to give to the materials selected, nil (with a
+;;  message) when e cannot be a material (a gradient, a user-defined pattern):
+(defun Remote>>Dyl:MaterialFromHatch (e r / o ed pat res put s v lay rec lw tr)
+  (setq o   (vlax-ename->vla-object e)
+        ed  (entget e)
+        pat (strcase (vla-get-PatternName o))
+  )
+  (defun put (i val) (setq res (cons (cons i val) res) r (Remote>>Dyl:ListSubst r i val)))
+  (cond
+    ((= 1 (vla-get-HatchObjectType o)) (princ "\nA gradient is not a hatch pattern: nothing copied.") nil)
+    ((or (= acHatchPatternTypeUserDefined (vla-get-PatternType o)) (= "_USER" pat))
+     (princ "\nA user-defined hatch has no pattern of a .pat file: nothing copied.")
+     nil
+    )
+    (T
+     (put 3 pat)
+     (put 9 (if (Remote>>Dyl:MaterialAnno-p e) "1" "0"))
+     (put 30 (if (= :vlax-true (vla-get-AssociativeHatch o)) "1" "0"))
+     (if (/= "SOLID" pat)
+       (progn
+         ;;  The scale back in the units of the pattern, at 1:1 (r has its pattern and annotative):
+         (setq s (/ (vla-get-PatternScale o) (Remote>>Dyl:MaterialUnitFactor r)))
+         (if (Remote>>Dyl:MaterialScaled-p r) (setq s (/ s (Remote>>Dyl:MaterialFactor (nth 11 r)))))
+         (put 4 (Remote>>Dyl:MaterialNumP s 6))
+         (put 6 (Remote>>Dyl:MaterialNumP (* 180.0 (/ (vla-get-PatternAngle o) pi)) 4))
+       )
+     )
+     ;;  The layer key of its layer (its name without phase), never a key kept for compatibility:
+     (setq lay (cdr (assoc 8 ed)))
+     (if (and (setq rec (Remote>>Dyl:LayerKeyOfLayer (Remote>>Dyl:PhaseBase lay (Remote>>Dyl:PhaseList))))
+              (Remote>>Dyl:LayerKeyMaterial-p (car rec))
+         )
+       (put 8 (car rec))
+       (princ (strcat "\nLayer " lay " is not the layer of a layer key: the hatch layer key " (nth 8 r) " is kept."))
+     )
+     ;;  The layer key overrides, on when the hatch has one:
+     (if (setq v (Remote>>Dyl:MaterialColorOf o nil)) (progn (put 22 "1") (put 23 v)) (put 22 "0"))
+     (if (and (setq v (cdr (assoc 6 ed))) (not (member (strcase v) '("BYLAYER" "BYBLOCK"))))
+       (progn (put 47 "1") (put 48 (strcase v)))
+       (put 47 "0")
+     )
+     (if (and (setq v (cdr (assoc 48 ed))) (not (equal 1.0 v 1e-9)))
+       (progn (put 49 "1") (put 50 (Remote>>Dyl:MaterialNumP v 6)))
+       (put 49 "0")
+     )
+     (if (and (setq lw (cdr (assoc 370 ed))) (member (itoa lw) *mt:weights*))
+       (progn (put 26 "1") (put 27 (itoa lw)))
+       (put 26 "0")
+     )
+     (setq tr (vl-catch-all-apply 'vla-get-EntityTransparency (list o)))
+     (if (and (= 'STR (type tr)) (wcmatch tr "#,##"))
+       (progn (put 28 "1") (put 29 tr))
+       (put 28 "0")
+     )
+     ;;  Its background color (a SOLID hatch has none, see *mt:solidoff*):
+     (if (and (/= "SOLID" pat) (setq v (Remote>>Dyl:MaterialColorOf o T)))
+       (progn (put 24 "1") (put 25 v))
+       (put 24 "0")
+     )
+     (reverse res)
+    )
+  )
+)
+
+;;  Pick hatch...: a hatch picked in the drawing gives its hatch settings to the hatch presets
+;;  selected (see Remote>>Dyl:MaterialFromHatch, Remote>>Dyl:PresetDlgPut). Its pattern is
+;;  added to the Pattern popup when the list does not have it:
+(defun Remote>>Dyl:MaterialPickHatch (r / e vals)
+  (while (and (not e) (progn (setvar "ERRNO" 0) (or (setq e (entsel "\nSelect a hatch to copy <cancel>: ")) (= 7 (getvar "ERRNO")))))
+    (cond
+      ((not e) (princ "\nNothing selected."))
+      ((/= "HATCH" (cdr (assoc 0 (entget (car e))))) (princ "\nThat is not a hatch.") (setq e nil))
+    )
+  )
+  (if (and e (setq vals (Remote>>Dyl:MaterialFromHatch (car e) r)))
+    (progn
+      (foreach x vals (Remote>>Dyl:PresetDlgPut (car x) (cdr x)))
+      (if (not (member (cdr (assoc 3 vals)) mt:pats)) (setq mt:pats (acad_strlsort (cons (cdr (assoc 3 vals)) mt:pats))))
+      (princ (strcat "\nHatch copied: " (Remote>>Dyl:MaterialSummary (nth pst:idx pst:lst)) "."))
+    )
+  )
+)
+
+;;  Code *mt:hatchpickcode* = Pick hatch...: a hatch picked in the drawing gives its settings to
+;;  the hatch presets selected, then the dialog is shown again.
 ;;  Code *mt:legendcode* = Draw legend...: the legend of the hatch presets selected (as they are
 ;;  being edited) is drawn from a point picked, then the dialog is shown again.
 ;;  Code 5 = the open button of the hatch layer key: the Layer Keys dialog is shown on that key
@@ -2224,6 +2337,7 @@
 (defun Remote>>Dyl:MaterialDlgStatus (sta r / k)
   (if (and (= 5 sta) (setq k (Remote>>Dyl:LayerKeyPick (nth 8 r)))) (Remote>>Dyl:PresetDlgPut 8 k))
   (if (= *mt:legendcode* sta) (Remote>>Dyl:MaterialLegend (Remote>>Dyl:MaterialDlgSelected)))
+  (if (= *mt:hatchpickcode* sta) (Remote>>Dyl:MaterialPickHatch r))
   nil
 )
 
@@ -2308,7 +2422,10 @@
             "        }"
             ;;  The legend of the hatch presets selected, drawn in the drawing (see
             ;;  Remote>>Dyl:MaterialLegend):
+            ;;  Pick hatch...: the hatch settings of a hatch of the drawing (see
+            ;;  Remote>>Dyl:MaterialFromHatch):
             "        : row { fixed_width = true; alignment = right;"
+            "          : button { key = \"hpk\"; label = \"Pick hatch...\"; }"
             "          : button { key = \"leg\"; label = \"Draw legend...\"; }"
             "        }"
             "      }"
