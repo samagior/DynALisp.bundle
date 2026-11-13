@@ -22,9 +22,16 @@
   ;;  Quiet startup: the steps print nothing but errors, their result is summed up in one
   ;;  line at the end (Dyl:StartupSummary). *dyl:warn*: the steps that failed, printed
   ;;  with the summary. Dyl-Reload prints the steps as before:
-  (setq *dyl:quiet* T
-        *dyl:warn*  nil
-        *dyl:note*  nil
+  ;;  Kept for the diagnostics (Dyl-Diagnostics): *dyl:t0* when the startup began,
+  ;;  *dyl:loaderrs* the Remote and Reactor files that failed to load ("file: error"),
+  ;;  *dyl:loadtimes* the time each one took ((file . ms) ...), and at the summary
+  ;;  *dyl:startms*, *dyl:startwarn* and *dyl:startnote* (see Dyl:StartupSummary):
+  (setq *dyl:quiet*     T
+        *dyl:warn*      nil
+        *dyl:note*      nil
+        *dyl:t0*        (getvar "MILLISECS")
+        *dyl:loaderrs*  nil
+        *dyl:loadtimes* nil
   )
 
   ;;Default Autocad ActiveX variables:
@@ -573,11 +580,15 @@
 
   ;;  Recursively load all the Lisp files of the folders dirs. An error in a file is
   ;;  printed and the next files are loaded: one file stopped the whole startup (the
-  ;;  Apps, Dyl-Settings...) in the drawing:
-  (defun Dyl:LoadDirs (dirs / res)
+  ;;  Apps, Dyl-Settings...) in the drawing. The errors and the time of each file are
+  ;;  kept for the diagnostics (*dyl:loaderrs*, *dyl:loadtimes*, see dyl:startup):
+  (defun Dyl:LoadDirs (dirs / res t0 rel)
     (foreach dir dirs
       (foreach pth (Dyl:lspdirs dir)
         (foreach k (vl-directory-files pth "*.lsp" 1)
+          (setq t0  (getvar "MILLISECS")
+                rel (substr (strcat pth "\\" k) (+ 2 (strlen *dyl:module)))
+          )
           (if
             (vl-catch-all-error-p
               (setq res (vl-catch-all-apply 'load
@@ -587,8 +598,12 @@
                         )
               )
             )
-            (princ (strcat "\n--> Error loading : " k " : " (vl-catch-all-error-message res) "\n--> From : " pth))
+            (progn
+              (setq *dyl:loaderrs* (cons (strcat rel ": " (vl-catch-all-error-message res)) *dyl:loaderrs*))
+              (princ (strcat "\n--> Error loading : " k " : " (vl-catch-all-error-message res) "\n--> From : " pth))
+            )
           )
+          (setq *dyl:loadtimes* (cons (cons rel (- (getvar "MILLISECS") t0)) *dyl:loadtimes*))
         )
       )
     )
@@ -635,6 +650,11 @@
     ;; Save and disable secureload system variable to prevent pop up confimation with each file:
     (setq *scr (getvar 'secureload))
     (setvar 'secureload 0)
+
+    ;; The load errors and times of this load only (Dyl-Reload loads again):
+    (setq *dyl:loaderrs*  nil
+          *dyl:loadtimes* nil
+    )
 
     ;; Recursively load all the Lisp file in each module Remote folder, then in each
     ;; module Reactor folder (they can use the Remote functions) while the DynALisp
@@ -4276,6 +4296,11 @@
     (foreach n (reverse *dyl:note*) (princ (strcat "\n" n)))
     (if *dyl:warn* (princ (strcat "\n--> " (Remote>>LM:lst->str (reverse *dyl:warn*) " | "))))
     (princ "\n")
+    ;; Kept for the diagnostics (Dyl-Diagnostics), the startup time with them:
+    (setq *dyl:startms*   (if *dyl:t0* (- (getvar "MILLISECS") *dyl:t0*))
+          *dyl:startwarn* (reverse *dyl:warn*)
+          *dyl:startnote* (reverse *dyl:note*)
+    )
     (setq *dyl:quiet* nil
           *dyl:warn*  nil
           *dyl:note*  nil
