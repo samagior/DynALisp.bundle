@@ -2881,14 +2881,10 @@
   )
 )
 
-;;  The items of the Group popup: All, then the groups of the presets in the order of the
-;;  groups (see Remote>>Dyl:Groups), a group typed in the presets file that is not one of
-;;  them last:
-(defun Dyl:QuickDrawGalleryGroups (/ have res)
-  (setq have (mapcar '(lambda (x) (strcase (nth 1 (car x)))) qg:all))
-  (foreach g (Remote>>Dyl:Groups)
-    (if (member (strcase g) have) (setq res (cons g res)))
-  )
+;;  The items of the Group popup: All, then every group (see Remote>>Dyl:Groups), also the
+;;  ones without a preset, a group typed in the presets file that is not one of them last:
+(defun Dyl:QuickDrawGalleryGroups (/ res)
+  (setq res (reverse (Remote>>Dyl:Groups)))
   (foreach x qg:all
     (if (not (member (strcase (nth 1 (car x))) (mapcar 'strcase res))) (setq res (cons (nth 1 (car x)) res)))
   )
@@ -3017,7 +3013,7 @@
         g                 (cond
                             ((not g) (cond ((Dyl:QuickDrawGalleryMatch (cond (*qd:gallerylast*) ("All")) qg:grps)) ("All")))
                             ((Dyl:QuickDrawGalleryMatch g qg:grps))
-                            (T (princ (strcat "\nNo Quick Draw preset in the group " g ": all the presets are shown.")) "All")
+                            (T (princ (strcat "\nNo Quick Draw group " g ": all the presets are shown.")) "All")
                           )
         dcl               (Dyl:QuickDrawGalleryDcl)
         id                (load_dialog dcl)
