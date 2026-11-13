@@ -118,6 +118,25 @@ The alias of a Quick Draw preset tells how it draws: `PL-*` for a preset drawn w
 
 *Why: one version number for every reader, updates readable without a GitHub account while the source stays private, users told what changed on each update, the users' edits kept by every update, and nothing left behind by the uninstall unless the user saves it.*
 
+## Git
+
+Claude commits as the work goes, without being asked; it pushes, merges into `main` and tags only when asked.
+
+- **Branches**: `main` always loads in AutoCAD, since git clones `git pull` it and releases are tagged from it.
+  - Work of several steps (a new tool, a rename across files, a window rebuilt) goes on a branch made from `main` before its first edit: `feature/<name>`, `fix/<name>` or `refactor/<name>`, in lower case with hyphens (`feature/object-layer-keys`).
+  - A change of one step (a small fix, a docs page, a convention) can go straight on `main`.
+  - A branch is merged into `main` with `git merge --no-ff` once the user has tried it in AutoCAD and asks for it, then deleted. Work found on `main` at the start of a session that is not committed is committed first, or moved to its branch, before anything new.
+- **Staging**: stage by path, only the files of the step (`git add <paths>`), never `git add -A` or `git add .`. Check `git status` before each commit:
+  - A file the user changed that is not part of the step is left out, and named in the reply.
+  - A file made by AutoCAD or a tool (a crash report, a `__pycache__`, a backup) is never committed: it goes in `.gitignore`.
+- **Commits**: one commit per step that is done and leaves DynALisp loading, made when the step is done, never one commit for a whole session.
+  - A step is committed whole: a tool with its docs page, its rows of `StartupSuite.csv` and `Aliases.csv`, its ribbon row with `DynALisp.cuix` built again, and the convention it brings in `CONVENTIONS.md`.
+  - A rename is a commit of its own (`git mv`, then the lines that name it), before the file is edited, so that git follows its history.
+  - The message is a short summary line in the imperative (*Add Object Layer Keys*, 72 characters at most), a blank line, then, when it helps, short lines on what changed and why; plain ASCII; it ends with the `Co-Authored-By` line.
+- **Never**: force push, rebase or amend a commit already pushed, skip the hooks, or commit to `main` work that does not load yet. A version raised (`AppVersion` and its `CHANGELOG.md` section) is one commit of its own; the `v<version>` tag is pushed only when the user asks for the release.
+
+*Why: `main` is what every git clone runs and what every release is built from, so it must always work; small commits by path keep each change easy to review and undo, keep the user's own edits and the files made by AutoCAD out of them, and let git follow a file through its renames.*
+
 ## Ribbon
 
 - The DynALisp tab of the ribbon (`Contents\Resources\DynALisp.cuix`) is **generated** by `Installer\Ribbon\BuildRibbon.py`, never edited in the CUI editor: its buttons are in `Installer\Ribbon\Ribbon.csv`, their icons in `Installer\Ribbon\RibbonIcons.py`, their names, descriptions (tooltips) and children read from `StartupSuite.csv`.
