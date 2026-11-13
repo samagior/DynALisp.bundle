@@ -51,6 +51,29 @@
   )
 )
 
+;; returns the layer name lay without its new phase suffix *new: the layer of its layer key
+;;   ex. -E -> -D : "G-Detl-Exst-D" -> "G-Detl-Exst"; unphased (*new ""): lay itself
+(defun Dyl-LayTransfer-Base (lay)
+  (if (and (/= "" *new) (wcmatch (strcase lay) (strcat "*" (strcase *new))))
+    (substr lay 1 (- (strlen lay) (strlen *new)))
+    lay
+  )
+)
+
+;; the phase code of the transfer ("-D" -> "D"), nil to unphased
+(defun Dyl-LayTransfer-Code ()
+  (if (wcmatch *new "-?*") (substr *new 2))
+)
+
+;; the target layer tgt of a phase transfer as its layer key says it should be (see
+;; Remote>>Dyl:LayerKeyExpected): the key with the name tgt and the color of the phase (the
+;; color of the key when it keeps it in every phase); nil when tgt is not the layer of a key
+(defun Dyl-LayTransfer-Key (tgt)
+  (if (and (= "Phase" *typ) Remote>>Dyl:LayerKeyExpected)
+    (Remote>>Dyl:LayerKeyExpected tgt (Dyl-LayTransfer-Base tgt) (Dyl-LayTransfer-Code))
+  )
+)
+
 ;; returns T if layer name lay matches and its target is a different layer
 (defun Dyl-LayTransfer-Changes (lay) 
   (and (Dyl-LayTransfer-Match lay) 
@@ -211,8 +234,8 @@
   )
 )
 
-(defun Dyl-LayTransfer (*pat *new / olderr *doc *layers *blocks *ss *objs *blks *map *lst *lck *tgt *src-obj *tgt-obj 
-                        *src-clr
+(defun Dyl-LayTransfer (*pat *new / olderr *doc *layers *blocks *ss *objs *blks *map *lst *lck *tgt *src-obj *tgt-obj
+                        *src-clr *key
                        ) 
   ;; *pat     - pattern string to match/replace in layer names (argument)
   ;; *new     - replacement string for the matched pattern (argument)
@@ -230,6 +253,7 @@
   ;; *src-obj - VLA layer object for the source layer (used when auto-creating target)
   ;; *tgt-obj - VLA layer object for the newly created target layer
   ;; *src-clr - ACI color number of the source layer, used to derive target layer color
+  ;; *key     - the target as its layer key says it should be (Dyl-LayTransfer-Key), nil: not a key layer
 
   (setq olderr *error*)
   (defun *error* (*erm) 
@@ -281,16 +305,24 @@
         )
       )
 
-      ;; compute target layer name for each source layer, auto-create if missing
-      (foreach x *lst 
-        (setq *tgt (Dyl-LayTransfer-Target x))
-        (if (not (tblsearch "LAYER" *tgt)) 
+      ;; compute target layer name for each source layer, auto-create if missing; an existing
+      ;; target of a layer key that differs from it: asked whether to update it to its key
+      ;; (the window of the layer keys, see Remote>>Dyl:LayerKeyCheck)
+      (foreach x *lst
+        (setq *tgt (Dyl-LayTransfer-Target x)
+              *key (Dyl-LayTransfer-Key *tgt)
+        )
+        (if (and (tblsearch "LAYER" *tgt) *key) (Remote>>Dyl:LayerKeyCheck *key))
+        (if (not (tblsearch "LAYER" *tgt))
           (progn 
             (setq *src-obj (vla-item *layers x))
             (setq *tgt-obj (vla-add *layers *tgt))
             (setq *src-clr (vla-get-color *src-obj))
-            (vla-put-color *tgt-obj 
-                           (cond 
+            (vla-put-color *tgt-obj
+                           (cond
+                             ;; the layer of a layer key: the color of its key in that phase (the
+                             ;; color of the key when it keeps it in every phase)
+                             (*key (atoi (nth 2 *key)))
                              ((= *new "-D") (atoi (strcat "2" (substr (itoa *src-clr) (strlen (itoa *src-clr))))))
                              ((= *new "-E") (atoi (strcat "20" (substr (itoa *src-clr) (strlen (itoa *src-clr))))))
                              ;; unphased from -D (2#) or -E (20#) : back to base color #

@@ -28,7 +28,7 @@
 </tr>
 <tr class="alt">
 <td>Requires</td>
-<td>AutoCAD for Windows (ActiveX / ObjectDBX); the shape libraries of <span class="fixw">Modules\Dynalisp\Res\Shapes</span>; Dynalisp preset engine, <a href="Dyl-QuickDraw.htm#materials">materials</a> and <a href="../Layer/Dyl-LayerKeys.htm">layer keys</a> (loaded at startup)</td>
+<td>AutoCAD for Windows (ActiveX / ObjectDBX); the shape libraries of <span class="fixw">Modules\Dynalisp\Res\Shapes</span>; Dynalisp preset engine, <a href="Dyl-QuickDraw.htm#materials">hatch presets</a> and <a href="../Layer/Dyl-LayerKeys.htm">layer keys</a> (loaded at startup)</td>
 </tr>
 <tr>
 <td>Licence</td>
@@ -37,8 +37,8 @@
 </table>
 </div>
 <h2>Program Description</h2>
-<p>The companion of <a href="Dyl-QuickDraw.htm">Quick Draw</a> for premade shapes: studs, bricks, CMU, steel sections&hellip; Each preset inserts a shape from a library drawing, dragged into place (insertion point, then rotation), again and again until Enter or Esc. Each shape is exploded: its closed outlines are filled with the hatch of the preset <a href="Dyl-QuickDraw.htm#materials">material</a> (an outline inside another one is an island, e.g. the cores of a CMU), and all its objects go on the outline layer key of the material. Quick Draw and Quick Shape share the same materials: editing <em>Brick</em> changes both.</p>
-<p><span class="fixw">DYL-QUICKSHAPE</span> opens the preset editor, the same as the one of Quick Draw (list, aliases, New, Copy, Delete, Reset Selected, Reset All, Material and Edit materials...). The presets are saved to <span class="fixw">Modules\Dynalisp\Res\QuickShape.csv</span>; each custom preset gets a command <span class="fixw">Pst-QuickShapeCustom&lt;Name&gt;</span> to give aliases to.</p>
+<p>The companion of <a href="Dyl-QuickDraw.htm">Quick Draw</a> for premade shapes: studs, bricks, CMU, steel sections&hellip; Each preset inserts a shape from a library drawing, dragged into place (insertion point, then rotation), again and again until Enter or Esc. Each shape is exploded: its closed outlines are filled with the hatch of the preset <a href="Dyl-QuickDraw.htm#materials">hatch preset</a> (an outline inside another one is an island, e.g. the cores of a CMU), and all its objects go on the outline layer key of the hatch preset. Quick Draw and Quick Shape share the same hatch presets: editing <em>Brick</em> changes both.</p>
+<p><span class="fixw">DYL-QUICKSHAPE</span> opens the preset editor, the same as the one of Quick Draw (list, aliases, New, Copy, Delete, Reset Selected, Reset All, Group picked from the groups (edited in the <a href="Dyl-PresetGroups.htm">Preset Groups</a> window, its open button left of the list), Hatch preset (the hatch presets of that group) and its open button to the Hatch Presets window, several presets edited at once). The presets are saved to <span class="fixw">Modules\Dynalisp\Res\QuickShape.csv</span>; each custom preset gets a command <span class="fixw">Pst-QuickShapeCustom&lt;Name&gt;</span> to give aliases to.</p>
 <h2 id="libraries">Shape Libraries</h2>
 <p>The shapes are blocks in library drawings: <strong>every <span class="fixw">.dwg</span> of <span class="fixw">Modules\Dynalisp\Res\Shapes</span> is a library, and every block in it is a shape</strong>. One drawing with many blocks or many drawings with one block each both work, and both can be mixed (e.g. <span class="fixw">Wood.dwg</span>, <span class="fixw">Masonry.dwg</span>, <span class="fixw">Steel.dwg</span>). A shape is shown as <em>Library: Block</em>. When the folder has no library, a starter <span class="fixw">Shapes.dwg</span> is made with the shapes of the default presets.</p>
 <div class="spacedbullets">
@@ -60,9 +60,10 @@
 <h2>Preset Dialog</h2>
 <div class="spacedbullets">
 <ul>
-<li><strong>Material</strong> &ndash; the <a href="Dyl-QuickDraw.htm#materials">material</a> that fills the shape, with <strong>Edit materials...</strong>.</li>
+<li><strong>Hatch preset</strong> &ndash; the <a href="Dyl-QuickDraw.htm#materials">hatch preset</a> that fills the shape; the square open button just left of it opens the Hatch Presets window.</li>
 <li><strong>Shape</strong> &ndash; picked from the shapes of every library. A shape used by a preset but no longer found stays in the list, marked <em>(missing shape)</em>, until another one is picked.</li>
 <li><strong>Scale</strong> &ndash; insertion scale, on top of the block units (&gt; 0).</li>
+<li><strong>Border settings</strong> &ndash; the border of the shape: the layer key its closed outlines and linework go on, and the overrides of its <em>Color</em>, <em>Linetype</em>, <em>Linetype scale</em>, <em>Lineweight</em> and <em>Transparency</em>, as in the <a href="Dyl-QuickDraw.htm#border">Border settings</a> of Quick Draw. A shape is always drawn with its border: there is no <em>Has a border</em>. Saved with the preset (border columns of <span class="fixw">QuickShape.csv</span>); a preset of an older file gets the border of its hatch preset.</li>
 <li><strong>Draw</strong> saves the presets and inserts the selected one, <strong>Save</strong> saves without inserting, <strong>Cancel</strong> discards the changes. <strong>Open Docs</strong> opens this page.</li>
 </ul>
 </div>
@@ -70,7 +71,7 @@
 <p>Default presets (restored by <em>Reset Selected</em> / <em>Reset All</em>). Their shapes are in the starter library <span class="fixw">Shapes.dwg</span> (inches).</p>
 <div class="programs commands wide">
 <table>
-<tr><th>Alias</th><th>Preset</th><th>Shape</th><th>Material</th></tr>
+<tr><th>Alias</th><th>Preset</th><th>Shape</th><th>Hatch preset</th></tr>
 <tr><td><span class="fixw">QS-STUD2X4</span></td><td>Stud 2x4</td><td>3.5 x 1.5</td><td>Wood Frame</td></tr>
 <tr><td><span class="fixw">QS-STUD2X6</span></td><td>Stud 2x6</td><td>5.5 x 1.5</td><td>Wood Frame</td></tr>
 <tr><td><span class="fixw">QS-STUD2X8</span></td><td>Stud 2x8</td><td>7.25 x 1.5</td><td>Wood Frame</td></tr>

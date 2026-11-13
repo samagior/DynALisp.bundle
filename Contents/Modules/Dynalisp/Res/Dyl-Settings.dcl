@@ -31,12 +31,12 @@ set_head  : text {width = 32; fixed_width = true;}
 set_pop   : popup_list {width = 32; fixed_width = true;}
 pref_label : text {width = 29; fixed_width = true;}
 pref_pop  : popup_list {width = 37; fixed_width = true;}
-// Reactors and Overrides: a setting with its "..." button, which opens the window that edits it (the
+// Reactors and Overrides: a setting with its open button, which opens the window that edits it (the
 // toggles are as wide, so the buttons line up):
-// Both one line high, so the rows and their descriptions sit close together. The "..."
-// button is a square image button (a plain button cannot be made that small, the aspect
-// ratio of 1 gives it a width equal to its height): its "open" icon is drawn by
-// Dyl:SetDlgMore in dynalisp.mnl:
+// Both one line high, so the rows and their descriptions sit close together. The open
+// button is the square image button of every DynALisp window (a plain button cannot be
+// made that small, the aspect ratio of 1 gives it a width equal to its height): its
+// "open" icon is drawn by Dyl:MoreTile in dynalisp.mnl:
 set_tog   : toggle {width = 38; fixed_width = true; height = 1; fixed_height = true;}
 set_more  : image_button {height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15;}
 // Short description under a reactor setting, greyed out and indented by set_indent
@@ -70,6 +70,13 @@ dyl_settings
           : set_more {key = "ldo";}
         }
         : concatenation {: set_indent {} : set_desc {label = "Stacks new objects by layer level.";}}
+        // DynalispObjectKeys (Reactor\Dyl-ObjectLayerKeys.lsp): ... runs Dyl-ObjectLayerKeys
+        // (the key of each kind of object), then opens this window again:
+        : row {
+          : set_tog {label = "Auto layer keys"; key = "alk";}
+          : set_more {key = "lol";}
+        }
+        : concatenation {: set_indent {} : set_desc {label = "Puts new dimensions, text on their key.";}}
         // DynalispSettingsSync (Dyl:SettingsSyncOn-p, Reactor\Dyl-SettingsSync.lsp):
         : set_tog {label = "Settings sync"; key = "syn";}
         : concatenation {: set_indent {} : set_desc {label = "Open drawings follow saved settings.";}}
@@ -115,6 +122,17 @@ dyl_settings
         }
         : spacer {}
       }
+      // The layers of the layer keys that exist with other values than their key (Remote\Dyl-LayerKey.lsp,
+      // Remote>>Dyl:LayerKeyCheck): asked by default (Yes / No); the answer remembered by
+      // "Remember my answer" of that question is set here, or taken back (both off): one of
+      // the two at most (DynalispLayerKeyUpdate, DynalispLayerKeyKeep):
+      : boxed_column {label = "Layer keys";
+        : set_desc {label = "Existing layers that differ from their key.";}
+        : spacer {height = 0.5;}
+        : set_tog {label = "Update them without asking"; key = "lku";}
+        : set_tog {label = "Keep them without asking"; key = "lkk";}
+        : concatenation {: set_indent {} : set_desc {label = "Both off: asked when the key is used.";}}
+      }
       // New versions of DynALisp (Dyl:UpdAuto, DynalispAutoUpdate): checked once a day by
       // the first drawing opened, the setup started (installs when AutoCAD closes). For a
       // git clone, greyed out and its description says so (aud, set by Dyl:SetDlgFill):
@@ -135,7 +153,7 @@ dyl_settings
 }
 
 
-// The drawing defaults window (opened by the ... button of Drawing defaults in
+// The drawing defaults window (opened by the open button of Drawing defaults in
 // dyl_settings, see Dyl:SetDefsDlg). Popups of the unit (u) and grid (g) presets for the
 // imperial (im) and metric (mt) drawings, first item: not checked:
 dyl_drawdefs
@@ -179,7 +197,7 @@ dyl_drawdefs
 }
 
 
-// The display window (opened by the ... button of Display in dyl_settings, see
+// The display window (opened by the open button of Display in dyl_settings, see
 // Dyl:SetDisplayDlg): the display settings applied in every drawing while Display is on.
 // The other display settings are to be added to this box:
 dyl_display
@@ -202,7 +220,7 @@ dyl_display
 }
 
 
-// The file preferences window (opened by the ... button of the DynALisp profile in
+// The file preferences window (opened by the open button of the DynALisp profile in
 // dyl_settings, see Dyl:SetPrefsDlg): the paths of the DynALisp profile, from
 // Res\FilePrefs.csv. Popups in the *fp:prefs* order (*dyl:setprefs*):
 dyl_fileprefs

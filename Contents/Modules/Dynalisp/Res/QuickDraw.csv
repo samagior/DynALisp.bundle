@@ -1,38 +1,38 @@
-Id;Group;Name;Material;Method
-qd-Demolition;Phase;Demolition;mt-Demolition;
-qd-NotInContract;Phase;Not In Contract;mt-NotInContract;
-qd-Existing;Phase;Existing;mt-Existing;
-qd-Concrete;Section;Concrete;mt-Concrete;
-qd-LightweightConcrete;Section;Lightweight Concrete;mt-LightweightConcrete;
-qd-Mortar;Section;Mortar;mt-Mortar;
-qd-Brick;Section;Brick;mt-Brick;
-qd-Stone;Section;Stone;mt-Stone;
-qd-CMU;Section;CMU;mt-CMU;
-qd-Firebrick;Section;Firebrick;mt-Firebrick;
-qd-Marble;Section;Marble;mt-Marble;
-cu-Test;Section;Test;cu-Test;
-qd-Grout;Section;Grout;mt-Grout;
-qd-Iron;Section;Iron;mt-Iron;
-qd-Steel;Section;Steel;mt-Steel;
-qd-Bronze;Section;Bronze;mt-Bronze;
-cu-ModularBrick;Elevation;Modular Brick;cu-ModularBrick;
-qd-Lead;Section;Lead;mt-Lead;
-qd-Aluminium;Section;Aluminium;mt-Aluminium;
-qd-Plywood;Section;Plywood;mt-Plywood;
-qd-WoodPlank;Section;Wood Plank;mt-WoodPlank;
-qd-WoodFrame;Section;Wood Frame;mt-WoodFrame;
-qd-Particleboard;Section;Particleboard;mt-Particleboard;
-qd-Hardboard;Section;Hardboard;mt-Hardboard;
-qd-Plastic;Section;Plastic;mt-Plastic;
-qd-LooseInsulation;Section;Loose Insulation;mt-LooseInsulation;
-qd-SprayInsulation;Section;Spray Insulation;mt-SprayInsulation;
-qd-RigidInsulation;Section;Rigid Insulation;mt-RigidInsulation;
-qd-Gypsum;Section;Gypsum;mt-Gypsum;
-qd-Plaster;Section;Plaster;mt-Plaster;
-qd-CompactedSoil;Section;Compacted Soil;mt-CompactedSoil;
-qd-Topsoil;Section;Topsoil;mt-Topsoil;
-qd-UndisturbedSoil;Section;Undisturbed Soil;mt-UndisturbedSoil;
-qd-Sand;Section;Sand;mt-Sand;
-qd-Asphalt;Section;Asphalt;mt-Asphalt;
-qd-Gravel;Section;Gravel;mt-Gravel;
-qd-CrushedStone;Section;Crushed Stone;mt-CrushedStone;
+Id;Group;Name;Material;Method;Override;Width;Justify;Sides;ScaleWidth;WidthFactor;OriginOnLine;OriginOffset;ShrinkGap;ShrinkGapOn;ShrinkGapMetric;OriginAlong;OutlineKey;BorderColorOn;BorderColor;BorderLinetypeOn;BorderLinetype;BorderLtScaleOn;BorderLtScale;BorderLineweightOn;BorderLineweight;BorderTransparencyOn;BorderTransparency;NoBorder
+qd-Demolition;Phase;Demolition;mt-Demolition;;1;;Center;;0;1;0;0;;0;;0;THIN;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-NotInContract;Phase;Not In Contract;mt-NotInContract;;1;;Center;;0;1;0;0;;0;;0;XLINE;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Existing;Phase;Existing;mt-Existing;;1;;Center;;0;1;0;0;;0;;0;XLINE;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Concrete;Section;Concrete;mt-Concrete;;1;;Center;;0;1;0;0;;0;;0;WIDE;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-LightweightConcrete;Section;Lightweight Concrete;mt-LightweightConcrete;;1;;Center;;0;1;0;0;;0;;0;THIN;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Mortar;Section;Mortar;mt-Mortar;;1;;Center;;0;1;0;0;;0;;0;FINE;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Brick;Section;Brick;mt-Brick;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Stone;Section;Stone;mt-Stone;;1;;Center;;0;1;0;0;;0;;0;WIDE;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-CMU;Section;CMU;mt-CMU;;1;;Center;;0;1;0;0;;0;;0;WIDE;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Firebrick;Section;Firebrick;mt-Firebrick;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Marble;Section;Marble;mt-Marble;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+cu-Test;Section;Test;cu-Test;;1;;Center;;0;1;0;0;;0;;0;THIN;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Grout;Section;Grout;mt-Grout;;1;;Center;;0;1;0;0;;0;;0;XLINE;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Iron;Section;Iron;mt-Iron;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Steel;Section;Steel;mt-Steel;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Bronze;Section;Bronze;mt-Bronze;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+cu-ModularBrick;Elevation;Modular Brick;cu-ModularBrick;;1;;Center;;0;1;0;0;;0;;0;THIN;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Lead;Section;Lead;mt-Lead;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Aluminium;Section;Aluminium;mt-Aluminium;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Plywood;Section;Plywood;mt-Plywood;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-WoodPlank;Section;Wood Plank;mt-WoodPlank;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-WoodFrame;Section;Wood Frame;mt-WoodFrame;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Particleboard;Section;Particleboard;mt-Particleboard;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Hardboard;Section;Hardboard;mt-Hardboard;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Plastic;Section;Plastic;mt-Plastic;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-LooseInsulation;Section;Loose Insulation;mt-LooseInsulation;;1;;Center;;0;1;0;0;;0;;0;HATCH;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-SprayInsulation;Section;Spray Insulation;mt-SprayInsulation;;1;;Center;;0;1;0;0;;0;;0;HATCH;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-RigidInsulation;Section;Rigid Insulation;mt-RigidInsulation;Linear;1;25,50,75,100;Ask;;1;1;0;0;;0;;0;THIN;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Gypsum;Section;Gypsum;mt-Gypsum;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Plaster;Section;Plaster;mt-Plaster;;1;;Center;;0;1;0;0;;0;;0;THIN;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-CompactedSoil;Section;Compacted Soil;mt-CompactedSoil;;1;;Center;;0;1;0;0;;0;;0;XLINE;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Topsoil;Section;Topsoil;mt-Topsoil;;1;;Center;;0;1;0;0;;0;;0;XLINE;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-UndisturbedSoil;Section;Undisturbed Soil;mt-UndisturbedSoil;;1;;Center;;0;1;0;0;;0;;0;XLINE;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Sand;Section;Sand;mt-Sand;;1;;Center;;0;1;0;0;;0;;0;FINE;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Asphalt;Section;Asphalt;mt-Asphalt;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-Gravel;Section;Gravel;mt-Gravel;;1;;Center;;0;1;0;0;;0;;0;FINE;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+qd-CrushedStone;Section;Crushed Stone;mt-CrushedStone;;1;;Center;;0;1;0;0;;0;;0;FINE;0;7;0;CONTINUOUS;0;1;0;25;0;50;0

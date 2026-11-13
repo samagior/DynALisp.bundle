@@ -2,6 +2,7 @@
 
 [![Discord Server](https://img.shields.io/discord/1181042941859467284?logo=discord&logoColor=white)](https://discord.gg/hP2UEVpK)
 [![Licence](https://img.shields.io/badge/License-GPL%20v3-blue.svg?)](http://www.gnu.org/licenses/gpl-3.0)
+[![Powered by Claude](https://img.shields.io/badge/Powered%20by-Claude-D97757?logo=claude&logoColor=white)](https://claude.com/claude-code)
 
 &nbsp;
 
@@ -9,7 +10,8 @@
 
 DynALisp is an open source AutoCAD plugin and development platform written in AutoLISP / Visual LISP. Use it as is, with its built-in tools, or as a base to build your own. It ships as an Autodesk plugin bundle, so it is easy to deploy, manage and customize: every tool can be turned on or off, renamed with aliases, and documented, without touching the code.
 
-- **Ready-made tools** - about 40 DynALisp tools (drawing presets, layers, cleaning, output prep, setup...) and over 100 tools by Lee Mac, each with its docs page.
+- **Ready-made tools** - about 40 DynALisp tools (drawing presets, layers, cleaning, output prep, setup...), each with its docs page.
+- **A sample module** - the LeeMac module showcases what DynALisp does with existing AutoLISP programs: over 100 tools by Lee Mac, indexed, turned on or off, given aliases and docs pages, without touching their code. Use it as a model for your own module.
 - **One window for every setting** - drawing settings, file preferences, system variables and reactors, applied to all drawings and off until you turn them on.
 - **Your edits stay yours** - the defaults are in the repository, your changes are saved to a separate `User` folder, and can be reset at any time.
 - **Built for developers** - a large library of subfunctions, available in VS Code as snippets to speed up writing new tools.
@@ -60,13 +62,15 @@ Type `Dyl` in the command line to see the main commands. The core commands:
 | `Dyl-Settings` | Drawing settings, file preferences, system variables, reactors, commands |
 | `Dyl-PrepSuite` | Output prep: the steps run before saves, prints and REGEN |
 | `Dyl-UserFiles` | Your edited files (presets, aliases...): open, reset or make default |
-| `Dyl-Docs` / `LM-Docs` | Open the docs of the DynALisp / Lee Mac module |
+| `Dyl-Docs` / `LM-Docs` | Open the docs of every module (the Docs button of the ribbon) / of the LeeMac sample module |
 | `Dyl-Reload` | Load the module commands again, as turned on in Dyl-Suite |
 | `Dyl-SuiteUpdate` | Rebuild the command index (`StartupSuite.csv`) from the Lisp files |
 | `Dyl-VSCode` | Open the DynALisp folder in VS Code |
 | `Dyl-RestoreCommands` | Use the native save, plot, publish, preview and regen commands this session |
 
 Every window has an **Open Docs** button that opens its page.
+
+The **DynALisp** tab of the ribbon has a button for each tool of the DynALisp module, in a panel per group (Draw, Layers, Layer Tools, Text, Cleaning, Navigate, Output, Setup, Utilities) and the core commands in the DynALisp panel. The **Quick Draw** button opens the Quick Draw Gallery (a tile with its hatch for each preset; its arrow opens it on a group), **Quick Draw Manager** the Quick Draw window. The arrow of a button lists its presets (the phases, the drawing scales...), and the button then runs the one picked last, as the Circle button of AutoCAD (the main tool is always first in the list); the tools used less often are in the slide-out of their panel (the arrow beside its title). A tool turned off in `Dyl-Suite` answers *Unknown command* when its button is clicked.
 
 ### DynALisp Tools
 
@@ -94,11 +98,11 @@ DynALisp.bundle
 │  ├─ Resources              Core: dynalisp.mnl, ribbon, Startup Suite, aliases, core dialogs, docs.css
 │  └─ Modules
 │     ├─ Dynalisp            The DynALisp tools
-│     ├─ LeeMac              The Lee Mac tools and subfunctions
+│     ├─ LeeMac              The sample module: the Lee Mac tools and subfunctions
 │     └─ gileCAD             The gileCAD subfunctions
 ├─ User                      Your edited copies of the data files (not in git)
 ├─ Licences                  Licences of the third-party code
-├─ Installer                 The setup (Inno Setup) and its build script
+├─ Installer                 The setup (Inno Setup) and its build script; Ribbon: the ribbon builder
 ├─ .github                   The release workflow
 └─ .vscode                   VS Code settings and subfunction snippets
 ```
@@ -111,7 +115,7 @@ Each module has the same folders:
 - **Res** - the data files (CSV) and dialogs (DCL) of the module.
 - **Docs** - the HTML docs, one page per tool.
 
-Add your own tools as a new module folder under `Contents\Modules`: it is loaded and indexed like the others. A personal module can be kept out of git (see `.gitignore`).
+Add your own tools as a new module folder under `Contents\Modules`: it is loaded and indexed like the others. The LeeMac module is the sample to follow: existing programs, each with one `LM-*` main command, its `Pst-*` children and aliases, shared subfunctions in `Remote`, and a docs page per program. A personal module can be kept out of git (see `.gitignore`).
 
 &nbsp;
 
@@ -120,6 +124,16 @@ Add your own tools as a new module folder under `Contents\Modules`: it is loaded
 Open the folder in VS Code with `Dyl-VSCode` (it offers to install VS Code when missing). The workspace recommends the AutoLISP extension and adds two snippet files, `LM-LocalSub` and `LM-RemoteSub`, for the Lee Mac subfunctions: insert a subfunction as local code, or as a call to its `Remote>>` copy loaded at startup. `.vscode\lmsnippets.py` regenerates them from `LM-Sub.lsp`.
 
 Before adding a tool, read [CONVENTIONS.md](CONVENTIONS.md): command naming (`Dyl-*` main command, `Pst-*` children, aliases), where files go, settings, reactors, user files and windows. After adding or renaming a command, run `Dyl-SuiteUpdate` to index it.
+
+### The ribbon
+
+`Contents\Resources\DynALisp.cuix` is written by `Installer\Ribbon\BuildRibbon.py` (Python 3 with Pillow: `pip install pillow`), never in the CUI editor:
+
+- `Installer\Ribbon\Ribbon.csv` - the panels and buttons: the panel, the stack (empty: a large button; a number: small buttons stacked together; `>1`: a row of the slide-out), the command, its children listed under its arrow (`*`, or patterns divided by `|`), and a name and description for a command that is not in `StartupSuite.csv`.
+- `Installer\Ribbon\RibbonIcons.py` - the icon of each command, drawn at 16 and 32 px and stored in the CUIx. A child without an icon of its own uses the icon of its main command.
+- `Installer\Ribbon\ContextMenus.csv` - the commands added to the right-click menus of AutoCAD: the menu (`OBJECT_MTEXT` for one mtext selected, `OBJECTS_MTEXT` for several...) and the command. Empty for now: the first menus made AutoCAD crash on the right click (see `BuildRibbon.py`).
+
+Run `python Installer\Ribbon\BuildRibbon.py` after adding, renaming or removing a tool: it warns about a main command of the module missing from `Ribbon.csv` or without an icon. `--sheet <file.png>` draws every icon, on the light and the dark ribbon, to review them. Restart AutoCAD to see the new ribbon.
 
 ### Releasing a version
 
@@ -148,6 +162,25 @@ The [release workflow](.github/workflows/release.yml) checks the tag against `Ap
 
 &nbsp;
 
+## Powered By Claude
+
+[![Claude](https://img.shields.io/badge/Claude-Anthropic-D97757?logo=claude&logoColor=white&style=for-the-badge)](https://claude.com/claude-code)
+
+DynALisp is developed with [Claude Code](https://claude.com/claude-code), Anthropic's coding assistant: the ribbon and its icons, the Quick Draw gallery and assemblies, the layer keys, the docs pages and the [conventions](CONVENTIONS.md) were written with it. The **Claude Text Fix** tool (`Dyl-ClaudeTextFix`) uses Claude itself to proofread the texts of a drawing.
+
+### Working on DynALisp with Claude Code
+
+- **Start it in the bundle folder.** [CLAUDE.md](CLAUDE.md) loads [CONVENTIONS.md](CONVENTIONS.md) in every session, so each change follows the DynALisp rules (naming, folders, settings, windows, docs) without repeating them.
+- **Ask for the result, one change at a time.** Name the tool and the window, say what should happen ("in Quick Draw, grey out the hatch preset when Assembly is checked"); a short request reviewed and tested beats a long one.
+- **Plan the large changes first.** For a new tool or a window redesign, ask for a plan (plan mode) and answer its questions before any code is written.
+- **Make new rules conventions.** When you agree on how something should always be done, ask Claude to add it to CONVENTIONS.md, with its reason: the next sessions will follow it.
+- **Test in AutoCAD.** Claude cannot run AutoCAD: reload (`Dyl-Reload`, or restart AutoCAD for the menu and `dynalisp.mnl`), try the change, and paste back the command line text of an error. Describe what you see in the window when the layout is off.
+- **Rebuild what is generated.** After a tool is added or renamed: `Dyl-SuiteUpdate` for the Startup Suite, and `python Installer\Ribbon\BuildRibbon.py` for the ribbon (Claude runs it when it changes the ribbon).
+- **Review, then commit.** Read the diff before committing; Claude commits only when asked.
+- **Keep keys out of the files.** Claude Text Fix reads its Anthropic API key from the `ANTHROPIC_API_KEY` environment variable (or asks for it, kept for the session only): never write a key in a Lisp, CSV or settings file.
+
+&nbsp;
+
 ## Licence
 
 DynALisp is released under the [GNU GPL v3](LICENSE). The Lee Mac tools keep their own licence: see [LEE-MAC-LICENCE](Licences/LEE-MAC-LICENCE.md).
@@ -158,4 +191,5 @@ DynALisp is released under the [GNU GPL v3](LICENSE). The Lee Mac tools keep the
 - **Gilles Chanteau** ; founder of [gileCAD](https://gilecad.azurewebsites.net/Default.aspx) and yet another very helpful resource in the community, publisher of my AutoLISP bible: [Introduction à AutoLISP](https://apps.autodesk.com/ACD/en/Detail/Index?id=6145646386361353211&appLang=fr&os=Win32_64) (French only).
 - **Jimmy Bergmark** ; founder of [JTB World](https://jtbworld.com/), creator of many plug-ins on the Autodesk App Store.
 - **Arnold Higuit** ; maker of a very extensive course on Udemy: [Practical AutoLISP Programming - Beginner to Advanced](https://www.udemy.com/course/practical-autolisp-programming-beginner-to-advanced/). A sample is available on [YouTube](https://www.youtube.com/watch?v=OqD9iW_bp4U&list=PLQKJ4G-oY3jOZV0x8K3dlR--wGwaHPT1D) as well. Not recommended as a full play-through, as it is not the most entertaining, but very well structured and a good reference to keep on hand.
+- **Claude** ; Anthropic's AI assistant, through [Claude Code](https://claude.com/claude-code): a partner for the code, the icons, the docs and the conventions of DynALisp (see [Powered By Claude](#powered-by-claude)).
 - **Nikolay Raspopov** ; founder of [CADSTA](https://www.cadsta.com/) and creator of the [AutoCAD AutoLISP Extension](https://marketplace.visualstudio.com/items?itemName=NikolayRaspopov.AutoCAD-AutoLISP) for VS Code.

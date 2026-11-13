@@ -15,8 +15,9 @@
     <div id="content">
         <h1>Field Objects</h1>
 
-        <p class="note">This page is a copy of the original help page on Lee Mac's website, included here for offline
-            reference. For the latest version, see the original page:
+        <p class="note">This program is part of the <a href="../index.htm">LeeMac sample module</a>, which
+            showcases how DynALisp turns existing AutoLISP programs into a module. The description below is a copy of
+            the original help page on Lee Mac's website, included here for offline reference. For the latest version, see the original page:
             <a href="https://lee-mac.com/fieldobjects.html" target="_blank">https://lee-mac.com/fieldobjects.html</a></p>
 
 <div class="programs">
@@ -46,8 +47,8 @@
 <p>This program enables the user to easily view the object or set of objects referenced by a selected field.</p>
 <p>Upon issuing the command syntax <span class="fixw">fieldobjects</span> at the AutoCAD command-line, the program will prompt the user to
                 select an annotation object (Text, MText or Attribute) containing one or more field expressions referencing one or more objects in the
-                active drawing. Such fields may be created using my <a href="LM-Areas2Field.htm">Areas to Field</a> program, or my 
-                <a href="LM-Areas2Attribute.htm">Area Field to Attribute</a> program, for example.</p>
+                active drawing. Such fields may be created using my <a href="LM-AreaFieldToMtext.htm">Areas to Field</a> program, or my 
+                <a href="LM-AreaFieldToAttribute.htm">Area Field to Attribute</a> program, for example.</p>
 <p>Following a valid selection, the program will enclose the selected annotation object containing the field(s) with a green rectangular
                 text box, with links to every referenced object, each of which is surrounded by a red rectangular bounding box. The size of the rectangular
                 frames relative to the enclosed objects is dependent on the current zoom level, and will automatically update as the user zooms &amp; 
@@ -91,7 +92,7 @@
         </details>
 <!-- dyl:aliases -->
 <h2 id="aliases">Command Names And Aliases</h2>
-<p>This page is a copy of Lee Mac's page: the commands keep their original names as aliases. Each program has one main command starting with <span class="fixw">LM-</span>. The short names are its aliases: they run the same command, and can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (saved in <span class="fixw">Resources\Aliases.csv</span>).</p>
+<p>As in every DynALisp module, each program of this sample module has one main command, named <span class="fixw">LM-*</span>, and the original command names of Lee Mac's page are kept as its aliases: they run the same command, and can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (saved in <span class="fixw">Resources\Aliases.csv</span>).</p>
 <div class="programs commands wide">
 <table>
 <tr><th>Command</th><th>Aliases</th><th>Name</th></tr>

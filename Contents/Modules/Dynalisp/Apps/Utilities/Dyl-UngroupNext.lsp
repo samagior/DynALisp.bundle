@@ -56,7 +56,7 @@
 ;; Ungroup Nested
 ;; Removes every group, at every nesting level, that contains the selected objects.
 
-(defun c:Dyl-UngroupNested (/ doc ss n i selentities anydeleted groups grouplist grp gname count j memberobj matched) 
+(defun c:Dyl-UngroupNext (/ doc ss n i selentities anydeleted groups grouplist grp gname count j memberobj matched) 
 
   (vl-load-com)
 
@@ -127,5 +127,5 @@
   (princ)
 )
 
-(princ "\nUngroupNext.lsp loaded. Type Dyl-UngroupNested to run.")
+(princ "\nUngroupNext.lsp loaded. Type Dyl-UngroupNext to run.")
 (princ)

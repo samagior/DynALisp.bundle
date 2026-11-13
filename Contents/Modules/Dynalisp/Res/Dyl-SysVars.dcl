@@ -36,7 +36,8 @@ dyl_sysvars
     // Variable, Preferred value, Current value (marked when it differs), as the protected
     // variables below:
     : list_box {key = "hdr"; width = 84; height = 2; fixed_height = true; tabs = "22 44"; is_enabled = false;}
-    : list_box {key = "lst"; width = 84; height = 14; tabs = "22 44";}
+    // Several rows can be selected (Ctrl / Shift click): Remove removes them all:
+    : list_box {key = "lst"; width = 84; height = 14; tabs = "22 44"; multiple_select = true;}
     : row {
       : edit_box {label = "Variable:"; key = "var"; edit_width = 18; edit_limit = 64;}
       : edit_box {label = "Preferred value:"; key = "val"; edit_width = 24; edit_limit = 255;}
@@ -54,7 +55,7 @@ dyl_sysvars
   // drawing whatever the profile, no profile changes them (no value: protected only):
   : boxed_column {label = "Protected variables (set in every drawing, never changed by a profile)";
     : list_box {key = "khd"; width = 84; height = 2; fixed_height = true; tabs = "22 44"; is_enabled = false;}
-    : list_box {key = "kls"; width = 84; height = 7; tabs = "22 44";}
+    : list_box {key = "kls"; width = 84; height = 7; tabs = "22 44"; multiple_select = true;}
     : row {
       : edit_box {label = "Variable:"; key = "kvr"; edit_width = 18; edit_limit = 64;}
       : edit_box {label = "Preferred value:"; key = "kvl"; edit_width = 24; edit_limit = 255;}

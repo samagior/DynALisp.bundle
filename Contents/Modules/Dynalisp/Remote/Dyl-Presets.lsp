@@ -253,12 +253,21 @@
 ;;    (check  . <function: key value -> error message, nil when valid>)
 ;;    (init   . <function: fill the popups and set the actions of the App tiles>)
 ;;    (state  . <function: preset -> enable / disable the App tiles>)
+;;    (warn . 5)      ; OK asks first when more than 5 presets were changed (Materials)
+;;    (noun . "materials") ; what the presets are called in the messages ("presets")
+;;    (skip   . <function: preset -> keys of the App tiles not stored, e.g. greyed out tiles
+;;               that only show values stored elsewhere; optional>)
 ;;    (status . <function: code preset, called when the dialog is closed with a code >= 3;
 ;;               returns save to save the presets and close the dialog (no reopen)>)
 ;;    (prefix . <function: preset -> text put in the new alias box, e.g. "QD-">)
 ;;    (select . <id of the preset selected when the dialog opens (default: the last one)>)
-;;    (groups "Floor" ...)          ; groups of the Group popup (no groups: Group is an edit box)
+;;    (groups . T)                  ; Group is a popup of the groups (Remote\Dyl-Groups.lsp), with
+;;                                  ; its open button to the Preset Groups window (no groups:
+;;                                  ; Group is an edit box)
 ;;    (material . 3)                ; index of a material id in a preset (see Materials below)
+;;    (matinparams . T)             ; the Hatch preset row (keys matl, edm, mat) is in the
+;;                                  ; params of the tool, not at the top of Parameters, and
+;;                                  ; has no summary line (mts) under it
 ;;
 ;;  An App button closes the dialog with a code from 3 to 8 (after Remote>>Dyl:PresetDlgCommit):
 ;;  status is called (e.g. to show another dialog, not nested in this one), then this
@@ -273,15 +282,64 @@
 ;;  commands: no aliases, and OK (save) instead of Draw / Save. Its dialog returns the
 ;;  preset selected on OK, so the tool that opened it can pick it.
 ;;
+;;  Several presets can be selected in the list (Ctrl / Shift click) and edited at once (see
+;;  CONVENTIONS.md, Windows): the fields show the preset shown (pst:idx), a value changed is
+;;  given to every preset selected (pst:sel, see Remote>>Dyl:PresetDlgPut); the name, Copy
+;;  and the aliases are for one preset only; Delete and Reset Selected act on all of them;
+;;  Draw draws the preset shown.
+;;
 ;;  The functions below run inside Remote>>Dyl:PresetDialog and use its local variables:
-;;  pst:key (tool), pst:dlg (part of the App), pst:lst (presets being edited), pst:idx
-;;  (index of the selected preset), pst:dcl (dialog id), pst:grps (groups of the Group popup),
-;;  pst:mats and pst:matids (materials, ids of the Material popup), and the variables of the
+;;  pst:key (tool), pst:dlg (part of the App), pst:lst (presets being edited), pst:lst0 (the
+;;  presets as read, see Remote>>Dyl:PresetDlgChanged), pst:idx (index of the preset shown),
+;;  pst:sel (indexes of the presets selected, pst:idx included: several with (multi . T)), pst:dcl (dialog id), pst:grps (groups of the Group popup),
+;;  pst:mats and pst:matids (materials, ids of the Hatch preset popup: the materials of the
+;;  group of the preset shown), and the variables of the
 ;;  aliases panel (see Aliases below).
 
 ;;  Call the function prop of the App part of the dialog (nil when it has none):
 (defun Remote>>Dyl:PresetDlgCall (prop args / f)
   (if (setq f (cdr (assoc prop pst:dlg))) (apply f args))
+)
+
+;;  Groups of the Group popup ((groups . T) of the App, nil for an edit box): the groups (see
+;;  Remote>>Dyl:Groups, Remote\Dyl-Groups.lsp), then the other groups used by a preset (they
+;;  stay selectable, e.g. a group typed in the presets file, or removed from the groups):
+(defun Remote>>Dyl:PresetDlgGrps (/ g)
+  (if (assoc 'groups pst:dlg)
+    (progn
+      (setq g (Remote>>Dyl:Groups))
+      (foreach r pst:lst
+        (if (not (member (nth 1 r) g)) (setq g (append g (list (nth 1 r)))))
+      )
+      g
+    )
+  )
+)
+
+;;  The presets of each group, ((group . n) ...), for the Preset Groups window:
+(defun Remote>>Dyl:PresetDlgGroupCounts (/ res x g)
+  (foreach r pst:lst
+    (setq g (strcase (cond ((nth 1 r)) (""))))
+    (if (setq x (assoc g res))
+      (setq res (subst (cons (car x) (1+ (cdr x))) x res))
+      (setq res (cons (cons g 1) res))
+    )
+  )
+  res
+)
+
+;;  The groups renamed in the Preset Groups window since the dialog was shown (*grp:renames*,
+;;  after its first pst:gren renames) are renamed in the presets being edited and in those
+;;  as read (pst:lst0: the files were saved with them), so a preset saved after keeps them:
+(defun Remote>>Dyl:PresetDlgGroupsSync (/ new)
+  (setq new (Remote>>Dyl:GroupsDrop *grp:renames* pst:gren))
+  (foreach pairs new
+    (setq pst:lst  (mapcar '(lambda (r) (cons (car r) (cons (Remote>>Dyl:GroupRenamed (nth 1 r) pairs) (cddr r)))) pst:lst)
+          pst:lst0 (mapcar '(lambda (r) (cons (car r) (cons (Remote>>Dyl:GroupRenamed (nth 1 r) pairs) (cddr r)))) pst:lst0)
+          pst:shw  (if (/= "" pst:shw) (Remote>>Dyl:GroupRenamed pst:shw pairs) pst:shw)
+    )
+  )
+  (setq pst:gren (length *grp:renames*))
 )
 
 ;;  Popup tiles -> list of their values (nil for the other tiles): the Group popup (pst:grps,
@@ -308,19 +366,74 @@
   )
 )
 
-;;  Fill the Material popup (each time the dialog is shown: the materials may have been
-;;  edited) and set the action of the Edit materials button. It also works when the material
-;;  of the preset no longer exists (only the material is then invalid), to pick or make another:
+;;  The Hatch preset popup (mat) lists the materials of the group of the preset shown (its
+;;  Group, the same groups as the materials, see Remote>>Dyl:Groups), by name: pst:matids. The
+;;  material of the preset shown stays listed when it is in another group, or no longer
+;;  exists (marked missing), and every material is listed when its group has none.
+
+;;  Read the materials (each time the dialog is shown: they may have been edited), draw the
+;;  open button of the Hatch Presets window and set its action:
 (defun Remote>>Dyl:PresetDlgMatInit ()
-  (setq pst:mats   (Remote>>Dyl:MaterialRead)
-        pst:matids (Remote>>Dyl:MaterialPopup "mat"
-                                              pst:mats
-                                              (mapcar '(lambda (r) (nth (Remote>>Dyl:PresetDlgMat) r)) pst:lst)
-                   )
-  )
+  (setq pst:mats (Remote>>Dyl:MaterialRead))
+  (Dyl:MoreTile "edm" T)
   (action_tile
     "edm"
     "(if (or (Remote>>Dyl:PresetDlgCommit) (not (assoc (nth (Remote>>Dyl:PresetDlgMat) (nth pst:idx pst:lst)) pst:mats))) (done_dialog 9))"
+  )
+)
+
+;;  The materials of the group grp, sorted by name (nil: none):
+(defun Remote>>Dyl:PresetDlgMatsOf (grp)
+  (vl-sort (vl-remove-if-not '(lambda (m) (= (strcase grp) (strcase (nth 1 m)))) pst:mats)
+           '(lambda (a b) (< (strcase (nth 2 a)) (strcase (nth 2 b))))
+  )
+)
+
+;;  Fill the Hatch preset popup for the preset shown: the materials of its group, then its
+;;  material when it is not one of them (shown "group - name", or marked missing). A group
+;;  without material: every material, sorted by group and name, shown "group - name":
+(defun Remote>>Dyl:PresetDlgMatFill (/ r cur in m)
+  (setq r   (nth pst:idx pst:lst)
+        cur (nth (Remote>>Dyl:PresetDlgMat) r)
+        in  (Remote>>Dyl:PresetDlgMatsOf (nth 1 r))
+  )
+  (setq pst:matids
+         (if in
+           (Remote>>Dyl:MaterialPopup "mat"
+                                      (if (and (setq m (assoc cur pst:mats)) (not (member m in))) (append in (list m)) in)
+                                      (list cur)
+                                      (nth 1 r)
+           )
+           (Remote>>Dyl:MaterialPopup "mat"
+                                      (vl-sort pst:mats
+                                               '(lambda (a b)
+                                                  (< (strcase (strcat (nth 1 a) "\t" (nth 2 a)))
+                                                     (strcase (strcat (nth 1 b) "\t" (nth 2 b)))
+                                                  )
+                                                )
+                                      )
+                                      (list cur)
+                                      nil
+           )
+         )
+  )
+)
+
+;;  The Group of the presets selected changed (Remote>>Dyl:PresetDlgField): the Hatch preset
+;;  popup lists the materials of the new group. When the material of the preset shown is not
+;;  one of them, the first one is given to the presets selected (then another one of the group
+;;  can be picked):
+(defun Remote>>Dyl:PresetDlgMatGroup (/ r i)
+  (setq r (nth pst:idx pst:lst))
+  (Remote>>Dyl:PresetDlgMatFill)
+  (if (and (Remote>>Dyl:PresetDlgMatsOf (nth 1 r))
+           (not (member (assoc (nth (Remote>>Dyl:PresetDlgMat) r) pst:mats) (Remote>>Dyl:PresetDlgMatsOf (nth 1 r))))
+      )
+    (progn
+      (set_tile "mat" "0")
+      (Remote>>Dyl:PresetDlgField "mat" "0")
+    )
+    (set_tile "mat" (itoa (cond ((vl-position (nth (Remote>>Dyl:PresetDlgMat) r) pst:matids)) (0))))
   )
 )
 
@@ -329,12 +442,56 @@
   (cdr (assoc 'defs pst:dlg))
 )
 
+;;  What the presets are called in the messages ((noun . "materials") of the App):
+(defun Remote>>Dyl:PresetDlgNoun ()
+  (cond ((cdr (assoc 'noun pst:dlg))) ("presets"))
+)
+
+;;  Indexes of the presets selected, the one shown (pst:idx) included:
+(defun Remote>>Dyl:PresetDlgSel ()
+  (if (member pst:idx pst:sel) pst:sel (list pst:idx))
+)
+
+;;  Give the value val to the column i of every preset selected (pst:one T, see
+;;  Remote>>Dyl:PresetDlgCommit: to the preset shown only):
+(defun Remote>>Dyl:PresetDlgPut (i val)
+  (foreach j (if pst:one (list pst:idx) (Remote>>Dyl:PresetDlgSel))
+    (setq pst:lst (Remote>>Dyl:ListSubst pst:lst j (Remote>>Dyl:ListSubst (nth j pst:lst) i val)))
+  )
+)
+
+;;  Number of presets changed since the dialog opened: edited (or added), and deleted:
+(defun Remote>>Dyl:PresetDlgChanged ()
+  (+ (length (vl-remove-if '(lambda (r) (member r pst:lst0)) pst:lst))
+     (length (vl-remove-if '(lambda (r) (assoc (car r) pst:lst)) pst:lst0))
+  )
+)
+
+;;  OK / Draw / Save: T, after asking when more presets were changed than (warn . n) of the
+;;  App allows:
+(defun Remote>>Dyl:PresetDlgWarnOk (/ w n)
+  (setq w (cdr (assoc 'warn pst:dlg))
+        n (Remote>>Dyl:PresetDlgChanged)
+  )
+  (or (not w)
+      (<= n w)
+      (Remote>>Dyl:PresetDlgAsk
+        (strcat (itoa n) " " (Remote>>Dyl:PresetDlgNoun) " were changed (edited, added or deleted). Save the changes?")
+      )
+  )
+)
+
+;;  Sorts of the list (see *pst:sorts*):
+(defun Remote>>Dyl:PresetDlgSorts ()
+  *pst:sorts*
+)
+
 ;;  T when the presets of the tool are commands (aliases, Draw button):
 (defun Remote>>Dyl:PresetDlgCmds-p ()
   (if (Remote>>Dyl:PresetProp pst:key 'cmd) t)
 )
 
-;;  Docs page of the tool (Open Docs button, see Dyl:DocsTile) (nil: none found): (doc . "Draw\\Dyl-Materials.htm") of
+;;  Docs page of the tool (Open Docs button, see Dyl:DocsTile) (nil: none found): (doc . "Draw\\Dyl-HatchPresets.htm") of
 ;;  its spec, relative to the Docs folder of the Dynalisp module, else the page named after
 ;;  its App (path . "Dynalisp\\Apps\\Draw\\Dyl-QuickDraw.lsp" -> Docs\Draw\Dyl-QuickDraw.htm):
 (defun Remote>>Dyl:PresetDlgDocFile (/ doc app)
@@ -357,12 +514,16 @@
 )
 
 ;;  Write the dialog definition to a temporary DCL file and return its path:
-(defun Remote>>Dyl:PresetDlgDcl (/ title cmds tabs wid path file)
-  ;;  Columns of the list: group, name, (aliases), status; the status, last, about 12 wide:
+(defun Remote>>Dyl:PresetDlgDcl (/ title cmds nost tabs wid path file)
+  ;;  Columns of the list: group, name, and the aliases of a tool whose presets are commands
+  ;;  (no Status column: the status of the preset shown is in the Parameters heading, see
+  ;;  Remote>>Dyl:PresetDlgState). Without aliases: group and name only, the name about 30
+  ;;  wide, a narrow list (nost):
   (setq title (Remote>>Dyl:PresetProp pst:key 'title)
         cmds  (Remote>>Dyl:PresetDlgCmds-p)
-        tabs  (if cmds "12 38 60" "12 46")
-        wid   (if cmds "72" "58")
+        nost  (not cmds)
+        tabs  (if cmds "12 38" "12")
+        wid   (if cmds "62" "44")
         path  (vl-filename-mktemp "pst" nil ".dcl")
         file  (open path "w")
   )
@@ -371,13 +532,18 @@
       (list (strcat "dyl_pst : dialog { label = \"DynALisp - " title "\";")
             "  : row {"
             "    : column {"
-            ;;  Filter and sort of the list (see Remote>>Dyl:PresetDlgView):
+            ;;  Filter and sort of the list (see Remote>>Dyl:PresetDlgView), kept narrow: the
+            ;;  list is as wide as the widest line of this column. A narrow list (no aliases):
+            ;;  the sort on a row of its own:
             "      : row {"
-            ;;  Kept narrow: the list is as wide as the widest line of this column:
             "        : edit_box { key = \"flt\"; label = \"Filter:\"; edit_width = 16; edit_limit = 64; }"
-            "        : popup_list { key = \"srt\"; label = \"Sort by:\"; edit_width = 12; }"
-            "        : text { key = \"pcn\"; width = 12; }"
+            (if nost "" "        : popup_list { key = \"srt\"; label = \"Sort by:\"; edit_width = 12; }")
+            (if nost "        : text { key = \"pcn\"; width = 14; }" "        : text { key = \"pcn\"; width = 12; }")
             "      }"
+            (if nost "      : row { : popup_list { key = \"srt\"; label = \"Sort by:\"; edit_width = 16; } }" "")
+            ;;  Show: the presets of one group; Set default: the group the window opens on:
+            "      : row { : popup_list { key = \"shg\"; label = \"Show:\"; edit_width = 16; }"
+            "              : button { key = \"shd\"; label = \"Set default\"; fixed_width = true; } }"
             ;;  Column titles: a one-line list box with the same tabs, so they line up with the list:
             (strcat "      : list_box { label = \"" (if cmds "Presets (double-click to draw):" "Presets:") "\";")
             (strcat "                   key = \"hdr\"; width = " wid "; height = 2; fixed_height = true; tabs = \"" tabs "\";")
@@ -389,7 +555,10 @@
                     tabs
                     "\";"
             )
-            (strcat "                   allow_accept = " (if cmds "true" "false") "; }")
+            (strcat "                   allow_accept = " (if cmds "true" "false") ";"
+                    " multiple_select = true;"
+                    " }"
+            )
             "      : row {"
             "        : button { key = \"new\"; label = \"New\"; }"
             "        : button { key = \"cpy\"; label = \"Copy\"; }"
@@ -410,25 +579,44 @@
         )
       )
       (list "    }"
-            "    : boxed_column { label = \"Parameters\";"
+            ;;  Its heading gives the status of the selected preset, Parameters (modified) or
+            ;;  Parameters (custom) (see Remote>>Dyl:PresetDlgState; the longest one here, so
+            ;;  its label has the room):
+            "    : boxed_column { key = \"prm\"; label = \"Parameters (modified)\";"
             "      : edit_box { key = \"nam\"; label = \"Name:\"; edit_width = 28; edit_limit = 64; }"
             (if (assoc 'groups pst:dlg)
-              "      : popup_list { key = \"grp\"; label = \"Group:\"; edit_width = 28; }"
+              ;;  Built as the Hatch preset row below (a label, then the popup, fixed, at the
+              ;;  right of the row), so both popups have the same width:
+              ;;  The open button of the Preset Groups window just left of it (one string: the
+              ;;  then branch of the if):
+              (strcat "      : row { : text { label = \"Group:\"; }"
+                      " : image_button { key = \"gre\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
+                      " : popup_list { key = \"grp\"; edit_width = 28; fixed_width = true; } }"
+              )
               "      : edit_box { key = \"grp\"; label = \"Group:\"; edit_width = 28; edit_limit = 64; }"
             )
             "      spacer;"
       )
-      (if (Remote>>Dyl:PresetDlgMat)
-        (list "      : popup_list { key = \"mat\"; label = \"Material:\"; edit_width = 32; }"
+      ;;  (matinparams . T): the tool puts these rows in a box of its params (the Behaviors
+      ;;  box of Quick Draw, see *mt:behaviordcl*), with the same keys:
+      (if (and (Remote>>Dyl:PresetDlgMat) (not (cdr (assoc 'matinparams pst:dlg))))
+        ;;  The open button of the Hatch Presets window just left of the popup it edits (see
+        ;;  CONVENTIONS.md, Windows), the popup at the right of the row as the boxes above:
+        (list "      : row { : text { key = \"matl\"; label = \"Hatch preset:\"; }"
+              "              : image_button { key = \"edm\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
+              "              : popup_list { key = \"mat\"; edit_width = 28; fixed_width = true; } }"
               "      : text { key = \"mts\"; width = 50; }"
-              "      : button { key = \"edm\"; label = \"Edit materials...\"; fixed_width = true; alignment = right; }"
               "      spacer;"
         )
       )
       (cdr (assoc 'params pst:dlg))
-      (list "      spacer;"
-            "      : text { key = \"src\"; width = 50; }"
-            "    }"
+      ;;  The command of the preset, for a tool whose presets are commands:
+      (if (Remote>>Dyl:PresetDlgCmds-p)
+        (list "      spacer;"
+              "      : text { key = \"src\"; width = 50; }"
+        )
+      )
+      (list "    }"
             "  }"
             ;;  Bottom row: the reset buttons on the left (as small as their label), the
             ;;  spacer stretching between, OK / Cancel and Open Docs on the right:
@@ -510,57 +698,36 @@
   )
 )
 
-;;  Fill the preset list: group, name, aliases (tools with commands) and status of each preset:
-;;  Status of a preset r: "custom", "modified" (a default one changed) or "" (default):
-(defun Remote>>Dyl:PresetDlgStatus (r / d)
-  (setq d (assoc (car r) (Remote>>Dyl:PresetDlgDefs)))
-  (cond
-    ((not d) "custom")
-    ((equal r d) "")
-    ("modified")
-  )
-)
-
-;;  List line of a preset r: group, name, aliases (tools with commands), status:
+;;  List line of a preset r: group, name, and its aliases (tools with commands):
 (defun Remote>>Dyl:PresetDlgLine (r / c)
   (setq c (Remote>>Dyl:PresetCommand pst:key (car r)))
   (strcat (nth 1 r)
           "\t"
           (nth 2 r)
-          "\t"
           (cond
             ((not (Remote>>Dyl:PresetDlgCmds-p)) "")
             ((not c) "\t")
-            ((strcat (cond ((Remote>>LM:lst->str (Dyl:AliasesOf (strcase c) pst:als) ", ")) ("")) "\t"))
+            ((strcat "\t" (cond ((Remote>>LM:lst->str (Dyl:AliasesOf (strcase c) pst:als) ", ")) (""))))
           )
-          (Remote>>Dyl:PresetDlgStatus r)
   )
 )
 
 ;;-------------------------=={ Sort and filter }==------------------------;;
 
 ;;  The list shows pst:view: the indexes in pst:lst of the presets listed, in their order.
-;;  pst:flt: the filter text (the presets whose group, name, aliases, status or third value,
+;;  pst:flt: the filter text (the presets whose group, name, aliases or third value,
 ;;  e.g. the pattern of a material, have it, any case; "": every preset), pst:srt: the sort
-;;  (index in *pst:sorts*, 0: file order). The selected preset (pst:idx) is always listed,
-;;  so the fields shown are those of a line of the list.
-(setq *pst:sorts* '("File order" "Group" "Name" "Status"))
+;;  (an item of *pst:sorts*, "Name" by default). The selected preset (pst:idx) is always
+;;  listed, so the fields shown are those of a line of the list.
+(setq *pst:sorts* '("Name" "Group"))
 
 ;;  Sort key of the preset at index i (see pst:srt), in upper case:
 (defun Remote>>Dyl:PresetDlgKey (i / r)
   (setq r (nth i pst:lst))
   (strcase
     (cond
-      ((= 1 pst:srt) (strcat (nth 1 r) "\t" (nth 2 r)))
-      ((= 2 pst:srt) (nth 2 r))
-      ;;  Status: custom, then modified, then the default presets:
-      ((strcat (cdr (assoc (Remote>>Dyl:PresetDlgStatus r) '(("custom" . "1") ("modified" . "2") ("" . "3"))))
-               "\t"
-               (nth 1 r)
-               "\t"
-               (nth 2 r)
-       )
-      )
+      ((= "Group" pst:srt) (strcat (nth 1 r) "\t" (nth 2 r)))
+      ((nth 2 r))
     )
   )
 )
@@ -580,23 +747,26 @@
   )
 )
 
-;;  Indexes of the presets to list: those of the filter, and the selected one when pin is T,
-;;  in the order of the sort:
+;;  Indexes of the presets to list: those of the Show group (pst:shw, "": all) and of the
+;;  filter, and the selected one when pin is T, in the order of the sort:
 (defun Remote>>Dyl:PresetDlgView (pin / f i lst)
   (setq f (strcase (vl-string-trim " " (cond (pst:flt) (""))))
         i -1
   )
   (foreach r pst:lst
     (setq i (1+ i))
-    (if (or (and pin (= i pst:idx)) (Remote>>Dyl:PresetDlgMatch-p r f)) (setq lst (cons i lst)))
+    (if (or (and pin (= i pst:idx)) (and (Remote>>Dyl:PresetDlgInShow-p r) (Remote>>Dyl:PresetDlgMatch-p r f)))
+      (setq lst (cons i lst))
+    )
   )
   (setq lst (reverse lst))
-  (if (and pst:srt (/= 0 pst:srt)) (vl-sort lst 'Remote>>Dyl:PresetDlgBefore) lst)
+  (vl-sort lst 'Remote>>Dyl:PresetDlgBefore)
 )
 
-;;  Line of the list of the selected preset ("": not listed):
-(defun Remote>>Dyl:PresetDlgPos (/ p)
-  (if (setq p (vl-position pst:idx pst:view)) (itoa p) "")
+;;  Lines of the list of the presets selected, "0 3 5" ("": not listed):
+(defun Remote>>Dyl:PresetDlgPos (/ l)
+  (setq l (vl-remove nil (mapcar '(lambda (i) (vl-position i pst:view)) (Remote>>Dyl:PresetDlgSel))))
+  (if l (Remote>>LM:lst->str (mapcar 'itoa (vl-sort l '<)) " ") "")
 )
 
 ;;  Filter typed: the presets of the filter listed, the selected one kept when it has the
@@ -608,60 +778,181 @@
             m       (Remote>>Dyl:PresetDlgView nil)
       )
       (if (and m (not (member pst:idx m))) (setq pst:idx (car m)))
+      (setq pst:sel (list pst:idx))
       (Remote>>Dyl:PresetDlgShow)
     )
     (set_tile "flt" (cond (pst:flt) ("")))
   )
 )
 
+;;  Show: the list shows the presets of one group (pst:shw, "": All). Set default saves the
+;;  group shown for the tool (the DynalispPresetShow<tool> user setting, all drawings): the
+;;  window opens on it.
+
+;;  Name of the user setting of the default Show group of the tool:
+(defun Remote>>Dyl:PresetDlgShowEnv ()
+  (strcat "DynalispPresetShow" pst:key)
+)
+
+;;  T when the preset r is in the Show group:
+(defun Remote>>Dyl:PresetDlgInShow-p (r)
+  (or (= "" pst:shw) (= (strcase pst:shw) (strcase (nth 1 r))))
+)
+
+;;  Groups of the Show popup: All, then the groups of the presets (in the order of the Group
+;;  popup of the tool, else sorted), and the group shown when no preset is in it any more:
+(defun Remote>>Dyl:PresetDlgShowGroups (/ used lst)
+  (foreach r pst:lst
+    (if (not (member (nth 1 r) used)) (setq used (cons (nth 1 r) used)))
+  )
+  (setq lst (if pst:grps
+              (vl-remove-if-not '(lambda (g) (member g used)) pst:grps)
+              (acad_strlsort used)
+            )
+  )
+  (if (and (/= "" pst:shw) (not (member pst:shw lst))) (setq lst (append lst (list pst:shw))))
+  (cons "All" lst)
+)
+
+;;  Fill the Show popup (again only when its groups changed, see pst:shwlst) and show the
+;;  group of pst:shw:
+(defun Remote>>Dyl:PresetDlgShowFill (/ lst)
+  (setq lst (Remote>>Dyl:PresetDlgShowGroups))
+  (if (not (equal lst pst:shwlst))
+    (progn
+      (start_list "shg")
+      (foreach g lst (add_list g))
+      (end_list)
+      (setq pst:shwlst lst)
+    )
+  )
+  (set_tile "shg" (itoa (cond ((if (/= "" pst:shw) (vl-position pst:shw lst))) (0))))
+)
+
+;;  A group picked in Show: its presets listed, the selected one kept when it is in it, else
+;;  the first one of the group:
+(defun Remote>>Dyl:PresetDlgShowPick (val / g m)
+  (if (Remote>>Dyl:PresetDlgCommit)
+    (progn
+      (setq g       (nth (atoi val) pst:shwlst)
+            pst:shw (if (or (not g) (= "0" val)) "" g)
+            m       (Remote>>Dyl:PresetDlgView nil)
+      )
+      (if (and m (not (member pst:idx m))) (setq pst:idx (car m)))
+      (setq pst:sel (list pst:idx))
+      (Remote>>Dyl:PresetDlgShow)
+    )
+    (Remote>>Dyl:PresetDlgShowFill)
+  )
+)
+
+;;  Set default: the group shown is the one the window opens on (All: every preset):
+(defun Remote>>Dyl:PresetDlgShowDefault ()
+  (setenv (Remote>>Dyl:PresetDlgShowEnv) pst:shw)
+  (set_tile "error"
+            (strcat (Remote>>Dyl:PresetProp pst:key 'title)
+                    " now opens on "
+                    (if (= "" pst:shw) "every group." (strcat "the group " pst:shw "."))
+            )
+  )
+)
+
 ;;  Sort picked, kept for the tool for the session:
 (defun Remote>>Dyl:PresetDlgSort (val)
-  (setq pst:srt            (atoi val)
+  (setq pst:srt            (cond ((nth (atoi val) (Remote>>Dyl:PresetDlgSorts))) ("Name"))
         *dyl:presetsort* (cons (cons pst:key pst:srt) (vl-remove (assoc pst:key *dyl:presetsort*) *dyl:presetsort*))
   )
   (Remote>>Dyl:PresetDlgList)
 )
 
-;;  Fill the list with the presets of the filter, in the order of the sort:
-(defun Remote>>Dyl:PresetDlgList (/ n)
-  (setq pst:view (Remote>>Dyl:PresetDlgView T))
-  (start_list "lst")
-  (foreach i pst:view (add_list (Remote>>Dyl:PresetDlgLine (nth i pst:lst))))
-  (end_list)
-  (set_tile "lst" (Remote>>Dyl:PresetDlgPos))
+;;  Fill the list with the presets of the filter, in the order of the sort. A list refilled
+;;  scrolls back to its top and setting its selection scrolls to it, so the list does not move
+;;  when a preset is picked: only the lines that changed are replaced (pst:lines, the lines
+;;  shown; the whole list only when the number of lines changed), and the selection is set
+;;  only when it is not the one shown:
+(defun Remote>>Dyl:PresetDlgList (/ n lines pos i)
+  (setq pst:view (Remote>>Dyl:PresetDlgView T)
+        lines    (mapcar '(lambda (i) (Remote>>Dyl:PresetDlgLine (nth i pst:lst))) pst:view)
+        pos      (Remote>>Dyl:PresetDlgPos)
+  )
+  (cond
+    ((equal lines pst:lines))
+    ((= (length lines) (length pst:lines))
+     (setq i 0)
+     (mapcar '(lambda (new old)
+                (if (/= new old)
+                  (progn
+                    (start_list "lst" 1 i)
+                    (add_list new)
+                    (end_list)
+                  )
+                )
+                (setq i (1+ i))
+              )
+             lines
+             pst:lines
+     )
+    )
+    (T
+     (start_list "lst")
+     (foreach l lines (add_list l))
+     (end_list)
+     ;;  A list refilled has no selection:
+     (set_tile "lst" "")
+    )
+  )
+  (setq pst:lines lines)
+  (if (/= pos (get_tile "lst")) (set_tile "lst" pos))
+  (Remote>>Dyl:PresetDlgShowFill)
   (setq n (length (Remote>>Dyl:PresetDlgView nil)))
   (set_tile "pcn"
             (cond
-              ((= "" (vl-string-trim " " (cond (pst:flt) ("")))) (strcat (itoa (length pst:lst)) " presets"))
-              ((= 0 n) "No preset matches")
+              ((and (= "" pst:shw) (= "" (vl-string-trim " " (cond (pst:flt) (""))))) (strcat (itoa (length pst:lst)) " " (Remote>>Dyl:PresetDlgNoun)))
+              ((= 0 n) "No match")
               ((strcat (itoa n) " of " (itoa (length pst:lst))))
             )
   )
 )
 
 ;;  Refresh the list, the preset status and the state of the buttons:
-(defun Remote>>Dyl:PresetDlgState (/ r d)
-  (setq r (nth pst:idx pst:lst)
-        d (assoc (car r) (Remote>>Dyl:PresetDlgDefs))
+(defun Remote>>Dyl:PresetDlgState (/ r d sel)
+  (setq r   (nth pst:idx pst:lst)
+        d   (assoc (car r) (Remote>>Dyl:PresetDlgDefs))
+        sel (mapcar '(lambda (j) (nth j pst:lst)) (Remote>>Dyl:PresetDlgSel))
   )
   (Remote>>Dyl:PresetDlgList)
-  (set_tile "src"
+  ;;  The status in the heading of the Parameters column (nothing for a default preset as
+  ;;  shipped; several selected: their number), the command of the preset under it:
+  (set_tile "prm"
             (cond
-              ((not (Remote>>Dyl:PresetDlgCmds-p))
-               (strcat (if d "Default" "Custom") " preset" (if (and d (not (equal r d))) " (modified)" ""))
-              )
-              ((= "" (car r)) "Custom preset - gets its command once saved or given an alias")
-              ((strcat (if d "Default" "Custom")
-                       " preset - command "
-                       (strcase (Remote>>Dyl:PresetCommand pst:key (car r)))
-                       (if (and d (not (equal r d))) " (modified)" "")
-               )
-              )
+              ((cdr sel) (strcat "Parameters (" (itoa (length sel)) " selected)"))
+              ((not d) "Parameters (custom)")
+              ((not (equal r d)) "Parameters (modified)")
+              ("Parameters")
             )
   )
-  (mode_tile "rst" (if (and d (not (equal r d))) 0 1))
-  (mode_tile "del" (if d 1 0))
-  (if (Remote>>Dyl:PresetDlgMat)
+  (if (Remote>>Dyl:PresetDlgCmds-p)
+    (set_tile "src"
+              (if (= "" (car r))
+                "Gets its command once saved or given an alias."
+                (strcat "Command: " (strcase (Remote>>Dyl:PresetCommand pst:key (car r))))
+              )
+    )
+  )
+  ;;  Reset Selected: a modified default preset selected; Delete: custom presets only. The
+  ;;  name (unique) and Copy for one preset only:
+  (mode_tile "rst"
+             (if (vl-some '(lambda (x / y) (and (setq y (assoc (car x) (Remote>>Dyl:PresetDlgDefs))) (not (equal x y)))) sel)
+               0
+               1
+             )
+  )
+  (mode_tile "del" (if (vl-some '(lambda (x) (assoc (car x) (Remote>>Dyl:PresetDlgDefs))) sel) 1 0))
+  (mode_tile "nam" (if (cdr sel) 1 0))
+  (mode_tile "cpy" (if (cdr sel) 1 0))
+  ;;  The summary of the hatch preset under the popup (none when the tool puts the popup in
+  ;;  its params, see (matinparams . T)):
+  (if (and (Remote>>Dyl:PresetDlgMat) (not (cdr (assoc 'matinparams pst:dlg))))
     (set_tile "mts"
               (cond
                 ((setq d (assoc (nth (Remote>>Dyl:PresetDlgMat) r) pst:mats)) (Remote>>Dyl:MaterialSummary d))
@@ -675,6 +966,8 @@
 ;;  Show the values of the selected preset:
 (defun Remote>>Dyl:PresetDlgShow (/ r items)
   (setq r (nth pst:idx pst:lst))
+  ;;  The materials of its group in the Hatch preset popup:
+  (if (Remote>>Dyl:PresetDlgMat) (Remote>>Dyl:PresetDlgMatFill))
   (foreach x (Remote>>Dyl:PresetDlgTiles)
     (set_tile (car x)
               (if (setq items (Remote>>Dyl:PresetDlgItems (car x)))
@@ -689,7 +982,8 @@
 )
 
 ;;  Validate the value of a tile and store it in the selected preset, returns T when valid:
-(defun Remote>>Dyl:PresetDlgField (key val / items msg)
+(defun Remote>>Dyl:PresetDlgField (key val / items msg old)
+  (setq old (nth 1 (nth pst:idx pst:lst)))
   ;;  The popups return the index of the value in their list:
   (if (setq items (Remote>>Dyl:PresetDlgItems key))
     (setq val (cond ((nth (atoi val) items)) ("")))
@@ -702,7 +996,7 @@
               ((and (= "nam" key) (Remote>>Dyl:PresetTaken-p val pst:idx))
                (strcat "Another preset is already named \"" val "\".")
               )
-              ((and (= "mat" key) (not (assoc val pst:mats))) "This material no longer exists: pick another one.")
+              ((and (= "mat" key) (not (assoc val pst:mats))) "This hatch preset no longer exists: pick another one.")
               ((Remote>>Dyl:PresetDlgCall 'check (list key val)))
             )
   )
@@ -713,36 +1007,48 @@
       nil
     )
     (progn
-      (setq pst:lst (Remote>>Dyl:ListSubst pst:lst
-                                            pst:idx
-                                            (Remote>>Dyl:ListSubst (nth pst:idx pst:lst)
-                                                                   (cdr (assoc key (Remote>>Dyl:PresetDlgTiles)))
-                                                                   val
-                                            )
-                    )
+      ;;  To every preset selected (the preset shown only for the name, and while committing):
+      (if (= "nam" key)
+        (setq pst:lst (Remote>>Dyl:ListSubst pst:lst pst:idx (Remote>>Dyl:ListSubst (nth pst:idx pst:lst) 2 val)))
+        (Remote>>Dyl:PresetDlgPut (cdr (assoc key (Remote>>Dyl:PresetDlgTiles))) val)
       )
       (if (not items) (set_tile key val))
       (set_tile "error" "")
+      ;;  Another group: the Hatch preset popup lists its materials (not while committing:
+      ;;  the group was stored by its action, the Hatch preset popup shows the preset's):
+      (if (and (= "grp" key) (Remote>>Dyl:PresetDlgMat) (not pst:one) (/= (strcase old) (strcase val)))
+        (Remote>>Dyl:PresetDlgMatGroup)
+      )
       t
     )
   )
 )
 
-;;  Store every tile in the selected preset, returns T when they are all valid:
-(defun Remote>>Dyl:PresetDlgCommit (/ ok)
-  (setq ok t)
+;;  Store every tile in the preset shown, returns T when they are all valid. The tiles the
+;;  App skips (greyed out, showing values that are not the preset's) are not stored. Only in
+;;  the preset shown (pst:one): a value changed was given to every preset selected by the
+;;  action of its tile:
+(defun Remote>>Dyl:PresetDlgCommit (/ ok skip pst:one)
+  (setq pst:one t
+        ok   t
+        skip (Remote>>Dyl:PresetDlgCall 'skip (list (nth pst:idx pst:lst)))
+  )
   (foreach x (Remote>>Dyl:PresetDlgTiles)
-    (if ok (setq ok (Remote>>Dyl:PresetDlgField (car x) (get_tile (car x)))))
+    (if (and ok (not (member (car x) skip))) (setq ok (Remote>>Dyl:PresetDlgField (car x) (get_tile (car x)))))
   )
   ok
 )
 
-;;  Select another preset (the current one must be valid first):
-;;  Line val of the list picked: the preset it shows (see pst:view):
-(defun Remote>>Dyl:PresetDlgPick (val / i)
-  (if (and (Remote>>Dyl:PresetDlgCommit) (setq i (nth (atoi val) pst:view)))
+;;  Select other presets (the current one must be valid first): lines val of the list picked
+;;  ("3", or "0 3 5"), the presets they show (see pst:view). The preset
+;;  shown stays when it is still selected, else the first one selected:
+(defun Remote>>Dyl:PresetDlgPick (val / l)
+  (setq l (vl-remove nil (mapcar '(lambda (n) (nth n pst:view)) (read (strcat "(" (cond (val) ("")) ")")))))
+  (if (and l (Remote>>Dyl:PresetDlgCommit))
     (progn
-      (setq pst:idx i)
+      (setq pst:sel l
+            pst:idx (if (member pst:idx l) pst:idx (car l))
+      )
       (Remote>>Dyl:PresetDlgShow)
     )
     (set_tile "lst" (Remote>>Dyl:PresetDlgPos))
@@ -758,6 +1064,7 @@
                                              pst:idx
                                              (Remote>>Dyl:ListSubst rec 2 (Remote>>Dyl:PresetUnique (nth 2 rec) nil))
                     )
+            pst:sel (list pst:idx)
       )
       (Remote>>Dyl:PresetDlgShow)
       (mode_tile "nam" 2)
@@ -779,35 +1086,53 @@
   (Remote>>Dyl:PresetDlgAdd (cons "" (Remote>>Dyl:ListSubst (cdr r) 1 (strcat (nth 2 r) " copy"))))
 )
 
-;;  Delete the selected custom preset, with the aliases of its command:
-(defun Remote>>Dyl:PresetDlgDelete ()
+;;  Delete the custom presets selected, with the aliases of their command:
+(defun Remote>>Dyl:PresetDlgDelete (/ sel i c)
+  (setq sel (Remote>>Dyl:PresetDlgSel))
   (if
     (Remote>>Dyl:PresetDlgAsk
-      (strcat "Delete the custom preset \""
-              (nth 2 (nth pst:idx pst:lst))
-              "\""
-              (if pst:alst " and its aliases" "")
-              "?"
+      (if (cdr sel)
+        (strcat "Delete the " (itoa (length sel)) " custom " (Remote>>Dyl:PresetDlgNoun) " selected"
+                (if (Remote>>Dyl:PresetDlgCmds-p) " and their aliases" "")
+                "?"
+        )
+        (strcat "Delete the custom preset \""
+                (nth 2 (nth pst:idx pst:lst))
+                "\""
+                (if pst:alst " and its aliases" "")
+                "?"
+        )
       )
     )
     (progn
-      (if pst:acmd (setq pst:als (vl-remove-if '(lambda (p) (= pst:acmd (cdr p))) pst:als)))
-      (setq pst:lst (Remote>>Dyl:ListRemove pst:lst pst:idx)
-            pst:idx (min pst:idx (1- (length pst:lst)))
+      (foreach j sel
+        (if (setq c (Remote>>Dyl:PresetCommand pst:key (car (nth j pst:lst))))
+          (setq c       (strcase c)
+                pst:als (vl-remove-if '(lambda (p) (= c (cdr p))) pst:als)
+          )
+        )
+      )
+      (setq i       -1
+            pst:lst (vl-remove-if '(lambda (r) (member (setq i (1+ i)) sel)) pst:lst)
+            pst:idx (min (apply 'min sel) (1- (length pst:lst)))
+            pst:sel (list pst:idx)
       )
       (Remote>>Dyl:PresetDlgShow)
     )
   )
 )
 
-;;  Reset the selected default preset to its default values:
-(defun Remote>>Dyl:PresetDlgReset ()
-  (setq pst:lst (Remote>>Dyl:ListSubst pst:lst
-                                        pst:idx
-                                        (assoc (car (nth pst:idx pst:lst)) (Remote>>Dyl:PresetDlgDefs))
-                )
+;;  Reset the default presets selected to their default values (the custom ones selected
+;;  are left as they are):
+(defun Remote>>Dyl:PresetDlgReset (/ d)
+  (foreach j (Remote>>Dyl:PresetDlgSel)
+    (if (setq d (assoc (car (nth j pst:lst)) (Remote>>Dyl:PresetDlgDefs)))
+      (progn
+        (setq pst:lst (Remote>>Dyl:ListSubst pst:lst j d))
+        (Remote>>Dyl:PresetDlgRename j)
+      )
+    )
   )
-  (Remote>>Dyl:PresetDlgRename pst:idx)
   (Remote>>Dyl:PresetDlgShow)
 )
 
@@ -847,8 +1172,11 @@
   (mode_tile "aren" 1)
   (mode_tile "adel" 1)
   (set_tile "aln" (cond ((Remote>>Dyl:PresetDlgCall 'prefix (list r))) ("")))
+  ;;  For one preset only (greyed out while several are selected):
+  (foreach k '("als" "aln" "aad") (mode_tile k (if (cdr (Remote>>Dyl:PresetDlgSel)) 1 0)))
   (set_tile "ams"
             (cond
+              ((cdr (Remote>>Dyl:PresetDlgSel)) "Several presets selected: pick one to edit its aliases.")
               ((not pst:acmd) "New preset: adding an alias gives it its command.")
               ((not pst:alst) "No alias yet: type one and click Add.")
               ("Pick an alias to rename or remove it.")
@@ -941,12 +1269,13 @@
 ;;  Draw and Save (OK for a tool without commands) write the presets file and the aliases.
 ;;  Returns the preset to draw (the preset selected on OK for a tool without commands), or
 ;;  nil on Save / Cancel:
-(defun Remote>>Dyl:PresetDialog (pst:key pst:dlg / dcl:pth dcl:sta pst:dcl pst:lst pst:idx pst:als0 pst:als
-                                 pst:acmd pst:alst pst:grps pst:mats pst:matids sel mat
-                                 pst:view pst:flt pst:srt
+(defun Remote>>Dyl:PresetDialog (pst:key pst:dlg / dcl:pth dcl:sta pst:dcl pst:lst pst:lst0 pst:idx pst:sel pst:als0 pst:als
+                                 pst:acmd pst:alst pst:grps pst:gren pst:mats pst:matids sel mat
+                                 pst:view pst:flt pst:srt pst:lines pst:shw pst:shwlst
                                 )
   ;;  The sort of the list of this tool, kept for the session (*dyl:presetsort*):
-  (setq pst:srt (cond ((cdr (assoc pst:key *dyl:presetsort*))) (0))
+  (setq pst:srt (cdr (assoc pst:key *dyl:presetsort*))
+        pst:srt (if (member pst:srt (Remote>>Dyl:PresetDlgSorts)) pst:srt "Name")
         pst:flt ""
   )
   (setq dcl:pth  (Remote>>Dyl:PresetDlgDcl)
@@ -960,24 +1289,36 @@
                       )
                       (1- (length pst:lst))
                  )
+        pst:sel  (list pst:idx)
+        pst:lst0 pst:lst
         pst:als0 (Dyl:AliasRead)
         pst:als  pst:als0
-        pst:grps (cdr (assoc 'groups pst:dlg))
+        pst:gren (length *grp:renames*)
         dcl:sta  3
   )
-  ;;  Group popup: the groups of the App, then the other groups used by a preset (they stay
-  ;;  selectable, e.g. a group typed in the presets file):
-  (if pst:grps
-    (foreach r pst:lst
-      (if (not (member (nth 1 r) pst:grps)) (setq pst:grps (append pst:grps (list (nth 1 r)))))
+  ;;  Show: the default group of the tool when a preset is in it (else All); the preset shown
+  ;;  is then one of the group, but the one the window was opened on:
+  (setq pst:shw (cond ((getenv (Remote>>Dyl:PresetDlgShowEnv))) ("")))
+  (if (not (vl-some '(lambda (r) (Remote>>Dyl:PresetDlgInShow-p r)) pst:lst)) (setq pst:shw ""))
+  (if (and (not sel) (not (Remote>>Dyl:PresetDlgInShow-p (nth pst:idx pst:lst))))
+    (setq pst:idx (car (Remote>>Dyl:PresetDlgView nil))
+          pst:sel (list pst:idx)
     )
   )
   ;;  Code >= 3 = App button: its status function runs, then this dialog is shown again
   ;;  with the presets being edited (dialogs are not nested):
   (while (and dcl:sta (<= 3 dcl:sta))
     (setq dcl:sta nil)
+    ;;  The groups renamed since the dialog was shown (here or in a window opened from it),
+    ;;  then the groups of the Group popup:
+    (Remote>>Dyl:PresetDlgGroupsSync)
+    (setq pst:grps (Remote>>Dyl:PresetDlgGrps))
     (if (and (>= pst:dcl 0) (new_dialog "dyl_pst" pst:dcl))
       (progn
+        ;;  A new dialog: its list is empty (see Remote>>Dyl:PresetDlgList):
+        (setq pst:lines  nil
+              pst:shwlst nil
+        )
         (if (Remote>>Dyl:PresetDlgMat) (Remote>>Dyl:PresetDlgMatInit))
         (Remote>>Dyl:PresetDlgCall 'init nil)
         (if pst:grps
@@ -985,20 +1326,25 @@
             (start_list "grp")
             (foreach g pst:grps (add_list g))
             (end_list)
+            ;;  The Preset Groups window (code 8):
+            (Dyl:MoreTile "gre" T)
+            (action_tile "gre" "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog 8))")
           )
         )
         (start_list "hdr")
-        (add_list (if (Remote>>Dyl:PresetDlgCmds-p) "Group\tName\tAliases\tStatus" "Group\tName\tStatus"))
+        (add_list (if (Remote>>Dyl:PresetDlgCmds-p) "Group\tName\tAliases" "Group\tName"))
         (end_list)
         (action_tile "hdr" "(set_tile \"hdr\" \"\")")
         ;;  Filter and sort, as they were when the dialog is shown again:
         (start_list "srt")
-        (foreach s *pst:sorts* (add_list s))
+        (foreach s (Remote>>Dyl:PresetDlgSorts) (add_list s))
         (end_list)
-        (set_tile "srt" (itoa pst:srt))
+        (set_tile "srt" (itoa (cond ((vl-position pst:srt (Remote>>Dyl:PresetDlgSorts))) (0))))
         (set_tile "flt" pst:flt)
         (action_tile "flt" "(Remote>>Dyl:PresetDlgFilter $value)")
         (action_tile "srt" "(Remote>>Dyl:PresetDlgSort $value)")
+        (action_tile "shg" "(Remote>>Dyl:PresetDlgShowPick $value)")
+        (action_tile "shd" "(Remote>>Dyl:PresetDlgShowDefault)")
         (Remote>>Dyl:PresetDlgShow)
         (foreach x (Remote>>Dyl:PresetDlgTiles)
           (action_tile (car x) "(if (Remote>>Dyl:PresetDlgField $key $value) (Remote>>Dyl:PresetDlgState))")
@@ -1014,30 +1360,29 @@
         (action_tile "aad" "(Remote>>Dyl:PresetDlgAliasAdd)")
         (action_tile "aren" "(Remote>>Dyl:PresetDlgAliasRename)")
         (action_tile "adel" "(Remote>>Dyl:PresetDlgAliasRemove)")
+        ;;  OK / Draw / Save: the values valid, and asked first when more presets were changed
+        ;;  than (warn . n) allows:
         (action_tile "accept"
                      (if (Remote>>Dyl:PresetDlgCmds-p)
-                       "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog 1))"
-                       "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog 2))"
+                       "(if (and (Remote>>Dyl:PresetDlgCommit) (Remote>>Dyl:PresetDlgWarnOk)) (done_dialog 1))"
+                       "(if (and (Remote>>Dyl:PresetDlgCommit) (Remote>>Dyl:PresetDlgWarnOk)) (done_dialog 2))"
                      )
         )
-        (action_tile "sav" "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog 2))")
+        (action_tile "sav" "(if (and (Remote>>Dyl:PresetDlgCommit) (Remote>>Dyl:PresetDlgWarnOk)) (done_dialog 2))")
         (setq dcl:sta (start_dialog))
       )
       (alert (strcat "\nError: " (Remote>>Dyl:PresetProp pst:key 'title) " dialog could not be loaded"))
     )
     (cond
       ((not (and dcl:sta (<= 3 dcl:sta))))
+      ;;  The Preset Groups window: its renames are given to the presets being edited when
+      ;;  the dialog is shown again (see Remote>>Dyl:PresetDlgGroupsSync):
+      ((= 8 dcl:sta) (Remote>>Dyl:GroupsDialog (Remote>>Dyl:PresetDlgGroupCounts)))
       ;;  Edit materials: the material selected on OK is given to the preset:
       ((= 9 dcl:sta)
+       ;;  To every preset selected (see Remote>>Dyl:PresetDlgPut):
        (if (setq mat (Remote>>Dyl:MaterialDialog (nth (Remote>>Dyl:PresetDlgMat) (nth pst:idx pst:lst))))
-         (setq pst:lst (Remote>>Dyl:ListSubst pst:lst
-                                               pst:idx
-                                               (Remote>>Dyl:ListSubst (nth pst:idx pst:lst)
-                                                                      (Remote>>Dyl:PresetDlgMat)
-                                                                      (car mat)
-                                               )
-                       )
-         )
+         (Remote>>Dyl:PresetDlgPut (Remote>>Dyl:PresetDlgMat) (car mat))
        )
       )
       ((= 'save (Remote>>Dyl:PresetDlgCall 'status (list dcl:sta (nth pst:idx pst:lst))))

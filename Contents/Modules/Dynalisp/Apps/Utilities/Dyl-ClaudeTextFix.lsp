@@ -13,8 +13,12 @@
 ;;;                 or asks for a selection if nothing is selected.
 ;;;
 ;;; Requirements :
-;;;   - An Anthropic API key, stored in the ANTHROPIC_API_KEY environment
-;;;     variable (restart AutoCAD after creating it) or typed on demand.
+;;;   - An Anthropic login of the user: the `ant` CLI installed, and
+;;;     `ant auth login` run once (in the browser, with the SSO of the
+;;;     organization when it has one): no key to handle (see ctf:get-auth).
+;;;     Else an Anthropic API key, in the ANTHROPIC_API_KEY environment
+;;;     variable (restart AutoCAD after creating it; it wins over the login)
+;;;     or typed on demand.
 ;;;   - Windows (uses the WinHttp.WinHttpRequest.5.1 COM object).
 ;;;
 ;;; Notes :
@@ -38,6 +42,12 @@
 
 ;; Session cache for the API key (kept across command calls, never saved).
 (if (not (boundp '*ctf:api-key*)) (setq *ctf:api-key* nil))
+
+;; Session cache for the token of the Anthropic login (see ctf:ant-token): the
+;; token, when it was read (MILLISECS), how long it is used before it is read
+;; again (10 minutes; the login itself is refreshed by the ant CLI).
+(if (not (boundp '*ctf:token*)) (setq *ctf:token* nil *ctf:token-time* nil))
+(setq *ctf:token-ttl* 600000)
 
 ;; Instructions sent to the model with every request.
 (setq *ctf:system-prompt* (strcat "You proofread text taken from AutoCAD construction drawings " 
@@ -169,19 +179,94 @@
 ;;; ==========================================================================
 
 ;;; --------------------------------------------------------------------------
-;;; ctf:get-api-key
-;;;   Returns the API key: session cache first, then the ANTHROPIC_API_KEY
-;;;   environment variable, then an interactive prompt. Returns nil if the
-;;;   user enters nothing. A typed key is kept in memory for the session only.
+;;; ctf:ant-token
+;;;   A short-lived access token of the Anthropic login of the user (the `ant`
+;;;   CLI: `ant auth login` once, in the browser, with the SSO of the
+;;;   organization when it has one): `ant auth print-credentials --access-token`
+;;;   run in a hidden window, its output read from a temporary file deleted at
+;;;   once. Kept *ctf:token-ttl* ms (the CLI refreshes the login itself).
+;;;   Returns nil when `ant` is not installed or no one is logged in.
 ;;; --------------------------------------------------------------------------
-(defun ctf:get-api-key (/ input) 
-  (cond 
-    (*ctf:api-key* *ctf:api-key*)
-    ((setq *ctf:api-key* (getenv "ANTHROPIC_API_KEY")) *ctf:api-key*)
-    (T
-     (setq input (getstring T "\nCle API Anthropic (valable pour cette session) : "))
-     (if (/= input "") (setq *ctf:api-key* input))
+(defun ctf:ant-token (/ sh out code des line)
+  (if (and *ctf:token*
+           *ctf:token-time*
+           (< 0 (- (getvar "MILLISECS") *ctf:token-time*) *ctf:token-ttl*)
+      )
+    *ctf:token*
+    (progn
+      (setq *ctf:token* nil
+            out         (vl-filename-mktemp "ctf" nil ".txt")
+      )
+      (if (setq sh (vlax-create-object "WScript.Shell"))
+        (progn
+          (setq code (vl-catch-all-apply
+                       'vlax-invoke-method
+                       (list sh
+                             'Run
+                             (strcat "cmd /c ant auth print-credentials --access-token > \"" out "\" 2>nul")
+                             0
+                             :vlax-true
+                       )
+                     )
+          )
+          (vlax-release-object sh)
+          (if (and (equal 0 code) (setq des (open out "r")))
+            (progn
+              (setq line (read-line des))
+              (close des)
+            )
+          )
+          (vl-file-delete out)
+          ;; A token is one word: an error message or JSON is not one
+          (if
+            (and line
+                 (setq line (vl-string-trim " \t\r\n" line))
+                 (< 20 (strlen line))
+                 (not (vl-string-search " " line))
+                 (not (vl-string-search "{" line))
+            )
+            (setq *ctf:token*      line
+                  *ctf:token-time* (getvar "MILLISECS")
+            )
+          )
+        )
+      )
+      *ctf:token*
     )
+  )
+)
+
+;;; --------------------------------------------------------------------------
+;;; ctf:get-auth
+;;;   How to sign the requests: ("key" . api-key) or ("bearer" . token).
+;;;   A key typed this session first, then the ANTHROPIC_API_KEY environment
+;;;   variable (it wins over the login, as in the Anthropic SDKs), then the
+;;;   Anthropic login of the user (see ctf:ant-token), then a key asked now
+;;;   (kept in memory for the session only). nil when nothing is given.
+;;; --------------------------------------------------------------------------
+(defun ctf:get-auth (/ env tok input)
+  (setq env (getenv "ANTHROPIC_API_KEY"))
+  (cond
+    (*ctf:api-key* (cons "key" *ctf:api-key*))
+    ((and env (/= "" env)) (cons "key" (setq *ctf:api-key* env)))
+    ((setq tok (ctf:ant-token)) (cons "bearer" tok))
+    (T
+     (princ "\nNo Anthropic login found: run  ant auth login  once in a terminal, or set ANTHROPIC_API_KEY.")
+     (setq input (getstring T "\nAnthropic API key (for this session): "))
+     (if (/= input "") (cons "key" (setq *ctf:api-key* input)))
+    )
+  )
+)
+
+;;; --------------------------------------------------------------------------
+;;; ctf:forget-auth
+;;;   A credential refused by the API (HTTP 401) is forgotten: the next run
+;;;   reads the environment variable or the login again (or asks again).
+;;; --------------------------------------------------------------------------
+(defun ctf:forget-auth (auth)
+  (if (= "bearer" (car auth))
+    (setq *ctf:token* nil)
+    (setq *ctf:api-key* nil)
   )
 )
 
@@ -211,11 +296,18 @@
 ;;;   Returns (status . response-text). COM errors are raised to the caller,
 ;;;   which wraps this function in vl-catch-all-apply.
 ;;; --------------------------------------------------------------------------
-(defun ctf:http-post (http api-key body) 
+(defun ctf:http-post (http auth body)
   (vlax-invoke-method http 'SetTimeouts 10000 10000 *ctf:timeout-ms* *ctf:timeout-ms*)
   (vlax-invoke-method http 'Open "POST" *ctf:api-url* :vlax-false)
   (vlax-invoke-method http 'SetRequestHeader "Content-Type" "application/json; charset=utf-8")
-  (vlax-invoke-method http 'SetRequestHeader "x-api-key" api-key)
+  ;; An API key in x-api-key; a login token as a Bearer token, with its beta header:
+  (if (= "bearer" (car auth))
+    (progn
+      (vlax-invoke-method http 'SetRequestHeader "Authorization" (strcat "Bearer " (cdr auth)))
+      (vlax-invoke-method http 'SetRequestHeader "anthropic-beta" "oauth-2025-04-20")
+    )
+    (vlax-invoke-method http 'SetRequestHeader "x-api-key" (cdr auth))
+  )
   (vlax-invoke-method http 'SetRequestHeader "anthropic-version" *ctf:api-version*)
   (vlax-invoke-method http 'Send body)
   (cons (vlax-get-property http 'Status) 
@@ -228,14 +320,14 @@
 ;;;   Safe wrapper around ctf:http-post. Always returns (status . text):
 ;;;   status 0 means a local failure and text then holds the error message.
 ;;; --------------------------------------------------------------------------
-(defun ctf:send-request (api-key body / http result) 
+(defun ctf:send-request (auth body / http result)
   (setq http (vlax-create-object "WinHttp.WinHttpRequest.5.1"))
   (cond 
     ((not http)
      (cons 0 "impossible de creer l'objet WinHttp")
     )
     (T
-     (setq result (vl-catch-all-apply 'ctf:http-post (list http api-key body)))
+     (setq result (vl-catch-all-apply 'ctf:http-post (list http auth body)))
      (vlax-release-object http)
      (if (vl-catch-all-error-p result) 
        (cons 0 (vl-catch-all-error-message result))
@@ -250,8 +342,8 @@
 ;;;   Sends TEXT to Claude and returns (T . corrected-text) on success or
 ;;;   (nil . error-message) on failure.
 ;;; --------------------------------------------------------------------------
-(defun ctf:correct-text (api-key text / response status raw corrected err) 
-  (setq response (ctf:send-request api-key (ctf:build-request-body text))
+(defun ctf:correct-text (auth text / response status raw corrected err)
+  (setq response (ctf:send-request auth (ctf:build-request-body text))
         status   (car response)
         raw      (cdr response)
   )
@@ -268,8 +360,9 @@
     ((= status 0)
      (cons nil raw)
     )
-    ;; HTTP error returned by the API
+    ;; HTTP error returned by the API (401: the credential is forgotten)
     (T
+     (if (= status 401) (ctf:forget-auth auth))
      (setq err (ctf:json-string-after raw "message"))
      (cons nil (strcat "HTTP " (itoa status) " - " (if err err "erreur inconnue")))
     )
@@ -348,7 +441,7 @@
 ;;;   Proofreads every object of the selection set, one API call per object.
 ;;;   Returns a list of counters : (checked fixed failed).
 ;;; --------------------------------------------------------------------------
-(defun ctf:process-selection (api-key ss / idx obj original result corrected answer apply-all quit n-checked n-fixed 
+(defun ctf:process-selection (auth ss /idx obj original result corrected answer apply-all quit n-checked n-fixed 
                               n-failed
                              ) 
   (setq idx       0
@@ -368,7 +461,7 @@
       (progn 
         (setq n-checked (1+ n-checked)
               original  (vla-get-TextString obj)
-              result    (ctf:correct-text api-key original)
+              result    (ctf:correct-text auth original)
         )
 
         (cond 
@@ -426,7 +519,7 @@
 ;; Claude Text Fix
 ;; Proofreads the selected texts, mtexts and multileaders with Claude and replaces them after confirmation.
 
-(defun c:Dyl-ClaudeTextFix (/ *error* doc undo-open api-key ss stats) 
+(defun c:Dyl-ClaudeTextFix (/ *error* doc undo-open auth ss stats)
 
   ;; Local error handler: closes the UNDO group and hides Esc/cancel noise.
   (defun *error* (msg) 
@@ -440,8 +533,8 @@
   (setq doc (vla-get-ActiveDocument (vlax-get-acad-object)))
 
   (cond 
-    ((not (setq api-key (ctf:get-api-key)))
-     (princ "\nCLAUDETEXT : aucune cle API fournie. Commande annulee.")
+    ((not (setq auth (ctf:get-auth)))
+     (princ "\nClaude Text Fix: no Anthropic login or API key. Command cancelled.")
     )
 
     ((not (setq ss (ctf:get-selection)))
@@ -451,7 +544,7 @@
     (T
      (vla-StartUndoMark doc)
      (setq undo-open T)
-     (setq stats (ctf:process-selection api-key ss))
+     (setq stats (ctf:process-selection auth ss))
      (vla-EndUndoMark doc)
      (setq undo-open nil)
 

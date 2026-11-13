@@ -37,22 +37,23 @@
 </table>
 </div>
 <h2>Program Description</h2>
-<p>Opens a working folder in Windows Explorer: the DynALisp bundle, the current drawing folder, the Dynalisp model templates or the sheet set folder of the current project.</p>
+<p>Opens a working folder in Windows Explorer: the DynALisp bundle, the current drawing folder, the Dynalisp model templates, the sheet set folder of the current project or the AutoCAD support folder.</p>
 <h2 id="commands">Commands</h2>
 <div class="programs commands wide">
 <table>
 <tr><th>Command</th><th>Name</th><th>Description</th></tr>
-<tr><td><span class="fixw">DYL-OPENFOLDER</span></td><td>Open Folder</td><td>Opens the repository, current drawing, template or sheet set folder in Windows Explorer.</td></tr>
+<tr><td><span class="fixw">DYL-OPENFOLDER</span></td><td>Open Folder</td><td>Opens the repository, current drawing, template, sheet set or AutoCAD support folder in Windows Explorer.</td></tr>
 </table>
 </div>
 <h2>How It Works</h2>
-<p>The command prompts <span class="fixw">Open folder: [Repository/CurrentDrawing/Template/SheetSet]</span> and opens the folder in Windows Explorer:</p>
+<p>The command prompts <span class="fixw">Open folder: [Repository/CurrentDrawing/Template/SheetSet/sUpport]</span> and opens the folder in Windows Explorer:</p>
 <div class="unspacedbullets">
 <ul>
 <li><em>Repository</em>: the <span class="fixw">DynALisp.bundle</span> folder;</li>
 <li><em>CurrentDrawing</em>: the folder of the current drawing;</li>
 <li><em>Template</em>: <span class="fixw">Modules\Dynalisp\Res\Templates\Model</span>;</li>
-<li><em>SheetSet</em>: the nearest folder containing a <span class="fixw">.dst</span> file, searched from the drawing folder up through its parent folders.</li>
+<li><em>SheetSet</em>: the nearest folder containing a <span class="fixw">.dst</span> file, searched from the drawing folder up through its parent folders;</li>
+<li><em>sUpport</em> (type <span class="fixw">U</span>): the user Support folder of the AutoCAD running, <span class="fixw">%APPDATA%\Autodesk\&lt;product&gt;\&lt;language&gt;\Support</span> (<span class="fixw">ROAMABLEROOTPREFIX</span>): <span class="fixw">acad.cuix</span>, the copies of partial menus (<span class="fixw">.cuix</span>) AutoCAD saves there, the user's <span class="fixw">.pat</span> and <span class="fixw">.lin</span> files.</li>
 </ul>
 </div>
 <p>A missing folder is reported as <em>Folder not found</em>.</p>
@@ -69,7 +70,7 @@
 <div class="programs commands wide">
 <table>
 <tr><th>Command</th><th>Aliases</th><th>Name</th></tr>
-<tr><td><span class="fixw">dyl-openfolder</span></td><td>&ndash;</td><td>Open Folder</td></tr>
+<tr><td><span class="fixw">Dyl-OpenFolder</span></td><td>&ndash;</td><td>Open Folder</td></tr>
 </table>
 </div>
 <!-- /dyl:aliases -->

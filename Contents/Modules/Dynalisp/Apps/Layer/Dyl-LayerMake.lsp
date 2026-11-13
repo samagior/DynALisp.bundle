@@ -16,7 +16,7 @@
 ;;
 ;;-------------------------=={ End of Licence }==------------------------;;
 
-(Defun Dyl-LayMake (*typ *dir *lst *cop) 
+(Defun Dyl-LayerMake (*typ *dir *lst *cop) 
   ;; *typ = "Csv" for layer list or "Lyr" for single layer
   ;; *dir = directory subfolder name from:
 
@@ -564,12 +564,12 @@
 
 
 ;;  The layer sets are the child commands Pst-Make*Layers below, run by their
-;;  aliases (LL-A-FLOOR...) or picked in the Dyl-LayMake dialog.
+;;  aliases (LL-A-FLOOR...) or picked in the Dyl-LayerMake dialog.
 
 ;; Make Layers
 ;; Lists the layer sets with their aliases and creates the layers of the one picked.
 
-(defun c:Dyl-LayMake ()
+(defun c:Dyl-LayerMake ()
   (Dyl:ChildPicker "Dyl-LayerMake.lsp" "Make Layers" "Double-click a layer set (or OK) to create its layers." '*lm:last*)
 )
 
@@ -583,7 +583,7 @@
         *dir "Dyl//Drawing"
         *lst '("Basic.csv")
   )
-  (Dyl-LayMake *typ *dir *lst *cop)
+  (Dyl-LayerMake *typ *dir *lst *cop)
 )
 
 ;; Make Architectural Elevation Layers
@@ -594,7 +594,7 @@
         *dir "Architecture"
         *lst '("A-Elev.csv" "A-Eqpm.csv" "A-Anno.csv")
   )
-  (Dyl-LayMake *typ *dir *lst *cop)
+  (Dyl-LayerMake *typ *dir *lst *cop)
 )
 
 ;; Make Architectural Section Layers
@@ -605,7 +605,7 @@
         *dir "Architecture"
         *lst '("A-Elev.csv" "A-Eqpm.csv" "A-Anno.csv")
   )
-  (Dyl-LayMake *typ *dir *lst *cop)
+  (Dyl-LayerMake *typ *dir *lst *cop)
 )
 
 ;; Make Architectural Detail Layers
@@ -616,7 +616,7 @@
         *dir "Architecture"
         *lst '("A-Drawing.csv" "A-Eqpm.csv" "A-Anno.csv")
   )
-  (Dyl-LayMake *typ *dir *lst *cop)
+  (Dyl-LayerMake *typ *dir *lst *cop)
 )
 
 ;; Make Architectural Floor Plan Layers
@@ -627,7 +627,7 @@
         *dir "Architecture"
         *lst '("A-Flor.csv" "A-Eqpm.csv" "A-Anno.csv")
   )
-  (Dyl-LayMake *typ *dir *lst *cop)
+  (Dyl-LayerMake *typ *dir *lst *cop)
 )
 
 ;; Make Architectural Roof Plan Layers
@@ -638,7 +638,7 @@
         *dir "Architecture"
         *lst '("A-Roof.csv" "A-Eqpm.csv" "A-Anno.csv")
   )
-  (Dyl-LayMake *typ *dir *lst *cop)
+  (Dyl-LayerMake *typ *dir *lst *cop)
 )
 
 ;; Make Architectural Ceiling Plan Layers
@@ -649,7 +649,7 @@
         *dir "Architecture"
         *lst '("A-Ceil.csv" "A-Flor.csv" "A-Eqpm.csv" "A-Anno.csv")
   )
-  (Dyl-LayMake *typ *dir *lst *cop)
+  (Dyl-LayerMake *typ *dir *lst *cop)
 )
 
 ;; Make Architectural Furniture Plan Layers
@@ -660,7 +660,7 @@
         *dir "Architecture"
         *lst '("A-Furn.csv" "A-Flor.csv" "A-Anno.csv")
   )
-  (Dyl-LayMake *typ *dir *lst *cop)
+  (Dyl-LayerMake *typ *dir *lst *cop)
 )
 
 ;; Make NCS Level 1 Layers
@@ -673,7 +673,7 @@
                "1-Plumbing.csv" "1-Electrical.csv" "1-Mechanical.csv"
               )
   )
-  (Dyl-LayMake *typ *dir *lst *cop)
+  (Dyl-LayerMake *typ *dir *lst *cop)
 )
 
 ;; Make NCS Level 2 Layers
@@ -686,7 +686,7 @@
                "2-Plumbing.csv" "2-Electrical.csv" "2-Mechanical.csv"
               )
   )
-  (Dyl-LayMake *typ *dir *lst *cop)
+  (Dyl-LayerMake *typ *dir *lst *cop)
 )
 
 ;; Make NCS Level 3 Layers
@@ -699,6 +699,6 @@
                "2-Plumbing.csv" "3-Electrical.csv" "3-Mechanical.csv"
               )
   )
-  (Dyl-LayMake *typ *dir *lst *cop)
+  (Dyl-LayerMake *typ *dir *lst *cop)
 )
   ;#endregion

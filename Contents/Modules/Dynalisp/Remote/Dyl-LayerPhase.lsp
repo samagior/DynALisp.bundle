@@ -23,8 +23,8 @@
 ;;  Modules\Dynalisp\Res\AEC\Standard\Phase.csv (*ph:defaults* when it is missing).
 ;;
 ;;  Each drawing has an active phase, saved in the drawing (none by default):
-;;    - while auto-phase is on, the layer keys marked Phased give their layer in the
-;;      active phase (MED -> A-Detl-Medm-E, see Remote>>Dyl:LayerKeyName);
+;;    - while auto-phase is on, every layer key gives its layer in the active phase
+;;      (MED -> A-Detl-Medm-E, see Remote>>Dyl:LayerKeyName);
 ;;    - Auto-phase moves the objects created by a command to the active phase: an object
 ;;      created on A-Wall-Full-E, or on the layer of a phased layer key, goes to
 ;;      A-Wall-Full-N. Objects on other layers are not changed. Auto-phase is a user
@@ -103,7 +103,7 @@
 
 ;;  Layer an object on lay goes to in phase code, nil when it stays on lay: a phased
 ;;  layer takes code in place of its own phase, the layer of a phased layer key gets it
-;;  added. bases: layers of the phased keys (Remote>>Dyl:LayerKeyPhased)
+;;  added. bases: layers of the layer keys (Remote>>Dyl:LayerKeyPhased)
 (defun Remote>>Dyl:PhaseTarget (lay code codes bases / new)
   (setq new (cond
               ((wcmatch (strcase lay) *ph:never*) nil)
@@ -130,8 +130,9 @@
 )
 
 ;;  Create the layer new from the layer src (phase from -> phase to) when the drawing
-;;  does not have it: color of Remote>>Dyl:PhaseColor, linetype, lineweight, plot and
-;;  description of src. Returns T when the layer exists:
+;;  does not have it: color of Remote>>Dyl:PhaseColor (the color of its layer key when the
+;;  key keeps its color in every phase, see Remote>>Dyl:LayerKeyKeepColor), linetype,
+;;  lineweight, plot and description of src. Returns T when the layer exists:
 (defun Remote>>Dyl:PhaseMake (src new from to / lays s n)
   (if (not (tblsearch "LAYER" new))
     (progn
@@ -140,7 +141,15 @@
       )
       (if (not (vl-catch-all-error-p (setq n (vl-catch-all-apply 'vla-Add (list lays new)))))
         (progn
-          (vla-put-Color n (Remote>>Dyl:PhaseColor (abs (vla-get-Color s)) from to))
+          (vla-put-Color n
+                         (cond
+                           ((and Remote>>Dyl:LayerKeyKeepColor
+                                 (Remote>>Dyl:LayerKeyKeepColor (substr new 1 (max 1 (- (strlen new) (strlen to) 1))))
+                            )
+                           )
+                           ((Remote>>Dyl:PhaseColor (abs (vla-get-Color s)) from to))
+                         )
+          )
           (vla-put-Linetype n (vla-get-Linetype s))
           (vla-put-Lineweight n (vla-get-Lineweight s))
           (vla-put-Plottable n (vla-get-Plottable s))

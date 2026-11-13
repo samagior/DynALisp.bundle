@@ -5,7 +5,7 @@
 ;; Fix Blocks ByBlock
 ;; Moves the entities of the selected block definitions to layer 0 with ByBlock color, linetype and lineweight.
 
-(defun c:Dyl-FixBlocksByBlock (/ SSET intCount ENAM ELST BNAM FLST FIX1) 
+(defun c:Dyl-SetByBlock (/ SSET intCount ENAM ELST BNAM FLST FIX1) 
   (defun FIX1 (BNAM / BENAM BONAM) 
     (if (not (member BNAM FLST)) 
       (progn 

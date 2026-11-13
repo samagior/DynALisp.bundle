@@ -17,9 +17,11 @@
 ;;-------------------------=={ End of Licence }==------------------------;;
 
 ;; Open Folder
-;; Opens the repository, current drawing, template or sheet set folder in Windows Explorer.
+;; Opens the repository, current drawing, template, sheet set or AutoCAD support folder in Windows Explorer.
 ;; The sheet set folder is the nearest folder containing a .dst file, searching
-;; from the current drawing folder up through its parents.
+;; from the current drawing folder up through its parents. The support folder is the user
+;; Support folder of AutoCAD (ROAMABLEROOTPREFIX + Support: acad.cuix, the partial CUIx
+;; files AutoCAD saves there, the user's .pat and .lin files).
 
 (defun Local>>Dyl:Explore (*dir)
   ;; *dir = [str] folder to open (quoted, trailing backslash removed for explorer)
@@ -44,15 +46,15 @@
 )
 
 ;; Open Folder
-;; Opens the repository, current drawing, template or sheet set folder in Windows Explorer.
+;; Opens the repository, current drawing, template, sheet set or AutoCAD support folder in Windows Explorer.
 
-(defun c:dyl-openfolder (/ *opt *dir)
+(defun c:Dyl-OpenFolder (/ *opt *dir)
   (initget
-    "Repository CurrentDrawing Template SheetSet _R C T S"
+    "Repository CurrentDrawing Template SheetSet sUpport _R C T S U"
   )
   (setq *opt (getkword
                (strcat
-                 "\nOpen folder: [Repository/CurrentDrawing/Template/SheetSet] : "
+                 "\nOpen folder: [Repository/CurrentDrawing/Template/SheetSet/sUpport] : "
                )
              )
   )
@@ -66,6 +68,8 @@
        (princ "\nNo sheet set (.dst) found in the drawing folder or its parents.")
      )
     )
+    ;;  The user Support folder of this AutoCAD (its version and language):
+    ((= "U" *opt) (Local>>Dyl:Explore (strcat (getvar "ROAMABLEROOTPREFIX") "Support")))
     (T nil)
   )
   (princ)

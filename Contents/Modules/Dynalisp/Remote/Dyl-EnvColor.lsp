@@ -18,7 +18,7 @@
 
 ;;  Loaded at startup with the other Remote files, before the Apps.
 ;;
-;;  The display settings of Dyl-Settings (Display in Overrides, its ... button opening
+;;  The display settings of Dyl-Settings (Display in Overrides, its open button opening
 ;;  the display window). Display on (DynalispDisplayOn user setting, off by default),
 ;;  each drawing opened applies the display settings chosen (Remote>>Dyl:DisplayApply,
 ;;  run by dynalisp.mnl); off, the display preferences are left as they are.

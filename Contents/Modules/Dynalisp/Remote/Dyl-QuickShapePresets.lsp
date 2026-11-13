@@ -26,14 +26,21 @@
   (cons
     '("QuickShape"
       (file . "QuickShape.csv")
-      (header "Id" "Group" "Name" "Material" "Shape" "Scale")
+      ;;  Then the border of the preset (the values of the border columns of Materials.csv, a
+      ;;  shape always has its border; a row of an older file without them gets the border of
+      ;;  its material, see Dyl:QuickShapeFix):
+      (header "Id" "Group" "Name" "Material" "Shape" "Scale"
+              "OutlineKey" "BorderColorOn" "BorderColor" "BorderLinetypeOn" "BorderLinetype"
+              "BorderLtScaleOn" "BorderLtScale" "BorderLineweightOn" "BorderLineweight"
+              "BorderTransparencyOn" "BorderTransparency"
+      )
       (default . "QS-*")
       (base . "Pst-QuickShape")
       (cmd . "Pst-QuickShapeCustom")
       (title . "Quick Shape")
       (path . "Dynalisp\\Apps\\Draw\\Dyl-QuickShape.lsp")
       (info . 4)
-      (desc . "inserts its shape and fills it with its material.")
+      (desc . "inserts its shape and fills it with its hatch preset.")
       (get . Dyl:QuickShapeGet)
       (run . Dyl:QuickShapeRun)
      )

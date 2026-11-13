@@ -16,7 +16,7 @@
 ;;
 ;;-------------------------=={ End of Licence }==------------------------;;
 
-(defun Dyl-LayFilter (*shw *hid *sh2 *hi2 *scn *lck *msg) 
+(defun Dyl-LayerFilter (*shw *hid *sh2 *hi2 *scn *lck *msg) 
 
   ;;  Arguments:
   ;;  *shw = [lst] layer name patterns to turn ON and thaw (primary set)
@@ -473,12 +473,12 @@
 ;;-------------------------=={ Commands }==------------------------;;
 
 ;;  The filter presets are the child commands Pst-* below, run by their aliases
-;;  (SH-ALL, E1...) or picked in the Dyl-LayFilter dialog.
+;;  (SH-ALL, E1...) or picked in the Dyl-LayerFilter dialog.
 
 ;; Layer Filters
 ;; Lists the layer filter presets with their aliases and applies the one picked.
 
-(defun c:Dyl-LayFilter ()
+(defun c:Dyl-LayerFilter ()
   (Dyl:ChildPicker "Dyl-LayerFilter.lsp" "Layer Filters" "Double-click a filter (or OK) to apply it. In a layout, select the viewports next." '*lf:last*)
 )
 
@@ -497,7 +497,7 @@
         *lck "No"
         *msg "Architectural floor plan"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 
@@ -518,7 +518,7 @@
         *lck "No"
         *msg "Show All (Xref included)"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Show Non-Plotting Layers
@@ -534,7 +534,7 @@
         *lck "No"
         *msg "Show Non-Plotting Only"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Show New Work Layers
@@ -550,7 +550,7 @@
         *lck "No"
         *msg "Show Existing to remain + New"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Show Demolition Layers
@@ -566,7 +566,7 @@
         *lck "No"
         *msg "Show Existing to remain + Demo"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Show Existing Layers
@@ -582,7 +582,7 @@
         *lck "No"
         *msg "Show Existing to remain Only"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Show Key Plan Layers
@@ -598,7 +598,7 @@
         *lck "No"
         *msg "Show Key Plan Only"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 ;#endregion
 
@@ -618,7 +618,7 @@
         *lck "No"
         *msg "Hide All (Xref included)"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Hide Annotation Layers
@@ -634,7 +634,7 @@
         *lck "No"
         *msg "Hide All (Xref included)"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Hide Membrane Layers
@@ -650,7 +650,7 @@
         *lck "No"
         *msg "Hide All (Xref included)"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Screen Existing Layers
@@ -666,7 +666,7 @@
         *lck "No"
         *msg "Existing layer screening applied"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Hide Non-Plotting Layers
@@ -682,7 +682,7 @@
         *lck "No"
         *msg "Hide Non-Plotting Layers Only"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Hide New Work Layers
@@ -698,7 +698,7 @@
         *lck "No"
         *msg "Hide New Work Only"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Hide Demolition Layers
@@ -714,7 +714,7 @@
         *lck "No"
         *msg "Hide Existing to demolish Only"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Hide Existing Layers
@@ -730,7 +730,7 @@
         *lck "No"
         *msg "Hide Existing to remain Only"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Hide Key Plan Layers
@@ -746,7 +746,7 @@
         *lck "No"
         *msg "Hide Key Plan Only"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 ;#endregion
 
@@ -766,7 +766,7 @@
         *lck "No"
         *msg "Existing to remain + New - Number 0001"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Existing View Stack 0002
@@ -782,7 +782,7 @@
         *lck "No"
         *msg "Existing to remain + New - Number 0002"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Existing View Stack 0003
@@ -798,7 +798,7 @@
         *lck "No"
         *msg "Existing to remain + New - Number 0003"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Existing View Stack 0004
@@ -814,7 +814,7 @@
         *lck "No"
         *msg "Existing to remain + New - Number 0004"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Existing View Stack 0005
@@ -830,7 +830,7 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0005"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Existing View Stack 0006
@@ -846,7 +846,7 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0006"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Existing View Stack 0007
@@ -862,7 +862,7 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0007"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Existing View Stack 0008
@@ -880,7 +880,7 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0008"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Existing View Stack 0009
@@ -898,7 +898,7 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0009"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Demolition View Architecture
@@ -914,7 +914,7 @@
         *lck "No"
         *msg "Existing to remain + Demo - Architecture"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 
@@ -931,7 +931,7 @@
         *lck "No"
         *msg "Existing to remain + New - Number 0001"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Demolition View Stack 0002
@@ -947,7 +947,7 @@
         *lck "No"
         *msg "Existing to remain + New - Number 0002"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Demolition View Stack 0003
@@ -963,7 +963,7 @@
         *lck "No"
         *msg "Existing to remain + New - Number 0003"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Demolition View Stack 0004
@@ -979,7 +979,7 @@
         *lck "No"
         *msg "Existing to remain + New - Number 0004"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Demolition View Stack 0005
@@ -995,7 +995,7 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0005"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Demolition View Stack 0006
@@ -1011,7 +1011,7 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0006"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Demolition View Stack 0007
@@ -1027,7 +1027,7 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0007"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Demolition View Stack 0008
@@ -1045,7 +1045,7 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0008"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; Demolition View Stack 0009
@@ -1063,7 +1063,7 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0009"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; New Work View Architecture
@@ -1079,7 +1079,7 @@
         *lck "No"
         *msg "Existing to remain + New - Architecture"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; New Work View Structure
@@ -1095,7 +1095,7 @@
         *lck "No"
         *msg "Existing to remain + New - Architecture"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 
@@ -1113,7 +1113,7 @@
         *lck "No"
         *msg "Existing to remain + New - Number 0001"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; New Work View Stack 0002
@@ -1129,7 +1129,7 @@
         *lck "No"
         *msg "Existing to remain + New - Number 0002"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; New Work View Stack 0003
@@ -1145,7 +1145,7 @@
         *lck "No"
         *msg "Existing to remain + New - Number 0003"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; New Work View Stack 0004
@@ -1161,7 +1161,7 @@
         *lck "No"
         *msg "Existing to remain + New - Number 0004"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; New Work View Stack 0005
@@ -1177,7 +1177,7 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0005"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; New Work View Stack 0006
@@ -1193,7 +1193,7 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0006"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; New Work View Stack 0007
@@ -1209,7 +1209,7 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0007"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; New Work View Stack 0008
@@ -1227,7 +1227,7 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0008"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 
 ;; New Work View Stack 0009
@@ -1245,6 +1245,6 @@
         *lck "No"
         *msg "Existing to remain + New - Stack Number 0009"
   )
-  (Dyl-LayFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
+  (Dyl-LayerFilter *shw *hid *sh2 *hi2 *scn *lck *msg)
 )
 ;#endregion

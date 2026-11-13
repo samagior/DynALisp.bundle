@@ -33,3 +33,9 @@ plot.log
 
 # Setups built by Installer\Build.ps1 (published as GitHub release assets):
 /Releases/
+
+# AutoCAD crash reports (Customer Error Reporting):
+ErrorReports/
+
+# Python bytecode of the ribbon scripts:
+__pycache__/

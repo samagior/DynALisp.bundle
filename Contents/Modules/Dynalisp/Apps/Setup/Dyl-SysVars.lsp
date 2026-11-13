@@ -30,11 +30,14 @@
 ;;    sv:sets - the profiles being edited: ((name (variable value) ...) ...)
 ;;    sv:pst  - index in sv:sets of the profile shown (the active one on OK)
 ;;    sv:old  - names of the profiles when the window opened (their files)
-;;    sv:idx  - index of the row selected in the profile list
+;;    sv:idx  - index of the row shown in the edit boxes of the profile list
+;;    sv:sel  - indexes of the rows selected in the profile list (Ctrl / Shift click, see
+;;              CONVENTIONS.md, Windows): Remove removes them all; the edit boxes show
+;;              the first one (a value is for one variable: Add adds or replaces one)
 ;;    sv:keep - the protected variables being edited: ((variable value) ...), sorted. Their
 ;;              value is set in every drawing whatever the profile, no profile changes
 ;;              them ("": protected only, not set; see Remote>>Dyl:SysVarKeep)
-;;    sv:kidx - index of the protected variable selected
+;;    sv:kidx - index of the protected variable shown, sv:ksel - those selected (as sv:sel)
 ;;  Both lists show the same three columns: Variable, Preferred value, Current value. The
 ;;  current value is marked when the variable does not have its preferred value (see
 ;;  sv:state): "*" it differs, "(value not valid)", "(protected)" a profile row of a
@@ -144,9 +147,27 @@
   )
 )
 
-;;  Select the row i of the profile and show it in its edit boxes:
+;;  Lines picked in a list ("3" or "0 3 5"), as indexes:
+(defun sv:lines (val)
+  (read (strcat "(" (cond (val) ("")) ")"))
+)
+
+;;  Rows of the profile picked in its list (val, see sv:lines): the first one shown:
+(defun sv:picks (val / l)
+  (if (setq l (vl-remove-if-not '(lambda (n) (nth n (sv:rows))) (sv:lines val)))
+    (progn
+      (sv:pick (car l))
+      (setq sv:sel l)
+      (set_tile "lst" val)
+    )
+  )
+)
+
+;;  Select the row i of the profile (alone) and show it in its edit boxes:
 (defun sv:pick (i / r)
-  (setq sv:idx i)
+  (setq sv:idx i
+        sv:sel (list i)
+  )
   (if (setq r (nth i (sv:rows)))
     (progn
       (set_tile "lst" (itoa i))
@@ -181,9 +202,13 @@
   )
 )
 
-;;  Remove the row selected of the profile:
-(defun sv:remove ()
-  (sv:store (Remote>>Dyl:ListRemove (sv:rows) sv:idx))
+;;  Remove the rows selected of the profile:
+(defun sv:remove (/ sel i)
+  (setq sel (if (member sv:idx sv:sel) sv:sel (list sv:idx))
+        i   -1
+  )
+  (sv:store (vl-remove-if '(lambda (r) (member (setq i (1+ i)) sel)) (sv:rows)))
+  (setq sv:idx (apply 'min sel))
   (sv:fill)
 )
 
@@ -211,9 +236,22 @@
   (mode_tile "kdl" (if sv:keep 0 1))
 )
 
-;;  Select the protected variable i and show it in its edit boxes:
+;;  Protected variables picked in their list (val, see sv:lines): the first one shown:
+(defun sv:kpicks (val / l)
+  (if (setq l (vl-remove-if-not '(lambda (n) (nth n sv:keep)) (sv:lines val)))
+    (progn
+      (sv:kpick (car l))
+      (setq sv:ksel l)
+      (set_tile "kls" val)
+    )
+  )
+)
+
+;;  Select the protected variable i (alone) and show it in its edit boxes:
 (defun sv:kpick (i / r)
-  (setq sv:kidx i)
+  (setq sv:kidx i
+        sv:ksel (list i)
+  )
   (if (setq r (nth i sv:keep))
     (progn
       (set_tile "kls" (itoa i))
@@ -247,11 +285,15 @@
   )
 )
 
-;;  Remove the protected variable selected:
-(defun sv:keepremove ()
+;;  Remove the protected variables selected:
+(defun sv:keepremove (/ sel i)
   (if (nth sv:kidx sv:keep)
     (progn
-      (setq sv:keep (Remote>>Dyl:ListRemove sv:keep sv:kidx))
+      (setq sel     (if (member sv:kidx sv:ksel) sv:ksel (list sv:kidx))
+            i       -1
+            sv:keep (vl-remove-if '(lambda (r) (member (setq i (1+ i)) sel)) sv:keep)
+            sv:kidx (apply 'min sel)
+      )
       (sv:fill)
     )
   )
@@ -599,7 +641,7 @@
 ;; System Variables
 ;; Edits the system variable profiles: the preferred values set in every drawing while System variables is on (Dyl-Settings).
 
-(defun c:Dyl-SysVars (/ dcl:id sv:sets sv:pst sv:old sv:idx sv:keep sv:kidx sta err)
+(defun c:Dyl-SysVars (/ dcl:id sv:sets sv:pst sv:old sv:idx sv:sel sv:keep sv:kidx sv:ksel sta err)
   (setq sv:keep (Remote>>Dyl:SysVarKeep)
         sv:kidx 0
         sv:old  (Remote>>Dyl:SysVarProfiles)
@@ -618,12 +660,12 @@
      (action_tile "pcp" "(sv:profile 'copy) (sv:fill)")
      (action_tile "prn" "(sv:profile 'rename) (sv:fill)")
      (action_tile "pdl" "(sv:delete)")
-     (action_tile "lst" "(sv:pick (atoi $value)) (set_tile \"msg\" \"\")")
+     (action_tile "lst" "(sv:picks $value) (set_tile \"msg\" \"\")")
      (action_tile "add" "(sv:add)")
      (action_tile "cur" "(sv:usecur \"var\" \"val\")")
      (action_tile "del" "(sv:remove)")
      (action_tile "rst" "(sv:reset)")
-     (action_tile "kls" "(sv:kpick (atoi $value)) (set_tile \"msg\" \"\")")
+     (action_tile "kls" "(sv:kpicks $value) (set_tile \"msg\" \"\")")
      (action_tile "kad" "(sv:keepadd)")
      (action_tile "kcu" "(sv:usecur \"kvr\" \"kvl\")")
      ;; The list of every system variable, adding to the profile or to the protected ones:

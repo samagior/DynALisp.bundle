@@ -14,16 +14,20 @@ Each module is a folder of `Contents\Modules\<Module>` (Dynalisp, LeeMac...), wi
 
 `Contents\Resources` is kept for the core of DynALisp itself: `dynalisp.mnl`, the Startup Suite (`StartupSuite.csv`, `Aliases.csv`), the core dialogs and `docs.css`. A file that belongs to a module never goes there.
 
-*Why: a module stays self-contained, and the core holds only what runs every module.*
+The **LeeMac** module is the **sample module**: in its docs index, its pages, the README and the core windows it is described as a sample that showcases what DynALisp does with existing AutoLISP programs (indexed in the Startup Suite, main and child commands, aliases, shared subfunctions, a docs page per program), and the model for a module of one's own. Its programs keep their author and licence.
+
+*Why: a module stays self-contained, and the core holds only what runs every module. The LeeMac module shows, with real programs, how any collection of AutoLISP code becomes a DynALisp module.*
 
 ## Commands
 
-- Each Lisp file has **one main command**, named after what it does: `Dyl-*` in the Dynalisp module, `LM-*` in the LeeMac module.
+- Each Lisp file has **one main command**, named after what it does: `Dyl-*` in the Dynalisp module, `LM-*` in the LeeMac sample module.
 - Its other commands (presets, variants) are **child commands named `Pst-*`**, run by their aliases. When a file has no natural main tool, its main command is a picker (`Dyl:ChildPicker` in `dynalisp.mnl`) that lists its children.
-- Short and former command names are **aliases** in `Resources\Aliases.csv`, never extra code.
-- To rename a command, update its rows of `StartupSuite.csv` before the Lisp file (so its Load value is kept), and add the former name as an alias.
+- Short names are **aliases** in `Resources\Aliases.csv`, never extra code (the original names of a program, e.g. Lee Mac's `BATTE`, are short names). An alias is **never a long name with a command prefix** (`Dyl-*`, `LM-*`, `Pst-*`): Dyl-Suite refuses it, and a former long name (`DYL-LAYFILTER`) is dropped, not kept as an alias. An alias never takes the name of a command of AutoCAD or of its Express Tools: a command always wins, so that alias is never defined. Dyl-Suite refuses such a name and says what has it (`Dyl:AliasTaken`), and an alias saved before its name was taken is reported with its command (*Alias TCOUNT of LM-TEXTCOUNT not defined: TCOUNT is already a command of another program...*). An original name that is taken gets another alias (`TXTCOUNT` for Lee Mac's `TCOUNT`).
+- The Apps file is **named exactly as its main command**, same spelling and case (`c:Dyl-HatchPresets` -> `Apps\Draw\Dyl-HatchPresets.lsp`), and so is its docs page (`Docs\Draw\Dyl-HatchPresets.htm`). A file that holds only functions, without a command (`LM-PrintList.lsp`), is named after what it holds.
+- Command and file names are in **PascalCase**: each word starts with a capital and goes on in lower case, after the prefix (`Dyl-LayerExportToCsv`, `LM-ResetXrefLayers`), never all in capitals (`Dyl-EXPORTLAYERS`) or all in lower case (`dyl-list`). An AutoCAD term of one word is one word (`ByLayer`, `Linetype`, `Multileader`, `Xref`, `Mtext`); an acronym may keep its capitals (`LM-FormatDCL`, `Pst-QuickDrawCMU`). A name is spelled out, never abbreviated (`LM-ModelSpaceToPaperSpace`, not `LM-ms2ps`), and has no version number (`LM-DumpObject`, not `LM-DumpObjectV1-2`): the short names are aliases.
+- To rename a command, update its rows of `StartupSuite.csv` before the Lisp file (so its Load value is kept); its short aliases follow it, and its former name is not kept. Rename its Apps file and its docs page with it, and update what names them: the `File` and `Path` columns of `StartupSuite.csv` (the default and its `User` copy), the `Dyl:DocsTile` calls, and the links of the other docs pages.
 
-*Why: typing "Dyl" in the AutoCAD command line suggests only the main commands. The child prefix must not contain "DYL" (the suggestion list matches mid-string), and a leading `_` or symbol is parsed by the command line, hence `Pst-`.*
+*Why: typing "Dyl" in the AutoCAD command line suggests only the main commands (a `DYL-*` alias would add a second, outdated name to that list). The child prefix must not contain "DYL" (the suggestion list matches mid-string), and a leading `_` or symbol is parsed by the command line, hence `Pst-`. A file named as its command is found from the command (and the command from the file) without opening the Startup Suite. PascalCase names read the same in the code, the docs and the AutoCAD command line, which shows them in capitals anyway.*
 
 ### Preset aliases
 
@@ -33,6 +37,44 @@ The alias of a Quick Draw preset tells how it draws: `PL-*` for a preset drawn w
 
 - The preset tools (Quick Draw, Quick Shape...) are built on the shared preset engine (`Remote\Dyl-Presets.lsp`): one window, the same list, filter, sort and buttons for every tool.
 - The hatch parameters live in **materials** (`Remote\Dyl-Materials.lsp`, `Res\Materials.csv`), shared by id: `QD-BRICK`, `PL-BRICK` and a brick shape all use the one *Brick* material, so editing it changes them all.
+- The **groups** of the presets and of the hatch presets are one list, `Res\Groups.csv` (`Remote\Dyl-Groups.lsp`: `Remote>>Dyl:Groups`), edited in the **Preset Groups** window that the open button left of every Group list opens. A tool asks for it with `(groups . T)`, and reads the group of a row with `Remote>>Dyl:GroupCase`. A group renamed there is renamed in the files of every preset tool (`Remote>>Dyl:GroupsRename`) and in the presets of the windows open (`*grp:renames*`).
+
+*Why: a preset and its hatch preset are found by their group (the Hatch preset list shows the hatch presets of the group of the preset), so every window must list the same groups, with the same names.*
+
+- In the windows, the messages and the docs, a material is a **hatch preset**: the **Hatch Presets** window (command `Dyl-HatchPresets`), *Hatch preset:* and its open button in the preset windows. The code and the data files keep *material* (`Remote>>Dyl:Material*`, `*mt:*`, `Materials.csv`, the `mt-*` ids, `Remote\Dyl-Materials.lsp`), so the users' copies and older files keep working.
+
+*Why: users pick a hatch, so the windows name it after what it is; the code keeps its names so nothing that reads the files breaks.*
+
+- A material is **only the hatch** (pattern, scale, hatch layer key, optional settings). How it is drawn (method, Linear width, Polygon sides...) is a **behavior of each preset**, set in the **Behaviors** box of the Quick Draw window, never in the Hatch Presets window:
+  - The box is defined in `Remote\Dyl-Materials.lsp`: `*mt:behaviordcl*`, `*mt:behaviortiles*`, `Remote>>Dyl:MaterialDlgBehaviorsInit`, `Remote>>Dyl:MaterialDlgBehaviors`, and its *Pick...* button `Remote>>Dyl:MaterialOriginPick`.
+  - When a preset is drawn, its behaviors are put in the behavior columns of its material (`Dyl:QuickDrawMat`). Those columns of `Materials.csv` are no longer edited: they are only read to give their behaviors to the presets of older files.
+  - A new behavior is a column of `QuickDraw.csv` (`*qd:tiles*`) and a slot of those material columns.
+  - Quick Shape presets insert shapes and have no behaviors.
+- The **border** (its layer key, the overrides of its properties, its transparency, *Has a border*) is a setting **of each preset** too, in the **Border settings** box of the Quick Draw and Quick Shape windows, never in the Hatch Presets window:
+  - The box is defined in `Remote\Dyl-Materials.lsp`: `Remote>>Dyl:MaterialBorderDcl`, `*mt:bordertiles*`, `Remote>>Dyl:MaterialDlgBorderInit`, `Remote>>Dyl:MaterialDlgBorderState`, `Remote>>Dyl:MaterialDlgBorderStatus`.
+  - The border columns of a preset follow the order of `*mt:bordertiles*` (`Remote>>Dyl:MaterialBorderTiles`). When a preset is drawn, they are put in the border columns of its material (`Remote>>Dyl:MaterialBorderPut`). Those columns of `Materials.csv` are no longer edited: they only give their border to the presets of older files and to the default presets.
+  - A Quick Shape shape always has its border: no *Has a border* there.
+
+*Why: two presets of one material can be drawn differently (`QD-BRICK` asks the method, `PL-BRICK` draws a polyline) and with different borders, so how a preset is drawn belongs to the preset, and a material stays the same hatch wherever it is used.*
+
+- A setting that holds **a list** (the layers of an assembly of Quick Draw) is **one column of text**: its items divided by `|`, the fields of an item by `:`, never `;` or `,` (`Remote>>Dyl:MaterialLayers` reads it and drops the items that are not valid, `Remote>>Dyl:MaterialLayersStr` writes it). It is edited in a window of its own, opened by the open button beside its checkbox (the Assembly Layers window), never as a tile of the preset window, and the window shows a short summary of it beside that button (*3 layers*).
+
+*Why: the CSV files are read with `;`, tab or `,` as their separator (whichever the header uses), so a list kept in one cell must not use them; one column keeps each preset one row, and a file of an older version still reads (the column is empty).*
+
+- A material has **one scale**, in the units of its pattern, never an imperial and a metric one. `Remote>>Dyl:MaterialScale` converts it for the drawing:
+  - The units of a pattern are found by `Remote>>Dyl:MaterialPatUnits`: `acad.pat` is imperial and `acadiso.pat` metric.
+  - A pattern in its own `.pat` file is metric when the file says `;%UNITS=MM`, or when its file or folder name has *ISO* or *METRIC* in it. Otherwise it is imperial.
+  - The scale of an imperial pattern is multiplied by 25.4 in a metric drawing (`MEASUREMENT` 1), and that of a metric pattern divided by 25.4 in an imperial one.
+  - A `.pat` file DynALisp writes (`Dyl-RebuildPat`) says its units: `;%UNITS=MM` or `;%UNITS=INCH`.
+
+*Why: One scale per material is one value to keep right, and a pattern draws at the same size in imperial and metric drawings.*
+
+- The `G-DS-ANNO-STD-*` layer keys are kept for compatibility only (the display configurations of AutoCAD Architecture) and are **never the layer key of a material** (`*lk:nomaterial*`, `Remote>>Dyl:LayerKeyMaterial-p`):
+  - The Hatch Presets window does not list them, and a double-click on one in the Layer Keys window opened from it is refused.
+  - A material read with one gets `HATCH` in its place (`Remote>>Dyl:MaterialFix`).
+  - A new key of that kind matches the pattern, or is added to it.
+
+*Why: those keys put objects on the screening and non-plotting layers of AutoCAD Architecture, never on the layer of a hatch or its border.*
 
 ## Settings
 
@@ -42,7 +84,9 @@ The alias of a Quick Draw preset tells how it draws: `PL-*` for a preset drawn w
 - Every on/off setting is **off on a new installation**, and on only once the user turns it on: read it with `(= "1" (getenv "Dynalisp..."))`, never `(/= "0" ...)`.
 - DynALisp prefers **watching and enforcing defaults** (units and grid checked when each drawing opens) over commands to run by hand.
 
-*Why: one place for every setting, and nothing changes in a drawing until the user asks for it.*
+- A question that offers **Remember my answer and do not ask again** (e.g. updating a layer that differs from its layer key) saves the answer as settings of the Settings window: one on/off toggle per answer (*Update them without asking*, *Keep them without asking*: `DynalispLayerKeyUpdate`, `DynalispLayerKeyKeep`), one of them on at most, both off (asked) on a new installation. The Settings window shows the answer remembered and takes it back.
+
+*Why: one place for every setting, and nothing changes in a drawing until the user asks for it; an answer remembered is a setting like any other, so it can always be seen and undone.*
 
 ## Reactors
 
@@ -74,14 +118,61 @@ The alias of a Quick Draw preset tells how it draws: `PL-*` for a preset drawn w
 
 *Why: one version number for every reader, updates readable without a GitHub account while the source stays private, users told what changed on each update, the users' edits kept by every update, and nothing left behind by the uninstall unless the user saves it.*
 
+## Ribbon
+
+- The DynALisp tab of the ribbon (`Contents\Resources\DynALisp.cuix`) is **generated** by `Installer\Ribbon\BuildRibbon.py`, never edited in the CUI editor: its buttons are in `Installer\Ribbon\Ribbon.csv`, their icons in `Installer\Ribbon\RibbonIcons.py`, their names, descriptions (tooltips) and children read from `StartupSuite.csv`.
+- Every main command of the Dynalisp module has a button, in the panel of its group, with an **icon of its own** (16 and 32 px, stored in the CUIx). A new tool gets its row and its icon in the same change, then the script is run and `DynALisp.cuix` committed. The script warns about a main command missing from the ribbon or without an icon.
+- The children (`Pst-*`) of a tool are listed under the arrow of its button, all of them or the ones picked by patterns when they are too many for one list (Layer Transfer, Drawing Scale). A child has an icon of its own only when it tells it apart (the colour of a phase, the eye of Show / Hide); otherwise it uses the icon of its main command.
+- That button is a split button that **follows** the item picked last (`SplitFollow`, the main command first, as the Circle button of AutoCAD), never one that stays on the main command (`SplitNoFollow`): the face of a split button that does not follow shows only an image of the resources of AutoCAD, never one stored in the CUIx, so it would have no icon.
+- Items that are not commands of their own (the groups of the Quick Draw Gallery) set a Lisp variable, then run the command (`@*qd:gallerygroup*=All|Phase|Section` in the Children column): the button keeps its name (`SplitFollowStaticText`) and runs the item picked last. The command reads the variable once and clears it, so typed at the command line it opens as usual.
+- The icons are flat, as those of AutoCAD: dark outlines, light fills and the orange and teal of the logo, never a line alone in the dark ink (it disappears on the dark ribbon). Check them on both themes with `BuildRibbon.py --sheet`.
+- A command that works on the objects selected can be added to the **right-click menu** of those objects in `Installer\Ribbon\ContextMenus.csv` (the alias of the object menu: `OBJECT_MTEXT` for one mtext, `OBJECTS_MTEXT` for several; AutoCAD adds them to its own menu; each menu gets a `POPnnn` alias first, as those of `acad.cuix`). Its macro has no `^C^C`, which would drop the selection, and the command reads the selection first (`(ssget "_I")`). The menu of the text editor itself cannot be changed.
+- The tab fits a 1920 px screen: the tools used less often go to the slide-out of their panel (`>1` in the Stack column).
+
+*Why: the ribbon follows the commands of the Startup Suite with one script run, every tool can be found by its picture, and the CUIx stays the same file whoever builds it.*
+
 ## Windows
 
 - Every DynALisp window has an **Open Docs** button (exactly that label, never "Documentation"), key `docs`, next to its OK / Cancel or Close buttons:
   `: button {label = "Open Docs"; key = "docs"; width = 12; fixed_width = true;}`
 - After `new_dialog`, `(Dyl:DocsTile "Group\\Page.htm")` makes it open the page (relative to `Modules\Dynalisp\Docs`, or a full path): the window stays open, and the button is greyed out when the page is missing. The windows of the core use the pages of `Docs\Core`.
 - A new window comes with its docs page. Small Yes/No and name prompts have no button.
+- In a group of parameters, every **value box** (edit box, popup list) ends at the same distance from the right border of the group:
+  - Each value is a `row` of its own, the box last in the row.
+  - A box with a label and an `edit_width`, not fixed, is right-justified in the space of its tile.
+  - A box after a checkbox is `fixed_width = true`, and the checkbox (a `width`, not fixed) takes the rest of the row.
+  - Two values never share a row.
+- A group divided into sub-sections has a **dividing line**, drawn like the borders of the groups, over the title of each one (a `text` ending with `:`, such as *Layer key overrides:*):
+  `: image {key = "..."; height = 0.8; fixed_height = true; color = -15;}`
+  After `new_dialog`, `(Dyl:LineTile key)` (Docs region of `dynalisp.mnl`) draws it.
+  A sub-section at the top of a column of the group has its title only, without the line: the border of the group is just above it.
+  The two columns of a group are divided by the same line, vertical, between them (an image narrow and as tall as the columns, drawn by `Dyl:LineTile` too):
+  `: image {key = "..."; width = 2; height = 1; fixed_width = true; color = -15;}`
+- The rows of a group are **dense and balanced**. A group as tall as its neighbours never spreads its extra height between its rows:
+  - Each sub-section is a `: column { fixed_height = true; ... }`, its dividing line and title included.
+  - A `: spacer { }` between the sub-sections takes the extra height, spread evenly, and the last row ends at the bottom of the group.
+  - A group without sub-sections ends with that spacer instead.
+- Adding or removing a parameter **rebalances the window**:
+  - The columns of groups stay about the same height. When one gets taller by more than a couple of rows, a sub-section moves to the shorter column if it fits there. When the groups no longer balance side by side, they go one under the other, each split in two columns: the basic settings and the layer key overrides on the left, the optional settings on the right (the Hatch settings of the Hatch Presets window).
+  - The list heights and the docs follow.
+- The **view choices** of a window (the sort of its list, the group it shows) are not settings: they stay in the window, never in the Settings window. They are kept for the session, or, with a **Set default** button beside them, saved as the one the window opens on: a `Dynalisp*` user setting of the tool (`DynalispPresetShow<tool>` for the Show group of the preset windows), off (All) until the user sets it.
+- A window that lists items and edits the selected one (presets, materials, layer keys, rules...) lets **several items be selected** in its list (`multiple_select = true`; Ctrl / Shift click), to edit them at once:
+  - The fields show the item clicked first (the one shown). A value changed is given to every item selected; their other values are left as they are.
+  - A value unique to each item (name, key), Copy, and the values edited line by line (a list of layers) are for one item only: greyed out while several are selected. Delete and Reset act on every item selected.
+  - The heading of the fields gives their number (*Parameters (3 selected)*).
+  - The code keeps the item shown (`pst:idx`) and the items selected (`pst:sel`). A field's action gives its value to all of them (`Remote>>Dyl:PresetDlgPut`); committing the fields (before changing the selection) writes the item shown only.
+  - A window that edits through an *Add* button (a value typed for one item, as System Variables) lets several be selected to Remove them at once.
+- A button beside a setting that opens the window editing it (a sub-window, the AutoCAD color dialog...), or the file it comes from (the `.pat` file of a pattern), is the square **open button** of the Settings window, never a `...` button. It goes just to the left of the value box it edits:
+  `: image_button {key = "..."; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15;}`
+- After `new_dialog`, `(Dyl:MoreTile key on)` (Docs region of `dynalisp.mnl`) draws its *open* icon. To grey it out or turn it back on, call it again with `on` nil or true in place of `mode_tile`, since `mode_tile` leaves the icon black. A button that does something else keeps a text label (*New...*, *Edit layer keys...*, *Pick...*).
 
-*Why: every window leads to its documentation.*
+- Windows are **minimal**, for a clean, modern look that is easy to approach: the fewest graphics, text and boxes that do the job.
+  - Labels and list items are short, **never with text in parentheses** explaining them (*Sides*, not *Sides (Polygon)*; *Linear*, not *Linear (band along a line)*; *Transparency*, not *Transparency (0-90)*), and no description line under a field. The details are in the docs page that **Open Docs** opens.
+  - What can be set is shown by the window itself: a value the current choice does not use (the method of a preset, a checkbox off) is greyed out, never explained.
+  - A marker that warns about a value (*(not defined)*, *(missing hatch preset)*) is not an explanation: it stays.
+  - The docs name each setting with its label, and explain it there.
+
+*Why: every window leads to its documentation, a list is shown the way the user picked it where the list is (and opens that way again once set as the default), a setting that opens its own window looks the same in every window, the values of a group read as one column, its sub-sections look like the groups, a window stays balanced as it changes, many items get the same change in one go, and a window is read at a glance, its explanations kept in one place, the docs.*
 
 ## Spell Dictionaries
 

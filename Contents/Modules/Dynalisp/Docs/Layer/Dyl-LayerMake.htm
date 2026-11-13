@@ -20,7 +20,7 @@
 <table>
 <tr class="alt">
 <td>Function Syntax</td>
-<td><span class="fixw">DYL-LAYMAKE</span> and 11 layer sets &ndash; see <a href="#commands">Commands</a></td>
+<td><span class="fixw">DYL-LAYERMAKE</span> and 11 layer sets &ndash; see <a href="#commands">Commands</a></td>
 </tr>
 <tr>
 <td>Source File</td>
@@ -37,7 +37,7 @@
 </table>
 </div>
 <h2>Program Description</h2>
-<p><span class="fixw">DYL-LAYMAKE</span> lists every layer set with its alias: double-click one (or OK) to create its layers. The layer sets are child commands (<span class="fixw">Pst-*</span>) run by their aliases, which can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (see <a href="#aliases">Command Names And Aliases</a>).</p>
+<p><span class="fixw">DYL-LAYERMAKE</span> lists every layer set with its alias: double-click one (or OK) to create its layers. The layer sets are child commands (<span class="fixw">Pst-*</span>) run by their aliases, which can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (see <a href="#aliases">Command Names And Aliases</a>).</p>
 <p>Builds a set of layers from CSV layer lists: the layer names are assembled from the name fields of each row, then the colour, lineweight, linetype and plot setting are derived from the name with the Dynalisp layer rules. Existing layers are updated, missing ones created.</p>
 <h2 id="commands">Commands</h2>
 <div class="programs commands wide">
@@ -86,11 +86,11 @@
 </div>
 <!-- dyl:aliases -->
 <h2 id="aliases">Command Names And Aliases</h2>
-<p>Each program has one main command starting with <span class="fixw">Dyl-</span>. The short names are its aliases: they run the same command, and can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (saved in <span class="fixw">Resources\Aliases.csv</span>). The rows marked &#8627; are child commands of <span class="fixw">Dyl-LayMake</span>: they are run by their alias, or picked from <span class="fixw">Dyl-LayMake</span> when it lists them (their command is named <span class="fixw">Pst-*</span>).</p>
+<p>Each program has one main command starting with <span class="fixw">Dyl-</span>. The short names are its aliases: they run the same command, and can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (saved in <span class="fixw">Resources\Aliases.csv</span>). The rows marked &#8627; are child commands of <span class="fixw">Dyl-LayerMake</span>: they are run by their alias, or picked from <span class="fixw">Dyl-LayerMake</span> when it lists them (their command is named <span class="fixw">Pst-*</span>).</p>
 <div class="programs commands wide">
 <table>
 <tr><th>Command</th><th>Aliases</th><th>Name</th></tr>
-<tr><td><span class="fixw">Dyl-LayMake</span></td><td>&ndash;</td><td>Make Layers</td></tr>
+<tr><td><span class="fixw">Dyl-LayerMake</span></td><td>&ndash;</td><td>Make Layers</td></tr>
 <tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">LL-BASICDRAWING</span></td><td>&ndash;</td><td>Make Basic Drawing Layers</td></tr>
 <tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">LL-A-ELEV</span></td><td>&ndash;</td><td>Make Architectural Elevation Layers</td></tr>
 <tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">LL-A-SECT</span></td><td>&ndash;</td><td>Make Architectural Section Layers</td></tr>

@@ -1,11 +1,12 @@
 Load;Command;Name;Description;File;Module;Group;Duplicate;Path
-1;C:DYL-COLORBYLAYER;Color ByLayer;Sets the color of the selected objects to ByLayer.;Dyl-ColorBylayer.lsp;Dynalisp;Cleaning;;Dynalisp\Apps\Cleaning\Dyl-ColorBylayer.lsp
-1;C:PST-CHANGECOLOR;Change Color;Sets the color of the selected objects to a color picked in the color dialog.;Dyl-ColorBylayer.lsp;Dynalisp;Cleaning;;Dynalisp\Apps\Cleaning\Dyl-ColorBylayer.lsp
+1;C:DYL-COLORBYLAYER;Color ByLayer;Sets the color of the selected objects to ByLayer.;Dyl-ColorByLayer.lsp;Dynalisp;Cleaning;;Dynalisp\Apps\Cleaning\Dyl-ColorByLayer.lsp
+1;C:PST-CHANGECOLOR;Change Color;Sets the color of the selected objects to a color picked in the color dialog.;Dyl-ColorByLayer.lsp;Dynalisp;Cleaning;;Dynalisp\Apps\Cleaning\Dyl-ColorByLayer.lsp
 1;C:DYL-DATALINKS;Data Links;Lists the data links of the drawing with their status and tables, and deletes the unused or broken ones.;Dyl-DataLinks.lsp;Dynalisp;Cleaning;;Dynalisp\Apps\Cleaning\Dyl-DataLinks.lsp
 1;C:PST-DATALINKPURGE;Purge Data Links;Deletes every data link that no table uses, and lists the used links whose Excel file is missing.;Dyl-DataLinks.lsp;Dynalisp;Cleaning;;Dynalisp\Apps\Cleaning\Dyl-DataLinks.lsp
-1;C:DYL-FIXBLOCKSBYBLOCK;Fix Blocks ByBlock;Moves the entities of the selected block definitions to layer 0 with ByBlock color, linetype and lineweight.;Dyl-SetByBlock.lsp;Dynalisp;Cleaning;;Dynalisp\Apps\Cleaning\Dyl-SetByBlock.lsp
+1;C:DYL-SETBYBLOCK;Fix Blocks ByBlock;Moves the entities of the selected block definitions to layer 0 with ByBlock color, linetype and lineweight.;Dyl-SetByBlock.lsp;Dynalisp;Cleaning;;Dynalisp\Apps\Cleaning\Dyl-SetByBlock.lsp
 1;C:PST-SELECTALLBLOCKS;Select All Blocks;Selects every block reference in the drawing.;Dyl-SetByBlock.lsp;Dynalisp;Cleaning;;Dynalisp\Apps\Cleaning\Dyl-SetByBlock.lsp
 1;C:DYL-QUICKDRAW;Quick Draw;Opens a dialog to edit, create and draw the quick draw presets.;Dyl-QuickDraw.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-QuickDraw.lsp
+1;C:PST-QUICKDRAWGALLERY;Quick Draw Gallery;Opens the gallery of the quick draw presets by group, and draws the one clicked.;Dyl-QuickDraw.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-QuickDraw.lsp
 1;C:PST-QUICKDRAWDEMOLITION;Quick Draw Demolition;Draws a closed outline and fills it with the demolition phase hatch.;Dyl-QuickDraw.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-QuickDraw.lsp
 1;C:PST-QUICKDRAWNOTINCONTRACT;Quick Draw Not In Contract;Draws a closed outline and fills it with the not in contract phase hatch.;Dyl-QuickDraw.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-QuickDraw.lsp
 1;C:PST-QUICKDRAWEXISTING;Quick Draw Existing;Draws a closed outline and fills it with the existing phase background screen.;Dyl-QuickDraw.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-QuickDraw.lsp
@@ -49,12 +50,12 @@ Load;Command;Name;Description;File;Module;Group;Duplicate;Path
 1;C:PST-QUICKSHAPECMU8;Quick Shape CMU 8 in;Inserts 8 in concrete masonry units in plan section (with their cores), filled with the CMU hatch.;Dyl-QuickShape.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-QuickShape.lsp
 1;C:PST-QUICKSHAPEHSS4X4;Quick Shape HSS 4x4;Inserts 4x4x1/4 steel tubes in section, filled with the steel hatch.;Dyl-QuickShape.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-QuickShape.lsp
 1;C:DYL-SHRINKWRAP;Shrinkwrap;Draws closed polylines around the outside of the selected objects (replaces AECLINEWORKSHRINKWRAP).;Dyl-Shrinkwrap.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-Shrinkwrap.lsp
-1;C:DYL-MATERIALS;Materials;Opens a dialog to create and edit the materials (hatch and layers of an outline) used by Quick Draw and Quick Shape.;Dyl-Materials.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-Materials.lsp
+1;C:DYL-HATCHPRESETS;Hatch Presets;Opens a dialog to create and edit the hatch presets (pattern, scale and layer key of a hatch) used by Quick Draw and Quick Shape.;Dyl-HatchPresets.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-HatchPresets.lsp
 1;C:DYL-LAYERCOLORWEIGHT;Layer Color Weight;Matches the lineweight of the layers with their color, or their color with their lineweight (Dyl Standard).;Dyl-LayerColorWeight.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerColorWeight.lsp
 1;C:PST-LAYERWEIGHTBYCOLOR;Layer Lineweight By Color;Sets the lineweight of the layers from their color (Dyl Standard: color ##0 = 0.13, ##1 = 0.18...).;Dyl-LayerColorWeight.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerColorWeight.lsp
 1;C:PST-LAYERCOLORBYWEIGHT;Layer Color By Lineweight;Sets the last digit of the layer colors from their lineweight, keeping their hue (Dyl Standard).;Dyl-LayerColorWeight.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerColorWeight.lsp
-1;C:DYL-EXPORTLAYERS;Export Layers To CSV;Exports every layer of the drawing with its properties to a CSV file in the Downloads folder.;Dyl-LayerExportToCsv.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerExportToCsv.lsp
-1;C:DYL-LAYFILTER;Layer Filters;Lists the layer filter presets with their aliases and applies the one picked.;Dyl-LayerFilter.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerFilter.lsp
+1;C:DYL-LAYEREXPORTTOCSV;Export Layers To CSV;Exports every layer of the drawing with its properties to a CSV file in the Downloads folder.;Dyl-LayerExportToCsv.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerExportToCsv.lsp
+1;C:DYL-LAYERFILTER;Layer Filters;Lists the layer filter presets with their aliases and applies the one picked.;Dyl-LayerFilter.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerFilter.lsp
 1;C:PST-ARCHITECTURALFLOORPLANFILTER;Architectural Floor Plan Filter;Sets the layer visibility to show only the architectural floor plan layers.;Dyl-LayerFilter.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerFilter.lsp
 1;C:PST-SHOWALLLAYERS;Show All Layers;Turns on and thaws every layer of the drawing, xrefs included.;Dyl-LayerFilter.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerFilter.lsp
 1;C:PST-SHOWNONPLOTTINGLAYERS;Show Non-Plotting Layers;Turns on and thaws the Defpoints, non-plotting and readme layers.;Dyl-LayerFilter.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerFilter.lsp
@@ -101,7 +102,7 @@ Load;Command;Name;Description;File;Module;Group;Duplicate;Path
 1;C:PST-NEWWORKVIEWSTACK0007;New Work View Stack 0007;Shows the existing and new work layers of stack 0007 with the lower stacks hidden and the upper stacks screened.;Dyl-LayerFilter.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerFilter.lsp
 1;C:PST-NEWWORKVIEWSTACK0008;New Work View Stack 0008;Shows the existing and new work layers of stack 0008 with the lower stacks hidden and the upper stacks screened.;Dyl-LayerFilter.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerFilter.lsp
 1;C:PST-NEWWORKVIEWSTACK0009;New Work View Stack 0009;Shows the existing and new work layers of stack 0009 with the lower stacks hidden.;Dyl-LayerFilter.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerFilter.lsp
-1;C:DYL-LAYGROUP;Layer Groups;Creates the standard Dynalisp layer group filters in the Layer Properties Manager.;Dyl-LayerGroup.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerGroup.lsp
+1;C:DYL-LAYERGROUP;Layer Groups;Creates the standard Dynalisp layer group filters in the Layer Properties Manager.;Dyl-LayerGroup.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerGroup.lsp
 1;C:DYL-LAYERIMPORTFILTERSFROMDWG;Import Layer Filters;Imports the layer filters of another drawing into the current drawing.;Dyl-LayerImportFiltersFromDwg.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerImportFiltersFromDwg.lsp
 1;C:PST-LISTLAYERFILTERS;List Layer Filters;Lists the layer filter tree of the current drawing at the command line.;Dyl-LayerImportFiltersFromDwg.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerImportFiltersFromDwg.lsp
 1;C:PST-ARCHITECTURALFLOORPLANLAYERS;Architectural Floor Plan Layers;Imports the architectural floor plan layers from their preset CSV and saves a layer state.;Dyl-LayerImportFromCsv.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerImportFromCsv.lsp
@@ -117,8 +118,9 @@ Load;Command;Name;Description;File;Module;Group;Duplicate;Path
 1;C:PST-MECHANICALFLOORPLANLAYERS;Mechanical Floor Plan Layers;Imports the mechanical floor plan layers from their preset CSV and saves a layer state.;Dyl-LayerImportFromCsv.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerImportFromCsv.lsp
 1;C:DYL-LAYERIMPORTFROMCSV;Import Layers From CSV;Imports layers from a browsed CSV file without saving a layer state.;Dyl-LayerImportFromCsv.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerImportFromCsv.lsp
 1;C:DYL-LAYERKEYS;Layer Keys;Opens a dialog to create and edit the layer keys used by the Dynalisp Apps.;Dyl-LayerKeys.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerKeys.lsp
-1;C:DYL-LIST;Layer Drawing List;Draws a line and a label with the description of each layer of the drawing or of the selection.;Dyl-LayerList.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerList.lsp
-1;C:DYL-LAYMAKE;Make Layers;Lists the layer sets with their aliases and creates the layers of the one picked.;Dyl-LayerMake.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerMake.lsp
+1;C:DYL-OBJECTLAYERKEYS;Object Layer Keys;Opens a window to assign a layer key to the new dimensions, leaders, text and other common objects.;Dyl-ObjectLayerKeys.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-ObjectLayerKeys.lsp
+1;C:DYL-LAYERLIST;Layer Drawing List;Draws a line and a label with the description of each layer of the drawing or of the selection.;Dyl-LayerList.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerList.lsp
+1;C:DYL-LAYERMAKE;Make Layers;Lists the layer sets with their aliases and creates the layers of the one picked.;Dyl-LayerMake.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerMake.lsp
 1;C:PST-MAKEBASICDRAWINGLAYERS;Make Basic Drawing Layers;Creates the basic drawing layers from the Dynalisp CSV layer list.;Dyl-LayerMake.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerMake.lsp
 1;C:PST-MAKEARCHITECTURALELEVATIONLAYERS;Make Architectural Elevation Layers;Creates the architectural elevation, equipment and annotation layers from the CSV layer lists.;Dyl-LayerMake.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerMake.lsp
 1;C:PST-MAKEARCHITECTURALSECTIONLAYERS;Make Architectural Section Layers;Creates the architectural section, equipment and annotation layers from the CSV layer lists.;Dyl-LayerMake.lsp;Dynalisp;Layer;;Dynalisp\Apps\Layer\Dyl-LayerMake.lsp
@@ -272,63 +274,63 @@ Load;Command;Name;Description;File;Module;Group;Duplicate;Path
 1;C:PST-GRIDCENTIMETER;Grid Centimeter;Sets a 2 mm grid with a 1 cm major grid and a 1 mm snap, converted in imperial drawings.;Dyl-StandardGrid.lsp;Dynalisp;Setup;;Dynalisp\Apps\Setup\Dyl-StandardGrid.lsp
 1;C:PST-GRIDMETER;Grid Meter;Sets a 100 mm grid with a 1 m major grid and a 25 mm snap, converted in imperial drawings.;Dyl-StandardGrid.lsp;Dynalisp;Setup;;Dynalisp\Apps\Setup\Dyl-StandardGrid.lsp
 1;C:DYL-SYSVARS;System Variables;Edits the system variable profiles: the preferred values set in every drawing while System variables is on (Dyl-Settings).;Dyl-SysVars.lsp;Dynalisp;Setup;;Dynalisp\Apps\Setup\Dyl-SysVars.lsp
-1;C:DYL-TEXTPREFIXSUFFIX;Text Prefix Suffix;Adds a user string as a prefix or suffix to the selected Text and Mtext objects.;Dyl-AddPrefixSufix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-AddPrefixSufix.lsp
+1;C:DYL-ADDPREFIXSUFFIX;Text Prefix Suffix;Adds a user string as a prefix or suffix to the selected Text and Mtext objects.;Dyl-AddPrefixSuffix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-AddPrefixSuffix.lsp
 1;C:DYL-BATCHINSERT;Batch Insert;Inserts every drawing of a folder side by side as blocks in the current drawing.;Dyl-BatchInsert.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-BatchInsert.lsp
 1;C:DYL-CLAUDETEXTFIX;Claude Text Fix;Proofreads the selected texts, mtexts and multileaders with Claude and replaces them after confirmation.;Dyl-ClaudeTextFix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-ClaudeTextFix.lsp
-1;C:DYL-COUNTBYLAYERS;Count By Layers;Totals the length and area of the selected curves by layer, labels them and exports the results.;Dyl-CountbyLayers.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-CountbyLayers.lsp
+1;C:DYL-COUNTBYLAYERS;Count By Layers;Totals the length and area of the selected curves by layer, labels them and exports the results.;Dyl-CountByLayers.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-CountByLayers.lsp
 1;C:DYL-DICTIONARY;Dictionary;Searches the words of the DynALisp dictionaries, their definitions and categories, in the language of the file preferences.;Dyl-Dictionary.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-Dictionary.lsp
 1;C:DYL-GROUPCLUSTER;Group Cluster;Splits the objects of a window or selection into several groups based on their proximity.;Dyl-GroupCluster.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-GroupCluster.lsp
 1;C:DYL-LAYERCOLORTOOBJECT;Layer Color To Object;Gives the selected objects the color of their layer (as is, index, true color or ByLayer).;Dyl-LayerColorToObject.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-LayerColorToObject.lsp
 1;C:DYL-LINETOPOLYLINE;Line To Polyline;Converts each selected line into a polyline, optionally joining the touching ones.;Dyl-LineToPolyline.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-LineToPolyline.lsp
-1;C:DYL-MULTILEADERBLOCKLIST;Multileader and Block List;Lists the selected multileaders and blocks grouped by attribute values with a count per group.;Dyl-MultiLeaderList.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-MultiLeaderList.lsp
-1;C:DYL-OPENFOLDER;Open Folder;Opens the repository, current drawing, template or sheet set folder in Windows Explorer.;Dyl-OpenFolder.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-OpenFolder.lsp
-1;C:DYL-QUICKADDPREFIXSUFFIX;Quick Add Prefix / Suffix;Lists the dimension text presets with their aliases and applies the one picked.;Dyl-QuickAddPrefixSufix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSufix.lsp
-1;C:PST-DIMENSIONTEXTPLUSMINUS;Dimension Text Plus-Minus;Toggles the plus-minus prefix on the text of the selected dimension.;Dyl-QuickAddPrefixSufix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSufix.lsp
-1;C:PST-DIMENSIONTEXTDIAMETER;Dimension Text Diameter;Toggles the diameter prefix on the text of the selected dimension.;Dyl-QuickAddPrefixSufix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSufix.lsp
-1;C:PST-DIMENSIONTEXTMAXIMUM;Dimension Text Maximum;Toggles the max. prefix on the text of the selected dimension.;Dyl-QuickAddPrefixSufix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSufix.lsp
-1;C:PST-DIMENSIONTEXTMINIMUM;Dimension Text Minimum;Toggles the min. prefix on the text of the selected dimension.;Dyl-QuickAddPrefixSufix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSufix.lsp
-1;C:PST-DIMENSIONTEXTTYPICAL;Dimension Text Typical;Toggles the (TYP) suffix on the text of the selected dimension.;Dyl-QuickAddPrefixSufix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSufix.lsp
-1;C:PST-DIMENSIONTEXTOB;Dimension Text OB;Toggles the (OB) suffix on the text of the selected dimension.;Dyl-QuickAddPrefixSufix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSufix.lsp
-1;C:PST-DIMENSIONTEXTOL;Dimension Text OL;Toggles the (OL) suffix on the text of the selected dimension.;Dyl-QuickAddPrefixSufix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSufix.lsp
+1;C:DYL-MULTILEADERLIST;Multileader and Block List;Lists the selected multileaders and blocks grouped by attribute values with a count per group.;Dyl-MultileaderList.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-MultileaderList.lsp
+1;C:DYL-OPENFOLDER;Open Folder;Opens the repository, current drawing, template, sheet set or AutoCAD support folder in Windows Explorer.;Dyl-OpenFolder.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-OpenFolder.lsp
+1;C:DYL-QUICKADDPREFIXSUFFIX;Quick Add Prefix / Suffix;Lists the dimension text presets with their aliases and applies the one picked.;Dyl-QuickAddPrefixSuffix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSuffix.lsp
+1;C:PST-DIMENSIONTEXTPLUSMINUS;Dimension Text Plus-Minus;Toggles the plus-minus prefix on the text of the selected dimension.;Dyl-QuickAddPrefixSuffix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSuffix.lsp
+1;C:PST-DIMENSIONTEXTDIAMETER;Dimension Text Diameter;Toggles the diameter prefix on the text of the selected dimension.;Dyl-QuickAddPrefixSuffix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSuffix.lsp
+1;C:PST-DIMENSIONTEXTMAXIMUM;Dimension Text Maximum;Toggles the max. prefix on the text of the selected dimension.;Dyl-QuickAddPrefixSuffix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSuffix.lsp
+1;C:PST-DIMENSIONTEXTMINIMUM;Dimension Text Minimum;Toggles the min. prefix on the text of the selected dimension.;Dyl-QuickAddPrefixSuffix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSuffix.lsp
+1;C:PST-DIMENSIONTEXTTYPICAL;Dimension Text Typical;Toggles the (TYP) suffix on the text of the selected dimension.;Dyl-QuickAddPrefixSuffix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSuffix.lsp
+1;C:PST-DIMENSIONTEXTOB;Dimension Text OB;Toggles the (OB) suffix on the text of the selected dimension.;Dyl-QuickAddPrefixSuffix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSuffix.lsp
+1;C:PST-DIMENSIONTEXTOL;Dimension Text OL;Toggles the (OL) suffix on the text of the selected dimension.;Dyl-QuickAddPrefixSuffix.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickAddPrefixSuffix.lsp
 1;C:DYL-QUICKSELECTSIMILAR;Quick Select Similar;Selects the visible objects matching the types and properties chosen in a dialog.;Dyl-QuickSelectSimilar.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-QuickSelectSimilar.lsp
 1;C:DYL-REBUILDPAT;Rebuild Patterns;Rebuilds the .pat files of the hatch patterns missing from the support path.;Dyl-RebuildPat.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-RebuildPat.lsp
 1;C:PST-OPENPATS;Open Patterns Folder;Opens the pattern folder used by Dyl-RebuildPat in Windows Explorer.;Dyl-RebuildPat.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-RebuildPat.lsp
-1;C:DYL-RESETLINETYPESCALE;Reset Linetype Scale;Resets the linetype scale of every object in model space and all layouts to 1.0.;Dyl-ResetLineTypeScale.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-ResetLineTypeScale.lsp
-1;C:DYL-UNGROUPNESTED;Ungroup Nested;Removes every group, at every nesting level, that contains the selected objects.;Dyl-UngroupNext.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-UngroupNext.lsp
+1;C:DYL-RESETLINETYPESCALE;Reset Linetype Scale;Resets the linetype scale of every object in model space and all layouts to 1.0.;Dyl-ResetLinetypeScale.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-ResetLinetypeScale.lsp
+1;C:DYL-UNGROUPNEXT;Ungroup Nested;Removes every group, at every nesting level, that contains the selected objects.;Dyl-UngroupNext.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-UngroupNext.lsp
 1;C:DYL-VIEWPORTTOPAPERSPACE;Viewport To Paper Space;Recreates the model space objects seen through the selected viewports in paper space, then deletes the viewports.;Dyl-ViewportToPaperSpace.lsp;Dynalisp;Utilities;;Dynalisp\Apps\Utilities\Dyl-ViewportToPaperSpace.lsp
 1;C:PST-2DPROJECTIONHELP;2D Projection Help;Opens the Lee Mac 2D Projection help page in the web browser.;LM-2DProjection.lsp;LeeMac;General;;LeeMac\Apps\General\LM-2DProjection.lsp
 1;C:LM-2DPROJECTION;2D Projection;Projects a selection of planar objects from one reference frame to another.;LM-2DProjection.lsp;LeeMac;General;;LeeMac\Apps\General\LM-2DProjection.lsp
-1;C:PST-THREEPOINTRECTANGLEHELP;3-Point Rectangle Help;Opens the Lee Mac 3-Point Rectangle help page in the web browser.;LM-3P-Rec.lsp;LeeMac;General;;LeeMac\Apps\General\LM-3P-Rec.lsp
-1;C:PST-THREEPOINTRECTANGLEDYNAMICHELP;3-Point Rectangle Dynamic Help;Opens the Lee Mac 3-Point Rectangle help page in the web browser.;LM-3P-Rec.lsp;LeeMac;General;;LeeMac\Apps\General\LM-3P-Rec.lsp
-1;C:LM-THREEPOINTRECTANGLE;3-Point Rectangle;Draws a rectangle defined by three picked points.;LM-3P-Rec.lsp;LeeMac;General;;LeeMac\Apps\General\LM-3P-Rec.lsp
-1;C:PST-THREEPOINTRECTANGLEDYNAMIC;3-Point Rectangle Dynamic;Draws a rectangle defined by three picked points with a dynamic preview.;LM-3P-Rec.lsp;LeeMac;General;;LeeMac\Apps\General\LM-3P-Rec.lsp
-1;C:LM-ADDPOLYLINEVERTEX;Add Polyline Vertex;Adds a new vertex to a polyline at a picked point on one of its segments.;LM-AddLWPolylineVertex.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AddLWPolylineVertex.lsp
+1;C:PST-THREEPOINTRECTANGLEHELP;3-Point Rectangle Help;Opens the Lee Mac 3-Point Rectangle help page in the web browser.;LM-ThreePointRectangle.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ThreePointRectangle.lsp
+1;C:PST-THREEPOINTRECTANGLEDYNAMICHELP;3-Point Rectangle Dynamic Help;Opens the Lee Mac 3-Point Rectangle help page in the web browser.;LM-ThreePointRectangle.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ThreePointRectangle.lsp
+1;C:LM-THREEPOINTRECTANGLE;3-Point Rectangle;Draws a rectangle defined by three picked points.;LM-ThreePointRectangle.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ThreePointRectangle.lsp
+1;C:PST-THREEPOINTRECTANGLEDYNAMIC;3-Point Rectangle Dynamic;Draws a rectangle defined by three picked points with a dynamic preview.;LM-ThreePointRectangle.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ThreePointRectangle.lsp
+1;C:LM-ADDPOLYLINEVERTEX;Add Polyline Vertex;Adds a new vertex to a polyline at a picked point on one of its segments.;LM-AddPolylineVertex.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AddPolylineVertex.lsp
 1;C:LM-ADDOBJECTSTOBLOCK;Add Objects To Block;Adds the selected objects to the definition of a picked block.;LM-AddObjectsToBlock.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AddObjectsToBlock.lsp
-1;C:LM-POLYLINEOUTLINE;Polyline Outline;Creates a closed outline around a single polyline following its segment widths.;LM-AdvancedPolyOutline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AdvancedPolyOutline.lsp
-1;C:PST-MULTIPLEPOLYLINEOUTLINE;Multiple Polyline Outline;Creates a closed outline around each selected polyline following its segment widths.;LM-AdvancedPolyOutline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AdvancedPolyOutline.lsp
+1;C:LM-POLYLINEOUTLINE;Polyline Outline;Creates a closed outline around a single polyline following its segment widths.;LM-PolylineOutline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PolylineOutline.lsp
+1;C:PST-MULTIPLEPOLYLINEOUTLINE;Multiple Polyline Outline;Creates a closed outline around each selected polyline following its segment widths.;LM-PolylineOutline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PolylineOutline.lsp
 1;C:LM-ALIGNTEXT;Align Text;Aligns a selection of single-line text by their alignment points, optionally equally spaced.;LM-AlignText.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AlignText.lsp
 1;C:LM-ALIGNTEXTTOCURVE;Align Text To Curve;Dynamically aligns a new or existing Text or Mtext object to a selected curve.;LM-AlignTextToCurve.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AlignTextToCurve.lsp
 1;C:PST-AREALABELTOTABLE;Area Label To Table;Labels picked areas or objects with a number and lists their areas in a table.;LM-AreaLabel.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AreaLabel.lsp
 1;C:PST-AREALABELTOFILE;Area Label To File;Labels picked areas or objects with a number and writes their areas to a file.;LM-AreaLabel.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AreaLabel.lsp
 1;C:LM-AREALABEL;Area Label;Lists the Area Label commands with their aliases and runs the one picked.;LM-AreaLabel.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AreaLabel.lsp
-1;C:LM-AREAFIELDTOATTRIBUTE;Area Field To Attribute;Fills a selected attribute with a field showing the area or summed area of the selected objects.;LM-Areas2Attribute.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Areas2Attribute.lsp
-1;C:LM-AREAFIELDTOMTEXT;Area Field To Mtext;Creates an Mtext field showing the area or summed area of the selected objects.;LM-Areas2Field.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Areas2Field.lsp
+1;C:LM-AREAFIELDTOATTRIBUTE;Area Field To Attribute;Fills a selected attribute with a field showing the area or summed area of the selected objects.;LM-AreaFieldToAttribute.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AreaFieldToAttribute.lsp
+1;C:LM-AREAFIELDTOMTEXT;Area Field To Mtext;Creates an Mtext field showing the area or summed area of the selected objects.;LM-AreaFieldToMtext.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AreaFieldToMtext.lsp
 1;C:LM-ARROWARC;Arrow Arc;Draws an arc with arrowheads aligned at one or both of its end points.;LM-ArrowArc.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ArrowArc.lsp
 1;C:PST-ARROWARCSETTINGS;Arrow Arc Settings;Sets the arrowhead options used by the Arrow Arc command.;LM-ArrowArc.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ArrowArc.lsp
 1;C:LM-ASSOCIATIVECENTERLINE;Associative Centerline;Draws centerlines on the selected circles that update when the circles are modified.;LM-AssociativeCenterline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AssociativeCenterline.lsp
 1;C:PST-REMOVEASSOCIATIVECENTERLINE;Remove Associative Centerline;Removes the associativity between the selected circles and their centerlines.;LM-AssociativeCenterline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AssociativeCenterline.lsp
 1;C:LM-ASSOCIATIVETEXTBOX;Associative Textbox;Draws a frame around a Text or Mtext object that updates when the text is modified.;LM-AssociativeTextbox.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AssociativeTextbox.lsp
 1;C:PST-REMOVEASSOCIATIVETEXTBOX;Remove Associative Textbox;Removes the associativity between the selected text objects and their frames.;LM-AssociativeTextbox.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AssociativeTextbox.lsp
-1;C:PST-MOVEATTRIBUTES;Move Attributes;Moves an attribute tag by the same displacement in every selected block.;LM-AttModSuite.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AttModSuite.lsp
-1;C:PST-ROTATEATTRIBUTES;Rotate Attributes;Rotates an attribute tag by the same angle in every selected block.;LM-AttModSuite.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AttModSuite.lsp
-1;C:PST-EDITATTRIBUTES;Edit Attributes;Edits the properties of an attribute tag in every selected block through a dialog.;LM-AttModSuite.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AttModSuite.lsp
-1;C:LM-ATTRIBUTEMODIFICATIONSUITE;Attribute Modification Suite;Lists the Attribute Modification Suite commands with their aliases and runs the one picked.;LM-AttModSuite.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AttModSuite.lsp
+1;C:PST-MOVEATTRIBUTES;Move Attributes;Moves an attribute tag by the same displacement in every selected block.;LM-AttributeModificationSuite.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AttributeModificationSuite.lsp
+1;C:PST-ROTATEATTRIBUTES;Rotate Attributes;Rotates an attribute tag by the same angle in every selected block.;LM-AttributeModificationSuite.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AttributeModificationSuite.lsp
+1;C:PST-EDITATTRIBUTES;Edit Attributes;Edits the properties of an attribute tag in every selected block through a dialog.;LM-AttributeModificationSuite.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AttributeModificationSuite.lsp
+1;C:LM-ATTRIBUTEMODIFICATIONSUITE;Attribute Modification Suite;Lists the Attribute Modification Suite commands with their aliases and runs the one picked.;LM-AttributeModificationSuite.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AttributeModificationSuite.lsp
 1;C:LM-ATTRIBUTECOLOUR;Attribute Colour;Changes the colour of specific attribute tags in the selected blocks through a dialog.;LM-AttributeColour.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AttributeColour.lsp
 1;C:LM-AUTOBLOCKBREAK;Auto Block Break;Inserts a block and trims the surrounding geometry to its rectangular outline.;LM-AutoBlockBreak.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AutoBlockBreak.lsp
 1;C:PST-AUTOBLOCKBREAKEXISTING;Auto Block Break Existing;Trims the surrounding geometry to the outline of a picked existing block.;LM-AutoBlockBreak.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AutoBlockBreak.lsp
 1;C:PST-AUTOBLOCKBREAKSELECTION;Auto Block Break Selection;Trims the surrounding geometry to the outline of each selected existing block.;LM-AutoBlockBreak.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AutoBlockBreak.lsp
-1;C:LM-BATCHATTRIBUTEEDITOR;Batch Attribute Editor;Edits the values of multiple attributes in multiple blocks across multiple drawings.;LM-BAtte.lsp;LeeMac;General;;LeeMac\Apps\General\LM-BAtte.lsp
-1;C:LM-BATCHFINDANDREPLACE;Batch Find And Replace;Finds and replaces strings in the text objects of the current, open or folder drawings.;LM-BFind.lsp;LeeMac;General;;LeeMac\Apps\General\LM-BFind.lsp
+1;C:LM-BATCHATTRIBUTEEDITOR;Batch Attribute Editor;Edits the values of multiple attributes in multiple blocks across multiple drawings.;LM-BatchAttributeEditor.lsp;LeeMac;General;;LeeMac\Apps\General\LM-BatchAttributeEditor.lsp
+1;C:LM-BATCHFINDANDREPLACE;Batch Find And Replace;Finds and replaces strings in the text objects of the current, open or folder drawings.;LM-BatchFindAndReplace.lsp;LeeMac;General;;LeeMac\Apps\General\LM-BatchFindAndReplace.lsp
 1;C:LM-BLOCKCOUNT;Block Count;Reports the quantities of primary and nested blocks, dynamic blocks and xrefs.;LM-BlockCount.lsp;LeeMac;General;;LeeMac\Apps\General\LM-BlockCount.lsp
 1;C:PST-BOUNDINGBOXREACTORNEW;Bounding Box Reactor New;Creates a group of objects whose bounding polyline updates when they are modified.;LM-BoundingBoxReactor.lsp;LeeMac;General;;LeeMac\Apps\General\LM-BoundingBoxReactor.lsp
 1;C:PST-BOUNDINGBOXREACTORREMOVE;Bounding Box Reactor Remove;Removes objects from a bounding box reactor group.;LM-BoundingBoxReactor.lsp;LeeMac;General;;LeeMac\Apps\General\LM-BoundingBoxReactor.lsp
@@ -340,18 +342,18 @@ Load;Command;Name;Description;File;Module;Group;Duplicate;Path
 1;C:LM-BURSTUPGRADED;Burst Upgraded;Lists the Burst Upgraded commands with their aliases and runs the one picked.;LM-BurstUpgraded.lsp;LeeMac;General;;LeeMac\Apps\General\LM-BurstUpgraded.lsp
 1;C:LM-CENTERLINE;Centerline;Draws a pair of centerlines on arcs, circles and ellipses with a set length and angle.;LM-Centerline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Centerline.lsp
 1;C:LM-CHAINLENGTH;Chain Length;Calculates the length between two points along a chain of connected objects.;LM-ChainLength.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ChainLength.lsp
-1;C:LM-CHAINSELECTION;Chain Selection;Selects every object connected end to end with the picked object.;LM-ChainSel.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ChainSel.lsp
+1;C:LM-CHAINSELECTION;Chain Selection;Selects every object connected end to end with the picked object.;LM-ChainSelection.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ChainSelection.lsp
 1;C:LM-CHANGEBLOCKBASEPOINT;Change Block Base Point;Changes the base point of a block while keeping the insertion point of its references.;LM-ChangeBlockBasePoint.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ChangeBlockBasePoint.lsp
 1;C:PST-CHANGEBLOCKBASEPOINTRETAIN;Change Block Base Point Retain;Changes the base point of a block while keeping the position of its references.;LM-ChangeBlockBasePoint.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ChangeBlockBasePoint.lsp
 1;C:LM-CIRCLEBREAK;Circle Break;Breaks a circle or ellipse into two arcs and applies set properties to one of them.;LM-CircleBreak.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CircleBreak.lsp
 1;C:LM-CIRCLETANGENTS;Circle Tangents;Draws two circles joined by a pair of tangent lines forming a belt shape.;LM-CircleTangents.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CircleTangents.lsp
 1;C:LM-CIRCULARWIPEOUT;Circular Wipeout;Creates a circular wipeout from a center point and radius.;LM-CircularWipeout.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CircularWipeout.lsp
 1;C:PST-CIRCLETOWIPEOUT;Circle To Wipeout;Converts the selected circles into circular wipeouts.;LM-CircularWipeout.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CircularWipeout.lsp
-1;C:LM-CENTEREDMEASURE;Centered Measure;Measures the selected object like MEASURE with the divisions centered along its length.;LM-CMeasure.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CMeasure.lsp
-1;C:LM-COPYTODRAWINGS;Copy To Drawings;Copies the selected objects to a set of drawings without opening them.;LM-Copy2Drawings.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Copy2Drawings.lsp
-1;C:LM-COPYTOLAYOUTS;Copy To Layouts;Copies the selected objects to the layouts chosen in a dialog.;LM-Copy2Layouts.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Copy2Layouts.lsp
-1;C:PST-COPYTOALLLAYOUTS;Copy To All Layouts;Copies the selected objects to every layout of the drawing.;LM-Copy2Layouts.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Copy2Layouts.lsp
-1;C:LM-COPYTOXREF;Copy To Xref;Copies the selected objects into a selected xref without opening its source drawing.;LM-Copy2XRef.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Copy2XRef.lsp
+1;C:LM-CENTEREDMEASURE;Centered Measure;Measures the selected object like MEASURE with the divisions centered along its length.;LM-CenteredMeasure.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CenteredMeasure.lsp
+1;C:LM-COPYTODRAWINGS;Copy To Drawings;Copies the selected objects to a set of drawings without opening them.;LM-CopyToDrawings.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CopyToDrawings.lsp
+1;C:LM-COPYTOLAYOUTS;Copy To Layouts;Copies the selected objects to the layouts chosen in a dialog.;LM-CopyToLayouts.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CopyToLayouts.lsp
+1;C:PST-COPYTOALLLAYOUTS;Copy To All Layouts;Copies the selected objects to every layout of the drawing.;LM-CopyToLayouts.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CopyToLayouts.lsp
+1;C:LM-COPYTOXREF;Copy To Xref;Copies the selected objects into a selected xref without opening its source drawing.;LM-CopyToXref.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CopyToXref.lsp
 1;C:LM-COPYFIELD;Copy Field;Copies a field expression from a source object to multiple destination objects.;LM-CopyField.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CopyField.lsp
 1;C:PST-COPYBLOCKREFERENCE;Copy Block Reference;Creates a renamed copy of a single block reference with its own definition.;LM-CopyRenameBlock.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CopyRenameBlock.lsp
 1;C:PST-RENAMEBLOCKREFERENCE;Rename Block Reference;Renames a single block reference by giving it its own definition.;LM-CopyRenameBlock.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CopyRenameBlock.lsp
@@ -359,39 +361,39 @@ Load;Command;Name;Description;File;Module;Group;Duplicate;Path
 1;C:PST-COPYTEXT;Copy Text;Copies the text content of a source object to the selected destination objects.;LM-CopySwapText.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CopySwapText.lsp
 1;C:PST-SWAPTEXT;Swap Text;Swaps the text content between two objects.;LM-CopySwapText.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CopySwapText.lsp
 1;C:LM-COPYSWAPTEXT;Copy / Swap Text;Lists the Copy / Swap Text commands with their aliases and runs the one picked.;LM-CopySwapText.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CopySwapText.lsp
-1;C:LM-ADVANCEDBLOCKCOUNT;Advanced Block Count;Counts the selected blocks and reports to the command line, a file or a table.;LM-Count.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Count.lsp
-1;C:PST-ADVANCEDBLOCKCOUNTSETTINGS;Advanced Block Count Settings;Sets the output and table options used by the Advanced Block Count command.;LM-Count.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Count.lsp
+1;C:LM-ADVANCEDBLOCKCOUNT;Advanced Block Count;Counts the selected blocks and reports to the command line, a file or a table.;LM-AdvancedBlockCount.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AdvancedBlockCount.lsp
+1;C:PST-ADVANCEDBLOCKCOUNTSETTINGS;Advanced Block Count Settings;Sets the output and table options used by the Advanced Block Count command.;LM-AdvancedBlockCount.lsp;LeeMac;General;;LeeMac\Apps\General\LM-AdvancedBlockCount.lsp
 1;C:LM-COUNTATTRIBUTEVALUES;Count Attribute Values;Counts the occurrences of attribute values in the selected blocks and lists them in a table.;LM-CountAttributeValues.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CountAttributeValues.lsp
 1;C:LM-CURSORROTATE;Cursor Rotate;Rotates the crosshairs to an object, a fixed angle or a slope percentage.;LM-CursorRotate.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CursorRotate.lsp
 1;C:LM-CURVETEXT;Curve Text;Places and rotates text characters along a selected curve object.;LM-CurveText.lsp;LeeMac;General;;LeeMac\Apps\General\LM-CurveText.lsp
-1;C:LM-DYNAMICBLOCKCOUNT;Dynamic Block Count;Counts the standard and dynamic blocks and xrefs, including visibility states.;LM-DBCount.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DBCount.lsp
+1;C:LM-DYNAMICBLOCKCOUNT;Dynamic Block Count;Counts the standard and dynamic blocks and xrefs, including visibility states.;LM-DynamicBlockCount.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DynamicBlockCount.lsp
 1;C:LM-DELETEBLOCKS;Delete Blocks;Deletes all references and the definition of the picked or named blocks.;LM-DeleteBlocks.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DeleteBlocks.lsp
 1;C:LM-DIMENSIONOVERLAP;Dimension Overlap;Moves overlapping dimensions of all layouts and blocks to a separate layer.;LM-DimensionOverlap.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DimensionOverlap.lsp
-1;C:LM-DYNAMICINFORMATION;Dynamic Information;Displays information about the object under the cursor with layer isolation modes.;LM-DInfo.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DInfo.lsp
+1;C:LM-DYNAMICINFORMATION;Dynamic Information;Displays information about the object under the cursor with layer isolation modes.;LM-DynamicInformation.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DynamicInformation.lsp
 1;C:LM-DOUBLEEXTEND;Double Extend;Extends both ends of the selected lines, arcs and polylines by a given amount.;LM-DoubleExtend.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DoubleExtend.lsp
 1;C:LM-DOUBLEOFFSET;Double Offset;Offsets each selected object to both sides by a given distance.;LM-DoubleOffset.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DoubleOffset.lsp
 1;C:LM-DRAWGRID;Draw Grid;Draws a grid with a given number of rows and columns.;LM-DrawGrid.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DrawGrid.lsp
 1;C:PST-DRAWGRIDDYNAMIC;Draw Grid Dynamic;Draws a grid with a given number of rows and columns with a dynamic preview.;LM-DrawGrid.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DrawGrid.lsp
-1;C:LM-DYNAMICTEXTCURVEALIGN;Dynamic Text Curve Align;Dynamically aligns a new or existing text to a selected curve.;LM-DTCurve.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DTCurve.lsp
-1;C:PST-DYNAMICTEXTCURVEREMOVE;Dynamic Text Curve Remove;Removes the curve alignment reactor from the selected text.;LM-DTCurve.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DTCurve.lsp
+1;C:LM-DYNAMICTEXTCURVEALIGN;Dynamic Text Curve Align;Dynamically aligns a new or existing text to a selected curve.;LM-DynamicTextCurveAlign.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DynamicTextCurveAlign.lsp
+1;C:PST-DYNAMICTEXTCURVEREMOVE;Dynamic Text Curve Remove;Removes the curve alignment reactor from the selected text.;LM-DynamicTextCurveAlign.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DynamicTextCurveAlign.lsp
 1;C:LM-DYNAMICTEXTALIGN;Dynamic Text Align;Dynamically aligns a selection of Text and Mtext objects to any angle.;LM-DynamicTextAlign.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DynamicTextAlign.lsp
-1;C:LM-DYNAMICATTRIBUTEWIDTH;Dynamic Attribute Width;Dynamically changes the width factor of a selected attribute with the cursor.;LM-DynAttWidth.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DynAttWidth.lsp
+1;C:LM-DYNAMICATTRIBUTEWIDTH;Dynamic Attribute Width;Dynamically changes the width factor of a selected attribute with the cursor.;LM-DynamicAttributeWidth.lsp;LeeMac;General;;LeeMac\Apps\General\LM-DynamicAttributeWidth.lsp
 1;C:LM-ELEVATIONMARKER;Elevation Marker;Places elevation markers showing the UCS Y coordinate of each picked point.;LM-ElevationMarker.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ElevationMarker.lsp
-1;C:LM-ELLIPSETOARC;Ellipse To Arc;Converts the selected circular ellipses and elliptical arcs into circles and arcs.;LM-Ellipse2Arc.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Ellipse2Arc.lsp
+1;C:LM-ELLIPSETOARC;Ellipse To Arc;Converts the selected circular ellipses and elliptical arcs into circles and arcs.;LM-EllipseToArc.lsp;LeeMac;General;;LeeMac\Apps\General\LM-EllipseToArc.lsp
 1;C:LM-EXTRACTNESTEDBLOCK;Extract Nested Block;Converts a nested block into primary blocks at the same position for each reference.;LM-ExtractNestedBlock.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ExtractNestedBlock.lsp
 1;C:LM-FIELDARITHMETIC;Field Arithmetic;Adds, subtracts, multiplies or divides numerical text and fields into a result field.;LM-FieldArithmetic.lsp;LeeMac;General;;LeeMac\Apps\General\LM-FieldArithmetic.lsp
-1;C:LM-FIELDFORMATTINGCODE;Field Formatting Code;Prints the formatting code of the field in a selected annotation object.;LM-FieldFormat.lsp;LeeMac;General;;LeeMac\Apps\General\LM-FieldFormat.lsp
+1;C:LM-FIELDFORMATTINGCODE;Field Formatting Code;Prints the formatting code of the field in a selected annotation object.;LM-FieldFormattingCode.lsp;LeeMac;General;;LeeMac\Apps\General\LM-FieldFormattingCode.lsp
 1;C:LM-FIELDOBJECTS;Field Objects;Highlights the objects referenced by the fields of a selected annotation object.;LM-FieldObjects.lsp;LeeMac;General;;LeeMac\Apps\General\LM-FieldObjects.lsp
 1;C:LM-IMPORTBLOCK;Import Block;Imports a block from another drawing without opening it.;LM-ImportBlock.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ImportBlock.lsp
-1;C:LM-INCREMENTALARRAY;Incremental Array;Arrays the selected objects and increments the numbers found in their annotation.;LM-IncArray.lsp;LeeMac;General;;LeeMac\Apps\General\LM-IncArray.lsp
-1;C:PST-INCREMENTALARRAYDYNAMIC;Incremental Array Dynamic;Arrays the selected objects with a dynamic preview and increments the numbers in their annotation.;LM-IncArray.lsp;LeeMac;General;;LeeMac\Apps\General\LM-IncArray.lsp
-1;C:LM-LENGTHBETWEENINTERSECTIONS;Length Between Intersections;Displays the length of the segments of a curve divided at its intersections.;LM-IntLen.lsp;LeeMac;General;;LeeMac\Apps\General\LM-IntLen.lsp
-1;C:PST-LENGTHBETWEENINTERSECTIONSMULTIPLE;Length Between Intersections Multiple;Displays the segment lengths between intersections for each selected curve.;LM-IntLen.lsp;LeeMac;General;;LeeMac\Apps\General\LM-IntLen.lsp
-1;C:LM-ISOMETRICPOLYGON;Isometric Polygon;Draws a regular polygon projected in the active isometric plane.;LM-IsoPoly.lsp;LeeMac;General;;LeeMac\Apps\General\LM-IsoPoly.lsp
-1;C:LM-JUSTIFYBLOCKBASEPOINT;Justify Block Base Point;Moves the base point of the selected blocks to one of nine standard justifications.;LM-JustifyBasePoint.lsp;LeeMac;General;;LeeMac\Apps\General\LM-JustifyBasePoint.lsp
+1;C:LM-INCREMENTALARRAY;Incremental Array;Arrays the selected objects and increments the numbers found in their annotation.;LM-IncrementalArray.lsp;LeeMac;General;;LeeMac\Apps\General\LM-IncrementalArray.lsp
+1;C:PST-INCREMENTALARRAYDYNAMIC;Incremental Array Dynamic;Arrays the selected objects with a dynamic preview and increments the numbers in their annotation.;LM-IncrementalArray.lsp;LeeMac;General;;LeeMac\Apps\General\LM-IncrementalArray.lsp
+1;C:LM-LENGTHBETWEENINTERSECTIONS;Length Between Intersections;Displays the length of the segments of a curve divided at its intersections.;LM-LengthBetweenIntersections.lsp;LeeMac;General;;LeeMac\Apps\General\LM-LengthBetweenIntersections.lsp
+1;C:PST-LENGTHBETWEENINTERSECTIONSMULTIPLE;Length Between Intersections Multiple;Displays the segment lengths between intersections for each selected curve.;LM-LengthBetweenIntersections.lsp;LeeMac;General;;LeeMac\Apps\General\LM-LengthBetweenIntersections.lsp
+1;C:LM-ISOMETRICPOLYGON;Isometric Polygon;Draws a regular polygon projected in the active isometric plane.;LM-IsometricPolygon.lsp;LeeMac;General;;LeeMac\Apps\General\LM-IsometricPolygon.lsp
+1;C:LM-JUSTIFYBLOCKBASEPOINT;Justify Block Base Point;Moves the base point of the selected blocks to one of nine standard justifications.;LM-JustifyBlockBasePoint.lsp;LeeMac;General;;LeeMac\Apps\General\LM-JustifyBlockBasePoint.lsp
 1;C:LM-LABEL;Label;Creates Mtext labels dynamically aligned to a selected object.;LM-Label.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Label.lsp
-1;C:LM-LAYEREXTRACTOR;Layer Extractor;Reports the layer structure of every drawing in a folder and its subfolders.;LM-LayerExtract.lsp;LeeMac;General;;LeeMac\Apps\General\LM-LayerExtract.lsp
-1;C:LM-LAYERSTODRAWINGS;Layers To Drawings;Writes the objects of each active layer to a separate drawing in a chosen folder.;LM-Layers2Drawings.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Layers2Drawings.lsp
+1;C:LM-LAYEREXTRACTOR;Layer Extractor;Reports the layer structure of every drawing in a folder and its subfolders.;LM-LayerExtractor.lsp;LeeMac;General;;LeeMac\Apps\General\LM-LayerExtractor.lsp
+1;C:LM-LAYERSTODRAWINGS;Layers To Drawings;Writes the objects of each active layer to a separate drawing in a chosen folder.;LM-LayersToDrawings.lsp;LeeMac;General;;LeeMac\Apps\General\LM-LayersToDrawings.lsp
 1;C:PST-LAYOUTNAMEFIELD;Layout Name Field;Fills a selected annotation object with a field showing its layout name.;LM-LayoutField.lsp;LeeMac;General;;LeeMac\Apps\General\LM-LayoutField.lsp
 1;C:PST-LAYOUTNUMBERFIELD;Layout Number Field;Fills a selected annotation object with a field showing its layout position number.;LM-LayoutField.lsp;LeeMac;General;;LeeMac\Apps\General\LM-LayoutField.lsp
 1;C:PST-LAYOUTSHEETFIELD;Layout Sheet Field;Fills a selected annotation object with a field showing its layout number of the total.;LM-LayoutField.lsp;LeeMac;General;;LeeMac\Apps\General\LM-LayoutField.lsp
@@ -402,25 +404,25 @@ Load;Command;Name;Description;File;Module;Group;Duplicate;Path
 1;C:PST-AREAFIELDSQUAREMETERS;Area Field Square Meters;Creates a field showing the area of the selected objects converted to square meters.;LM-LengthAreaField.lsp;LeeMac;General;;LeeMac\Apps\General\LM-LengthAreaField.lsp
 1;C:LM-LENGTHAREAFIELD;Length / Area Field;Lists the Length / Area Field commands with their aliases and runs the one picked.;LM-LengthAreaField.lsp;LeeMac;General;;LeeMac\Apps\General\LM-LengthAreaField.lsp
 1;C:LM-LENGTHFIELDTOATTRIBUTE;Length Field To Attribute;Fills a selected attribute with a field showing the length or summed length of the selected objects.;LM-LengthFieldToAttribute.lsp;LeeMac;General;;LeeMac\Apps\General\LM-LengthFieldToAttribute.lsp
-1;C:PST-GLOBALATTRIBUTEEXTRACTOR;Global Attribute Extractor;Extracts the attributes of listed blocks from a folder of drawings to Excel.;LM-MacAttV3-1.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MacAttV3-1.lsp
-1;C:PST-GLOBALATTRIBUTEEDITOR;Global Attribute Editor;Edits the attributes of listed blocks across a folder of drawings.;LM-MacAttV3-1.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MacAttV3-1.lsp
-1;C:LM-GLOBALATTRIBUTES;Global Attribute Editor And Extractor;Opens the global attribute editor and extractor dialog.;LM-MacAttV3-1.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MacAttV3-1.lsp
-1;C:LM-BACKGROUNDMASK;Background Mask;Edits the background mask properties of the selected Mtext, multileaders and dimensions.;LM-Mask.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Mask.lsp
-1;C:LM-MATCHATTRIBUTES;Match Attributes;Matches the properties of a source attribute to the picked attributes.;LM-MatchAttribs.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MatchAttribs.lsp
+1;C:PST-GLOBALATTRIBUTEEXTRACTOR;Global Attribute Extractor;Extracts the attributes of listed blocks from a folder of drawings to Excel.;LM-GlobalAttributes.lsp;LeeMac;General;;LeeMac\Apps\General\LM-GlobalAttributes.lsp
+1;C:PST-GLOBALATTRIBUTEEDITOR;Global Attribute Editor;Edits the attributes of listed blocks across a folder of drawings.;LM-GlobalAttributes.lsp;LeeMac;General;;LeeMac\Apps\General\LM-GlobalAttributes.lsp
+1;C:LM-GLOBALATTRIBUTES;Global Attribute Editor And Extractor;Opens the global attribute editor and extractor dialog.;LM-GlobalAttributes.lsp;LeeMac;General;;LeeMac\Apps\General\LM-GlobalAttributes.lsp
+1;C:LM-BACKGROUNDMASK;Background Mask;Edits the background mask properties of the selected Mtext, multileaders and dimensions.;LM-BackgroundMask.lsp;LeeMac;General;;LeeMac\Apps\General\LM-BackgroundMask.lsp
+1;C:LM-MATCHATTRIBUTES;Match Attributes;Matches the properties of a source attribute to the picked attributes.;LM-MatchAttributes.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MatchAttributes.lsp
 1;C:LM-MATCHFIELDFORMATTING;Match Field Formatting;Copies the formatting of a source field to multiple destination fields.;LM-MatchFieldFormatting.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MatchFieldFormatting.lsp
-1;C:LM-MATCHTEXTPROPERTIES;Match Text Properties;Matches the properties of a source text, Mtext or attribute to the selected objects.;LM-MatchTextProps.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MatchTextProps.lsp
-1;C:LM-LENGTHATMIDPOINT;Length At Midpoint;Labels each selected object with a length field placed at its midpoint.;LM-MidLen.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MidLen.lsp
+1;C:LM-MATCHTEXTPROPERTIES;Match Text Properties;Matches the properties of a source text, Mtext or attribute to the selected objects.;LM-MatchTextProperties.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MatchTextProperties.lsp
+1;C:LM-LENGTHATMIDPOINT;Length At Midpoint;Labels each selected object with a length field placed at its midpoint.;LM-LengthAtMidpoint.lsp;LeeMac;General;;LeeMac\Apps\General\LM-LengthAtMidpoint.lsp
 1;C:LM-MINIMUMENCLOSINGCIRCLE;Minimum Enclosing Circle;Draws the smallest circle enclosing the selected object.;LM-MinimumEnclosingCircle.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MinimumEnclosingCircle.lsp
 1;C:PST-MINIMUMENCLOSINGCIRCLEMULTIPLE;Minimum Enclosing Circle Multiple;Draws the smallest circle enclosing all the selected objects.;LM-MinimumEnclosingCircle.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MinimumEnclosingCircle.lsp
-1;C:LM-MULTILINESTOPOLYLINES;Multilines To Polylines;Converts the selected multilines into polylines.;LM-MLines2PLines.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MLines2PLines.lsp
-1;C:LM-MULTILINEJUSTIFICATION;Multiline Justification;Changes the justification of the selected multilines without moving them.;LM-MLJust.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MLJust.lsp
-1;C:LM-MULTIPOLYLINE;Multi-Polyline;Draws a multiline that is automatically exploded and joined into polylines.;LM-MPline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MPline.lsp
-1;C:LM-MODELSPACETOPAPERSPACE;Model Space To Paper Space;Copies the selected model space objects to paper space through the active viewport.;LM-ms2ps.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ms2ps.lsp
-1;C:PST-MTEXTEDITREACTORON;Mtext Edit Reactor On;Enables a reactor that selects all the text when an Mtext or multileader is edited.;LM-MTEditReactor.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MTEditReactor.lsp
-1;C:PST-MTEXTEDITREACTOROFF;Mtext Edit Reactor Off;Disables the Mtext edit reactor.;LM-MTEditReactor.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MTEditReactor.lsp
-1;C:LM-MTEXTEDITREACTOR;Mtext Edit Reactor;Lists the Mtext Edit Reactor commands with their aliases and runs the one picked.;LM-MTEditReactor.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MTEditReactor.lsp
+1;C:LM-MULTILINESTOPOLYLINES;Multilines To Polylines;Converts the selected multilines into polylines.;LM-MultilinesToPolylines.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MultilinesToPolylines.lsp
+1;C:LM-MULTILINEJUSTIFICATION;Multiline Justification;Changes the justification of the selected multilines without moving them.;LM-MultilineJustification.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MultilineJustification.lsp
+1;C:LM-MULTIPOLYLINE;Multi-Polyline;Draws a multiline that is automatically exploded and joined into polylines.;LM-MultiPolyline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MultiPolyline.lsp
+1;C:LM-MODELSPACETOPAPERSPACE;Model Space To Paper Space;Copies the selected model space objects to paper space through the active viewport.;LM-ModelSpaceToPaperSpace.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ModelSpaceToPaperSpace.lsp
+1;C:PST-MTEXTEDITREACTORON;Mtext Edit Reactor On;Enables a reactor that selects all the text when an Mtext or multileader is edited.;LM-MtextEditReactor.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MtextEditReactor.lsp
+1;C:PST-MTEXTEDITREACTOROFF;Mtext Edit Reactor Off;Disables the Mtext edit reactor.;LM-MtextEditReactor.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MtextEditReactor.lsp
+1;C:LM-MTEXTEDITREACTOR;Mtext Edit Reactor;Lists the Mtext Edit Reactor commands with their aliases and runs the one picked.;LM-MtextEditReactor.lsp;LeeMac;General;;LeeMac\Apps\General\LM-MtextEditReactor.lsp
 1;C:LM-NESTEDMOVE;Nested Move;Moves objects nested in a block or xref without opening the source drawing.;LM-NestedMove.lsp;LeeMac;General;;LeeMac\Apps\General\LM-NestedMove.lsp
-1;C:LM-INCREMENTALNUMBERING;Incremental Numbering;Places incrementing numbers or letters as text, Mtext or attributed blocks.;LM-NumInc.lsp;LeeMac;General;;LeeMac\Apps\General\LM-NumInc.lsp
+1;C:LM-INCREMENTALNUMBERING;Incremental Numbering;Places incrementing numbers or letters as text, Mtext or attributed blocks.;LM-IncrementalNumbering.lsp;LeeMac;General;;LeeMac\Apps\General\LM-IncrementalNumbering.lsp
 1;C:LM-OBJECTALIGN;Object Align;Dynamically aligns a selection of objects to a selected curve.;LM-ObjectAlign.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ObjectAlign.lsp
 1;C:LM-OBJECTBREAK;Object Break;Breaks an object at two points and applies set properties to the section between them.;LM-ObjectBreak.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ObjectBreak.lsp
 1;C:PST-OBJECTBREAKATINTERSECTIONS;Object Break At Intersections;Breaks an object at its intersections with another object and applies set properties to the section.;LM-ObjectBreak.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ObjectBreak.lsp
@@ -428,17 +430,17 @@ Load;Command;Name;Description;File;Module;Group;Duplicate;Path
 1;C:PST-UNLOCKOBJECTS;Unlock Objects;Removes the modification lock from the selected objects.;LM-ObjectLock.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ObjectLock.lsp
 1;C:PST-DISABLEOBJECTLOCK;Disable Object Lock;Removes the object lock reactor and its data from the drawing.;LM-ObjectLock.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ObjectLock.lsp
 1;C:LM-OBJECTLOCK;Object Lock;Lists the Object Lock commands with their aliases and runs the one picked.;LM-ObjectLock.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ObjectLock.lsp
-1;C:LM-OFFSETPOLYLINESECTION;Offset Polyline Section;Offsets the section of a polyline between two points to both sides.;LM-OffsetSection.lsp;LeeMac;General;;LeeMac\Apps\General\LM-OffsetSection.lsp
+1;C:LM-OFFSETPOLYLINESECTION;Offset Polyline Section;Offsets the section of a polyline between two points to both sides.;LM-OffsetPolylineSection.lsp;LeeMac;General;;LeeMac\Apps\General\LM-OffsetPolylineSection.lsp
 1;C:LM-OUTLINEOBJECTS;Outline Objects;Creates closed polylines or regions outlining all the selected objects.;LM-OutlineObjects.lsp;LeeMac;General;;LeeMac\Apps\General\LM-OutlineObjects.lsp
 1;C:LM-POLYLINETAPER;Polyline Taper;Applies a width tapering from a start to an end value along the selected polylines.;LM-PolylineTaper.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PolylineTaper.lsp
-1;C:PST-POLYLINECLOSE;Polyline Close;Closes every polyline in the selection.;LM-PolyTools.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PolyTools.lsp
-1;C:PST-POLYLINEJOIN;Polyline Join;Joins the selected lines, arcs and polylines into polylines.;LM-PolyTools.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PolyTools.lsp
-1;C:PST-POLYLINEWIDTH;Polyline Width;Sets the global width of every polyline in the selection.;LM-PolyTools.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PolyTools.lsp
-1;C:LM-POLYLINETOOLS;Polyline Tools;Lists the Polyline Tools commands with their aliases and runs the one picked.;LM-PolyTools.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PolyTools.lsp
+1;C:PST-POLYLINECLOSE;Polyline Close;Closes every polyline in the selection.;LM-PolylineTools.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PolylineTools.lsp
+1;C:PST-POLYLINEJOIN;Polyline Join;Joins the selected lines, arcs and polylines into polylines.;LM-PolylineTools.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PolylineTools.lsp
+1;C:PST-POLYLINEWIDTH;Polyline Width;Sets the global width of every polyline in the selection.;LM-PolylineTools.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PolylineTools.lsp
+1;C:LM-POLYLINETOOLS;Polyline Tools;Lists the Polyline Tools commands with their aliases and runs the one picked.;LM-PolylineTools.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PolylineTools.lsp
 1;C:LM-PREFIXSUFFIXLAYER;Prefix Suffix Layer;Adds a prefix and or suffix to the layer names of the selected objects.;LM-PrefixSuffixLayer.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PrefixSuffixLayer.lsp
 1;C:PST-REMOVEPREFIXSUFFIXLAYER;Remove Prefix Suffix Layer;Removes a prefix and or suffix from the layer names of the selected objects.;LM-PrefixSuffixLayer.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PrefixSuffixLayer.lsp
-1;C:LM-POINTMANAGER;Point Manager;Imports, exports and converts points between the drawing and txt or csv files.;LM-PtManager.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PtManager.lsp
-1;C:PST-POINTMANAGERRESET;Point Manager Reset;Clears the saved default settings of the point manager.;LM-PtManager.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PtManager.lsp
+1;C:LM-POINTMANAGER;Point Manager;Imports, exports and converts points between the drawing and txt or csv files.;LM-PointManager.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PointManager.lsp
+1;C:PST-POINTMANAGERRESET;Point Manager Reset;Clears the saved default settings of the point manager.;LM-PointManager.lsp;LeeMac;General;;LeeMac\Apps\General\LM-PointManager.lsp
 1;C:PST-QUICKFIELDAREA;Quick Field Area;Example quick field command that inserts an area field of a selected object.;LM-QuickField.lsp;LeeMac;General;;LeeMac\Apps\General\LM-QuickField.lsp
 1;C:PST-QUICKFIELDLENGTH;Quick Field Length;Example quick field command that inserts a length field of a selected object.;LM-QuickField.lsp;LeeMac;General;;LeeMac\Apps\General\LM-QuickField.lsp
 1;C:PST-QUICKFIELDSTYLENAME;Quick Field Style Name;Example quick field command that inserts a style name field of a selected object.;LM-QuickField.lsp;LeeMac;General;;LeeMac\Apps\General\LM-QuickField.lsp
@@ -448,7 +450,7 @@ Load;Command;Name;Description;File;Module;Group;Duplicate;Path
 1;C:PST-QUICKMIRROROBJECT;Quick Mirror Object;Mirrors a single object about the point where it was picked.;LM-QuickMirror.lsp;LeeMac;General;;LeeMac\Apps\General\LM-QuickMirror.lsp
 1;C:PST-QUICKMIRROROBJECTDELETE;Quick Mirror Object Delete;Mirrors a single object about the point where it was picked and deletes the original.;LM-QuickMirror.lsp;LeeMac;General;;LeeMac\Apps\General\LM-QuickMirror.lsp
 1;C:LM-RENUMBERLAYOUTS;Renumber Layouts;Renumbers every layout in order with an optional prefix and suffix.;LM-RenumberLayouts.lsp;LeeMac;General;;LeeMac\Apps\General\LM-RenumberLayouts.lsp
-1;C:LM-RESETXREFLAYERS;Reset Xref Layers;Resets the properties of the layers of a selected xref to match its source drawing.;LM-ResetXRefLayers.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ResetXRefLayers.lsp
+1;C:LM-RESETXREFLAYERS;Reset Xref Layers;Resets the properties of the layers of a selected xref to match its source drawing.;LM-ResetXrefLayers.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ResetXrefLayers.lsp
 1;C:LM-SCRIPTWRITER;Script Writer;Writes and runs a script on every drawing of a folder and its subfolders.;LM-ScriptWriter.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ScriptWriter.lsp
 1;C:LM-SEGMENTCURVE;Segment Curve;Converts the selected curves into polylines with a given number of straight segments.;LM-SegmentCurve.lsp;LeeMac;General;;LeeMac\Apps\General\LM-SegmentCurve.lsp
 1;C:LM-SHOWHATCHTEXT;Show Hatch Text;Clears the hatch pattern around the selected text, Mtext and block attributes.;LM-ShowHatchText.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ShowHatchText.lsp
@@ -472,26 +474,26 @@ Load;Command;Name;Description;File;Module;Group;Duplicate;Path
 1;C:LM-STRIKETHROUGH;Strikethrough;Lists the Strikethrough commands with their aliases and runs the one picked.;LM-Strikethrough.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Strikethrough.lsp
 1;C:LM-SUMATTRIBUTEVALUES;Sum Attribute Values;Sums the numerical attribute values of the selected blocks and lists them in a table.;LM-SumAttributeValues.lsp;LeeMac;General;;LeeMac\Apps\General\LM-SumAttributeValues.lsp
 1;C:LM-TABSORT;Tab Sort;Sorts, renames, adds and deletes layout tabs through a dialog.;LM-TabSort.lsp;LeeMac;General;;LeeMac\Apps\General\LM-TabSort.lsp
-1;C:LM-TEXTCOUNT;Text Count;Counts the occurrences of each string in the selection and lists them in a table.;LM-TCount.lsp;LeeMac;General;;LeeMac\Apps\General\LM-TCount.lsp
-1;C:LM-TEXTTOMTEXT;Text To Mtext;Combines the picked texts into an Mtext on new or same lines.;LM-Text2MText.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Text2MText.lsp
-1;C:LM-TEXTTOWORDS;Text To Words;Splits each selected text into separate text objects for each word.;LM-Text2Words.lsp;LeeMac;General;;LeeMac\Apps\General\LM-Text2Words.lsp
-1;C:LM-TEXTCALCULATOR;Text Calculator;Performs arithmetic on the numbers in picked texts and places the result as Mtext.;LM-TextCalc.lsp;LeeMac;General;;LeeMac\Apps\General\LM-TextCalc.lsp
+1;C:LM-TEXTCOUNT;Text Count;Counts the occurrences of each string in the selection and lists them in a table.;LM-TextCount.lsp;LeeMac;General;;LeeMac\Apps\General\LM-TextCount.lsp
+1;C:LM-TEXTTOMTEXT;Text To Mtext;Combines the picked texts into an Mtext on new or same lines.;LM-TextToMtext.lsp;LeeMac;General;;LeeMac\Apps\General\LM-TextToMtext.lsp
+1;C:LM-TEXTTOWORDS;Text To Words;Splits each selected text into separate text objects for each word.;LM-TextToWords.lsp;LeeMac;General;;LeeMac\Apps\General\LM-TextToWords.lsp
+1;C:LM-TEXTCALCULATOR;Text Calculator;Performs arithmetic on the numbers in picked texts and places the result as Mtext.;LM-TextCalculator.lsp;LeeMac;General;;LeeMac\Apps\General\LM-TextCalculator.lsp
 1;C:LM-TOTALAREA;Total Area;Displays the total area of the selected objects at the command line.;LM-TotalArea.lsp;LeeMac;General;;LeeMac\Apps\General\LM-TotalArea.lsp
-1;C:LM-TOTALLENGTH;Total Length;Displays the total length of the selected objects at the command line.;LM-TotalLenght.lsp;LeeMac;General;;LeeMac\Apps\General\LM-TotalLenght.lsp
+1;C:LM-TOTALLENGTH;Total Length;Displays the total length of the selected objects at the command line.;LM-TotalLength.lsp;LeeMac;General;;LeeMac\Apps\General\LM-TotalLength.lsp
 1;C:LM-TOTALLENGTHPOLYLINE;Total Length Polyline;Draws a polyline whose overall length can be limited to a given value.;LM-TotalLengthPolyline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-TotalLengthPolyline.lsp
 1;C:LM-UPDATETITLEBLOCK;Update Titleblock;Updates the block attributes of the drawing from the matching row of a CSV file.;LM-UpdateTitleblock.lsp;LeeMac;General;;LeeMac\Apps\General\LM-UpdateTitleblock.lsp
-1;C:LM-VIEWPORTOUTLINE;Viewport Outline;Draws a polyline in model space following the outline of a selected viewport.;LM-VPOutline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-VPOutline.lsp
-1;C:PST-VIEWPORTOUTLINELAYOUT;Viewport Outline Layout;Draws the model space outline of every viewport in the current layout.;LM-VPOutline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-VPOutline.lsp
-1;C:PST-VIEWPORTOUTLINEALL;Viewport Outline All;Draws the model space outline of every viewport in all layouts.;LM-VPOutline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-VPOutline.lsp
-1;C:LM-DUMPOBJECT;Dump Object;Lists the ActiveX properties and methods of a selected object.;LM-DumpObjectV1-2.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-DumpObjectV1-2.lsp
-1;C:PST-DUMPNESTEDOBJECT;Dump Nested Object;Lists the ActiveX properties and methods of a selected nested object.;LM-DumpObjectV1-2.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-DumpObjectV1-2.lsp
-1;C:LM-ENTITYLIST;Entity List;Displays the DXF data of a selected entity.;LM-elist.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-elist.lsp
-1;C:PST-ENTITYLISTNESTED;Entity List Nested;Displays the DXF data of a selected nested entity.;LM-elist.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-elist.lsp
-1;C:LM-FORMATDCL;Format DCL;Writes a formatted copy of a selected DCL file in the same folder.;LM-FormatDCLV1-0.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-FormatDCLV1-0.lsp
+1;C:LM-VIEWPORTOUTLINE;Viewport Outline;Draws a polyline in model space following the outline of a selected viewport.;LM-ViewportOutline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ViewportOutline.lsp
+1;C:PST-VIEWPORTOUTLINELAYOUT;Viewport Outline Layout;Draws the model space outline of every viewport in the current layout.;LM-ViewportOutline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ViewportOutline.lsp
+1;C:PST-VIEWPORTOUTLINEALL;Viewport Outline All;Draws the model space outline of every viewport in all layouts.;LM-ViewportOutline.lsp;LeeMac;General;;LeeMac\Apps\General\LM-ViewportOutline.lsp
+1;C:LM-DUMPOBJECT;Dump Object;Lists the ActiveX properties and methods of a selected object.;LM-DumpObject.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-DumpObject.lsp
+1;C:PST-DUMPNESTEDOBJECT;Dump Nested Object;Lists the ActiveX properties and methods of a selected nested object.;LM-DumpObject.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-DumpObject.lsp
+1;C:LM-ENTITYLIST;Entity List;Displays the DXF data of a selected entity.;LM-EntityList.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-EntityList.lsp
+1;C:PST-ENTITYLISTNESTED;Entity List Nested;Displays the DXF data of a selected nested entity.;LM-EntityList.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-EntityList.lsp
+1;C:LM-FORMATDCL;Format DCL;Writes a formatted copy of a selected DCL file in the same folder.;LM-FormatDCL.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-FormatDCL.lsp
 1;C:PST-LISPTOBBCODE;LISP To BBCode;Converts a selected Lisp file into a BBCode styled file.;LM-LISPStyler.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-LISPStyler.lsp
 1;C:PST-LISPTOHTML;LISP To HTML;Converts a selected Lisp file into an HTML styled file.;LM-LISPStyler.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-LISPStyler.lsp
 1;C:LM-LISPSTYLER;LISP Styler;Lists the LISP Styler commands with their aliases and runs the one picked.;LM-LISPStyler.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-LISPStyler.lsp
-0;;;;LM-PrintListV1-0.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-PrintListV1-0.lsp
+0;;;;LM-PrintList.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-PrintList.lsp
 1;C:COUNTBYLAYERS;"www.lee-mac.com                                           ;;";"------------------------------------------------------------;;";CountbyLayers.lsp;MyTools;Dynalisp;;MyTools\Apps\Dynalisp\CountbyLayers.lsp
 1;C:SL-ATTRIBUT;Select By Attribute;Selects the blocks sharing the attribute value, attribute tag or name of a picked block attribute.;Dyl-SelectAttribut.lsp;MyTools;Dynalisp;;MyTools\Apps\Dynalisp\Dyl-SelectAttribut.lsp
 1;C:SL-BLOCK;Select By Block Name;Selects every reference of the picked block, dynamic block references included.;Dyl-SelectBlock.lsp;MyTools;Dynalisp;;MyTools\Apps\Dynalisp\Dyl-SelectBlock.lsp

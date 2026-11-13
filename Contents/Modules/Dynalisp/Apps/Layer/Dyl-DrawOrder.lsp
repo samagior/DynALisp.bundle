@@ -266,7 +266,7 @@
       "        : popup_list { key = \"srt\"; label = \"Sort by:\"; edit_width = 16; }"
       "      }"
       "      : list_box { key = \"hdr\"; width = 118; height = 2; fixed_height = true; tabs = \"6 12 29 49 65\"; is_enabled = false; }"
-      "      : list_box { key = \"lst\"; width = 118; height = 16; tabs = \"6 12 29 49 65\"; }"
+      "      : list_box { key = \"lst\"; width = 118; height = 16; tabs = \"6 12 29 49 65\"; multiple_select = true; }"
       "      : row { fixed_width = true;"
       "        : button { key = \"new\"; label = \"New\"; }"
       "        : button { key = \"cpy\"; label = \"Copy\"; }"
@@ -277,7 +277,7 @@
       "      }"
       "    }"
       "    : column {"
-      "      : boxed_column { label = \"Rule\";"
+      "      : boxed_column { key = \"rbx\"; label = \"Rule (999 selected)\";"
       "        : edit_box { key = \"lvl\"; label = \"Name:\"; edit_width = 36; edit_limit = 64; }"
       "        : edit_box { key = \"dsc\"; label = \"Description:\"; edit_width = 36; edit_limit = 255; }"
       "        : edit_box { key = \"ord\"; label = \"Level (-99 to 99):\"; edit_width = 5; edit_limit = 3; }"
@@ -341,7 +341,9 @@
 ;;  The functions below run inside c:Dyl-DrawOrder and use its local variables:
 ;;  ldo:sets (every preset being edited: ((name . rows) ...)), ldo:pst (index of the
 ;;  selected preset), ldo:old (names of the presets when the dialog opened),
-;;  ldo:lst (rows of the selected preset, in the file order), ldo:idx (index of the selected row),
+;;  ldo:lst (rows of the selected preset, in the file order), ldo:idx (index of the row shown),
+;;  ldo:sel (indexes of the rules selected, ldo:idx included: several can be selected, see
+;;  ldo:sel-of),
 ;;  ldo:cnt (result of ldo:counts for the rows ldo:cntof), ldo:objs (items of the obj popup),
 ;;  ldo:layi (selected line of the Layers list), ldo:sort (sort of the rule list, index in
 ;;  *ldo:sorts*), ldo:viewl (index in ldo:lst of the rule on each line of the list),
@@ -362,11 +364,36 @@
   (if (not ldo:oth) (nth ldo:idx ldo:lst))
 )
 
-;;  Select the line of the selected rule, or of the other objects, in the rule list:
-(defun ldo:dlgsel ()
+;;  Several rules can be selected in the list (Ctrl / Shift click) and edited at once (see
+;;  CONVENTIONS.md, Windows): the fields show the rule ldo:idx; Description, Level, Order and
+;;  Type changed are given to every rule selected (see ldo:put); the name, the Layers and
+;;  Objects lists (edited line by line), Copy and Move up / down are for one rule only;
+;;  Delete removes them all. The line of the other objects is selected alone.
+
+;;  Indexes of the rules selected, the one shown (ldo:idx) included (nil: the line of the
+;;  other objects is selected):
+(defun ldo:sel-of ()
+  (cond
+    (ldo:oth nil)
+    ((member ldo:idx ldo:sel) ldo:sel)
+    ((list ldo:idx))
+  )
+)
+
+;;  Give the value val to the cell i of every rule selected (ldo:one T, see ldo:dlgcommit:
+;;  to the rule shown only):
+(defun ldo:put (i val)
+  (foreach j (if ldo:one (list ldo:idx) (ldo:sel-of))
+    (setq ldo:lst (Remote>>Dyl:ListSubst ldo:lst j (Remote>>Dyl:ListSubst (nth j ldo:lst) i val)))
+  )
+)
+
+;;  Select the lines of the rules selected, or of the other objects, in the rule list:
+(defun ldo:dlgsel (/ l)
+  (setq l (vl-remove nil (mapcar '(lambda (i) (vl-position i ldo:viewl)) (ldo:sel-of))))
   (cond
     (ldo:oth (set_tile "lst" (itoa (vl-position -1 ldo:viewl))))
-    (ldo:lst (set_tile "lst" (itoa (vl-position ldo:idx ldo:viewl))))
+    (l (set_tile "lst" (Remote>>LM:lst->str (mapcar 'itoa (vl-sort l '<)) " ")))
     ((set_tile "lst" ""))
   )
 )
@@ -681,7 +708,7 @@
 ;;  Enable the move buttons when the selected rule can move that way, in the Level and Order
 ;;  sorts only:
 (defun ldo:dlgmoves (/ p)
-  (setq p (if (and (ldo:rule) (member ldo:sort '(0 1))) (vl-position ldo:idx ldo:viewl)))
+  (setq p (if (and (ldo:rule) (not (cdr (ldo:sel-of))) (member ldo:sort '(0 1))) (vl-position ldo:idx ldo:viewl)))
   (mode_tile "mup" (if (and p (ldo:neighbor p -1)) 0 1))
   (mode_tile "mdn" (if (and p (ldo:neighbor p 1)) 0 1))
 )
@@ -737,6 +764,9 @@
   (setq r (ldo:rule))
   (foreach x *ldo:tiles* (set_tile (car x) (if r (nth (cdr x) r) "")))
   (foreach k '("lvl" "ord" "pri" "typ" "dsc" "cpy" "del") (mode_tile k (if r 0 1)))
+  ;;  Several rules selected: their number in the heading, the name and Copy greyed out:
+  (set_tile "rbx" (if (cdr (ldo:sel-of)) (strcat "Rule (" (itoa (length (ldo:sel-of))) " selected)") "Rule"))
+  (if (cdr (ldo:sel-of)) (foreach k '("lvl" "cpy") (mode_tile k 1)))
   (set_tile "error" "")
   (set_tile "lyi" "")
   (setq ldo:layi 0)
@@ -826,9 +856,10 @@
   (if r (set_tile "typ" (itoa i)))
   (ldo:dlgobjname)
   (ldo:dlglays)
-  (foreach k '("lay" "lyi" "lya" "lyr" "lyd") (mode_tile k (if (member i '(0 2)) 0 1)))
-  (mode_tile "prd" (if ldo:objs 0 1))
-  (mode_tile "obj" (if ldo:objs 0 1))
+  ;;  The Layers and Objects lists for one rule only:
+  (foreach k '("lay" "lyi" "lya" "lyr" "lyd") (mode_tile k (if (and (member i '(0 2)) (not (cdr (ldo:sel-of)))) 0 1)))
+  (mode_tile "prd" (if (and ldo:objs (not (cdr (ldo:sel-of)))) 0 1))
+  (mode_tile "obj" (if (and ldo:objs (not (cdr (ldo:sel-of)))) 0 1))
 )
 
 ;;  Show the objects of another product (index in ldo:products) in the obj popup, the
@@ -935,17 +966,22 @@
   (set_tile "lyi" (cond ((nth ldo:layi (ldo:lays))) ("")))
 )
 
-;;  Change the type of the selected rule (index in *ldo:types*): the field it does not use
-;;  is cleared, the one it needs gets a value to replace when it is empty (placeholder
+;;  Change the type of the rules selected (index in *ldo:types*): the field a rule does not
+;;  use is cleared, the one it needs gets a value to replace when it is empty (placeholder
 ;;  layers, first item of the Objects list):
-(defun ldo:dlgtype (i / r lay obj)
+(defun ldo:dlgtype (i / r lay obj q)
   (if (ldo:dlgcommit)
     (progn
-      (setq r   (nth ldo:idx ldo:lst)
-            lay (cond ((not (member i '(0 2))) "") ((/= "" (nth 2 r)) (nth 2 r)) ("*-Name,*-Name-*"))
-            obj (cond ((not (member i '(1 2))) "") ((/= "" (nth 3 r)) (nth 3 r)) ((cdr (cadr (car *ldo:catalog*)))))
+      (setq r (nth ldo:idx ldo:lst))
+      (foreach j (ldo:sel-of)
+        (setq q   (nth j ldo:lst)
+              lay (cond ((not (member i '(0 2))) "") ((/= "" (nth 2 q)) (nth 2 q)) ("*-Name,*-Name-*"))
+              obj (cond ((not (member i '(1 2))) "") ((/= "" (nth 3 q)) (nth 3 q)) ((cdr (cadr (car *ldo:catalog*)))))
+        )
+        (setq ldo:lst (Remote>>Dyl:ListSubst ldo:lst j (list (car q) (cadr q) lay obj (nth 4 q) (nth 5 q))))
       )
-      (setq ldo:lst (Remote>>Dyl:ListSubst ldo:lst ldo:idx (list (car r) (cadr r) lay obj (nth 4 r) (nth 5 r)))
+      (setq lay     (nth 2 (nth ldo:idx ldo:lst))
+            obj     (nth 3 (nth ldo:idx ldo:lst))
             ldo:prd (ldo:prdof obj)
       )
       (ldo:dlgmodes)
@@ -1008,10 +1044,10 @@
     )
     (progn
       (if (member key '("ord" "pri")) (setq val (itoa (atoi val))))
-      (setq ldo:lst (Remote>>Dyl:ListSubst ldo:lst
-                                           ldo:idx
-                                           (Remote>>Dyl:ListSubst (nth ldo:idx ldo:lst) (cdr (assoc key *ldo:tiles*)) val)
-                    )
+      ;;  To every rule selected (the rule shown only for the name, and while committing):
+      (if (= "lvl" key)
+        (setq ldo:lst (Remote>>Dyl:ListSubst ldo:lst ldo:idx (Remote>>Dyl:ListSubst (nth ldo:idx ldo:lst) 0 val)))
+        (ldo:put (cdr (assoc key *ldo:tiles*)) val)
       )
       (set_tile key val)
       (set_tile "error" "")
@@ -1020,9 +1056,12 @@
   )
 )
 
-;;  Store every tile in the selected rule, returns T when they are all valid:
-(defun ldo:dlgcommit (/ ok)
-  (setq ok t)
+;;  Store every tile in the rule shown, returns T when they are all valid. Only in the rule
+;;  shown (ldo:one): a value changed was given to every rule selected by the action of its tile:
+(defun ldo:dlgcommit (/ ok ldo:one)
+  (setq ldo:one t
+        ok      t
+  )
   (if (ldo:rule)
     (foreach x *ldo:tiles*
       (if ok (setq ok (ldo:dlgfield (car x) (get_tile (car x)))))
@@ -1031,17 +1070,22 @@
   ok
 )
 
-;;  Select another line (the rule being edited must be valid first). The line of the
-;;  other objects shows its content, the Rule section disabled:
-(defun ldo:dlgpick (val / i)
-  (setq i (nth (atoi val) ldo:viewl))
-  (if (ldo:dlgcommit)
+;;  Select other lines ("3" or "0 3 5"; the rule being edited must be valid first). The rule
+;;  shown stays when it is still selected, else the first one selected. The line of the
+;;  other objects, picked alone, shows its content, the Rule section disabled (picked with
+;;  rules, it is left out):
+(defun ldo:dlgpick (val / l r)
+  (setq l (vl-remove nil (mapcar '(lambda (n) (nth n ldo:viewl)) (read (strcat "(" (cond (val) ("")) ")"))))
+        r (vl-remove -1 l)
+  )
+  (if (and l (ldo:dlgcommit))
     (progn
-      (if (= -1 i)
-        (setq ldo:oth t)
+      (if r
         (setq ldo:oth nil
-              ldo:idx i
+              ldo:sel r
+              ldo:idx (if (member ldo:idx r) ldo:idx (car r))
         )
+        (setq ldo:oth t)
       )
       (ldo:dlgshow)
     )
@@ -1061,6 +1105,7 @@
     (progn
       (setq ldo:idx (if ldo:lst (1+ ldo:idx) 0)
             ldo:lst (Remote>>Dyl:ListInsert ldo:lst ldo:idx row)
+            ldo:sel (list ldo:idx)
             ldo:oth nil
       )
       (ldo:dlgshow)
@@ -1070,10 +1115,13 @@
   )
 )
 
-;;  Delete the selected rule (Cancel brings it back):
-(defun ldo:dlgdelete ()
-  (setq ldo:lst (Remote>>Dyl:ListRemove ldo:lst ldo:idx)
-        ldo:idx (max 0 (min ldo:idx (1- (length ldo:lst))))
+;;  Delete the rules selected (Cancel brings them back):
+(defun ldo:dlgdelete (/ sel i)
+  (setq sel     (ldo:sel-of)
+        i       -1
+        ldo:lst (vl-remove-if '(lambda (r) (member (setq i (1+ i)) sel)) ldo:lst)
+        ldo:idx (max 0 (min (apply 'min sel) (1- (length ldo:lst))))
+        ldo:sel (list ldo:idx)
   )
   (ldo:dlgshow)
 )
@@ -1082,6 +1130,7 @@
 (defun ldo:dlgrestore ()
   (setq ldo:lst (ldo:defaults)
         ldo:idx 0
+        ldo:sel '(0)
         ldo:oth nil
   )
   (ldo:dlgshow)
@@ -1160,6 +1209,7 @@
   (setq ldo:pst i
         ldo:lst (cdr (nth i ldo:sets))
         ldo:idx 0
+        ldo:sel '(0)
         ldo:oth nil
   )
   (ldo:dlgpresets)
@@ -1282,7 +1332,7 @@
 ;; Draw Order
 ;; Edits the draw order levels of the Dynalisp layers (annotation on top, hatches at the bottom), chooses the preferred and drawing presets and restacks the drawing.
 
-(defun c:Dyl-DrawOrder (/ dcl:pth dcl:id sta err ldo:sets ldo:pst ldo:old ldo:active ldo:lst ldo:idx ldo:cnt
+(defun c:Dyl-DrawOrder (/ dcl:pth dcl:id sta err ldo:sets ldo:pst ldo:old ldo:active ldo:lst ldo:idx ldo:sel ldo:cnt
                         ldo:cntof ldo:objs ldo:layi ldo:sort ldo:viewl ldo:oth ldo:cntkey ldo:cntres ldo:cntents
                         ldo:sets0 ldo:zoom ldo:cntview ldo:cntfilter ldo:prd ldo:dwgtypes ldo:regen ldo:ren
                         ldo:pref ldo:dwg ldo:pref0 ldo:dwg0

@@ -1047,7 +1047,7 @@
       (setq sym (read (strcat "C:" (car p))))
       (cond
         ((not (eval (read (strcat "C:" (cdr p))))))
-        ((or (eval sym) (getcname (car p))) (setq skp (cons (car p) skp)))
+        ((or (eval sym) (getcname (car p))) (setq skp (cons p skp)))
         (T
          (eval (list 'defun sym nil (list (read (strcat "C:" (cdr p))))))
          (setq *dyl:aliasdefs* (cons (car p) *dyl:aliasdefs*)
@@ -1056,15 +1056,48 @@
         )
       )
     )
-    ;; Not at startup (quiet): Dyl-Reload and Dyl-Suite show it:
+    ;; Not at startup (quiet): Dyl-Reload and Dyl-Suite show it, one line per
+    ;; alias, with what already has its name:
     (if (and skp (not *dyl:quiet*))
-      (princ
-        (strcat "\n--> Alias(es) not defined, the name is already a command: "
-                (Remote>>LM:lst->str (reverse skp) ", ")
+      (foreach p (reverse skp)
+        (princ
+          (strcat "\n--> Alias " (car p) " of " (cdr p) " not defined: " (car p) " is already "
+                  (cond ((Dyl:AliasTaken (car p))) ("a command"))
+                  (if (or (getcname (car p)) (not (Dyl:AliasTakenOther (car p))))
+                    ""
+                    " (Express Tools, a Lisp file loaded by AutoCAD...)"
+                  )
+                  ". Give " (cdr p) " another alias in Dyl-Suite."
+          )
         )
       )
     )
     n
+  )
+
+  ;;; What already has the command name a, as a text for the messages ("an
+  ;;; AutoCAD command"...), nil when the name is free. A command of another
+  ;;; program is a Lisp command DynALisp did not define (an Express Tools command,
+  ;;; a Lisp file of the user...); the aliases of DynALisp (*dyl:aliasdefs*) are
+  ;;; not counted. Without the DynALisp commands (see Dyl:AliasTaken):
+  (defun Dyl:AliasTakenOther (a)
+    (setq a (strcase a))
+    (cond
+      ((getcname a) "an AutoCAD command")
+      ((and (not (member a (mapcar 'strcase *dyl:aliasdefs*))) (eval (read (strcat "C:" a))))
+       "a command of another program"
+      )
+    )
+  )
+
+  ;;; Same, the DynALisp commands of the Startup Suite first (their file named):
+  (defun Dyl:AliasTaken (a / r)
+    (cond
+      ((setq r (vl-some '(lambda (x) (if (= (strcase a) (nth 1 x)) x)) (cdr (Dyl:SuiteRead))))
+       (strcat "a DynALisp command (Modules\\" (nth 3 r) ")")
+      )
+      ((Dyl:AliasTakenOther a))
+    )
   )
 
   ;;; ---------------------------------------------------------------------------
@@ -2268,6 +2301,9 @@
                 ((and (not alst) (Dyl:SuiteDlgMain r) (Dyl:SuitePreset-p r)) "A child command runs by its aliases: add one.")
                 ((/= "1" (car r)) "Aliases run once the command is turned on.")
                 ((not alst) "No alias yet: type one and click Add.")
+                ;; An alias whose name another program took (e.g. an Express Tools
+                ;; command) never runs: tell which one, so it is renamed:
+                ((vl-some '(lambda (a / w) (if (setq w (Dyl:AliasTakenOther a)) (strcat a " is already " w ": rename it."))) alst))
                 ("Pick an alias to rename or remove it.")
               )
     )
@@ -2291,13 +2327,16 @@
     (cond
       ((= "" a) "Type an alias name.")
       ((not (Dyl:AliasName-p a)) "Use letters, digits, - and _ only.")
+      ;; An alias is a short name: never one of the command prefixes (the
+      ;; command line suggests the Dyl-* commands, a long former name is dropped):
+      ((wcmatch a "DYL-*,LM-*,PST-*") "An alias is a short name: no Dyl-, LM- or Pst- prefix.")
       ((= a old) "The name did not change.")
       ((= a acmd) "This is the name of the command itself.")
       ((setq x (assoc a als)) (strcat a " is already an alias of " (cdr x) "."))
       ((setq x (vl-some '(lambda (r) (if (= a (nth 1 r)) r)) recs))
        (strcat a " is already a command: Modules\\" (nth 5 x))
       )
-      ((getcname a) (strcat a " is an AutoCAD command: the alias would never run."))
+      ((setq x (Dyl:AliasTakenOther a)) (strcat a " is already " x "."))
     )
   )
 
@@ -2416,10 +2455,10 @@
        ;; Column titles (set by Dyl:SuiteDlgSort); a click on them is undone
        ;; (they are not a selection):
        (action_tile "hdr" "(set_tile \"hdr\" \"\")")
-       ;; Main commands unfolded in the last Dyl-Suite, children shown at each
-       ;; Dyl-Suite:
+       ;; Main commands unfolded in the last Dyl-Suite; the child commands hidden
+       ;; at each Dyl-Suite (Show child commands unchecked):
        (setq opens *dyl:suiteopen*
-             showk "1"
+             showk "0"
        )
        (set_tile "sch" showk)
        ;; The commands turned off are hidden at each Dyl-Suite:
@@ -2427,6 +2466,12 @@
        (set_tile "sof" showoff)
        (Dyl:SuiteDlgPopup "shw" '("All" "On" "Off" "With aliases"))
        (Dyl:SuiteDlgModules)
+       ;; The Dynalisp module selected at each Dyl-Suite: the other modules are
+       ;; listed once picked in Module (or All). All when it is not listed:
+       (if (setq res (vl-position "DYNALISP" (mapcar 'strcase mods)))
+         (set_tile "mod" (itoa res))
+       )
+       (setq res nil)
        ;; Sort of the last Dyl-Suite (Module: the order of the CSV):
        (Dyl:SuiteDlgPopup "srt" '("Command" "Aliases" "Name" "Module" "Group"))
        (set_tile "srt"
@@ -2673,13 +2718,126 @@
   ;;; ---------------------------------------------------------------------------
   ;;; Open the docs index of a module (Modules\<Module>\Docs\index.htm) with its
   ;;; Windows association. mod is the module folder (*dyl:dyl, *dyl:lmapps...):
-  ;;;   Dyl-Docs -> Dynalisp module docs
-  ;;;   LM-Docs  -> LeeMac module docs
+  ;;;   Dyl-Docs -> every module, see Dyl:DocsAll below
+  ;;;   LM-Docs  -> LeeMac sample module docs
   ;;; ---------------------------------------------------------------------------
   (defun Dyl:DocsOpen (mod / f)
     (if (findfile (setq f (strcat mod "\\Docs\\index.htm")))
       (Dyl:SuiteDlgShell (list f))
       (princ (strcat "\n--> Docs index not found: " f))
+    )
+    (princ)
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; The docs of every module (Dyl-Docs, the Docs button of the ribbon): a page
+  ;;; listing each folder of Modules that has a Docs\index.htm (the Dynalisp module
+  ;;; first), with the title and the first sentence of that index, made each time
+  ;;; (a module added is listed), written to the temp folder (never under Contents)
+  ;;; and opened.
+  ;;; ---------------------------------------------------------------------------
+  ;;  The text of the html s without its tags, its spaces joined:
+  (defun Dyl:DocsText (s / i j)
+    (while (and (setq i (vl-string-search "<" s)) (setq j (vl-string-search ">" s i)))
+      (setq s (strcat (substr s 1 i) (substr s (+ j 2))))
+    )
+    (while (vl-string-search "  " s) (setq s (vl-string-subst " " "  " s)))
+    (vl-string-trim " \t" s)
+  )
+
+  ;;  (title . sentence) of the docs index f: its first h1, the first sentence of the
+  ;;  first paragraph after it; the module name m when it has no h1:
+  (defun Dyl:DocsIndexInfo (f m / des str all i j h1 p)
+    (setq all "")
+    (if (setq des (open f "r"))
+      (progn
+        (while (setq str (read-line des)) (setq all (strcat all " " str)))
+        (close des)
+      )
+    )
+    (if (and (setq i (vl-string-search "<h1>" all)) (setq j (vl-string-search "</h1>" all i)))
+      (setq h1  (Dyl:DocsText (substr all (+ i 5) (- j i 4)))
+            all (substr all (+ j 6))
+      )
+    )
+    (if (and (setq i (vl-string-search "<p>" all)) (setq j (vl-string-search "</p>" all i)))
+      (progn
+        (setq p (Dyl:DocsText (substr all (+ i 4) (- j i 3))))
+        (if (setq i (vl-string-search ". " p)) (setq p (substr p 1 (1+ i))))
+      )
+    )
+    (cons (cond (h1) (m)) (cond (p) ("")))
+  )
+
+  ;;  The file URL of the path f (file:///C:/..., its spaces escaped):
+  (defun Dyl:DocsUrl (f)
+    (strcat "file:///" (vl-string-translate "\\" "/" (Dyl:DocsSpaces f)))
+  )
+  (defun Dyl:DocsSpaces (s)
+    (while (vl-string-search " " s) (setq s (vl-string-subst "%20" " " s)))
+    s
+  )
+
+  ;;  Write the page of every module and open it:
+  (defun Dyl:DocsAll (/ mods f out des info)
+    (foreach m (vl-directory-files *dyl:module nil -1)
+      (if (and (not (member m '("." "..")))
+               (findfile (setq f (strcat *dyl:module "\\" m "\\Docs\\index.htm")))
+          )
+        (setq mods (cons (list m f) mods))
+      )
+    )
+    ;;  The Dynalisp module first, the others by name:
+    (setq mods (vl-sort mods
+                        '(lambda (a b)
+                           (cond
+                             ((= "DYNALISP" (strcase (car a))) T)
+                             ((= "DYNALISP" (strcase (car b))) nil)
+                             ((< (strcase (car a)) (strcase (car b))))
+                           )
+                         )
+               )
+          out  (strcat (getvar "TEMPPREFIX") "DynALisp-Docs.htm")
+    )
+    (if (setq des (open out "w"))
+      (progn
+        (foreach line
+          (list "<!DOCTYPE html>"
+                "<html lang=\"en\">"
+                "<head>"
+                "    <meta charset=\"utf-8\">"
+                "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+                "    <title>DynALisp Docs</title>"
+                (strcat "    <link rel=\"stylesheet\" href=\"" (Dyl:DocsUrl (strcat *dyl:res "\\docs.css")) "\">")
+                "</head>"
+                "<body>"
+                "    <div id=\"header\"><p>DynALisp <span>Docs</span></p></div>"
+                "    <div id=\"content\">"
+                "        <h1>DynALisp Docs</h1>"
+                "<div class=\"programs commands wide\">"
+                "<table>"
+                "<tr><th>Module</th><th>Description</th></tr>"
+          )
+          (write-line line des)
+        )
+        (foreach x mods
+          (setq info (Dyl:DocsIndexInfo (cadr x) (car x)))
+          (write-line (strcat "<tr><td><a href=\"" (Dyl:DocsUrl (cadr x)) "\">" (car info) "</a></td><td>" (cdr info) "</td></tr>") des)
+        )
+        (foreach line
+          (list "</table>"
+                "</div>"
+                "    </div>"
+                "    <div id=\"footer\"><p>DynALisp &ndash; released under the GNU General Public License v3</p></div>"
+                "</body>"
+                "</html>"
+          )
+          (write-line line des)
+        )
+        (close des)
+        (Dyl:SuiteDlgShell (list out))
+      )
+      (princ (strcat "\n--> The docs page could not be written: " out))
     )
     (princ)
   )
@@ -2715,6 +2873,80 @@
     (if (not (Dyl:DocsPage page)) (mode_tile "docs" 1))
   )
 
+  ;;; ---------------------------------------------------------------------------
+  ;;; Open button of the DynALisp windows: the small square button beside a setting
+  ;;; that opens the window editing it (a sub-window, the color dialog...), in place
+  ;;; of a "..." button. An image button one line high (a plain button cannot be made
+  ;;; that small; the aspect ratio of 1 makes it as wide as it is high):
+  ;;;   : image_button {key = "..."; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15;}
+  ;;; (set_more in Dyl-Settings.dcl). After new_dialog, (Dyl:MoreTile key on) draws
+  ;;; its "open" icon: a box open at its top-right corner, an arrow coming out of it.
+  ;;; Grey and disabled when on is nil: call it again in place of mode_tile each time
+  ;;; the button is turned on or off (mode_tile leaves the icon black). Pixels, y
+  ;;; going down:
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:MoreTile (key on / w h s p l tp r b mx my a c ln)
+    (setq w  (dimx_tile key)
+          h  (dimy_tile key)
+          s  (min w h)
+          p  (max 2 (/ s 6))
+          ;;  Icon square (left, top, right, bottom), centered in the tile:
+          l  (+ (/ (- w s) 2) p)
+          tp (+ (/ (- h s) 2) p)
+          r  (- (+ l s) p p 1)
+          b  (- (+ tp s) p p 1)
+          ;;  Its middle and the size of the arrow head:
+          mx (/ (+ l r) 2)
+          my (/ (+ tp b) 2)
+          a  (max 2 (/ (- r l) 3))
+          c  (if on -16 8)
+    )
+    (defun ln (x1 y1 x2 y2) (vector_image x1 y1 x2 y2 c))
+    (start_image key)
+    (fill_image 0 0 w h -15)
+    ;;  Box open at its top-right corner: left side, bottom, right side up to the middle,
+    ;;  top up to the middle:
+    (ln l tp l b)
+    (ln l b r b)
+    (ln r b r my)
+    (ln l tp mx tp)
+    ;;  Arrow from the middle of the box to its top-right corner (drawn twice: bolder),
+    ;;  and its head:
+    (ln mx my r tp)
+    (ln (1+ mx) my (1+ r) tp)
+    (ln (- r a) tp r tp)
+    (ln r tp r (+ tp a))
+    (end_image)
+    (mode_tile key (if on 0 1))
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Dividing line of the DynALisp windows: the line over the title of a sub-section
+  ;;; of a group, drawn like the borders of the groups (boxed_column): one pixel in
+  ;;; their light grey (ACI 254; the dialog line color -18 draws it dark) on the
+  ;;; dialog background (-15), across the tile. An image tile as wide as the group,
+  ;;; its line in its middle (the space around it):
+  ;;;   : image {key = "..."; height = 0.8; fixed_height = true; color = -15;}
+  ;;; The same vertical line between two columns of a group: an image tile narrow and as
+  ;;; tall as the columns (not fixed_height), its line drawn down its middle:
+  ;;;   : image {key = "..."; width = 2; height = 1; fixed_width = true; color = -15;}
+  ;;; After new_dialog, (Dyl:LineTile key) draws either one (vertical when the tile is
+  ;;; taller than wide):
+  ;;; ---------------------------------------------------------------------------
+  (defun Dyl:LineTile (key / w h)
+    (setq w (dimx_tile key)
+          h (dimy_tile key)
+    )
+    (start_image key)
+    (fill_image 0 0 w h -15)
+    (if (> h w)
+      (vector_image (/ w 2) 0 (/ w 2) (1- h) 254)
+      (vector_image 0 (/ h 2) (1- w) (/ h 2) 254)
+    )
+    (end_image)
+  )
+
+
   ;;  Docs page of the main command of the Lisp file fle (e.g. "Dyl-LayerMake.lsp"),
   ;;  from its Startup Suite record (any module), nil when none:
   (defun Dyl:DocsOfFile (fle)
@@ -2724,7 +2956,8 @@
     )
   )
 
-  (defun c:Dyl-Docs () (Dyl:DocsOpen *dyl:dyl))
+  ;;  The docs of every module (each one links to its own index):
+  (defun c:Dyl-Docs () (Dyl:DocsAll))
 
   (defun c:LM-Docs () (Dyl:DocsOpen *dyl:lmapps))
 
@@ -2764,7 +2997,7 @@
                           ("Dyl-PrepSuite" "Output prep: the steps run before the saves, prints and REGEN")
                           ("Dyl-UserFiles" "Your edited files (presets, aliases...): open, reset or make default")
                           ("Dyl-Docs" "Open the docs of the DynALisp module")
-                          ("LM-Docs" "Open the docs of the Lee Mac module")
+                          ("LM-Docs" "Open the docs of the LeeMac sample module")
                           ("Dyl-Reload" "Load the module commands again, as turned on in Dyl-Suite")
                           ("Dyl-SuiteUpdate" "Rebuild the command index (StartupSuite.csv) from the Lisp files")
                           ("Dyl-VSCode" "Open the DynALisp folder in Visual Studio Code to read or edit it")
@@ -4013,13 +4246,13 @@
   ;;; Dyl-Settings: one window for the drawing setup and the passive behaviors
   ;;; (Modules\Dynalisp\Res\Dyl-Settings.dcl):
   ;;;
-  ;;;   - Drawing defaults (Overrides, DynalispSetupOn) and its ... button, the
+  ;;;   - Drawing defaults (Overrides, DynalispSetupOn) and its open button, the
   ;;;     drawing defaults window (Dyl:SetDefsDlg, greyed out while the check is
   ;;;     off): the unit and grid presets of the imperial and metric drawings,
   ;;;     checked each time a drawing opens and set when the drawing differs (user
   ;;;     settings, see Modules\Dynalisp\Remote\Dyl-DrawingSetup.lsp). Saving a
   ;;;     change checks the current drawing right away.
-  ;;;   - DynALisp profile (Overrides) and its ... button, the file preferences
+  ;;;   - DynALisp profile (Overrides) and its open button, the file preferences
   ;;;     window (Dyl:SetPrefsDlg, greyed out while the profile is off): the AEC
   ;;;     library classification, the drawing units and the language, which set the
   ;;;     paths and the main dictionary of the DynALisp profile when it is on, and
@@ -4033,27 +4266,35 @@
   ;;;     are greyed out: they need the reactors
   ;;;   - Settings sync: DynalispSettingsSync user setting (see Dyl:SettingsSyncOn-p)
   ;;;   - Auto-phase: DynalispPhaseAuto user setting (see Dyl-LayerPhase)
-  ;;;   - Auto draw order: DynalispDrawOrderAuto user setting (see Dyl-DrawOrder,
-  ;;;     whose window, opened by its ... button, chooses the preferred
+  ;;;   - Auto layer keys: DynalispObjectKeys user setting (see Remote>>Dyl:ObjectKeysAuto-p
+;;;     in Modules\Dynalisp\Remote\Dyl-LayerKey.lsp): the new dimensions, leaders, text...
+;;;     made by a command go to the layer key of their kind; its open button runs
+;;;     Dyl-ObjectLayerKeys (the keys), then opens the window again
+;;;   - Auto draw order: DynalispDrawOrderAuto user setting (see Dyl-DrawOrder,
+  ;;;     whose window, opened by its open button, chooses the preferred
   ;;;     preset and the preset of the drawing)
   ;;;   - Command optimizer (Overrides): the redefinition of the save and print
   ;;;     commands and REGEN (DynalispPrepRedefine user setting, see MAJ:Redefine-p),
   ;;;     its Output prep button opening the output prep window (MAJ:PrepDlg) for
   ;;;     the steps each one runs, the draw order among them (PrepSuite.csv,
   ;;;     see MAJ:PrepRead)
-  ;;;   - System variables (Overrides, DynalispSysVarOn) and its ... button, which
+  ;;;   - System variables (Overrides, DynalispSysVarOn) and its open button, which
   ;;;     closes the window, runs Dyl-SysVars (the profiles: preferred values, like
   ;;;     the System Variable Monitor) and opens it again (greyed out while off or
   ;;;     when Dyl-SysVars is turned off): the active profile set in every drawing
   ;;;     opened (see Modules\Dynalisp\Remote\Dyl-SysVars.lsp)
-  ;;;   - Display (Overrides, DynalispDisplayOn) and its ... button, the display
+  ;;;   - Display (Overrides, DynalispDisplayOn) and its open button, the display
   ;;;     window (Dyl:SetDisplayDlg, greyed out while Display is off): the display
   ;;;     settings applied in every drawing opened while Display is on, for now the
   ;;;     model space background color, Black, Default or White, or (Not set): the
   ;;;     current color kept (DynalispBackground, see
   ;;;     Modules\Dynalisp\Remote\Dyl-EnvColor.lsp). More display settings go in
   ;;;     that window, with their value in st:bkg's place made a list
-  ;;;   - Install updates automatically (Updates, DynalispAutoUpdate, see
+  ;;;   - Layer keys: the answer remembered to "update this layer to its layer key?"
+;;;     (Remote>>Dyl:LayerKeyCheck): Update them without asking (DynalispLayerKeyUpdate)
+;;;     or Keep them without asking (DynalispLayerKeyKeep), one of them at most; both
+;;;     off, the question is asked (see Modules\Dynalisp\Remote\Dyl-LayerKey.lsp)
+;;;   - Install updates automatically (Updates, DynalispAutoUpdate, see
   ;;;     Dyl:UpdAuto in the Info region): checked once a day, the setup of a new
   ;;;     version started (installed when AutoCAD closes); greyed out for a git clone
   ;;;
@@ -4072,7 +4313,7 @@
   ;;; follow them only once opened again.
   ;;;
   ;;; The helpers below work on the locals of c:Dyl-Settings (st:*) by dynamic
-  ;;; scoping, prefixed so the commands run from the window (... buttons) cannot
+  ;;; scoping, prefixed so the commands run from the window (open buttons) cannot
   ;;; change them by using the same global names.
   ;;; ============================================================================
 
@@ -4120,81 +4361,51 @@
   (defun Dyl:SetDlgRea (on)
     (mode_tile "aph" (if (and on Remote>>Dyl:PhaseAutoSet) 0 1))
     (mode_tile "ado" (if (and on Remote>>Dyl:DrawOrderAutoSet) 0 1))
+    (mode_tile "alk" (if (and on Remote>>Dyl:ObjectKeysAutoSet) 0 1))
     (mode_tile "syn" (if on 0 1))
-  )
-
-  ;;; Draw the small square image button key (set_more in Dyl-Settings.dcl) with an
-  ;;; "open" icon: a box open at its top-right corner, an arrow coming out of it. Grey
-  ;;; and disabled when on is nil (its command turned off). Pixels, y going down:
-  (defun Dyl:SetDlgMore (key on / w h s p l tp r b mx my a c ln)
-    (setq w  (dimx_tile key)
-          h  (dimy_tile key)
-          s  (min w h)
-          p  (max 2 (/ s 6))
-          ;;  Icon square (left, top, right, bottom), centered in the tile:
-          l  (+ (/ (- w s) 2) p)
-          tp (+ (/ (- h s) 2) p)
-          r  (- (+ l s) p p 1)
-          b  (- (+ tp s) p p 1)
-          ;;  Its middle and the size of the arrow head:
-          mx (/ (+ l r) 2)
-          my (/ (+ tp b) 2)
-          a  (max 2 (/ (- r l) 3))
-          c  (if on -16 8)
-    )
-    (defun ln (x1 y1 x2 y2) (vector_image x1 y1 x2 y2 c))
-    (start_image key)
-    (fill_image 0 0 w h -15)
-    ;;  Box open at its top-right corner: left side, bottom, right side up to the middle,
-    ;;  top up to the middle:
-    (ln l tp l b)
-    (ln l b r b)
-    (ln r b r my)
-    (ln l tp mx tp)
-    ;;  Arrow from the middle of the box to its top-right corner (drawn twice: bolder),
-    ;;  and its head:
-    (ln mx my r tp)
-    (ln (1+ mx) my (1+ r) tp)
-    (ln (- r a) tp r tp)
-    (ln r tp r (+ tp a))
-    (end_image)
-    (mode_tile key (if on 0 1))
   )
 
   ;;; Set the tiles from the values being edited:
   (defun Dyl:SetDlgFill ()
-    ;; Drawing defaults: its ... button (the drawing settings window) available even while
+    ;; Drawing defaults: its open button (the drawing settings window) available even while
     ;; the check is off (the Shrinkwrap gap step of that window is used anyway), greyed out
     ;; with the checkbox when Dyl-DrawingSetup.lsp is not loaded:
     (set_tile "dso" (if st:dso "1" "0"))
     (if (not Remote>>Dyl:SetupOnSet) (mode_tile "dso" 1))
-    (Dyl:SetDlgMore "dsm" (and Remote>>Dyl:SetupDefaultSet T))
-    ;; DynALisp profile: its ... button (the file preferences window) greyed out while
+    (Dyl:MoreTile "dsm" (and Remote>>Dyl:SetupDefaultSet T))
+    ;; DynALisp profile: its open button (the file preferences window) greyed out while
     ;; the profile is off, both when Dyl-FilePrefs.lsp is not loaded:
     (set_tile "pfo" (if (car st:pfp) "1" "0"))
     (if (not st:pfp) (mode_tile "pfo" 1))
-    (Dyl:SetDlgMore "pfm" (car st:pfp))
+    (Dyl:MoreTile "pfm" (car st:pfp))
     (set_tile "rea" (if st:rea "1" "0"))
     (set_tile "aph" (if st:aph "1" "0"))
     ;; Greyed out when Dyl-LayerPhase is turned off in Dyl-Suite:
-    (Dyl:SetDlgMore "lph" c:Dyl-LayerPhase)
-    (Dyl:SetDlgMore "ldo" c:Dyl-DrawOrder)
-    (Dyl:SetDlgMore "prs" T)
+    (Dyl:MoreTile "lph" c:Dyl-LayerPhase)
+    (Dyl:MoreTile "ldo" c:Dyl-DrawOrder)
+    ;; Auto layer keys: its open button greyed out when Dyl-ObjectLayerKeys is turned off in Dyl-Suite:
+    (set_tile "alk" (if st:alk "1" "0"))
+    (Dyl:MoreTile "lol" c:Dyl-ObjectLayerKeys)
+    (Dyl:MoreTile "prs" T)
     (set_tile "ado" (if st:ado "1" "0"))
     (set_tile "syn" (if st:syn "1" "0"))
     (Dyl:SetDlgRea st:rea)
     (set_tile "prp" (if st:prp "1" "0"))
-    ;; Display: its ... button (the display window) greyed out while Display is off,
+    ;; Display: its open button (the display window) greyed out while Display is off,
     ;; both when Dyl-EnvColor.lsp is not loaded:
     (set_tile "dpo" (if st:dpo "1" "0"))
     (if (not Remote>>Dyl:DisplayOnSet) (mode_tile "dpo" 1))
-    (Dyl:SetDlgMore "dpm" (and st:dpo Remote>>Dyl:DisplayOnSet))
-    ;; System variables: its ... button (Dyl-SysVars, the profiles) greyed out while off,
+    (Dyl:MoreTile "dpm" (and st:dpo Remote>>Dyl:DisplayOnSet))
+    ;; System variables: its open button (Dyl-SysVars, the profiles) greyed out while off,
     ;; or when Dyl-SysVars is turned off in Dyl-Suite; both when Dyl-SysVars.lsp of the
     ;; Remote folder is not loaded:
     (set_tile "svo" (if st:svo "1" "0"))
     (if (not Remote>>Dyl:SysVarOnSet) (mode_tile "svo" 1))
-    (Dyl:SetDlgMore "svm" (and st:svo c:Dyl-SysVars))
+    (Dyl:MoreTile "svm" (and st:svo c:Dyl-SysVars))
+    ;; Layer keys: the answer remembered (greyed out when Dyl-LayerKey.lsp is not loaded):
+    (set_tile "lku" (if (= "Update" st:lkm) "1" "0"))
+    (set_tile "lkk" (if (= "Keep" st:lkm) "1" "0"))
+    (if (not Remote>>Dyl:LayerKeyMatchSet) (foreach k '("lku" "lkk") (mode_tile k 1)))
     ;; Automatic updates: greyed out for a git clone (updated with git pull):
     (set_tile "aup" (if st:aup "1" "0"))
     (if (Dyl:InfoGit-p)
@@ -4208,6 +4419,7 @@
     (setq st:dso (= "1" (get_tile "dso"))
           st:aph (= "1" (get_tile "aph"))
           st:ado (= "1" (get_tile "ado"))
+          st:alk (= "1" (get_tile "alk"))
           st:rea (= "1" (get_tile "rea"))
           st:syn (= "1" (get_tile "syn"))
           st:prp (= "1" (get_tile "prp"))
@@ -4215,12 +4427,13 @@
           st:dpo (= "1" (get_tile "dpo"))
           st:svo (= "1" (get_tile "svo"))
           st:aup (= "1" (get_tile "aup"))
+          st:lkm (cond ((= "1" (get_tile "lku")) "Update") ((= "1" (get_tile "lkk")) "Keep"))
           ;; The other file preferences are set in their own window (Dyl:SetPrefsDlg):
           st:pfp (if st:pfp (cons (= "1" (get_tile "pfo")) (cdr st:pfp)))
     )
   )
 
-  ;;; ... button of Drawing defaults: the drawing defaults window (dyl_drawdefs) over
+  ;;; Open button of Drawing defaults: the drawing defaults window (dyl_drawdefs) over
   ;;; this one, on the values being edited (st:defs). OK keeps the presets picked in
   ;;; st:defs, saved with the other settings by Save; Cancel leaves them:
   (defun Dyl:SetDefsDlg (/ res gaps)
@@ -4288,7 +4501,7 @@
     (cons (and Remote>>Dyl:SetupOn-p (Remote>>Dyl:SetupOn-p) T) (Dyl:SetDefsRead))
   )
 
-  ;;; ... button of Display: the display window (dyl_display) over this one, on the
+  ;;; Open button of Display: the display window (dyl_display) over this one, on the
   ;;; values being edited (st:bkg). OK keeps the values picked, saved with the other
   ;;; settings by Save; Cancel leaves them. More display settings: set and read
   ;;; their tiles here too:
@@ -4310,7 +4523,7 @@
     )
   )
 
-  ;;; ... button of the DynALisp profile: the file preferences window (dyl_fileprefs)
+  ;;; Open button of the DynALisp profile: the file preferences window (dyl_fileprefs)
   ;;; over this one, on the values being edited (st:pfp). OK keeps the values picked
   ;;; in st:pfp, saved with the other settings by Save; Cancel leaves them:
   (defun Dyl:SetPrefsDlg (/ res)
@@ -4344,7 +4557,7 @@
     )
   )
 
-  ;;; Run the command of a ... button: (NAME SYMBOL nil). An error or a cancel in
+  ;;; Run the command of a open button: (NAME SYMBOL nil). An error or a cancel in
   ;;; the command brings the window back all the same:
   (defun Dyl:SetRun (c / res)
     (princ (strcat "\n" (car (Remote>>LM:str->lst (vl-string-left-trim " " (car c)) "\t"))))
@@ -4357,10 +4570,13 @@
     )
   )
 
-  ;;; ... button of Auto-phase: the Layer Phases window (Dyl-LayerPhase):
+  ;;; Open button of Auto-phase: the Layer Phases window (Dyl-LayerPhase):
   (defun Dyl:SetPhases () (Dyl:SetRun (list "Layer Phases" 'c:Dyl-LayerPhase nil)))
 
-  ;;; ... button of Auto draw order: the Draw Order window (Dyl-DrawOrder), which sets auto
+  ;;; Open button of Auto layer keys: the Object Layer Keys window (Dyl-ObjectLayerKeys):
+  (defun Dyl:SetObjectKeys () (Dyl:SetRun (list "Object Layer Keys" 'c:Dyl-ObjectLayerKeys nil)))
+
+  ;;; Open button of Auto draw order: the Draw Order window (Dyl-DrawOrder), which sets auto
   ;;; draw order itself and chooses the presets. The Auto draw order checkbox
   ;;; changed here is applied first, so that window shows it. When this one opens
   ;;; again, it shows the auto draw order that window leaves, also kept as the
@@ -4377,7 +4593,7 @@
     )
   )
 
-  ;;; ... button of System variables: the profiles window (Dyl-SysVars), which saves its
+  ;;; Open button of System variables: the profiles window (Dyl-SysVars), which saves its
   ;;; profiles itself:
   (defun Dyl:SetSysVars () (Dyl:SetRun (list "System Variables" 'c:Dyl-SysVars nil)))
 
@@ -4411,9 +4627,20 @@
     (if (not (eq st:rea (nth 7 old))) (Dyl:ReactorsSet st:rea))
     (if (not (eq st:aph (nth 0 old))) (Remote>>Dyl:PhaseAutoSet st:aph))
     (if (not (eq st:ado (nth 1 old))) (Remote>>Dyl:DrawOrderAutoSet st:ado))
+    (if (and Remote>>Dyl:ObjectKeysAutoSet (not (eq st:alk (nth 15 old)))) (Remote>>Dyl:ObjectKeysAutoSet st:alk))
     (if (not (eq st:syn (nth 8 old))) (Dyl:SettingsSyncSet st:syn))
     (if (not (eq st:prp (nth 2 old))) (MAJ:RedefineSet st:prp))
     (if (not (eq st:aup (nth 13 old))) (Dyl:UpdAutoSet st:aup))
+    ;; Layer keys: the answer remembered to the layers that differ from their key:
+    (if (and Remote>>Dyl:LayerKeyMatchSet (not (equal st:lkm (nth 14 old))))
+      (progn
+        (Remote>>Dyl:LayerKeyMatchSet st:lkm)
+        (princ (strcat "\nLayer keys: the layers that differ from their key are "
+                       (cond ((= "Update" st:lkm) "updated without asking.") ((= "Keep" st:lkm) "kept without asking.") ("asked about."))
+               )
+        )
+      )
+    )
     ;; The steps edited in the output prep window (Output prep button):
     (MAJ:PrepSave st:cfg (nth 3 old))
     ;; System variables: the preferred values of the active profile set right away when
@@ -4485,7 +4712,7 @@
     )
   )
 
-  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:old st:dch st:sta)
+  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:old st:dch st:sta)
     (setq st:defs (Dyl:SetDefsRead)
           st:aph  (and Remote>>Dyl:PhaseAuto-p (Remote>>Dyl:PhaseAuto-p) T)
           st:ado  (and Remote>>Dyl:DrawOrderAuto-p (Remote>>Dyl:DrawOrderAuto-p) T)
@@ -4500,7 +4727,9 @@
           st:svo  (and Remote>>Dyl:SysVarOn-p (Remote>>Dyl:SysVarOn-p) T)
           st:gaps (Dyl:SetGapsRead)
           st:aup  (Dyl:UpdAutoOn-p)
-          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup)
+          st:lkm  (if Remote>>Dyl:LayerKeyMatch (Remote>>Dyl:LayerKeyMatch))
+          st:alk  (and Remote>>Dyl:ObjectKeysAuto-p (Remote>>Dyl:ObjectKeysAuto-p) T)
+          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup st:lkm st:alk)
           st:dch  (load_dialog (strcat (vl-filename-directory *dyl:prep) "\\Dyl-Settings.dcl"))
           st:sta  2
     )
@@ -4510,23 +4739,28 @@
       (Dyl:SetDlgFill)
       (action_tile "lph" "(Dyl:SetDlgGet) (done_dialog 4)")
       (action_tile "ldo" "(Dyl:SetDlgGet) (done_dialog 5)")
+      ;; ... of Auto layer keys (7): closes the window, runs Dyl-ObjectLayerKeys, opens it again:
+      (action_tile "lol" "(Dyl:SetDlgGet) (done_dialog 7)")
       (action_tile "rea" "(Dyl:SetDlgRea (= \"1\" $value))")
       ;; The output prep window over this one: its steps are kept in st:cfg, saved
       ;; with the other settings:
       (action_tile "prs" "(setq st:cfg (cond ((MAJ:PrepDlg st:dch st:cfg (= \"1\" (get_tile \"prp\")))) (st:cfg)))")
-      ;; The file preferences window over this one, its ... button greyed out while
+      ;; The file preferences window over this one, its open button greyed out while
       ;; the DynALisp profile is off:
-      (action_tile "pfo" "(Dyl:SetDlgMore \"pfm\" (= \"1\" $value))")
+      (action_tile "pfo" "(Dyl:MoreTile \"pfm\" (= \"1\" $value))")
       (action_tile "pfm" "(Dyl:SetPrefsDlg)")
       ;; The drawing settings window over this one (available while the check is off too):
       (action_tile "dsm" "(Dyl:SetDefsDlg)")
-      ;; The display window over this one, its ... button greyed out while Display is off:
-      (action_tile "dpo" "(Dyl:SetDlgMore \"dpm\" (and (= \"1\" $value) Remote>>Dyl:DisplayOnSet))")
+      ;; The display window over this one, its open button greyed out while Display is off:
+      (action_tile "dpo" "(Dyl:MoreTile \"dpm\" (and (= \"1\" $value) Remote>>Dyl:DisplayOnSet))")
       (action_tile "dpm" "(Dyl:SetDisplayDlg)")
       ;; ... of System variables (6) closes the window, runs Dyl-SysVars and opens it
       ;; again; greyed out while off:
-      (action_tile "svo" "(Dyl:SetDlgMore \"svm\" (and (= \"1\" $value) c:Dyl-SysVars))")
+      (action_tile "svo" "(Dyl:MoreTile \"svm\" (and (= \"1\" $value) c:Dyl-SysVars))")
       (action_tile "svm" "(Dyl:SetDlgGet) (done_dialog 6)")
+      ;; Layer keys: one of the two answers at most:
+      (action_tile "lku" "(if (= \"1\" $value) (set_tile \"lkk\" \"0\"))")
+      (action_tile "lkk" "(if (= \"1\" $value) (set_tile \"lku\" \"0\"))")
       (action_tile "accept" "(Dyl:SetDlgGet) (done_dialog 1)")
       (action_tile "cancel" "(done_dialog 0)")
       (Dyl:DocsTile "Core\\Dyl-Settings.htm")
@@ -4534,6 +4768,7 @@
       (if (= 4 st:sta) (Dyl:SetPhases))
       (if (= 5 st:sta) (Dyl:SetDrawOrder))
       (if (= 6 st:sta) (Dyl:SetSysVars))
+      (if (= 7 st:sta) (Dyl:SetObjectKeys))
     )
     (if (<= 0 st:dch) (unload_dialog st:dch))
     (cond

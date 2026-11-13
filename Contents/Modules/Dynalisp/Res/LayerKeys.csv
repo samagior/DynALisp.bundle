@@ -1,8 +1,108 @@
-Key;Layer;Color;Linetype;Lineweight;Plot;Description;Phased
-FINE;A-Detl-Fine;1;CONTINUOUS;0.18;1;Detail: Fine Lines;1
-THIN;A-Detl-Thin;2;CONTINUOUS;0.25;1;Detail: Thin Lines;1
-MED;A-Detl-Medm;3;CONTINUOUS;0.35;1;Detail: Medium Lines;1
-WIDE;A-Detl-Wide;4;CONTINUOUS;0.50;1;Detail: Wide Lines;1
-XLINE;A-Detl-XFin;8;CONTINUOUS;0.13;1;Detail: Extra Fine Lines;1
-HATCH;A-Detl-Patt;8;CONTINUOUS;0.18;1;Detail: Texture Or Hatch Patterns;1
+Key;Layer;Color;Linetype;Lineweight;Plot;Description;Aec
+FINE;A-Detl-Fine;1;CONTINUOUS;0.18;1;Detail: Fine Lines;0
+THIN;A-Detl-Thin;2;CONTINUOUS;0.25;1;Detail: Thin Lines;0
+MED;A-Detl-Medm;3;CONTINUOUS;0.35;1;Detail: Medium Lines;0
+WIDE;A-Detl-Wide;4;CONTINUOUS;0.50;1;Detail: Wide Lines;0
+XLINE;A-Detl-XFin;8;CONTINUOUS;0.13;1;Detail: Extra Fine Lines;0
+HATCH;A-Detl-Patt;8;CONTINUOUS;0.18;1;Detail: Texture Or Hatch Patterns;0
 G-DS-ANNO-STD-BACKGROUND_SCREEN;A-Detl-Scrn;254;CONTINUOUS;0.18;1;Detail: Screening Of Coordination Objects And Backgrounds;0
+ANNDTOBJ;G-Detl-Iden;31;CONTINUOUS;0.25;1;Detail marks;1
+ANNELKEY;G-Elev-Iden;151;CONTINUOUS;0.25;1;Elevation marks;1
+ANNELOBJ;G-Elev-Line;141;CONTINUOUS;0.25;0;Elevation Definition Lines;1
+ANNMASK;G-Anno-Mask;170;CONTINUOUS;0.18;1;Aec Masking Objects;1
+ANNMATCH;G-Anno-Matc;214;CONTINUOUS;0.70;1;Match Lines;1
+ANNOBJ;G-Anno-Note;231;CONTINUOUS;0.25;1;Notes, leaders, etc.;1
+ANNREV;G-Anno-Revs;71;CONTINUOUS;0.25;1;Revisions;1
+ANNSXKEY;G-Sect-Iden;191;CONTINUOUS;0.25;1;Section marks;1
+ANNSXOBJ;G-Sect-Line;181;CONTINUOUS;0.18;0;Section lines;1
+ANNSYMOBJ;G-Anno-Symb;131;CONTINUOUS;0.25;1;Annotation marks;1
+APPL;A-Appl;11;CONTINUOUS;0.25;1;Appliances;1
+CASE;A-Case;31;CONTINUOUS;0.25;1;Casework;1
+CASENO;A-Case-Iden;31;CONTINUOUS;0.25;1;Casework tags;1
+CEILGRID;A-Clng-Grid;72;CONTINUOUS;0.50;1;Ceiling grids;1
+CEILOBJ;A-Clng;13;CONTINUOUS;0.50;1;Ceiling objects;1
+CHASE;A-Wall-Chas;91;CONTINUOUS;0.25;1;Chases;1
+COGO;AS-Ctrl;7;CONTINUOUS;0.18;1;Control Points;1
+COLUMN;S-Cols;112;CONTINUOUS;0.50;1;Columns;1
+COMMUN;T-Comm;130;CONTINUOUS;0.18;1;Communication;1
+CONTROL;T-Ctrl;230;CONTINUOUS;0.18;1;Control systems;1
+CWLAYOUT;A-Glaz-Curt;52;CONTINUOUS;0.50;1;Curtain Walls;1
+CWUNIT;A-Glaz-Curt-Unit;51;CONTINUOUS;0.25;1;Curtain Wall Units;1
+DIMLINE;G-Anno-Dims;211;CONTINUOUS;0.25;1;Dimensions;1
+DIMMAN;G-Anno-Dims;211;CONTINUOUS;0.25;1;Dimensions (AutoCAD points);1
+DISPTHEME;G-Anno-Them;52;CONTINUOUS;0.50;1;Display Theme Legends;1
+DOOR;A-Door;31;CONTINUOUS;0.25;1;Doors;1
+DOORNO;A-Door-Iden;31;CONTINUOUS;0.25;1;Door tags;1
+DRAINAGE;P-Pipe-Dran;150;CONTINUOUS;0.18;1;Drainage;1
+ELEC;E-Elec;71;CONTINUOUS;0.25;1;Electrical;1
+ELECNO;E-Elec-Iden;31;CONTINUOUS;0.25;1;Electrical tags;1
+ELEV;G-Elev;111;CONTINUOUS;0.50;1;Elevations;1
+ELEVAT;A-Evtr;172;CONTINUOUS;0.35;1;Elevators;1
+ELEVHIDE;G-Elev;111;CONTINUOUS;0.50;1;Elevations (2D);1
+EQUIP;G-Eqpm;71;CONTINUOUS;0.25;1;Equipment;1
+EQUIPNO;G-Eqpm-Iden;31;CONTINUOUS;0.25;1;Equipment tags;1
+FINCEIL;A-Clng-Iden;31;CONTINUOUS;0.25;1;Ceiling tags;1
+FINFLOOR;A-Flor-Iden;31;CONTINUOUS;0.25;1;Finish tags;1
+FIRE;F-Eqpm;91;CONTINUOUS;0.25;1;Fire system equip.;1
+FURN;I-Furn;30;CONTINUOUS;0.18;1;Furniture;1
+FURNNO;I-Furn-Iden;31;CONTINUOUS;0.25;1;Furniture tags;1
+G-DS-ANNO-STD-NON_PLOTTABLE_OBJECTS;G-Anno-Stnd-Nplt;140;CONTINUOUS;0.18;0;General Annotation Layer Key: Non-Plottable Objects;1
+G-DS-ANNO-STD-NON_PLOTTABLE_OBJECTS_SCREEN;G-Anno-Stnd-Nplt-Scrn;8;CONTINUOUS;0.18;0;General Annotation Layer Key: Non-Plottable Screened Objects;1
+GRIDBUB;S-Grid-Iden;31;CENTER;0.25;1;Plan grid bubbles;1
+GRIDLINE;S-Grid;191;CENTER;0.25;1;Column Grids;1
+HIDDEN;G-Detl-Hidd;1;HIDDEN2;0.18;1;Hidden lines;1
+LAYGRID;G-Grid-Nplt;200;DASHED;0.18;0;Layout grids;1
+LIGHTCLG;E-Lite-Clng;193;CONTINUOUS;0.50;1;Ceiling lighting;1
+LIGHTW;E-Lite-Wall;53;CONTINUOUS;0.50;1;Wall lighting;1
+MASS ELEM;MASS ELEM;7;CONTINUOUS;Default;1;Massing elements;1
+MASSGRPS;G-Mass-Grps;13;CONTINUOUS;0.50;1;Massing groups;1
+MASSSLCE;G-Mass-Slce;51;DASHED;0.25;1;Massing Slices;1
+OPENING;A-Wall-Open;31;CONTINUOUS;0.25;1;Wall openings;1
+PEOPLE;A-Elev-Pepl;30;CONTINUOUS;0.18;1;People;1
+PFIXT;P-Fixt;131;CONTINUOUS;0.25;1;Plumbing fixtures;1
+PLANTS;L-Site-Plnt;71;CONTINUOUS;0.25;1;Plants - outdoor;1
+PLANTSI;I-Furn-Plnt;70;CONTINUOUS;0.18;1;Plants - indoor;1
+POLYGON;G-Poly;110;CONTINUOUS;0.50;1;AEC Polygons;1
+POWER;E-Wire-Powr;113;CONTINUOUS;0.50;1;Electrical power;1
+PRCL;AS-Prop;7;CONTINUOUS;0.18;1;Property;1
+PRK-SYM;C-Site-Prkg;70;CONTINUOUS;0.18;1;Parking symbols;1
+RBFINISHID;G-Spce-Stnd-Iden;31;CONTINUOUS;0.25;1;Room Book Layer Key: Finish ID's;1
+RBQUANTITYID;G-Spce-Stnd-Iden;31;CONTINUOUS;0.25;1;Room Book Layer Key: Quantity ID's;1
+ROOF;A-Roof;132;CONTINUOUS;0.35;1;Rooflines;1
+ROOFSLAB;A-Roof-Slab;12;CONTINUOUS;0.35;1;Roof Slabs;1
+ROOMNO;A-Area-Room-Iden;31;CONTINUOUS;0.25;1;Room tags;1
+SCHEDOBJ;G-Schd;231;CONTINUOUS;0.25;1;Schedule tables;1
+SEATNO;I-Furn-Iden;31;CONTINUOUS;0.25;1;Seating tags;1
+SECT;G-Sect;73;CONTINUOUS;0.50;1;Miscellaneous sections;1
+SECTHIDE;G-Sect;73;CONTINUOUS;0.50;1;Sections (2D);1
+SITE;C-Site;91;CONTINUOUS;0.25;1;Site;1
+SLAB;A-Slab;192;CONTINUOUS;0.35;1;Slabs;1
+SPACENO;G-Area-Spce-Iden;31;CONTINUOUS;0.25;1;Space numbers;1
+SPACEOBJ;G-Area-Spce;52;CONTINUOUS;0.50;1;Spaces;1
+STAIR;A-Flor-Strs;31;CONTINUOUS;0.25;1;Stairs;1
+STAIRH;A-Flor-Strs-Hral;11;CONTINUOUS;0.25;1;Stair handrails;1
+STRUCTBEAM;S-Beam;72;CONTINUOUS;0.50;1;Structural Beams;1
+STRUCTBEAMIDEN;S-Beam-Iden;31;CONTINUOUS;0.25;1;Structural Beam Tags;1
+STRUCTBRACE;S-Cols-Brcg;92;DASHED;0.35;1;Structural Braces;1
+STRUCTBRACEIDEN;S-Cols-Brcg-Iden;31;CONTINUOUS;0.25;1;Structural Brace Tags;1
+STRUCTCOLS;S-Cols;112;CONTINUOUS;0.50;1;Structural Columns;1
+STRUCTCOLSIDEN;S-Cols-Iden;31;CONTINUOUS;0.25;1;Structural Column Tags;1
+SWITCH;E-Devc-Swch;11;CONTINUOUS;0.25;1;Electrical switches;1
+TINN;AS-Tinn;7;CONTINUOUS;0.18;1;Triangulated irregular network;1
+TITSCALE;G-Anno-Titl-Scal;231;CONTINUOUS;0.25;1;Graphical Scales;1
+TITTEXT;G-Anno-Ttlb;213;CONTINUOUS;0.50;1;Border and title block;1
+TITTEXT-DWG;G-Anno-Titl-Text;233;CONTINUOUS;0.50;1;Drawing title text;1
+TOILACC;P-Flor-Spcl;90;CONTINUOUS;0.18;1;Arch. specialties;1
+TOILNO;P-Flor-Fixt-Iden;31;CONTINUOUS;0.25;1;Toilet tags;1
+TOPO;AS-Topo;7;CONTINUOUS;0.18;1;Topography;1
+UTIL;C-Site-Util;91;CONTINUOUS;0.25;1;Site utilities;1
+VEHICLES;C-Site-Vhcl;30;CONTINUOUS;0.18;1;Vehicles;1
+VIEWPORT;G-View-Nplt;140;CONTINUOUS;0.18;0;Sheet View viewports;1
+WALL;A-Wall;113;CONTINUOUS;0.50;1;Walls;1
+WALLFIRE;F-Wall-Fire-Patt;152;DASHED;0.35;1;Fire wall patterning;1
+WALLNO;A-Anno-Wall-Iden;31;CONTINUOUS;0.25;1;Wall tags;1
+WIND;A-Glaz;51;CONTINUOUS;0.25;1;Windows;1
+WINDASSEM;A-Glaz-Assm;71;CONTINUOUS;0.25;1;Window Assemblies;1
+WINDNO;A-Glaz-Iden;31;CONTINUOUS;0.25;1;Window tags;1
+ZONE;G-Area-Zone;52;CONTINUOUS;0.50;1;Zones;1
+ZONENO;G-Area-Zone-Iden;31;CONTINUOUS;0.25;1;Zone tags;1

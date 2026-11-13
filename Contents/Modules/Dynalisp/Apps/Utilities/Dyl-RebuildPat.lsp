@@ -406,6 +406,9 @@
         fh
       )
       (write-line ";;" fh)
+      ;; Units of the pattern: those of the drawing (MEASUREMENT), read by the materials
+      ;; (Remote>>Dyl:MaterialPatUnits) to scale it for imperial and metric drawings
+      (write-line (if (= 1 (getvar "MEASUREMENT")) ";%UNITS=MM" ";%UNITS=INCH") fh)
       ;; Pattern header and definition lines
       (write-line (strcat "*" name ", Rebuilt from " (getvar "DWGNAME")) fh)
       (foreach def-line def-lines 

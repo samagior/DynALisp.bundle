@@ -1,0 +1,13 @@
+Object;Key
+Dimension;DIMLINE
+Tolerance;DIMLINE
+Leader;ANNOBJ
+Multileader;ANNOBJ
+Text;ANNOBJ
+Mtext;ANNOBJ
+Table;SCHEDOBJ
+RevisionCloud;ANNREV
+Hatch;HATCH
+Wipeout;ANNMASK
+Viewport;VIEWPORT
+Image;

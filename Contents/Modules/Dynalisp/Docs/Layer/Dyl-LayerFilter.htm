@@ -20,7 +20,7 @@
 <table>
 <tr class="alt">
 <td>Function Syntax</td>
-<td><span class="fixw">DYL-LAYFILTER</span> and 46 presets &ndash; see <a href="#commands">Commands</a></td>
+<td><span class="fixw">DYL-LAYERFILTER</span> and 46 presets &ndash; see <a href="#commands">Commands</a></td>
 </tr>
 <tr>
 <td>Source File</td>
@@ -37,7 +37,7 @@
 </table>
 </div>
 <h2>Program Description</h2>
-<p><span class="fixw">DYL-LAYFILTER</span> lists every filter preset with its alias: double-click one (or OK) to apply it. The presets are child commands (<span class="fixw">Pst-*</span>) run by their aliases, which can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (see <a href="#aliases">Command Names And Aliases</a>).</p>
+<p><span class="fixw">DYL-LAYERFILTER</span> lists every filter preset with its alias: double-click one (or OK) to apply it. The presets are child commands (<span class="fixw">Pst-*</span>) run by their aliases, which can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (see <a href="#aliases">Command Names And Aliases</a>).</p>
 <p>One-word commands that set up the layer visibility for a type of view: show or hide a phase, isolate one level of a stacked drawing, screen the other disciplines, and so on. In model space the layers themselves are changed; in a layout the same filter is applied as viewport overrides on the viewports you select.</p>
 <p>The program works with layer names built from fields separated by hyphens, where the last field can be a phase suffix and a field can be a stack (level) number:</p>
 <div class="programs commands">
@@ -151,11 +151,11 @@
 </div>
 <!-- dyl:aliases -->
 <h2 id="aliases">Command Names And Aliases</h2>
-<p>Each program has one main command starting with <span class="fixw">Dyl-</span>. The short names are its aliases: they run the same command, and can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (saved in <span class="fixw">Resources\Aliases.csv</span>). The rows marked &#8627; are child commands of <span class="fixw">Dyl-LayFilter</span>: they are run by their alias, or picked from <span class="fixw">Dyl-LayFilter</span> when it lists them (their command is named <span class="fixw">Pst-*</span>).</p>
+<p>Each program has one main command starting with <span class="fixw">Dyl-</span>. The short names are its aliases: they run the same command, and can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (saved in <span class="fixw">Resources\Aliases.csv</span>). The rows marked &#8627; are child commands of <span class="fixw">Dyl-LayerFilter</span>: they are run by their alias, or picked from <span class="fixw">Dyl-LayerFilter</span> when it lists them (their command is named <span class="fixw">Pst-*</span>).</p>
 <div class="programs commands wide">
 <table>
 <tr><th>Command</th><th>Aliases</th><th>Name</th></tr>
-<tr><td><span class="fixw">Dyl-LayFilter</span></td><td>&ndash;</td><td>Layer Filters</td></tr>
+<tr><td><span class="fixw">Dyl-LayerFilter</span></td><td>&ndash;</td><td>Layer Filters</td></tr>
 <tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">LF-A-FLOR</span></td><td>&ndash;</td><td>Architectural Floor Plan Filter</td></tr>
 <tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">SH-ALL</span></td><td>&ndash;</td><td>Show All Layers</td></tr>
 <tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">SH-NPLT</span></td><td>&ndash;</td><td>Show Non-Plotting Layers</td></tr>

@@ -26,7 +26,7 @@
 ;; Export Layers To CSV
 ;; Exports every layer of the drawing with its properties to a CSV file in the Downloads folder.
 
-(defun C:Dyl-EXPORTLAYERS (/ *error* doc layers layer-obj i layer-name layer-color layer-lw layer-lt layer-plot 
+(defun C:Dyl-LayerExportToCsv (/ *error* doc layers layer-obj i layer-name layer-color layer-lw layer-lt layer-plot 
                            layer-trans layer-desc layer-on layer-freeze layer-vpfreeze layer-list row csv-path 
                            file-handle lw-val lw-str color-val color-str trans-val trans-str plot-val plot-str on-val 
                            on-str freeze-val freeze-str vpfreeze-val vpfreeze-str username downloads-path

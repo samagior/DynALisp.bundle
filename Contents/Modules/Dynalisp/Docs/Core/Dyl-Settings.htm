@@ -47,6 +47,7 @@
 <tr><th>Setting</th><th>What it does</th></tr>
 <tr><td>DynALisp reactors</td><td>The master switch. Off, the <span class="fixw">Reactor</span> folders are not loaded at all and no reactor runs (the reactor settings below are greyed out). Turned off, the reactors of the open drawings are removed.</td></tr>
 <tr><td>Auto-phase new objects</td><td>Puts the new objects on the layer of the active phase (<a href="../Layer/Dyl-LayerPhase.htm">Layer Phase</a>, <span class="fixw">PH-AUTO</span>). Its button opens Layer Phase.</td></tr>
+<tr><td>Auto layer keys</td><td>Puts the new dimensions, leaders, text, tables and other common objects made by a command on the layer key of their kind (<a href="../Layer/Dyl-ObjectLayerKeys.htm">Object Layer Keys</a>). Its button opens Object Layer Keys.</td></tr>
 <tr><td>Auto draw order</td><td>Stacks the new objects by the level of their layer (<a href="../Layer/Dyl-DrawOrder.htm">Draw Order</a>). Its button opens Draw Order.</td></tr>
 <tr><td>Settings sync</td><td>The other open drawings follow the settings saved here when they are made current (only what changed is applied). Off, a setting applies to the drawing it is changed in and to the drawings opened after.</td></tr>
 </table>
@@ -65,6 +66,16 @@
 </table>
 </div>
 
+<h2 id="layerkeys">Layer Keys</h2>
+<p><em>Existing layers that differ from their key.</em></p>
+<div class="programs commands wide">
+<table>
+<tr><th>Setting</th><th>What it does</th></tr>
+<tr><td>Update them without asking</td><td>A layer of a layer key that exists in the drawing with another color, linetype, lineweight or plot setting than its key is updated to its key, without asking (<a href="../Layer/Dyl-LayerKeys.htm#differ">Layer Keys</a>).</td></tr>
+<tr><td>Keep them without asking</td><td>Such a layer is used as it is, without asking.</td></tr>
+</table>
+</div>
+<p>One of the two at most (checking one unchecks the other). Both off, the default: you are asked, once per layer and session. <em>Remember my answer and do not ask again</em> in that question checks one of them for you; uncheck it here to be asked again.</p>
 <h2 id="updates">Updates</h2>
 <p><em>New versions of DynALisp.</em></p>
 <div class="programs commands wide">

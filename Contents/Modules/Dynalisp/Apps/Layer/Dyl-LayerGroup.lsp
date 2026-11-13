@@ -884,6 +884,6 @@
 ;; Layer Groups
 ;; Creates the standard Dynalisp layer group filters in the Layer Properties Manager.
 
-(defun c:Dyl-LayGroup () 
+(defun c:Dyl-LayerGroup () 
   (Dyl:LayGroup)
 )

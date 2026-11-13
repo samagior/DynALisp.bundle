@@ -19,7 +19,7 @@
 ;; Layer Drawing List
 ;; Draws a line and a label with the description of each layer of the drawing or of the selection.
 
-(defun c:dyl-list (/ pt rsp dat ln lst desln) 
+(defun c:Dyl-LayerList (/ pt rsp dat ln lst desln) 
   (initget "All Select")
   (setq pt (getpoint "\nSelect insertion point: "))
   (initget "Select All")
