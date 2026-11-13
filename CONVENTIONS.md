@@ -94,7 +94,7 @@ The alias of a Quick Draw preset tells how it draws: `PL-*` for a preset drawn w
 - Never create a `vlr-*` reactor in Apps, Remote or the MNL: every reactor is in a **Reactor** folder.
 - The Reactor folders are loaded by `Dyl:load` only while `DynalispReactors` is on (the master switch of Dyl-Settings); off, they are skipped entirely.
 - Each Reactor file registers its stop function with `Dyl:ReactorsAdd`, creates nothing when `Dyl:ReactorsOn-p` is nil, and its document manager callback calls `Dyl:ReactorsStop` when the switch was turned off in another drawing.
-- Each reactor has its own `Dynalisp*` setting, with a toggle and a short description in the Reactors section of Dyl-Settings.
+- Each reactor has its own `Dynalisp*` setting, with a toggle and a short description in the Reactors section of Dyl-Settings. A reactor a command makes for a moment and removes when it runs again (the event count of `Dyl-Diagnostics`) needs no setting: it is in a Reactor file all the same, made only while the reactors are on, and removed by `Dyl:ReactorsStop`.
 - Code in Remote or Apps that calls a Reactor function checks it is defined first: `(if Reactor>>Dyl:X ...)`.
 - A reactor that counts the commands running (to act when the outer one ends, not after a transparent `'ZOOM`) sets its count back to 0 when a command starts with no other one running (`Dyl:CmdTop-p` in `dynalisp.mnl`), never relying on getting the end of every command it saw start.
 
@@ -194,6 +194,16 @@ Claude commits as the work goes, without being asked; it pushes, merges into `ma
   - The docs name each setting with its label, and explain it there.
 
 *Why: every window leads to its documentation, a list is shown the way the user picked it where the list is (and opens that way again once set as the default), a setting that opens its own window looks the same in every window, the values of a group read as one column, its sub-sections look like the groups, a window stays balanced as it changes, many items get the same change in one go, and a window is read at a glance, its explanations kept in one place, the docs.*
+
+## Diagnostics
+
+- What goes wrong is found with **`Dyl-Diagnostics`** (`Apps\Troubleshooting`): one section per part (DynALisp, AutoCAD, Conflicts, Startup Suite, Settings, Reactors, Drawing), each a `dg:s-*` function and a `Pst-Diagnostics*` child run alone, all of them in the full report.
+- A tool that adds a startup step, a reactor, a data file, a setting or a way to conflict with other programs **adds its check** to the section it belongs to, in the same change: a problem is a `dg:bad` line (`[!]`, listed again at the top of the report), what is only worth knowing a `dg:note`.
+- The startup keeps what it did for the report: its time, warnings and notes (`*dyl:startms*`, `*dyl:startwarn*`, `*dyl:startnote*`) and the Remote and Reactor files that failed to load and their time (`*dyl:loaderrs*`, `*dyl:loadtimes*`). A new startup step goes through `Dyl:StartupStep`, so its errors are kept.
+- A report is **written to a text file** of `%TEMP%` and opened in the text editor (`dg:write`, `dg:open`), never printed on the command line, which keeps only what to do next.
+- A report never holds the user's profile folder, user name or computer name (`dg:anon`), since it is sent in a **public** GitHub issue of the releases repository that the user opens, reads and submits; DynALisp never sends anything by itself. The drawing itself is never part of it.
+
+*Why: a user can send a whole picture of their setup in one click, and a problem shows in the report the day its tool is added; a file reads, copies and attaches better than the command line; and nothing private is published without the user seeing it first.*
 
 ## Spell Dictionaries
 

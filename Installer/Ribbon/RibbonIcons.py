@@ -1072,6 +1072,18 @@ def i_purgedatalinks(c):
     c.line([(22.3, 10.7), (27.7, 5.3)], PAPER, 1.4 if c.small else 2)
 
 
+# ---------------------------------------------------------------- troubleshooting
+
+def i_diagnostics(c):
+    """A report looked at through a magnifier, a pulse line in its lens."""
+    sheet(c, 3, 2, 21, 28)
+    text_lines(c, 6.5, 8, 17.5, 2 if c.small else 3, 4 if c.small else 3.5)
+    c.line([(25.5, 25.5), (29.5, 29.5)], ORANGE, 2.6 if c.small else 3.6)
+    c.circle(21, 21, 7.5, TEAL_L, INK)
+    c.line([(15.5, 21.5), (18.5, 21.5), (20, 17.5), (22, 25), (23.5, 21.5), (26.5, 21.5)], INK,
+           1 if c.small else 1.3)
+
+
 ICONS = {
     # core
     'DYL-SETTINGS': i_settings,
@@ -1130,6 +1142,8 @@ ICONS = {
     'DYL-RESETLINETYPESCALE': i_resetlinetypescale,
     'DYL-UNGROUPNEXT': i_ungroupnext,
     'DYL-VIEWPORTTOPAPERSPACE': i_viewporttopaperspace,
+    # troubleshooting
+    'DYL-DIAGNOSTICS': i_diagnostics,
     # children with an icon of their own
     'PST-CHANGECOLOR': i_changecolor,
     'PST-DATALINKPURGE': i_purgedatalinks,
