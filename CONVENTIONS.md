@@ -95,8 +95,9 @@ The alias of a Quick Draw preset tells how it draws: `PL-*` for a preset drawn w
 - Each Reactor file registers its stop function with `Dyl:ReactorsAdd`, creates nothing when `Dyl:ReactorsOn-p` is nil, and its document manager callback calls `Dyl:ReactorsStop` when the switch was turned off in another drawing.
 - Each reactor has its own `Dynalisp*` setting, with a toggle and a short description in the Reactors section of Dyl-Settings.
 - Code in Remote or Apps that calls a Reactor function checks it is defined first: `(if Reactor>>Dyl:X ...)`.
+- A reactor that counts the commands running (to act when the outer one ends, not after a transparent `'ZOOM`) sets its count back to 0 when a command starts with no other one running (`Dyl:CmdTop-p` in `dynalisp.mnl`), never relying on getting the end of every command it saw start.
 
-*Why: a safe way to shut every reactor down at once, plus a setting for each one.*
+*Why: a safe way to shut every reactor down at once, plus a setting for each one. A command whose end a reactor never gets (one run while the drawing opens, one ended in another drawing) would leave its count stuck above 0: the reactor would stop acting and keep collecting every object added, slowing AutoCAD down until a Lisp command reset it.*
 
 ## User Files
 

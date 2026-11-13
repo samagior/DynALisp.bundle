@@ -55,7 +55,9 @@
   )
 )
 
+;;  A command started with no other one running starts the count again (see Dyl:CmdTop-p):
 (defun Reactor>>Dyl:DrawOrderOnStart (rea args / cmd)
+  (if (Dyl:CmdTop-p (car args)) (setq *do:depth* 0))
   (if (= 0 *do:depth*)
     (setq cmd      (strcase (car args))
           *do:off* (wcmatch cmd (Reactor>>Dyl:DrawOrderSkip))

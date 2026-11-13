@@ -41,6 +41,17 @@
     r
   )
 
+  ;;  T when the command cmd (name given to a commandWillStart reactor) starts with no
+  ;;  other command running, i.e. it is not a transparent or nested command: CMDNAMES is
+  ;;  empty, or holds cmd alone ('ZOOM during LINE: "LINE" or "LINE'ZOOM"). The reactors
+  ;;  that count the commands running set their count back to 0 then, since a command
+  ;;  whose end they did not get (a command run while the drawing opens, a command
+  ;;  ended in another drawing) would leave it above 0 for the rest of the session:
+  (defun Dyl:CmdTop-p (cmd / cur)
+    (setq cur (strcase (getvar "CMDNAMES")))
+    (or (= "" cur) (= cur (strcase cmd)))
+  )
+
   ;;  T when the drawing made current (args of a document manager reactor) is the drawing
   ;;  this code runs in: every open drawing has its own document manager reactors, which
   ;;  all run when any drawing becomes current:
