@@ -48,7 +48,9 @@
   )
 )
 
+;;  A command started with no other one running starts the count again (see Dyl:CmdTop-p):
 (defun Reactor>>Dyl:PhaseOnStart (rea args)
+  (if (Dyl:CmdTop-p (car args)) (setq *ph:depth* 0))
   (if (= 0 *ph:depth*) (setq *ph:off* (wcmatch (strcase (car args)) (Reactor>>Dyl:PhaseSkip))))
   (setq *ph:depth* (1+ *ph:depth*))
 )

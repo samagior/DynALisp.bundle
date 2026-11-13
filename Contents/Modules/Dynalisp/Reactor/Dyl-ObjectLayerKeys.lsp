@@ -46,7 +46,9 @@
   )
 )
 
+;;  A command started with no other one running starts the count again (see Dyl:CmdTop-p):
 (defun Reactor>>Dyl:ObjectKeysOnStart (rea args)
+  (if (Dyl:CmdTop-p (car args)) (setq *olk:depth* 0))
   (if (= 0 *olk:depth*)
     (setq *olk:cmd* (strcase (car args))
           *olk:off* (wcmatch *olk:cmd* (strcase (Remote>>Dyl:ObjectKeysSkip)))
