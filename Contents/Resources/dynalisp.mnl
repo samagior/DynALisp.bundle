@@ -1110,13 +1110,53 @@
   ;;; AutoCAD command"...), nil when the name is free. A command of another
   ;;; program is a Lisp command DynALisp did not define (an Express Tools command,
   ;;; a Lisp file of the user...); the aliases of DynALisp (*dyl:aliasdefs*) are
-  ;;; not counted. Without the DynALisp commands (see Dyl:AliasTaken):
-  (defun Dyl:AliasTakenOther (a)
+  ;;; not counted. An alias of acad.pgp (DO for DONUT) is taken too: a
+  ;;; DynALisp alias of that name would take it from the users of AutoCAD.
+  ;;; Without the DynALisp commands (see Dyl:AliasTaken):
+  (defun Dyl:AliasTakenOther (a / p)
     (setq a (strcase a))
     (cond
       ((getcname a) "an AutoCAD command")
       ((and (not (member a (mapcar 'strcase *dyl:aliasdefs*))) (eval (read (strcat "C:" a))))
        "a command of another program"
+      )
+      ((setq p (assoc a (Dyl:PgpAliases))) (strcat "an alias of acad.pgp (" (cdr p) ")"))
+    )
+  )
+
+  ;;; The aliases of the acad.pgp AutoCAD reads (the one of the profile):
+  ;;; ((ALIAS . COMMAND) ...), upper case, COMMAND without its "*" (the program
+  ;;; of an external command). Read again only when the file changes:
+  (defun Dyl:PgpAliases (/ f tm des s i c lst)
+    (if (setq f (findfile "acad.pgp"))
+      (progn
+        (setq tm (vl-file-systime f))
+        (if (not (equal (list f tm) (car *dyl:pgp*)))
+          (progn
+            (if (setq des (open f "r"))
+              (progn
+                (while (setq s (read-line des))
+                  (setq s (vl-string-trim " \t" s))
+                  (if (and (/= ";" (substr s 1 1)) (setq i (vl-string-search "," s)) (< 0 i))
+                    (progn
+                      (setq c (substr s (+ i 2)))
+                      (if (vl-string-search "," c) (setq c (substr c 1 (vl-string-search "," c))))
+                      (setq lst (cons (cons (strcase (vl-string-trim " \t" (substr s 1 i)))
+                                            (strcase (vl-string-trim " \t*" c))
+                                      )
+                                      lst
+                                )
+                      )
+                    )
+                  )
+                )
+                (close des)
+              )
+            )
+            (setq *dyl:pgp* (cons (list f tm) (reverse lst)))
+          )
+        )
+        (cdr *dyl:pgp*)
       )
     )
   )

@@ -544,18 +544,35 @@
   )
 )
 
-;;  The aliases of acad.pgp named as a DynALisp command or alias:
-(defun dg:cf-pgp (/ pgp names a)
-  (if (setq pgp (findfile "acad.pgp"))
-    (progn
-      (setq names (dg:dylnames))
-      (foreach s (dg:lines pgp nil)
-        (if (and (not (wcmatch s ";*"))
-                 (vl-string-search "," s)
-                 (member (setq a (strcase (vl-string-trim " \t" (substr s 1 (vl-string-search "," s))))) names)
-            )
-          (dg:bad (strcat "acad.pgp has the alias " a ", also the name of a DynALisp command or alias"))
-        )
+;;  The aliases of acad.pgp named as a DynALisp command or alias defined in this
+;;  drawing (a command turned off, an alias not defined, takes nothing):
+(defun dg:cf-pgp (/ pgp als rows ons r)
+  (setq pgp  (Dyl:PgpAliases)
+        als  (Dyl:AliasRead)
+        rows (vl-catch-all-apply 'Dyl:Suite '(nil))
+  )
+  (dg:kv "acad.pgp" (cond ((findfile "acad.pgp")) ("not found")))
+  (if (listp rows)
+    (foreach r rows
+      (if (and (= "1" (car r)) (/= "" (nth 1 r))) (setq ons (cons (list (dg:cmd (nth 1 r)) (nth 3 r)) ons)))
+    )
+  )
+  (foreach p pgp
+    (cond
+      ((setq r (assoc (car p) ons))
+       (dg:bad (strcat "acad.pgp alias " (car p) " (" (cdr p) ") has the name of the DynALisp command "
+                       (car p) " (Modules\\" (cadr r) "): rename the command or turn it off in Dyl-Suite"
+               )
+       )
+      )
+      ((member (car p) (mapcar 'strcase *dyl:dyndefs*))
+       (dg:bad (strcat "acad.pgp alias " (car p) " (" (cdr p) ") has the name of a DynALisp custom preset command"))
+      )
+      ((and (member (car p) (mapcar 'strcase *dyl:aliasdefs*)) (setq r (assoc (car p) als)))
+       (dg:bad (strcat "acad.pgp alias " (car p) " (" (cdr p) ") has the name of the DynALisp alias of "
+                       (cdr r) ": give " (cdr r) " another alias in Dyl-Suite"
+               )
+       )
       )
     )
   )
@@ -670,9 +687,13 @@
   (if docs (dg:note (strcat "Main command(s) without a docs page: " (Remote>>LM:lst->str (reverse docs) ", "))))
 )
 
+;;  An alias of a command neither in the Startup Suite nor a dynamic child (a
+;;  custom preset, Dyl:DynList) is left over from a command removed or renamed:
 (defun dg:suite-aliases (/ als cmds)
   (setq als  (Dyl:AliasRead)
-        cmds (mapcar '(lambda (r) (dg:cmd (nth 1 r))) (Dyl:SuiteRecs))
+        cmds (append (mapcar '(lambda (r) (dg:cmd (nth 1 r))) (Dyl:SuiteRecs))
+                     (mapcar '(lambda (d) (strcase (car d))) (Dyl:DynList))
+             )
   )
   (dg:kv "Aliases.csv" (Dyl:UserFile *dyl:alias))
   (dg:kv "Aliases / defined" (strcat (itoa (length als)) " / " (itoa (length *dyl:aliasdefs*))))
