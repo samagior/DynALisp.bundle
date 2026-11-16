@@ -499,9 +499,6 @@ Load;Command;Name;Description;File;Module;Group;Duplicate;Path
 1;C:LM-ENTITYLIST;Entity List;Displays the DXF data of a selected entity.;LM-EntityList.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-EntityList.lsp
 1;C:PST-ENTITYLISTNESTED;Entity List Nested;Displays the DXF data of a selected nested entity.;LM-EntityList.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-EntityList.lsp
 1;C:LM-FORMATDCL;Format DCL;Writes a formatted copy of a selected DCL file in the same folder.;LM-FormatDCL.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-FormatDCL.lsp
-1;C:PST-LISPTOBBCODE;LISP To BBCode;Converts a selected Lisp file into a BBCode styled file.;LM-LISPStyler.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-LISPStyler.lsp
-1;C:PST-LISPTOHTML;LISP To HTML;Converts a selected Lisp file into an HTML styled file.;LM-LISPStyler.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-LISPStyler.lsp
-1;C:LM-LISPSTYLER;LISP Styler;Lists the LISP Styler commands with their aliases and runs the one picked.;LM-LISPStyler.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-LISPStyler.lsp
 0;;;;LM-PrintList.lsp;LeeMac;Utilities;;LeeMac\Apps\Utilities\LM-PrintList.lsp
 1;C:COUNTBYLAYERS;"www.lee-mac.com                                           ;;";"------------------------------------------------------------;;";CountbyLayers.lsp;MyTools;Dynalisp;;MyTools\Apps\Dynalisp\CountbyLayers.lsp
 1;C:SL-ATTRIBUT;Select By Attribute;Selects the blocks sharing the attribute value, attribute tag or name of a picked block attribute.;Dyl-SelectAttribut.lsp;MyTools;Dynalisp;;MyTools\Apps\Dynalisp\Dyl-SelectAttribut.lsp
