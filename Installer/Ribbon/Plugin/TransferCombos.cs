@@ -1,10 +1,10 @@
-// TransferCombos.cs - the Level, From and To drop-downs, after the Layer Transfer button
+// TransferCombos.cs - the Level, From and To drop-downs of the Layer Transfer panel
 // Copyright (C) 2026  Samuel Martineau, GNU General Public License v3 (see Plugin.cs)
 //
 // A layer of the NCS (United States National CAD Standard) is named
 //   discipline designator - major group - minor groups - status:  A-Wall-Full-E
 // (see NcsName below). Three drop-downs, each after its label, choose the transfer of the
-// Layer Transfer button: the objects selected go from one value of a level (field) of their
+// Transfer button: the objects selected go from one value of a level (field) of their
 // layer name to another, the other levels kept:
 //   - Level: Discipline designator, Major group, Minor group or Status,
 //   - From: Any, or a value of that field found in the layers of the drawing (None / Unphased:
@@ -14,7 +14,7 @@
 //     (Res\AEC\Standard: Dd1 + Dd2, Major, Phase; the minor groups of the drawing only, the
 //     list of Minor.csv being too long), and None / Unphased.
 // The lists follow the layers of the current drawing: they are read again when a drawing is
-// made current and after each command. Picking a value only chooses it: the Layer Transfer
+// made current and after each command. Picking a value only chooses it: the Transfer
 // button runs Pst-TransferField of Dyl-LayerTransfer.lsp on the objects selected (it asks for
 // them when none is selected), which reads the choice with (Dyl:RibbonTransfer).
 
@@ -29,9 +29,13 @@ namespace DynALisp.Ribbon
 {
     public class TransferCombos : Part
     {
-        // After the Layer Transfer button, which runs Pst-TransferField (Ribbon.csv):
+        // In the Layer Transfer panel, after its Transfer button, which runs Pst-TransferField
+        // (Ribbon.csv), before its Manager button:
         public override string ButtonId => "RBN_DYL_CMD_PST_TRANSFERFIELD";
         public override string Command => "PST-TRANSFERFIELD";
+        public override string Label => "Transfer";
+        public override string PanelId => "RBN_DYL_PANEL_LAYER_TRANSFER";
+        public override string PanelTitle => "Layer Transfer";
 
         public static readonly TransferCombos Part = new TransferCombos();
 
@@ -74,7 +78,7 @@ namespace DynALisp.Ribbon
             _from = Host.Combo("DYL_TRANSFER_FROM", "Layer Transfer: the value of the layers to transfer (Any: every layer).");
             _from.CurrentChanged += OnFrom;
             _fromPicks = new Host.Picks(_from);
-            _to = Host.Combo("DYL_TRANSFER_TO", "Layer Transfer: the value to give the layers. The Layer Transfer button transfers the objects selected.");
+            _to = Host.Combo("DYL_TRANSFER_TO", "Layer Transfer: the value to give the layers. The Transfer button transfers the objects selected.");
             _to.CurrentChanged += OnTo;
             _toPicks = new Host.Picks(_to);
             _sig = null;

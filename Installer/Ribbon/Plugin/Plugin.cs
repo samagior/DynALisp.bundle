@@ -17,8 +17,9 @@
 // The DynALisp tab is generated into DynALisp.cuix (Installer\Ribbon\BuildRibbon.py), but a
 // CUIx only holds buttons: a drop-down that shows a state can only be added at run time. Each
 // group of drop-downs (a Part: PhaseCombos, TransferCombos) is a stack of drop-downs that the
-// Host puts after the button of its tool (found by its UID RBN_DYL_CMD_<command>), and again
-// when AutoCAD rebuilds the ribbon (workspace or menus loaded again).
+// Host puts in the panel of its tool (Layers, Layer Transfer), after the button of the tool
+// (found by its UID RBN_DYL_CMD_<command>, its label or its macro), and again when AutoCAD
+// rebuilds the ribbon (workspace or menus loaded again).
 
 using System;
 using System.Collections.Generic;
@@ -57,6 +58,9 @@ namespace DynALisp.Ribbon
     {
         public abstract string ButtonId { get; }      // RBN_DYL_CMD_DYL_LAYERPHASE
         public abstract string Command { get; }       // DYL-LAYERPHASE (to find the button by its macro)
+        public virtual string Label => null;          // the label of the button, when not its command name
+        public virtual string PanelId => "RBN_DYL_PANEL_LAYERS";   // its panel (BuildRibbon.py)
+        public virtual string PanelTitle => "Layers";
         public abstract RibbonRowPanel Build();       // the stack, made again for each ribbon
         public abstract void Refresh();               // show the state
         public virtual void DocumentChanged() { }     // a drawing made current
@@ -67,7 +71,6 @@ namespace DynALisp.Ribbon
     public static class Host
     {
         const string TabId = "RBN_DYL_TAB";
-        const string PanelId = "RBN_DYL_PANEL_LAYERS";
 
         static readonly List<Part> Parts = new List<Part>();
         static bool _dirty = true;
@@ -131,13 +134,13 @@ namespace DynALisp.Ribbon
         static bool IdIs(string id, string want) =>
             id != null && (id == want || id.EndsWith("." + want, StringComparison.OrdinalIgnoreCase));
 
-        static RibbonPanelSource Panel()
+        static RibbonPanelSource Panel(Part part)
         {
             var ribbon = ComponentManager.Ribbon;
             var tab = ribbon?.Tabs.FirstOrDefault(t => IdIs(t.Id, TabId))
                       ?? ribbon?.Tabs.FirstOrDefault(t => t.Title == "DynALisp");
-            var panel = tab?.Panels.FirstOrDefault(p => p.Source != null && IdIs(p.Source.Id, PanelId))
-                        ?? tab?.Panels.FirstOrDefault(p => p.Source != null && p.Source.Title == "Layers");
+            var panel = tab?.Panels.FirstOrDefault(p => p.Source != null && IdIs(p.Source.Id, part.PanelId))
+                        ?? tab?.Panels.FirstOrDefault(p => p.Source != null && p.Source.Title == part.PanelTitle);
             return panel?.Source;
         }
 
@@ -152,21 +155,23 @@ namespace DynALisp.Ribbon
         static bool IsButton(RibbonItem it, Part p)
         {
             if (IdIs(it.Id, p.ButtonId)) return true;
-            string text = new string((it.Text ?? "").Where(ch => !char.IsWhiteSpace(ch)).ToArray());
-            string name = p.Command.Substring(p.Command.IndexOf('-') + 1);
+            static string Bare(string s) => new string((s ?? "").Where(ch => !char.IsWhiteSpace(ch)).ToArray());
+            string text = Bare(it.Text);
+            string name = p.Label != null ? Bare(p.Label) : p.Command.Substring(p.Command.IndexOf('-') + 1);
             if (text.Equals(name, StringComparison.OrdinalIgnoreCase)) return true;
             return it is RibbonButton b && b.CommandParameter is string m
                    && m.TrimEnd().EndsWith(p.Command, StringComparison.OrdinalIgnoreCase);
         }
 
-        // Put every part in the panel (after its button, the end of the panel when it is not
+        // Put every part in its panel (after its button, the end of the panel when it is not
         // found) and show its state. True when they are all there.
         public static bool Ensure()
         {
-            var src = Panel();
-            if (src == null) return false;
+            bool all = true;
             foreach (var p in Parts)
             {
+                var src = Panel(p);
+                if (src == null) { all = false; continue; }
                 if (p.Row != null && Contains(src.Items, p.Row)) continue;
                 var row = p.Build();
                 // Left by a former load of the plugin (NETLOAD again):
@@ -191,7 +196,7 @@ namespace DynALisp.Ribbon
                 p.Row = row;
                 try { p.Refresh(); } catch (System.Exception ex) { Log(ex.Message); }
             }
-            return true;
+            return all;
         }
 
         public static void Dirty() => _dirty = true;

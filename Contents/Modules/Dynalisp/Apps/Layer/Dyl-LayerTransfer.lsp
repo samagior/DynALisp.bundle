@@ -1189,7 +1189,7 @@
 ;; Transfer Field
 ;; Moves the selected objects to the layers with another discipline designator, major group, minor group or status, the other fields kept.
 
-;;  Run by the Layer Transfer button of the ribbon (and its alias LTF): it transfers with the
+;;  Run by the Transfer button of the ribbon (and its alias LTF): it transfers with the
 ;;  Level, From and To of the drop-downs, read with (Dyl:RibbonTransfer) of
 ;;  Resources\DynALisp.Ribbon.dll: (level from to), level "Discipline", "Major", "Minor" or
 ;;  "Status", from nil for any value, "" for the layers without one (minor group, status),
