@@ -56,6 +56,7 @@ namespace DynALisp.Ribbon
         };
 
         RibbonCombo _field, _from, _to;
+        Host.Picks _fieldPicks, _fromPicks, _toPicks;
         bool _updating;
         string _fld = "Status";          // the field
         string _src = Any;               // From: Any, "" none, or a value
@@ -68,10 +69,13 @@ namespace DynALisp.Ribbon
             _field = Host.Combo("DYL_TRANSFER_FIELD", "Layer Transfer: the level of the layer names to change.");
             foreach (var f in Fields) _field.Items.Add(Host.Item(f.Text, f.Tag));
             _field.CurrentChanged += OnField;
+            _fieldPicks = new Host.Picks(_field);
             _from = Host.Combo("DYL_TRANSFER_FROM", "Layer Transfer: the value of the layers to transfer (Any: every layer).");
             _from.CurrentChanged += OnFrom;
+            _fromPicks = new Host.Picks(_from);
             _to = Host.Combo("DYL_TRANSFER_TO", "Layer Transfer: the value to give the layers. The Layer Transfer button transfers the objects selected.");
             _to.CurrentChanged += OnTo;
+            _toPicks = new Host.Picks(_to);
             _sig = null;
             var labels = Host.Labels("Level:", "From:", "To:");
             return Host.Rows("DYL_TRANSFER_DROPDOWNS",
@@ -211,9 +215,22 @@ namespace DynALisp.Ribbon
             finally { _updating = false; }
         }
 
+        // A change made by the ribbon itself (not picked by the user) shows the choices again,
+        // once the change is over:
+        bool ByRibbon(Host.Picks picks)
+        {
+            if (picks.ByUser) return false;
+            System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+            {
+                _sig = null;
+                try { Refresh(); } catch (System.Exception ex) { Host.Log(ex.Message); }
+            }));
+            return true;
+        }
+
         void OnField(object sender, RibbonPropertyChangedEventArgs e)
         {
-            if (_updating || !(_field.Current is RibbonItem it) || (string)it.Tag == _fld) return;
+            if (_updating || ByRibbon(_fieldPicks) || !(_field.Current is RibbonItem it) || (string)it.Tag == _fld) return;
             _fld = (string)it.Tag;
             _src = Any;
             _dst = null;
@@ -222,20 +239,20 @@ namespace DynALisp.Ribbon
 
         void OnFrom(object sender, RibbonPropertyChangedEventArgs e)
         {
-            if (_updating || !(_from.Current is RibbonItem it)) return;
+            if (_updating || ByRibbon(_fromPicks) || !(_from.Current is RibbonItem it)) return;
             _src = (string)it.Tag;
         }
 
-        // A fixed width, 1.5 times the Phase drop-downs (a long item is read whole in the list
-        // when it opens):
+        // A fixed width, the width of the Auto-phase and Phase drop-downs (a long item is read
+        // whole in the list when it opens):
         public void Resize()
         {
-            if (Row != null) Host.FixWidth(Math.Ceiling(1.5 * PhaseCombos.Width), _field, _from, _to);
+            if (Row != null) Host.FixWidth(PhaseCombos.Width, _field, _from, _to);
         }
 
         void OnTo(object sender, RibbonPropertyChangedEventArgs e)
         {
-            if (_updating || !(_to.Current is RibbonItem it)) return;
+            if (_updating || ByRibbon(_toPicks) || !(_to.Current is RibbonItem it)) return;
             _dst = (string)it.Tag;
         }
     }

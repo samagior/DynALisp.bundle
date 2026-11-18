@@ -205,6 +205,24 @@ namespace DynALisp.Ribbon
             ShowText = false, ShowImage = false, IsEditable = false, ToolTip = tip,
         };
 
+        // A drop-down whose Current is acted on only when the user picks an item: its list is
+        // open, or has just closed. The ribbon also changes Current on its own (to the first
+        // item, when it makes the control again: tab shown, panel resized, ribbon rebuilt),
+        // which must never run a setter (it turned auto-phase back on).
+        public sealed class Picks
+        {
+            bool _open;
+            int _closed = Environment.TickCount - 60000;
+
+            public Picks(RibbonCombo c)
+            {
+                c.DropDownOpened += (s, e) => _open = true;
+                c.DropDownClosed += (s, e) => { _open = false; _closed = Environment.TickCount; };
+            }
+
+            public bool ByUser => _open || unchecked(Environment.TickCount - _closed) < 750;
+        }
+
         // A stack of drop-downs, one under the other:
         public static RibbonRowPanel Stack(string id, params RibbonItem[] items) =>
             Rows(id, items.Select(it => new[] { it }).ToArray());

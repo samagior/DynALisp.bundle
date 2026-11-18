@@ -11,7 +11,8 @@
 //   - each drawing keeps its own phase (Document.UserData): a drawing made current shows its
 //     phase, and auto-phase is read again from the user settings (getenv).
 // Picking an item runs the Lisp setter (Remote>>Dyl:PhaseSet, Remote>>Dyl:PhaseAutoSet), and
-// the setter shows the new state.
+// the setter shows the new state. Only an item picked by the user runs it (Host.Picks): the
+// ribbon also changes the item shown on its own, which only shows the state again.
 
 using System;
 using System.Collections.Generic;
@@ -39,7 +40,7 @@ namespace DynALisp.Ribbon
         static bool _auto, _reactors;
 
         // The width of the Auto-phase and Phase drop-downs: their longest item (the Layer
-        // Transfer drop-downs are 1.5 times as wide):
+        // Transfer drop-downs have the same width):
         public static double Width => Host.FitWidth(
             new[] { "Auto-phase On (reactors off)", "Auto-phase Off", "None" }.Concat(Phases.Select(p => p.Key + " - " + p.Value)));
 
@@ -124,6 +125,7 @@ namespace DynALisp.Ribbon
 
             RibbonCombo _autoCombo, _phaseCombo;
             RibbonButton _autoOn, _autoOff;
+            Host.Picks _autoPicks, _phasePicks;
             List<KeyValuePair<string, string>> _shown;
             bool _updating;
 
@@ -137,8 +139,10 @@ namespace DynALisp.Ribbon
                 _autoCombo.Items.Add(_autoOn);
                 _autoCombo.Items.Add(_autoOff);
                 _autoCombo.CurrentChanged += OnAutoPicked;
+                _autoPicks = new Host.Picks(_autoCombo);
                 _phaseCombo = Host.Combo("DYL_PHASE_ACTIVE", "Active phase of the drawing: new objects and phased layer keys go to its layers.");
                 _phaseCombo.CurrentChanged += OnPhasePicked;
+                _phasePicks = new Host.Picks(_phaseCombo);
                 _shown = null;
                 return Host.Stack("DYL_PHASE_DROPDOWNS", _autoCombo, _phaseCombo);
             }
@@ -188,19 +192,40 @@ namespace DynALisp.Ribbon
                 finally { _updating = false; }
             }
 
+            // A change made by the ribbon itself (not picked by the user) shows the state
+            // again, once the change is over:
+            void ShowAgain() =>
+                System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
+                {
+                    try { Refresh(); } catch (System.Exception ex) { Host.Log(ex.Message); }
+                }));
+
             void OnAutoPicked(object sender, RibbonPropertyChangedEventArgs e)
             {
-                if (_updating || !(_autoCombo.Current is RibbonButton b)) return;
-                bool on = (b.Tag as string) == "1";
+                if (_updating) return;
+                var b = _autoCombo.Current as RibbonButton;
+                bool on = (b?.Tag as string) == "1";
+                if (b == null || !_autoPicks.ByUser)
+                {
+                    if (b == null || on != _auto) ShowAgain();
+                    return;
+                }
                 if (on == _auto) return;
                 Host.Run("(progn (if Remote>>Dyl:PhaseAutoSet (Remote>>Dyl:PhaseAutoSet " + (on ? "T" : "nil") + ")) (princ))");
             }
 
             void OnPhasePicked(object sender, RibbonPropertyChangedEventArgs e)
             {
-                if (_updating || !(_phaseCombo.Current is RibbonButton b)) return;
-                string code = b.Tag as string ?? "";
-                if (string.Equals(Host.Doc?.UserData[PhaseKey] as string, code, StringComparison.OrdinalIgnoreCase)) return;
+                if (_updating) return;
+                var b = _phaseCombo.Current as RibbonButton;
+                string code = b?.Tag as string ?? "";
+                string cur = Host.Doc?.UserData[PhaseKey] as string;
+                if (b == null || !_phasePicks.ByUser)
+                {
+                    if (cur != null && (b == null || !string.Equals(cur, code, StringComparison.OrdinalIgnoreCase))) ShowAgain();
+                    return;
+                }
+                if (string.Equals(cur, code, StringComparison.OrdinalIgnoreCase)) return;
                 Host.Run("(progn (if Remote>>Dyl:PhaseSet (Remote>>Dyl:PhaseSet " + (code == "" ? "nil" : "\"" + code.Replace("\"", "") + "\"") + ")) (princ))");
             }
         }
