@@ -9,7 +9,8 @@
 //   - Level: Discipline designator, Major group, Minor group or Status,
 //   - From: Any, or a value of that field found in the layers of the drawing (None / Unphased:
 //     the layers without a minor group / without a status),
-//   - To: the values of the drawing, then the other values of the AEC lists of DynALisp
+//   - To: Select replacement... while no value is picked, the values of the drawing, then
+//     the other values of the AEC lists of DynALisp
 //     (Res\AEC\Standard: Dd1 + Dd2, Major, Phase; the minor groups of the drawing only, the
 //     list of Minor.csv being too long), and None / Unphased.
 // The lists follow the layers of the current drawing: they are read again when a drawing is
@@ -192,6 +193,10 @@ namespace DynALisp.Ribbon
                 foreach (var v in vals) _from.Items.Add(Host.Item(Label(v), v));
 
                 _to.Items.Clear();
+                // shown while no value is picked (greyed out: it is not a value):
+                var prompt = Host.Item("Select replacement...", null);
+                prompt.IsEnabled = false;
+                _to.Items.Add(prompt);
                 foreach (var v in vals) _to.Items.Add(Host.Item(Label(v), v));
                 if (_fld != "Minor")
                     foreach (var s in std)
@@ -208,7 +213,7 @@ namespace DynALisp.Ribbon
                 RibbonItem to = _dst == null ? null
                     : _to.Items.OfType<RibbonItem>().FirstOrDefault(it => string.Equals((string)it.Tag, _dst, StringComparison.OrdinalIgnoreCase));
                 if (to == null) _dst = null;
-                _to.Current = to;
+                _to.Current = to ?? prompt;
                 Resize();
             }
             catch (System.Exception ex) { Host.Log(ex.Message); }
