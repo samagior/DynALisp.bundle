@@ -39,6 +39,20 @@
 <h2>Program Description</h2>
 <p><span class="fixw">DYL-LAYERTRANSFER</span> lists every transfer with its alias: double-click one (or OK), then select the objects. The transfers are child commands (<span class="fixw">Pst-*</span>) run by their aliases, which can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (see <a href="#aliases">Command Names And Aliases</a>).</p>
 <p>Moves the selected objects to the matching layer of another phase, discipline, stack or view type, by replacing one field of their layer name (e.g. <span class="fixw">A-Wall-E</span> &rarr; <span class="fixw">A-Wall-D</span> with <span class="fixw">E-D</span>). Missing target layers are created with the properties of the source layer. Blocks are handled without editing the original block: a renamed copy of the definition is transferred and only the selected references are switched to it.</p>
+<h2>Ribbon</h2>
+<p>The <strong>Layer Transfer</strong> button of the <em>Layers</em> panel of the DynALisp tab opens the list of transfers. Next to it, three drop-downs transfer any value of a field of the layer names to another one, for the layers named as the NCS (United States National CAD Standard) names them: <span class="fixw">A-Wall-Full-E</span> is the discipline designator <span class="fixw">A</span>, the major group <span class="fixw">Wall</span>, the minor group <span class="fixw">Full</span> and the status <span class="fixw">E</span>.</p>
+<div class="spacedbullets">
+<ul>
+<li><strong>Field</strong> &ndash; <em>Discipline designator</em>, <em>Major group</em>, <em>Minor group</em> or <em>Status</em> (the phase). The other fields of the names are kept.</li>
+<li><strong>From</strong> (second drop-down) &ndash; <em>Any</em>, or a value of the field found in the layers of the drawing. <em>None</em> (minor group) or <em>Unphased</em> (status): the layers that have no value for the field.</li>
+<li><strong>To</strong> (third drop-down) &ndash; the values of the drawing first, then the other values of the AEC lists of DynALisp (<span class="fixw">Res\AEC\Standard</span>: <span class="fixw">Dd1.csv</span> and <span class="fixw">Dd2.csv</span> for the discipline designators, <span class="fixw">Major.csv</span>, <span class="fixw">Phase.csv</span>; the minor groups of the drawing only, <span class="fixw">Minor.csv</span> being too long for a list). <em>None</em> or <em>Unphased</em> removes the field. A value is shown with its description when the AEC lists have it (<span class="fixw">Wall - Walls</span>).</li>
+<li>Select the objects, then pick a <strong>To</strong> value: they are transferred at once, as the Layer drop-down of AutoCAD moves the objects selected (with none selected, you are asked to select them). Picking the value shown again transfers the next selection.</li>
+<li>The lists follow the layers of the current drawing: they are read again after each command and when another drawing is made current. <em>From</em> keeps its value while the drawing has it.</li>
+<li>With <em>Any</em>, a minor group transfer changes the first minor group of each name, and adds one after the major group to the names that have none (<span class="fixw">A-Detl-E</span> &rarr; <span class="fixw">A-Detl-Patt-E</span>); a status transfer gives the status to the unphased names too.</li>
+<li>The drop-downs run <span class="fixw">Pst-TransferField</span> (alias <span class="fixw">LTF</span>), which can also be typed: it asks for the field, the From value (Enter: any) and the To value (<em>None</em> to remove it).</li>
+<li>The drop-downs are added by <span class="fixw">Resources\DynALisp.Ribbon.dll</span>, which needs AutoCAD 2025 or later. In an older version, the Layers panel has only the Layer Transfer button.</li>
+</ul>
+</div>
 <h2>How It Works</h2>
 <div class="spacedbullets">
 <ol>
@@ -57,6 +71,7 @@
 <li><strong>Designator</strong> &ndash; the first occurrence of the discipline letter is replaced.</li>
 <li><strong>Major</strong> &ndash; the first occurrence after the designator is replaced (e.g. Detl &harr; Sect).</li>
 <li><strong>Minor</strong> &ndash; the first occurrence from the 8th character on is replaced (Line &harr; Hidd, stack numbers).</li>
+<li><strong>Field</strong> (<span class="fixw">LTF</span> and the drop-downs of the ribbon) &ndash; the name is read as an NCS name: a discipline designator of 1 or 2 letters, a major group of 4 characters, minor groups of 4 characters (none or more) and an optional status of 1 character, divided by <span class="fixw">-</span>. Only that field is replaced, so a designator transfer never touches the other fields. The layers with other names (<span class="fixw">0</span>, <span class="fixw">Defpoints</span>, the layers of the xrefs...) are left as they are.</li>
 </ul>
 </div>
 <h3>Phase Suffixes</h3>
@@ -118,6 +133,7 @@
 <tr><td><span class="fixw">0005-4</span></td><td>Transfer Stack 0005 To 0004</td><td>Moves the selected objects from their stack 0005 layer to the matching stack 0004 layer.</td><td>Minor</td><td><span class="fixw">0005</span></td><td><span class="fixw">0004</span></td></tr>
 <tr><td><span class="fixw">DETL-SECT</span></td><td>Transfer Detail To Section</td><td>Moves the selected objects from their Detl major layer to the matching Sect layer.</td><td>Major</td><td><span class="fixw">Detl</span></td><td><span class="fixw">Sect</span></td></tr>
 <tr><td><span class="fixw">SECT-DETL</span></td><td>Transfer Section To Detail</td><td>Moves the selected objects from their Sect major layer to the matching Detl layer.</td><td>Major</td><td><span class="fixw">Sect</span></td><td><span class="fixw">Detl</span></td></tr>
+<tr><td><span class="fixw">LTF</span></td><td>Transfer Field</td><td>Moves the selected objects to the layers with another discipline designator, major group, minor group or status, the other fields kept.</td><td>Field</td><td>asked</td><td>asked</td></tr>
 </table>
 </div>
 <h2>Known Limitations</h2>
@@ -193,6 +209,7 @@
 <tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">0005-4</span></td><td>&ndash;</td><td>Transfer Stack 0005 To 0004</td></tr>
 <tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">DETL-SECT</span></td><td>&ndash;</td><td>Transfer Detail To Section</td></tr>
 <tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">SECT-DETL</span></td><td>&ndash;</td><td>Transfer Section To Detail</td></tr>
+<tr><td>&nbsp;&nbsp;&#8627; <span class="fixw">LTF</span></td><td>&ndash;</td><td>Transfer Field</td></tr>
 </table>
 </div>
 <!-- /dyl:aliases -->

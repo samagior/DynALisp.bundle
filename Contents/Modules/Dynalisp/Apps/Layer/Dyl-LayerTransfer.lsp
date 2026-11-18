@@ -17,29 +17,117 @@
 ;;-------------------------=={ End of Licence }==------------------------;;
 
 ;; returns T if layer name lay is a candidate for transfer (same rule as the ssget layer filter)
-(defun Dyl-LayTransfer-Match (lay) 
-  (wcmatch (strcase lay) 
-           (strcase 
-             (if (= *typ "Phase") 
-               "*-*"
-               (strcat "*" *pat "*")
+;; Field: the layers with an NCS name (Dyl-LayTransfer-Ncs)
+(defun Dyl-LayTransfer-Match (lay)
+  (if (= "Field" *typ)
+    (and (Dyl-LayTransfer-Ncs lay) T)
+    (wcmatch (strcase lay)
+             (strcase
+               (if (= *typ "Phase")
+                 "*-*"
+                 (strcat "*" *pat "*")
+               )
              )
+    )
+  )
+)
+
+;;-------------------------=={ NCS names }==------------------------;;
+
+;; the parts of str divided by "-" ("A-Wall-Full-E" -> ("A" "Wall" "Full" "E"))
+(defun Dyl-LayTransfer-Split (str / pos lst)
+  (while (setq pos (vl-string-search "-" str))
+    (setq lst (cons (substr str 1 pos) lst)
+          str (substr str (+ pos 2))
+    )
+  )
+  (reverse (cons str lst))
+)
+
+;; the fields of an NCS layer name (United States National CAD Standard):
+;;   (discipline major (minor ...) status), status nil when the name has none
+;;   "A-Wall-Full-E" -> ("A" "Wall" ("Full") "E"), "AD-Door" -> ("AD" "Door" nil nil)
+;; discipline designator: 1 or 2 letters, major group: 4 characters, minor groups: 4
+;; characters each (none or more), status: 1 character (optional). nil for any other name
+;; and for the layers of the xrefs. Same rule as NcsName of the ribbon drop-downs
+;; (Installer\Ribbon\Plugin\TransferCombos.cs).
+(defun Dyl-LayTransfer-Ncs (lay / lst st)
+  (if (not (wcmatch lay "*|*"))
+    (progn
+      (setq lst (Dyl-LayTransfer-Split lay))
+      (if (and (< 2 (length lst)) (= 1 (strlen (last lst))))
+        (setq st  (last lst)
+              lst (reverse (cdr (reverse lst)))
+        )
+      )
+      (if (and (<= 2 (length lst))
+               (wcmatch (car lst) "@,@@")
+               (vl-every '(lambda (x) (= 4 (strlen x))) (cdr lst))
+          )
+        (list (car lst) (cadr lst) (cddr lst) st)
+      )
+    )
+  )
+)
+
+;; T when the value val of a field is the From value src (nil: any value)
+(defun Dyl-LayTransfer-Is (val src)
+  (or (null src) (= (strcase val) (strcase src)))
+)
+
+;; the target of lay for the Field transfer: the field *lt:fld ("Discipline", "Major",
+;; "Minor" or "Status") of value *lt:src (nil: any, "": none) given the value *lt:dst ("":
+;; none), the other fields kept. Minor group: the one of value *lt:src, the first one for
+;; any (added after the major group when the name has none). lay itself when it does not
+;; match:
+(defun Dyl-LayTransfer-FieldTarget (lay / n d mj mn st i)
+  (if (setq n (Dyl-LayTransfer-Ncs lay))
+    (progn
+      (setq d  (nth 0 n)
+            mj (nth 1 n)
+            mn (nth 2 n)
+            st (cond ((nth 3 n)) (""))
+      )
+      (cond
+        ((= "Discipline" *lt:fld) (if (Dyl-LayTransfer-Is d *lt:src) (setq d *lt:dst)))
+        ((= "Major" *lt:fld) (if (Dyl-LayTransfer-Is mj *lt:src) (setq mj *lt:dst)))
+        ((= "Status" *lt:fld) (if (Dyl-LayTransfer-Is st *lt:src) (setq st *lt:dst)))
+        ((= "Minor" *lt:fld)
+         (cond
+           ((null *lt:src) (setq mn (cons *lt:dst (cdr mn))))
+           ((= "" *lt:src) (if (not mn) (setq mn (list *lt:dst))))
+           ((setq i (vl-position (strcase *lt:src) (mapcar 'strcase mn)))
+            (setq mn (Remote>>Dyl:ListSubst mn i *lt:dst))
            )
+         )
+        )
+      )
+      (strcat d
+              "-"
+              mj
+              (apply 'strcat (mapcar '(lambda (x) (if (/= "" x) (strcat "-" x) "")) mn))
+              (if (/= "" st) (strcat "-" st) "")
+      )
+    )
+    lay
   )
 )
 
 ;; returns the target layer name for source layer name lay:
 ;;   - Phase + ends with -???? and not already *pat → append *new
 ;;   - all other cases                              → substitute *pat with *new
-(defun Dyl-LayTransfer-Target (lay / len) 
-  (if 
-    (and (= "Phase" *typ) 
+;;   - Field: the field *lt:fld given its new value (Dyl-LayTransfer-FieldTarget)
+(defun Dyl-LayTransfer-Target (lay / len)
+  (cond
+   ((= "Field" *typ) (Dyl-LayTransfer-FieldTarget lay))
+   ((and (= "Phase" *typ) 
          (wcmatch lay "*-????")
          (not (wcmatch lay (strcat "*" *pat)))
     )
     (strcat lay *new)
-    (progn 
-      (cond 
+   )
+   (T
+      (cond
         ((= "Designator" *typ) (setq len 0))
         ((= "Major" *typ) (setq len 2))
         ((= "Minor" *typ) (setq len 7))
@@ -47,7 +135,7 @@
         (T (setq len 0))
       )
       (vl-string-subst *new *pat lay len)
-    )
+   )
   )
 )
 
@@ -69,7 +157,7 @@
 ;; Remote>>Dyl:LayerKeyExpected): the key with the name tgt and the color of the phase (the
 ;; color of the key when it keeps it in every phase); nil when tgt is not the layer of a key
 (defun Dyl-LayTransfer-Key (tgt)
-  (if (and (= "Phase" *typ) Remote>>Dyl:LayerKeyExpected)
+  (if (and (or (= "Phase" *typ) (and (= "Field" *typ) (= "Status" *lt:fld))) Remote>>Dyl:LayerKeyExpected)
     (Remote>>Dyl:LayerKeyExpected tgt (Dyl-LayTransfer-Base tgt) (Dyl-LayTransfer-Code))
   )
 )
@@ -85,11 +173,17 @@
 ;;   an existing *pat suffix is replaced by *new, otherwise *new is appended ("-" added if missing)
 ;;   ex. E-N : "2X6" -> "2X6-N", "2X6-E" -> "2X6-N"
 ;;   ex. N-U : "2X6-N" -> "2X6", "2X6" -> "2X6" (unphased: *new is "", nothing appended)
-(defun Dyl-LayTransfer-BlockName (nam / old new) 
+(defun Dyl-LayTransfer-BlockName (nam / old new)
   (setq old (if (= "-" (substr *pat 1 1)) *pat (strcat "-" *pat))
         new (if (or (= "" *new) (= "-" (substr *new 1 1))) *new (strcat "-" *new))
   )
-  (if (wcmatch (strcase nam) (strcat "*" (strcase old))) 
+  ;; Field transfer of the status from any phase: the phase suffix of the name, whichever it is
+  (if (and (= "Field" *typ) (= "Status" *lt:fld) (null *lt:src) Remote>>Dyl:PhaseOf
+           (Remote>>Dyl:PhaseOf nam (Remote>>Dyl:PhaseList))
+      )
+    (setq old (substr nam (1- (strlen nam))))
+  )
+(if (wcmatch (strcase nam) (strcat "*" (strcase old))) 
     (strcat (substr nam 1 (- (strlen nam) (strlen old))) new)
     (strcat nam new)
   )
@@ -279,8 +373,8 @@
     (ssget 
       (list 
         '(-4 . "<OR")
-        (cons 8 
-              (if (= *typ "Phase") 
+        (cons 8
+              (if (member *typ '("Phase" "Field")) 
                 "*-*"
                 (strcat "*" *pat "*")
               )
@@ -389,7 +483,9 @@
 ;;-------------------------=={ Commands }==------------------------;;
 
 ;;  The transfers are the child commands Pst-Transfer* below, run by their aliases
-;;  (E-D, N-X...) or picked in the Dyl-LayerTransfer dialog.
+;;  (E-D, N-X...) or picked in the Dyl-LayerTransfer dialog. Pst-TransferField transfers any
+;;  value of a field of the NCS layer names to another one: it is run by the Field, From and
+;;  To drop-downs of the ribbon (Installer\Ribbon\Plugin\TransferCombos.cs).
 
 ;; Layer Transfer
 ;; Lists the layer transfers with their aliases and runs the one picked on the objects selected.
@@ -1087,4 +1183,65 @@
         *typ "Major"
   )
   (Dyl-LayTransfer *pat *new)
+)
+
+;; Transfer Field
+;; Moves the selected objects to the layers with another discipline designator, major group, minor group or status, the other fields kept.
+
+;;  Run by the To drop-down of the ribbon, which sets *lt:ribbon* first: (field from to),
+;;  field "Discipline", "Major", "Minor" or "Status", from nil for any value, "" for the
+;;  layers without one (minor group, status), to "" to remove the field (read once, then
+;;  cleared). Typed at the command line, it asks for them.
+(defun c:Pst-TransferField (/ *pat *new *lt:fld *lt:src *lt:dst arg ok)
+  (setq arg         *lt:ribbon*
+        *lt:ribbon* nil
+  )
+  (if arg
+    (setq *lt:fld (nth 0 arg)
+          *lt:src (nth 1 arg)
+          *lt:dst (nth 2 arg)
+    )
+    (progn
+      (initget "Discipline Major Minor Status")
+      (setq *lt:fld (cond ((getkword "\nField of the layer names [Discipline/Major/Minor/Status] <Status>: ")) ("Status"))
+            *lt:src (getstring "\nFrom value (Enter: any, None: the layers without one): ")
+            *lt:src (cond ((= "" *lt:src) nil) ((wcmatch (strcase *lt:src) "NONE,UNPHASED") "") (*lt:src))
+            *lt:dst (getstring "\nTo value (None: remove it): ")
+      )
+      (if (wcmatch (strcase *lt:dst) "NONE,UNPHASED") (setq *lt:dst ""))
+    )
+  )
+  (setq ok (and (or (= "" *lt:dst) (snvalid *lt:dst))
+                (cond
+                  ((= "Discipline" *lt:fld) (wcmatch *lt:dst "@,@@"))
+                  ((= "Major" *lt:fld) (= 4 (strlen *lt:dst)))
+                  ((= "Minor" *lt:fld) (member (strlen *lt:dst) '(0 4)))
+                  ((= "Status" *lt:fld) (<= (strlen *lt:dst) 1))
+                )
+           )
+  )
+  (if ok
+    (progn
+      (setq *typ "Field")
+      (if (= "Status" *lt:fld)
+        (setq *pat (if (and *lt:src (/= "" *lt:src)) (strcat "-" *lt:src) "")
+              *new (if (/= "" *lt:dst) (strcat "-" *lt:dst) "")
+        )
+        (setq *pat (cond (*lt:src) (""))
+              *new *lt:dst
+        )
+      )
+      (Dyl-LayTransfer *pat *new)
+    )
+    (princ (strcat "\n" (if (= "" *lt:dst) "None" *lt:dst) " is not a value of the "
+                   (cond ((= "Discipline" *lt:fld) "discipline designator (1 or 2 letters)")
+                         ((= "Major" *lt:fld) "major group (4 characters)")
+                         ((= "Minor" *lt:fld) "minor group (4 characters)")
+                         ("status (1 character)")
+                   )
+                   "."
+           )
+    )
+  )
+  (princ)
 )
