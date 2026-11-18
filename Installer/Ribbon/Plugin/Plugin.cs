@@ -62,10 +62,26 @@ namespace DynALisp.Ribbon
         public abstract string PanelId { get; }       // its panel (BuildRibbon.py): RBN_DYL_PANEL_<title>
         public abstract string PanelTitle { get; }    // Drawing Behaviors
         public abstract RibbonRowPanel Build();       // the stack, made again for each ribbon
-        public abstract void Refresh();               // show the state
+        public abstract void Refresh();               // show the state (run by the Host only, see Later)
         public virtual void DocumentChanged() { }     // a drawing made current
         public virtual void CommandEnded() { }        // a command or Lisp expression ended
         public RibbonRowPanel Row;
+
+        // Show the state again, the next time AutoCAD is idle with no command running (never
+        // at once: the events and Lisp calls that ask for it come in the middle of commands,
+        // while drawings load, or from the ribbon itself). delay: not before that many ms, so
+        // that a drop-down the ribbon keeps changing on its own is shown again once a second
+        // at most, never in a loop that would freeze AutoCAD.
+        public void Later(int delay = 0)
+        {
+            Pending = true;
+            int t = Environment.TickCount + delay;
+            if (delay > 0 && t - _notBefore > 0) _notBefore = t;
+        }
+
+        public bool Pending = true;
+        int _notBefore = Environment.TickCount;
+        public bool Due => Pending && Environment.TickCount - _notBefore >= 0;
     }
 
     public static class Host
@@ -119,14 +135,29 @@ namespace DynALisp.Ribbon
 
         public static Document Doc => AcApp.DocumentManager.MdiActiveDocument;
 
+        // The ribbon is changed only here: AutoCAD idle, a drawing open and no command running
+        // (the startup commands of AutoCAD Architecture, a Lisp expression...):
         static void OnIdle(object sender, EventArgs e)
         {
+            if (!Quiet()) return;
             if (_dirty && Environment.TickCount - _nextTry >= 0)
             {
                 _nextTry = Environment.TickCount + 1000;
                 if (Ensure()) _dirty = false;
             }
+            foreach (var p in Parts)
+                if (p.Row != null && p.Due)
+                {
+                    p.Pending = false;
+                    try { p.Refresh(); } catch (System.Exception ex) { Log(ex.Message); }
+                }
             PhaseCombos.AskOnIdle();
+        }
+
+        static bool Quiet()
+        {
+            try { var d = Doc; return d != null && d.Editor.IsQuiescent; }
+            catch { return false; }
         }
 
         // ---- the ribbon ----
@@ -194,6 +225,7 @@ namespace DynALisp.Ribbon
                 }
                 where.Insert(at, row);
                 p.Row = row;
+                p.Pending = false;
                 try { p.Refresh(); } catch (System.Exception ex) { Log(ex.Message); }
             }
             return all;

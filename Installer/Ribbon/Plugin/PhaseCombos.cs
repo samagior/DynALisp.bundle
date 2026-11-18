@@ -71,8 +71,9 @@ namespace DynALisp.Ribbon
             }
             var doc = Host.Doc;
             if (doc != null) doc.UserData[PhaseKey] = code ?? "";
-            if (!Host.Ensure()) Host.Dirty();
-            Part.Refresh();
+            // called while DynALisp loads, from reactors and in the middle of commands: the
+            // ribbon is changed later, when AutoCAD is idle
+            Part.Later();
             return true;
         }
 
@@ -152,7 +153,7 @@ namespace DynALisp.Ribbon
             public override void DocumentChanged()
             {
                 ReadSettings();
-                Refresh();
+                Later();
             }
 
             // Show the state: auto-phase, and the phase of the current drawing (nothing picked
@@ -173,8 +174,10 @@ namespace DynALisp.Ribbon
                         TransferCombos.Part.Resize();
                     }
                     // Auto-phase on but the reactors off: it does nothing, the item says so.
-                    _autoOn.Text = _reactors ? "Auto-phase On" : "Auto-phase On (reactors off)";
-                    _autoCombo.Current = _auto ? _autoOn : _autoOff;
+                    string on = _reactors ? "Auto-phase On" : "Auto-phase On (reactors off)";
+                    if (_autoOn.Text != on) _autoOn.Text = on;
+                    var auto = _auto ? _autoOn : _autoOff;
+                    if (!ReferenceEquals(_autoCombo.Current, auto)) _autoCombo.Current = auto;
 
                     string code = Host.Doc?.UserData[PhaseKey] as string;
                     RibbonItem cur = null;
@@ -189,18 +192,14 @@ namespace DynALisp.Ribbon
                             _shown = null;
                         }
                     }
-                    _phaseCombo.Current = cur;
+                    if (!ReferenceEquals(_phaseCombo.Current, cur)) _phaseCombo.Current = cur;
                 }
                 finally { _updating = false; }
             }
 
             // A change made by the ribbon itself (not picked by the user) shows the state
-            // again, once the change is over:
-            void ShowAgain() =>
-                System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
-                {
-                    try { Refresh(); } catch (System.Exception ex) { Host.Log(ex.Message); }
-                }));
+            // again, at idle time, once a second at most:
+            void ShowAgain() => Later(1000);
 
             void OnAutoPicked(object sender, RibbonPropertyChangedEventArgs e)
             {

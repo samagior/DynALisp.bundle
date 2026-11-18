@@ -61,6 +61,7 @@ namespace DynALisp.Ribbon
         };
 
         RibbonCombo _field, _from, _to;
+        RibbonItem _prompt;
         Host.Picks _fieldPicks, _fromPicks, _toPicks;
         bool _updating;
         string _fld = "Status";          // the field
@@ -87,8 +88,8 @@ namespace DynALisp.Ribbon
                 new RibbonItem[] { labels[0], _field }, new RibbonItem[] { labels[1], _from }, new RibbonItem[] { labels[2], _to });
         }
 
-        public override void DocumentChanged() => Refresh();
-        public override void CommandEnded() => Refresh();
+        public override void DocumentChanged() => Later();
+        public override void CommandEnded() => Later();
 
         // ---- the layer names ----
 
@@ -175,65 +176,69 @@ namespace DynALisp.Ribbon
             _updating = true;
             try
             {
-                _field.Current = _field.Items.OfType<RibbonItem>().FirstOrDefault(it => (string)it.Tag == _fld);
-                if (sig == _sig) return;
-                _sig = sig;
-
-                var desc = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-                var order = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-                foreach (var s in std)
-                {
-                    if (!desc.ContainsKey(s.Key)) desc[s.Key] = s.Value;
-                    if (!order.ContainsKey(s.Key)) order[s.Key] = order.Count;
-                }
-                // the values of the drawing in the order of the AEC list, the others after them:
-                vals = vals.OrderBy(v => order.TryGetValue(v, out int i) ? i : int.MaxValue)
-                           .ThenBy(v => v, StringComparer.OrdinalIgnoreCase).ToList();
-                string Label(string v) => desc.TryGetValue(v, out var d) && d != "" ? v + " - " + d : v;
-
-                _from.Items.Clear();
-                _from.Items.Add(Host.Item("Any", Any));
-                if (none) _from.Items.Add(Host.Item(NoneText, ""));
-                foreach (var v in vals) _from.Items.Add(Host.Item(Label(v), v));
-
-                _to.Items.Clear();
-                // shown while no value is picked (greyed out: it is not a value):
-                var prompt = Host.Item("Select replacement...", null);
-                prompt.IsEnabled = false;
-                _to.Items.Add(prompt);
-                foreach (var v in vals) _to.Items.Add(Host.Item(Label(v), v));
-                if (_fld != "Minor")
-                    foreach (var s in std)
-                        if (!vals.Contains(s.Key, StringComparer.OrdinalIgnoreCase)
-                            && !_to.Items.OfType<RibbonItem>().Any(it => string.Equals((string)it.Tag, s.Key, StringComparison.OrdinalIgnoreCase)))
-                            _to.Items.Add(Host.Item(Label(s.Key), s.Key));
-                if (_fld == "Minor" || _fld == "Status") _to.Items.Add(Host.Item(NoneText, ""));
-
+                Show(_field, _field.Items.OfType<RibbonItem>().FirstOrDefault(it => (string)it.Tag == _fld));
+                if (sig != _sig) Fill(sig, vals, none, std);
                 // From keeps its value while the drawing has it:
                 var from = _from.Items.OfType<RibbonItem>().FirstOrDefault(it => string.Equals((string)it.Tag, _src, StringComparison.OrdinalIgnoreCase));
                 if (from == null) { _src = Any; from = _from.Items.OfType<RibbonItem>().First(); }
-                _from.Current = from;
+                Show(_from, from);
                 // To keeps the value picked (the transfer may have added layers):
                 RibbonItem to = _dst == null ? null
                     : _to.Items.OfType<RibbonItem>().FirstOrDefault(it => string.Equals((string)it.Tag, _dst, StringComparison.OrdinalIgnoreCase));
                 if (to == null) _dst = null;
-                _to.Current = to ?? prompt;
-                Resize();
+                Show(_to, to ?? _prompt);
             }
             catch (System.Exception ex) { Host.Log(ex.Message); }
             finally { _updating = false; }
         }
 
+        static void Show(RibbonCombo c, RibbonItem it)
+        {
+            if (!ReferenceEquals(c.Current, it)) c.Current = it;
+        }
+
+        // The items of From and To, made again when the layers or the lists change:
+        void Fill(string sig, List<string> vals, bool none, List<KeyValuePair<string, string>> std)
+        {
+            _sig = sig;
+
+            var desc = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            var order = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+            foreach (var s in std)
+            {
+                if (!desc.ContainsKey(s.Key)) desc[s.Key] = s.Value;
+                if (!order.ContainsKey(s.Key)) order[s.Key] = order.Count;
+            }
+            // the values of the drawing in the order of the AEC list, the others after them:
+            vals = vals.OrderBy(v => order.TryGetValue(v, out int i) ? i : int.MaxValue)
+                       .ThenBy(v => v, StringComparer.OrdinalIgnoreCase).ToList();
+            string Label(string v) => desc.TryGetValue(v, out var d) && d != "" ? v + " - " + d : v;
+
+            _from.Items.Clear();
+            _from.Items.Add(Host.Item("Any", Any));
+            if (none) _from.Items.Add(Host.Item(NoneText, ""));
+            foreach (var v in vals) _from.Items.Add(Host.Item(Label(v), v));
+
+            _to.Items.Clear();
+            // shown while no value is picked (it is not a value: picked, To has none):
+            _prompt = Host.Item("Select replacement...", null);
+            _to.Items.Add(_prompt);
+            foreach (var v in vals) _to.Items.Add(Host.Item(Label(v), v));
+            if (_fld != "Minor")
+                foreach (var s in std)
+                    if (!vals.Contains(s.Key, StringComparer.OrdinalIgnoreCase)
+                        && !_to.Items.OfType<RibbonItem>().Any(it => string.Equals((string)it.Tag, s.Key, StringComparison.OrdinalIgnoreCase)))
+                        _to.Items.Add(Host.Item(Label(s.Key), s.Key));
+            if (_fld == "Minor" || _fld == "Status") _to.Items.Add(Host.Item(NoneText, ""));
+            Resize();
+        }
+
         // A change made by the ribbon itself (not picked by the user) shows the choices again,
-        // once the change is over:
+        // at idle time, once a second at most:
         bool ByRibbon(Host.Picks picks)
         {
             if (picks.ByUser) return false;
-            System.Windows.Threading.Dispatcher.CurrentDispatcher.BeginInvoke(new Action(() =>
-            {
-                _sig = null;
-                try { Refresh(); } catch (System.Exception ex) { Host.Log(ex.Message); }
-            }));
+            Later(1000);
             return true;
         }
 
@@ -243,7 +248,7 @@ namespace DynALisp.Ribbon
             _fld = (string)it.Tag;
             _src = Any;
             _dst = null;
-            Refresh();
+            Later();
         }
 
         void OnFrom(object sender, RibbonPropertyChangedEventArgs e)
