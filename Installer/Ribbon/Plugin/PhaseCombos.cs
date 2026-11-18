@@ -68,7 +68,10 @@ namespace DynALisp.Ribbon
         // Document.UserData keys: the phase of the drawing ("" none), the state asked once:
         const string PhaseKey = "DynALisp.Phase";
         const string AskedKey = "DynALisp.PhaseAsked";
-        const double ComboWidth = 190;
+        // The smallest width of the drop-downs, and the room of their arrow and margins
+        // added to the longest item (see Fit):
+        const double ComboWidth = 160;
+        const double ComboRoom = 44;
 
         static readonly List<KeyValuePair<string, string>> Defaults = new List<KeyValuePair<string, string>>
         {
@@ -285,6 +288,29 @@ namespace DynALisp.Ribbon
 
         static List<KeyValuePair<string, string>> _shown;
 
+        // Both drop-downs as wide as their longest item (the same width, so they line up),
+        // measured in the font of the ribbon, plus the room of the arrow:
+        static void Fit()
+        {
+            var texts = new List<string> { "Auto-phase On (reactors off)", _autoOff.Text };
+            texts.AddRange(_phaseCombo.Items.OfType<RibbonItem>().Select(it => it.Text ?? ""));
+            double w = ComboWidth;
+            try
+            {
+                var face = new System.Windows.Media.Typeface(System.Windows.SystemFonts.MessageFontFamily,
+                    System.Windows.FontStyles.Normal, System.Windows.FontWeights.Normal, System.Windows.FontStretches.Normal);
+                foreach (var t in texts)
+                {
+                    var ft = new System.Windows.Media.FormattedText(t, System.Globalization.CultureInfo.CurrentUICulture,
+                        System.Windows.FlowDirection.LeftToRight, face, 12, System.Windows.Media.Brushes.Black, 1.0);
+                    w = Math.Max(w, Math.Ceiling(ft.WidthIncludingTrailingWhitespace) + ComboRoom);
+                }
+            }
+            catch { w = Math.Max(w, 7.5 * texts.Max(t => t.Length) + ComboRoom); }
+            _autoCombo.Width = _phaseCombo.Width = w;
+            _autoCombo.MinWidth = _phaseCombo.MinWidth = w;
+        }
+
         // Show the state: auto-phase, and the phase of the current drawing (nothing picked
         // while it is not known).
         static void Refresh()
@@ -304,6 +330,7 @@ namespace DynALisp.Ribbon
                     _phaseCombo.Items.Add(Item("None", ""));
                     foreach (var p in _phases) _phaseCombo.Items.Add(Item(p.Key + " - " + p.Value, p.Key));
                     _shown = _phases;
+                    Fit();
                 }
                 // Auto-phase on but the reactors off: it does nothing, the item says so.
                 _autoOn.Text = _reactors ? "Auto-phase On" : "Auto-phase On (reactors off)";
