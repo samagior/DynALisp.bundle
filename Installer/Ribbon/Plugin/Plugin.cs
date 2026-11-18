@@ -17,7 +17,7 @@
 // The DynALisp tab is generated into DynALisp.cuix (Installer\Ribbon\BuildRibbon.py), but a
 // CUIx only holds buttons: a drop-down that shows a state can only be added at run time. Each
 // group of drop-downs (a Part: PhaseCombos, TransferCombos) is a stack of drop-downs that the
-// Host puts in the panel of its tool (Layers, Layer Transfer), after the button of the tool
+// Host puts in the panel of its tool (Drawing Behaviors, Layer Transfer), after the button of the tool
 // (found by its UID RBN_DYL_CMD_<command>, its label or its macro), and again when AutoCAD
 // rebuilds the ribbon (workspace or menus loaded again).
 
@@ -59,8 +59,8 @@ namespace DynALisp.Ribbon
         public abstract string ButtonId { get; }      // RBN_DYL_CMD_DYL_LAYERPHASE
         public abstract string Command { get; }       // DYL-LAYERPHASE (to find the button by its macro)
         public virtual string Label => null;          // the label of the button, when not its command name
-        public virtual string PanelId => "RBN_DYL_PANEL_LAYERS";   // its panel (BuildRibbon.py)
-        public virtual string PanelTitle => "Layers";
+        public abstract string PanelId { get; }       // its panel (BuildRibbon.py): RBN_DYL_PANEL_<title>
+        public abstract string PanelTitle { get; }    // Drawing Behaviors
         public abstract RibbonRowPanel Build();       // the stack, made again for each ribbon
         public abstract void Refresh();               // show the state
         public virtual void DocumentChanged() { }     // a drawing made current

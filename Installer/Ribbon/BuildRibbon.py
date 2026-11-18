@@ -33,11 +33,11 @@
 #     macros keep the selection (no ^C^C): the command works on the objects selected.
 #
 # A CUIx holds no drop-down of its own: the drop-downs (Auto-phase and Phase after the
-# Layer Phase button of the Layers panel; Level, From and To in the Layer Transfer panel,
+# Layer Phase button of the Drawing Behaviors panel; Level, From and To in the Layer Transfer panel,
 # between its Transfer and Manager buttons) are added at run time by DynALisp.Ribbon.dll
 # (Plugin, this folder: dotnet build Installer\Ribbon\Plugin -c Release), which finds the
 # tab, the panels and the buttons by their UIDs, titles or labels (RBN_DYL_TAB,
-# RBN_DYL_PANEL_LAYERS / Layers, RBN_DYL_PANEL_LAYER_TRANSFER / Layer Transfer,
+# RBN_DYL_PANEL_DRAWING_BEHAVIORS / Drawing Behaviors, RBN_DYL_PANEL_LAYER_TRANSFER / Layer Transfer,
 # RBN_DYL_CMD_DYL_LAYERPHASE / Layer Phase, RBN_DYL_CMD_PST_TRANSFERFIELD / Transfer): keep them.
 #
 # The parts of the CUIx that hold no command (Header.cui, the empty roots...) are kept

@@ -122,6 +122,8 @@ namespace DynALisp.Ribbon
         {
             public override string ButtonId => "RBN_DYL_CMD_DYL_LAYERPHASE";
             public override string Command => "DYL-LAYERPHASE";
+            public override string PanelId => "RBN_DYL_PANEL_DRAWING_BEHAVIORS";
+            public override string PanelTitle => "Drawing Behaviors";
 
             RibbonCombo _autoCombo, _phaseCombo;
             RibbonButton _autoOn, _autoOff;
