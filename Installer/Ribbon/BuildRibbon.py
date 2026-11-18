@@ -10,7 +10,8 @@
 #                    buttons of the same number that follow it (3 at most); a number
 #                    after > (>1): a row of small buttons in the slide-out of the panel
 #                    (under its title), for the tools used less often
-#       Command      the command, without C: (DYL-QUICKDRAW)
+#       Command      the command, without C: (DYL-QUICKDRAW); | : a dividing line between
+#                    the buttons before it and after it (around the Layer Transfer group)
 #       Children     the child commands (Pst-*) listed under its arrow: * every child,
 #                    or patterns divided by | (PST-SHOW*|PST-HIDE*); empty: none. Or
 #                    @<variable>=<value>|<value>...: items labelled by the values, each
@@ -32,7 +33,8 @@
 #     macros keep the selection (no ^C^C): the command works on the objects selected.
 #
 # A CUIx holds no drop-down of its own: the drop-downs (Auto-phase and Phase after the
-# Layer Phase button, Level, From and To after the Layer Transfer button) are added at run
+# Layer Phase button, Level, From and To after the Layer Transfer button, before the Layer
+# Transfer Manager button) are added at run
 # time by DynALisp.Ribbon.dll (Plugin, this folder: dotnet build Installer\Ribbon\Plugin -c
 # Release), which finds the tab, the panel and the buttons by their UIDs (RBN_DYL_TAB,
 # RBN_DYL_PANEL_LAYERS, RBN_DYL_CMD_DYL_LAYERPHASE, RBN_DYL_CMD_PST_TRANSFERFIELD): keep them.
@@ -199,12 +201,20 @@ class Builder:
             sp + '  ' + REV,
             sp + '</RibbonCommandButton>'])
 
+    def separator(self, ind):
+        sp = ' ' * ind
+        return '\n'.join([sp + '<RibbonSeparator UID="%s" Id="AcRibbonSeparator" SeparatorStyle="Line">' % self.uid(),
+                          sp + '  ' + REV,
+                          sp + '</RibbonSeparator>'])
+
     def item(self, it, large, ind):
         """A button of the panel: a command button, or a split button with its children.
         The split button follows the item picked last (the main command first): its face
         shows the image of that item's macro. A split button that does not follow shows its
         own SmallImage / LargeImage, which AutoCAD reads only from its resources, never
         from the images stored in a partial CUIx (its face would have no icon)."""
+        if it.get('sep'):
+            return self.separator(ind)
         style = 'LargeWithText' if large else 'SmallWithText'
         text = two_lines(it['name']) if large else it['name']
         if not it['kids']:
@@ -219,10 +229,7 @@ class Builder:
                                            style),
                sp + '  ' + REV]
         if not static:
-            out += [self.button(it['cmd'], text, it['name'], style, ind + 2),
-                    sp + '  <RibbonSeparator UID="%s" Id="AcRibbonSeparator" SeparatorStyle="Line">' % self.uid(),
-                    sp + '    ' + REV,
-                    sp + '  </RibbonSeparator>']
+            out += [self.button(it['cmd'], text, it['name'], style, ind + 2), self.separator(ind + 2)]
         for (kid, label, title) in it['kids']:
             out.append(self.button(kid, label, title, 'SmallWithText', ind + 2))
         out.append(sp + '</RibbonSplitButton>')
@@ -241,7 +248,7 @@ class Builder:
         items = main
         while i < len(items):
             it = items[i]
-            if not it['stack']:
+            if not it['stack'] or it.get('sep'):
                 out.append(self.item(it, True, 8))
                 i += 1
                 continue
@@ -293,6 +300,12 @@ def build():
         cmd = (r.get('Command') or '').strip().upper()
         if not cmd:
             continue
+        panel = (r.get('Panel') or '').strip() or 'DynALisp'
+        if cmd == '|':
+            # a dividing line (not stacked: it ends the stack before it)
+            if panels and panels[-1][0] == panel:
+                panels[-1][1].append({'cmd': cmd, 'sep': True, 'stack': '>' if (r.get('Stack') or '').strip().startswith('>') else ''})
+            continue
         row = cmds.get(cmd, {})
         name = (r.get('Name') or '').strip() or row.get('Name') or ''
         desc = (r.get('Description') or '').strip() or row.get('Description') or ''
@@ -315,7 +328,6 @@ def build():
             for k, label in zip(kids, labels):
                 b.macro(k, cmds[k].get('Name') or k, cmds[k].get('Description') or '', cmd)
                 items.append((k, label, cmds[k].get('Name') or k))
-        panel = (r.get('Panel') or '').strip() or 'DynALisp'
         if not panels or panels[-1][0] != panel:
             if any(p[0] == panel for p in panels):
                 b.warnings.append('The rows of panel %s are not together in Ribbon.csv.' % panel)

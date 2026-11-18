@@ -6,8 +6,10 @@ Draw;1;DYL-HATCHPRESETS;;;
 Draw;1;DYL-SHRINKWRAP;;;
 Layers;;DYL-LAYERKEYS;;;
 Layers;;DYL-LAYERPHASE;;;
+Layers;;|;;;;
 Layers;;PST-TRANSFERFIELD;;Layer Transfer;Transfers the objects selected from the From value to the To value of the Level chosen in the drop-downs.;1
-Layers;1;DYL-LAYERTRANSFER;;Layer Transfer Manager;
+Layers;;DYL-LAYERTRANSFER;;Layer Transfer Manager;
+Layers;;|;;;;
 Layers;1;DYL-OBJECTLAYERKEYS;;;
 Layers;1;DYL-LAYERMAKE;*;;
 Layers;2;DYL-LAYERIMPORTFROMCSV;*;;
