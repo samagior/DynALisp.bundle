@@ -227,7 +227,9 @@
 )
 
 ;;  Show the active phase in the status bar (MODEMACRO), only when MODEMACRO is empty or
-;;  already shows the phase:
+;;  already shows the phase, and in the Auto-phase and Phase drop-downs of the ribbon
+;;  (Dyl:RibbonPhase of Resources\DynALisp.Ribbon.dll, AutoCAD 2025 and later). Run on
+;;  every change of the phase or of auto-phase, so that both always show the current state:
 (defun Remote>>Dyl:PhaseStatus (/ mm code auto)
   (setq mm   (getvar "MODEMACRO")
         code (Remote>>Dyl:PhaseGet)
@@ -244,13 +246,27 @@
                         )
     )
   )
+  (if Dyl:RibbonPhase
+    (vl-catch-all-apply 'Dyl:RibbonPhase
+                        (list code
+                              (Remote>>Dyl:PhaseAuto-p)
+                              (Dyl:ReactorsOn-p)
+                              (apply 'append
+                                     (mapcar '(lambda (p) (list (car p) (cond ((cadr p)) (""))))
+                                             (Remote>>Dyl:PhaseList)
+                                     )
+                              )
+                        )
+    )
+  )
   (princ)
 )
 
 ;;  The auto-phase reactors are in Modules\Dynalisp\Reactor\Dyl-LayerPhase.lsp, loaded only
 ;;  while the DynALisp reactors are on (Dyl-Settings).
 
-;;  Each drawing opened shows its phase:
+;;  Each drawing opened shows its phase (again once every Remote file is loaded, see
+;;  Dyl:load: the ribbon then gets the phases of Phase.csv, read by Dyl-Sub.lsp):
 (Remote>>Dyl:PhaseStatus)
 
 (princ)

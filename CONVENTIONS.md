@@ -13,7 +13,7 @@ Each module is a folder of `Contents\Modules\<Module>` (Dynalisp, LeeMac...), wi
 - **Res** - the data files (CSV) and dialogs (DCL) of the module, even when the code that uses them is in the core (e.g. `PrepSuite.csv`). Reached with `*dyl:dylres`.
 - **Docs** - the HTML docs of the module, one page per Apps file, in the same group folder (`Docs\Draw\Dyl-QuickDraw.htm`), plus `index.htm`.
 
-`Contents\Resources` is kept for the core of DynALisp itself: `dynalisp.mnl`, the Startup Suite (`StartupSuite.csv`, `Aliases.csv`), the core dialogs and `docs.css`. A file that belongs to a module never goes there.
+`Contents\Resources` is kept for the core of DynALisp itself: `dynalisp.mnl`, the Startup Suite (`StartupSuite.csv`, `Aliases.csv`), the ribbon (`DynALisp.cuix`, `DynALisp.Ribbon.dll`), the core dialogs and `docs.css`. A file that belongs to a module never goes there.
 
 The **LeeMac** module is the **sample module**: in its docs index, its pages, the README and the core windows it is described as a sample that showcases what DynALisp does with existing AutoLISP programs (indexed in the Startup Suite, main and child commands, aliases, shared subfunctions, a docs page per program), and the model for a module of one's own. Its programs keep their author and licence.
 
@@ -149,8 +149,12 @@ Claude commits as the work goes, without being asked; it pushes, merges into `ma
 - The icons are flat, as those of AutoCAD: dark outlines, light fills and the orange and teal of the logo, never a line alone in the dark ink (it disappears on the dark ribbon). Check them on both themes with `BuildRibbon.py --sheet`.
 - A command that works on the objects selected can be added to the **right-click menu** of those objects in `Installer\Ribbon\ContextMenus.csv` (the alias of the object menu: `OBJECT_MTEXT` for one mtext, `OBJECTS_MTEXT` for several; AutoCAD adds them to its own menu; each menu gets a `POPnnn` alias first, as those of `acad.cuix`). Its macro has no `^C^C`, which would drop the selection, and the command reads the selection first (`(ssget "_I")`). The menu of the text editor itself cannot be changed.
 - The tab fits a 1920 px screen: the tools used less often go to the slide-out of their panel (`>1` in the Stack column).
+- A **state** the user must see while drawing (the active phase, auto-phase) is a **drop-down** of the ribbon, as the Layer drop-down of AutoCAD, never a split button (its face shows the item picked last, not the state). A CUIx holds no drop-down of its own:
+  - `Contents\Resources\DynALisp.Ribbon.dll` (source in `Installer\Ribbon\Plugin`, .NET 8: AutoCAD 2025 and later) adds it at run time, next to the button of its tool, found by its UID (`RBN_DYL_CMD_<command>`, given by `BuildRibbon.py`), and again when AutoCAD rebuilds the ribbon.
+  - The Lisp function that shows the state pushes it to the plugin after every change (`Remote>>Dyl:PhaseStatus` calls `Dyl:RibbonPhase`), only when the plugin is loaded (`(if Dyl:RibbonPhase ...)`): in an older AutoCAD, the button alone remains. A state of the drawing is kept per drawing, so a drawing made current shows its own. Picking an item runs the Lisp setter (`^C^C` first, as the buttons).
+  - The DLL is built with `dotnet build Installer\Ribbon\Plugin -c Release`, AutoCAD closed (it keeps the DLL open), and committed with its source, as `DynALisp.cuix`.
 
-*Why: the ribbon follows the commands of the Startup Suite with one script run, every tool can be found by its picture, and the CUIx stays the same file whoever builds it.*
+*Why: the ribbon follows the commands of the Startup Suite with one script run, every tool can be found by its picture, and the CUIx stays the same file whoever builds it. A state shown in the ribbon must be the one new objects get, whoever changed it, or the user draws on the wrong phase.*
 
 ## Windows
 

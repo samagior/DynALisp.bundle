@@ -29,6 +29,12 @@
 #     own menu of that alias), Command, Name (empty: the Name of StartupSuite.csv). Their
 #     macros keep the selection (no ^C^C): the command works on the objects selected.
 #
+# A CUIx holds no drop-down of its own: the drop-downs that show a state (Auto-phase and
+# Phase, after the Layer Phase button) are added at run time by DynALisp.Ribbon.dll
+# (Plugin, this folder: dotnet build Installer\Ribbon\Plugin -c Release), which finds the
+# tab, the panel and the button by their UIDs (RBN_DYL_TAB, RBN_DYL_PANEL_LAYERS,
+# RBN_DYL_CMD_DYL_LAYERPHASE): keep them.
+#
 # The parts of the CUIx that hold no command (Header.cui, the empty roots...) are kept
 # from the current DynALisp.cuix. Never edit DynALisp.cuix in the CUI editor: run this
 # script again. Needs Python 3 and Pillow (pip install pillow).
@@ -127,6 +133,7 @@ class Builder:
         self.macro_ids = {}   # command -> macro UID
         self.images = {}      # file name -> PNG bytes
         self.warnings = []
+        self.buttons = set()  # the UIDs of the command buttons
 
     def uid(self, kind='RBN'):
         self.n += 1
@@ -175,10 +182,17 @@ class Builder:
         return uid
 
     def button(self, cmd, text, title, style, ind):
+        """A command button. The first button of a command has the UID RBN_DYL_CMD_<command>,
+        so that the ribbon plugin finds it (Plugin\\PhaseCombos.cs adds its drop-downs after
+        the Layer Phase button)."""
         sp = ' ' * ind
+        uid = 'RBN_DYL_CMD_' + re.sub(r'[^A-Z0-9]', '_', cmd.upper())
+        if uid in self.buttons:
+            uid = self.uid()
+        self.buttons.add(uid)
         return '\n'.join([
             sp + '<RibbonCommandButton UID="%s" Id="AcRibbonCommandButton" Text="%s" ButtonStyle="%s" '
-                 'MenuMacroID="%s" KeyTip="">' % (self.uid(), attr(text), style, self.macro_ids[cmd]),
+                 'MenuMacroID="%s" KeyTip="">' % (uid, attr(text), style, self.macro_ids[cmd]),
             sp + '  <TooltipTitle xlate="true" UID="%s">%s</TooltipTitle>' % (self.uid('XLS'), escape(title)),
             sp + '  ' + REV,
             sp + '</RibbonCommandButton>'])

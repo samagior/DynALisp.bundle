@@ -40,6 +40,16 @@
 <p>A phased layer ends with a dash and a phase code: <span class="fixw">A-Wall-Full-E</span> (existing to remain), <span class="fixw">A-Wall-Full-D</span> (existing to demolish), <span class="fixw">A-Wall-Full-N</span> (new work), <span class="fixw">A-Wall-Full-F</span> (future work)... The codes and their descriptions are read from <span class="fixw">Modules\Dynalisp\Res\AEC\Standard\Phase.csv</span>.</p>
 <p>Each drawing has an <strong>active phase</strong>, saved in the drawing. It is shown in the status bar (<span class="fixw">Phase: N - New Work [Auto]</span>) and switched in one command with the <span class="fixw">PH-*</span> aliases. Switching the phase also moves the current layer to the new phase (<span class="fixw">A-Wall-Full-E</span> becomes <span class="fixw">A-Wall-Full-N</span>), and while auto-phase is on, the <a href="Dyl-LayerKeys.htm">layer keys</a> marked <em>Phased</em> give their layer in the active phase: <a href="../Draw/Dyl-QuickDraw.htm">QD-BRICK</a> draws its outline on <span class="fixw">A-Detl-Medm-E</span> and its hatch on <span class="fixw">A-Detl-Patt-E</span> in existing.</p>
 <p>With <strong>auto-phase</strong> on, every object created by a command goes to the active phase: a copy of an existing wall on <span class="fixw">A-Wall-Full-E</span> lands on <span class="fixw">A-Wall-Full-N</span> while the active phase is new work. Objects on layers without a phase are not changed, except on the layers of the layer keys, which get the phase added.</p>
+<h2>Ribbon</h2>
+<div class="spacedbullets">
+<ul>
+<li><strong>Layer Phase</strong> &ndash; the button of the <em>Layers</em> panel of the DynALisp tab opens the Layer Phases dialog.</li>
+<li><strong>Auto-phase drop-down</strong> &ndash; <em>Auto-phase On</em> or <em>Auto-phase Off</em>, as <span class="fixw">PH-AUTO</span> and the <em>Auto-phase new objects</em> setting of <span class="fixw">Dyl-Settings</span>. It reads <em>Auto-phase On (reactors off)</em> while the DynALisp reactors are off: auto-phase is on but does nothing until they are turned on.</li>
+<li><strong>Phase drop-down</strong> &ndash; the active phase of the current drawing (<em>None</em>, then every phase of <span class="fixw">Phase.csv</span>). Pick a phase to make it the active phase, as the <span class="fixw">PH-*</span> aliases do.</li>
+<li>Like the Layer drop-down of AutoCAD, both always show the current state, whatever changed it (an alias, the dialog, <span class="fixw">Dyl-Settings</span>, another drawing made current). Picking an item cancels the command running, as the buttons of the ribbon do.</li>
+<li>The drop-downs are added by <span class="fixw">Resources\DynALisp.Ribbon.dll</span>, which needs AutoCAD 2025 or later. In an older version, the Layers panel has only the Layer Phase button: use the <span class="fixw">PH-*</span> aliases and the status bar.</li>
+</ul>
+</div>
 <h2>Layer Phases Dialog</h2>
 <div class="spacedbullets">
 <ul>
@@ -77,6 +87,7 @@
 <ul>
 <li>Auto-phase moves the objects after their command, as a separate step: the first <span class="fixw">U</span> after a command puts the objects back on the layer they were created on, the second one undoes the command.</li>
 <li>The status bar shows the phase only when <span class="fixw">MODEMACRO</span> is not used by something else.</li>
+<li>The Phase drop-down follows the changes made by DynALisp. An <span class="fixw">UNDO</span> that takes the drawing back before a phase change gives the drawing its former phase, but the drop-down shows it only after the next change of phase or when the drawing is made current again (the status bar does the same).</li>
 <li><span class="fixw">MIRROR</span> with <em>Erase source objects</em> moves the mirrored objects to the active phase like any copy.</li>
 </ul>
 </div>
