@@ -205,7 +205,7 @@ namespace DynALisp.Ribbon
                     : _to.Items.OfType<RibbonItem>().FirstOrDefault(it => string.Equals((string)it.Tag, _dst, StringComparison.OrdinalIgnoreCase));
                 if (to == null) _dst = null;
                 _to.Current = to;
-                Host.Fit(Array.Empty<string>(), _field, _from, _to);
+                Resize();
             }
             catch (System.Exception ex) { Host.Log(ex.Message); }
             finally { _updating = false; }
@@ -224,6 +224,13 @@ namespace DynALisp.Ribbon
         {
             if (_updating || !(_from.Current is RibbonItem it)) return;
             _src = (string)it.Tag;
+        }
+
+        // A fixed width, 1.5 times the Phase drop-downs (a long item is read whole in the list
+        // when it opens):
+        public void Resize()
+        {
+            if (Row != null) Host.FixWidth(Math.Ceiling(1.5 * PhaseCombos.Width), _field, _from, _to);
         }
 
         void OnTo(object sender, RibbonPropertyChangedEventArgs e)

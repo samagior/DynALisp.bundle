@@ -252,10 +252,28 @@ namespace DynALisp.Ribbon
         // line up), measured in the font of the ribbon; texts: items that are not in them yet.
         public static void Fit(IEnumerable<string> texts, params RibbonCombo[] combos)
         {
-            var all = combos.SelectMany(c => c.Items.OfType<RibbonItem>().Select(it => it.Text ?? "")).Concat(texts);
-            double w = MinWidth;
-            foreach (var t in all) w = Math.Max(w, Math.Ceiling(TextWidth(t)) + Room);
+            double w = FitWidth(combos.SelectMany(c => c.Items.OfType<RibbonItem>().Select(it => it.Text ?? "")).Concat(texts));
             foreach (var c in combos) { c.Width = w; c.MinWidth = w; }
+        }
+
+        // The width of a drop-down that shows the longest of the texts:
+        public static double FitWidth(IEnumerable<string> texts)
+        {
+            double w = MinWidth;
+            foreach (var t in texts) w = Math.Max(w, Math.Ceiling(TextWidth(t)) + Room);
+            return w;
+        }
+
+        // Drop-downs of a fixed width; their list opens as wide as their longest item, so that
+        // a long item is read whole there:
+        public static void FixWidth(double w, params RibbonCombo[] combos)
+        {
+            foreach (var c in combos)
+            {
+                c.Width = w;
+                c.MinWidth = w;
+                c.DropDownWidth = Math.Max(w, FitWidth(c.Items.OfType<RibbonItem>().Select(it => it.Text ?? "")));
+            }
         }
 
         // Run a Lisp expression (or a macro) in the current drawing. The command running is

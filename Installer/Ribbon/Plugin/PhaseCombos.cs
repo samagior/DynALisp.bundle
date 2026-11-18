@@ -38,6 +38,11 @@ namespace DynALisp.Ribbon
         public static List<KeyValuePair<string, string>> Phases = Defaults;
         static bool _auto, _reactors;
 
+        // The width of the Auto-phase and Phase drop-downs: their longest item (the Layer
+        // Transfer drop-downs are 1.5 times as wide):
+        public static double Width => Host.FitWidth(
+            new[] { "Auto-phase On (reactors off)", "Auto-phase Off", "None" }.Concat(Phases.Select(p => p.Key + " - " + p.Value)));
+
         public static readonly Combos Part = new Combos();
 
         // (Dyl:RibbonPhase code auto reactors phases): the active phase of the current drawing
@@ -158,7 +163,8 @@ namespace DynALisp.Ribbon
                         _phaseCombo.Items.Add(Host.Item("None", ""));
                         foreach (var p in Phases) _phaseCombo.Items.Add(Host.Item(p.Key + " - " + p.Value, p.Key));
                         _shown = Phases;
-                        Host.Fit(new[] { "Auto-phase On (reactors off)" }, _autoCombo, _phaseCombo);
+                        Host.FixWidth(Width, _autoCombo, _phaseCombo);
+                        TransferCombos.Part.Resize();
                     }
                     // Auto-phase on but the reactors off: it does nothing, the item says so.
                     _autoOn.Text = _reactors ? "Auto-phase On" : "Auto-phase On (reactors off)";
