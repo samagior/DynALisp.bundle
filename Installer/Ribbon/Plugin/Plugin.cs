@@ -32,6 +32,7 @@ using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
 
 [assembly: ExtensionApplication(typeof(DynALisp.Ribbon.Plugin))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.PhaseCombos))]
+[assembly: CommandClass(typeof(DynALisp.Ribbon.TransferCombos))]
 
 namespace DynALisp.Ribbon
 {
@@ -42,7 +43,7 @@ namespace DynALisp.Ribbon
             try
             {
                 Host.Add(PhaseCombos.Part);
-                Host.Add(new TransferCombos());
+                Host.Add(TransferCombos.Part);
                 Host.Start();
             }
             catch (System.Exception ex) { Host.Log(ex.Message); }
@@ -204,15 +205,42 @@ namespace DynALisp.Ribbon
             ShowText = false, ShowImage = false, IsEditable = false, ToolTip = tip,
         };
 
-        public static RibbonRowPanel Stack(string id, params RibbonItem[] items)
+        // A stack of drop-downs, one under the other:
+        public static RibbonRowPanel Stack(string id, params RibbonItem[] items) =>
+            Rows(id, items.Select(it => new[] { it }).ToArray());
+
+        // A stack of rows, each of its items side by side (a label and its drop-down):
+        public static RibbonRowPanel Rows(string id, params RibbonItem[][] rows)
         {
-            var row = new RibbonRowPanel { Id = id };
-            for (int i = 0; i < items.Length; i++)
+            var panel = new RibbonRowPanel { Id = id };
+            for (int i = 0; i < rows.Length; i++)
             {
-                if (i > 0) row.Items.Add(new RibbonRowBreak());
-                row.Items.Add(items[i]);
+                if (i > 0) panel.Items.Add(new RibbonRowBreak());
+                foreach (var it in rows[i]) panel.Items.Add(it);
             }
-            return row;
+            return panel;
+        }
+
+        // Labels before the drop-downs of a stack (Level:, From:, To:), all as wide as the
+        // longest one, so that the drop-downs line up:
+        public static RibbonLabel[] Labels(params string[] texts)
+        {
+            double w = Math.Ceiling(texts.Max(t => TextWidth(t))) + 6;
+            return texts.Select(t => new RibbonLabel { Text = t, Width = w, MinWidth = w, Size = RibbonItemSize.Standard }).ToArray();
+        }
+
+        // The width of a text in the font of the ribbon:
+        public static double TextWidth(string t)
+        {
+            try
+            {
+                var face = new System.Windows.Media.Typeface(System.Windows.SystemFonts.MessageFontFamily,
+                    System.Windows.FontStyles.Normal, System.Windows.FontWeights.Normal, System.Windows.FontStretches.Normal);
+                var ft = new System.Windows.Media.FormattedText(t ?? "", System.Globalization.CultureInfo.CurrentUICulture,
+                    System.Windows.FlowDirection.LeftToRight, face, 12, System.Windows.Media.Brushes.Black, 1.0);
+                return ft.WidthIncludingTrailingWhitespace;
+            }
+            catch { return 7.5 * (t ?? "").Length; }
         }
 
         // The smallest width of a drop-down, and the room of its arrow and margins added to
@@ -224,20 +252,9 @@ namespace DynALisp.Ribbon
         // line up), measured in the font of the ribbon; texts: items that are not in them yet.
         public static void Fit(IEnumerable<string> texts, params RibbonCombo[] combos)
         {
-            var all = combos.SelectMany(c => c.Items.OfType<RibbonItem>().Select(it => it.Text ?? "")).Concat(texts).ToList();
+            var all = combos.SelectMany(c => c.Items.OfType<RibbonItem>().Select(it => it.Text ?? "")).Concat(texts);
             double w = MinWidth;
-            try
-            {
-                var face = new System.Windows.Media.Typeface(System.Windows.SystemFonts.MessageFontFamily,
-                    System.Windows.FontStyles.Normal, System.Windows.FontWeights.Normal, System.Windows.FontStretches.Normal);
-                foreach (var t in all)
-                {
-                    var ft = new System.Windows.Media.FormattedText(t, System.Globalization.CultureInfo.CurrentUICulture,
-                        System.Windows.FlowDirection.LeftToRight, face, 12, System.Windows.Media.Brushes.Black, 1.0);
-                    w = Math.Max(w, Math.Ceiling(ft.WidthIncludingTrailingWhitespace) + Room);
-                }
-            }
-            catch { if (all.Count > 0) w = Math.Max(w, 7.5 * all.Max(t => t.Length) + Room); }
+            foreach (var t in all) w = Math.Max(w, Math.Ceiling(TextWidth(t)) + Room);
             foreach (var c in combos) { c.Width = w; c.MinWidth = w; }
         }
 

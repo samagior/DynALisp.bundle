@@ -19,6 +19,8 @@
 #                    button keeps its name and runs the item picked last
 #       Name         the label (empty: the Name of StartupSuite.csv)
 #       Description  the tooltip (empty: the Description of StartupSuite.csv)
+#       Selection    1: the command works on the objects selected, so its macro has no ^C^C,
+#                    which would drop them (as the context menus); empty: ^C^C first
 #   - Contents\Resources\StartupSuite.csv: the names, descriptions and children of the
 #     commands (a child is a Pst-* command of the same file as its main command).
 #   - RibbonIcons.py (this folder): the icon of each command, drawn at 16 and 32 px and
@@ -29,11 +31,11 @@
 #     own menu of that alias), Command, Name (empty: the Name of StartupSuite.csv). Their
 #     macros keep the selection (no ^C^C): the command works on the objects selected.
 #
-# A CUIx holds no drop-down of its own: the drop-downs that show a state (Auto-phase and
-# Phase, after the Layer Phase button) are added at run time by DynALisp.Ribbon.dll
-# (Plugin, this folder: dotnet build Installer\Ribbon\Plugin -c Release), which finds the
-# tab, the panel and the button by their UIDs (RBN_DYL_TAB, RBN_DYL_PANEL_LAYERS,
-# RBN_DYL_CMD_DYL_LAYERPHASE): keep them.
+# A CUIx holds no drop-down of its own: the drop-downs (Auto-phase and Phase after the
+# Layer Phase button, Level, From and To after the Layer Transfer button) are added at run
+# time by DynALisp.Ribbon.dll (Plugin, this folder: dotnet build Installer\Ribbon\Plugin -c
+# Release), which finds the tab, the panel and the buttons by their UIDs (RBN_DYL_TAB,
+# RBN_DYL_PANEL_LAYERS, RBN_DYL_CMD_DYL_LAYERPHASE, RBN_DYL_CMD_PST_TRANSFERFIELD): keep them.
 #
 # The parts of the CUIx that hold no command (Header.cui, the empty roots...) are kept
 # from the current DynALisp.cuix. Never edit DynALisp.cuix in the CUI editor: run this
@@ -297,7 +299,7 @@ def build():
         if not name:
             b.warnings.append('%s is not in StartupSuite.csv and has no Name in Ribbon.csv: skipped.' % cmd)
             continue
-        b.macro(cmd, name, desc)
+        b.macro(cmd, name, desc, cancel=(r.get('Selection') or '').strip() != '1')
         spec = (r.get('Children') or '').strip()
         items = []
         if spec.startswith('@') and '=' in spec:

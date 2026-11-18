@@ -1,4 +1,4 @@
-Panel;Stack;Command;Children;Name;Description
+Panel;Stack;Command;Children;Name;Description;Selection
 Draw;;PST-QUICKDRAWGALLERY;@*qd:gallerygroup*=All|Phase|Section|Detail|Elevation|Wall|Floor|Ceiling|Roof|Finish|Structural|Site|Area|Annotation|Generic;Quick Draw;
 Draw;;DYL-QUICKSHAPE;*;;
 Draw;1;DYL-QUICKDRAW;;Quick Draw Manager;
@@ -6,10 +6,11 @@ Draw;1;DYL-HATCHPRESETS;;;
 Draw;1;DYL-SHRINKWRAP;;;
 Layers;;DYL-LAYERKEYS;;;
 Layers;;DYL-LAYERPHASE;;;
-Layers;;DYL-LAYERTRANSFER;;;
+Layers;;PST-TRANSFERFIELD;;Layer Transfer;Transfers the objects selected from the From value to the To value of the Level chosen in the drop-downs.;1
+Layers;1;DYL-LAYERTRANSFER;;Layer Transfer Manager;
 Layers;1;DYL-OBJECTLAYERKEYS;;;
 Layers;1;DYL-LAYERMAKE;*;;
-Layers;1;DYL-LAYERIMPORTFROMCSV;*;;
+Layers;2;DYL-LAYERIMPORTFROMCSV;*;;
 Layers;2;DYL-DRAWORDER;*;;
 Layers;>1;DYL-LAYERPENCOLORS;*;;
 Layers;>1;DYL-LAYERCOLORWEIGHT;*;;

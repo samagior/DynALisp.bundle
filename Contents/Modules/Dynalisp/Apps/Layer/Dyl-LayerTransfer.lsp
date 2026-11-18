@@ -484,8 +484,9 @@
 
 ;;  The transfers are the child commands Pst-Transfer* below, run by their aliases
 ;;  (E-D, N-X...) or picked in the Dyl-LayerTransfer dialog. Pst-TransferField transfers any
-;;  value of a field of the NCS layer names to another one: it is run by the Field, From and
-;;  To drop-downs of the ribbon (Installer\Ribbon\Plugin\TransferCombos.cs).
+;;  value of a level (field) of the NCS layer names to another one: it is the Layer Transfer
+;;  button of the ribbon, which reads the Level, From and To drop-downs
+;;  (Installer\Ribbon\Plugin\TransferCombos.cs).
 
 ;; Layer Transfer
 ;; Lists the layer transfers with their aliases and runs the one picked on the objects selected.
@@ -1188,22 +1189,33 @@
 ;; Transfer Field
 ;; Moves the selected objects to the layers with another discipline designator, major group, minor group or status, the other fields kept.
 
-;;  Run by the To drop-down of the ribbon, which sets *lt:ribbon* first: (field from to),
-;;  field "Discipline", "Major", "Minor" or "Status", from nil for any value, "" for the
-;;  layers without one (minor group, status), to "" to remove the field (read once, then
-;;  cleared). Typed at the command line, it asks for them.
+;;  Run by the Layer Transfer button of the ribbon (and its alias LTF): it transfers with the
+;;  Level, From and To of the drop-downs, read with (Dyl:RibbonTransfer) of
+;;  Resources\DynALisp.Ribbon.dll: (level from to), level "Discipline", "Major", "Minor" or
+;;  "Status", from nil for any value, "" for the layers without one (minor group, status),
+;;  to "" to remove the level. Without the drop-downs (AutoCAD before 2025) or before a To
+;;  value is picked, it asks for them.
 (defun c:Pst-TransferField (/ *pat *new *lt:fld *lt:src *lt:dst arg ok)
-  (setq arg         *lt:ribbon*
-        *lt:ribbon* nil
-  )
+  (if Dyl:RibbonTransfer (setq arg (Dyl:RibbonTransfer)))
   (if arg
-    (setq *lt:fld (nth 0 arg)
-          *lt:src (nth 1 arg)
-          *lt:dst (nth 2 arg)
+    (progn
+      (setq *lt:fld (nth 0 arg)
+            *lt:src (nth 1 arg)
+            *lt:dst (nth 2 arg)
+      )
+      (princ (strcat "\nLayer transfer: "
+                     *lt:fld
+                     " "
+                     (cond ((null *lt:src) "any") ((= "" *lt:src) "none") (*lt:src))
+                     " to "
+                     (if (= "" *lt:dst) "none" *lt:dst)
+             )
+      )
     )
     (progn
+      (if Dyl:RibbonTransfer (princ "\nNo To value picked in the ribbon."))
       (initget "Discipline Major Minor Status")
-      (setq *lt:fld (cond ((getkword "\nField of the layer names [Discipline/Major/Minor/Status] <Status>: ")) ("Status"))
+      (setq *lt:fld (cond ((getkword "\nLevel of the layer names [Discipline/Major/Minor/Status] <Status>: ")) ("Status"))
             *lt:src (getstring "\nFrom value (Enter: any, None: the layers without one): ")
             *lt:src (cond ((= "" *lt:src) nil) ((wcmatch (strcase *lt:src) "NONE,UNPHASED") "") (*lt:src))
             *lt:dst (getstring "\nTo value (None: remove it): ")

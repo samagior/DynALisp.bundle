@@ -1,33 +1,52 @@
-// TransferCombos.cs - the Field, From and To drop-downs, after the Layer Transfer button
+// TransferCombos.cs - the Level, From and To drop-downs, after the Layer Transfer button
 // Copyright (C) 2026  Samuel Martineau, GNU General Public License v3 (see Plugin.cs)
 //
 // A layer of the NCS (United States National CAD Standard) is named
 //   discipline designator - major group - minor groups - status:  A-Wall-Full-E
-// (see NcsName below). Three drop-downs transfer the objects selected from one value of a
-// field of their layer to another, keeping the other fields:
-//   - Field: Discipline designator, Major group, Minor group or Status,
+// (see NcsName below). Three drop-downs, each after its label, choose the transfer of the
+// Layer Transfer button: the objects selected go from one value of a level (field) of their
+// layer name to another, the other levels kept:
+//   - Level: Discipline designator, Major group, Minor group or Status,
 //   - From: Any, or a value of that field found in the layers of the drawing (None / Unphased:
 //     the layers without a minor group / without a status),
 //   - To: the values of the drawing, then the other values of the AEC lists of DynALisp
 //     (Res\AEC\Standard: Dd1 + Dd2, Major, Phase; the minor groups of the drawing only, the
 //     list of Minor.csv being too long), and None / Unphased.
 // The lists follow the layers of the current drawing: they are read again when a drawing is
-// made current and after each command. Picking a To value runs Pst-TransferField of
-// Dyl-LayerTransfer.lsp on the objects selected (it asks for them when none is selected),
-// the field and values given in *lt:ribbon* (read once by the command, then cleared).
+// made current and after each command. Picking a value only chooses it: the Layer Transfer
+// button runs Pst-TransferField of Dyl-LayerTransfer.lsp on the objects selected (it asks for
+// them when none is selected), which reads the choice with (Dyl:RibbonTransfer).
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Runtime;
 using Autodesk.Windows;
 
 namespace DynALisp.Ribbon
 {
     public class TransferCombos : Part
     {
-        public override string ButtonId => "RBN_DYL_CMD_DYL_LAYERTRANSFER";
-        public override string Command => "DYL-LAYERTRANSFER";
+        // After the Layer Transfer button, which runs Pst-TransferField (Ribbon.csv):
+        public override string ButtonId => "RBN_DYL_CMD_PST_TRANSFERFIELD";
+        public override string Command => "PST-TRANSFERFIELD";
+
+        public static readonly TransferCombos Part = new TransferCombos();
+
+        // (Dyl:RibbonTransfer): the transfer chosen in the drop-downs, (level from to): level
+        // "Discipline", "Major", "Minor" or "Status", from nil for any value, "" for the layers
+        // without one, to "" to remove the level. nil while no To value is picked.
+        [LispFunction("Dyl:RibbonTransfer")]
+        public static object RibbonTransfer(ResultBuffer args)
+        {
+            var p = Part;
+            if (p._dst == null) return null;
+            return new ResultBuffer(
+                new TypedValue((int)LispDataType.Text, p._fld),
+                p._src == Any ? new TypedValue((int)LispDataType.Nil) : new TypedValue((int)LispDataType.Text, p._src),
+                new TypedValue((int)LispDataType.Text, p._dst));
+        }
 
         const string Any = "\u0001";   // the tag of Any (From)
 
@@ -43,19 +62,20 @@ namespace DynALisp.Ribbon
         string _dst;                     // To: the value picked last (null: none yet)
         string _sig;                     // the layers and lists shown (to rebuild only on a change)
         List<string> _layers = new List<string>();
-        int _lastRun = -100000;
 
         public override RibbonRowPanel Build()
         {
-            _field = Host.Combo("DYL_TRANSFER_FIELD", "Layer Transfer: the field of the layer names to change.");
+            _field = Host.Combo("DYL_TRANSFER_FIELD", "Layer Transfer: the level of the layer names to change.");
             foreach (var f in Fields) _field.Items.Add(Host.Item(f.Text, f.Tag));
             _field.CurrentChanged += OnField;
             _from = Host.Combo("DYL_TRANSFER_FROM", "Layer Transfer: the value of the layers to transfer (Any: every layer).");
             _from.CurrentChanged += OnFrom;
-            _to = Host.Combo("DYL_TRANSFER_TO", "Layer Transfer: pick the value to give the layers of the objects selected.");
-            _to.CurrentChanged += OnToChanged;
+            _to = Host.Combo("DYL_TRANSFER_TO", "Layer Transfer: the value to give the layers. The Layer Transfer button transfers the objects selected.");
+            _to.CurrentChanged += OnTo;
             _sig = null;
-            return Host.Stack("DYL_TRANSFER_DROPDOWNS", _field, _from, _to);
+            var labels = Host.Labels("Level:", "From:", "To:");
+            return Host.Rows("DYL_TRANSFER_DROPDOWNS",
+                new RibbonItem[] { labels[0], _field }, new RibbonItem[] { labels[1], _from }, new RibbonItem[] { labels[2], _to });
         }
 
         public override void DocumentChanged() => Refresh();
@@ -168,34 +188,27 @@ namespace DynALisp.Ribbon
                 foreach (var v in vals) _from.Items.Add(Host.Item(Label(v), v));
 
                 _to.Items.Clear();
-                foreach (var v in vals) _to.Items.Add(ToItem(Label(v), v));
+                foreach (var v in vals) _to.Items.Add(Host.Item(Label(v), v));
                 if (_fld != "Minor")
                     foreach (var s in std)
                         if (!vals.Contains(s.Key, StringComparer.OrdinalIgnoreCase)
                             && !_to.Items.OfType<RibbonItem>().Any(it => string.Equals((string)it.Tag, s.Key, StringComparison.OrdinalIgnoreCase)))
-                            _to.Items.Add(ToItem(Label(s.Key), s.Key));
-                if (_fld == "Minor" || _fld == "Status") _to.Items.Add(ToItem(NoneText, ""));
+                            _to.Items.Add(Host.Item(Label(s.Key), s.Key));
+                if (_fld == "Minor" || _fld == "Status") _to.Items.Add(Host.Item(NoneText, ""));
 
                 // From keeps its value while the drawing has it:
                 var from = _from.Items.OfType<RibbonItem>().FirstOrDefault(it => string.Equals((string)it.Tag, _src, StringComparison.OrdinalIgnoreCase));
                 if (from == null) { _src = Any; from = _from.Items.OfType<RibbonItem>().First(); }
                 _from.Current = from;
-                // To shows the value picked last (the transfer may have added layers):
-                _to.Current = _dst == null ? null
+                // To keeps the value picked (the transfer may have added layers):
+                RibbonItem to = _dst == null ? null
                     : _to.Items.OfType<RibbonItem>().FirstOrDefault(it => string.Equals((string)it.Tag, _dst, StringComparison.OrdinalIgnoreCase));
+                if (to == null) _dst = null;
+                _to.Current = to;
                 Host.Fit(Array.Empty<string>(), _field, _from, _to);
             }
             catch (System.Exception ex) { Host.Log(ex.Message); }
             finally { _updating = false; }
-        }
-
-        // An item of To: picking it runs the transfer, even when it is the item shown already
-        // (its command; CurrentChanged only follows a change):
-        RibbonButton ToItem(string text, string tag)
-        {
-            var b = Host.Item(text, tag);
-            b.CommandHandler = new Exec(() => Transfer(tag));
-            return b;
         }
 
         void OnField(object sender, RibbonPropertyChangedEventArgs e)
@@ -213,30 +226,10 @@ namespace DynALisp.Ribbon
             _src = (string)it.Tag;
         }
 
-        void OnToChanged(object sender, RibbonPropertyChangedEventArgs e)
+        void OnTo(object sender, RibbonPropertyChangedEventArgs e)
         {
             if (_updating || !(_to.Current is RibbonItem it)) return;
-            Transfer((string)it.Tag);
-        }
-
-        static string Lisp(string v) => v == null ? "nil" : "\"" + v.Replace("\"", "").Replace("\\", "") + "\"";
-
-        void Transfer(string dst)
-        {
-            // the command and CurrentChanged of one pick run it once:
-            if (Environment.TickCount - _lastRun < 700) return;
-            _lastRun = Environment.TickCount;
-            _dst = dst;
-            Host.Run("(setq *lt:ribbon* (list " + Lisp(_fld) + " " + Lisp(_src == Any ? null : _src) + " " + Lisp(dst) + "))\nPST-TRANSFERFIELD");
-        }
-
-        class Exec : System.Windows.Input.ICommand
-        {
-            readonly Action _run;
-            public Exec(Action run) => _run = run;
-            public event EventHandler CanExecuteChanged { add { } remove { } }
-            public bool CanExecute(object parameter) => true;
-            public void Execute(object parameter) => _run();
+            _dst = (string)it.Tag;
         }
     }
 }
