@@ -1,7 +1,7 @@
 # BuildRibbon.py - build the DynALisp ribbon: Contents\Resources\DynALisp.cuix
 # Copyright (C) 2026  Samuel Martineau, GNU General Public License v3
 #
-#   python Installer\Ribbon\BuildRibbon.py [--sheet <icons.png>]
+#   python Installer\Ribbon\BuildRibbon.py [--sheet <icons.png>] [--pictures]
 #
 # Writes the DynALisp tab of the ribbon from:
 #   - Ribbon.csv (this folder): its panels and buttons, in their order. Columns:
@@ -40,6 +40,10 @@
 # RBN_DYL_PANEL_DRAWING_BEHAVIORS / Drawing Behaviors, RBN_DYL_PANEL_LAYER_TRANSFER / Layer Transfer,
 # RBN_DYL_CMD_DYL_LAYERPHASE / Layer Phase, RBN_DYL_CMD_PST_TRANSFERFIELD / Transfer): keep them.
 #
+# Then RibbonPanels.py (this folder) draws the pictures of the panels for the Ribbon docs page
+# (Docs\Plugins\Ribbon\*.png) and writes its Panels section: commit them with the CUIx.
+# --pictures draws them only, without writing the CUIx.
+#
 # The parts of the CUIx that hold no command (Header.cui, the empty roots...) are kept
 # from the current DynALisp.cuix. Never edit DynALisp.cuix in the CUI editor: run this
 # script again. Needs Python 3 and Pillow (pip install pillow).
@@ -63,6 +67,7 @@ CUIX = os.path.join(REPO, 'Contents', 'Resources', 'DynALisp.cuix')
 
 sys.path.insert(0, HERE)
 import RibbonIcons  # noqa: E402
+import RibbonPanels  # noqa: E402
 
 MENUGROUP = 'DYNALISP'
 TAB = 'DynALisp'
@@ -366,6 +371,7 @@ def build():
          'Name="%s" DisplayName="%s">' % (MENUGROUP, MENUGROUP),
          '  <MacroGroup Name="DynALisp">']
         + b.macros + ['  </MacroGroup>', '</MenuGroup>'])
+    b.panels, b.cmds = panels, cmds
     return part_xml(menugroup), part_xml(ribbon), part_xml(popmenus), b
 
 
@@ -473,10 +479,14 @@ def main():
         icon_sheet(args[args.index('--sheet') + 1])
         return
     menugroup, ribbon, popmenus, b = build()
-    write_cuix(menugroup, ribbon, popmenus, b.images)
+    if '--pictures' not in args:
+        write_cuix(menugroup, ribbon, popmenus, b.images)
     for w in b.warnings:
         print('Warning:', w)
-    print('Wrote %s: %d commands, %d images.' % (CUIX, len(b.macro_ids), len(b.images)))
+    if '--pictures' not in args:
+        print('Wrote %s: %d commands, %d images.' % (CUIX, len(b.macro_ids), len(b.images)))
+    done = RibbonPanels.write(b.panels, b.cmds)
+    print('Docs pictures: %s' % (', '.join(done) if done else 'no change'))
 
 
 if __name__ == '__main__':

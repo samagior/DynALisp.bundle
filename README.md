@@ -133,7 +133,7 @@ Before adding a tool, read [CONVENTIONS.md](CONVENTIONS.md): command naming (`Dy
 - `Installer\Ribbon\RibbonIcons.py` - the icon of each command, drawn at 16 and 32 px and stored in the CUIx. A child without an icon of its own uses the icon of its main command.
 - `Installer\Ribbon\ContextMenus.csv` - the commands added to the right-click menus of AutoCAD: the menu (`OBJECT_MTEXT` for one mtext selected, `OBJECTS_MTEXT` for several...) and the command. Empty for now: the first menus made AutoCAD crash on the right click (see `BuildRibbon.py`).
 
-Run `python Installer\Ribbon\BuildRibbon.py` after adding, renaming or removing a tool: it warns about a main command of the module missing from `Ribbon.csv` or without an icon. `--sheet <file.png>` draws every icon, on the light and the dark ribbon, to review them. Restart AutoCAD to see the new ribbon.
+Run `python Installer\Ribbon\BuildRibbon.py` after adding, renaming or removing a tool: it warns about a main command of the module missing from `Ribbon.csv` or without an icon. It also draws the pictures of the panels for the Ribbon docs page (`RibbonPanels.py`, into `Docs\Plugins\Ribbon`) and writes its Panels section; `--pictures` draws them only. `--sheet <file.png>` draws every icon, on the light and the dark ribbon, to review them. Restart AutoCAD to see the new ribbon.
 
 ### Releasing a version
 
