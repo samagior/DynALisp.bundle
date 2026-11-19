@@ -20,6 +20,34 @@
         />
     </Components>
 
+    <!-- Clean startup of Dyl-Settings (Installer\Startup), the same code built for .NET 8
+         (AutoCAD 2025 and later) and .NET Framework 4.8 (AutoCAD 2015 to 2024): -->
+    <Components Description="Clean startup">
+        <RuntimeRequirements
+            OS="Win64"
+            Platform="AutoCAD|AutoCAD*"
+            SeriesMin="R25.0"
+        />
+        <ComponentEntry
+            AppName="DynALisp clean startup"
+            ModuleName="./Contents/Resources/DynALisp.Startup.dll"
+            LoadOnAutoCADStartup="True"
+        />
+    </Components>
+    <Components Description="Clean startup (.NET Framework)">
+        <RuntimeRequirements
+            OS="Win64"
+            Platform="AutoCAD|AutoCAD*"
+            SeriesMin="R20.0"
+            SeriesMax="R24.3"
+        />
+        <ComponentEntry
+            AppName="DynALisp clean startup (.NET Framework)"
+            ModuleName="./Contents/Resources/Net48/DynALisp.Startup.dll"
+            LoadOnAutoCADStartup="True"
+        />
+    </Components>
+
     <Components>
         <RuntimeRequirements
             OS="Win32|Win64"

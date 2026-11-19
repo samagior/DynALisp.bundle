@@ -120,6 +120,10 @@ dyl_settings
           : set_tog {label = "Display"; key = "dpo";}
           : set_more {key = "dpm";}
         }
+        // Clean startup (DynalispCleanStartup, Contents\Resources\DynALisp.Startup.dll of
+        // Installer\Startup): the lines AutoCAD prints while it starts removed from the
+        // command line, from the next startup; greyed out without the plugin (Dyl:CleanStartup):
+        : set_tog {label = "Clean startup"; key = "csu";}
         : spacer {}
       }
       // The layers of the layer keys that exist with other values than their key (Remote\Dyl-LayerKey.lsp,
