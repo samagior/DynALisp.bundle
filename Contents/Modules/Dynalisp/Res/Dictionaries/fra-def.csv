@@ -27,6 +27,7 @@ accessible;accessibles;adj.;Intérieur;Appareils sanitaires et mobilier;Utilisab
 accordéon;accordéons;n.m.;Enveloppe;Portes et quincaillerie;Porte formée de panneaux repliables.;
 accrochage;;n.m.;Matériaux;Coffrage et préparation des surfaces;Adhérence d'une couche sur son support (primaire d'accrochage).;gobetis
 accumulation;accumulations;n.f.;Structure;Charges et calcul;Surépaisseur de neige derrière un obstacle ou un parapet.;surcharge
+acétone;;n.f.;Matériaux;Coffrage et préparation des surfaces;Solvant très volatil qui dissout les colles, les résines et les graisses.;solvant, isopropylique
 ACI;;sigle;Abréviations et sigles;Normalisation et essais;American Concrete Institute.;
 acier;aciers;n.m.;Structure;Acier et assemblages;Alliage de fer et de carbone employé en charpente et en armature.;profilé
 acier galvanisé;aciers galvanisés;loc.n.m.;Matériaux;Métaux et finis;Acier recouvert de zinc.;galvanisé
@@ -70,6 +71,8 @@ AISI;;sigle;Matériaux;Aciers inoxydables;American Iron and Steel Institute: dé
 aisselier;aisseliers;n.m.;Architecture;Appareils et moulures;Pièce oblique qui soutient une pièce horizontale près de son appui. Console de galerie.;lien, contrefiche
 alarme;alarmes;n.f.;Mécanique et électricité;Protection incendie;Signal d'avertissement (système d'alarme incendie).;avertisseur
 albédo;albédos;n.m.;Patrimoine et rénovation;Énergie et environnement;Pouvoir réfléchissant d'une surface (toit blanc).;îlot
+alcool;alcools;n.m.;Matériaux;Coffrage et préparation des surfaces;Liquide inflammable (éthanol, méthanol, isopropanol) employé comme solvant et pour nettoyer les surfaces.;éthylique, méthylique, isopropylique
+alcool isopropylique;;loc.n.m.;Matériaux;Coffrage et préparation des surfaces;Alcool qui s'évapore sans laisser de résidu, employé pour nettoyer et dégraisser une surface avant un scellant, un ruban ou une membrane.;isopropanol, isopropylique
 alcôve;alcôves;n.f.;Intérieur;Pièces et espaces;Renfoncement d'une pièce.;
 algicide;algicides;n.m.;Matériaux;Biocides;Produit qui détruit les algues.;biocide
 alignement;;n.m.;Projet et réglementation;Implantation et terrain;Limite entre la voie publique et un terrain. Disposition en ligne droite.;implantation
@@ -1181,6 +1184,8 @@ estimation;estimations;n.f.;Projet et réglementation;Chantier et contrats;Éval
 étançon;étançons;n.m.;Structure;Fondations;Pièce verticale qui soutient provisoirement un ouvrage.;étai, étançonnement
 étançonnement;étançonnements;n.m.;Structure;Fondations;Soutien provisoire d'un ouvrage par des étançons.;étai, étançon
 étayage;étayages;n.m.;Matériaux;Coffrage et préparation des surfaces;Ensemble des étais d'un coffrage de dalle.;étai
+éthanol;;n.m.;Matériaux;Coffrage et préparation des surfaces;Alcool éthylique.;éthylique, alcool
+éthylique;éthyliques;adj.;Matériaux;Coffrage et préparation des surfaces;Se dit de l'alcool tiré de la fermentation (éthanol).;éthanol, alcool
 étiquette;étiquettes;n.f.;Projet et réglementation;Documents;Marque qui identifie un élément (étiquette de porte, de pièce).;repère
 étiré;;adj.;Enveloppe;Menuiserie traditionnelle;Se dit d'un verre plat produit par étirage, ancien procédé industriel.;soufflé
 étoilé;étoilée, étoilées, étoilés;adj.;Architecture;Églises : voûtes et structure;Se dit d'une voûte à liernes et tiercerons.;lierne
@@ -1527,6 +1532,8 @@ isolant;isolante, isolantes, isolants;n.m./adj.;Enveloppe;Étanchéité;Matéria
 isolant sous dalle;isolants sous dalle;loc.n.m.;Structure;Fondations;Isolant rigide posé sous une dalle sur sol.;isolant
 isolation;isolations;n.f.;Enveloppe;Étanchéité;Ensemble des isolants d'une paroi.;isolant
 isométrie;isométries;n.f.;Projet et réglementation;Documents;Axonométrie à angles égaux.;axonométrie
+isopropanol;;n.m.;Matériaux;Coffrage et préparation des surfaces;Alcool isopropylique.;isopropylique, alcool isopropylique
+isopropylique;isopropyliques;adj.;Matériaux;Coffrage et préparation des surfaces;Se dit de l'alcool tiré du propylène (isopropanol), employé pour dégraisser les surfaces.;isopropanol, alcool isopropylique
 isostatique;isostatiques;adj.;Structure;Charpente et ossature;Se dit d'une structure dont les appuis suffisent juste à l'équilibre.;hyperstatique
 issue;issues;n.f.;Projet et réglementation;Incendie et issues;Partie d'un moyen d'évacuation qui mène de l'aire de plancher qu'elle dessert à un bâtiment distinct, une voie publique ou un lieu sûr à l'extérieur (porte d'issue, escalier d'issue). Terme défini du code.;accès à l'issue, moyen d'évacuation, évacuation, dégagement
 issue horizontale;issues horizontales;loc.n.f.;Projet et réglementation;Termes définis du code;Issue qui permet de passer d'un bâtiment à un autre par une porte, un vestibule, un passage piéton, une passerelle ou un balcon. Terme défini du code.;issue
@@ -1757,6 +1764,9 @@ métal déployé;métaux déployés;loc.n.m.;Matériaux;Métaux et finis;Tôle d
 métallique;métalliques;adj.;Enveloppe;Revêtements extérieurs;En métal (revêtement métallique, panneau métallique).;tôle
 métallisation;;n.f.;Matériaux;Corrosion et protection;Projection de métal fondu (zinc, aluminium) sur l'acier pour le protéger.;zingage
 méthacrylate;;n.m.;Matériaux;Polymères et élastomères;Composé d'où l'on tire le PMMA et des résines de revêtement.;PMMA
+méthanol;;n.m.;Matériaux;Coffrage et préparation des surfaces;Alcool méthylique, toxique.;méthylique, méthylhydrate
+méthylhydrate;;n.m.;Matériaux;Coffrage et préparation des surfaces;Au Québec, méthanol vendu comme solvant et alcool à brûler.;méthanol
+méthylique;méthyliques;adj.;Matériaux;Coffrage et préparation des surfaces;Se dit de l'alcool le plus simple (méthanol).;méthanol, alcool
 métope;métopes;n.f.;Architecture;Ordres et entablement;Panneau entre deux triglyphes de la frise dorique.;triglyphe
 métré;métrés;n.m.;Projet et réglementation;Chantier et contrats;Mesure des quantités d'ouvrage.;quantité
 mezz;;abr.;Abréviations et sigles;Ouvrages et parties;Mezzanine.;mezzanine
@@ -2798,6 +2808,7 @@ vanité;vanités;n.f.;Intérieur;Appareils sanitaires et mobilier;Au Québec, me
 vanne;vannes;n.f.;Mécanique et électricité;Plomberie;Appareil qui ouvre ou ferme une conduite.;robinet
 vantail;vantaux;n.m.;Enveloppe;Fenêtres et murs-rideaux;Partie mobile d'une porte ou d'une fenêtre qui pivote.;ouvrant, battant
 vapeur;vapeurs;n.f.;Patrimoine et rénovation;Nettoyage et dessalement;Nettoyage à la vapeur.;
+varsol;;n.m.;Matériaux;Coffrage et préparation des surfaces;Au Québec, essence minérale qui dilue les peintures à l'huile et nettoie les outils.;diluant, solvant
 vasque;vasques;n.f.;Intérieur;Appareils sanitaires et mobilier;Cuvette de lavabo posée sur ou sous un comptoir.;lavabo
 VAV;;sigle;Abréviations et sigles;Techniques et documents;Volume d'air variable.;CVAC
 VCT;;sigle;Abréviations et sigles;Sigles de matériaux;Carreaux de vinyle composé.;vinyle
