@@ -120,6 +120,14 @@ dyl_settings
           : set_tog {label = "Display"; key = "dpo";}
           : set_more {key = "dpm";}
         }
+        // Revisions (Remote\Dyl-Revisions.lsp, DynalispRevisionSync): every sheet of a project
+        // updated with the revisions of the project when it opens. ... runs
+        // Pst-RevisionTitleBlocks (the title blocks), then opens this window again; greyed out
+        // when Dyl-Revisions is turned off in Dyl-Suite:
+        : row {
+          : set_tog {label = "Revisions"; key = "rvo";}
+          : set_more {key = "rvm";}
+        }
         // Clean startup (DynalispCleanStartup, Contents\Resources\DynALisp.Startup.dll of
         // Installer\Startup): the lines AutoCAD prints while it starts removed from the
         // command line, from the next startup; greyed out without the plugin (Dyl:CleanStartup):
