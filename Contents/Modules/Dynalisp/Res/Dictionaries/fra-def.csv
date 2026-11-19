@@ -18,6 +18,7 @@ acajou;;n.m.;Matériaux;Bois et panneaux;Bois tropical rougeâtre employé en me
 acanthe;;n.f.;Architecture;Appareils et moulures;Feuille stylisée, ornement du chapiteau corinthien.;
 acc;;abr.;Abréviations et sigles;Matériaux et finis;Accessoire.;
 accélérateur;accélérateurs;n.m.;Matériaux;Adjuvants du béton;Adjuvant qui accélère la prise ou le durcissement du béton.;retardateur
+acceptabilité;acceptabilités;n.f.;Projet et réglementation;Chantier et contrats;Caractère de ce qui peut être accepté au regard des exigences (critères d'acceptabilité).;
 accès;;n.m.;Projet et réglementation;Incendie et issues;Voie ou porte qui permet d'entrer (accès des pompiers).;voie
 accès à l'issue;;loc.n.m.;Projet et réglementation;Termes définis du code;Partie d'un moyen d'évacuation, située dans une aire de plancher, qui permet d'accéder à une issue desservant cette aire. Terme défini du code.;issue, moyen d'évacuation
 accessibilité;;n.f.;Projet et réglementation;Incendie et issues;Possibilité pour toute personne, y compris à mobilité réduite, d'utiliser un bâtiment.;
@@ -102,6 +103,7 @@ anodique;anodiques;adj.;Matériaux;Corrosion et protection;Se dit du métal qui 
 anodisation;;n.f.;Matériaux;Métaux et finis;Traitement qui épaissit la couche d'oxyde de l'aluminium.;anodisé
 anodisé;anodisée;adj.;Matériaux;Métaux et finis;Se dit d'un aluminium dont la couche d'oxyde a été épaissie par électrolyse.;anodisation
 ANSI;;sigle;Abréviations et sigles;Normalisation et essais;American National Standards Institute, institut national de normalisation américain.;ASTM, ISO
+anti;;préf.;Mots composés;Protection (anti-);Préfixe qui signifie contre (anti-refoulement). Le correcteur vérifie chaque partie d'un mot composé séparément.;anti-retour
 anti-bélier;;adj.;Mots composés;Protection (anti-);Se dit d'un dispositif qui absorbe les coups de bélier dans une tuyauterie.;
 anti-bruit;;adj.;Mots composés;Protection (anti-);Qui réduit le bruit (écran anti-bruit).;
 anti-chute;anti-chutes;adj.;Mots composés;Protection (anti-);Qui empêche ou arrête les chutes (ligne de vie, filet).;
@@ -238,6 +240,7 @@ autonivelant;autonivelante, autonivelants;adj.;Mots composés;Positions (demi-, 
 autoperceuse;autoperceuses;adj.;Matériaux;Métaux et finis;Se dit d'une vis qui perce son trou.;vis
 autoplaçant;autoplaçante, autoplaçantes, autoplaçants;adj.;Matériaux;Adjuvants du béton;Se dit d'un béton très fluide qui se met en place sans vibration.;superplastifiant
 autoportant;autoportante, autoportantes, autoportants;adj.;Mots composés;Positions (demi-, mi-, semi-);Qui se porte lui-même sans ossature.;
+autorégulé;autorégulée, autorégulées, autorégulés;adj.;Mécanique et électricité;Ventilation et chauffage;Qui règle lui-même son fonctionnement (câble chauffant autorégulé).;régulation, thermostat
 autorité compétente;autorités compétentes;loc.n.f.;Projet et réglementation;Termes définis du code;Au Québec, la Régie du bâtiment (RBQ), une municipalité régionale de comté (MRC) ou une municipalité locale. Terme défini du code.;RBQ
 autotaraudeuse;autotaraudeuses;adj.;Matériaux;Métaux et finis;Se dit d'une vis qui creuse son filet.;vis
 auvent;auvents;n.m.;Projet et réglementation;Niveaux et espaces;Petit toit en saillie au-dessus d'une porte ou d'une fenêtre.;marquise
@@ -1340,6 +1343,7 @@ générateur de chaleur suspendu;générateurs de chaleur suspendus;loc.n.m.;Pro
 générateur-pulseur;générateurs-pulseurs;n.m.;Projet et réglementation;Termes définis du code;Générateur d'air chaud muni d'un ventilateur (générateur-pulseur d'air chaud). Terme défini du code.;générateur-pulseur d'air chaud
 générateur-pulseur d'air chaud;générateurs-pulseurs d'air chaud;loc.n.m.;Projet et réglementation;Termes définis du code;Générateur d'air chaud muni d'un ventilateur qui assure la circulation de l'air. Terme défini du code.;générateur d'air chaud
 génératrice;génératrices;n.f.;Mécanique et électricité;Électricité;Groupe électrogène de secours.;secours
+généré;générée, générées, générés;adj.;Projet et réglementation;Logiciels et classifications;Produit automatiquement par un logiciel ou un calcul (plan généré, quantités générées).;
 géocomposite;géocomposites;n.m.;Matériaux;Minéraux, liants et granulats;Produit qui associe plusieurs géosynthétiques (drainage, filtration).;géotextile
 géodésique;géodésiques;adj.;Projet et réglementation;Implantation et terrain;Se dit d'une altitude rattachée au réseau de référence.;niveau
 géogrille;géogrilles;n.f.;Matériaux;Minéraux, liants et granulats;Grille synthétique qui renforce un sol ou un remblai.;géotextile
@@ -2194,6 +2198,7 @@ précontraint;précontraintes, précontraints;adj.;Structure;Béton et maçonner
 précontrainte;;n.f.;Structure;Béton et maçonnerie;Compression donnée à un béton par des câbles tendus.;précontraint, post-tension
 prédalle;prédalles;n.f.;Structure;Béton et maçonnerie;Dalle mince préfabriquée qui sert de coffrage à un plancher coulé en place.;préfabriqué
 préfabriqué;préfabriquée, préfabriquées, préfabriqués;adj.;Structure;Béton et maçonnerie;Fabriqué en usine puis posé sur le chantier.;précontraint
+préformé;préformée, préformées, préformés;adj.;Enveloppe;Étanchéité;Façonné à l'avance en usine selon une forme donnée (solin préformé, coin préformé).;préfabriqué, solin
 prélaqué;prélaquée;adj.;Matériaux;Métaux et finis;Se dit d'une tôle peinte en usine avant façonnage.;prépeint
 préliminaire;préliminaires;adj.;Projet et réglementation;Documents;Se dit d'une étape avant les plans définitifs.;avant-projet
 premier étage;premiers étages;loc.n.m.;Projet et réglementation;Termes définis du code;Étage le plus élevé dont le plancher est à 2 m au plus au-dessus du niveau moyen du sol. Terme défini du code.;étage, niveau moyen du sol
