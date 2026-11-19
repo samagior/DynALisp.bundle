@@ -38,6 +38,9 @@
 ;;  *do:lisp*  - T while a Lisp command runs: its objects are restacked when it ends
 ;;  *do:off*   - T while the command running is one of the skipped commands
 ;;  *do:busy*  - T while the objects are restacked (the draw order tables created are not collected)
+;;  *do:append* - the reactor of the objects added: active only while a command or a Lisp command runs
+;;               (Reactor>>Dyl:DrawOrderWatch), see Reactor\Dyl-LayerPhase.lsp (objects added with no command
+;;               running, by the palettes of AutoCAD Architecture, froze AutoCAD)
 
 ;;  Commands whose new objects are left where they are (wcmatch pattern):
 (defun Reactor>>Dyl:DrawOrderSkip ()
@@ -47,6 +50,13 @@
 ;;  Commands after which the current space is restacked (wcmatch pattern):
 (defun Reactor>>Dyl:DrawOrderRefresh ()
   (strcase (cond ((getenv "DynalispDrawOrderRefresh")) (*do:refresh*)))
+)
+
+;;  Turn the reactor of the objects added on (a command or a Lisp command starts) or off:
+(defun Reactor>>Dyl:DrawOrderWatch (on)
+  (if (and *do:append* (not (eq (and on t) (vlr-added-p *do:append*))))
+    (vl-catch-all-apply (if on 'vlr-add 'vlr-remove) (list *do:append*))
+  )
 )
 
 (defun Reactor>>Dyl:DrawOrderOnAppend (rea args)
@@ -65,6 +75,7 @@
     )
   )
   (setq *do:depth* (1+ *do:depth*))
+  (Reactor>>Dyl:DrawOrderWatch t)
 )
 
 (defun Reactor>>Dyl:DrawOrderOnEnd (rea args)
@@ -72,13 +83,19 @@
   (if (= 0 *do:depth*)
     (progn
       (setq *do:off* nil)
-      (if (not *do:lisp*) (Reactor>>Dyl:DrawOrderRunSafe))
+      (if (not *do:lisp*)
+        (progn
+          (Reactor>>Dyl:DrawOrderWatch nil)
+          (Reactor>>Dyl:DrawOrderRunSafe)
+        )
+      )
     )
   )
 )
 
 (defun Reactor>>Dyl:DrawOrderOnLisp (rea args)
   (setq *do:lisp* t)
+  (Reactor>>Dyl:DrawOrderWatch t)
 )
 
 (defun Reactor>>Dyl:DrawOrderOnLispEnd (rea args)
@@ -86,6 +103,7 @@
         *do:depth* 0
         *do:off*   nil
   )
+  (Reactor>>Dyl:DrawOrderWatch nil)
   (Reactor>>Dyl:DrawOrderRunSafe)
 )
 
@@ -171,6 +189,7 @@
 (defun Reactor>>Dyl:DrawOrderReactors (on)
   (foreach r *do:reactors* (vl-catch-all-apply 'vlr-remove (list r)))
   (setq *do:reactors* nil
+        *do:append*   nil
         *do:new*      nil
         *do:ref*      nil
         *do:depth*    0
@@ -178,11 +197,14 @@
         *do:off*      nil
         *do:busy*     nil
   )
-  ;;  Only the reactors of the drawing in front run (see Dyl:ReactorLocal in dynalisp.mnl):
+  ;;  Only the reactors of the drawing in front run (see Dyl:ReactorLocal in dynalisp.mnl).
+  ;;  The reactor of the objects added waits for a command (Reactor>>Dyl:DrawOrderWatch):
   (if (and on (Dyl:ReactorsOn-p))
-    (setq *do:reactors*
+    (progn
+    (setq *do:append*  (Dyl:ReactorLocal (vlr-acdb-reactor "Dyl-DrawOrder" '((:vlr-objectAppended . Reactor>>Dyl:DrawOrderOnAppend))))
+          *do:reactors*
            (mapcar 'Dyl:ReactorLocal
-                   (list (vlr-acdb-reactor "Dyl-DrawOrder" '((:vlr-objectAppended . Reactor>>Dyl:DrawOrderOnAppend)))
+                   (list *do:append*
                          (vlr-editor-reactor "Dyl-DrawOrder"
                                              '((:vlr-commandWillStart . Reactor>>Dyl:DrawOrderOnStart)
                                                (:vlr-commandEnded . Reactor>>Dyl:DrawOrderOnEnd)
@@ -195,6 +217,8 @@
                          )
                    )
            )
+    )
+    (Reactor>>Dyl:DrawOrderWatch nil)
     )
   )
 )

@@ -36,10 +36,22 @@
 ;;  *ph:lisp*  - T while a Lisp command runs: its objects are moved when it ends
 ;;  *ph:off*   - T while the command running is one of the skipped commands
 ;;  *ph:busy*  - T while the objects are moved (the layers created are not collected)
+;;  *ph:append* - the reactor of the objects added: active only while a command or a Lisp
+;;               command runs (Reactor>>Dyl:PhaseWatch). Objects are also added with no
+;;               command running (the Project Navigator palette of AutoCAD Architecture, as
+;;               the first drawing of a session opens): a Lisp call for each of them, in the
+;;               middle of that work, froze AutoCAD until Escape was pressed.
 
 ;;  Commands whose new objects are left on their layer (wcmatch pattern):
 (defun Reactor>>Dyl:PhaseSkip ()
   (strcase (cond ((getenv "DynalispPhaseSkip")) (*ph:skip*)))
+)
+
+;;  Turn the reactor of the objects added on (a command or a Lisp command starts) or off:
+(defun Reactor>>Dyl:PhaseWatch (on)
+  (if (and *ph:append* (not (eq (and on t) (vlr-added-p *ph:append*))))
+    (vl-catch-all-apply (if on 'vlr-add 'vlr-remove) (list *ph:append*))
+  )
 )
 
 (defun Reactor>>Dyl:PhaseOnAppend (rea args)
@@ -53,6 +65,7 @@
   (if (Dyl:CmdTop-p (car args)) (setq *ph:depth* 0))
   (if (= 0 *ph:depth*) (setq *ph:off* (wcmatch (strcase (car args)) (Reactor>>Dyl:PhaseSkip))))
   (setq *ph:depth* (1+ *ph:depth*))
+  (Reactor>>Dyl:PhaseWatch t)
 )
 
 (defun Reactor>>Dyl:PhaseOnEnd (rea args)
@@ -60,13 +73,19 @@
   (if (= 0 *ph:depth*)
     (progn
       (setq *ph:off* nil)
-      (if (not *ph:lisp*) (Reactor>>Dyl:PhaseRunSafe))
+      (if (not *ph:lisp*)
+        (progn
+          (Reactor>>Dyl:PhaseWatch nil)
+          (Reactor>>Dyl:PhaseRunSafe)
+        )
+      )
     )
   )
 )
 
 (defun Reactor>>Dyl:PhaseOnLisp (rea args)
   (setq *ph:lisp* t)
+  (Reactor>>Dyl:PhaseWatch t)
 )
 
 (defun Reactor>>Dyl:PhaseOnLispEnd (rea args)
@@ -74,6 +93,7 @@
         *ph:depth* 0
         *ph:off*   nil
   )
+  (Reactor>>Dyl:PhaseWatch nil)
   (Reactor>>Dyl:PhaseRunSafe)
 )
 
@@ -160,17 +180,21 @@
 (defun Reactor>>Dyl:PhaseReactors (on)
   (foreach r *ph:reactors* (vl-catch-all-apply 'vlr-remove (list r)))
   (setq *ph:reactors* nil
+        *ph:append*   nil
         *ph:new*      nil
         *ph:depth*    0
         *ph:lisp*     nil
         *ph:off*      nil
         *ph:busy*     nil
   )
-  ;;  Only the reactors of the drawing in front run (see Dyl:ReactorLocal in dynalisp.mnl):
+  ;;  Only the reactors of the drawing in front run (see Dyl:ReactorLocal in dynalisp.mnl).
+  ;;  The reactor of the objects added waits for a command (Reactor>>Dyl:PhaseWatch):
   (if (and on (Dyl:ReactorsOn-p))
-    (setq *ph:reactors*
+    (progn
+    (setq *ph:append*  (Dyl:ReactorLocal (vlr-acdb-reactor "Dyl-LayerPhase" '((:vlr-objectAppended . Reactor>>Dyl:PhaseOnAppend))))
+          *ph:reactors*
            (mapcar 'Dyl:ReactorLocal
-                   (list (vlr-acdb-reactor "Dyl-LayerPhase" '((:vlr-objectAppended . Reactor>>Dyl:PhaseOnAppend)))
+                   (list *ph:append*
                          (vlr-editor-reactor "Dyl-LayerPhase"
                                              '((:vlr-commandWillStart . Reactor>>Dyl:PhaseOnStart)
                                                (:vlr-commandEnded . Reactor>>Dyl:PhaseOnEnd)
@@ -183,6 +207,8 @@
                          )
                    )
            )
+    )
+    (Reactor>>Dyl:PhaseWatch nil)
     )
   )
 )

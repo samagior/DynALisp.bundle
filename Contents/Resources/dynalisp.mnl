@@ -666,6 +666,10 @@
       (Dyl:ReactorsStop)
     )
 
+    ;; The status bar and the drop-downs of the ribbon show the phase of the drawing, with
+    ;; the phases of Phase.csv (read by Dyl-Sub.lsp, loaded after Dyl-LayerPhase.lsp):
+    (if Remote>>Dyl:PhaseStatus (vl-catch-all-apply 'Remote>>Dyl:PhaseStatus))
+
     ;; Load the core Lisp files kept in the Resources folder (CMDINDEX command):
     (load (strcat *dyl:res "\\CommandIndex.lsp") 
           (strcat "\n--> Unable to load : CommandIndex.lsp\n--> From : " *dyl:res)

@@ -722,6 +722,12 @@ def i_layertransfer(c):
     arrow(c, (19, 7), (25, 17.5), ORANGE)
 
 
+def i_layertransfermanager(c):
+    # the list of the transfers, with the transfer arrow
+    table(c, 2, 2, 22, 26, 4, 2)
+    arrow(c, (18, 16), (28, 28), ORANGE)
+
+
 def i_layermake(c):
     layers(c, 1, 22, 22, 10, 5)
     plus(c, 24, 23, 7)
@@ -1102,7 +1108,8 @@ ICONS = {
     'DYL-LAYERKEYS': i_layerkeys,
     'DYL-OBJECTLAYERKEYS': i_objectlayerkeys,
     'DYL-LAYERPHASE': i_layerphase,
-    'DYL-LAYERTRANSFER': i_layertransfer,
+    'PST-TRANSFERFIELD': i_layertransfer,
+    'DYL-LAYERTRANSFER': i_layertransfermanager,
     'DYL-LAYERMAKE': i_layermake,
     'DYL-LAYERIMPORTFROMCSV': i_layerimportfromcsv,
     'DYL-LAYEREXPORTTOCSV': i_layerexporttocsv,

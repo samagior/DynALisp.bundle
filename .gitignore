@@ -39,3 +39,8 @@ ErrorReports/
 
 # Python bytecode of the ribbon scripts:
 __pycache__/
+
+# Build output of the ribbon plugin (Installer\Ribbon\Plugin, its DLL is copied to
+# Contents\Resources and committed there):
+Installer/Ribbon/Plugin/bin/
+Installer/Ribbon/Plugin/obj/
