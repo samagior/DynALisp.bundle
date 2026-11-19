@@ -1344,11 +1344,13 @@ générateur-pulseur;générateurs-pulseurs;n.m.;Projet et réglementation;Terme
 générateur-pulseur d'air chaud;générateurs-pulseurs d'air chaud;loc.n.m.;Projet et réglementation;Termes définis du code;Générateur d'air chaud muni d'un ventilateur qui assure la circulation de l'air. Terme défini du code.;générateur d'air chaud
 génératrice;génératrices;n.f.;Mécanique et électricité;Électricité;Groupe électrogène de secours.;secours
 généré;générée, générées, générés;adj.;Projet et réglementation;Logiciels et classifications;Produit automatiquement par un logiciel ou un calcul (plan généré, quantités générées).;
+géo;;préf.;Mots composés;Préfixes;Préfixe qui signifie terre (géo-grille, géo-composite).;géotextile, géomembrane
 géocomposite;géocomposites;n.m.;Matériaux;Minéraux, liants et granulats;Produit qui associe plusieurs géosynthétiques (drainage, filtration).;géotextile
 géodésique;géodésiques;adj.;Projet et réglementation;Implantation et terrain;Se dit d'une altitude rattachée au réseau de référence.;niveau
 géogrille;géogrilles;n.f.;Matériaux;Minéraux, liants et granulats;Grille synthétique qui renforce un sol ou un remblai.;géotextile
 géomembrane;géomembranes;n.f.;Matériaux;Minéraux, liants et granulats;Membrane synthétique étanche employée sous le sol ou en bassin.;géotextile
 géomètre;;n.m.;Projet et réglementation;Implantation et terrain;Spécialiste de la mesure des terrains.;arpenteur-géomètre
+géoréférencé;géoréférencée, géoréférencées, géoréférencés;adj.;Projet et réglementation;Logiciels et classifications;Placé à ses coordonnées réelles sur le territoire (plan géoréférencé, nuage de points géoréférencé).;
 géorgien;géorgienne;adj.;Architecture;Styles historiques;Style britannique du XVIIIe siècle, symétrique et sobre.;néogéorgien
 géotechnique;géotechniques;n.f./adj.;Structure;Fondations;Étude des sols et de leur comportement sous les ouvrages.;portance, forage
 géotextile;géotextiles;n.m.;Matériaux;Minéraux, liants et granulats;Toile synthétique qui sépare, filtre ou draine les sols.;géomembrane, géogrille
@@ -1478,6 +1480,7 @@ infiltration;infiltrations;n.f.;Enveloppe;Pare-air et pare-vapeur;Entrée non co
 infiltrométrie;;n.f.;Patrimoine et rénovation;Diagnostic;Mesure de l'étanchéité à l'air d'un bâtiment par mise en pression.;infiltrométrique, thermographie
 infiltrométrique;infiltrométriques;adj.;Patrimoine et rénovation;Diagnostic;Qui se rapporte à l'infiltrométrie (test infiltrométrique).;infiltrométrie
 inflammable;inflammables;adj.;Projet et réglementation;Incendie et issues;Qui prend feu facilement.;combustible, ininflammable
+infonuagique;infonuagiques;adj./n.f.;Projet et réglementation;Logiciels et classifications;Au Québec, se dit des services informatiques offerts en ligne (stockage infonuagique).;
 ing;;abr.;Abréviations et sigles;Disciplines et intervenants;Ingénieur, ingénierie.;
 ingénieur;ingénieurs;n.m.;Projet et réglementation;Chantier et contrats;Professionnel des structures, de la mécanique ou de l'électricité.;ing
 inhibiteur;inhibiteurs, inhibitrice, inhibitrices;n.m./adj.;Matériaux;Corrosion et protection;Produit qui ralentit ou empêche une réaction (inhibiteur de corrosion).;anticorrosion, passivant
@@ -1690,6 +1693,7 @@ maç;;abr.;Abréviations et sigles;Matériaux et finis;Maçonnerie.;maçonnerie
 mâchicoulis;;n.m.;Architecture;Clochers et couronnements;Galerie en encorbellement percée au sol, au haut d'un mur fortifié.;créneau
 maçonnerie;maçonneries;n.f.;Structure;Béton et maçonnerie;Ouvrage en pierres, briques ou blocs liés au mortier.;mortier, moellon
 maçonnerie pleine;maçonneries pleines;loc.n.f.;Projet et réglementation;Termes définis du code;Maçonnerie à une ou plusieurs parois en éléments pleins, semi-pleins, perforés ou creux (vides non remplis), dont l'espace entre les parois est rempli de mortier ou de coulis. Terme défini du code.;élément de maçonnerie plein
+macro;macros;n.f./préf.;Mots composés;Préfixes;Suite de commandes enregistrées et lancées ensemble. Aussi préfixe qui signifie grand (macro-fibres).;
 madrier;madriers;n.m.;Structure;Pièce sur pièce;Pièce de bois épaisse, sciée ou équarrie.;pièce-sur-pièce
 Maibec;;n.pr.;Matériaux;Marques;Revêtement de bois préteint québécois.;bardeau
 maillet;maillets;n.m.;Enveloppe;Ferblanterie;Marteau de bois.;marteau
@@ -1791,6 +1795,7 @@ moisissure;moisissures;n.f.;Enveloppe;Étanchéité;Champignon qui se développe
 molybdène;;n.m.;Matériaux;Aciers inoxydables;Métal d'alliage qui améliore la résistance de l'inox à la piqûration (316 contre 304).;austénitique, piqûration
 moment;moments;n.m.;Structure;Charges et calcul;Effort de flexion dans une pièce.;flexion
 monastère;monastères;n.m.;Architecture;Églises : plan et espaces;Ensemble de bâtiments où vit une communauté religieuse.;couvent, cloître
+mono;;préf.;Mots composés;Préfixes;Préfixe qui signifie un seul (mono-composant).;monocouche
 monocouche;monocouches;adj.;Enveloppe;Toiture et drainage;Se dit d'une membrane posée en une seule couche (EPDM, TPO).;membrane
 montant;montants;n.m.;Structure;Charpente et ossature;Pièce verticale d'une ossature, d'un châssis ou d'une cloison.;colombage, poteau
 montant nain;montants nains;loc.n.m.;Structure;Charpente et ossature;Court montant sous un appui ou au-dessus d'un linteau.;montant, nain
@@ -1811,6 +1816,7 @@ mouton;moutons;n.m.;Enveloppe;Menuiserie traditionnelle;Montant central d'une fe
 moyen d'évacuation;moyens d'évacuation;loc.n.m.;Projet et réglementation;Incendie et issues;Chemin continu qui mène les occupants à l'extérieur.;évacuation, issue
 MPa;;abr.;Abréviations et sigles;Dimensions et unités;Mégapascal, unité de pression ou de résistance.;
 MRC;;sigle;Abréviations et sigles;Organismes publics;Municipalité régionale de comté.;
+multi;;préf.;Mots composés;Préfixes;Préfixe qui signifie plusieurs (multi-usage).;multicouche
 multicouche;multicouches;adj.;Enveloppe;Toiture et drainage;Se dit d'une couverture de plusieurs couches de membrane collées.;membrane, bicouche
 multifamilial;multifamiliale, multifamiliales, multifamiliaux;adj.;Architecture;Types d'habitation;Se dit d'un immeuble de plusieurs logements.;unifamilial
 multiplex;;n.m.;Architecture;Types d'habitation;Immeuble de plusieurs logements.;plex
@@ -2110,6 +2116,7 @@ point de rosée;points de rosée;loc.n.m.;Enveloppe;Pare-air et pare-vapeur;Temp
 pointage;pointages;n.m.;Matériaux;Soudage;Petits points de soudure provisoires.;soudage
 pointerolle;pointerolles;n.f.;Patrimoine et rénovation;Taille de la pierre;Ciseau pointu frappé à la massette, pour dégrossir la pierre.;massette, pic
 poli;polie, polies, polis;adj.;Intérieur;Revêtements de sol et finis;Rendu lisse et brillant.;brossé
+poly;;n.m./préf.;Mots composés;Préfixes;Au Québec, polyéthylène (pare-vapeur de poly 6 mil). Aussi préfixe qui signifie plusieurs.;polyéthylène
 polyacétal;;n.m.;Matériaux;Polymères et élastomères;Plastique technique dur employé en pièces de quincaillerie.;
 polyacrylate;polyacrylates;n.m.;Matériaux;Polymères et élastomères;Polymère acrylique employé en peintures, en scellants et en revêtements.;acrylique, polyacrylique
 polyacrylique;polyacryliques;adj.;Matériaux;Polymères et élastomères;À base de polymère acrylique.;polyacrylate
@@ -2177,6 +2184,7 @@ portemanteau;portemanteaux;n.m.;Mots composés;Accessoires (cache-, chasse-, por
 porteur;porteurs, porteuse, porteuses;adj.;Projet et réglementation;Termes définis du code;Se dit d'un élément de construction conçu pour supporter une charge en plus de sa charge permanente (pas un mur qui ne reçoit que les charges du vent et des séismes). Terme défini du code.;mur porteur, non-porteur
 portique;portiques;n.m.;Architecture;Ordres et entablement;Galerie couverte ouverte sur des colonnes. Ossature de poteaux et poutres.;colonnade
 portland;portlands;n.m.;Matériaux;Minéraux, liants et granulats;Ciment courant (ciment Portland).;ciment
+post;;préf.;Mots composés;Préfixes;Préfixe qui signifie après (post-tension).;post-tension
 post-tension;;n.f.;Structure;Béton et maçonnerie;Précontrainte par câbles tendus après le durcissement du béton.;précontrainte
 postmoderne;postmodernes;adj.;Architecture;Mouvements modernes et régionaux;Qui se rapporte au postmodernisme.;postmodernisme
 postmodernisme;;n.m.;Architecture;Mouvements modernes et régionaux;Courant (1970-1990) qui réintroduit l'ornement, les références historiques et l'ironie.;modernisme
@@ -2634,6 +2642,9 @@ téflon;;n.m.;Matériaux;Polymères et élastomères;Nom courant du PTFE.;PTFE
 teinté;;adj.;Matériaux;Verre;Coloré dans la masse ou en surface.;
 teinture;;n.f.;Matériaux;Plastiques et minéraux;Produit qui colore le bois en pénétrant.;lasure
 télécommunication;télécommunications;n.f.;Mécanique et électricité;Électricité;Réseaux téléphoniques et informatiques.;câblage
+téléversé;téléversée, téléversées, téléversés;adj.;Projet et réglementation;Logiciels et classifications;Transféré vers un serveur ou une plateforme en ligne.;téléverser
+téléversement;téléversements;n.m.;Projet et réglementation;Logiciels et classifications;Transfert d'un fichier vers un serveur ou une plateforme en ligne.;téléverser
+téléverser;téléverse, téléversent;v.;Projet et réglementation;Logiciels et classifications;Transférer un fichier vers un serveur ou une plateforme en ligne.;téléversement
 temp;;abr.;Abréviations et sigles;Documents et interventions;Temporaire.;
 tenon;tenons;n.m.;Structure;Charpente traditionnelle;Bout d'une pièce aminci pour entrer dans une mortaise.;mortaise
 tenon et mortaise;tenons ets mortaises;loc.n.m.;Structure;Charpente traditionnelle;Assemblage où le tenon d'une pièce entre dans la mortaise de l'autre.;tenon, mortaise
@@ -2651,6 +2662,7 @@ terre cuite;terres cuites;loc.n.f.;Matériaux;Plastiques et minéraux;Argile cui
 terre-plein;;n.m.;Mots composés;Parties du bâtiment et du projet;Bande surélevée de terre ou de béton (terre-plein central).;
 test d'infiltrométrie;tests d'infiltrométrie;loc.n.m.;Patrimoine et rénovation;Diagnostic;Mesure de l'étanchéité à l'air par mise en pression.;infiltrométrie
 thermique;thermiques;adj.;Enveloppe;Étanchéité;Qui se rapporte à la chaleur (pont thermique, résistance thermique).;isolant, RSI
+thermo;;préf.;Mots composés;Préfixes;Préfixe qui signifie chaleur (thermo-réfléchissant).;thermolaqué
 thermographie;;n.f.;Patrimoine et rénovation;Diagnostic;Image infrarouge qui montre les pertes de chaleur et les infiltrations d'une enveloppe.;thermographique, infiltrométrie
 thermographique;thermographiques;adj.;Patrimoine et rénovation;Diagnostic;Obtenu par thermographie.;thermographie
 thermolaquage;;n.m.;Matériaux;Métaux et finis;Peinture en poudre cuite au four.;thermolaqué
