@@ -38,7 +38,7 @@
 
 <h2 id="desc">Description</h2>
 <p>DynALisp names its layers as the <strong>AIA CAD Layer Guidelines</strong> of the <strong>United States National CAD Standard</strong> (NCS), version 5, name them. A layer name is made of fields divided by dashes: who the content belongs to (the discipline), what it is (the major and minor groups) and its phase (the status). <span class="fixw">A-Wall-Full-E</span> is an architectural wall, full height, existing to remain.</p>
-<p>The layer tools read the names that way: <a href="Dyl-LayerTransfer.htm">Layer Transfer</a> replaces one field of a name, <a href="Dyl-LayerPhase.htm">Layer Phase</a> reads and changes the status, the <a href="Dyl-LayerKeys.htm">layer keys</a> add the active phase to their layer, the <a href="Dyl-LayerFilter.htm">layer filters</a> group the layers by field, and <a href="Dyl-LayerMake.htm">Make Layers</a> builds the names from their fields. A layer named another way still works in AutoCAD, but these tools leave it as it is.</p>
+<p>The layer tools read the names that way: <a href="../Layer/Dyl-LayerTransfer.htm">Layer Transfer</a> replaces one field of a name, <a href="../Layer/Dyl-LayerPhase.htm">Layer Phase</a> reads and changes the status, the <a href="../Layer/Dyl-LayerKeys.htm">layer keys</a> add the active phase to their layer, the <a href="../Layer/Dyl-LayerFilter.htm">layer filters</a> group the layers by field, and <a href="../Layer/Dyl-LayerMake.htm">Make Layers</a> builds the names from their fields. A layer named another way still works in AutoCAD, but these tools leave it as it is.</p>
 
 <h2 id="format">Layer Name Format</h2>
 <p>A name has up to five fields, always in this order, each one divided from the next by a dash (<span class="fixw">-</span>):</p>
@@ -203,7 +203,7 @@
 </div>
 <div class="spacedbullets">
 <ul>
-<li>The same object keeps its name in every phase, only the status changes: <span class="fixw">A-Wall-Full-E</span>, <span class="fixw">A-Wall-Full-D</span>, <span class="fixw">A-Wall-Full-N</span>. That is what lets <a href="Dyl-LayerTransfer.htm">Layer Transfer</a> move objects from one phase to another, and <a href="Dyl-LayerPhase.htm">auto-phase</a> put the new objects in the active phase.</li>
+<li>The same object keeps its name in every phase, only the status changes: <span class="fixw">A-Wall-Full-E</span>, <span class="fixw">A-Wall-Full-D</span>, <span class="fixw">A-Wall-Full-N</span>. That is what lets <a href="../Layer/Dyl-LayerTransfer.htm">Layer Transfer</a> move objects from one phase to another, and <a href="../Layer/Dyl-LayerPhase.htm">auto-phase</a> put the new objects in the active phase.</li>
 <li>A phase layer that DynALisp creates gets the phase color: <span class="fixw">2#</span> for existing to demolish, <span class="fixw">20#</span> for existing to remain (the last digit of the color of the unphased layer, which gives the lineweight of the pen table, is kept).</li>
 <li>Use the letters or the numbers in a project, not both.</li>
 </ul>
@@ -213,7 +213,7 @@
 <div class="spacedbullets">
 <ul>
 <li><span class="fixw">0</span>, <span class="fixw">Defpoints</span> and the layers of the xrefs (<span class="fixw">Plan|A-Wall</span>) are never phased or transferred.</li>
-<li>Some layers of the AutoCAD Architecture layer key style that DynALisp follows have three minor groups (<span class="fixw">G-Anno-Stnd-Nplt-Scrn</span>, see <a href="Dyl-LayerKeys.htm#aec">AEC Layer Overrides</a>). The NCS allows two, but the tools read them all the same: every 4-character field between the major group and the status is a minor group.</li>
+<li>Some layers of the AutoCAD Architecture layer key style that DynALisp follows have three minor groups (<span class="fixw">G-Anno-Stnd-Nplt-Scrn</span>, see <a href="../Layer/Dyl-LayerKeys.htm#aec">AEC Layer Overrides</a>). The NCS allows two, but the tools read them all the same: every 4-character field between the major group and the status is a minor group.</li>
 <li>A name with a field of another length (<span class="fixw">A-Walls</span>, <span class="fixw">Hatch</span>) is not read as an NCS name: the Level transfers of Layer Transfer leave it as it is, and the wildcards of the layer filters may miss it.</li>
 </ul>
 </div>
@@ -222,11 +222,11 @@
 <div class="programs commands wide">
 <table>
 <tr><th>Tool</th><th>What it reads</th></tr>
-<tr><td><a href="Dyl-LayerTransfer.htm">Layer Transfer</a></td><td>The Level transfers (the ribbon drop-downs and <span class="fixw">LTF</span>) split the name into a designator of 1 or 2 letters, a major group, its minor groups and a status of 1 character, and replace one of them. The phase transfers (<span class="fixw">E-D</span>, <span class="fixw">D-N</span>...) replace or add the status.</td></tr>
-<tr><td><a href="Dyl-LayerPhase.htm">Layer Phase</a></td><td>The status: counts the layers of each phase, shows or hides them, and moves the current layer and the new objects to the active phase.</td></tr>
-<tr><td><a href="Dyl-LayerKeys.htm">Layer Keys</a></td><td>The unphased layer of each key, to which the active phase is added (<span class="fixw">A-Detl-Thin</span> &rarr; <span class="fixw">A-Detl-Thin-E</span>).</td></tr>
-<tr><td><a href="Dyl-LayerFilter.htm">Layer Filters</a></td><td>Wildcards on the fields: <span class="fixw">A-*</span> for architecture, <span class="fixw">*-E</span> and <span class="fixw">*-X</span> for existing, <span class="fixw">*-@@??</span> for the unphased layers (a name ending with a group), <span class="fixw">*-0001</span> &hellip; <span class="fixw">*-0009</span> for the stacks, <span class="fixw">*-Dims*</span>, <span class="fixw">*-Text*</span>... for the annotation (see its <em>Tokens</em>).</td></tr>
-<tr><td><a href="Dyl-LayerMake.htm">Make Layers</a></td><td>Builds each name from the <span class="fixw">Designator</span>, <span class="fixw">Major</span> and <span class="fixw">Minor</span> columns of its lists, and gives the layer a color, lineweight and linetype from its codes.</td></tr>
+<tr><td><a href="../Layer/Dyl-LayerTransfer.htm">Layer Transfer</a></td><td>The Level transfers (the ribbon drop-downs and <span class="fixw">LTF</span>) split the name into a designator of 1 or 2 letters, a major group, its minor groups and a status of 1 character, and replace one of them. The phase transfers (<span class="fixw">E-D</span>, <span class="fixw">D-N</span>...) replace or add the status.</td></tr>
+<tr><td><a href="../Layer/Dyl-LayerPhase.htm">Layer Phase</a></td><td>The status: counts the layers of each phase, shows or hides them, and moves the current layer and the new objects to the active phase.</td></tr>
+<tr><td><a href="../Layer/Dyl-LayerKeys.htm">Layer Keys</a></td><td>The unphased layer of each key, to which the active phase is added (<span class="fixw">A-Detl-Thin</span> &rarr; <span class="fixw">A-Detl-Thin-E</span>).</td></tr>
+<tr><td><a href="../Layer/Dyl-LayerFilter.htm">Layer Filters</a></td><td>Wildcards on the fields: <span class="fixw">A-*</span> for architecture, <span class="fixw">*-E</span> and <span class="fixw">*-X</span> for existing, <span class="fixw">*-@@??</span> for the unphased layers (a name ending with a group), <span class="fixw">*-0001</span> &hellip; <span class="fixw">*-0009</span> for the stacks, <span class="fixw">*-Dims*</span>, <span class="fixw">*-Text*</span>... for the annotation (see its <em>Tokens</em>).</td></tr>
+<tr><td><a href="../Layer/Dyl-LayerMake.htm">Make Layers</a></td><td>Builds each name from the <span class="fixw">Designator</span>, <span class="fixw">Major</span> and <span class="fixw">Minor</span> columns of its lists, and gives the layer a color, lineweight and linetype from its codes.</td></tr>
 </table>
 </div>
 
