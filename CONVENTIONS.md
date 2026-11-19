@@ -97,6 +97,7 @@ The alias of a Quick Draw preset tells how it draws: `PL-*` for a preset drawn w
 - Each reactor has its own `Dynalisp*` setting, with a toggle and a short description in the Reactors section of Dyl-Settings.
 - Code in Remote or Apps that calls a Reactor function checks it is defined first: `(if Reactor>>Dyl:X ...)`.
 - A reactor that counts the commands running (to act when the outer one ends, not after a transparent `'ZOOM`) sets its count back to 0 when a command starts with no other one running (`Dyl:CmdTop-p` in `dynalisp.mnl`), never relying on getting the end of every command it saw start.
+- A reactor that watches the objects added (`:vlr-objectAppended`) is **active only while a command or a Lisp command runs**: it is added when one starts and removed when it ends (`Reactor>>Dyl:PhaseWatch`). Objects are also added with no command running (the Project Navigator palette of AutoCAD Architecture, as the first drawing of a session opens), and a Lisp call for each of them, in the middle of that work, froze AutoCAD until Escape was pressed.
 
 *Why: a safe way to shut every reactor down at once, plus a setting for each one. A command whose end a reactor never gets (one run while the drawing opens, one ended in another drawing) would leave its count stuck above 0: the reactor would stop acting and keep collecting every object added, slowing AutoCAD down until a Lisp command reset it.*
 
