@@ -633,6 +633,7 @@ coefficient;coefficients;n.m.;Enveloppe;Fenêtres et murs-rideaux;Valeur de perf
 coefficient d'emprise au sol;coefficients d'emprise au sol;loc.n.m.;Projet et réglementation;Implantation et terrain;Rapport entre la surface bâtie au sol et la surface du lot.;emprise
 coefficient U;coefficients U;loc.n.m.;Enveloppe;Fenêtres et murs-rideaux;Transmission thermique d'une fenêtre (W/m²·K).;coefficient
 coffrage;coffrages;n.m.;Structure;Béton et maçonnerie;Moule provisoire dans lequel on coule le béton.;décoffrage, décoffrant
+cogénération;cogénérations;n.f.;Mécanique et électricité;Ventilation et chauffage;Production simultanée d'électricité et de chaleur à partir d'une même source d'énergie.;génératrice
 coin;coins;n.m.;Enveloppe;Revêtements extérieurs;Pièce de finition à l'angle extérieur d'un revêtement.;retour
 colimaçon;;n.m.;Intérieur;Escaliers et garde-corps;Escalier en spirale (escalier en colimaçon).;
 collatéral;collatéraux;n.m.;Architecture;Églises : plan et espaces;Nef latérale le long de la nef principale.;bas-côté, nef
@@ -1352,6 +1353,7 @@ géo;;préf.;Mots composés;Préfixes;Préfixe qui signifie terre (géo-grille, 
 géocomposite;géocomposites;n.m.;Matériaux;Minéraux, liants et granulats;Produit qui associe plusieurs géosynthétiques (drainage, filtration).;géotextile
 géodésique;géodésiques;adj.;Projet et réglementation;Implantation et terrain;Se dit d'une altitude rattachée au réseau de référence.;niveau
 géogrille;géogrilles;n.f.;Matériaux;Minéraux, liants et granulats;Grille synthétique qui renforce un sol ou un remblai.;géotextile
+géolocalisation;géolocalisations;n.f.;Projet et réglementation;Logiciels et classifications;Repérage de la position d'un lieu ou d'un objet par ses coordonnées géographiques.;géoréférencé
 géomembrane;géomembranes;n.f.;Matériaux;Minéraux, liants et granulats;Membrane synthétique étanche employée sous le sol ou en bassin.;géotextile
 géomètre;;n.m.;Projet et réglementation;Implantation et terrain;Spécialiste de la mesure des terrains.;arpenteur-géomètre
 géoréférencé;géoréférencée, géoréférencées, géoréférencés;adj.;Projet et réglementation;Logiciels et classifications;Placé à ses coordonnées réelles sur le territoire (plan géoréférencé, nuage de points géoréférencé).;
@@ -1830,6 +1832,7 @@ MRC;;sigle;Abréviations et sigles;Organismes publics;Municipalité régionale d
 multi;;préf.;Mots composés;Préfixes;Préfixe qui signifie plusieurs (multi-usage).;multicouche
 multicouche;multicouches;adj.;Enveloppe;Toiture et drainage;Se dit d'une couverture de plusieurs couches de membrane collées.;membrane, bicouche
 multifamilial;multifamiliale, multifamiliales, multifamiliaux;adj.;Architecture;Types d'habitation;Se dit d'un immeuble de plusieurs logements.;unifamilial
+multifonctionnel;multifonctionnelle, multifonctionnelles, multifonctionnels;adj.;Projet et réglementation;Niveaux et espaces;Qui remplit plusieurs fonctions (salle multifonctionnelle).;
 multiplex;;n.m.;Architecture;Types d'habitation;Immeuble de plusieurs logements.;plex
 mur coupe-feu;murs coupe-feu;loc.n.m.;Projet et réglementation;Termes définis du code;Séparation coupe-feu de construction incombustible qui divise un bâtiment ou sépare deux bâtiments contigus, et qui reste stable si la structure d'un côté s'effondre. Terme défini du code.;séparation coupe-feu, mur mitoyen
 mur creux;murs creux;loc.n.m.;Structure;Béton et maçonnerie;Mur de deux parois de maçonnerie séparées par une lame d'air.;lame d'air
