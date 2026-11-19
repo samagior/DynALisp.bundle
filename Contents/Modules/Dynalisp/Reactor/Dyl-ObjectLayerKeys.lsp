@@ -39,6 +39,16 @@
 ;;  *olk:lisp*  - T while a Lisp command runs: its objects are not collected
 ;;  *olk:off*   - T while the command running is one of the skipped commands
 ;;  *olk:busy*  - T while the objects are moved (the layers created are not collected)
+;;  *olk:append* - the reactor of the objects added: active only while a command runs
+;;               (Reactor>>Dyl:ObjectKeysWatch), see Reactor\Dyl-LayerPhase.lsp (objects added with no command
+;;               running, by the palettes of AutoCAD Architecture, froze AutoCAD)
+
+;;  Turn the reactor of the objects added on (a command starts) or off:
+(defun Reactor>>Dyl:ObjectKeysWatch (on)
+  (if (and *olk:append* (not (eq (and on t) (vlr-added-p *olk:append*))))
+    (vl-catch-all-apply (if on 'vlr-add 'vlr-remove) (list *olk:append*))
+  )
+)
 
 (defun Reactor>>Dyl:ObjectKeysOnAppend (rea args)
   (if (and (not *olk:off*) (not *olk:busy*) (not *olk:lisp*) (< 0 *olk:depth*) (= 'ENAME (type (cadr args))))
@@ -56,12 +66,14 @@
     )
   )
   (setq *olk:depth* (1+ *olk:depth*))
+  (Reactor>>Dyl:ObjectKeysWatch t)
 )
 
 (defun Reactor>>Dyl:ObjectKeysOnEnd (rea args)
   (setq *olk:depth* (max 0 (1- *olk:depth*)))
   (if (= 0 *olk:depth*)
     (progn
+      (Reactor>>Dyl:ObjectKeysWatch nil)
       (if (not (or *olk:off* *olk:lisp*)) (Reactor>>Dyl:ObjectKeysRunSafe))
       (setq *olk:off* nil
             *olk:new* nil
@@ -80,6 +92,7 @@
         *olk:off*   nil
         *olk:new*   nil
   )
+  (Reactor>>Dyl:ObjectKeysWatch nil)
 )
 
 ;;  T when the entity data ed is in model space or in a layout (not in a block definition):
@@ -153,6 +166,7 @@
 (defun Reactor>>Dyl:ObjectKeysReactors (on)
   (foreach r *olk:reactors* (vl-catch-all-apply 'vlr-remove (list r)))
   (setq *olk:reactors* nil
+        *olk:append*   nil
         *olk:new*      nil
         *olk:cmd*      ""
         *olk:depth*    0
@@ -160,11 +174,14 @@
         *olk:off*      nil
         *olk:busy*     nil
   )
-  ;;  Only the reactors of the drawing in front run (see Dyl:ReactorLocal in dynalisp.mnl):
+  ;;  Only the reactors of the drawing in front run (see Dyl:ReactorLocal in dynalisp.mnl).
+  ;;  The reactor of the objects added waits for a command (Reactor>>Dyl:ObjectKeysWatch):
   (if (and on (Dyl:ReactorsOn-p))
-    (setq *olk:reactors*
+    (progn
+    (setq *olk:append*  (Dyl:ReactorLocal (vlr-acdb-reactor "Dyl-ObjectLayerKeys" '((:vlr-objectAppended . Reactor>>Dyl:ObjectKeysOnAppend))))
+          *olk:reactors*
            (mapcar 'Dyl:ReactorLocal
-                   (list (vlr-acdb-reactor "Dyl-ObjectLayerKeys" '((:vlr-objectAppended . Reactor>>Dyl:ObjectKeysOnAppend)))
+                   (list *olk:append*
                          (vlr-editor-reactor "Dyl-ObjectLayerKeys"
                                              '((:vlr-commandWillStart . Reactor>>Dyl:ObjectKeysOnStart)
                                                (:vlr-commandEnded . Reactor>>Dyl:ObjectKeysOnEnd)
@@ -177,6 +194,8 @@
                          )
                    )
            )
+    )
+    (Reactor>>Dyl:ObjectKeysWatch nil)
     )
   )
 )
