@@ -1344,6 +1344,7 @@ générateur-pulseur;générateurs-pulseurs;n.m.;Projet et réglementation;Terme
 générateur-pulseur d'air chaud;générateurs-pulseurs d'air chaud;loc.n.m.;Projet et réglementation;Termes définis du code;Générateur d'air chaud muni d'un ventilateur qui assure la circulation de l'air. Terme défini du code.;générateur d'air chaud
 génératrice;génératrices;n.f.;Mécanique et électricité;Électricité;Groupe électrogène de secours.;secours
 généré;générée, générées, générés;adj.;Projet et réglementation;Logiciels et classifications;Produit automatiquement par un logiciel ou un calcul (plan généré, quantités générées).;
+générer;génère, génèrent;v.;Projet et réglementation;Logiciels et classifications;Produire automatiquement, par un logiciel ou un calcul.;généré
 géo;;préf.;Mots composés;Préfixes;Préfixe qui signifie terre (géo-grille, géo-composite).;géotextile, géomembrane
 géocomposite;géocomposites;n.m.;Matériaux;Minéraux, liants et granulats;Produit qui associe plusieurs géosynthétiques (drainage, filtration).;géotextile
 géodésique;géodésiques;adj.;Projet et réglementation;Implantation et terrain;Se dit d'une altitude rattachée au réseau de référence.;niveau
@@ -1469,6 +1470,7 @@ imposte;impostes;n.f.;Enveloppe;Fenêtres et murs-rideaux;Partie fixe ou ouvrant
 imprégnant;imprégnants;n.m.;Matériaux;Coffrage et préparation des surfaces;Produit qui pénètre un matériau poreux pour le protéger.;imprégnation
 imprégnation;;n.f.;Matériaux;Coffrage et préparation des surfaces;Pénétration d'un produit dans un matériau poreux.;imprégnant
 imputrescible;imputrescibles;adj.;Matériaux;Bois et panneaux;Qui ne pourrit pas.;traité
+incombustibilité;;n.f.;Projet et réglementation;Incendie et issues;Caractère d'un matériau incombustible (essai d'incombustibilité de la norme CAN/ULC-S114).;incombustible, combustible
 incombustible;;adj.;Projet et réglementation;Incendie et issues;Se dit d'un matériau qui satisfait à l'essai d'incombustibilité de la norme CAN/ULC-S114. Terme défini du code.;combustible, construction incombustible, non-combustible
 incrustation;;n.f.;Patrimoine et rénovation;Joints et consolidation;Pièce de pierre neuve insérée dans un parement pour remplacer une partie abîmée.;greffe
 indice de propagation de la flamme;indices de propagation de la flamme;loc.n.m.;Enveloppe;Protection incendie;Indice qui mesure la vitesse de propagation de la flamme à la surface d'un matériau selon l'essai normalisé (CAN/ULC-S102). Terme défini du code.;propagation
@@ -1781,6 +1783,9 @@ ml;;abr.;Abréviations et sigles;Dimensions et unités;Mètre linéaire, ou mill
 mm;;abr.;Abréviations et sigles;Dimensions et unités;Millimètre.;
 mobilisation;mobilisations;n.f.;Projet et réglementation;Chantier et contrats;Installation de chantier au début des travaux.;chantier
 mod;;abr.;Abréviations et sigles;Matériaux et finis;Modèle.;
+modélisation;modélisations;n.f.;Projet et réglementation;Logiciels et classifications;Construction d'un modèle numérique en 2D ou en 3D d'un bâtiment ou d'un élément.;maquette, BIM
+modélisé;modélisée, modélisées, modélisés;adj.;Projet et réglementation;Logiciels et classifications;Représenté par un modèle numérique.;modélisation
+modéliser;modélise, modélisent;v.;Projet et réglementation;Logiciels et classifications;Faire le modèle numérique d'un bâtiment ou d'un élément.;modélisation
 modénature;modénatures;n.f.;Architecture;Appareils et moulures;Ensemble des moulures et profils d'une façade.;moulure
 modernisation;modernisations;n.f.;Patrimoine et rénovation;Interventions sur l'existant;Mise à jour des systèmes, des équipements ou des finis d'un bâtiment.;rétrofit
 modernisme;;n.m.;Architecture;Mouvements modernes et régionaux;Mouvement du XXe siècle qui privilégie la fonction, les volumes simples et les matériaux modernes.;fonctionnalisme, brutalisme
@@ -1788,6 +1793,7 @@ moderniste;modernistes;adj./n.;Architecture;Mouvements modernes et régionaux;Qu
 modification;modifications;n.f.;Projet et réglementation;Chantier et contrats;Changement aux travaux (avis de modification, ordre de changement).;directive
 modifié;modifiée;adj.;Matériaux;Minéraux, liants et granulats;Se dit d'un bitume additionné de polymères (SBS, APP).;SBS, APP
 modillon;modillons;n.m.;Architecture;Ordres et entablement;Petite console sous une corniche.;corbeau, denticule
+modularité;modularités;n.f.;Projet et réglementation;Niveaux et espaces;Caractère de ce qui est fait de modules qu'on peut assembler, déplacer ou remplacer.;
 moellon;moellons;n.m.;Structure;Béton et maçonnerie;Pierre de petite dimension, brute ou peu taillée, employée en maçonnerie.;maçonnerie
 moisage;;n.m.;Structure;Charpente traditionnelle;Assemblage par moises.;moise
 moise;moises;n.f.;Structure;Charpente traditionnelle;Paire de pièces qui en serrent une autre de chaque côté.;moisage
@@ -1949,6 +1955,10 @@ panneau mural contreventé;panneaux muraux contreventés;loc.n.m.;Projet et rég
 panneresse;panneresses;n.f.;Structure;Béton et maçonnerie;Brique ou pierre posée dans le sens de la longueur du mur, montrant sa grande face.;boutisse
 papier peint;papiers peints;loc.n.m.;Intérieur;Revêtements de sol et finis;Revêtement mural de papier.;
 parachèvement;parachèvements;n.m.;Projet et réglementation;Chantier et contrats;Finition des derniers travaux.;réception
+paramétrage;paramétrages;n.m.;Projet et réglementation;Logiciels et classifications;Réglage des paramètres d'un logiciel, d'un objet ou d'un appareil.;paramétrer
+paramétré;paramétrée, paramétrées, paramétrés;adj.;Projet et réglementation;Logiciels et classifications;Défini par des paramètres modifiables (bloc paramétré).;paramétrique
+paramétrer;paramètrent;v.;Projet et réglementation;Logiciels et classifications;Régler les paramètres d'un logiciel, d'un objet ou d'un appareil.;paramétrage
+paramétrique;paramétriques;adj.;Projet et réglementation;Logiciels et classifications;Dont la forme est pilotée par des paramètres et des contraintes (modèle paramétrique, bloc paramétrique).;paramétré
 parapet;parapets;n.m.;Enveloppe;Toiture et drainage;Muret de protection en bordure d'un toit, d'un balcon ou d'un pont.;acrotère, garde-corps
 parasismique;parasismiques;adj.;Mots composés;Protection (anti-);Conçu pour résister aux séismes.;
 paratonnerre;paratonnerres;n.m.;Enveloppe;Ferblanterie;Tige métallique qui protège un bâtiment de la foudre.;
