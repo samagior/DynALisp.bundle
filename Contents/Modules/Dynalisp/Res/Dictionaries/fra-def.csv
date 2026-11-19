@@ -690,6 +690,7 @@ consolidant;consolidants;n.m.;Matériaux;Coffrage et préparation des surfaces;P
 consolidation;;n.f.;Patrimoine et rénovation;Joints et consolidation;Renforcement d'un élément affaibli (pierre, bois, maçonnerie).;consolidant
 consommation nette zéro;consommations nettes zéros;loc.n.f.;Patrimoine et rénovation;Énergie et environnement;Bâtiment qui produit autant d'énergie qu'il en consomme.;carboneutre
 constructeur;constructeurs;n.m.;Projet et réglementation;Chantier et contrats;Personne qui exécute ou fait exécuter les travaux de construction. Le code emploie « entrepreneur ».;concepteur, entrepreneur
+constructibilité;;n.f.;Projet et réglementation;Implantation et terrain;Possibilité de construire sur un terrain selon les règlements d'urbanisme.;
 construction combustible;constructions combustibles;loc.n.f.;Projet et réglementation;Termes définis du code;Construction qui ne satisfait pas aux exigences d'une construction incombustible ni d'une construction en bois d'œuvre massif encapsulé. Terme défini du code.;construction incombustible, combustible
 construction en bois d'œuvre massif encapsulé;constructions en bois d'œuvre massif encapsulé;loc.n.f.;Projet et réglementation;Termes définis du code;Construction dont la sécurité incendie vient d'éléments en bois d'œuvre massif (CLT, lamellé-collé) encapsulés, ayant un degré d'encapsulation et des dimensions minimales. Terme défini du code.;CLT, lamellé-croisé
 construction en gros bois d'œuvre;constructions en gros bois d'œuvre;loc.n.f.;Projet et réglementation;Termes définis du code;Construction combustible dont la sécurité incendie vient des dimensions minimales des éléments structuraux, de l'épaisseur des planchers et des toits de bois et de l'absence de vides de construction. Terme défini du code.;gros bois d'œuvre
@@ -776,6 +777,7 @@ cour;cours;n.f.;Projet et réglementation;Niveaux et espaces;Espace libre d'un t
 cour arrière;cours arrière;loc.n.f.;Projet et réglementation;Niveaux et espaces;Espace libre derrière un bâtiment.;cour, arrière-cour
 cour avant;cours avant;loc.n.f.;Projet et réglementation;Niveaux et espaces;Espace libre entre la façade et la rue.;cour
 couronnement;couronnements;n.m.;Enveloppe;Toiture et drainage;Élément qui termine le haut d'un mur ou d'un parapet.;acrotère, solin
+courriel;courriels;n.m.;Projet et réglementation;Logiciels et classifications;Au Québec, message électronique (adresse courriel).;
 coussin;coussins;n.m.;Structure;Fondations;Couche de granulat sous une dalle ou une semelle.;radier
 couvent;couvents;n.m.;Architecture;Églises : plan et espaces;Maison d'une communauté religieuse.;monastère
 couverture;couvertures;n.f.;Enveloppe;Toiture et drainage;Partie supérieure du toit qui reçoit l'eau (bardeaux, tôle, membrane).;toiture
@@ -982,6 +984,7 @@ drainage;;n.m.;Enveloppe;Toiture et drainage;Évacuation des eaux d'un terrain o
 droits acquis;;loc.n.m.;Projet et réglementation;Accessibilité et usages;Droit de maintenir un usage ou un bâtiment devenu non conforme.;dérogatoire
 ductilité;ductilités;n.f.;Structure;Charges et calcul;Aptitude d'un matériau à se déformer sans se rompre.;rigidité
 duplex;;n.m./adj.;Architecture;Types d'habitation;Immeuble de deux logements superposés. Aussi: acier inoxydable austéno-ferritique (2205).;plex, austéno-ferritique, superduplex
+durabilité;;n.f.;Matériaux;Corrosion et protection;Aptitude d'un matériau ou d'un ouvrage à garder ses performances dans le temps.;
 duramen;;n.m.;Structure;Bois et façonnage traditionnel;Bois de cœur d'un arbre, plus dur et plus durable.;aubier
 durci;durcie, durcies, durcis;adj.;Matériaux;Verre;Se dit d'un verre semi-trempé, deux fois plus résistant que le verre recuit.;trempé
 durcissement;durcissements;n.m.;Matériaux;Minéraux, liants et granulats;Gain de résistance d'un béton.;prise
@@ -1505,6 +1508,7 @@ intercepteur;intercepteurs;n.m.;Mécanique et électricité;Plomberie;Appareil q
 intercom;intercoms;n.m.;Mécanique et électricité;Électricité;Interphone.;interphone
 intergranulaire;intergranulaires;adj.;Matériaux;Corrosion et protection;Se dit de la corrosion qui suit les joints des grains d'un métal, souvent près d'une soudure.;sensibilisation, stabilisé
 international;internationale, internationales, internationaux;adj.;Architecture;Mouvements modernes et régionaux;Se dit du style moderne international.;
+interopérabilité;;n.f.;Projet et réglementation;Logiciels et classifications;Capacité de logiciels différents à échanger des données (format IFC).;BIM
 interphone;interphones;n.m.;Mécanique et électricité;Électricité;Appareil de communication à l'entrée.;intercom
 interrupteur;interrupteurs;n.m.;Mécanique et électricité;Électricité;Appareil qui ouvre ou ferme un circuit électrique.;
 intrados;;n.m.;Architecture;Arcs et voûtes;Face intérieure, concave, d'un arc ou d'une voûte.;extrados
@@ -1700,6 +1704,7 @@ madrier;madriers;n.m.;Structure;Pièce sur pièce;Pièce de bois épaisse, scié
 Maibec;;n.pr.;Matériaux;Marques;Revêtement de bois préteint québécois.;bardeau
 maillet;maillets;n.m.;Enveloppe;Ferblanterie;Marteau de bois.;marteau
 main courante;mains courantes;loc.n.f.;Intérieur;Escaliers et garde-corps;Barre qu'on saisit le long d'un escalier.;rampe
+maintenabilité;;n.f.;Projet et réglementation;Accessibilité et usages;Aptitude d'un ouvrage ou d'un équipement à être entretenu et réparé facilement.;
 maison passive;maisons passives;loc.n.f.;Architecture;Mouvements modernes et régionaux;Maison très peu énergivore (norme Passivhaus).;passif
 maison québécoise;maisons québécoises;loc.n.f.;Architecture;Styles historiques;Maison traditionnelle à toit à larmier et galerie.;larmier, galerie
 maisonnette;maisonnettes;n.f.;Architecture;Types d'habitation;Petite maison.;
