@@ -24,8 +24,10 @@
 
         <p class="note">Each program has one main command named <span class="fixw">Dyl-*</span>. Its presets and variants are child commands (<span class="fixw">Pst-*</span>), run by their aliases (the short names, e.g. <span class="fixw">QD-CONCRETE</span>) or picked from the main command. In <span class="fixw">Dyl-Suite</span>, a main command with children shows <span class="fixw">[+]</span> / <span class="fixw">[-]</span>: double-click it (or Fold/Unfold) to show or hide its children; double-click any other command (or Command docs) to open its page, the commands without a page of their own opening this index. The list is sorted by command, aliases, name, module or group with <span class="fixw">Sort by</span>, each main command keeping its children under it. Aliases are added, renamed or removed in Dyl-Suite (saved in <span class="fixw">Resources\Aliases.csv</span>).</p>
 
-<h2>Core</h2>
-<p>The windows of DynALisp itself (in <span class="fixw">Resources</span>, not a module program).</p>
+<h2>DynALisp</h2>
+<p>What every module shares, not a program of the module: the windows of DynALisp itself, the ribbon and the plugins, and the standards the programs follow.</p>
+<h3>Core</h3>
+<p>The windows of DynALisp itself (in <span class="fixw">Resources</span>).</p>
 <div class="programs commands wide">
 <table>
 <tr><th>Page</th><th>Syntax</th></tr>
@@ -34,7 +36,16 @@
 <tr><td><a href="Core/Dyl-Info.htm">Info And User Files</a></td><td><span class="fixw">Dyl-Info</span>, <span class="fixw">Dyl-UserFiles</span> and the other core commands</td></tr>
 </table>
 </div>
-<h2>Conventions</h2>
+<h3>Plugins</h3>
+<p>The parts of DynALisp that are not commands: the ribbon and the .NET plugins loaded with it.</p>
+<div class="programs commands wide">
+<table>
+<tr><th>Page</th><th>Description</th></tr>
+<tr><td><a href="Plugins/Ribbon.htm">Ribbon</a></td><td>The DynALisp tab: a button per tool, its presets under its arrow, the drop-downs of Layer Phase and Layer Transfer (<span class="fixw">DynALisp.Ribbon.dll</span>, AutoCAD 2025 and later)</td></tr>
+<tr><td><a href="Plugins/CleanStartup.htm">Clean Startup</a></td><td>The startup lines of AutoCAD removed from the command line (<span class="fixw">DynALisp.Startup.dll</span>, AutoCAD 2015 and later)</td></tr>
+</table>
+</div>
+<h3>Conventions</h3>
 <p>The standards the programs follow.</p>
 <div class="programs commands wide">
 <table>
@@ -42,7 +53,9 @@
 <tr><td><a href="Conventions/LayerNaming.htm">Layer Naming</a></td><td>The layer names of the NCS (AIA CAD Layer Guidelines, v5) as DynALisp writes and reads them: discipline, major and minor groups, status (phase)</td></tr>
 </table>
 </div>
-<h2>Cleaning</h2>
+<h2>Apps</h2>
+<p>The programs of the module, by group: one page per Apps file, in the folder of its group (<span class="fixw">Apps\Draw\Dyl-QuickDraw.lsp</span>, <span class="fixw">Docs\Draw\Dyl-QuickDraw.htm</span>). Each one is turned on or off in <a href="Core/Dyl-Suite.htm">Dyl-Suite</a>.</p>
+<h3>Cleaning</h3>
 <div class="programs commands wide">
 <table>
 <tr><th>Program</th><th>Commands</th><th>Syntax</th></tr>
@@ -51,7 +64,7 @@
 <tr><td><a href="Cleaning/Dyl-SetByBlock.htm">Fix Blocks ByBlock</a></td><td>2</td><td><span class="fixw">Dyl-SetByBlock</span> (FIXBLKS), <span class="fixw">SL-BLOCKALL</span></td></tr>
 </table>
 </div>
-<h2>Draw</h2>
+<h3>Draw</h3>
 <div class="programs commands wide">
 <table>
 <tr><th>Program</th><th>Commands</th><th>Syntax</th></tr>
@@ -61,7 +74,7 @@
 <tr><td><a href="Draw/Dyl-Shrinkwrap.htm">Shrinkwrap</a></td><td>1</td><td><span class="fixw">Dyl-Shrinkwrap</span></td></tr>
 </table>
 </div>
-<h2>Layer</h2>
+<h3>Layer</h3>
 <div class="programs commands wide">
 <table>
 <tr><th>Program</th><th>Commands</th><th>Syntax</th></tr>
@@ -81,14 +94,14 @@
 <tr><td><a href="Layer/Dyl-ObjectLayerKeys.htm">Object Layer Keys</a></td><td>1</td><td><span class="fixw">Dyl-ObjectLayerKeys</span></td></tr>
 </table>
 </div>
-<h2>Navigate</h2>
+<h3>Navigate</h3>
 <div class="programs commands wide">
 <table>
 <tr><th>Program</th><th>Commands</th><th>Syntax</th></tr>
 <tr><td><a href="Navigate/Dyl-SwitchDrawingScale.htm">Switch Drawing Scale</a></td><td>40</td><td><span class="fixw">Dyl-SwitchDrawingScale</span>, <span class="fixw">1-1</span> &hellip;</td></tr>
 </table>
 </div>
-<h2>Output</h2>
+<h3>Output</h3>
 <div class="programs commands wide">
 <table>
 <tr><th>Program</th><th>Commands</th><th>Syntax</th></tr>
@@ -96,7 +109,7 @@
 <tr><td><a href="Output/Dyl-PrepDrawing.htm">Prep Drawing</a></td><td>1</td><td><span class="fixw">Dyl-PrepDrawing</span></td></tr>
 </table>
 </div>
-<h2>Setup</h2>
+<h3>Setup</h3>
 <div class="programs commands wide">
 <table>
 <tr><th>Program</th><th>Commands</th><th>Syntax</th></tr>
@@ -106,14 +119,14 @@
 <tr><td><a href="Setup/Dyl-SysVars.htm">System Variables</a></td><td>1</td><td><span class="fixw">Dyl-SysVars</span></td></tr>
 </table>
 </div>
-<h2>Troubleshooting</h2>
+<h3>Troubleshooting</h3>
 <div class="programs commands wide">
 <table>
 <tr><th>Program</th><th>Commands</th><th>Syntax</th></tr>
 <tr><td><a href="Troubleshooting/Dyl-Diagnostics.htm">Diagnostics</a></td><td>9</td><td><span class="fixw">Dyl-Diagnostics</span> (DIAG), <span class="fixw">DIAG-ACAD</span> &hellip;</td></tr>
 </table>
 </div>
-<h2>Utilities</h2>
+<h3>Utilities</h3>
 <div class="programs commands wide">
 <table>
 <tr><th>Program</th><th>Commands</th><th>Syntax</th></tr>

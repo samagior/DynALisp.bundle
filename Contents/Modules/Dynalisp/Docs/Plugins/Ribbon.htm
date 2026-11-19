@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Ribbon</title>
+    <link rel="stylesheet" href="../../../../Resources/docs.css">
+</head>
+
+<body>
+    <div id="header">
+        <p>DynALisp <span>Docs</span></p>
+    </div>
+
+    <div id="content">
+        <h1>Ribbon</h1>
+
+<div class="toc">
+<h5>Contents</h5>
+<ul>
+<li class="outer"><a class="outer" href="#desc">Description</a></li>
+<li class="outer"><a class="outer" href="#panels">Panels</a></li>
+<li class="outer"><a class="outer" href="#buttons">Buttons</a></li>
+<li class="outer"><a class="outer" href="#dropdowns">Drop-downs</a></li>
+<li class="outer"><a class="outer" href="#notes">Notes</a></li>
+<li class="outer"><a class="outer" href="#build">Building The Ribbon</a></li>
+</ul>
+</div>
+
+<div class="programs">
+<table>
+<tr class="alt">
+<td>Source File</td>
+<td><span class="fixw">Resources\DynALisp.cuix</span> (the tab) and <span class="fixw">Resources\DynALisp.Ribbon.dll</span> (its drop-downs)</td>
+</tr>
+<tr>
+<td>Requires</td>
+<td>AutoCAD for Windows; the drop-downs need AutoCAD 2025 or later</td>
+</tr>
+<tr class="alt">
+<td>Licence</td>
+<td>GNU General Public License v3</td>
+</tr>
+</table>
+</div>
+
+<h2 id="desc">Description</h2>
+<p>The <strong>DynALisp</strong> tab of the ribbon has a button for each tool of the Dynalisp module, with an icon of its own, in a panel per group, and the core commands in the DynALisp panel. AutoCAD loads it with DynALisp: there is nothing to set up.</p>
+
+<h2 id="panels">Panels</h2>
+<div class="programs commands wide">
+<table>
+<tr><th>Panel</th><th>Tools</th></tr>
+<tr><td>Draw</td><td><a href="../Draw/Dyl-QuickDrawGallery.htm">Quick Draw</a> (the gallery), <a href="../Draw/Dyl-QuickShape.htm">Quick Shape</a>, <a href="../Draw/Dyl-QuickDraw.htm">Quick Draw Manager</a>, <a href="../Draw/Dyl-HatchPresets.htm">Hatch Presets</a>, <a href="../Draw/Dyl-Shrinkwrap.htm">Shrinkwrap</a></td></tr>
+<tr><td>Drawing Behaviors</td><td><a href="../Layer/Dyl-LayerPhase.htm">Layer Phase</a> and its drop-downs, <a href="../Layer/Dyl-ObjectLayerKeys.htm">Object Layer Keys</a>, <a href="../Layer/Dyl-DrawOrder.htm">Draw Order</a></td></tr>
+<tr><td>Layer Transfer</td><td><a href="../Layer/Dyl-LayerTransfer.htm">Transfer</a>, its drop-downs and <strong>Manager</strong></td></tr>
+<tr><td>Layer Tools</td><td>Layer Keys, Make Layers, Import Layers From CSV, Layer Filters, Layer Groups, Import Layer Filters; in the slide-out: Layer Drawing List, Export Layers To CSV, Layer Pen Colors, Layer Color Weight</td></tr>
+<tr><td>Text</td><td>Add Prefix / Suffix, Quick Add Prefix / Suffix, Claude Text Fix; in the slide-out: Dictionary, Multileader List</td></tr>
+<tr><td>Cleaning</td><td>Color ByLayer, Data Links, Fix Blocks ByBlock</td></tr>
+<tr><td>Navigate</td><td>Switch Drawing Scale</td></tr>
+<tr><td>Output</td><td>Prep Drawing; in the slide-out: Command Optimizer</td></tr>
+<tr><td>Setup</td><td>Set Units, Standard Grid, System Variables; in the slide-out: Set File Preferences</td></tr>
+<tr><td>Utilities</td><td>Quick Select Similar, Group Cluster, Ungroup Nested, Line To Polyline, Layer Color To Object, Reset Linetype Scale; in the slide-out: Viewport To Paper Space, Batch Insert, Count by Layers, Rebuild Patterns, Open Folder</td></tr>
+<tr><td>Troubleshooting</td><td><a href="../Troubleshooting/Dyl-Diagnostics.htm">Diagnostics</a></td></tr>
+<tr><td>DynALisp</td><td><a href="../Core/Dyl-Settings.htm">Settings</a>, <a href="../Core/Dyl-Suite.htm">Suite</a>, <a href="../Core/Dyl-Info.htm">User Files</a>, <a href="../Core/Dyl-Info.htm">Info</a>, <strong>Docs</strong> (the docs of every module installed); in the slide-out: Reload</td></tr>
+</table>
+</div>
+
+<h2 id="buttons">Buttons</h2>
+<div class="spacedbullets">
+<ul>
+<li>The arrow of a button lists the presets of its tool (the phases, the drawing scales, the units...), its main command first. The button then runs the item picked last, as the Circle button of AutoCAD.</li>
+<li>The arrow of the <strong>Quick Draw</strong> button lists <em>All</em> and the groups of the presets: the gallery opens on the group picked.</li>
+<li>The tools used less often are in the slide-out of their panel: the arrow beside its title.</li>
+<li>A button whose tool works on the objects selected (<strong>Transfer</strong>) keeps the selection; the other buttons cancel the command running first.</li>
+<li>Hover over a button to see its description.</li>
+</ul>
+</div>
+
+<h2 id="dropdowns">Drop-downs</h2>
+<p>Two panels have drop-downs that show what the drawing is set to, as the Layer drop-down of AutoCAD:</p>
+<div class="spacedbullets">
+<ul>
+<li><strong>Drawing Behaviors</strong> &ndash; auto-phase and the active phase of the current drawing (see <a href="../Layer/Dyl-LayerPhase.htm">Layer Phase</a>). Picking an item sets it.</li>
+<li><strong>Layer Transfer</strong> &ndash; the Level, From and To of the transfer (see <a href="../Layer/Dyl-LayerTransfer.htm">Layer Transfer</a>). Their lists follow the layers of the drawing. Picking a value only chooses it: the <strong>Transfer</strong> button runs it. The choices are kept for the session.</li>
+</ul>
+</div>
+<p>They always show the current state, whatever changed it (an alias, a window, another drawing made current).</p>
+
+<h2 id="notes">Notes</h2>
+<div class="spacedbullets">
+<ul>
+<li>The drop-downs are added by <span class="fixw">Resources\DynALisp.Ribbon.dll</span>, which needs AutoCAD 2025 or later. In an older version, the tab has its buttons only: the Layer Phase button opens its window, and the Transfer button asks for the level and the values.</li>
+<li>A tool turned off in <a href="../Core/Dyl-Suite.htm">Dyl-Suite</a> answers <em>Unknown command</em> when its button is clicked.</li>
+<li>The drop-downs change only while AutoCAD is idle, with no command running: after a command, they may take a moment to show the new state.</li>
+<li>A problem of the drop-downs prints a line starting with <em>DynALisp ribbon:</em> at the command line.</li>
+</ul>
+</div>
+
+<h2 id="build">Building The Ribbon</h2>
+<p>For whoever changes DynALisp: the tab is generated, never edited in the CUI editor.</p>
+<div class="spacedbullets">
+<ul>
+<li><span class="fixw">Installer\Ribbon\BuildRibbon.py</span> writes <span class="fixw">DynALisp.cuix</span> from <span class="fixw">Installer\Ribbon\Ribbon.csv</span> (the panels and buttons), <span class="fixw">RibbonIcons.py</span> (the icons) and <span class="fixw">Resources\StartupSuite.csv</span> (the names, descriptions and children). It warns about a main command missing from the ribbon or without an icon. <span class="fixw">--sheet &lt;file.png&gt;</span> draws every icon on the light and the dark ribbon.</li>
+<li>The drop-downs are built with <span class="fixw">dotnet build Installer\Ribbon\Plugin -c Release</span>, AutoCAD closed.</li>
+<li>Restart AutoCAD to see the new ribbon.</li>
+</ul>
+</div>
+
+<p><a href="../index.htm">&larr; Dynalisp module docs index</a></p>
+
+    </div>
+
+    <div id="footer">
+        <p>Author: Samuel Martineau, Copyright &copy; 2026 &ndash; released under the GNU General Public License v3</p>
+    </div>
+</body>
+
+</html>
