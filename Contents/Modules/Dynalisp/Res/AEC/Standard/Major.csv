@@ -1,60 +1,60 @@
-Abbreviation,ColorGroup,ColorIndex,Lineweight,Linetype,Description
-Accs,--,-,----,------,Access Plan
-Acid,--,-,----,------,Acid Water System
-Aeri,--,-,----,------,Aerial Survey
-Afff,--,-,----,------,Aqueous Film Forming Foam System
-Afld,--,-,----,------,Airfields
-Air~,--,-,----,------,Air
-Algn,--,-,----,------,Alignment
-Alrm,--,-,----,------,Alarm
-Anch,--,-,----,------,Anchor
-Anno,--,-,----,------,Annotation
-Appl,--,-,----,------,Bearings And Distance Labels
-Area,--,-,----,------,Area
-Arow,--,-,----,------,North Arrow
-Auxl,--,-,----,------,Auxiliary
-Barr,--,-,----,------,Barrier
-Bcst,--,-,----,------,Broadcast Related System (Radio or TV)
-Beam,--,-,----,------,Beam
-Bell,--,-,----,------,Bell
-Bgrd,--,-,----,------,Background
-Bldg,--,-,----,------,Building And Primary Structures
-Blin,--,-,----,------,Boundary Line
-Bloc,--,-,----,------,Block
-Bndy,--,-,----,------,Boundary
-Bore,--,-,----,------,Borings
-Brcg,--,-,----,------,Bracing
-Brdg,--,-,----,------,Bridge
-Brin,--,-,----,------,Brine
-Brkl,--,-,----,------,Break / Fault Line
-Brln,--,-,----,------,Building Restriction Line
-Bzna,--,-,----,------,Buffer Zone Aera
-Elev,--,-,----,------,Elevation
-Sect,--,-,----,------,Section
-Detl,--,-,----,------,Detail
-Plan,--,-,----,------,Plan
-Flor,--,-,----,------,Floor
-Fnsh,--,-,----,------,Finishes Plan
-Furn,--,-,----,------,Furnishing Plan
-Strc,--,-,----,------,Structural Plan
-Elec,--,-,----,------,Electrical Plan
-Hvac,--,-,----,------,Hvac Plan
-Clng,--,-,----,------,Ceiling Plan
-Code,--,-,----,------,Code Compliance Plan
-Door,--,-,----,------,Doors
-Glaz,--,-,----,------,Glazing
-Wall,--,-,----,------,Wall
-Roof,--,-,----,------,Roof
-Cols,--,-,----,------,Columns
-Conv,--,-,----,------,Conveying systems
-Clng,--,-,----,------,Ceiling
-Hvac,--,-,----,------,Hvac systems
-Furn,--,-,----,------,Furnishings
-Eqpm,--,-,----,------,Equipment
-Lite,--,-,----,------,Lighting
-Fenc,--,-,----,------,Fences
-Irrg,--,-,----,------,Irrigation
-Plnt,--,-,----,------,Plant and landascape material
-Pvmt,--,-,----,------,Pavement
-Site,--,-,----,------,Site features
-Topo,--,-,----,------,Topographic features
+﻿Abbreviation,ColorGroup,ColorIndex,Lineweight,Linetype,Description,Description.fr
+Accs,--,-,----,------,Access Plan,Plan d'accès
+Acid,--,-,----,------,Acid Water System,Réseau d'eaux acides
+Aeri,--,-,----,------,Aerial Survey,Levé aérien
+Afff,--,-,----,------,Aqueous Film Forming Foam System,Système à mousse formant un film aqueux
+Afld,--,-,----,------,Airfields,Aérodromes
+Air~,--,-,----,------,Air,Air
+Algn,--,-,----,------,Alignment,Alignement
+Alrm,--,-,----,------,Alarm,Alarme
+Anch,--,-,----,------,Anchor,Ancrage
+Anno,--,-,----,------,Annotation,Annotation
+Appl,--,-,----,------,Bearings And Distance Labels,Étiquettes de gisements et distances
+Area,--,-,----,------,Area,Superficie
+Arow,--,-,----,------,North Arrow,Flèche du nord
+Auxl,--,-,----,------,Auxiliary,Auxiliaire
+Barr,--,-,----,------,Barrier,Barrière
+Bcst,--,-,----,------,Broadcast Related System (Radio or TV),Système de radiodiffusion (radio ou télé)
+Beam,--,-,----,------,Beam,Poutre
+Bell,--,-,----,------,Bell,Cloche
+Bgrd,--,-,----,------,Background,Arrière-plan
+Bldg,--,-,----,------,Building And Primary Structures,Bâtiment et structures principales
+Blin,--,-,----,------,Boundary Line,Ligne de limite
+Bloc,--,-,----,------,Block,Bloc
+Bndy,--,-,----,------,Boundary,Limite
+Bore,--,-,----,------,Borings,Forages
+Brcg,--,-,----,------,Bracing,Contreventement
+Brdg,--,-,----,------,Bridge,Pont
+Brin,--,-,----,------,Brine,Saumure
+Brkl,--,-,----,------,Break / Fault Line,Ligne de rupture / de faille
+Brln,--,-,----,------,Building Restriction Line,Ligne de restriction de construction
+Bzna,--,-,----,------,Buffer Zone Aera,Zone tampon
+Elev,--,-,----,------,Elevation,Élévation
+Sect,--,-,----,------,Section,Coupe
+Detl,--,-,----,------,Detail,Détail
+Plan,--,-,----,------,Plan,Plan
+Flor,--,-,----,------,Floor,Plancher
+Fnsh,--,-,----,------,Finishes Plan,Plan des finis
+Furn,--,-,----,------,Furnishing Plan,Plan d'ameublement
+Strc,--,-,----,------,Structural Plan,Plan de structure
+Elec,--,-,----,------,Electrical Plan,Plan d'électricité
+Hvac,--,-,----,------,Hvac Plan,Plan de CVCA
+Clng,--,-,----,------,Ceiling Plan,Plan de plafond
+Code,--,-,----,------,Code Compliance Plan,Plan de conformité au code
+Door,--,-,----,------,Doors,Portes
+Glaz,--,-,----,------,Glazing,Vitrage
+Wall,--,-,----,------,Wall,Mur
+Roof,--,-,----,------,Roof,Toiture
+Cols,--,-,----,------,Columns,Colonnes
+Conv,--,-,----,------,Conveying systems,Systèmes de transport
+Clng,--,-,----,------,Ceiling,Plafond
+Hvac,--,-,----,------,Hvac systems,Systèmes de CVCA
+Furn,--,-,----,------,Furnishings,Mobilier
+Eqpm,--,-,----,------,Equipment,Équipement
+Lite,--,-,----,------,Lighting,Éclairage
+Fenc,--,-,----,------,Fences,Clôtures
+Irrg,--,-,----,------,Irrigation,Irrigation
+Plnt,--,-,----,------,Plant and landascape material,Végétaux et matériaux paysagers
+Pvmt,--,-,----,------,Pavement,Revêtement de chaussée
+Site,--,-,----,------,Site features,Éléments du site
+Topo,--,-,----,------,Topographic features,Éléments topographiques

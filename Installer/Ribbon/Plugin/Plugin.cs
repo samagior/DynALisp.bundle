@@ -378,6 +378,30 @@ namespace DynALisp.Ribbon
             return File.Exists(usr) ? usr : Path.Combine(Bundle, "Contents", rel);
         }
 
+        // The fields of a CSV line: a field in quotes may hold the separator ("Mixing Box, Dual
+        // Duct" in Minor.csv), "" in it is one quote:
+        public static string[] Fields(string line, char sep)
+        {
+            var out = new List<string>();
+            var cur = new System.Text.StringBuilder();
+            bool quoted = false;
+            for (int i = 0; i < line.Length; i++)
+            {
+                char c = line[i];
+                if (quoted)
+                {
+                    if (c == '"' && i + 1 < line.Length && line[i + 1] == '"') { cur.Append('"'); i++; }
+                    else if (c == '"') quoted = false;
+                    else cur.Append(c);
+                }
+                else if (c == '"') quoted = true;
+                else if (c == sep) { out.Add(cur.ToString()); cur.Clear(); }
+                else cur.Append(c);
+            }
+            out.Add(cur.ToString());
+            return out.ToArray();
+        }
+
         // The (code, description) rows of a list of Res\AEC\Standard: the first column and the
         // last one (Description). Separator: ; tab or , (whichever the header uses).
         public static List<KeyValuePair<string, string>> Standard(string name)
@@ -390,7 +414,7 @@ namespace DynALisp.Ribbon
                 var lines = File.ReadAllLines(path);
                 if (lines.Length == 0) return lst;
                 char sep = lines[0].Contains(';') ? ';' : lines[0].Contains('\t') ? '\t' : ',';
-                var head = lines[0].Split(sep);
+                var head = Fields(lines[0], sep);
                 int desc = Array.FindIndex(head, h => h.Trim().Trim('﻿').Equals("Description", StringComparison.OrdinalIgnoreCase));
                 // The description in the language of DynALisp (Description.fr), the English one
                 // where it has none:
@@ -398,7 +422,7 @@ namespace DynALisp.Ribbon
                     : Array.FindIndex(head, h => h.Trim().Trim('﻿').Equals("Description." + T.Lang, StringComparison.OrdinalIgnoreCase));
                 foreach (var line in lines.Skip(1))
                 {
-                    var f = line.Split(sep);
+                    var f = Fields(line, sep);
                     string code = f[0].Trim();
                     if (code == "") continue;
                     string d = local >= 0 && local < f.Length ? f[local].Trim() : "";
