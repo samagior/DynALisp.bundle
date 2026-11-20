@@ -3807,6 +3807,10 @@
   ;; (see Modules\Dynalisp\Remote\Dyl-EnvColor.lsp):
   (if Remote>>Dyl:DisplayApply (Dyl:StartupStep "Display" 'Remote>>Dyl:DisplayApply nil))
 
+  ;; Revisions: a sheet of a project updated with the revisions of the project, while
+  ;; Revisions is on in Dyl-Settings (see Modules\Dynalisp\Remote\Dyl-Revisions.lsp):
+  (if Remote>>Dyl:RevisionsWatch (Dyl:StartupStep "Revisions" 'Remote>>Dyl:RevisionsWatch nil))
+
   ;; DynALisp profile set from the file preferences chosen in Dyl-Settings: only checked,
   ;; a profile made current while a drawing opens reloads the menus of every drawing (see
   ;; Modules\Dynalisp\Remote\Dyl-FilePrefs.lsp):
@@ -4519,6 +4523,11 @@
 ;;;     (Remote>>Dyl:LayerKeyCheck): Update them without asking (DynalispLayerKeyUpdate)
 ;;;     or Keep them without asking (DynalispLayerKeyKeep), one of them at most; both
 ;;;     off, the question is asked (see Modules\Dynalisp\Remote\Dyl-LayerKey.lsp)
+;;;   - Revisions (Overrides, DynalispRevisionSync, see Remote>>Dyl:RevSyncOn-p in
+;;;     Modules\Dynalisp\Remote\Dyl-Revisions.lsp): every sheet of a project updated with
+;;;     the revisions of the project when it opens; its open button runs
+;;;     Pst-RevisionTitleBlocks (the title blocks), then opens the window again (greyed out
+;;;     when Dyl-Revisions is turned off in Dyl-Suite). Saving it on updates this drawing
 ;;;   - Clean startup (Overrides, DynalispCleanStartup, see Dyl:CleanStartupSet): the
   ;;;     startup lines removed from the command line, from the next startup; greyed
   ;;;     out without Resources\DynALisp.Startup.dll (Dyl:CleanStartup not defined)
@@ -4639,6 +4648,12 @@
     (set_tile "svo" (if st:svo "1" "0"))
     (if (not Remote>>Dyl:SysVarOnSet) (mode_tile "svo" 1))
     (Dyl:MoreTile "svm" (and st:svo c:Dyl-SysVars))
+    ;; Revisions: its open button (the title blocks) available while off, greyed out when
+    ;; Dyl-Revisions is turned off in Dyl-Suite; both when Dyl-Revisions.lsp of the Remote
+    ;; folder is not loaded:
+    (set_tile "rvo" (if st:rvo "1" "0"))
+    (if (not Remote>>Dyl:RevSyncSet) (mode_tile "rvo" 1))
+    (Dyl:MoreTile "rvm" (and Remote>>Dyl:RevSyncSet c:Pst-RevisionTitleBlocks T))
     ;; Clean startup: greyed out without the plugin that does it (AutoCAD older than 2015):
     (set_tile "csu" (if st:csu "1" "0"))
     (if (not Dyl:CleanStartup) (mode_tile "csu" 1))
@@ -4669,6 +4684,7 @@
           st:aup (= "1" (get_tile "aup"))
           st:csu (= "1" (get_tile "csu"))
           st:lng (car (nth (atoi (get_tile "lng")) *dyl:langs*))
+          st:rvo (= "1" (get_tile "rvo"))
           st:lkm (cond ((= "1" (get_tile "lku")) "Update") ((= "1" (get_tile "lkk")) "Keep"))
           ;; The other file preferences are set in their own window (Dyl:SetPrefsDlg):
           st:pfp (if st:pfp (cons (= "1" (get_tile "pfo")) (cdr st:pfp)))
@@ -4839,6 +4855,10 @@
   ;;; profiles itself:
   (defun Dyl:SetSysVars () (Dyl:SetRun (list "System Variables" 'c:Dyl-SysVars nil)))
 
+  ;;; Open button of Revisions: the Revision Title Blocks window (Pst-RevisionTitleBlocks of
+  ;;; Dyl-Revisions), which saves the title blocks itself:
+  (defun Dyl:SetRevBlocks () (Dyl:SetRun (list "Revision Title Blocks" 'c:Pst-RevisionTitleBlocks nil)))
+
   ;;; Apply the values saved, only the ones changed (old: the values when the
   ;;; window opened, see st:old in c:Dyl-Settings):
   (defun Dyl:SetApply (old / res)
@@ -4875,6 +4895,23 @@
     (if (not (eq st:aup (nth 13 old))) (Dyl:UpdAutoSet st:aup))
     (if (not (eq st:csu (nth 16 old))) (Dyl:CleanStartupSet st:csu))
     (if (/= st:lng (nth 17 old)) (Dyl:LangSet st:lng))
+    ;; Revisions: turned on, this drawing updated right away when it is a sheet of a project:
+    (if (and Remote>>Dyl:RevSyncSet (not (eq st:rvo (nth 18 old))))
+      (progn
+        (Remote>>Dyl:RevSyncSet st:rvo)
+        (princ (strcat "\nRevisions "
+                       (cond
+                         ((not st:rvo) "off: the sheets are updated by Dyl-Revisions only.")
+                         ((vl-catch-all-error-p (setq res (vl-catch-all-apply 'Remote>>Dyl:RevisionsWatch)))
+                          (strcat "on, --> " (vl-catch-all-error-message res) ".")
+                         )
+                         (res (strcat "on, this drawing: " res "."))
+                         ("on: the sheets of a project are updated when they open.")
+                       )
+               )
+        )
+      )
+    )
     ;; Layer keys: the answer remembered to the layers that differ from their key:
     (if (and Remote>>Dyl:LayerKeyMatchSet (not (equal st:lkm (nth 14 old))))
       (progn
@@ -4956,7 +4993,7 @@
     )
   )
 
-  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:csu st:lng st:old st:dch st:sta)
+  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:old st:dch st:sta)
     (setq st:defs (Dyl:SetDefsRead)
           st:aph  (and Remote>>Dyl:PhaseAuto-p (Remote>>Dyl:PhaseAuto-p) T)
           st:ado  (and Remote>>Dyl:DrawOrderAuto-p (Remote>>Dyl:DrawOrderAuto-p) T)
@@ -4975,7 +5012,8 @@
           st:alk  (and Remote>>Dyl:ObjectKeysAuto-p (Remote>>Dyl:ObjectKeysAuto-p) T)
           st:csu  (Dyl:CleanStartupOn-p)
           st:lng  (Dyl:Lang)
-          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup st:lkm st:alk st:csu st:lng)
+          st:rvo  (and Remote>>Dyl:RevSyncOn-p (Remote>>Dyl:RevSyncOn-p) T)
+          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo)
           st:dch  (load_dialog (strcat (vl-filename-directory *dyl:prep) "\\Dyl-Settings.dcl"))
           st:sta  2
     )
@@ -5004,6 +5042,8 @@
       ;; again; greyed out while off:
       (action_tile "svo" "(Dyl:MoreTile \"svm\" (and (= \"1\" $value) c:Dyl-SysVars))")
       (action_tile "svm" "(Dyl:SetDlgGet) (done_dialog 6)")
+      ;; ... of Revisions (8) closes the window, runs Pst-RevisionTitleBlocks and opens it again:
+      (action_tile "rvm" "(Dyl:SetDlgGet) (done_dialog 8)")
       ;; Layer keys: one of the two answers at most:
       (action_tile "lku" "(if (= \"1\" $value) (set_tile \"lkk\" \"0\"))")
       (action_tile "lkk" "(if (= \"1\" $value) (set_tile \"lku\" \"0\"))")
@@ -5015,6 +5055,7 @@
       (if (= 5 st:sta) (Dyl:SetDrawOrder))
       (if (= 6 st:sta) (Dyl:SetSysVars))
       (if (= 7 st:sta) (Dyl:SetObjectKeys))
+      (if (= 8 st:sta) (Dyl:SetRevBlocks))
     )
     (if (<= 0 st:dch) (unload_dialog st:dch))
     (cond

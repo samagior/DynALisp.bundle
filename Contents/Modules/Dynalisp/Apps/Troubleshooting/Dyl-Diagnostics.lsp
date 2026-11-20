@@ -879,7 +879,56 @@
   (dg:try 'dg:dwg-spaces)
   (dg:try 'dg:dwg-tables)
   (dg:try 'dg:dwg-objects)
+  (dg:try 'dg:dwg-revisions)
   (dg:try 'dg:dwg-regen)
+)
+
+;;  The revisions of the project of the drawing (Dyl-Revisions): its files, and the title
+;;  blocks of the layouts that have revisions. No project name or folder (they can name a
+;;  client):
+(defun dg:dwg-revisions (/ prj revs maps shts scan xr n)
+  (dg:sub "Revisions (Dyl-Revisions)")
+  (dg:kv "DynalispRevisionSync" (getenv "DynalispRevisionSync"))
+  (cond
+    ((not Remote>>Dyl:RevProjectOf) (dg:bad "Remote\\Dyl-Revisions.lsp is not loaded"))
+    ((not (setq prj (Remote>>Dyl:RevProjectOf))) (dg:item "Not in a Project Navigator project (no .apj from its folder up)"))
+    (T
+     (setq revs (Remote>>Dyl:RevRead prj)
+           maps (Remote>>Dyl:RevBlocks)
+           shts (Remote>>Dyl:RevSheets prj)
+     )
+     (dg:kv "Project" "found (.apj)")
+     (dg:kv "Sheet folder" (if (vl-file-directory-p (nth 4 prj)) "found" "missing"))
+     (dg:kv "Revisions" (strcat (itoa (length revs)) " (" (itoa (length (vl-remove-if-not '(lambda (r) (= "1" (nth 6 r))) revs))) " issued)"))
+     (dg:kv "Settings" (Remote>>LM:lst->str (mapcar '(lambda (s) (strcat (car s) "=" (cdr s))) (Remote>>Dyl:RevSettings prj)) ", "))
+     (dg:kv "Sheets.csv" (strcat (itoa (length shts)) " sheet(s)"))
+     (dg:kv "Title blocks set up" (itoa (length maps)))
+     (foreach f '("Revisions.csv" "Sheets.csv")
+       (if (and (findfile (Remote>>Dyl:RevPath prj f)) (not (setq n (open (Remote>>Dyl:RevPath prj f) "r"))))
+         (dg:bad (strcat f " of the project cannot be read"))
+         (if n (close n))
+       )
+     )
+     (dg:kv "This drawing" (if (Remote>>Dyl:RevSheetThis prj) "a sheet of the project" "not in the sheet folder"))
+     (vlax-for lay (vla-get-Layouts (dg:doc))
+       (if (= :vlax-false (vla-get-ModelType lay))
+         (progn
+           (setq scan (Remote>>Dyl:RevScan (vla-get-Block lay) maps)
+                 xr   (Remote>>Dyl:RevXrecGet lay)
+           )
+           (dg:item (strcat (vla-get-Name lay) ": " (itoa (length (car xr))) " revision(s) given, "
+                            (itoa (length (car scan))) " in clouds, " (itoa (length (caddr scan))) " title block(s)"
+                            (if (and xr (= 1 (cadr xr))) ", attributes to set again (ObjectDBX)" "")
+                    )
+           )
+           (if (and (or (car xr) (car scan)) (not (caddr scan)))
+             (dg:bad (strcat "Layout " (vla-get-Name lay) " has revisions but no title block set up (REVTB)"))
+           )
+         )
+       )
+     )
+    )
+  )
 )
 
 (defun dg:dwg-file (/ f)

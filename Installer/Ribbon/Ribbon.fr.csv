@@ -131,6 +131,10 @@ PST-DRAWINGSCALE1-24;Échelle du dessin 1/2 po = 1 pi;Règle l'échelle d'annota
 PST-DRAWINGSCALE1-48;Échelle du dessin 1/4 po = 1 pi;Règle l'échelle d'annotation à 1/4 po = 1 pi (1:48) dans les dessins impériaux ou à 1:50 dans les dessins métriques.
 PST-DRAWINGSCALE1-96;Échelle du dessin 1/8 po = 1 pi;Règle l'échelle d'annotation à 1/8 po = 1 pi (1:96) dans les dessins impériaux ou à 1:100 dans les dessins métriques.
 DYL-PREPDRAWING;Préparer le dessin;Exécute maintenant chaque étape de préparation de sortie : calques, objets masqués, xréfs, liaisons de données, tableaux, ordre de tracé et régénération.
+DYL-REVISIONS;Révisions;Ouvre les révisions du projet, comme dans Revit : leur numérotation, leurs dates et descriptions, et les feuilles qui les ont.
+PST-REVISIONCLOUD;Nuage de révision;Dessine un nuage de révision sur la présentation pour une révision du projet, puis son étiquette, et met à jour le cartouche.
+PST-REVISIONSUPDATE;Mettre à jour les révisions;Met à jour les cartouches et les étiquettes de révision de cette feuille avec les révisions de son projet.
+PST-REVISIONTITLEBLOCKS;Cartouches de révision;Ouvre les cartouches qui affichent les révisions, et les attributs de leurs lignes de révision.
 DYL-CMDOPTIMIZER;Optimiseur de commandes;Active ou désactive la redéfinition des commandes d'enregistrement et d'impression et de REGEN, comme dans Dyl-Settings.
 DYL-SETUNITS;Régler les unités;Liste les réglages d'unités avec leurs alias et applique celui choisi.
 PST-UNITSMETRICMM;Unités métriques 1 mm;Règle les unités du dessin en décimales avec une précision de 1 mm.

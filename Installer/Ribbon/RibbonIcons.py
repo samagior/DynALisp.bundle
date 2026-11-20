@@ -855,6 +855,47 @@ def i_prepdrawing(c):
     check(c, 24, 24, 7)
 
 
+def cloud(c, x0, y0, x1, y1, n=3, m=2, color=ORANGE, fill=ORANGE_L):
+    """A revision cloud: n bumps along the top and bottom of the box, m along its sides."""
+    c.rect(x0, y0, x1, y1, fill, None)
+    rx, ry = (x1 - x0) / (2.0 * n), (y1 - y0) / (2.0 * m)
+    px = 1.0 if c.small else 1.6
+    for i in range(n):
+        cx = x0 + rx * (2 * i + 1)
+        c.d.pieslice(((cx - rx) * c.k, (y0 - ry * 0.8) * c.k, (cx + rx) * c.k, (y0 + ry * 0.8) * c.k), 180, 360, fill=fill)
+        c.d.pieslice(((cx - rx) * c.k, (y1 - ry * 0.8) * c.k, (cx + rx) * c.k, (y1 + ry * 0.8) * c.k), 0, 180, fill=fill)
+        c.d.arc(((cx - rx) * c.k, (y0 - ry * 0.8) * c.k, (cx + rx) * c.k, (y0 + ry * 0.8) * c.k), 180, 360, fill=color, width=c.w(px))
+        c.d.arc(((cx - rx) * c.k, (y1 - ry * 0.8) * c.k, (cx + rx) * c.k, (y1 + ry * 0.8) * c.k), 0, 180, fill=color, width=c.w(px))
+    for j in range(m):
+        cy = y0 + ry * (2 * j + 1)
+        c.d.pieslice(((x0 - rx * 0.8) * c.k, (cy - ry) * c.k, (x0 + rx * 0.8) * c.k, (cy + ry) * c.k), 90, 270, fill=fill)
+        c.d.pieslice(((x1 - rx * 0.8) * c.k, (cy - ry) * c.k, (x1 + rx * 0.8) * c.k, (cy + ry) * c.k), 270, 450, fill=fill)
+        c.d.arc(((x0 - rx * 0.8) * c.k, (cy - ry) * c.k, (x0 + rx * 0.8) * c.k, (cy + ry) * c.k), 90, 270, fill=color, width=c.w(px))
+        c.d.arc(((x1 - rx * 0.8) * c.k, (cy - ry) * c.k, (x1 + rx * 0.8) * c.k, (cy + ry) * c.k), 270, 450, fill=color, width=c.w(px))
+
+
+def rev_tag(c, cx, cy, s=5.5):
+    """The revision tag: a triangle around its number."""
+    h = s * math.sqrt(3)
+    c.poly([(cx - s, cy + h / 3), (cx + s, cy + h / 3), (cx, cy - 2 * h / 3)], TEAL_L, INK)
+
+
+def i_revisions(c):
+    # a sheet with its title block of revision rows, a revision cloud and its tag
+    c.rect(2, 4, 30, 28, PAPER, INK)
+    c.rect(21, 4, 30, 28, GRAY_L, INK)
+    for y in (18, 22):
+        c.line([(21, y), (30, y)], INK, 1 if c.small else 1.2, caps=False)
+    cloud(c, 6, 9, 16, 19, n=3, m=2)
+    rev_tag(c, 16, 23, 5)
+
+
+def i_revisioncloud(c):
+    # a revision cloud and its tag
+    cloud(c, 5, 6, 25, 20, n=4, m=2)
+    rev_tag(c, 23, 24, 6)
+
+
 def i_cmdoptimizer(c):
     # a floppy disk and a bolt
     c.rect(3, 3, 25, 25, BLUE, INK, r=2)
@@ -1128,6 +1169,8 @@ ICONS = {
     'DYL-SWITCHDRAWINGSCALE': i_switchdrawingscale,
     'DYL-PREPDRAWING': i_prepdrawing,
     'DYL-CMDOPTIMIZER': i_cmdoptimizer,
+    'DYL-REVISIONS': i_revisions,
+    'PST-REVISIONCLOUD': i_revisioncloud,
     'DYL-SETFILEPREFS': i_setfileprefs,
     'DYL-SETUNITS': i_setunits,
     'DYL-STANDARDGRID': i_standardgrid,
