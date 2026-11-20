@@ -147,7 +147,8 @@ class Builder:
         self.images = {}      # file name -> PNG bytes
         self.warnings = []
         self.buttons = set()  # the UIDs of the command buttons
-        self.tr = {}          # lang -> [(UID, text, tooltip title, tooltip)], see translations
+        self.tr = {}          # lang -> [(UID, macro, English text, text, tooltip title, tooltip)]
+        self.macro_cmd = {}   # command -> the text of its macro, without ^C^C
         self.tr_desc = {}     # lang -> {command: tooltip}
 
     def uid(self, kind='RBN'):
@@ -179,6 +180,7 @@ class Builder:
         if cmd in self.macro_ids:
             return self.macro_ids[cmd]
         uid = 'MM_DYL_' + re.sub(r'[^A-Z0-9]', '_', cmd.upper())
+        self.macro_cmd[cmd] = command or cmd
         small, large = self.icon(cmd, parent)
         self.macros.append('\n'.join([
             '    <MenuMacro UID="%s">' % uid,
@@ -208,7 +210,8 @@ class Builder:
         self.buttons.add(uid)
         for lang, (label, ttl) in (tr or {}).items():
             desc = self.tr_desc.get(lang, {})
-            self.tr.setdefault(lang, []).append((uid, label, ttl, desc.get(cmd) or desc.get(cmd.split('=')[0], '')))
+            self.tr.setdefault(lang, []).append((uid, self.macro_cmd.get(cmd, ''), text, label, ttl,
+                                                 desc.get(cmd) or desc.get(cmd.split('=')[0], '')))
         return '\n'.join([
             sp + '<RibbonCommandButton UID="%s" Id="AcRibbonCommandButton" Text="%s" ButtonStyle="%s" '
                  'MenuMacroID="%s" KeyTip="">' % (uid, attr(text), style, self.macro_ids[cmd]),
@@ -241,7 +244,7 @@ class Builder:
         static = it.get('static')
         split = self.uid()
         for lang, (label, _) in tr.items():
-            self.tr.setdefault(lang, []).append((split, label, '', ''))
+            self.tr.setdefault(lang, []).append((split, '', text, label, '', ''))
         out = [sp + '<RibbonSplitButton UID="%s" Id="AcRibbonSplitButton" Text="%s" KeyTip="" SmallImage="" '
                     'LargeImage="" Behavior="%s" ListStyle="IconText" ButtonStyle="%s" '
                     'Grouping="false">' % (split, attr(text), 'SplitFollowStaticText' if static else 'SplitFollow',
@@ -258,7 +261,7 @@ class Builder:
     def panel(self, name, items, tr=None):
         uid = 'RBN_DYL_PANEL_' + re.sub(r'[^A-Z0-9]', '_', name.upper())
         for lang, title in (tr or {}).items():
-            self.tr.setdefault(lang, []).append((uid, title, '', ''))
+            self.tr.setdefault(lang, []).append((uid, '', name, title, '', ''))
         out = ['    <RibbonPanelSource UID="%s" Text="%s" HiddenInEditor="false">' % (uid, attr(name)),
                '      ' + REV,
                '      <Name xlate="true" UID="%s">%s - %s</Name>' % (self.uid('XLS'), TAB, escape(name)),
@@ -342,12 +345,14 @@ def item_translations(cmd, name, kids, static, langs, b):
 def write_translations(b):
     """Contents\\Resources\\DynALisp.Ribbon.<lang>.csv, read by the ribbon plugin
     (Plugin\\Translations.cs): the text of each item of the tab in that language, by its UID.
-    Columns: Id;Text;Title;Description (the label, the title and the text of its tooltip)."""
+    Columns: Id;Macro;English;Text;Title;Description: its UID, its macro without ^C^C and its
+    English label (to find it when AutoCAD does not give it its UID), then its label, the
+    title and the text of its tooltip in that language."""
     done = []
     for lang, rows in b.tr.items():
         path = os.path.join(os.path.dirname(CUIX), 'DynALisp.Ribbon.%s.csv' % lang)
-        text = 'Id;Text;Title;Description\r\n' + ''.join(
-            '%s;%s;%s;%s\r\n' % tuple(v.replace(';', ',').replace('\r', ' ').replace('\n', ' ') for v in row)
+        text = 'Id;Macro;English;Text;Title;Description\r\n' + ''.join(
+            '%s;%s;%s;%s;%s;%s\r\n' % tuple(v.replace(';', ',').replace('\r', ' ').replace('\n', ' ') for v in row)
             for row in rows)
         old = open(path, encoding='utf-8-sig').read() if os.path.exists(path) else None
         if old != text.replace('\r\n', '\n'):

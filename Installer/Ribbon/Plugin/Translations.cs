@@ -84,10 +84,11 @@ namespace DynALisp.Ribbon
             {
                 string code = args?.AsArray().Select(v => v.Value as string).FirstOrDefault(v => v != null);
                 code = string.IsNullOrWhiteSpace(code) ? "en" : code.Trim().ToLowerInvariant();
-                if (code != Lang || _map == null)
+                _asked = true;
+                if (code != Lang || _entries == null)
                 {
                     Lang = code;
-                    _map = Load(code);
+                    Load(code);
                     Host.Rebuild();     // the drop-downs made again in the language
                 }
                 Dirty();
@@ -96,38 +97,101 @@ namespace DynALisp.Ribbon
             return true;
         }
 
+        // (Dyl:RibbonLangInfo): what the translation of the tab found, to see why an item is not
+        // translated: the language, the texts read, the items of the tab and how they were found,
+        // and a few items not found (their id | label | macro).
+        [LispFunction("Dyl:RibbonLangInfo")]
+        public static object RibbonLangInfo(ResultBuffer args)
+        {
+            return string.Format(
+                "Language: {0} (given: {1}); texts: {2} ({3}); tab: {4}; panels: {5} of {6}; items: {7} of {8} " +
+                "(by id {9}, by macro {10}, by label {11}); not found: {12}",
+                Lang, _asked ? "yes" : "no", _entries?.Count ?? 0, _file ?? "none",
+                _tab ? "found" : "not found", _panelsDone, _panels, _itemsDone, _items, _byId, _byMacro, _byText,
+                _missed.Count == 0 ? "none" : string.Join(" ; ", _missed));
+        }
+
         // ---- the tab ----
 
-        // id -> (text, title, description) in the language (empty in English):
-        static Dictionary<string, (string Text, string Title, string Desc)> _map;
-        // id -> the texts of the CUIx (English), kept the first time an item is seen:
-        static readonly Dictionary<string, (string Text, string Title, object Content, bool Plain)> Originals = new();
-        static bool _dirty;
+        sealed class Entry
+        {
+            public string Id, Macro, English, Text, Title, Desc;
+        }
+
+        // The texts of the language (none in English), found by the UID of an item, else by its
+        // macro (AutoCAD may not give an item of a partial CUIx its UID), else by its English label:
+        static List<Entry> _entries;
+        static Dictionary<string, Entry> _byIdMap, _byEnglish;
+        static List<Entry> _byMacroList;
+        static string _file;
+        static bool _dirty, _asked, _tab;
+        static int _panels, _panelsDone, _items, _itemsDone, _byId, _byMacro, _byText;
+        static readonly List<string> _missed = new();
+
+        // The texts of the CUIx (English) of each item, kept on the item itself the first time it
+        // is seen (a ribbon made again has new items, in English again):
+        sealed class Original
+        {
+            public string Text, Title;
+            public object Content, Tip;
+        }
+        static readonly System.Runtime.CompilerServices.ConditionalWeakTable<object, Original> Originals = new();
 
         public static void Dirty() => _dirty = true;
-        public static bool Due => _dirty && _map != null;
+        public static bool Due => _dirty && _entries != null;
 
-        static Dictionary<string, (string, string, string)> Load(string code)
+        static void Load(string code)
         {
-            var map = new Dictionary<string, (string, string, string)>(StringComparer.OrdinalIgnoreCase);
-            if (code == "en") return map;
-            try
+            _entries = new List<Entry>();
+            _file = null;
+            if (code != "en")
             {
-                string path = Path.Combine(Path.GetDirectoryName(typeof(T).Assembly.Location), "DynALisp.Ribbon." + code + ".csv");
-                if (!File.Exists(path)) return map;
-                foreach (var line in File.ReadAllLines(path).Skip(1))
+                try
                 {
-                    var f = line.Split(';');
-                    if (f.Length >= 2 && f[0].Trim() != "")
-                        map[f[0].Trim()] = (f[1], f.Length > 2 ? f[2] : "", f.Length > 3 ? f[3] : "");
+                    string path = Path.Combine(Path.GetDirectoryName(typeof(T).Assembly.Location), "DynALisp.Ribbon." + code + ".csv");
+                    _file = File.Exists(path) ? Path.GetFileName(path) : Path.GetFileName(path) + " missing";
+                    if (File.Exists(path))
+                        foreach (var line in File.ReadAllLines(path).Skip(1))
+                        {
+                            var f = line.Split(';');
+                            if (f.Length >= 6 && f[0].Trim() != "")
+                                _entries.Add(new Entry { Id = f[0].Trim(), Macro = f[1].Trim(), English = Norm(f[2]), Text = f[3], Title = f[4], Desc = f[5] });
+                        }
                 }
+                catch (System.Exception ex) { Host.Log(ex.Message); }
             }
-            catch (System.Exception ex) { Host.Log(ex.Message); }
-            return map;
+            _byIdMap = new Dictionary<string, Entry>(StringComparer.OrdinalIgnoreCase);
+            _byEnglish = new Dictionary<string, Entry>(StringComparer.OrdinalIgnoreCase);
+            foreach (var e in _entries)
+            {
+                _byIdMap[e.Id] = e;
+                if (e.English != "" && !_byEnglish.ContainsKey(e.English)) _byEnglish[e.English] = e;
+            }
+            // the longest macro first: the items of the Quick Draw gallery all end with its command
+            _byMacroList = _entries.Where(e => e.Macro != "").OrderByDescending(e => e.Macro.Length).ToList();
         }
+
+        // A label with its spaces and line breaks made one space:
+        static string Norm(string s) => string.Join(" ", (s ?? "").Split(new[] { ' ', '\r', '\n', '\t' }, StringSplitOptions.RemoveEmptyEntries));
 
         // The UID of an item without the prefix AutoCAD may give it (DYNALISP.RBN_DYL_...):
         static string Bare(string id) => id == null ? null : id.Substring(id.LastIndexOf('.') + 1);
+
+        static Entry Find(string id, string macro, string english, out int how)
+        {
+            how = 0;
+            if (_entries.Count == 0) return null;
+            string bare = Bare(id);
+            if (bare != null && _byIdMap.TryGetValue(bare, out var e)) { how = 1; return e; }
+            if (!string.IsNullOrWhiteSpace(macro))
+            {
+                string m = macro.TrimEnd(' ', '\r', '\n', ';');
+                foreach (var x in _byMacroList)
+                    if (m.EndsWith(x.Macro, StringComparison.OrdinalIgnoreCase)) { how = 2; return x; }
+            }
+            if (_byEnglish.TryGetValue(Norm(english), out e)) { how = 3; return e; }
+            return null;
+        }
 
         // Put the texts of the language on the tab (run by Host.OnIdle). False when the tab is
         // not there yet (tried again later).
@@ -136,20 +200,24 @@ namespace DynALisp.Ribbon
             var ribbon = ComponentManager.Ribbon;
             var tab = ribbon?.Tabs.FirstOrDefault(t => Bare(t.Id) == "RBN_DYL_TAB")
                       ?? ribbon?.Tabs.FirstOrDefault(t => t.Title == "DynALisp");
+            _tab = tab != null;
             if (tab == null) return false;
+            _panels = _panelsDone = _items = _itemsDone = _byId = _byMacro = _byText = 0;
+            _missed.Clear();
             foreach (var panel in tab.Panels)
             {
                 var src = panel.Source;
                 if (src == null) continue;
-                string id = Bare(src.Id);
-                if (id != null && id.StartsWith("RBN_DYL_"))
-                {
-                    if (!Originals.ContainsKey(id)) Originals[id] = (src.Title, null, null, true);
-                    string title = _map.TryGetValue(id, out var tr) && tr.Text != "" ? tr.Text : Originals[id].Text;
-                    if (src.Title != title) src.Title = title;
-                }
+                _panels++;
+                var org = Originals.GetValue(src, _ => new Original { Text = src.Title });
+                var e = Find(src.Id, null, org.Text, out _);
+                if (e != null) _panelsDone++;
+                string title = e != null && e.Text != "" ? e.Text : org.Text;
+                if (src.Title != title) src.Title = title;
                 Walk(src.Items);
             }
+            if (Lang != "en" && _entries.Count > 0 && _itemsDone == 0)
+                Host.Log("the tab could not be translated: no item found, see (Dyl:RibbonLangInfo).");
             _dirty = false;
             return true;
         }
@@ -167,31 +235,38 @@ namespace DynALisp.Ribbon
 
         static void Item(RibbonItem it)
         {
-            string id = Bare(it.Id);
-            if (id == null || !id.StartsWith("RBN_DYL_")) return;   // the drop-downs of the parts
-            if (!Originals.TryGetValue(id, out var org))
+            // Only the buttons of the CUIx: not the separators, breaks, labels and drop-downs:
+            if (!(it is RibbonButton)) return;
+            if (it.Id != null && it.Id.StartsWith("DYL_")) return;   // the items of the parts
+            var org = Originals.GetValue(it, _ =>
+                it.ToolTip is RibbonToolTip t0 ? new Original { Text = it.Text, Title = t0.Title, Content = t0.Content }
+                                               : new Original { Text = it.Text, Tip = it.ToolTip });
+            string macro = (it as RibbonButton)?.CommandParameter as string;
+            _items++;
+            var e = Find(it.Id, macro, org.Text, out int how);
+            if (e != null)
             {
-                org = it.ToolTip is RibbonToolTip tt ? (it.Text, tt.Title, tt.Content, false)
-                                                     : (it.Text, it.ToolTip as string, null, true);
-                Originals[id] = org;
+                _itemsDone++;
+                if (how == 1) _byId++; else if (how == 2) _byMacro++; else _byText++;
             }
-            bool has = _map.TryGetValue(id, out var tr);
-            string text = has && tr.Text != "" ? Lines(tr.Text, org.Text) : org.Text;
+            else if (Lang != "en" && _missed.Count < 6)
+                _missed.Add((it.Id ?? "") + " | " + Norm(org.Text) + " | " + (macro ?? "").Trim());
+            string text = e != null && e.Text != "" ? Lines(e.Text, org.Text) : org.Text;
             // A split button that follows the item picked last shows the text of that item
             // (translated with it); one that keeps its name (the Quick Draw gallery) shows its own:
             bool follows = it is RibbonListButton lb && lb.IsSynchronizedWithCurrentItem;
             if (!follows && it.Text != text) it.Text = text;
-            string title = has && tr.Title != "" ? tr.Title : org.Title;
-            object content = has && tr.Desc != "" ? tr.Desc : org.Content;
-            if (it.ToolTip is RibbonToolTip t)
+            if (it.ToolTip is RibbonToolTip tt)
             {
-                if (t.Title != title) t.Title = title;
-                if (!Equals(t.Content, content)) t.Content = content;
+                string title = e != null && e.Title != "" ? e.Title : org.Title;
+                object content = e != null && e.Desc != "" ? e.Desc : org.Content;
+                if (tt.Title != title) tt.Title = title;
+                if (!Equals(tt.Content, content)) tt.Content = content;
             }
-            else if (has && (tr.Title != "" || tr.Desc != ""))
-                it.ToolTip = new RibbonToolTip { Title = title, Content = content };
-            else if (!has && org.Plain && !Equals(it.ToolTip, org.Title))
-                it.ToolTip = org.Title;
+            else if (e != null && (e.Title != "" || e.Desc != ""))
+                it.ToolTip = new RibbonToolTip { Title = e.Title != "" ? e.Title : text, Content = e.Desc };
+            else if (e == null && !Equals(it.ToolTip, org.Tip))
+                it.ToolTip = org.Tip;
         }
 
         // The label on two lines when the label of the CUIx is (a large button), cut at the
