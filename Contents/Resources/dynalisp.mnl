@@ -4436,6 +4436,9 @@
   (defun Dyl:LangSet (key)
     (setenv "DynalispLanguage" key)
     (Dyl:LangRibbon)
+    ;;  The phases in the language: the status bar and the phases sent to the ribbon
+    ;;  (Remote>>Dyl:PhaseList reads the column of the language of Phase.csv):
+    (if Remote>>Dyl:PhaseStatus (vl-catch-all-apply 'Remote>>Dyl:PhaseStatus nil))
     (princ (strcat "\nLanguage of DynALisp: " key ". The docs open in it from now on"
                    (if Dyl:RibbonLang ", and the ribbon shows it" "")
                    "."

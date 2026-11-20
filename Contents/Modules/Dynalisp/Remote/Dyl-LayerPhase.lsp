@@ -70,16 +70,54 @@
 ;;-------------------------=={ Phases }==------------------------;;
 
 ;;  Phases of Phase.csv: ((code description) ...), *ph:defaults* when the file is missing
-;;  (or at startup, while Dyl-Sub.lsp that reads the CSV files is not loaded yet):
-(defun Remote>>Dyl:PhaseList (/ lst)
-  (foreach r (if Remote>>Dyl:CsvRead
-               (Remote>>Dyl:CsvRead
-                 (Dyl:UserFile (strcat (if *dyl:dylres *dyl:dylres (strcat *dyl:dyl "\\Res")) "\\AEC\\Standard\\Phase.csv"))
-                 6
-               )
-             )
-    (if (and (= 1 (strlen (car r))) (snvalid (car r)) (not (assoc (strcase (car r)) lst)))
-      (setq lst (cons (list (strcase (car r)) (nth 5 r)) lst))
+;;  (or at startup, while LM-Sub.lsp that parses the CSV lines is not loaded yet). The
+;;  description is in the language of DynALisp (Dyl:Lang) when the file has its column
+;;  (Description.fr), the English one (Description, 6th column) otherwise. The file is read
+;;  as UTF-8 for the accents; an AutoCAD that cannot (older than 2021) reads it in the code
+;;  page of Windows and keeps the English descriptions:
+(defun Remote>>Dyl:PhaseList (/ fle des utf str sep head col row lst)
+  (setq fle (Dyl:UserFile (strcat (if *dyl:dylres *dyl:dylres (strcat *dyl:dyl "\\Res")) "\\AEC\\Standard\\Phase.csv")))
+  (if (and Remote>>LM:csv->lst (findfile fle))
+    (progn
+      (setq utf (not (or (vl-catch-all-error-p (setq des (vl-catch-all-apply 'open (list fle "r" "utf8"))))
+                         (not des)
+                     )
+                )
+      )
+      (if (not utf) (setq des (open fle "r")))
+      (if des
+        (progn
+          (if (setq str (read-line des))
+            (setq sep  (cond ((vl-string-search ";" str) ";") ((vl-string-search "\t" str) "\t") (","))
+                  ;;  (a byte order mark can only be on the first name, Abbreviation, not used here)
+                  head (mapcar '(lambda (h) (strcase (vl-string-trim " \t\"" h))) (Remote>>LM:csv->lst str sep 0))
+                  ;;  The column of the language (nil in English, or without UTF-8):
+                  col  (if (and utf Dyl:LangCode (/= "en" (Dyl:LangCode)))
+                         (vl-position (strcat "DESCRIPTION." (strcase (Dyl:LangCode))) head)
+                       )
+            )
+          )
+          (while (setq str (read-line des))
+            (if (/= "" (vl-string-trim " \t" str))
+              (progn
+                (setq row (mapcar '(lambda (s) (vl-string-trim " " s)) (Remote>>LM:csv->lst str sep 0)))
+                (if (and (= 1 (strlen (car row))) (snvalid (car row)) (not (assoc (strcase (car row)) lst)))
+                  (setq lst (cons (list (strcase (car row))
+                                        (cond ((and col (/= "" (cond ((nth col row)) ("")))) (nth col row))
+                                              ((nth 5 row))
+                                              ("")
+                                        )
+                                  )
+                                  lst
+                            )
+                  )
+                )
+              )
+            )
+          )
+          (close des)
+        )
+      )
     )
   )
   (cond ((reverse lst)) (*ph:defaults*))
