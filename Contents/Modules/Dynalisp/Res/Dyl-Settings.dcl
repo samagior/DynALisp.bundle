@@ -49,12 +49,12 @@ set_desc  : text_part {width = 41; fixed_width = true; height = 1; fixed_height 
 dyl_settings
 : dialog {label = "DynALisp - Settings";
     : column {
-      // The language of DynALisp (DynalispLanguage, Dyl:Lang): its docs, and later its
-      // ribbon; the language of the AutoCAD installed until it is set. Not the Language
+      // The language of DynALisp (DynalispLanguage, Dyl:Lang): its docs and its ribbon
+      // (AutoCAD 2025 and later); the language of the AutoCAD installed until it is set. Not the Language
       // of the File Preferences (content folders, dictionaries). The popup ends at the
       // right of the section, as the open buttons of the toggles below:
       : boxed_column {label = "Environment";
-        : set_desc {label = "The language of DynALisp and its docs.";}
+        : set_desc {label = "The language of its docs and ribbon.";}
         : spacer {height = 0.5;}
         : row {
           : text {label = "Language"; width = 20; fixed_width = true;}

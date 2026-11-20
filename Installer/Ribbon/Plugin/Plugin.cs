@@ -102,7 +102,7 @@ namespace DynALisp.Ribbon
             dm.DocumentToBeDestroyed += (s, e) => Watched.Remove(e.Document);
             foreach (Document d in dm) Watch(d);
             AcApp.Idle += OnIdle;
-            ComponentManager.ItemInitialized += (s, e) => _dirty = true;
+            ComponentManager.ItemInitialized += (s, e) => { _dirty = true; T.Dirty(); };
             if (RibbonServices.RibbonPaletteSet != null) WatchPaletteSet();
             else RibbonServices.RibbonPaletteSetCreated += (s, e) => WatchPaletteSet();
         }
@@ -119,7 +119,7 @@ namespace DynALisp.Ribbon
         {
             _dirty = true;
             if (RibbonServices.RibbonPaletteSet != null)
-                RibbonServices.RibbonPaletteSet.WorkspaceLoaded += (s, e) => _dirty = true;
+                RibbonServices.RibbonPaletteSet.WorkspaceLoaded += (s, e) => { _dirty = true; T.Dirty(); };
         }
 
         static void Each(Action<Part> a)
@@ -151,7 +151,25 @@ namespace DynALisp.Ribbon
                     p.Pending = false;
                     try { p.Refresh(); } catch (System.Exception ex) { Log(ex.Message); }
                 }
+            // The texts of the tab in the language of DynALisp (Translations.cs), once a
+            // second at most while the tab is not there:
+            if (T.Due && Environment.TickCount - _nextLang >= 0)
+            {
+                _nextLang = Environment.TickCount + 1000;
+                try { T.Apply(); } catch (System.Exception ex) { Log(ex.Message); }
+            }
             PhaseCombos.AskOnIdle();
+        }
+
+        static int _nextLang;
+
+        // The drop-downs of every part made again (their language changed): Ensure puts them
+        // back, the next time AutoCAD is idle.
+        public static void Rebuild()
+        {
+            foreach (var p in Parts) p.Row = null;
+            _dirty = true;
+            _nextTry = Environment.TickCount;
         }
 
         static bool Quiet()

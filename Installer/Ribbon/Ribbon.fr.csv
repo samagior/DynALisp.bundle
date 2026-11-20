@@ -1,0 +1,173 @@
+Key;Name;Description
+Panel:Draw;Dessin;
+Panel:Drawing Behaviors;Comportements du dessin;
+Panel:Layer Transfer;Transfert de calques;
+Panel:Layer Tools;Outils de calques;
+Panel:Text;Texte;
+Panel:Cleaning;Nettoyage;
+Panel:Navigate;Navigation;
+Panel:Output;Sortie;
+Panel:Setup;Configuration;
+Panel:Utilities;Utilitaires;
+Panel:Troubleshooting;Dépannage;
+Panel:DynALisp;DynALisp;
+PST-QUICKDRAWGALLERY;Dessin rapide;Ouvre la galerie des préréglages de dessin rapide par groupe, et dessine celui cliqué.
+PST-QUICKDRAWGALLERY=All;Tous;
+PST-QUICKDRAWGALLERY=Phase;Phase;
+PST-QUICKDRAWGALLERY=Section;Coupe;
+PST-QUICKDRAWGALLERY=Detail;Détail;
+PST-QUICKDRAWGALLERY=Elevation;Élévation;
+PST-QUICKDRAWGALLERY=Wall;Mur;
+PST-QUICKDRAWGALLERY=Floor;Plancher;
+PST-QUICKDRAWGALLERY=Ceiling;Plafond;
+PST-QUICKDRAWGALLERY=Roof;Toiture;
+PST-QUICKDRAWGALLERY=Finish;Fini;
+PST-QUICKDRAWGALLERY=Structural;Structure;
+PST-QUICKDRAWGALLERY=Site;Site;
+PST-QUICKDRAWGALLERY=Area;Superficie;
+PST-QUICKDRAWGALLERY=Annotation;Annotation;
+PST-QUICKDRAWGALLERY=Generic;Générique;
+DYL-QUICKSHAPE;Forme rapide;Ouvre une fenêtre pour modifier, créer et dessiner les préréglages de forme rapide.
+PST-QUICKSHAPESTUD2X4;Forme rapide Montant 2x4;Insère des montants 2x4 en coupe, remplis de la hachure d'ossature de bois.
+PST-QUICKSHAPESTUD2X6;Forme rapide Montant 2x6;Insère des montants 2x6 en coupe, remplis de la hachure d'ossature de bois.
+PST-QUICKSHAPESTUD2X8;Forme rapide Montant 2x8;Insère des montants 2x8 en coupe, remplis de la hachure d'ossature de bois.
+PST-QUICKSHAPEBRICKMODULAR;Forme rapide Brique modulaire;Insère des briques modulaires en coupe, remplies de la hachure de brique.
+PST-QUICKSHAPECMU8;Forme rapide Bloc de béton 8 po;Insère des blocs de béton de 8 po en coupe en plan (avec leurs alvéoles), remplis de la hachure de bloc.
+PST-QUICKSHAPEHSS4X4;Forme rapide PCC 4x4;Insère des profilés tubulaires d'acier 4x4x1/4 en coupe, remplis de la hachure d'acier.
+DYL-QUICKDRAW;Gestion du dessin rapide;Ouvre une fenêtre pour modifier, créer et dessiner les préréglages de dessin rapide.
+DYL-HATCHPRESETS;Préréglages de hachures;Ouvre une fenêtre pour créer et modifier les préréglages de hachures (motif, échelle et clé de calque d'une hachure) utilisés par le dessin rapide et la forme rapide.
+DYL-SHRINKWRAP;Contour extérieur;Dessine des polylignes fermées autour de l'extérieur des objets sélectionnés (remplace AECLINEWORKSHRINKWRAP).
+DYL-LAYERPHASE;Phase des calques;Liste les phases du dessin pour choisir la phase active et les afficher ou les masquer.
+DYL-OBJECTLAYERKEYS;Clés de calque des objets;Ouvre une fenêtre pour attribuer une clé de calque aux nouvelles cotes, lignes de repère, textes et autres objets courants.
+DYL-DRAWORDER;Ordre de tracé;Modifie les niveaux d'ordre de tracé des calques Dynalisp (annotation dessus, hachures dessous), choisit les préréglages préféré et du dessin et réempile le dessin.
+PST-DRAWORDERAPPLY;Ordre de tracé Appliquer;Réempile l'espace objet, chaque présentation et chaque définition de bloc par niveau selon le préréglage actif : annotation dessus, hachures et arrière-plans dessous.
+PST-DRAWORDERAUTOTOGGLE;Ordre de tracé Auto activer/désactiver;Active ou désactive l'ordre de tracé automatique : les objets créés par une commande sont placés à leur niveau à la fin de celle-ci.
+PST-DRAWORDERCOUNT;Ordre de tracé Compter;Compte les entrées de la table d'ordre de tracé de l'espace objet par rapport aux objets de l'espace objet.
+PST-DRAWORDERRESET;Ordre de tracé Réinitialiser;Supprime la table d'ordre de tracé de l'espace objet : les objets reprennent leur ordre de création (U l'annule).
+PST-DRAWORDERREBUILD;Ordre de tracé Reconstruire;Supprime les tables d'ordre de tracé de l'espace objet, des présentations et des définitions de blocs, puis les réempile par niveau à partir de zéro pour garder le panoramique rapide.
+PST-TRANSFERFIELD;Transférer;Transfère les objets sélectionnés de la valeur From à la valeur To du niveau (Level) choisi dans les listes déroulantes.
+DYL-LAYERTRANSFER;Gestion;Liste les transferts de calques avec leurs alias et exécute celui choisi sur les objets sélectionnés.
+DYL-LAYERKEYS;Clés de calque;Ouvre une fenêtre pour créer et modifier les clés de calque utilisées par les Apps Dynalisp.
+DYL-LAYERMAKE;Créer des calques;Liste les jeux de calques avec leurs alias et crée les calques de celui choisi.
+PST-MAKEBASICDRAWINGLAYERS;Créer les calques de dessin de base;Crée les calques de dessin de base à partir de la liste de calques CSV de Dynalisp.
+PST-MAKEARCHITECTURALELEVATIONLAYERS;Créer les calques d'élévation d'architecture;Crée les calques d'élévation, d'équipement et d'annotation d'architecture à partir des listes de calques CSV.
+PST-MAKEARCHITECTURALSECTIONLAYERS;Créer les calques de coupe d'architecture;Crée les calques de coupe, d'équipement et d'annotation d'architecture à partir des listes de calques CSV.
+PST-MAKEARCHITECTURALDETAILLAYERS;Créer les calques de détail d'architecture;Crée les calques de détail, d'équipement et d'annotation d'architecture à partir des listes de calques CSV.
+PST-MAKEARCHITECTURALFLOORPLANLAYERS;Créer les calques de plan d'étage d'architecture;Crée les calques de plan d'étage, d'équipement et d'annotation d'architecture à partir des listes de calques CSV.
+PST-MAKEARCHITECTURALROOFPLANLAYERS;Créer les calques de plan de toiture d'architecture;Crée les calques de plan de toiture, d'équipement et d'annotation d'architecture à partir des listes de calques CSV.
+PST-MAKEARCHITECTURALCEILINGPLANLAYERS;Créer les calques de plan de plafond d'architecture;Crée les calques de plan de plafond, de plancher, d'équipement et d'annotation d'architecture à partir des listes de calques CSV.
+PST-MAKEARCHITECTURALFURNITUREPLANLAYERS;Créer les calques de plan de mobilier d'architecture;Crée les calques de plan de mobilier, de plancher et d'annotation d'architecture à partir des listes de calques CSV.
+PST-MAKENCSLEVEL1LAYERS;Créer les calques NCS de niveau 1;Crée les calques NCS de niveau 1 de chaque discipline à partir des listes de calques CSV.
+PST-MAKENCSLEVEL2LAYERS;Créer les calques NCS de niveau 2;Crée les calques NCS de niveau 2 de chaque discipline à partir des listes de calques CSV.
+PST-MAKENCSLEVEL3LAYERS;Créer les calques NCS de niveau 3;Crée les calques NCS de niveau 3 de chaque discipline à partir des listes de calques CSV.
+DYL-LAYERIMPORTFROMCSV;Importer des calques d'un CSV;Importe les calques d'un fichier CSV choisi, sans enregistrer d'état de calques.
+PST-ARCHITECTURALFLOORPLANLAYERS;Calques de plan d'étage d'architecture;Importe les calques de plan d'étage d'architecture de leur CSV préréglé et enregistre un état de calques.
+PST-ARCHITECTURALCEILINGPLANLAYERS;Calques de plan de plafond d'architecture;Importe les calques de plan de plafond d'architecture de leur CSV préréglé et enregistre un état de calques.
+PST-ARCHITECTURALROOFPLANLAYERS;Calques de plan de toiture d'architecture;Importe les calques de plan de toiture d'architecture de leur CSV préréglé et enregistre un état de calques.
+PST-INTERIORFURNISHINGPLANLAYERS;Calques de plan d'ameublement intérieur;Importe les calques de plan d'ameublement intérieur de leur CSV préréglé et enregistre un état de calques.
+PST-INTERIORFINISHPLANLAYERS;Calques de plan des finis intérieurs;Importe les calques de plan des finis intérieurs de leur CSV préréglé et enregistre un état de calques.
+PST-LANDSCAPEPLANTINGSPLANLAYERS;Calques de plan de plantation;Importe les calques de plan de plantation de leur CSV préréglé et enregistre un état de calques.
+PST-CIVILPROPERTYPLANLAYERS;Calques de plan de propriété (génie civil);Importe les calques de plan de propriété de génie civil de leur CSV préréglé et enregistre un état de calques.
+PST-STRUCTURALFLOORPLANLAYERS;Calques de plan d'étage de structure;Importe les calques de plan d'étage de structure de leur CSV préréglé et enregistre un état de calques.
+PST-ELECTRICALFLOORPLANLAYERS;Calques de plan d'étage d'électricité;Importe les calques de plan d'étage d'électricité de leur CSV préréglé et enregistre un état de calques.
+PST-PLUMBINGFLOORPLANLAYERS;Calques de plan d'étage de plomberie;Importe les calques de plan d'étage de plomberie de leur CSV préréglé et enregistre un état de calques.
+PST-MECHANICALFLOORPLANLAYERS;Calques de plan d'étage de mécanique;Importe les calques de plan d'étage de mécanique de leur CSV préréglé et enregistre un état de calques.
+DYL-LAYERFILTER;Filtres de calques;Liste les préréglages de filtres de calques avec leurs alias et applique celui choisi.
+PST-SHOWALLLAYERS;Afficher tous les calques;Active et libère chaque calque du dessin, xréfs comprises.
+PST-SHOWNONPLOTTINGLAYERS;Afficher les calques non tracés;Active et libère les calques Defpoints, non tracés et de notes à lire.
+PST-SHOWNEWWORKLAYERS;Afficher les calques des travaux neufs;Active et libère les calques de la phase des travaux neufs.
+PST-SHOWDEMOLITIONLAYERS;Afficher les calques de démolition;Active et libère les calques de la phase existant à démolir.
+PST-SHOWEXISTINGLAYERS;Afficher les calques existants;Active et libère les calques de la phase existant à conserver.
+PST-SHOWKEYPLANLAYERS;Afficher les calques du plan clé;Active et libère les calques du plan clé.
+PST-HIDEALLLAYERS;Masquer tous les calques;Désactive et gèle chaque calque du dessin, xréfs comprises.
+PST-HIDEANNOTATIONLAYERS;Masquer les calques d'annotation;Désactive et gèle les calques d'annotation.
+PST-HIDEMEMBRANELAYERS;Masquer les calques de membranes;Désactive et gèle les calques des membranes pare-vapeur, pare-air et pare-pluie.
+PST-SCREENEXISTINGLAYERS;Tramer les calques existants;Applique une transparence de tramage de 50 pour cent aux calques existants.
+PST-HIDENONPLOTTINGLAYERS;Masquer les calques non tracés;Désactive et gèle les calques Defpoints, non tracés et de notes à lire.
+PST-HIDENEWWORKLAYERS;Masquer les calques des travaux neufs;Désactive et gèle les calques de la phase des travaux neufs.
+PST-HIDEDEMOLITIONLAYERS;Masquer les calques de démolition;Désactive et gèle les calques de la phase existant à démolir.
+PST-HIDEEXISTINGLAYERS;Masquer les calques existants;Désactive et gèle les calques de la phase existant à conserver.
+PST-HIDEKEYPLANLAYERS;Masquer les calques du plan clé;Désactive et gèle les calques du plan clé.
+DYL-LAYERGROUP;Groupes de calques;Crée les filtres de groupes de calques standard de Dynalisp dans le Gestionnaire des propriétés des calques.
+DYL-LAYERIMPORTFILTERSFROMDWG;Importer des filtres de calques;Importe les filtres de calques d'un autre dessin dans le dessin courant.
+PST-LISTLAYERFILTERS;Lister les filtres de calques;Liste l'arborescence des filtres de calques du dessin courant à la ligne de commande.
+DYL-LAYERLIST;Liste des calques dessinée;Dessine une ligne et une étiquette avec la description de chaque calque du dessin ou de la sélection.
+DYL-LAYEREXPORTTOCSV;Exporter les calques en CSV;Exporte chaque calque du dessin avec ses propriétés dans un fichier CSV du dossier Téléchargements.
+DYL-LAYERPENCOLORS;Couleurs de plumes des calques;Remplace les couleurs des calques par les couleurs de plumes 1 à 7 selon leur épaisseur de ligne, ou rétablit leurs couleurs enregistrées.
+PST-LAYERCOLORSTOPENS;Couleurs des calques en plumes;Règle les couleurs des calques sur les couleurs de plumes 1 à 7 selon leur épaisseur de ligne (30 pour 0,13), en enregistrant leurs couleurs.
+PST-LAYERCOLORSRESTORE;Rétablir les couleurs des calques;Redonne aux calques les couleurs enregistrées quand elles ont été remplacées par les couleurs de plumes.
+DYL-LAYERCOLORWEIGHT;Couleur et épaisseur des calques;Accorde l'épaisseur de ligne des calques à leur couleur, ou leur couleur à leur épaisseur de ligne (norme Dyl).
+PST-LAYERWEIGHTBYCOLOR;Épaisseur des calques selon la couleur;Règle l'épaisseur de ligne des calques selon leur couleur (norme Dyl : couleur ##0 = 0,13, ##1 = 0,18...).
+PST-LAYERCOLORBYWEIGHT;Couleur des calques selon l'épaisseur;Règle le dernier chiffre de la couleur des calques selon leur épaisseur de ligne, en gardant leur teinte (norme Dyl).
+DYL-ADDPREFIXSUFFIX;Préfixe et suffixe de texte;Ajoute un texte choisi comme préfixe ou suffixe aux textes et textes multilignes sélectionnés.
+DYL-QUICKADDPREFIXSUFFIX;Préfixe / suffixe rapide;Liste les préréglages de texte de cote avec leurs alias et applique celui choisi.
+PST-DIMENSIONTEXTPLUSMINUS;Texte de cote Plus-moins;Ajoute ou retire le préfixe plus-moins du texte de la cote sélectionnée.
+PST-DIMENSIONTEXTDIAMETER;Texte de cote Diamètre;Ajoute ou retire le préfixe de diamètre du texte de la cote sélectionnée.
+PST-DIMENSIONTEXTMAXIMUM;Texte de cote Maximum;Ajoute ou retire le préfixe max. du texte de la cote sélectionnée.
+PST-DIMENSIONTEXTMINIMUM;Texte de cote Minimum;Ajoute ou retire le préfixe min. du texte de la cote sélectionnée.
+PST-DIMENSIONTEXTTYPICAL;Texte de cote Typique;Ajoute ou retire le suffixe (TYP) du texte de la cote sélectionnée.
+PST-DIMENSIONTEXTOB;Texte de cote OB;Ajoute ou retire le suffixe (OB) du texte de la cote sélectionnée.
+PST-DIMENSIONTEXTOL;Texte de cote OL;Ajoute ou retire le suffixe (OL) du texte de la cote sélectionnée.
+DYL-CLAUDETEXTFIX;Correction de texte Claude;Révise les textes, textes multilignes et lignes de repère multiples sélectionnés avec Claude et les remplace après confirmation.
+DYL-DICTIONARY;Dictionnaire;Cherche les mots des dictionnaires DynALisp, leurs définitions et catégories, dans la langue des préférences de fichiers.
+DYL-MULTILEADERLIST;Liste des lignes de repère et blocs;Liste les lignes de repère multiples et les blocs sélectionnés, groupés par valeurs d'attributs, avec un compte par groupe.
+DYL-COLORBYLAYER;Couleur DuCalque;Règle la couleur des objets sélectionnés sur DuCalque.
+PST-CHANGECOLOR;Changer la couleur;Règle la couleur des objets sélectionnés sur une couleur choisie dans la boîte de dialogue des couleurs.
+DYL-DATALINKS;Liaisons de données;Liste les liaisons de données du dessin avec leur état et leurs tableaux, et supprime celles inutilisées ou brisées.
+PST-DATALINKPURGE;Purger les liaisons de données;Supprime chaque liaison de données qu'aucun tableau n'utilise, et liste les liaisons utilisées dont le fichier Excel est manquant.
+DYL-SETBYBLOCK;Blocs DuBloc;Place les entités des définitions de blocs sélectionnées sur le calque 0, avec couleur, type de ligne et épaisseur de ligne DuBloc.
+PST-SELECTALLBLOCKS;Sélectionner tous les blocs;Sélectionne chaque référence de bloc du dessin.
+DYL-SWITCHDRAWINGSCALE;Changer l'échelle du dessin;Demande une échelle de dessin (p. ex. 100 ou 1:100) et l'applique, comme le font ses commandes préréglées 1-100, 1-48...
+PST-DRAWINGSCALE1-1;Échelle du dessin 1:1;Règle l'échelle d'annotation à 1:1 dans les dessins métriques ou à 1 pi = 1 pi dans les dessins impériaux.
+PST-DRAWINGSCALE1-5;Échelle du dessin 1:5;Règle l'échelle d'annotation à 1:5 dans les dessins métriques ou à 3 po = 1 pi dans les dessins impériaux.
+PST-DRAWINGSCALE1-10;Échelle du dessin 1:10;Règle l'échelle d'annotation à 1:10 dans les dessins métriques ou à 1 1/2 po = 1 pi dans les dessins impériaux.
+PST-DRAWINGSCALE1-20;Échelle du dessin 1:20;Règle l'échelle d'annotation à 1:20 dans les dessins métriques ou à 3/4 po = 1 pi dans les dessins impériaux.
+PST-DRAWINGSCALE1-50;Échelle du dessin 1:50;Règle l'échelle d'annotation à 1:50 dans les dessins métriques ou à 1/4 po = 1 pi dans les dessins impériaux.
+PST-DRAWINGSCALE1-100;Échelle du dessin 1:100;Règle l'échelle d'annotation à 1:100 dans les dessins métriques ou à 1/8 po = 1 pi dans les dessins impériaux.
+PST-DRAWINGSCALE1-200;Échelle du dessin 1:200;Règle l'échelle d'annotation à 1:200 dans les dessins métriques ou à 1/16 po = 1 pi dans les dessins impériaux.
+PST-DRAWINGSCALE1-500;Échelle du dessin 1:500;Règle l'échelle d'annotation à 1:500 dans les dessins métriques ou à 1/32 po = 1 pi dans les dessins impériaux.
+PST-DRAWINGSCALE1-12;Échelle du dessin 1 po = 1 pi;Règle l'échelle d'annotation à 1 po = 1 pi (1:12) dans les dessins impériaux ou à 1:10 dans les dessins métriques.
+PST-DRAWINGSCALE1-24;Échelle du dessin 1/2 po = 1 pi;Règle l'échelle d'annotation à 1/2 po = 1 pi (1:24) dans les dessins impériaux ou à 1:25 dans les dessins métriques.
+PST-DRAWINGSCALE1-48;Échelle du dessin 1/4 po = 1 pi;Règle l'échelle d'annotation à 1/4 po = 1 pi (1:48) dans les dessins impériaux ou à 1:50 dans les dessins métriques.
+PST-DRAWINGSCALE1-96;Échelle du dessin 1/8 po = 1 pi;Règle l'échelle d'annotation à 1/8 po = 1 pi (1:96) dans les dessins impériaux ou à 1:100 dans les dessins métriques.
+DYL-PREPDRAWING;Préparer le dessin;Exécute maintenant chaque étape de préparation de sortie : calques, objets masqués, xréfs, liaisons de données, tableaux, ordre de tracé et régénération.
+DYL-CMDOPTIMIZER;Optimiseur de commandes;Active ou désactive la redéfinition des commandes d'enregistrement et d'impression et de REGEN, comme dans Dyl-Settings.
+DYL-SETUNITS;Régler les unités;Liste les réglages d'unités avec leurs alias et applique celui choisi.
+PST-UNITSMETRICMM;Unités métriques 1 mm;Règle les unités du dessin en décimales avec une précision de 1 mm.
+PST-UNITSMETRICTENTHMM;Unités métriques 0,1 mm;Règle les unités du dessin en décimales avec une précision de 0,1 mm.
+PST-UNITSMETRICHUNDREDTHMM;Unités métriques 0,01 mm;Règle les unités du dessin en décimales avec une précision de 0,01 mm.
+PST-UNITSIMPERIALSIXTEENTHIN;Unités impériales 1/16 po;Règle les unités du dessin en architecture avec une précision de 1/16 po.
+DYL-STANDARDGRID;Grille standard;Liste les réglages de grille avec leurs alias et applique celui choisi.
+PST-GRIDINCH;Grille Pouce;Règle une grille de 1/4 po avec une grille principale de 1 po et un accrochage de 1/8 po, convertis dans les dessins métriques.
+PST-GRIDFOOT;Grille Pied;Règle une grille de 1 po avec une grille principale de 1 pi et un accrochage de 1/8 po, convertis dans les dessins métriques.
+PST-GRIDCENTIMETER;Grille Centimètre;Règle une grille de 2 mm avec une grille principale de 1 cm et un accrochage de 1 mm, convertis dans les dessins impériaux.
+PST-GRIDMETER;Grille Mètre;Règle une grille de 100 mm avec une grille principale de 1 m et un accrochage de 25 mm, convertis dans les dessins impériaux.
+DYL-SYSVARS;Variables système;Modifie les profils de variables système : les valeurs préférées appliquées à chaque dessin tant que System variables est activé (Dyl-Settings).
+DYL-SETFILEPREFS;Préférences de fichiers;Demande les préférences de fichiers et règle le profil DynALisp à partir d'elles.
+DYL-QUICKSELECTSIMILAR;Sélection rapide semblable;Sélectionne les objets visibles qui correspondent aux types et propriétés choisis dans une fenêtre.
+DYL-GROUPCLUSTER;Groupes par proximité;Répartit les objets d'une fenêtre ou d'une sélection en plusieurs groupes selon leur proximité.
+DYL-UNGROUPNEXT;Dégrouper l'imbriqué;Retire chaque groupe, à tous les niveaux d'imbrication, qui contient les objets sélectionnés.
+DYL-LINETOPOLYLINE;Ligne en polyligne;Convertit chaque ligne sélectionnée en polyligne, en joignant au besoin celles qui se touchent.
+DYL-LAYERCOLORTOOBJECT;Couleur du calque à l'objet;Donne aux objets sélectionnés la couleur de leur calque (telle quelle, en index, en couleur vraie ou DuCalque).
+DYL-RESETLINETYPESCALE;Réinitialiser l'échelle des types de ligne;Remet à 1,0 l'échelle de type de ligne de chaque objet de l'espace objet et de toutes les présentations.
+DYL-VIEWPORTTOPAPERSPACE;Fenêtre vers l'espace papier;Recrée dans l'espace papier les objets de l'espace objet vus par les fenêtres sélectionnées, puis supprime les fenêtres.
+DYL-BATCHINSERT;Insertion par lot;Insère chaque dessin d'un dossier côte à côte comme blocs dans le dessin courant.
+DYL-COUNTBYLAYERS;Compte par calques;Totalise la longueur et l'aire des courbes sélectionnées par calque, les étiquette et exporte les résultats.
+DYL-REBUILDPAT;Reconstruire les motifs;Reconstruit les fichiers .pat des motifs de hachures absents du chemin de support.
+PST-OPENPATS;Ouvrir le dossier des motifs;Ouvre dans l'Explorateur Windows le dossier des motifs utilisé par Dyl-RebuildPat.
+DYL-OPENFOLDER;Ouvrir un dossier;Ouvre dans l'Explorateur Windows le dossier du dépôt, du dessin courant, des gabarits, du jeu de feuilles ou de support d'AutoCAD.
+DYL-DIAGNOSTICS;Diagnostics;Écrit un rapport complet de DynALisp, d'AutoCAD et du dessin avec vos paramètres et fichiers, puis offre de l'envoyer dans un ticket GitHub.
+PST-DIAGNOSTICSDYNALISP;Diagnostics DynALisp;Rapporte la version et l'installation de DynALisp, son démarrage, ses erreurs de chargement et ses modules.
+PST-DIAGNOSTICSAUTOCAD;Diagnostics AutoCAD;Rapporte le produit AutoCAD, Windows, le profil, les variables système, les chemins, les applications et les paquets chargés.
+PST-DIAGNOSTICSCONFLICTS;Diagnostics Conflits;Cherche les autres programmes qui redéfinissent les commandes, alias ou le démarrage de DynALisp, et leurs réacteurs.
+PST-DIAGNOSTICSSUITE;Diagnostics Suite de démarrage;Vérifie la suite de démarrage et les alias : fichiers manquants, commandes non définies, alias sans commande.
+PST-DIAGNOSTICSSETTINGS;Diagnostics Paramètres;Liste les paramètres DynALisp et vos fichiers, et vérifie chaque fichier de données que lit DynALisp.
+PST-DIAGNOSTICSREACTORS;Diagnostics Réacteurs;Compare les réacteurs DynALisp du dessin à leurs paramètres et liste chaque réacteur.
+PST-DIAGNOSTICSREACTOREVENTS;Diagnostics Événements des réacteurs;Compte les événements que le dessin envoie aux réacteurs entre deux exécutions, pour trouver ce qui ralentit AutoCAD.
+PST-DIAGNOSTICSDRAWING;Diagnostics Dessin;Rapporte les unités, les espaces, les tables d'ordre de tracé, les calques, les xréfs et les objets du dessin, et son temps de régénération.
+DYL-SETTINGS;Paramètres;Ouvre les paramètres de DynALisp : la langue, les réacteurs, les dérogations et les mises à jour.
+DYL-SUITE;Suite;Active ou désactive chaque commande, modifie ses alias et ouvre ses docs.
+DYL-USERFILES;Fichiers utilisateur;Liste vos copies des fichiers de données, les réinitialise, et exporte ou importe vos paramètres.
+DYL-INFO;Info;Montre la version de DynALisp et ce qui a changé, et vérifie les mises à jour.
+DYL-DOCS;Docs;Ouvre les docs de chaque module installé.
+DYL-RELOAD;Recharger;Recharge chaque module de DynALisp.

@@ -320,6 +320,10 @@
            (strcat (Dyl:Lang) (if (getenv "DynalispLanguage") "" " (not set: the language of AutoCAD)"))
     )
   )
+  ;;  The ribbon is translated by DynALisp.Ribbon.dll (AutoCAD 2025 and later):
+  (if (and Dyl:LangCode (/= "en" (Dyl:LangCode)) (not Dyl:RibbonLang))
+    (dg:note "The ribbon stays in English: DynALisp.Ribbon.dll is not loaded (AutoCAD older than 2025)")
+  )
   (if (not (vl-some '(lambda (r) (= (strcase r) (strcase (vl-filename-directory *dyl:repo))))
                     (dg:pluginroots)
            )

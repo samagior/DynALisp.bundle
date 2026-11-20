@@ -4407,7 +4407,7 @@
   )
 
   ;;; Language of DynALisp (Environment in Dyl-Settings, DynalispLanguage): the language
-  ;;; of its docs, and later of its ribbon. Not the Language of the File Preferences,
+  ;;; of its docs and of its ribbon (Dyl:LangRibbon). Not the Language of the File Preferences,
   ;;; which sets the content folders and the dictionaries of the drawings. Until it is
   ;;; set, the language of the AutoCAD installed (the lcid that ends its product key,
   ;;; ...\ACAD-A101:40C), English when DynALisp is not in that language yet. Each
@@ -4435,8 +4435,22 @@
 
   (defun Dyl:LangSet (key)
     (setenv "DynalispLanguage" key)
-    (princ (strcat "\nLanguage of DynALisp: " key ". The docs open in it from now on."))
+    (Dyl:LangRibbon)
+    (princ (strcat "\nLanguage of DynALisp: " key ". The docs open in it from now on"
+                   (if Dyl:RibbonLang ", and the ribbon shows it" "")
+                   "."
+           )
+    )
   )
+
+  ;;  The ribbon in the language: given to DynALisp.Ribbon.dll (AutoCAD 2025 and later,
+  ;;  Installer\Ribbon\Plugin\Translations.cs), which puts the texts of
+  ;;  Resources\DynALisp.Ribbon.<code>.csv on the tab; in an older AutoCAD, the ribbon
+  ;;  stays in English. When DynALisp loads, and when the language is saved:
+  (defun Dyl:LangRibbon ()
+    (if Dyl:RibbonLang (vl-catch-all-apply 'Dyl:RibbonLang (list (Dyl:LangCode))))
+  )
+  (Dyl:LangRibbon)
 
 
   ;#endregion
@@ -4504,7 +4518,7 @@
   ;;;     startup lines removed from the command line, from the next startup; greyed
   ;;;     out without Resources\DynALisp.Startup.dll (Dyl:CleanStartup not defined)
 ;;;   - Language (Environment, the first section, DynalispLanguage, see Dyl:Lang): the
-  ;;;     language of DynALisp, its docs (and later its ribbon); the language of the
+  ;;;     language of DynALisp, its docs and its ribbon; the language of the
   ;;;     AutoCAD installed until it is set. Not the Language of the File Preferences
 ;;;   - Install updates automatically (Updates, DynalispAutoUpdate, see
   ;;;     Dyl:UpdAuto in the Info region): checked once a day, the setup of a new

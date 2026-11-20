@@ -72,18 +72,18 @@ namespace DynALisp.Ribbon
 
         public override RibbonRowPanel Build()
         {
-            _field = Host.Combo("DYL_TRANSFER_FIELD", "Layer Transfer: the level of the layer names to change.");
-            foreach (var f in Fields) _field.Items.Add(Host.Item(f.Text, f.Tag));
+            _field = Host.Combo("DYL_TRANSFER_FIELD", T.S("Layer Transfer: the level of the layer names to change."));
+            foreach (var f in Fields) _field.Items.Add(Host.Item(T.S(f.Text), f.Tag));
             _field.CurrentChanged += OnField;
             _fieldPicks = new Host.Picks(_field);
-            _from = Host.Combo("DYL_TRANSFER_FROM", "Layer Transfer: the value of the layers to transfer (Any: every layer).");
+            _from = Host.Combo("DYL_TRANSFER_FROM", T.S("Layer Transfer: the value of the layers to transfer (Any: every layer)."));
             _from.CurrentChanged += OnFrom;
             _fromPicks = new Host.Picks(_from);
-            _to = Host.Combo("DYL_TRANSFER_TO", "Layer Transfer: the value to give the layers. The Transfer button transfers the objects selected.");
+            _to = Host.Combo("DYL_TRANSFER_TO", T.S("Layer Transfer: the value to give the layers. The Transfer button transfers the objects selected."));
             _to.CurrentChanged += OnTo;
             _toPicks = new Host.Picks(_to);
             _sig = null;
-            var labels = Host.Labels("Level:", "From:", "To:");
+            var labels = Host.Labels(T.S("Level:"), T.S("From:"), T.S("To:"));
             return Host.Rows("DYL_TRANSFER_DROPDOWNS",
                 new RibbonItem[] { labels[0], _field }, new RibbonItem[] { labels[1], _from }, new RibbonItem[] { labels[2], _to });
         }
@@ -161,7 +161,7 @@ namespace DynALisp.Ribbon
             _ => PhaseCombos.Phases,
         };
 
-        string NoneText => _fld == "Status" ? "Unphased" : "None";
+        string NoneText => _fld == "Status" ? T.S("Unphased") : T.S("None");
 
         // ---- the drop-downs ----
 
@@ -215,13 +215,13 @@ namespace DynALisp.Ribbon
             string Label(string v) => desc.TryGetValue(v, out var d) && d != "" ? v + " - " + d : v;
 
             _from.Items.Clear();
-            _from.Items.Add(Host.Item("Any", Any));
+            _from.Items.Add(Host.Item(T.S("Any"), Any));
             if (none) _from.Items.Add(Host.Item(NoneText, ""));
             foreach (var v in vals) _from.Items.Add(Host.Item(Label(v), v));
 
             _to.Items.Clear();
             // shown while no value is picked (it is not a value: picked, To has none):
-            _prompt = Host.Item("Select replacement...", null);
+            _prompt = Host.Item(T.S("Select replacement..."), null);
             _to.Items.Add(_prompt);
             foreach (var v in vals) _to.Items.Add(Host.Item(Label(v), v));
             if (_fld != "Minor")

@@ -26,6 +26,9 @@
 #     commands (a child is a Pst-* command of the same file as its main command).
 #   - RibbonIcons.py (this folder): the icon of each command, drawn at 16 and 32 px and
 #     stored in the CUIx. A child without an icon uses the icon of its main command.
+#   - Ribbon.<code>.csv (this folder, Ribbon.fr.csv): the texts of the tab in another language
+#     (see translations); written by UID in Contents\Resources\DynALisp.Ribbon.<code>.csv, which the
+#     ribbon plugin puts on the tab when DynALisp is in that language (Plugin\Translations.cs).
 #   - ContextMenus.csv (this folder): the commands added to the right-click menus of
 #     AutoCAD. Columns: Menu (the alias of an object menu: OBJECT_MTEXT for one mtext
 #     selected, OBJECTS_MTEXT for several; AutoCAD adds the items of a partial CUIx to its
@@ -144,6 +147,8 @@ class Builder:
         self.images = {}      # file name -> PNG bytes
         self.warnings = []
         self.buttons = set()  # the UIDs of the command buttons
+        self.tr = {}          # lang -> [(UID, text, tooltip title, tooltip)], see translations
+        self.tr_desc = {}     # lang -> {command: tooltip}
 
     def uid(self, kind='RBN'):
         self.n += 1
@@ -191,15 +196,19 @@ class Builder:
         self.macro_ids[cmd] = uid
         return uid
 
-    def button(self, cmd, text, title, style, ind):
+    def button(self, cmd, text, title, style, ind, tr=None):
         """A command button. The first button of a command has the UID RBN_DYL_CMD_<command>,
         so that the ribbon plugin finds it (Plugin\\PhaseCombos.cs adds its drop-downs after
-        the Layer Phase button)."""
+        the Layer Phase button). tr: {lang: (label, title)}, its text in the other languages
+        (see translations)."""
         sp = ' ' * ind
         uid = 'RBN_DYL_CMD_' + re.sub(r'[^A-Z0-9]', '_', cmd.upper())
         if uid in self.buttons:
             uid = self.uid()
         self.buttons.add(uid)
+        for lang, (label, ttl) in (tr or {}).items():
+            desc = self.tr_desc.get(lang, {})
+            self.tr.setdefault(lang, []).append((uid, label, ttl, desc.get(cmd) or desc.get(cmd.split('=')[0], '')))
         return '\n'.join([
             sp + '<RibbonCommandButton UID="%s" Id="AcRibbonCommandButton" Text="%s" ButtonStyle="%s" '
                  'MenuMacroID="%s" KeyTip="">' % (uid, attr(text), style, self.macro_ids[cmd]),
@@ -223,26 +232,33 @@ class Builder:
             return self.separator(ind)
         style = 'LargeWithText' if large else 'SmallWithText'
         text = two_lines(it['name']) if large else it['name']
+        tr = {lang: (t['name'], t['name']) for lang, t in it.get('tr', {}).items()}
         if not it['kids']:
-            return self.button(it['cmd'], text, it['name'], style, ind)
+            return self.button(it['cmd'], text, it['name'], style, ind, tr)
         sp = ' ' * ind
         # The items of a variable (@): the button keeps its name (their icon is the same)
         # and runs the item picked last; no main command above them:
         static = it.get('static')
+        split = self.uid()
+        for lang, (label, _) in tr.items():
+            self.tr.setdefault(lang, []).append((split, label, '', ''))
         out = [sp + '<RibbonSplitButton UID="%s" Id="AcRibbonSplitButton" Text="%s" KeyTip="" SmallImage="" '
                     'LargeImage="" Behavior="%s" ListStyle="IconText" ButtonStyle="%s" '
-                    'Grouping="false">' % (self.uid(), attr(text), 'SplitFollowStaticText' if static else 'SplitFollow',
+                    'Grouping="false">' % (split, attr(text), 'SplitFollowStaticText' if static else 'SplitFollow',
                                            style),
                sp + '  ' + REV]
         if not static:
-            out += [self.button(it['cmd'], text, it['name'], style, ind + 2), self.separator(ind + 2)]
-        for (kid, label, title) in it['kids']:
-            out.append(self.button(kid, label, title, 'SmallWithText', ind + 2))
+            out += [self.button(it['cmd'], text, it['name'], style, ind + 2, tr), self.separator(ind + 2)]
+        for n, (kid, label, title) in enumerate(it['kids']):
+            ktr = {lang: (t['kids'][n][0], t['kids'][n][1]) for lang, t in it.get('tr', {}).items()}
+            out.append(self.button(kid, label, title, 'SmallWithText', ind + 2, ktr))
         out.append(sp + '</RibbonSplitButton>')
         return '\n'.join(out)
 
-    def panel(self, name, items):
+    def panel(self, name, items, tr=None):
         uid = 'RBN_DYL_PANEL_' + re.sub(r'[^A-Z0-9]', '_', name.upper())
+        for lang, title in (tr or {}).items():
+            self.tr.setdefault(lang, []).append((uid, title, '', ''))
         out = ['    <RibbonPanelSource UID="%s" Text="%s" HiddenInEditor="false">' % (uid, attr(name)),
                '      ' + REV,
                '      <Name xlate="true" UID="%s">%s - %s</Name>' % (self.uid('XLS'), TAB, escape(name)),
@@ -286,6 +302,61 @@ class Builder:
         return uid, '\n'.join(out)
 
 
+def translations():
+    """{lang: {key: (name, tooltip)}} of each Ribbon.<lang>.csv of this folder (Ribbon.fr.csv).
+    Key: a command (DYL-QUICKDRAW, PST-DRAWINGSCALE1-100), an item of a variable
+    (PST-QUICKDRAWGALLERY=Section) or Panel:<title>. Name: the label of the button (for a
+    command whose label is set by the Name of Ribbon.csv, that label: Quick Draw Manager), the
+    full name of a child (its label is made the same way as in English, see short_names), the
+    label of an item of a variable; tooltip: its description."""
+    out = {}
+    for f in sorted(os.listdir(HERE)):
+        m = re.match(r'Ribbon\.([a-z]{2})\.csv$', f)
+        if m:
+            out[m.group(1)] = {(r.get('Key') or '').strip(): ((r.get('Name') or '').strip(), (r.get('Description') or '').strip())
+                               for r in read_csv(os.path.join(HERE, f)) if (r.get('Key') or '').strip()}
+    return out
+
+
+def item_translations(cmd, name, kids, static, langs, b):
+    """{lang: {'name': label, 'kids': [(label, title)...]}} of a button and its children, the
+    English text where a translation is missing (with a warning)."""
+    out = {}
+    for lang, table in langs.items():
+        def get(key, en):
+            t = table.get(key)
+            if not t or not t[0]:
+                b.warnings.append('No %s name for %s in Ribbon.%s.csv.' % (lang, key, lang))
+                return en
+            return t[0]
+        if static:
+            labels = [get(k, lbl) for k, lbl, _ in kids]
+            titles = [('%s : %s' if lang == 'fr' else '%s: %s') % (get(cmd, name), l) for l in labels]
+        else:
+            titles = [get(k, title) for k, _, title in kids]
+            labels = short_names(titles)
+        out[lang] = {'name': get(cmd, name), 'kids': list(zip(labels, titles))}
+    return out
+
+
+def write_translations(b):
+    """Contents\\Resources\\DynALisp.Ribbon.<lang>.csv, read by the ribbon plugin
+    (Plugin\\Translations.cs): the text of each item of the tab in that language, by its UID.
+    Columns: Id;Text;Title;Description (the label, the title and the text of its tooltip)."""
+    done = []
+    for lang, rows in b.tr.items():
+        path = os.path.join(os.path.dirname(CUIX), 'DynALisp.Ribbon.%s.csv' % lang)
+        text = 'Id;Text;Title;Description\r\n' + ''.join(
+            '%s;%s;%s;%s\r\n' % tuple(v.replace(';', ',').replace('\r', ' ').replace('\n', ' ') for v in row)
+            for row in rows)
+        old = open(path, encoding='utf-8-sig').read() if os.path.exists(path) else None
+        if old != text.replace('\r\n', '\n'):
+            with open(path, 'w', encoding='utf-8-sig', newline='') as f:
+                f.write(text)
+            done.append(os.path.basename(path))
+    return done
+
+
 def placeholder(cmd, size):
     """A grey tile with the first letter of the command, for a command without an icon."""
     c = RibbonIcons.Ic(size)
@@ -301,6 +372,9 @@ def part_xml(root):
 def build():
     cmds, files = suite_commands()
     b = Builder()
+    langs = translations()
+    for lang, table in langs.items():
+        b.tr_desc[lang] = {k: v[1] for k, v in table.items() if v[1]}
     panels = []   # (name, [items])
     for r in read_csv(LAYOUT):
         cmd = (r.get('Command') or '').strip().upper()
@@ -339,7 +413,8 @@ def build():
                 b.warnings.append('The rows of panel %s are not together in Ribbon.csv.' % panel)
             panels.append((panel, []))
         panels[-1][1].append({'cmd': cmd, 'name': name, 'stack': (r.get('Stack') or '').strip(), 'kids': items,
-                              'static': spec.startswith('@')})
+                              'static': spec.startswith('@'),
+                              'tr': item_translations(cmd, name, items, spec.startswith('@'), langs, b)})
 
     # main commands of the module that are not on the ribbon:
     on = {it['cmd'] for _, its in panels for it in its}
@@ -347,7 +422,15 @@ def build():
         if c.startswith('DYL-') and (r.get('Module') or '') == MODULE and c not in on:
             b.warnings.append('%s (%s) is not on the ribbon: add it to Ribbon.csv.' % (c, r.get('Name')))
 
-    srcs = [b.panel(name, items) for name, items in panels]
+    b.panel_tr = {}   # lang -> {panel: title}
+    for lang, table in langs.items():
+        b.panel_tr[lang] = {}
+        for name, _ in panels:
+            t = table.get('Panel:' + name)
+            if not t:
+                b.warnings.append('No %s title for the panel %s in Ribbon.%s.csv.' % (lang, name, lang))
+            b.panel_tr[lang][name] = t[0] if t else name
+    srcs = [b.panel(name, items, {lang: b.panel_tr[lang][name] for lang in langs}) for name, items in panels]
     refs = ['      <RibbonPanelSourceReference UID="RBN_DYL_REF_%s" PanelId="%s" ResizeStyle="Default">\n'
             '        %s\n      </RibbonPanelSourceReference>' % (uid[len('RBN_DYL_PANEL_'):], uid, REV)
             for uid, _ in srcs]
@@ -485,7 +568,9 @@ def main():
         print('Warning:', w)
     if '--pictures' not in args:
         print('Wrote %s: %d commands, %d images.' % (CUIX, len(b.macro_ids), len(b.images)))
-    done = RibbonPanels.write(b.panels, b.cmds)
+        done = write_translations(b)
+        print('Translations: %s' % (', '.join(done) if done else 'no change'))
+    done = RibbonPanels.write(b.panels, b.cmds, b.panel_tr)
     print('Docs pictures: %s' % (', '.join(done) if done else 'no change'))
 
 

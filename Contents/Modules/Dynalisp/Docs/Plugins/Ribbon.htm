@@ -47,7 +47,7 @@
 </div>
 
 <h2 id="desc">Description</h2>
-<p>The <strong>DynALisp</strong> tab of the ribbon has a button for each tool of the Dynalisp module, with an icon of its own, in a panel per group, and the core commands in the DynALisp panel. AutoCAD loads it with DynALisp: there is nothing to set up.</p>
+<p>The <strong>DynALisp</strong> tab of the ribbon has a button for each tool of the Dynalisp module, with an icon of its own, in a panel per group, and the core commands in the DynALisp panel. AutoCAD loads it with DynALisp: there is nothing to set up. It is in the language of DynALisp (<a href="../Core/Dyl-Settings.htm#environment">Language</a> in Dyl-Settings): English or French, its panels, buttons, tooltips and drop-downs (AutoCAD 2025 and later; the pictures below are the English tab).</p>
 
 <h2 id="panels">Panels</h2>
 <!-- BuildRibbon: panels -->
@@ -115,7 +115,7 @@
 <h2 id="notes">Notes</h2>
 <div class="spacedbullets">
 <ul>
-<li>The drop-downs are added by <span class="fixw">Resources\DynALisp.Ribbon.dll</span>, which needs AutoCAD 2025 or later. In an older version, the tab has its buttons only: the Layer Phase button opens its window, and the Transfer button asks for the level and the values.</li>
+<li>The drop-downs and the translation of the tab are done by <span class="fixw">Resources\DynALisp.Ribbon.dll</span>, which needs AutoCAD 2025 or later. In an older version, the tab is in English and has its buttons only: the Layer Phase button opens its window, and the Transfer button asks for the level and the values.</li>
 <li>A tool turned off in <a href="../Core/Dyl-Suite.htm">Dyl-Suite</a> answers <em>Unknown command</em> when its button is clicked.</li>
 <li>The drop-downs change only while AutoCAD is idle, with no command running: after a command, they may take a moment to show the new state.</li>
 <li>A problem of the drop-downs prints a line starting with <em>DynALisp ribbon:</em> at the command line.</li>
@@ -127,6 +127,7 @@
 <div class="spacedbullets">
 <ul>
 <li><span class="fixw">Installer\Ribbon\BuildRibbon.py</span> writes <span class="fixw">DynALisp.cuix</span> from <span class="fixw">Installer\Ribbon\Ribbon.csv</span> (the panels and buttons), <span class="fixw">RibbonIcons.py</span> (the icons) and <span class="fixw">Resources\StartupSuite.csv</span> (the names, descriptions and children). It warns about a main command missing from the ribbon or without an icon. <span class="fixw">--sheet &lt;file.png&gt;</span> draws every icon on the light and the dark ribbon.</li>
+<li>The texts of the tab in another language are in <span class="fixw">Installer\Ribbon\Ribbon.fr.csv</span> (a panel, a command or an item of the Quick Draw gallery, its name and its tooltip); the script writes them by the id of each item in <span class="fixw">Resources\DynALisp.Ribbon.fr.csv</span>, which the plugin reads, and warns about a text missing.</li>
 <li>The drop-downs are built with <span class="fixw">dotnet build Installer\Ribbon\Plugin -c Release</span>, AutoCAD closed.</li>
 <li>The same run draws the pictures of this page from the same panels and icons (<span class="fixw">Installer\Ribbon\RibbonPanels.py</span>, into <span class="fixw">Docs\Plugins\Ribbon</span>) and writes its Panels section: they follow the ribbon, with no screenshot to take. <span class="fixw">--pictures</span> draws them only.</li>
 <li>Restart AutoCAD to see the new ribbon.</li>

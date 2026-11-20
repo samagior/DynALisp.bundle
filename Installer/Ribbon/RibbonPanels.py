@@ -50,10 +50,15 @@ THEMES = {
 }
 
 # The drop-downs of DynALisp.Ribbon.dll, after the button of their tool: (label, value shown).
+# In each language of the plugin (Plugin\Translations.cs); the phases are the descriptions of
+# Phase.csv, which has them in English only:
 PLUGIN = {
-    'DYL-LAYERPHASE': ({'en': 'Auto-phase and Phase', 'fr': 'Auto-phase et Phase'}, [('', 'Auto-phase On'), ('', 'N - New Work')]),
-    'PST-TRANSFERFIELD': ({'en': 'Level, From and To', 'fr': 'Level, From et To'}, [('Level:', 'Status'), ('From:', 'E - Existing To Remain'),
-                                                 ('To:', 'N - New Work')]),
+    'DYL-LAYERPHASE': ({'en': 'Auto-phase and Phase', 'fr': 'Auto-phase et Phase'},
+                       {'en': [('', 'Auto-phase On'), ('', 'N - New Work')],
+                        'fr': [('', 'Auto-phase activée'), ('', 'N - New Work')]}),
+    'PST-TRANSFERFIELD': ({'en': 'Level, From and To', 'fr': 'Niveau, De et À'},
+                          {'en': [('Level:', 'Status'), ('From:', 'E - Existing To Remain'), ('To:', 'N - New Work')],
+                           'fr': [('Niveau :', 'Statut'), ('De :', 'E - Existing To Remain'), ('À :', 'N - New Work')]}),
 }
 
 # The pages of the core commands (not in StartupSuite.csv), relative to Docs\Plugins:
@@ -193,7 +198,7 @@ def combos(rows, cw):
     return lw + cw + 4, draw
 
 
-def blocks(items):
+def blocks(items, lang='en'):
     """The blocks of the main row of a panel, as Builder.panel of BuildRibbon.py lays it out."""
     out, i, cw = [], 0, combo_width()
     while i < len(items):
@@ -215,7 +220,7 @@ def blocks(items):
             out.append(stack(group))
         for g in group:
             if g['cmd'] in PLUGIN:
-                out.append(combos(PLUGIN[g['cmd']][1], cw))
+                out.append(combos(PLUGIN[g['cmd']][1][lang], cw))
     return out
 
 
@@ -230,11 +235,11 @@ def slide_rows(items):
     return [r for _, r in rows]
 
 
-def panel_image(name, items, t, slide=True):
+def panel_image(name, items, t, slide=True, lang='en'):
     main = [it for it in items if not it['stack'].startswith('>')]
     rows = slide_rows([it for it in items if it['stack'].startswith('>')]) if slide else []
     has_slide = any(it['stack'].startswith('>') for it in items)
-    bl = blocks(main)
+    bl = blocks(main, lang)
     pw = max(sum(w for w, _ in bl) + 2 * PAD, tw(name, 11) + 36)
     sw = max([sum(small_width(it) + 2 for it in r) + 2 * PAD for r in rows] + [0])
     w = max(pw, sw)
@@ -260,8 +265,8 @@ def panel_image(name, items, t, slide=True):
     return c.im
 
 
-def tab_image(panels, t):
-    ims = [panel_image(n, its, t, slide=False) for n, its in panels]
+def tab_image(panels, t, lang='en'):
+    ims = [panel_image(n, its, t, slide=False, lang=lang) for n, its in panels]
     gap = 3 * S
     out = Image.new('RGBA', (sum(i.width for i in ims) + gap * (len(ims) - 1), max(i.height for i in ims)), (0, 0, 0, 0))
     x = 0
@@ -345,15 +350,32 @@ def picture(base, w, alt):
             '<img src="Ribbon/%s.png" width="%d" alt="%s"></picture></p>' % (base, base, w, html.escape(alt)))
 
 
-def section(panels, sizes, cmds, lang):
-    w = TEXT[lang]
-    out = [BEGIN, '<p>%s</p>' % html.escape(w['intro'], quote=False), picture('Tab', sizes['Tab'], w['tab'])]
+def localized_panels(panels, lang, panel_tr):
+    """[(title, items, base)] of the panels in lang: their titles and the labels of their
+    buttons translated (BuildRibbon.py, Ribbon.<lang>.csv); base: the name of their pictures
+    (Draw, Draw-fr)."""
+    out = []
     for name, items in panels:
-        base = slug(name)
+        its = []
+        for it in items:
+            it = dict(it)
+            if not it.get('sep') and lang in it.get('tr', {}):
+                it['name'] = it['tr'][lang]['name']
+            its.append(it)
+        title = (panel_tr or {}).get(lang, {}).get(name, name) if lang != 'en' else name
+        out.append((title, its, slug(name) + ('' if lang == 'en' else '-' + lang)))
+    return out
+
+
+def section(panels, sizes, cmds, lang, panel_tr=None):
+    w = TEXT[lang]
+    tab = 'Tab' + ('' if lang == 'en' else '-' + lang)
+    out = [BEGIN, '<p>%s</p>' % html.escape(w['intro'], quote=False), picture(tab, sizes[tab], w['tab'])]
+    for (name, _), (title, items, base) in zip(panels, localized_panels(panels, lang, panel_tr)):
         main = [tool(it, cmds, lang) for it in items if not it.get('sep') and not it['stack'].startswith('>')]
         more = [tool(it, cmds, lang) for it in items if not it.get('sep') and it['stack'].startswith('>')]
-        out.append('<h3 id="panel-%s">%s</h3>' % (base.lower(), html.escape(name)))
-        out.append(picture(base, sizes[base], w['panel'] % name))
+        out.append('<h3 id="panel-%s">%s</h3>' % (slug(name).lower(), html.escape(title)))
+        out.append(picture(base, sizes[base], w['panel'] % title))
         p = ', '.join(main) + '.'
         if more:
             p += ' ' + w['slide'] + ' ' + ', '.join(more) + '.'
@@ -362,21 +384,24 @@ def section(panels, sizes, cmds, lang):
     return '\n'.join(out)
 
 
-def write(panels, cmds):
-    """The pictures and the Panels section of the page; returns the files written."""
+def write(panels, cmds, panel_tr=None):
+    """The pictures and the Panels section of the page, in each language of TEXT (the French
+    pictures: Draw-fr.png, Draw-fr-dark.png); returns the files written."""
     os.makedirs(OUT, exist_ok=True)
-    written, sizes = [], {}
-    for suffix, t in THEMES.items():
-        im = tab_image(panels, t)
-        sizes['Tab'] = im.width // S
-        if save(im, os.path.join(OUT, 'Tab%s.png' % suffix)):
-            written.append('Tab%s.png' % suffix)
-        for name, items in panels:
-            im = panel_image(name, items, t)
-            sizes[slug(name)] = im.width // S
-            if save(im, os.path.join(OUT, '%s%s.png' % (slug(name), suffix))):
-                written.append('%s%s.png' % (slug(name), suffix))
-    keep = {('Tab%s.png' % s).lower() for s in THEMES} | {('%s%s.png' % (slug(n), s)).lower() for n, _ in panels for s in THEMES}
+    written, sizes, keep = [], {}, set()
+    for lang in TEXT:
+        lp = localized_panels(panels, lang, panel_tr)
+        tab = 'Tab' + ('' if lang == 'en' else '-' + lang)
+        for suffix, t in THEMES.items():
+            jobs = [(tab, lambda: tab_image([(ti, its) for ti, its, _ in lp], t, lang))]
+            jobs += [(base, (lambda ti=ti, its=its: panel_image(ti, its, t, lang=lang))) for ti, its, base in lp]
+            for base, draw in jobs:
+                im = draw()
+                sizes[base] = im.width // S
+                f = '%s%s.png' % (base, suffix)
+                keep.add(f.lower())
+                if save(im, os.path.join(OUT, f)):
+                    written.append(f)
     for f in os.listdir(OUT):
         if f.endswith('.png') and f.lower() not in keep:
             os.remove(os.path.join(OUT, f))
@@ -392,7 +417,7 @@ def write(panels, cmds):
             written.append('(no %s in %s: its Panels section is not written)' % (BEGIN, os.path.basename(path)))
             continue
         eol = '\r\n' if '\r\n' in page else '\n'
-        new = page[:i] + section(panels, sizes, cmds, lang).replace('\n', eol) + page[j + len(END):]
+        new = page[:i] + section(panels, sizes, cmds, lang, panel_tr).replace('\n', eol) + page[j + len(END):]
         if new != page:
             with open(path, 'w', encoding='utf-8', newline='') as f:
                 f.write(new)
