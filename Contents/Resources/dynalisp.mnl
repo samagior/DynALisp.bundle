@@ -2982,19 +2982,16 @@
 
   ;;; ---------------------------------------------------------------------------
   ;;; Languages of the docs. A page is in English (Page.htm) and may have a copy in
-  ;;; another language beside it (Page.fr.htm). The language opened is the Language
-  ;;; of the File Preferences (Remote>>Dyl:PrefGet, the language of AutoCAD until it
-  ;;; is set), English when the page has no copy in it. Every docs page is opened
-  ;;; through Dyl:SuiteDlgShell, which calls Dyl:DocsLocal. The pages link to each
-  ;;; other in their own language and have an EN / FR switch at their top right
+  ;;; another language beside it (Page.fr.htm). The language opened is the language
+  ;;; of DynALisp (Language in Dyl-Settings, Dyl:Lang in the Settings region),
+  ;;; English when the page has no copy in it. Every docs page is opened through
+  ;;; Dyl:SuiteDlgShell, which calls Dyl:DocsLocal. The pages link to each other in
+  ;;; their own language and have an EN / FR switch at their top right
   ;;; (Installer\Docs\BuildDocs.py).
   ;;; ---------------------------------------------------------------------------
-  ;;  (language of the File Preferences . suffix of its pages):
-  (setq *dyl:docslangs* '(("French" . "fr")))
-
   ;;  The suffix of the docs language ("fr"), nil for English:
-  (defun Dyl:DocsLang ()
-    (if Remote>>Dyl:PrefGet (cdr (assoc (Remote>>Dyl:PrefGet "Language") *dyl:docslangs*)))
+  (defun Dyl:DocsLang (/ code)
+    (if (/= "en" (setq code (Dyl:LangCode))) code)
   )
 
   ;;  The page f in the docs language when it has a copy in it (a page of a Docs
@@ -4409,6 +4406,38 @@
     )
   )
 
+  ;;; Language of DynALisp (Environment in Dyl-Settings, DynalispLanguage): the language
+  ;;; of its docs, and later of its ribbon. Not the Language of the File Preferences,
+  ;;; which sets the content folders and the dictionaries of the drawings. Until it is
+  ;;; set, the language of the AutoCAD installed (the lcid that ends its product key,
+  ;;; ...\ACAD-A101:40C), English when DynALisp is not in that language yet. Each
+  ;;; language: (key code lcid), the key also its name in the window (the windows are in
+  ;;; English); code is the suffix of its docs pages (Page.fr.htm):
+  (setq *dyl:langs* '(("English" "en" "409") ("French" "fr" "40C")))
+
+  ;;  The key of the language of the AutoCAD installed, English when it is not one of
+  ;;  *dyl:langs*:
+  (defun Dyl:LangDefault (/ key)
+    (setq key (strcase (vlax-product-key)))
+    (cond
+      ((car (vl-some '(lambda (l) (if (wcmatch key (strcat "*:" (caddr l))) l)) *dyl:langs*)))
+      ("English")
+    )
+  )
+
+  ;;  The key of the language of DynALisp ("English", "French"):
+  (defun Dyl:Lang (/ key)
+    (if (assoc (setq key (getenv "DynalispLanguage")) *dyl:langs*) key (Dyl:LangDefault))
+  )
+
+  ;;  Its code ("en", "fr"):
+  (defun Dyl:LangCode () (cadr (assoc (Dyl:Lang) *dyl:langs*)))
+
+  (defun Dyl:LangSet (key)
+    (setenv "DynalispLanguage" key)
+    (princ (strcat "\nLanguage of DynALisp: " key ". The docs open in it from now on."))
+  )
+
 
   ;#endregion
 
@@ -4474,6 +4503,9 @@
 ;;;   - Clean startup (Overrides, DynalispCleanStartup, see Dyl:CleanStartupSet): the
   ;;;     startup lines removed from the command line, from the next startup; greyed
   ;;;     out without Resources\DynALisp.Startup.dll (Dyl:CleanStartup not defined)
+;;;   - Language (Environment, the first section, DynalispLanguage, see Dyl:Lang): the
+  ;;;     language of DynALisp, its docs (and later its ribbon); the language of the
+  ;;;     AutoCAD installed until it is set. Not the Language of the File Preferences
 ;;;   - Install updates automatically (Updates, DynalispAutoUpdate, see
   ;;;     Dyl:UpdAuto in the Info region): checked once a day, the setup of a new
   ;;;     version started (installed when AutoCAD closes); greyed out for a git clone
@@ -4481,7 +4513,8 @@
   ;;; The values are applied when the window is saved, Cancel leaves them as
   ;;; they were (a setup command run from the window is not undone).
   ;;;
-  ;;; Every on/off setting is off on a new installation: it is on only once the
+  ;;; Every on/off setting is off on a new installation (the language, a choice, is the
+  ;;; language of AutoCAD until it is set): it is on only once the
   ;;; user turns it on, saved as "1" in its Dynalisp* user setting (setenv, kept
   ;;; in the AutoCAD profile from then on); read it with (= "1" (getenv ...)).
   ;;;
@@ -4547,6 +4580,11 @@
 
   ;;; Set the tiles from the values being edited:
   (defun Dyl:SetDlgFill ()
+    ;; Language of DynALisp (Environment): the languages of *dyl:langs*:
+    (start_list "lng")
+    (foreach l *dyl:langs* (add_list (car l)))
+    (end_list)
+    (set_tile "lng" (itoa (cond ((vl-position (assoc st:lng *dyl:langs*) *dyl:langs*)) (0))))
     ;; Drawing defaults: its open button (the drawing settings window) available even while
     ;; the check is off (the Shrinkwrap gap step of that window is used anyway), greyed out
     ;; with the checkbox when Dyl-DrawingSetup.lsp is not loaded:
@@ -4611,6 +4649,7 @@
           st:svo (= "1" (get_tile "svo"))
           st:aup (= "1" (get_tile "aup"))
           st:csu (= "1" (get_tile "csu"))
+          st:lng (car (nth (atoi (get_tile "lng")) *dyl:langs*))
           st:lkm (cond ((= "1" (get_tile "lku")) "Update") ((= "1" (get_tile "lkk")) "Keep"))
           ;; The other file preferences are set in their own window (Dyl:SetPrefsDlg):
           st:pfp (if st:pfp (cons (= "1" (get_tile "pfo")) (cdr st:pfp)))
@@ -4816,6 +4855,7 @@
     (if (not (eq st:prp (nth 2 old))) (MAJ:RedefineSet st:prp))
     (if (not (eq st:aup (nth 13 old))) (Dyl:UpdAutoSet st:aup))
     (if (not (eq st:csu (nth 16 old))) (Dyl:CleanStartupSet st:csu))
+    (if (/= st:lng (nth 17 old)) (Dyl:LangSet st:lng))
     ;; Layer keys: the answer remembered to the layers that differ from their key:
     (if (and Remote>>Dyl:LayerKeyMatchSet (not (equal st:lkm (nth 14 old))))
       (progn
@@ -4897,7 +4937,7 @@
     )
   )
 
-  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:csu st:old st:dch st:sta)
+  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:csu st:lng st:old st:dch st:sta)
     (setq st:defs (Dyl:SetDefsRead)
           st:aph  (and Remote>>Dyl:PhaseAuto-p (Remote>>Dyl:PhaseAuto-p) T)
           st:ado  (and Remote>>Dyl:DrawOrderAuto-p (Remote>>Dyl:DrawOrderAuto-p) T)
@@ -4915,7 +4955,8 @@
           st:lkm  (if Remote>>Dyl:LayerKeyMatch (Remote>>Dyl:LayerKeyMatch))
           st:alk  (and Remote>>Dyl:ObjectKeysAuto-p (Remote>>Dyl:ObjectKeysAuto-p) T)
           st:csu  (Dyl:CleanStartupOn-p)
-          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup st:lkm st:alk st:csu)
+          st:lng  (Dyl:Lang)
+          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup st:lkm st:alk st:csu st:lng)
           st:dch  (load_dialog (strcat (vl-filename-directory *dyl:prep) "\\Dyl-Settings.dcl"))
           st:sta  2
     )

@@ -49,6 +49,18 @@ set_desc  : text_part {width = 41; fixed_width = true; height = 1; fixed_height 
 dyl_settings
 : dialog {label = "DynALisp - Settings";
     : column {
+      // The language of DynALisp (DynalispLanguage, Dyl:Lang): its docs, and later its
+      // ribbon; the language of the AutoCAD installed until it is set. Not the Language
+      // of the File Preferences (content folders, dictionaries). The popup ends at the
+      // right of the section, as the open buttons of the toggles below:
+      : boxed_column {label = "Environment";
+        : set_desc {label = "The language of DynALisp and its docs.";}
+        : spacer {height = 0.5;}
+        : row {
+          : text {label = "Language"; width = 20; fixed_width = true;}
+          : popup_list {key = "lng"; width = 21; fixed_width = true;}
+        }
+      }
       // The reactors (Reactor folder of each module). DynALisp reactors (DynalispReactors,
       // see Dyl:ReactorsOn-p) turns them all off: the Reactor folders are then not loaded and
       // the reactor settings under it are greyed out (Dyl:SetDlgRea):

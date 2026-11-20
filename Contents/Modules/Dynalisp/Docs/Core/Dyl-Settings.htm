@@ -38,8 +38,17 @@
 </table>
 </div>
 <h2>Program Description</h2>
-<p><span class="fixw">DYL-SETTINGS</span> opens the DynALisp Settings window: the reactors, which act on the objects as you draw, the overrides, which DynALisp sets in every drawing opened, and the updates of DynALisp. Every setting is <strong>off on a new installation</strong>; once turned on it is remembered (a Windows user setting, <span class="fixw">Dynalisp*</span>) for every drawing and session. <strong>Save</strong> applies and saves the changes, <strong>Cancel</strong> discards them, <strong>Open Docs</strong> opens this page.</p>
+<p><span class="fixw">DYL-SETTINGS</span> opens the DynALisp Settings window: the language of DynALisp, the reactors, which act on the objects as you draw, the overrides, which DynALisp sets in every drawing opened, and the updates of DynALisp. Every on/off setting is <strong>off on a new installation</strong>; once turned on it is remembered (a Windows user setting, <span class="fixw">Dynalisp*</span>) for every drawing and session. <strong>Save</strong> applies and saves the changes, <strong>Cancel</strong> discards them, <strong>Open Docs</strong> opens this page.</p>
 <p>A setting with a square <em>open</em> button beside it has its own window; the button is greyed out while the setting is off (or when the program it needs is not loaded).</p>
+
+<h2 id="environment">Environment</h2>
+<p><em>The language of DynALisp and its docs.</em></p>
+<div class="programs commands wide">
+<table>
+<tr><th>Setting</th><th>What it does</th></tr>
+<tr><td>Language</td><td><em>English</em> or <em>French</em>: the language the DynALisp docs open in (the <strong>Open Docs</strong> buttons, <span class="fixw">Dyl-Docs</span>, the docs of <span class="fixw">Dyl-Suite</span>), English for a page not translated yet; the EN | FR switch at the top right of every page changes the language of the page shown. Later, the language of the ribbon too. Until it is saved, the language of the AutoCAD installed (English for a language DynALisp does not have yet). It is not the Language of the <a href="../Setup/Dyl-SetFilePrefs.htm">File Preferences</a>, which sets the content folders and the dictionaries of the drawings.</td></tr>
+</table>
+</div>
 
 <h2 id="reactors">Reactors</h2>
 <p><em>Act on new objects as you draw.</em> The reactors are in the <span class="fixw">Reactor</span> folder of each module.</p>
@@ -61,7 +70,7 @@
 <tr><th>Setting</th><th>What it does</th></tr>
 <tr><td>Drawing Settings</td><td>Every drawing opened is checked against the default units and grid of its kind (imperial or metric); a drawing that differs is set to them. Its button opens the <a href="#drawing">Drawing Settings</a> window, also available while the check is off (for the Shrinkwrap gap step).</td></tr>
 <tr><td>Commands</td><td>Redefines the save and print commands and <span class="fixw">REGEN</span> (<a href="../Output/Dyl-CmdOptimizer.htm">Command Optimizer</a>) so they prepare the drawing first. Its button opens the Output Prep window (<a href="../Output/Dyl-PrepDrawing.htm">Prep Drawing</a>, also <span class="fixw">DYL-PREPSUITE</span>): the steps run before each command.</td></tr>
-<tr><td>File Preferences</td><td>The DynALisp profile: AutoCAD's paths set from the AEC library classification, drawing units and language. The language is also the one these docs open in (English for a page not translated yet). Its button opens the File Preferences window (<a href="../Setup/Dyl-SetFilePrefs.htm">Set File Preferences</a>).</td></tr>
+<tr><td>File Preferences</td><td>The DynALisp profile: AutoCAD's paths set from the AEC library classification, drawing units and language. Its button opens the File Preferences window (<a href="../Setup/Dyl-SetFilePrefs.htm">Set File Preferences</a>).</td></tr>
 <tr><td>System variables</td><td>The preferred values of the active system variable profile, and the protected variables, set in every drawing opened (<a href="../Setup/Dyl-SysVars.htm">System Variables</a>). Its button opens Dyl-SysVars.</td></tr>
 <tr><td>Display</td><td>The display settings applied in every drawing opened. Its button opens the <a href="#display">Display</a> window.</td></tr>
 <tr><td>Clean startup</td><td>Once AutoCAD has started, the lines it printed while starting (<em>Loading AEC...</em>, <em>Customization file loaded successfully</em>, the palettes and startup commands of the workspace...) are removed from the command line. Kept: the <em>Drawing created using...</em> line, the lines of DynALisp and every line that reports an error or a warning. Applies from the next startup. Greyed out in a version older than 2015. See <a href="../Plugins/CleanStartup.htm">Clean Startup</a>.</td></tr>
@@ -105,7 +114,7 @@
 </div>
 
 <h2 id="settings">Where The Settings Are</h2>
-<p>The settings are Windows user settings of AutoCAD (<span class="fixw">getenv</span> / <span class="fixw">setenv</span>): <span class="fixw">DynalispReactors</span>, <span class="fixw">DynalispSettingsSync</span>, <span class="fixw">DynalispSetupOn</span>, <span class="fixw">DynalispSysVarOn</span>, <span class="fixw">DynalispDisplayOn</span>, <span class="fixw">DynalispAutoUpdate</span>, <span class="fixw">DynalispCleanStartup</span>, <span class="fixw">DynalispShrinkGapImperial</span> / <span class="fixw">Metric</span>... A setting is on only when it is <span class="fixw">"1"</span>, so a setting never saved is off. If the reactors keep AutoCAD from starting, turn them off from the command line: <span class="fixw">(setenv "DynalispReactors" "0")</span>, then open the drawings again.</p>
+<p>The settings are Windows user settings of AutoCAD (<span class="fixw">getenv</span> / <span class="fixw">setenv</span>): <span class="fixw">DynalispReactors</span>, <span class="fixw">DynalispSettingsSync</span>, <span class="fixw">DynalispSetupOn</span>, <span class="fixw">DynalispSysVarOn</span>, <span class="fixw">DynalispDisplayOn</span>, <span class="fixw">DynalispAutoUpdate</span>, <span class="fixw">DynalispCleanStartup</span>, <span class="fixw">DynalispLanguage</span>, <span class="fixw">DynalispShrinkGapImperial</span> / <span class="fixw">Metric</span>... A setting is on only when it is <span class="fixw">"1"</span>, so a setting never saved is off; <span class="fixw">DynalispLanguage</span> holds <span class="fixw">English</span> or <span class="fixw">French</span>. If the reactors keep AutoCAD from starting, turn them off from the command line: <span class="fixw">(setenv "DynalispReactors" "0")</span>, then open the drawings again.</p>
 <p><a href="../index.htm">&larr; Dynalisp module docs index</a></p>
 
     </div>
