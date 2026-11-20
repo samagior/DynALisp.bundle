@@ -174,6 +174,12 @@ Claude commits as the work goes, without being asked; it pushes, merges into `ma
   `: button {label = "Open Docs"; key = "docs"; width = 12; fixed_width = true;}`
 - After `new_dialog`, `(Dyl:DocsTile "Group\\Page.htm")` makes it open the page (relative to `Modules\Dynalisp\Docs`, or a full path): the window stays open, and the button is greyed out when the page is missing. The windows of the core use the pages of `Docs\Core`.
 - A new window comes with its docs page. Small Yes/No and name prompts have no button.
+- The docs are **in English and French**: a page is `Page.htm` (English, the one every link and `Dyl:DocsTile` names) and its French copy `Page.fr.htm` beside it, in the same folder:
+  - A docs page opens in the language of the File Preferences (`Remote>>Dyl:PrefGet "Language"`, the language of AutoCAD until it is set), English when the page has no copy in it. Every page is opened through `Dyl:SuiteDlgShell`, which calls `Dyl:DocsLocal` (Docs region of `dynalisp.mnl`); a new language is a row of `*dyl:docslangs*` and of `LANGS` in `Installer\Docs\BuildDocs.py`.
+  - Every page has the **EN | FR switch** at the top right of its header, greyed out for a language it has no copy in yet. `python Installer\Docs\BuildDocs.py` writes it, sets `<html lang>` and points the links of each page to the pages of its language; run it after adding, translating, moving or deleting a page, and commit what it changed. It reports the broken links and how many pages are translated (`--missing` lists the others).
+  - A French page translates the text and keeps what DynALisp shows as it is: the labels of the windows and the ribbon, the commands, aliases, settings and file names, in English (*Open Docs*, *Save*, `Dyl-Settings`, `DynalispReactors`). AutoCAD terms are those of the French AutoCAD (calque, hachure, ruban, groupe de fonctions, ligne de commande).
+  - A change to a page that has its French copy is made in both, in the same change. A new page may come in English alone: its switch shows FR greyed out until its copy is added.
+  - The Lee Mac pages of the LeeMac sample module are their author's: they stay in English.
 - In a group of parameters, every **value box** (edit box, popup list) ends at the same distance from the right border of the group:
   - Each value is a `row` of its own, the box last in the row.
   - A box with a label and an `edit_width`, not fixed, is right-justified in the space of its tile.
@@ -209,7 +215,7 @@ Claude commits as the work goes, without being asked; it pushes, merges into `ma
   - A marker that warns about a value (*(not defined)*, *(missing hatch preset)*) is not an explanation: it stays.
   - The docs name each setting with its label, and explain it there.
 
-*Why: every window leads to its documentation, a list is shown the way the user picked it where the list is (and opens that way again once set as the default), a setting that opens its own window looks the same in every window, the values of a group read as one column, its sub-sections look like the groups, a window stays balanced as it changes, many items get the same change in one go, and a window is read at a glance, its explanations kept in one place, the docs.*
+*Why: every window leads to its documentation, in the language the user works in when it is translated, a list is shown the way the user picked it where the list is (and opens that way again once set as the default), a setting that opens its own window looks the same in every window, the values of a group read as one column, its sub-sections look like the groups, a window stays balanced as it changes, many items get the same change in one go, and a window is read at a glance, its explanations kept in one place, the docs.*
 
 ## Diagnostics
 

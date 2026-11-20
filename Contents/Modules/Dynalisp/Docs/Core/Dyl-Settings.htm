@@ -11,6 +11,7 @@
 <body>
     <div id="header">
         <p>DynALisp <span>Docs</span></p>
+        <nav class="lang" aria-label="Language"><span class="on" title="English">EN</span><a href="Dyl-Settings.fr.htm" hreflang="fr" lang="fr" title="Français">FR</a></nav>
     </div>
 
     <div id="content">
@@ -60,7 +61,7 @@
 <tr><th>Setting</th><th>What it does</th></tr>
 <tr><td>Drawing Settings</td><td>Every drawing opened is checked against the default units and grid of its kind (imperial or metric); a drawing that differs is set to them. Its button opens the <a href="#drawing">Drawing Settings</a> window, also available while the check is off (for the Shrinkwrap gap step).</td></tr>
 <tr><td>Commands</td><td>Redefines the save and print commands and <span class="fixw">REGEN</span> (<a href="../Output/Dyl-CmdOptimizer.htm">Command Optimizer</a>) so they prepare the drawing first. Its button opens the Output Prep window (<a href="../Output/Dyl-PrepDrawing.htm">Prep Drawing</a>, also <span class="fixw">DYL-PREPSUITE</span>): the steps run before each command.</td></tr>
-<tr><td>File Preferences</td><td>The DynALisp profile: AutoCAD's paths set from the AEC library classification, drawing units and language. Its button opens the File Preferences window (<a href="../Setup/Dyl-SetFilePrefs.htm">Set File Preferences</a>).</td></tr>
+<tr><td>File Preferences</td><td>The DynALisp profile: AutoCAD's paths set from the AEC library classification, drawing units and language. The language is also the one these docs open in (English for a page not translated yet). Its button opens the File Preferences window (<a href="../Setup/Dyl-SetFilePrefs.htm">Set File Preferences</a>).</td></tr>
 <tr><td>System variables</td><td>The preferred values of the active system variable profile, and the protected variables, set in every drawing opened (<a href="../Setup/Dyl-SysVars.htm">System Variables</a>). Its button opens Dyl-SysVars.</td></tr>
 <tr><td>Display</td><td>The display settings applied in every drawing opened. Its button opens the <a href="#display">Display</a> window.</td></tr>
 <tr><td>Clean startup</td><td>Once AutoCAD has started, the lines it printed while starting (<em>Loading AEC...</em>, <em>Customization file loaded successfully</em>, the palettes and startup commands of the workspace...) are removed from the command line. Kept: the <em>Drawing created using...</em> line, the lines of DynALisp and every line that reports an error or a warning. Applies from the next startup. Greyed out in a version older than 2015. See <a href="../Plugins/CleanStartup.htm">Clean Startup</a>.</td></tr>

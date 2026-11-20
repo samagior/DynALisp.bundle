@@ -2227,8 +2227,9 @@
                                       (list (vlax-get-acad-object) "Shell.Application")
                   )
         )
-        (foreach f fils 
-          (cond 
+        (foreach f fils
+          (setq f (Dyl:DocsLocal f))
+          (cond
             ((and (not (vl-catch-all-error-p shl)) 
                   (not 
                     (vl-catch-all-error-p 
@@ -2900,7 +2901,8 @@
       (if (and (not (member m '("." "..")))
                (findfile (setq f (strcat *dyl:module "\\" m "\\Docs\\index.htm")))
           )
-        (setq mods (cons (list m f) mods))
+        ;;  its index in the docs language when it has one (index.fr.htm):
+        (setq mods (cons (list m (Dyl:DocsLocal f)) mods))
       )
     )
     ;;  The Dynalisp module first, the others by name:
@@ -2919,7 +2921,7 @@
       (progn
         (foreach line
           (list "<!DOCTYPE html>"
-                "<html lang=\"en\">"
+                (strcat "<html lang=\"" (cond ((Dyl:DocsLang)) ("en")) "\">")
                 "<head>"
                 "    <meta charset=\"utf-8\">"
                 "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
@@ -2944,7 +2946,10 @@
           (list "</table>"
                 "</div>"
                 "    </div>"
-                "    <div id=\"footer\"><p>DynALisp &ndash; released under the GNU General Public License v3</p></div>"
+                (if (= "fr" (Dyl:DocsLang))
+                  "    <div id=\"footer\"><p>DynALisp &ndash; publi&eacute; sous la licence publique g&eacute;n&eacute;rale GNU v3</p></div>"
+                  "    <div id=\"footer\"><p>DynALisp &ndash; released under the GNU General Public License v3</p></div>"
+                )
                 "</body>"
                 "</html>"
           )
@@ -2972,6 +2977,39 @@
       ((/= 'STR (type page)) nil)
       ((findfile (strcat *dyl:dyl "\\Docs\\" page)))
       ((wcmatch page "?:\\*,\\\\*") (findfile page))
+    )
+  )
+
+  ;;; ---------------------------------------------------------------------------
+  ;;; Languages of the docs. A page is in English (Page.htm) and may have a copy in
+  ;;; another language beside it (Page.fr.htm). The language opened is the Language
+  ;;; of the File Preferences (Remote>>Dyl:PrefGet, the language of AutoCAD until it
+  ;;; is set), English when the page has no copy in it. Every docs page is opened
+  ;;; through Dyl:SuiteDlgShell, which calls Dyl:DocsLocal. The pages link to each
+  ;;; other in their own language and have an EN / FR switch at their top right
+  ;;; (Installer\Docs\BuildDocs.py).
+  ;;; ---------------------------------------------------------------------------
+  ;;  (language of the File Preferences . suffix of its pages):
+  (setq *dyl:docslangs* '(("French" . "fr")))
+
+  ;;  The suffix of the docs language ("fr"), nil for English:
+  (defun Dyl:DocsLang ()
+    (if Remote>>Dyl:PrefGet (cdr (assoc (Remote>>Dyl:PrefGet "Language") *dyl:docslangs*)))
+  )
+
+  ;;  The page f in the docs language when it has a copy in it (a page of a Docs
+  ;;  folder only), else f:
+  (defun Dyl:DocsLocal (f / lng loc)
+    (cond
+      ((and (= 'STR (type f))
+            (setq lng (Dyl:DocsLang))
+            (wcmatch (strcase f) "*\\DOCS\\*.HTM")
+            (not (wcmatch (strcase f) (strcat "*." (strcase lng) ".HTM")))
+            (findfile (setq loc (strcat (substr f 1 (- (strlen f) 4)) "." lng ".htm")))
+       )
+       loc
+      )
+      (f)
     )
   )
 

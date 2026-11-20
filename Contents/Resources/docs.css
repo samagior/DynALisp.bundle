@@ -91,6 +91,48 @@ img {
     color: var(--accent);
 }
 
+/* The language switch at the top right (Installer\Docs\BuildDocs.py writes it) */
+#header {
+    position: relative;
+}
+
+#header .lang {
+    position: absolute;
+    top: 50%;
+    right: 24px;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 2px;
+    padding: 2px;
+    border: 1px solid rgba(248, 250, 252, 0.25);
+    border-radius: 7px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+#header .lang a,
+#header .lang span {
+    padding: 3px 9px;
+    border-radius: 5px;
+    color: var(--header-text);
+    text-decoration: none;
+}
+
+#header .lang a:hover {
+    background-color: rgba(248, 250, 252, 0.12);
+}
+
+#header .lang .on {
+    background-color: var(--accent);
+    color: #ffffff;
+}
+
+#header .lang .off {
+    opacity: 0.4;
+    cursor: default;
+}
+
 /* ---------- Content ---------- */
 
 #content {
@@ -514,6 +556,10 @@ details.bundled pre {
 
     #header {
         padding: 14px 16px;
+    }
+
+    #header .lang {
+        right: 16px;
     }
 
     #content h1, #content h2, #content h3, #content h4,

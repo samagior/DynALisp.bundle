@@ -314,6 +314,8 @@
   )
   (dg:kv "Installed" (if (setq git (dg:git)) (strcat "git clone, " git) "with the setup"))
   (dg:kv "Folder" *dyl:repo*)
+  ;;  The language the docs open in (the Language of the File Preferences, Dyl:DocsLang):
+  (dg:kv "Docs language" (cond ((and Dyl:DocsLang (Dyl:DocsLang))) ("en")))
   (if (not (vl-some '(lambda (r) (= (strcase r) (strcase (vl-filename-directory *dyl:repo))))
                     (dg:pluginroots)
            )

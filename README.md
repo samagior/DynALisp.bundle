@@ -68,7 +68,7 @@ Type `Dyl` in the command line to see the main commands. The core commands:
 | `Dyl-VSCode` | Open the DynALisp folder in VS Code |
 | `Dyl-RestoreCommands` | Use the native save, plot, publish, preview and regen commands this session |
 
-Every window has an **Open Docs** button that opens its page.
+Every window has an **Open Docs** button that opens its page. The docs are in English and French: they open in the language of the File Preferences (`Dyl-SetFilePrefs`), and the EN | FR switch at the top right of each page changes it. After editing a page, run `python Installer\Docs\BuildDocs.py`: it writes the switch, links each page to the pages of its language and reports the broken links.
 
 The **DynALisp** tab of the ribbon has a button for each tool of the DynALisp module, in a panel per group (Draw, Layers, Layer Tools, Text, Cleaning, Navigate, Output, Setup, Utilities) and the core commands in the DynALisp panel. The **Quick Draw** button opens the Quick Draw Gallery (a tile with its hatch for each preset; its arrow opens it on a group), **Quick Draw Manager** the Quick Draw window. The arrow of a button lists its presets (the phases, the drawing scales...), and the button then runs the one picked last, as the Circle button of AutoCAD (the main tool is always first in the list); the tools used less often are in the slide-out of their panel (the arrow beside its title). A tool turned off in `Dyl-Suite` answers *Unknown command* when its button is clicked.
 
