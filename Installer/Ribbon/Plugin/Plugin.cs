@@ -154,7 +154,7 @@ namespace DynALisp.Ribbon
                     p.Pending = false;
                     try { p.Refresh(); } catch (System.Exception ex) { Log(ex.Message); }
                 }
-            // The texts of the tab in the language of DynALisp (Translations.cs), once a
+            // The texts of the tab in the language of the AutoCAD installed (Translations.cs), once a
             // second at most while the tab is not there:
             if (T.Due && Environment.TickCount - _nextLang >= 0)
             {
@@ -416,7 +416,7 @@ namespace DynALisp.Ribbon
                 char sep = lines[0].Contains(';') ? ';' : lines[0].Contains('\t') ? '\t' : ',';
                 var head = Fields(lines[0], sep);
                 int desc = Array.FindIndex(head, h => h.Trim().Trim('﻿').Equals("Description", StringComparison.OrdinalIgnoreCase));
-                // The description in the language of DynALisp (Description.fr), the English one
+                // The description in the language of the AutoCAD installed (Description.fr), the English one
                 // where it has none:
                 int local = T.Lang == "en" ? -1
                     : Array.FindIndex(head, h => h.Trim().Trim('﻿').Equals("Description." + T.Lang, StringComparison.OrdinalIgnoreCase));

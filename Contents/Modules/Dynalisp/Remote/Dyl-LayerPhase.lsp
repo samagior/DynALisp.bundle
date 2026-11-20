@@ -71,7 +71,8 @@
 
 ;;  Phases of Phase.csv: ((code description) ...), *ph:defaults* when the file is missing
 ;;  (or at startup, while LM-Sub.lsp that parses the CSV lines is not loaded yet). The
-;;  description is in the language of DynALisp (Dyl:Lang) when the file has its column
+;;  description is in the language of the AutoCAD installed (Dyl:LangAcad, as the ribbon),
+;;  not the Language of Dyl-Settings (the docs), when the file has its column
 ;;  (Description.fr), the English one (Description, 6th column) otherwise. The file is read
 ;;  as UTF-8 for the accents; an AutoCAD that cannot (older than 2021) reads it in the code
 ;;  page of Windows and keeps the English descriptions:
@@ -92,8 +93,8 @@
                   ;;  (a byte order mark can only be on the first name, Abbreviation, not used here)
                   head (mapcar '(lambda (h) (strcase (vl-string-trim " \t\"" h))) (Remote>>LM:csv->lst str sep 0))
                   ;;  The column of the language (nil in English, or without UTF-8):
-                  col  (if (and utf Dyl:LangCode (/= "en" (Dyl:LangCode)))
-                         (vl-position (strcat "DESCRIPTION." (strcase (Dyl:LangCode))) head)
+                  col  (if (and utf Dyl:LangAcad (/= "en" (Dyl:LangAcad)))
+                         (vl-position (strcat "DESCRIPTION." (strcase (Dyl:LangAcad))) head)
                        )
             )
           )
