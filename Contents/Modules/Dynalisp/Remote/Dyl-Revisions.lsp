@@ -488,7 +488,9 @@
 
 ;;  The title block of RevisionBlocks.csv (maps) of a block name, nil when none:
 (defun Remote>>Dyl:RevBlockMap (nam maps)
-  (vl-some '(lambda (m) (if (wcmatch nam (car m)) m)) maps)
+  ;;  The name itself first: a name picked (Dyl:RevBlocksGuess) is saved as it is, and one
+  ;;  with a wildcard character (#, @, ., ~, [...) does not match itself in wcmatch:
+  (vl-some '(lambda (m) (if (or (= (strcase nam) (strcase (car m))) (wcmatch nam (car m))) m)) maps)
 )
 
 ;;  The objects of a layout that DynALisp writes: (clouds tags blocks), clouds the ids of

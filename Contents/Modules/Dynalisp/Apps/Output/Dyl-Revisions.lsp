@@ -31,115 +31,9 @@
 
 ;;-------------------------=={ Dialogs }==------------------------;;
 
-;;  Write the windows to a temporary DCL file, returns its path:
-(defun Dyl:RevDcl (/ path file)
-  (setq path (vl-filename-mktemp "rev" nil ".dcl")
-        file (open path "w")
-  )
-  (foreach line
-    '("rev_more : image_button { height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
-      "rev_line : image { height = 0.8; fixed_height = true; color = -15; }"
-      "rev_edit : edit_box { edit_width = 30; }"
-      "rev_pop : popup_list { edit_width = 30; }"
-      "rev_buttons : row { fixed_width = true; alignment = right;"
-      "  : button { key = \"accept\"; label = \"OK\"; is_default = true; width = 12; fixed_width = true; }"
-      "  : button { key = \"cancel\"; label = \"Cancel\"; is_cancel = true; width = 12; fixed_width = true; }"
-      "  : button { key = \"docs\"; label = \"Open Docs\"; width = 12; fixed_width = true; }"
-      "}"
-      ;;  The Revisions window:
-      "dyl_rev : dialog { label = \"DynALisp - Revisions\";"
-      "  : text { key = \"prj\"; width = 124; }"
-      "  : row {"
-      "    : boxed_column { label = \"Revisions\";"
-      "      : list_box { key = \"rhd\"; width = 74; height = 2; fixed_height = true; tabs = \"5 12 24 62\"; is_enabled = false; }"
-      "      : list_box { key = \"rev\"; width = 74; height = 12; tabs = \"5 12 24 62\"; multiple_select = true; }"
-      "      : row { fixed_width = true; alignment = left;"
-      "        : button { key = \"new\"; label = \"New\"; width = 12; }"
-      "        : button { key = \"del\"; label = \"Delete\"; width = 12; }"
-      "        : button { key = \"up\"; label = \"Move Up\"; width = 12; }"
-      "        : button { key = \"dn\"; label = \"Move Down\"; width = 12; }"
-      "      }"
-      "    }"
-      "    : column {"
-      "      : boxed_column { key = \"pbx\"; label = \"Parameters\";"
-      "        : row { : rev_pop { key = \"num\"; label = \"Numbering:\"; } }"
-      "        : row { : rev_edit { key = \"dat\"; label = \"Date:\"; } }"
-      "        : row { : rev_edit { key = \"dsc\"; label = \"Description:\"; } }"
-      "        : row { : rev_edit { key = \"ito\"; label = \"Issued to:\"; } }"
-      "        : row { : rev_edit { key = \"iby\"; label = \"Issued by:\"; } }"
-      "        : row { : toggle { key = \"iss\"; label = \"Issued\"; } }"
-      "        : spacer { }"
-      "      }"
-      "      : boxed_column { label = \"Project\";"
-      "        : row { : rev_pop { key = \"pnm\"; label = \"Numbering:\"; } }"
-      "        : row { : rev_pop { key = \"pst\"; label = \"First number:\"; } }"
-      "        : row {"
-      "          : text { label = \"Title blocks:\"; }"
-      "          : rev_more { key = \"tbm\"; }"
-      "          : text { key = \"tbs\"; width = 28; fixed_width = true; }"
-      "        }"
-      "        : spacer { }"
-      "      }"
-      "    }"
-      "  }"
-      "  : boxed_column { key = \"sbx\"; label = \"Sheets\";"
-      "    : list_box { key = \"shd\"; width = 124; height = 2; fixed_height = true; tabs = \"46 80 94\"; is_enabled = false; }"
-      "    : list_box { key = \"sht\"; width = 124; height = 12; tabs = \"46 80 94\"; multiple_select = true; }"
-      "    : row { fixed_width = true; alignment = left;"
-      "      : button { key = \"add\"; label = \"Add Revision\"; width = 20; }"
-      "      : button { key = \"rem\"; label = \"Remove Revision\"; width = 20; }"
-      "      : button { key = \"all\"; label = \"Update All Sheets\"; width = 20; }"
-      "    }"
-      "  }"
-      "  errtile;"
-      "  rev_buttons;"
-      "}"
-      ;;  The Revision Title Blocks window:
-      "dyl_revtb : dialog { label = \"DynALisp - Revision Title Blocks\";"
-      "  : row {"
-      "    : boxed_column { label = \"Title blocks\";"
-      "      : list_box { key = \"thd\"; width = 46; height = 2; fixed_height = true; tabs = \"30 37\"; is_enabled = false; }"
-      "      : list_box { key = \"tbl\"; width = 46; height = 17; tabs = \"30 37\"; multiple_select = true; }"
-      "      : row { fixed_width = true; alignment = left;"
-      "        : button { key = \"new\"; label = \"New\"; width = 12; }"
-      "        : button { key = \"del\"; label = \"Delete\"; width = 12; }"
-      "        : button { key = \"pck\"; label = \"Pick...\"; width = 12; }"
-      "      }"
-      "    }"
-      "    : boxed_column { key = \"tbx\"; label = \"Parameters\";"
-      "      : column { fixed_height = true;"
-      "        : row { : rev_edit { key = \"nam\"; label = \"Block:\"; } }"
-      "        : row { : rev_edit { key = \"rws\"; label = \"Rows:\"; } }"
-      "        : row { : rev_pop { key = \"fst\"; label = \"Row 1:\"; } }"
-      "      }"
-      "      : spacer { }"
-      "      : column { fixed_height = true;"
-      "        : rev_line { key = \"ln1\"; }"
-      "        : text { label = \"Row attributes:\"; }"
-      "        : row { : rev_edit { key = \"a3\"; label = \"Number:\"; } }"
-      "        : row { : rev_edit { key = \"a4\"; label = \"Date:\"; } }"
-      "        : row { : rev_edit { key = \"a5\"; label = \"Description:\"; } }"
-      "        : row { : rev_edit { key = \"a6\"; label = \"Issued to:\"; } }"
-      "        : row { : rev_edit { key = \"a7\"; label = \"Issued by:\"; } }"
-      "      }"
-      "      : spacer { }"
-      "      : column { fixed_height = true;"
-      "        : rev_line { key = \"ln2\"; }"
-      "        : text { label = \"Sheet attributes:\"; }"
-      "        : row { : rev_edit { key = \"a8\"; label = \"Current revision:\"; } }"
-      "        : row { : rev_edit { key = \"a9\"; label = \"Current date:\"; } }"
-      "      }"
-      "      : spacer { }"
-      "    }"
-      "  }"
-      "  errtile;"
-      "  rev_buttons;"
-      "}"
-     )
-    (write-line line file)
-  )
-  (close file)
-  path
+;;  The windows: Modules\Dynalisp\Res\Dyl-Revisions.dcl (dyl_rev, dyl_revtb). Returns its path:
+(defun Dyl:RevDcl ()
+  (strcat (if *dyl:dylres *dyl:dylres (strcat *dyl:dyl "\\Res")) "\\Dyl-Revisions.dcl")
 )
 
 ;;  Fill a list or popup tile with the strings lst:
@@ -365,7 +259,6 @@
     (if (= 3 sta) (Dyl:RevBlocksPick))
   )
   (if (<= 0 id) (unload_dialog id))
-  (vl-file-delete dcl)
   (cond
     ((/= 1 sta) nil)
     ((Remote>>Dyl:RevCsvWrite (Dyl:UserFileW (Remote>>Dyl:RevBlocksFile)) *rev:blkhdr* tb:lst)
@@ -383,8 +276,8 @@
 ;;  the project being edited), rv:shts (the sheets being edited, ((file layout hand clouds)
 ;;  ...)), rv:revs0, rv:sets0, rv:shts0 (as they were read), rv:sel (the indexes of the
 ;;  revisions selected, the first one shown), rv:ssel (the indexes of the sheets selected),
-;;  rv:stamp (the time Revisions.csv was written when it was read), rv:tbchg (T once the
-;;  title blocks were saved from this window).
+;;  rv:stamp (the times Revisions.csv and RevisionSettings.csv were written when they were
+;;  read, Dyl:RevStamps), rv:tbchg (T once the title blocks were saved from this window).
 
 ;;  The revisions selected:
 (defun Dyl:RevSelRevs () (mapcar '(lambda (i) (nth i rv:revs)) rv:sel))
@@ -394,6 +287,23 @@
 
 ;;  Numbers of every revision, per project:
 (defun Dyl:RevAllNumbers () (Remote>>Dyl:RevNumbers rv:revs (atoi (cdr (assoc "Start" rv:sets)))))
+
+;;  T when every issued revision keeps its number with the revisions revs in place of
+;;  rv:revs (a revision deleted, or numbered otherwise, before it). Compared per project: a
+;;  number per sheet changes only when the number per project does:
+(defun Dyl:RevKeepsIssued-p (revs / start old new)
+  (setq start (atoi (cdr (assoc "Start" rv:sets)))
+        old   (Remote>>Dyl:RevNumbers rv:revs start)
+        new   (Remote>>Dyl:RevNumbers revs start)
+  )
+  (vl-every '(lambda (r) (or (not (Dyl:RevIssued-p r)) (equal (assoc (car r) old) (assoc (car r) new)))) rv:revs)
+)
+
+;;  The revisions without the ones selected:
+(defun Dyl:RevWithoutSel (/ ids)
+  (setq ids (mapcar 'car (Dyl:RevSelRevs)))
+  (vl-remove-if '(lambda (r) (member (car r) ids)) rv:revs)
+)
 
 ;;  Line of the revisions list: sequence, number (per project, or how it counts per sheet),
 ;;  date, description, issued:
@@ -502,7 +412,9 @@
   (set_tile "ito" (if r (nth 4 r) ""))
   (set_tile "iby" (if r (nth 5 r) ""))
   (set_tile "iss" (if (and r (Dyl:RevIssued-p r)) "1" "0"))
-  (foreach k '("num" "dat" "dsc" "ito" "iby" "del") (mode_tile k (if lock 1 0)))
+  (foreach k '("num" "dat" "dsc" "ito" "iby") (mode_tile k (if lock 1 0)))
+  ;;  Never deleted when an issued revision after it would be numbered otherwise:
+  (mode_tile "del" (if (or lock (not (Dyl:RevKeepsIssued-p (Dyl:RevWithoutSel)))) 1 0))
   (mode_tile "iss" (if r 0 1))
   ;;  Moved one at a time, never past an issued revision (its number would change):
   (mode_tile "up" (if (and one (< 0 (car rv:sel)) (not (Dyl:RevIssued-p (nth (1- (car rv:sel)) rv:revs)))) 0 1))
@@ -519,14 +431,25 @@
   (mode_tile "rem" (if (and (not lock) rv:ssel) 0 1))
 )
 
-;;  A field changed: its value given to every revision selected (i: its column):
-(defun Dyl:RevPutField (i val)
+;;  A field changed: its value given to every revision selected (i: its column). A
+;;  numbering that would number an issued revision after them otherwise is refused:
+(defun Dyl:RevPutField (i val / revs)
   (if (= 1 i) (setq val (nth (atoi val) *rev:numberings*)))
   (if (= 6 i) (setq val (if (= "1" val) "1" "")))
   (if (/= 1 i) (setq val (vl-string-trim " " val)))
-  (foreach s rv:sel (setq rv:revs (Remote>>Dyl:ListSubst rv:revs s (Remote>>Dyl:ListSubst (nth s rv:revs) i val))))
-  (set_tile "error" "")
-  (Dyl:RevFill)
+  (setq revs rv:revs)
+  (foreach s rv:sel (setq revs (Remote>>Dyl:ListSubst revs s (Remote>>Dyl:ListSubst (nth s revs) i val))))
+  (if (and (= 1 i) (not (Dyl:RevKeepsIssued-p revs)))
+    (progn
+      (Dyl:RevShow)
+      (set_tile "error" "An issued revision after it would be numbered otherwise: its numbering cannot change.")
+    )
+    (progn
+      (setq rv:revs revs)
+      (set_tile "error" "")
+      (Dyl:RevFill)
+    )
+  )
 )
 
 ;;  A project setting changed:
@@ -632,12 +555,19 @@
   (vl-remove-if-not '(lambda (s) (member (strcase (Remote>>Dyl:RevFull prj (car s))) files)) shts)
 )
 
+;;  The times the revisions and the settings of the project were written (nil for a file
+;;  not made yet), to tell when another user changed them:
+(defun Dyl:RevStamps (prj)
+  (mapcar '(lambda (f) (Remote>>Dyl:RevStamp (Remote>>Dyl:RevPath prj f))) '("Revisions.csv" "RevisionSettings.csv"))
+)
+
 ;;  Check the revisions before saving: a sequence of dates and descriptions. Returns an
-;;  error message, nil when they can be saved:
+;;  error message, nil when they can be saved. The stamps are lists: compared with equal
+;;  (= and /= tell two lists apart even when they hold the same values):
 (defun Dyl:RevCheck ()
   (cond
-    ((/= rv:stamp (Remote>>Dyl:RevStamp (Remote>>Dyl:RevPath rv:prj "Revisions.csv")))
-     "Another user changed the revisions since this window opened: Cancel, then open it again."
+    ((not (equal rv:stamp (Dyl:RevStamps rv:prj)))
+     "Another user changed the revisions or the settings of the project since this window opened: Cancel, then open it again."
     )
     ((vl-some '(lambda (r) (= "" (nth 3 r))) rv:revs) "Every revision needs a description.")
   )
@@ -814,12 +744,12 @@
 ;; Revisions
 ;; Opens the revisions of the project, as in Revit: their numbering, dates and descriptions, and the sheets that have them.
 
-(defun c:Dyl-Revisions (/ rv:prj rv:revs rv:revs0 rv:sets rv:sets0 rv:shts rv:shts0 rv:sel rv:ssel rv:stamp rv:tbchg rv:dcl rv:msg dcl:pth sta files)
+(defun c:Dyl-Revisions (/ rv:prj rv:revs rv:revs0 rv:sets rv:sets0 rv:shts rv:shts0 rv:sel rv:ssel rv:stamp rv:tbchg rv:dcl rv:msg sta files)
   (cond
     ((not (setq rv:prj (Remote>>Dyl:RevProjectOf)))
      (princ "\nThis drawing is not in a project: open a drawing of a Project Navigator project (its folder or a folder under it has the .apj file).")
     )
-    ((> 0 (setq rv:dcl (load_dialog (setq dcl:pth (Dyl:RevDcl))))) (princ "\n--> Unable to load the Revisions window."))
+    ((> 0 (setq rv:dcl (load_dialog (Dyl:RevDcl)))) (princ "\n--> Unable to load the Revisions window."))
     (T
      (setq rv:revs  (Remote>>Dyl:RevRead rv:prj)
            rv:revs0 rv:revs
@@ -827,7 +757,7 @@
            rv:sets0 rv:sets
            rv:shts  (Dyl:RevSheetsOf rv:prj)
            rv:shts0 rv:shts
-           rv:stamp (Remote>>Dyl:RevStamp (Remote>>Dyl:RevPath rv:prj "Revisions.csv"))
+           rv:stamp (Dyl:RevStamps rv:prj)
            rv:sel   (if rv:revs (list (1- (length rv:revs))))
            sta      4
      )
@@ -856,7 +786,6 @@
     )
   )
   (if (and rv:dcl (<= 0 rv:dcl)) (unload_dialog rv:dcl))
-  (if dcl:pth (vl-file-delete dcl:pth))
   (princ)
 )
 
