@@ -391,12 +391,18 @@ namespace DynALisp.Ribbon
                 char sep = lines[0].Contains(';') ? ';' : lines[0].Contains('\t') ? '\t' : ',';
                 var head = lines[0].Split(sep);
                 int desc = Array.FindIndex(head, h => h.Trim().Trim('﻿').Equals("Description", StringComparison.OrdinalIgnoreCase));
+                // The description in the language of DynALisp (Description.fr), the English one
+                // where it has none:
+                int local = T.Lang == "en" ? -1
+                    : Array.FindIndex(head, h => h.Trim().Trim('﻿').Equals("Description." + T.Lang, StringComparison.OrdinalIgnoreCase));
                 foreach (var line in lines.Skip(1))
                 {
                     var f = line.Split(sep);
                     string code = f[0].Trim();
                     if (code == "") continue;
-                    lst.Add(new KeyValuePair<string, string>(code, desc >= 0 && desc < f.Length ? f[desc].Trim() : ""));
+                    string d = local >= 0 && local < f.Length ? f[local].Trim() : "";
+                    if (d == "") d = desc >= 0 && desc < f.Length ? f[desc].Trim() : "";
+                    lst.Add(new KeyValuePair<string, string>(code, d));
                 }
             }
             catch { }

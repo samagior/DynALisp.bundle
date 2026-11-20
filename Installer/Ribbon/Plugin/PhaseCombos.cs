@@ -39,10 +39,23 @@ namespace DynALisp.Ribbon
         public static List<KeyValuePair<string, string>> Phases = Defaults;
         static bool _auto, _reactors;
 
+        // The phases with their descriptions in the language of DynALisp: the Description.<lang>
+        // column of Phase.csv, read by the plugin (Host.Standard, in UTF-8; the Lisp side reads
+        // the file in the code page of Windows and sends the English descriptions). The English
+        // one for a phase the column does not have:
+        public static List<KeyValuePair<string, string>> Localized()
+        {
+            if (T.Lang == "en") return Phases;
+            var local = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var s in Host.Standard("Phase"))
+                if (!local.ContainsKey(s.Key) && s.Value != "") local[s.Key] = s.Value;
+            return Phases.Select(p => new KeyValuePair<string, string>(p.Key, local.TryGetValue(p.Key, out var d) ? d : p.Value)).ToList();
+        }
+
         // The width of the Auto-phase and Phase drop-downs: their longest item (the Layer
         // Transfer drop-downs have the same width):
         public static double Width => Host.FitWidth(
-            new[] { T.S("Auto-phase On (reactors off)"), T.S("Auto-phase Off"), T.S("None") }.Concat(Phases.Select(p => p.Key + " - " + p.Value)));
+            new[] { T.S("Auto-phase On (reactors off)"), T.S("Auto-phase Off"), T.S("None") }.Concat(Localized().Select(p => p.Key + " - " + p.Value)));
 
         public static readonly Combos Part = new Combos();
 
@@ -168,7 +181,7 @@ namespace DynALisp.Ribbon
                     {
                         _phaseCombo.Items.Clear();
                         _phaseCombo.Items.Add(Host.Item(T.S("None"), ""));
-                        foreach (var p in Phases) _phaseCombo.Items.Add(Host.Item(p.Key + " - " + p.Value, p.Key));
+                        foreach (var p in Localized()) _phaseCombo.Items.Add(Host.Item(p.Key + " - " + p.Value, p.Key));
                         _shown = Phases;
                         Host.FixWidth(Width, _autoCombo, _phaseCombo);
                         TransferCombos.Part.Resize();

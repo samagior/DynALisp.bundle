@@ -158,7 +158,7 @@ namespace DynALisp.Ribbon
             "Discipline" => Host.Standard("Dd1").Concat(Host.Standard("Dd2")).ToList(),
             "Major" => Host.Standard("Major"),
             "Minor" => Host.Standard("Minor"),
-            _ => PhaseCombos.Phases,
+            _ => PhaseCombos.Localized(),
         };
 
         string NoneText => _fld == "Status" ? T.S("Unphased") : T.S("None");
