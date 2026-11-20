@@ -357,9 +357,9 @@
               "\n"
       )
     )
-    (command "undo" "end")
+    (command "_.undo" "_end")
     (setq *error* olderr)
-    (command "undo" "group")
+    (command "_.undo" "_group")
     (prin1)
   )
   (vl-load-com)

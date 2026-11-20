@@ -55,7 +55,7 @@
         (if *dyl-marked 
           (progn 
             (setq *dyl-marked nil)
-            (vl-catch-all-apply '(lambda () (command "undo" "back")))
+            (vl-catch-all-apply '(lambda () (command "_.undo" "_back")))
           )
         )
         (setq *dyl-in-error nil)
@@ -376,26 +376,26 @@
 
     ;;  if in model space
     (progn 
-      (command "undo" "mark")
+      (command "_.undo" "_mark")
       (setq *dyl-marked T)
 
       ;: Initial reset
-      (command "-layer" "TR" "0" "*" "U" "*" "")
+      (command "_.-layer" "_TR" "0" "*" "_U" "*" "")
 
       ;; Startup state switch
       (if (= "Empty" *str) 
-        (command "-layer" "Set" "0" "Off" "*" "No" "Freeze" "*" "")
+        (command "_.-layer" "_Set" "0" "_Off" "*" "_No" "_Freeze" "*" "")
       )
       (if (= "AllVisible" *str) 
-        (command "-layer" "On" "*" "Thaw" "*" "")
+        (command "_.-layer" "_On" "*" "_Thaw" "*" "")
       )
 
       ;: Layer visibility filter
-      (command "-layer" "ON" *shw "T" *shw "OFF" *hid "F" *hid "ON" *sh2 "T" *sh2 "OFF" *hi2 "F" *hi2 "")
+      (command "_.-layer" "_ON" *shw "_T" *shw "_OFF" *hid "_F" *hid "_ON" *sh2 "_T" *sh2 "_OFF" *hi2 "_F" *hi2 "")
 
       ;: Layer utility
-      (command "-layer" "TR" "50" *scn "")
-      (if (= "Yes" *lck) (command "-layer" "LO" *scn ""))
+      (command "_.-layer" "_TR" "50" *scn "")
+      (if (= "Yes" *lck) (command "_.-layer" "_LO" *scn ""))
 
       ;: clean exit
       (setq *dyl-marked nil)
@@ -417,29 +417,29 @@
               (if (< (sslength *vps) (sslength *ss)) 
                 (prompt "\nNote: Non-viewport objects were ignored.")
               )
-              (command "undo" "mark")
+              (command "_.undo" "_mark")
               (setq *dyl-marked T)
 
               ;; Startup state switch (mirrors the model-space switch above):
               (if (= "Empty" *str) 
-                (command "vplayer" "F" "*" "S" *vps "" "")
+                (command "_.vplayer" "_F" "*" "_S" *vps "" "")
               )
               (if (= "AllVisible" *str) 
-                (command "vplayer" "T" "*" "S" *vps "" "")
+                (command "_.vplayer" "_T" "*" "_S" *vps "" "")
               )
 
               ;: Layer visibility filter (only send the operations whose list is non-empty;
               ;: feeding "Empty" straight to VPLAYER as a layer name can desync its prompts)
-              (setq *vpa (list "vplayer"))
-              (if (not (= *shw "Empty")) (setq *vpa (append *vpa (list "T" *shw "S" *vps ""))))
-              (if (not (= *hid "Empty")) (setq *vpa (append *vpa (list "F" *hid "S" *vps ""))))
-              (if (not (= *sh2 "Empty")) (setq *vpa (append *vpa (list "T" *sh2 "S" *vps ""))))
-              (if (not (= *hi2 "Empty")) (setq *vpa (append *vpa (list "F" *hi2 "S" *vps ""))))
+              (setq *vpa (list "_.vplayer"))
+              (if (not (= *shw "Empty")) (setq *vpa (append *vpa (list "_T" *shw "_S" *vps ""))))
+              (if (not (= *hid "Empty")) (setq *vpa (append *vpa (list "_F" *hid "_S" *vps ""))))
+              (if (not (= *sh2 "Empty")) (setq *vpa (append *vpa (list "_T" *sh2 "_S" *vps ""))))
+              (if (not (= *hi2 "Empty")) (setq *vpa (append *vpa (list "_F" *hi2 "_S" *vps ""))))
               (if (> (length *vpa) 1) (apply 'command (append *vpa (list ""))))
 
               ;: Layer utility
               (if (not (= *scn "Empty")) 
-                (command "vplayer" "TR" "50" *scn "S" *vps "" "")
+                (command "_.vplayer" "_TR" "50" *scn "_S" *vps "" "")
               )
 
               (setq *dyl-marked nil)

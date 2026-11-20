@@ -24,7 +24,7 @@
   (setq x 0)
   (foreach path (vl-directory-files "C:/Users/My folder/" "*.dwg") 
 
-    (command "-insert" path "x,0,0" "" "" "")
+    (command "_.-insert" path "x,0,0" "" "" "")
     (setq x (+ x 100))
   )
 )

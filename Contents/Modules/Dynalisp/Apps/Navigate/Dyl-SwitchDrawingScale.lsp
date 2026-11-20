@@ -99,11 +99,11 @@
       (setq g a)
       (vl-catch-all-apply 
         '(lambda () 
-           (command "-SCALELISTEDIT" 
-                    "A"
+           (command "_.-SCALELISTEDIT"
+                    "_A"
                     sName
                     (strcat (itoa (/ n1 g)) ":" (itoa (/ n2 g)))
-                    "E"
+                    "_E"
            )
          )
       )
