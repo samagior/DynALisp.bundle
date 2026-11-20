@@ -314,6 +314,19 @@
   )
   (dg:kv "Installed" (if (setq git (dg:git)) (strcat "git clone, " git) "with the setup"))
   (dg:kv "Folder" *dyl:repo*)
+  ;;  The language of DynALisp, its docs (Language in Dyl-Settings, Dyl:Lang):
+  (if Dyl:Lang
+    (dg:kv "Language"
+           (strcat (Dyl:Lang) (if (getenv "DynalispLanguage") "" " (not set: the language of AutoCAD)"))
+    )
+  )
+  ;;  The ribbon is translated by DynALisp.Ribbon.dll (AutoCAD 2025 and later):
+  (if (and Dyl:LangCode (/= "en" (Dyl:LangCode)) (not Dyl:RibbonLang))
+    (if (< (atof (getvar "ACADVER")) 25.0)
+      (dg:note "The ribbon stays in English: DynALisp.Ribbon.dll needs AutoCAD 2025 or later")
+      (dg:bad "The ribbon stays in English: DynALisp.Ribbon.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)")
+    )
+  )
   (if (not (vl-some '(lambda (r) (= (strcase r) (strcase (vl-filename-directory *dyl:repo))))
                     (dg:pluginroots)
            )

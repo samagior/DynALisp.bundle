@@ -68,7 +68,7 @@ Type `Dyl` in the command line to see the main commands. The core commands:
 | `Dyl-VSCode` | Open the DynALisp folder in VS Code |
 | `Dyl-RestoreCommands` | Use the native save, plot, publish, preview and regen commands this session |
 
-Every window has an **Open Docs** button that opens its page.
+Every window has an **Open Docs** button that opens its page. The docs are in English and French: they open in the language of DynALisp (*Language* in `Dyl-Settings`, the language of AutoCAD until it is set), and the EN | FR switch at the top right of each page changes it. After editing a page, run `python Installer\Docs\BuildDocs.py`: it writes the switch, links each page to the pages of its language and reports the broken links.
 
 The **DynALisp** tab of the ribbon has a button for each tool of the DynALisp module, in a panel per group (Draw, Layers, Layer Tools, Text, Cleaning, Navigate, Output, Setup, Utilities) and the core commands in the DynALisp panel. The **Quick Draw** button opens the Quick Draw Gallery (a tile with its hatch for each preset; its arrow opens it on a group), **Quick Draw Manager** the Quick Draw window. The arrow of a button lists its presets (the phases, the drawing scales...), and the button then runs the one picked last, as the Circle button of AutoCAD (the main tool is always first in the list); the tools used less often are in the slide-out of their panel (the arrow beside its title). A tool turned off in `Dyl-Suite` answers *Unknown command* when its button is clicked.
 
@@ -131,9 +131,10 @@ Before adding a tool, read [CONVENTIONS.md](CONVENTIONS.md): command naming (`Dy
 
 - `Installer\Ribbon\Ribbon.csv` - the panels and buttons: the panel, the stack (empty: a large button; a number: small buttons stacked together; `>1`: a row of the slide-out), the command, its children listed under its arrow (`*`, or patterns divided by `|`), and a name and description for a command that is not in `StartupSuite.csv`.
 - `Installer\Ribbon\RibbonIcons.py` - the icon of each command, drawn at 16 and 32 px and stored in the CUIx. A child without an icon of its own uses the icon of its main command.
+- `Installer\Ribbon\Ribbon.fr.csv` - the French texts of the tab (panel titles, button labels and tooltips): the plugin shows them on AutoCAD 2025 and later when the language of DynALisp (Dyl-Settings) is French.
 - `Installer\Ribbon\ContextMenus.csv` - the commands added to the right-click menus of AutoCAD: the menu (`OBJECT_MTEXT` for one mtext selected, `OBJECTS_MTEXT` for several...) and the command. Empty for now: the first menus made AutoCAD crash on the right click (see `BuildRibbon.py`).
 
-Run `python Installer\Ribbon\BuildRibbon.py` after adding, renaming or removing a tool: it warns about a main command of the module missing from `Ribbon.csv` or without an icon. `--sheet <file.png>` draws every icon, on the light and the dark ribbon, to review them. Restart AutoCAD to see the new ribbon.
+Run `python Installer\Ribbon\BuildRibbon.py` after adding, renaming or removing a tool: it warns about a main command of the module missing from `Ribbon.csv` or without an icon. It also draws the pictures of the panels for the Ribbon docs page (`RibbonPanels.py`, into `Docs\Plugins\Ribbon`) and writes its Panels section; `--pictures` draws them only. `--sheet <file.png>` draws every icon, on the light and the dark ribbon, to review them. Restart AutoCAD to see the new ribbon.
 
 ### Releasing a version
 

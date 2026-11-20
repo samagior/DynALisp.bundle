@@ -34,6 +34,7 @@ using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
 [assembly: ExtensionApplication(typeof(DynALisp.Ribbon.Plugin))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.PhaseCombos))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.TransferCombos))]
+[assembly: CommandClass(typeof(DynALisp.Ribbon.LangCommands))]
 
 namespace DynALisp.Ribbon
 {
@@ -43,6 +44,8 @@ namespace DynALisp.Ribbon
         {
             try
             {
+                // The language first: the drop-downs are made in it (Translations.cs):
+                T.Start();
                 Host.Add(PhaseCombos.Part);
                 Host.Add(TransferCombos.Part);
                 Host.Start();
@@ -90,7 +93,7 @@ namespace DynALisp.Ribbon
 
         static readonly List<Part> Parts = new List<Part>();
         static bool _dirty = true;
-        static int _nextTry;
+        static int _nextTry = Environment.TickCount;   // not 0: TickCount is negative half of the time
         static readonly HashSet<Document> Watched = new HashSet<Document>();
 
         public static void Add(Part p) => Parts.Add(p);
@@ -102,7 +105,7 @@ namespace DynALisp.Ribbon
             dm.DocumentToBeDestroyed += (s, e) => Watched.Remove(e.Document);
             foreach (Document d in dm) Watch(d);
             AcApp.Idle += OnIdle;
-            ComponentManager.ItemInitialized += (s, e) => _dirty = true;
+            ComponentManager.ItemInitialized += (s, e) => { _dirty = true; T.Dirty(); };
             if (RibbonServices.RibbonPaletteSet != null) WatchPaletteSet();
             else RibbonServices.RibbonPaletteSetCreated += (s, e) => WatchPaletteSet();
         }
@@ -119,7 +122,7 @@ namespace DynALisp.Ribbon
         {
             _dirty = true;
             if (RibbonServices.RibbonPaletteSet != null)
-                RibbonServices.RibbonPaletteSet.WorkspaceLoaded += (s, e) => _dirty = true;
+                RibbonServices.RibbonPaletteSet.WorkspaceLoaded += (s, e) => { _dirty = true; T.Dirty(); };
         }
 
         static void Each(Action<Part> a)
@@ -151,7 +154,25 @@ namespace DynALisp.Ribbon
                     p.Pending = false;
                     try { p.Refresh(); } catch (System.Exception ex) { Log(ex.Message); }
                 }
+            // The texts of the tab in the language of DynALisp (Translations.cs), once a
+            // second at most while the tab is not there:
+            if (T.Due && Environment.TickCount - _nextLang >= 0)
+            {
+                _nextLang = Environment.TickCount + 1000;
+                try { T.Apply(); } catch (System.Exception ex) { Log(ex.Message); }
+            }
             PhaseCombos.AskOnIdle();
+        }
+
+        static int _nextLang = Environment.TickCount;
+
+        // The drop-downs of every part made again (their language changed): Ensure puts them
+        // back, the next time AutoCAD is idle.
+        public static void Rebuild()
+        {
+            foreach (var p in Parts) p.Row = null;
+            _dirty = true;
+            _nextTry = Environment.TickCount;
         }
 
         static bool Quiet()
@@ -171,7 +192,7 @@ namespace DynALisp.Ribbon
             var tab = ribbon?.Tabs.FirstOrDefault(t => IdIs(t.Id, TabId))
                       ?? ribbon?.Tabs.FirstOrDefault(t => t.Title == "DynALisp");
             var panel = tab?.Panels.FirstOrDefault(p => p.Source != null && IdIs(p.Source.Id, part.PanelId))
-                        ?? tab?.Panels.FirstOrDefault(p => p.Source != null && p.Source.Title == part.PanelTitle);
+                        ?? tab?.Panels.FirstOrDefault(p => p.Source != null && (p.Source.Title == part.PanelTitle || T.OriginalTitle(p.Source) == part.PanelTitle));
             return panel?.Source;
         }
 
@@ -357,6 +378,30 @@ namespace DynALisp.Ribbon
             return File.Exists(usr) ? usr : Path.Combine(Bundle, "Contents", rel);
         }
 
+        // The fields of a CSV line: a field in quotes may hold the separator ("Mixing Box, Dual
+        // Duct" in Minor.csv), "" in it is one quote:
+        public static string[] Fields(string line, char sep)
+        {
+            var res = new List<string>();
+            var cur = new System.Text.StringBuilder();
+            bool quoted = false;
+            for (int i = 0; i < line.Length; i++)
+            {
+                char c = line[i];
+                if (quoted)
+                {
+                    if (c == '"' && i + 1 < line.Length && line[i + 1] == '"') { cur.Append('"'); i++; }
+                    else if (c == '"') quoted = false;
+                    else cur.Append(c);
+                }
+                else if (c == '"') quoted = true;
+                else if (c == sep) { res.Add(cur.ToString()); cur.Clear(); }
+                else cur.Append(c);
+            }
+            res.Add(cur.ToString());
+            return res.ToArray();
+        }
+
         // The (code, description) rows of a list of Res\AEC\Standard: the first column and the
         // last one (Description). Separator: ; tab or , (whichever the header uses).
         public static List<KeyValuePair<string, string>> Standard(string name)
@@ -369,14 +414,20 @@ namespace DynALisp.Ribbon
                 var lines = File.ReadAllLines(path);
                 if (lines.Length == 0) return lst;
                 char sep = lines[0].Contains(';') ? ';' : lines[0].Contains('\t') ? '\t' : ',';
-                var head = lines[0].Split(sep);
+                var head = Fields(lines[0], sep);
                 int desc = Array.FindIndex(head, h => h.Trim().Trim('﻿').Equals("Description", StringComparison.OrdinalIgnoreCase));
+                // The description in the language of DynALisp (Description.fr), the English one
+                // where it has none:
+                int local = T.Lang == "en" ? -1
+                    : Array.FindIndex(head, h => h.Trim().Trim('﻿').Equals("Description." + T.Lang, StringComparison.OrdinalIgnoreCase));
                 foreach (var line in lines.Skip(1))
                 {
-                    var f = line.Split(sep);
+                    var f = Fields(line, sep);
                     string code = f[0].Trim();
                     if (code == "") continue;
-                    lst.Add(new KeyValuePair<string, string>(code, desc >= 0 && desc < f.Length ? f[desc].Trim() : ""));
+                    string d = local >= 0 && local < f.Length ? f[local].Trim() : "";
+                    if (d == "") d = desc >= 0 && desc < f.Length ? f[desc].Trim() : "";
+                    lst.Add(new KeyValuePair<string, string>(code, d));
                 }
             }
             catch { }

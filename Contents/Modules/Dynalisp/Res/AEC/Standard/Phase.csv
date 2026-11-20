@@ -1,21 +1,21 @@
-Abbreviation,ColorGroup,ColorIndex,Lineweight,Linetype,Description
-E,--,-,----,------,Existing To Remain
-D,--,-,----,------,Existing To Demolish
-N,--,-,----,------,New Work
-T,--,-,----,------,Temporary Work
-M,--,-,----,------,Item To Be Moved
-S,--,-,----,------,Existing to Be Saved
-R,--,-,----,------,Existing to be Refurbish
-A,--,-,----,------,Abandonned Work
-F,--,-,----,------,Future Work
-X,--,-,----,------,Not in Contract
-P,--,-,----,------,Proposed Work
-1,--,-,----,------,Phase Number 1
-2,--,-,----,------,Phase Number 2
-3,--,-,----,------,Phase Number 3
-4,--,-,----,------,Phase Number 4
-5,--,-,----,------,Phase Number 5
-6,--,-,----,------,Phase Number 6
-7,--,-,----,------,Phase Number 7
-8,--,-,----,------,Phase Number 8
-9,--,-,----,------,Phase Number 9
+﻿Abbreviation,ColorGroup,ColorIndex,Lineweight,Linetype,Description,Description.fr
+E,--,-,----,------,Existing To Remain,Existant à conserver
+D,--,-,----,------,Existing To Demolish,Existant à démolir
+N,--,-,----,------,New Work,Travaux neufs
+T,--,-,----,------,Temporary Work,Travaux temporaires
+M,--,-,----,------,Item To Be Moved,Élément à déplacer
+S,--,-,----,------,Existing to Be Saved,Existant à récupérer
+R,--,-,----,------,Existing to be Refurbish,Existant à remettre à neuf
+A,--,-,----,------,Abandonned Work,Travaux abandonnés
+F,--,-,----,------,Future Work,Travaux futurs
+X,--,-,----,------,Not in Contract,Hors contrat
+P,--,-,----,------,Proposed Work,Travaux proposés
+1,--,-,----,------,Phase Number 1,Phase numéro 1
+2,--,-,----,------,Phase Number 2,Phase numéro 2
+3,--,-,----,------,Phase Number 3,Phase numéro 3
+4,--,-,----,------,Phase Number 4,Phase numéro 4
+5,--,-,----,------,Phase Number 5,Phase numéro 5
+6,--,-,----,------,Phase Number 6,Phase numéro 6
+7,--,-,----,------,Phase Number 7,Phase numéro 7
+8,--,-,----,------,Phase Number 8,Phase numéro 8
+9,--,-,----,------,Phase Number 9,Phase numéro 9

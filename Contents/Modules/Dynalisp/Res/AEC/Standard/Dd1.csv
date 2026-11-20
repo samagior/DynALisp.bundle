@@ -1,22 +1,22 @@
-Abbreviation,ColorID,Color,Lineweight,Linetype,Description
-A,--,-,----,------,Architectural
-C,--,-,----,------,Civil
-Z,--,-,----,------,Contractor
-E,--,-,----,------,Electrical
-W,--,-,----,------,Energy
-Q,--,-,----,------,Equipment
-F,--,-,----,------,Fire
-G,--,-,----,------,General
-B,--,-,----,------,Geotechnical
-H,--,-,----,------,Hazardeous
-I,--,-,----,------,Interior
-L,--,-,----,------,Landscape
-M,--,-,----,------,Mechanical 
-O,--,-,----,------,Operation
-X,--,-,----,------,Other Discipline
-P,--,-,----,------,Plumbing
-D,--,-,----,------,Process
-R,--,-,----,------,Resource
-S,--,-,----,------,Structural
-V,--,-,----,------,Survey
-T,--,-,----,------,Telecomunication
+﻿Abbreviation,ColorID,Color,Lineweight,Linetype,Description,Description.fr
+A,--,-,----,------,Architectural,Architecture
+C,--,-,----,------,Civil,Génie civil
+Z,--,-,----,------,Contractor,Entrepreneur
+E,--,-,----,------,Electrical,Électricité
+W,--,-,----,------,Energy,Énergie
+Q,--,-,----,------,Equipment,Équipement
+F,--,-,----,------,Fire,Protection incendie
+G,--,-,----,------,General,Général
+B,--,-,----,------,Geotechnical,Géotechnique
+H,--,-,----,------,Hazardeous,Matières dangereuses
+I,--,-,----,------,Interior,Aménagement intérieur
+L,--,-,----,------,Landscape,Architecture de paysage
+M,--,-,----,------,Mechanical ,Mécanique
+O,--,-,----,------,Operation,Exploitation
+X,--,-,----,------,Other Discipline,Autre discipline
+P,--,-,----,------,Plumbing,Plomberie
+D,--,-,----,------,Process,Procédés
+R,--,-,----,------,Resource,Ressources
+S,--,-,----,------,Structural,Structure
+V,--,-,----,------,Survey,Arpentage
+T,--,-,----,------,Telecomunication,Télécommunications
