@@ -76,6 +76,37 @@ namespace DynALisp.Ribbon
         public static string S(string en) =>
             Strings.TryGetValue(Lang, out var d) && d.TryGetValue(en, out var s) ? s : en;
 
+        // The language when the plugin loads, read by the plugin itself: the Lisp call of
+        // dynalisp.mnl may come before the plugin is loaded, and AutoCAD may load the plugin
+        // after it. DynalispLanguage (the user setting of Dyl-Settings, FixedProfile\General of
+        // the product), else the language of the AutoCAD installed (the lcid ending its product
+        // key, ...\ACAD-A104:40C), English for another one: the same rule as Dyl:Lang.
+        static readonly Dictionary<string, string> Keys = new(StringComparer.OrdinalIgnoreCase)
+            { ["English"] = "en", ["French"] = "fr" };
+        static readonly Dictionary<string, string> Lcids = new(StringComparer.OrdinalIgnoreCase)
+            { ["409"] = "en", ["40C"] = "fr" };
+
+        public static void Start()
+        {
+            string code = "en";
+            try
+            {
+                string root = HostApplicationServices.Current.UserRegistryProductRootKey;
+                string key;
+                using (var k = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(root + @"\FixedProfile\General"))
+                    key = k?.GetValue("DynalispLanguage") as string;
+                if (key != null && Keys.TryGetValue(key, out var c)) code = c;
+                else if (Lcids.TryGetValue(root.Substring(root.LastIndexOf(':') + 1), out c)) code = c;
+                _start = code;
+            }
+            catch (System.Exception ex) { Host.Log(ex.Message); }
+            Lang = code;
+            Load(code);
+            Dirty();
+        }
+
+        static string _start;
+
         // (Dyl:RibbonLang "fr"): the language of DynALisp. Returns T.
         [LispFunction("Dyl:RibbonLang")]
         public static object RibbonLang(ResultBuffer args)
@@ -104,11 +135,11 @@ namespace DynALisp.Ribbon
         public static object RibbonLangInfo(ResultBuffer args)
         {
             return string.Format(
-                "Language: {0} (given: {1}); texts: {2} ({3}); tab: {4}; panels: {5} of {6}; items: {7} of {8} " +
-                "(by id {9}, by macro {10}, by label {11}); not found: {12}",
+                "Language: {0} (at startup: {13}, given by Lisp: {1}); texts: {2} ({3}); tab: {4}; panels: {5} of {6}; " +
+                "items: {7} of {8} (by id {9}, by macro {10}, by label {11}); applied: {14}; not found: {12}",
                 Lang, _asked ? "yes" : "no", _entries?.Count ?? 0, _file ?? "none",
                 _tab ? "found" : "not found", _panelsDone, _panels, _itemsDone, _items, _byId, _byMacro, _byText,
-                _missed.Count == 0 ? "none" : string.Join(" ; ", _missed));
+                _missed.Count == 0 ? "none" : string.Join(" ; ", _missed), _start ?? "not read", _applied);
         }
 
         // ---- the tab ----
@@ -125,6 +156,7 @@ namespace DynALisp.Ribbon
         static List<Entry> _byMacroList;
         static string _file;
         static bool _dirty, _asked, _tab;
+        static int _applied;
         static int _panels, _panelsDone, _items, _itemsDone, _byId, _byMacro, _byText;
         static readonly List<string> _missed = new();
 
@@ -218,6 +250,7 @@ namespace DynALisp.Ribbon
             }
             if (Lang != "en" && _entries.Count > 0 && _itemsDone == 0)
                 Host.Log("the tab could not be translated: no item found, see (Dyl:RibbonLangInfo).");
+            _applied++;
             _dirty = false;
             return true;
         }

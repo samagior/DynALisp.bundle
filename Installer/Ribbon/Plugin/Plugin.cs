@@ -43,6 +43,8 @@ namespace DynALisp.Ribbon
         {
             try
             {
+                // The language first: the drop-downs are made in it (Translations.cs):
+                T.Start();
                 Host.Add(PhaseCombos.Part);
                 Host.Add(TransferCombos.Part);
                 Host.Start();
