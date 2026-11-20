@@ -66,14 +66,14 @@
 <ul>
 <li><strong>Revisions list</strong> &ndash; the revisions of the project, in their sequence: sequence, number, date, description and whether it is issued. Several revisions can be selected (Ctrl or Shift click) to edit them at once. With numbering per sheet, the number column shows how they count (<em>1...</em> or <em>A...</em>): each sheet numbers its own.</li>
 <li><strong>New</strong> &ndash; adds a revision after the last one, dated today, with the numbering of the last one. A revision is never given the id of a revision deleted, so the clouds of a deleted revision never go to a new one.</li>
-<li><strong>Delete</strong> &ndash; deletes the revisions selected, after a confirmation, and takes them from every sheet. Their clouds stay in the drawings, without a revision: erase them.</li>
+<li><strong>Delete</strong> &ndash; deletes the revisions selected, after a confirmation, and takes them from every sheet. Their clouds stay in the drawings, without a revision: erase them. Greyed out when an issued revision after them would get another number.</li>
 <li><strong>Move Up</strong>, <strong>Move Down</strong> &ndash; change the sequence of the revision selected, and the numbers that follow it. A revision is never moved past an issued one.</li>
 </ul>
 </div>
 <h3>Parameters</h3>
 <div class="spacedbullets">
 <ul>
-<li><strong>Numbering</strong> &ndash; <em>Numeric</em> (1, 2, 3), <em>Alphabetic</em> (A, B, C... Z, AA) or <em>None</em> (no number, a revision that is only listed). Each numbering counts on its own: revisions A and B issued for tender, then 1, 2, 3 for construction.</li>
+<li><strong>Numbering</strong> &ndash; <em>Numeric</em> (1, 2, 3), <em>Alphabetic</em> (A, B, C... Z, AA) or <em>None</em> (no number, a revision that is only listed). Each numbering counts on its own: revisions A and B issued for tender, then 1, 2, 3 for construction. A numbering that would give an issued revision after it another number is refused.</li>
 <li><strong>Date</strong>, <strong>Description</strong>, <strong>Issued to</strong>, <strong>Issued by</strong> &ndash; what the title blocks show. Every revision needs a description.</li>
 <li><strong>Issued</strong> &ndash; locks the revision once it is sent: its parameters, its sheets, its place in the sequence and its deletion are greyed out. Clear it to change the revision again. A cloud is drawn only for a revision that is not issued.</li>
 </ul>
@@ -141,7 +141,7 @@
 <tr><td><span class="fixw">Sheets.csv</span></td><td>Every sheet, the revisions given to it and the ones its clouds had at its last update.</td></tr>
 </table>
 </div>
-<p>Each layout also keeps a copy of the revisions given to it: a sheet drawing copied or renamed keeps its revisions. When another user saves the revisions while your window is open, <strong>OK</strong> is refused: cancel, then open the window again.</p>
+<p>Each layout also keeps a copy of the revisions given to it: a sheet drawing copied or renamed keeps its revisions. When another user saves the revisions or the settings of the project while your window is open, <strong>OK</strong> and <strong>Update All Sheets</strong> are refused: cancel, then open the window again.</p>
 <h2>Known Limitations</h2>
 <div class="spacedbullets">
 <ul>

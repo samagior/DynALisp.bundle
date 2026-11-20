@@ -4902,7 +4902,7 @@
         (princ (strcat "\nRevisions "
                        (cond
                          ((not st:rvo) "off: the sheets are updated by Dyl-Revisions only.")
-                         ((vl-catch-all-error-p (setq res (vl-catch-all-apply 'Remote>>Dyl:RevisionsWatch)))
+                         ((vl-catch-all-error-p (setq res (vl-catch-all-apply 'Remote>>Dyl:RevisionsWatch nil)))
                           (strcat "on, --> " (vl-catch-all-error-message res) ".")
                          )
                          (res (strcat "on, this drawing: " res "."))

@@ -383,8 +383,8 @@
 ;;  the project being edited), rv:shts (the sheets being edited, ((file layout hand clouds)
 ;;  ...)), rv:revs0, rv:sets0, rv:shts0 (as they were read), rv:sel (the indexes of the
 ;;  revisions selected, the first one shown), rv:ssel (the indexes of the sheets selected),
-;;  rv:stamp (the time Revisions.csv was written when it was read), rv:tbchg (T once the
-;;  title blocks were saved from this window).
+;;  rv:stamp (the times Revisions.csv and RevisionSettings.csv were written when they were
+;;  read, Dyl:RevStamps), rv:tbchg (T once the title blocks were saved from this window).
 
 ;;  The revisions selected:
 (defun Dyl:RevSelRevs () (mapcar '(lambda (i) (nth i rv:revs)) rv:sel))
@@ -394,6 +394,23 @@
 
 ;;  Numbers of every revision, per project:
 (defun Dyl:RevAllNumbers () (Remote>>Dyl:RevNumbers rv:revs (atoi (cdr (assoc "Start" rv:sets)))))
+
+;;  T when every issued revision keeps its number with the revisions revs in place of
+;;  rv:revs (a revision deleted, or numbered otherwise, before it). Compared per project: a
+;;  number per sheet changes only when the number per project does:
+(defun Dyl:RevKeepsIssued-p (revs / start old new)
+  (setq start (atoi (cdr (assoc "Start" rv:sets)))
+        old   (Remote>>Dyl:RevNumbers rv:revs start)
+        new   (Remote>>Dyl:RevNumbers revs start)
+  )
+  (vl-every '(lambda (r) (or (not (Dyl:RevIssued-p r)) (equal (assoc (car r) old) (assoc (car r) new)))) rv:revs)
+)
+
+;;  The revisions without the ones selected:
+(defun Dyl:RevWithoutSel (/ ids)
+  (setq ids (mapcar 'car (Dyl:RevSelRevs)))
+  (vl-remove-if '(lambda (r) (member (car r) ids)) rv:revs)
+)
 
 ;;  Line of the revisions list: sequence, number (per project, or how it counts per sheet),
 ;;  date, description, issued:
@@ -502,7 +519,9 @@
   (set_tile "ito" (if r (nth 4 r) ""))
   (set_tile "iby" (if r (nth 5 r) ""))
   (set_tile "iss" (if (and r (Dyl:RevIssued-p r)) "1" "0"))
-  (foreach k '("num" "dat" "dsc" "ito" "iby" "del") (mode_tile k (if lock 1 0)))
+  (foreach k '("num" "dat" "dsc" "ito" "iby") (mode_tile k (if lock 1 0)))
+  ;;  Never deleted when an issued revision after it would be numbered otherwise:
+  (mode_tile "del" (if (or lock (not (Dyl:RevKeepsIssued-p (Dyl:RevWithoutSel)))) 1 0))
   (mode_tile "iss" (if r 0 1))
   ;;  Moved one at a time, never past an issued revision (its number would change):
   (mode_tile "up" (if (and one (< 0 (car rv:sel)) (not (Dyl:RevIssued-p (nth (1- (car rv:sel)) rv:revs)))) 0 1))
@@ -519,14 +538,25 @@
   (mode_tile "rem" (if (and (not lock) rv:ssel) 0 1))
 )
 
-;;  A field changed: its value given to every revision selected (i: its column):
-(defun Dyl:RevPutField (i val)
+;;  A field changed: its value given to every revision selected (i: its column). A
+;;  numbering that would number an issued revision after them otherwise is refused:
+(defun Dyl:RevPutField (i val / revs)
   (if (= 1 i) (setq val (nth (atoi val) *rev:numberings*)))
   (if (= 6 i) (setq val (if (= "1" val) "1" "")))
   (if (/= 1 i) (setq val (vl-string-trim " " val)))
-  (foreach s rv:sel (setq rv:revs (Remote>>Dyl:ListSubst rv:revs s (Remote>>Dyl:ListSubst (nth s rv:revs) i val))))
-  (set_tile "error" "")
-  (Dyl:RevFill)
+  (setq revs rv:revs)
+  (foreach s rv:sel (setq revs (Remote>>Dyl:ListSubst revs s (Remote>>Dyl:ListSubst (nth s revs) i val))))
+  (if (and (= 1 i) (not (Dyl:RevKeepsIssued-p revs)))
+    (progn
+      (Dyl:RevShow)
+      (set_tile "error" "An issued revision after it would be numbered otherwise: its numbering cannot change.")
+    )
+    (progn
+      (setq rv:revs revs)
+      (set_tile "error" "")
+      (Dyl:RevFill)
+    )
+  )
 )
 
 ;;  A project setting changed:
@@ -632,12 +662,19 @@
   (vl-remove-if-not '(lambda (s) (member (strcase (Remote>>Dyl:RevFull prj (car s))) files)) shts)
 )
 
+;;  The times the revisions and the settings of the project were written (nil for a file
+;;  not made yet), to tell when another user changed them:
+(defun Dyl:RevStamps (prj)
+  (mapcar '(lambda (f) (Remote>>Dyl:RevStamp (Remote>>Dyl:RevPath prj f))) '("Revisions.csv" "RevisionSettings.csv"))
+)
+
 ;;  Check the revisions before saving: a sequence of dates and descriptions. Returns an
-;;  error message, nil when they can be saved:
+;;  error message, nil when they can be saved. The stamps are lists: compared with equal
+;;  (= and /= tell two lists apart even when they hold the same values):
 (defun Dyl:RevCheck ()
   (cond
-    ((/= rv:stamp (Remote>>Dyl:RevStamp (Remote>>Dyl:RevPath rv:prj "Revisions.csv")))
-     "Another user changed the revisions since this window opened: Cancel, then open it again."
+    ((not (equal rv:stamp (Dyl:RevStamps rv:prj)))
+     "Another user changed the revisions or the settings of the project since this window opened: Cancel, then open it again."
     )
     ((vl-some '(lambda (r) (= "" (nth 3 r))) rv:revs) "Every revision needs a description.")
   )
@@ -827,7 +864,7 @@
            rv:sets0 rv:sets
            rv:shts  (Dyl:RevSheetsOf rv:prj)
            rv:shts0 rv:shts
-           rv:stamp (Remote>>Dyl:RevStamp (Remote>>Dyl:RevPath rv:prj "Revisions.csv"))
+           rv:stamp (Dyl:RevStamps rv:prj)
            rv:sel   (if rv:revs (list (1- (length rv:revs))))
            sta      4
      )
