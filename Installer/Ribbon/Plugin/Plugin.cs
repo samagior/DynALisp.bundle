@@ -382,7 +382,7 @@ namespace DynALisp.Ribbon
         // Duct" in Minor.csv), "" in it is one quote:
         public static string[] Fields(string line, char sep)
         {
-            var out = new List<string>();
+            var res = new List<string>();
             var cur = new System.Text.StringBuilder();
             bool quoted = false;
             for (int i = 0; i < line.Length; i++)
@@ -395,11 +395,11 @@ namespace DynALisp.Ribbon
                     else cur.Append(c);
                 }
                 else if (c == '"') quoted = true;
-                else if (c == sep) { out.Add(cur.ToString()); cur.Clear(); }
+                else if (c == sep) { res.Add(cur.ToString()); cur.Clear(); }
                 else cur.Append(c);
             }
-            out.Add(cur.ToString());
-            return out.ToArray();
+            res.Add(cur.ToString());
+            return res.ToArray();
         }
 
         // The (code, description) rows of a list of Res\AEC\Standard: the first column and the
