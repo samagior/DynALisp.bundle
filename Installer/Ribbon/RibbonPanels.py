@@ -6,8 +6,9 @@
 #   - Docs\Plugins\Ribbon\<Panel>.png and <Panel>-dark.png: each panel, its slide-out open
 #     under it, on the light and the dark ribbon of AutoCAD
 #   - Docs\Plugins\Ribbon\Tab.png and Tab-dark.png: every panel side by side
-#   - the Panels section of Docs\Plugins\Ribbon.htm, between its two BuildRibbon comments: a
-#     picture and the tools of each panel, linked to their pages
+#   - the Panels section of Docs\Plugins\Ribbon.htm and of its copy in each language of TEXT
+#     (Ribbon.fr.htm), between their two BuildRibbon comments: a picture and the tools of each
+#     panel, linked to their pages in the language of the page
 # The drop-downs added at run time by DynALisp.Ribbon.dll are drawn after their button
 # (PLUGIN below, with sample values): keep it in step with Plugin\PhaseCombos.cs and
 # Plugin\TransferCombos.cs. A picture is only written when it changed, so git sees no change
@@ -50,8 +51,8 @@ THEMES = {
 
 # The drop-downs of DynALisp.Ribbon.dll, after the button of their tool: (label, value shown).
 PLUGIN = {
-    'DYL-LAYERPHASE': ('Auto-phase and Phase', [('', 'Auto-phase On'), ('', 'N - New Work')]),
-    'PST-TRANSFERFIELD': ('Level, From and To', [('Level:', 'Status'), ('From:', 'E - Existing To Remain'),
+    'DYL-LAYERPHASE': ({'en': 'Auto-phase and Phase', 'fr': 'Auto-phase et Phase'}, [('', 'Auto-phase On'), ('', 'N - New Work')]),
+    'PST-TRANSFERFIELD': ({'en': 'Level, From and To', 'fr': 'Level, From et To'}, [('Level:', 'Status'), ('From:', 'E - Existing To Remain'),
                                                  ('To:', 'N - New Work')]),
 }
 
@@ -308,12 +309,34 @@ def doc_link(cmd, cmds):
     return None
 
 
-def tool(it, cmds):
+# The words of the Panels section in each language of the docs (the names of the panels and
+# the buttons stay as the ribbon shows them, in English):
+TEXT = {
+    'en': dict(intro='The whole tab, then each panel with its slide-out open under its title. '
+                     'The drop-downs show sample values.',
+               tab='The DynALisp tab of the ribbon', panel='The %s panel', slide='In the slide-out:',
+               drops=' and its %s drop-downs'),
+    'fr': dict(intro="L'onglet entier, puis chaque groupe de fonctions avec sa partie déroulante ouverte "
+                     "sous son titre. Les listes déroulantes montrent des valeurs d'exemple.",
+               tab="L'onglet DynALisp du ruban", panel='Le groupe de fonctions %s',
+               slide='Dans la partie déroulante :', drops=' et ses listes déroulantes %s'),
+}
+
+
+def localized(link, lang):
+    """The link to the page in lang when it has a copy in it (Dyl-LayerKeys.fr.htm)."""
+    if not link or lang == 'en':
+        return link
+    loc = link[:-4] + '.' + lang + '.htm'
+    return loc if os.path.exists(os.path.normpath(os.path.join(DOCS, 'Plugins', loc))) else link
+
+
+def tool(it, cmds, lang):
     name = html.escape(it['name'])
-    link = doc_link(it['cmd'], cmds)
+    link = localized(doc_link(it['cmd'], cmds), lang)
     s = '<a href="%s">%s</a>' % (link, name) if link else name
     if it['cmd'] in PLUGIN:
-        s += ' and its %s drop-downs' % PLUGIN[it['cmd']][0]
+        s += TEXT[lang]['drops'] % PLUGIN[it['cmd']][0][lang]
     return s
 
 
@@ -322,19 +345,18 @@ def picture(base, w, alt):
             '<img src="Ribbon/%s.png" width="%d" alt="%s"></picture></p>' % (base, base, w, html.escape(alt)))
 
 
-def section(panels, sizes, cmds):
-    out = [BEGIN,
-           '<p>The whole tab, then each panel with its slide-out open under its title. The drop-downs show sample values.</p>',
-           picture('Tab', sizes['Tab'], 'The DynALisp tab of the ribbon')]
+def section(panels, sizes, cmds, lang):
+    w = TEXT[lang]
+    out = [BEGIN, '<p>%s</p>' % html.escape(w['intro'], quote=False), picture('Tab', sizes['Tab'], w['tab'])]
     for name, items in panels:
         base = slug(name)
-        main = [tool(it, cmds) for it in items if not it.get('sep') and not it['stack'].startswith('>')]
-        more = [tool(it, cmds) for it in items if not it.get('sep') and it['stack'].startswith('>')]
+        main = [tool(it, cmds, lang) for it in items if not it.get('sep') and not it['stack'].startswith('>')]
+        more = [tool(it, cmds, lang) for it in items if not it.get('sep') and it['stack'].startswith('>')]
         out.append('<h3 id="panel-%s">%s</h3>' % (base.lower(), html.escape(name)))
-        out.append(picture(base, sizes[base], 'The %s panel' % name))
+        out.append(picture(base, sizes[base], w['panel'] % name))
         p = ', '.join(main) + '.'
         if more:
-            p += ' In the slide-out: ' + ', '.join(more) + '.'
+            p += ' ' + w['slide'] + ' ' + ', '.join(more) + '.'
         out.append('<p>' + p + '</p>')
     out.append(END)
     return '\n'.join(out)
@@ -359,15 +381,20 @@ def write(panels, cmds):
         if f.endswith('.png') and f.lower() not in keep:
             os.remove(os.path.join(OUT, f))
             written.append(f + ' (removed)')
-    with open(PAGE, encoding='utf-8', newline='') as f:
-        page = f.read()
-    i, j = page.find(BEGIN), page.find(END)
-    if i < 0 or j < 0:
-        return written + ['(no %s in Ribbon.htm: its Panels section is not written)' % BEGIN]
-    eol = '\r\n' if '\r\n' in page else '\n'
-    new = page[:i] + section(panels, sizes, cmds).replace('\n', eol) + page[j + len(END):]
-    if new != page:
-        with open(PAGE, 'w', encoding='utf-8', newline='') as f:
-            f.write(new)
-        written.append('Ribbon.htm')
+    for lang in TEXT:
+        path = PAGE if lang == 'en' else PAGE[:-4] + '.' + lang + '.htm'
+        if not os.path.exists(path):
+            continue
+        with open(path, encoding='utf-8', newline='') as f:
+            page = f.read()
+        i, j = page.find(BEGIN), page.find(END)
+        if i < 0 or j < 0:
+            written.append('(no %s in %s: its Panels section is not written)' % (BEGIN, os.path.basename(path)))
+            continue
+        eol = '\r\n' if '\r\n' in page else '\n'
+        new = page[:i] + section(panels, sizes, cmds, lang).replace('\n', eol) + page[j + len(END):]
+        if new != page:
+            with open(path, 'w', encoding='utf-8', newline='') as f:
+                f.write(new)
+            written.append(os.path.basename(path))
     return written
