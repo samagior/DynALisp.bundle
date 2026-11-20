@@ -39,7 +39,7 @@ namespace DynALisp.Ribbon
         public static List<KeyValuePair<string, string>> Phases = Defaults;
         static bool _auto, _reactors;
 
-        // The phases with their descriptions in the language of DynALisp: the Description.<lang>
+        // The phases with their descriptions in the language of the AutoCAD installed (T.Lang): the Description.<lang>
         // column of Phase.csv, read by the plugin (Host.Standard, in UTF-8; the Lisp side reads
         // the file in the code page of Windows and sends the English descriptions). The English
         // one for a phase the column does not have:

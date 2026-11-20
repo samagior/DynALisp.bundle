@@ -320,8 +320,10 @@
            (strcat (Dyl:Lang) (if (getenv "DynalispLanguage") "" " (not set: the language of AutoCAD)"))
     )
   )
-  ;;  The ribbon is translated by DynALisp.Ribbon.dll (AutoCAD 2025 and later):
-  (if (and Dyl:LangCode (/= "en" (Dyl:LangCode)) (not Dyl:RibbonLang))
+  ;;  The ribbon, in the language of the AutoCAD installed (Dyl:LangAcad), is translated
+  ;;  by DynALisp.Ribbon.dll (AutoCAD 2025 and later):
+  (if Dyl:LangAcad (dg:kv "Ribbon language" (strcat (Dyl:LangAcad) " (the language of AutoCAD)")))
+  (if (and Dyl:LangAcad (/= "en" (Dyl:LangAcad)) (not Dyl:RibbonLang))
     (if (< (atof (getvar "ACADVER")) 25.0)
       (dg:note "The ribbon stays in English: DynALisp.Ribbon.dll needs AutoCAD 2025 or later")
       (dg:bad "The ribbon stays in English: DynALisp.Ribbon.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)")

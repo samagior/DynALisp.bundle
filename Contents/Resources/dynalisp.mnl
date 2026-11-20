@@ -4411,12 +4411,13 @@
   )
 
   ;;; Language of DynALisp (Environment in Dyl-Settings, DynalispLanguage): the language
-  ;;; of its docs and of its ribbon (Dyl:LangRibbon). Not the Language of the File Preferences,
+  ;;; its docs open in, and nothing else. Not the Language of the File Preferences,
   ;;; which sets the content folders and the dictionaries of the drawings. Until it is
   ;;; set, the language of the AutoCAD installed (the lcid that ends its product key,
-  ;;; ...\ACAD-A101:40C), English when DynALisp is not in that language yet. Each
-  ;;; language: (key code lcid), the key also its name in the window (the windows are in
-  ;;; English); code is the suffix of its docs pages (Page.fr.htm):
+  ;;; ...\ACAD-A101:40C), English when DynALisp is not in that language yet. The ribbon
+  ;;; and the phases are always in the language of the AutoCAD installed (Dyl:LangAcad),
+  ;;; whatever this setting. Each language: (key code lcid), the key also its name in the
+  ;;; window (the windows are in English); code is the suffix of its docs pages (Page.fr.htm):
   (setq *dyl:langs* '(("English" "en" "409") ("French" "fr" "40C")))
 
   ;;  The key of the language of the AutoCAD installed, English when it is not one of
@@ -4437,27 +4438,24 @@
   ;;  Its code ("en", "fr"):
   (defun Dyl:LangCode () (cadr (assoc (Dyl:Lang) *dyl:langs*)))
 
+  ;;  The code of the language of the AutoCAD installed ("en", "fr"), English when
+  ;;  DynALisp is not in it: the language of the ribbon and of the phases (Phase.csv),
+  ;;  never changed by the Language setting:
+  (defun Dyl:LangAcad () (cadr (assoc (Dyl:LangDefault) *dyl:langs*)))
+
   (defun Dyl:LangSet (key)
     (setenv "DynalispLanguage" key)
-    (Dyl:LangRibbon)
-    ;;  The phases in the language: the status bar and the phases sent to the ribbon
-    ;;  (Remote>>Dyl:PhaseList reads the column of the language of Phase.csv):
-    (if Remote>>Dyl:PhaseStatus (vl-catch-all-apply 'Remote>>Dyl:PhaseStatus nil))
-    (princ (strcat "\nLanguage of DynALisp: " key ". The docs open in it from now on"
-                   (if Dyl:RibbonLang ", and the ribbon shows it" "")
-                   "."
-           )
-    )
+    (princ (strcat "\nLanguage of DynALisp: " key ". The docs open in it from now on."))
   )
 
-  ;;  The ribbon in the language: given to DynALisp.Ribbon.dll (AutoCAD 2025 and later,
-  ;;  Installer\Ribbon\Plugin\Translations.cs), which puts the texts of
-  ;;  Resources\DynALisp.Ribbon.<code>.csv on the tab; in an older AutoCAD, the ribbon
-  ;;  stays in English. When DynALisp loads and when the language is saved; the plugin
-  ;;  also reads DynalispLanguage itself when it starts (T.Start), so it never depends
-  ;;  on this call:
+  ;;  The ribbon in the language of the AutoCAD installed: given to DynALisp.Ribbon.dll
+  ;;  (AutoCAD 2025 and later, Installer\Ribbon\Plugin\Translations.cs), which puts the
+  ;;  texts of Resources\DynALisp.Ribbon.<code>.csv on the tab; in an older AutoCAD, the
+  ;;  ribbon stays in English. When DynALisp loads; the plugin also reads the lcid of the
+  ;;  AutoCAD installed itself when it starts (T.Start), with the rule of Dyl:LangAcad, so
+  ;;  it never depends on this call:
   (defun Dyl:LangRibbon ()
-    (if Dyl:RibbonLang (vl-catch-all-apply 'Dyl:RibbonLang (list (Dyl:LangCode))))
+    (if Dyl:RibbonLang (vl-catch-all-apply 'Dyl:RibbonLang (list (Dyl:LangAcad))))
   )
   (Dyl:LangRibbon)
 
@@ -4532,8 +4530,9 @@
   ;;;     startup lines removed from the command line, from the next startup; greyed
   ;;;     out without Resources\DynALisp.Startup.dll (Dyl:CleanStartup not defined)
 ;;;   - Language (Environment, the first section, DynalispLanguage, see Dyl:Lang): the
-  ;;;     language of DynALisp, its docs and its ribbon; the language of the
-  ;;;     AutoCAD installed until it is set. Not the Language of the File Preferences
+  ;;;     language the docs of DynALisp open in (the ribbon is in the language of the
+  ;;;     AutoCAD installed); the language of AutoCAD until it is set. Not the Language
+  ;;;     of the File Preferences
 ;;;   - Install updates automatically (Updates, DynalispAutoUpdate, see
   ;;;     Dyl:UpdAuto in the Info region): checked once a day, the setup of a new
   ;;;     version started (installed when AutoCAD closes); greyed out for a git clone

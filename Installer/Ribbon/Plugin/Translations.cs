@@ -1,4 +1,4 @@
-// Translations.cs - the DynALisp ribbon tab in the language of DynALisp
+// Translations.cs - the DynALisp ribbon tab in the language of the AutoCAD installed
 // Copyright (C) 2026  Samuel Martineau
 //
 // This program is free software: you can redistribute it and/or modify
@@ -14,9 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
-// A CUIx holds one language: DynALisp.cuix is in English. The Lisp side gives the language
-// of DynALisp (Language in Dyl-Settings, Dyl:Lang of dynalisp.mnl) with (Dyl:RibbonLang
-// "fr") when DynALisp loads and when the language is saved. In another language than
+// A CUIx holds one language: DynALisp.cuix is in English. The tab is in the language of the
+// AutoCAD installed (the lcid ending its product key), never in the Language of Dyl-Settings,
+// which is only the language of the docs: the plugin reads it when it starts (T.Start), and
+// the Lisp side gives it again with (Dyl:RibbonLang "fr") when DynALisp loads
+// (Dyl:LangRibbon, Dyl:LangAcad of dynalisp.mnl, the same rule). In another language than
 // English, the labels and tooltips of the tab are replaced by those of
 // Contents\Resources\DynALisp.Ribbon.<code>.csv, written by BuildRibbon.py from
 // Installer\Ribbon\Ribbon.<code>.csv (Id;Text;Title;Description, the items found by their
@@ -40,7 +42,7 @@ namespace DynALisp.Ribbon
     // one, so they are here.
     public class LangCommands
     {
-        // (Dyl:RibbonLang "fr"): the language of DynALisp, given when it is saved. Returns T.
+        // (Dyl:RibbonLang "fr"): the language of the AutoCAD installed, given when DynALisp loads. Returns T.
         [LispFunction("Dyl:RibbonLang")]
         public static object RibbonLang(ResultBuffer args) => T.RibbonLang(args);
 
@@ -51,7 +53,7 @@ namespace DynALisp.Ribbon
 
     public static class T
     {
-        // The language of DynALisp: en, fr...
+        // The language of the tab, the one of the AutoCAD installed: en, fr...
         public static string Lang { get; private set; } = "en";
 
         // The strings of the plugin itself (the drop-downs), by language:
@@ -91,11 +93,10 @@ namespace DynALisp.Ribbon
             Strings.TryGetValue(Lang, out var d) && d.TryGetValue(en, out var s) ? s : en;
 
         // The language when the plugin loads, read by the plugin itself, so the tab is in it
-        // whatever the order in which AutoCAD loads the plugin and dynalisp.mnl. DynalispLanguage (the user setting of Dyl-Settings, FixedProfile\General of
-        // the product), else the language of the AutoCAD installed (the lcid ending its product
-        // key, ...\ACAD-A104:40C), English for another one: the same rule as Dyl:Lang.
-        static readonly Dictionary<string, string> Keys = new(StringComparer.OrdinalIgnoreCase)
-            { ["English"] = "en", ["French"] = "fr" };
+        // whatever the order in which AutoCAD loads the plugin and dynalisp.mnl: the language of
+        // the AutoCAD installed (the lcid ending its product key, ...\ACAD-A104:40C), English for
+        // another one: the same rule as Dyl:LangAcad. DynalispLanguage (Language in Dyl-Settings)
+        // is not read: it is the language of the docs only.
         static readonly Dictionary<string, string> Lcids = new(StringComparer.OrdinalIgnoreCase)
             { ["409"] = "en", ["40C"] = "fr" };
 
@@ -105,11 +106,7 @@ namespace DynALisp.Ribbon
             try
             {
                 string root = HostApplicationServices.Current.UserRegistryProductRootKey;
-                string key;
-                using (var k = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(root + @"\FixedProfile\General"))
-                    key = k?.GetValue("DynalispLanguage") as string;
-                if (key != null && Keys.TryGetValue(key, out var c)) code = c;
-                else if (Lcids.TryGetValue(root.Substring(root.LastIndexOf(':') + 1), out c)) code = c;
+                if (Lcids.TryGetValue(root.Substring(root.LastIndexOf(':') + 1), out var c)) code = c;
                 _start = code;
             }
             catch (System.Exception ex) { Host.Log(ex.Message); }
@@ -120,7 +117,7 @@ namespace DynALisp.Ribbon
 
         static string _start;
 
-        // (Dyl:RibbonLang "fr"): the language of DynALisp. Returns T.
+        // (Dyl:RibbonLang "fr"): the language of the AutoCAD installed. Returns T.
         public static object RibbonLang(ResultBuffer args)
         {
             try
