@@ -5,8 +5,11 @@
     ProductCode="[C481FFC8-87C5-4BB3-8529-5CA7B41EB8E6]"
 >
 
-    <!-- The live drop-downs of the ribbon (.NET 8: AutoCAD 2025 and later), loaded before
-         the CUIx so that its MNL finds Dyl:RibbonPhase (Installer\Ribbon\Plugin): -->
+    <!-- The live drop-downs and the translation of the ribbon (.NET 8: AutoCAD 2025 and
+         later, Installer\Ribbon\Plugin). Listed first, but AutoCAD may load it after the MNL of
+         the CUIx has run: the plugin reads the settings it needs at startup itself and asks
+         the Lisp side for the state of the drawing when AutoCAD is idle. -->
+
     <Components Description="Ribbon drop-downs">
         <RuntimeRequirements
             OS="Win64"

@@ -4446,7 +4446,9 @@
   ;;  The ribbon in the language: given to DynALisp.Ribbon.dll (AutoCAD 2025 and later,
   ;;  Installer\Ribbon\Plugin\Translations.cs), which puts the texts of
   ;;  Resources\DynALisp.Ribbon.<code>.csv on the tab; in an older AutoCAD, the ribbon
-  ;;  stays in English. When DynALisp loads, and when the language is saved:
+  ;;  stays in English. When the language is saved (and when DynALisp loads, in case the
+  ;;  plugin is already loaded: AutoCAD may load it after this MNL, so it also reads
+  ;;  DynalispLanguage itself when it starts, see T.Start):
   (defun Dyl:LangRibbon ()
     (if Dyl:RibbonLang (vl-catch-all-apply 'Dyl:RibbonLang (list (Dyl:LangCode))))
   )
