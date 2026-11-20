@@ -38,12 +38,12 @@
 </table>
 </div>
 <h2>Description</h2>
-<p>Donne à chaque type d'objet courant une <a href="Dyl-LayerKeys.htm">clé de calque</a> par défaut, comme le font les clés de calque d'AutoCAD Architecture : une cote dessinée avec <span class="fixw">DIM</span> va sur le calque de <span class="fixw">DIMLINE</span>, un texte sur le calque de <span class="fixw">ANNOBJ</span>, quel que soit le calque courant. Cela fonctionne tant que <strong>Auto layer keys</strong> est activé (<a href="../Core/Dyl-Settings.fr.htm#reactors">Dyl-Settings</a>, Reactors, désactivé par défaut); son bouton ouvrir y ouvre aussi cette fenêtre.</p>
+<p>Donne à chaque type d'objet courant une <a href="Dyl-LayerKeys.fr.htm">clé de calque</a> par défaut, comme le font les clés de calque d'AutoCAD Architecture : une cote dessinée avec <span class="fixw">DIM</span> va sur le calque de <span class="fixw">DIMLINE</span>, un texte sur le calque de <span class="fixw">ANNOBJ</span>, quel que soit le calque courant. Cela fonctionne tant que <strong>Auto layer keys</strong> est activé (<a href="../Core/Dyl-Settings.fr.htm#reactors">Dyl-Settings</a>, Reactors, désactivé par défaut); son bouton ouvrir y ouvre aussi cette fenêtre.</p>
 <h2>Fenêtre Object Layer Keys</h2>
 <div class="spacedbullets">
 <ul>
 <li><strong>Liste</strong> &ndash; chaque type d'objet, sa clé de calque (<em>(none)</em> : laissé sur le calque courant) et le calque qu'elle donne dans ce dessin (dans la phase active tant que l'auto-phase est activée; <em>created when used</em> quand le dessin ne l'a pas encore). Plusieurs types peuvent être sélectionnés (Ctrl / Maj clic) pour leur donner une clé d'un coup.</li>
-<li><strong>Layer key</strong> &ndash; la clé des types sélectionnés, choisie parmi les clés de calque; <em>(None: the current layer)</em> les laisse comme AutoCAD les dessine. Le bouton carré <em>ouvrir</em> à côté ouvre la fenêtre <a href="Dyl-LayerKeys.htm">Layer Keys</a> : modifiez-y les clés, ou double-cliquez-en une pour la donner aux types sélectionnés (les clés sont enregistrées, puis cette fenêtre se rouvre).</li>
+<li><strong>Layer key</strong> &ndash; la clé des types sélectionnés, choisie parmi les clés de calque; <em>(None: the current layer)</em> les laisse comme AutoCAD les dessine. Le bouton carré <em>ouvrir</em> à côté ouvre la fenêtre <a href="Dyl-LayerKeys.fr.htm">Layer Keys</a> : modifiez-y les clés, ou double-cliquez-en une pour la donner aux types sélectionnés (les clés sont enregistrées, puis cette fenêtre se rouvre).</li>
 <li><strong>Reset Selected</strong> / <strong>Reset All</strong> &ndash; les clés par défaut des types sélectionnés, ou de tous les types.</li>
 <li>Sous les boutons, si Auto layer keys est activé. <strong>OK</strong> enregistre les clés, <strong>Cancel</strong> annule les changements, <strong>Open Docs</strong> ouvre cette page.</li>
 </ul>
@@ -66,11 +66,11 @@
 <h2>Fonctionnement</h2>
 <div class="spacedbullets">
 <ol>
-<li>Pendant qu'une commande s'exécute, les nouveaux objets sont rassemblés; à sa fin, chacun d'un type qui a une clé va sur le calque de cette clé (créé avec les propriétés de la clé quand le dessin ne l'a pas, libéré s'il est gelé, voir <a href="Dyl-LayerKeys.htm">Layer Keys</a>). Un message en donne le nombre.</li>
+<li>Pendant qu'une commande s'exécute, les nouveaux objets sont rassemblés; à sa fin, chacun d'un type qui a une clé va sur le calque de cette clé (créé avec les propriétés de la clé quand le dessin ne l'a pas, libéré s'il est gelé, voir <a href="Dyl-LayerKeys.fr.htm">Layer Keys</a>). Un message en donne le nombre.</li>
 <li>Tant que l'auto-phase est activée, le calque de la clé est celui de la phase active (<span class="fixw">G-Anno-Dims-E</span>).</li>
 <li>Les objets faits par une commande Lisp sont laissés tels quels : les outils DynALisp (Quick Draw, Quick Shape...) mettent les leurs sur leurs propres clés de calque.</li>
 <li>Les copies gardent le calque de leur original : les objets faits par <span class="fixw">COPY</span>, <span class="fixw">MIRROR</span>, <span class="fixw">ARRAY</span>, <span class="fixw">OFFSET</span>, une copie par poignées, un collage, une insertion, une décomposition et les autres commandes qui modifient ou apportent des objets (celles de l'auto-phase) sont laissés sur leur calque. Les objets d'une définition de bloc ne changent jamais, ni la fenêtre de l'espace papier d'une présentation.</li>
-<li>Aucune fenêtre ne peut s'ouvrir depuis un réacteur : un calque qui diffère de sa clé est vérifié la prochaine fois qu'un outil utilise la clé (<a href="Dyl-LayerKeys.htm#differ">Layers That Differ From Their Key</a>). Une dérogation de calque AEC telle que livrée y utilise son propre calque (le style de clés de calque du dessin est lu par une commande, qui ne peut pas s'exécuter depuis un réacteur).</li>
+<li>Aucune fenêtre ne peut s'ouvrir depuis un réacteur : un calque qui diffère de sa clé est vérifié la prochaine fois qu'un outil utilise la clé (<a href="Dyl-LayerKeys.fr.htm#differ">Layers That Differ From Their Key</a>). Une dérogation de calque AEC telle que livrée y utilise son propre calque (le style de clés de calque du dessin est lu par une commande, qui ne peut pas s'exécuter depuis un réacteur).</li>
 <li>Les clés sont enregistrées dans <span class="fixw">Modules\Dynalisp\Res\ObjectLayerKeys.csv</span> (sa copie sous <span class="fixw">User</span>) : une rangée par type, son identifiant et sa clé. Un type absent du fichier reçoit sa clé par défaut.</li>
 </ol>
 </div>
