@@ -51,14 +51,14 @@ THEMES = {
 
 # The drop-downs of DynALisp.Ribbon.dll, after the button of their tool: (label, value shown).
 # In each language of the plugin (Plugin\Translations.cs); the phases are the descriptions of
-# Phase.csv, which has them in English only:
+# Phase.csv (its Description.fr column in French):
 PLUGIN = {
     'DYL-LAYERPHASE': ({'en': 'Auto-phase and Phase', 'fr': 'Auto-phase et Phase'},
                        {'en': [('', 'Auto-phase On'), ('', 'N - New Work')],
-                        'fr': [('', 'Auto-phase activée'), ('', 'N - New Work')]}),
+                        'fr': [('', 'Auto-phase activée'), ('', 'N - Travaux neufs')]}),
     'PST-TRANSFERFIELD': ({'en': 'Level, From and To', 'fr': 'Niveau, De et À'},
                           {'en': [('Level:', 'Status'), ('From:', 'E - Existing To Remain'), ('To:', 'N - New Work')],
-                           'fr': [('Niveau :', 'Statut'), ('De :', 'E - Existing To Remain'), ('À :', 'N - New Work')]}),
+                           'fr': [('Niveau :', 'Statut'), ('De :', 'E - Existant à conserver'), ('À :', 'N - Travaux neufs')]}),
 }
 
 # The pages of the core commands (not in StartupSuite.csv), relative to Docs\Plugins:
