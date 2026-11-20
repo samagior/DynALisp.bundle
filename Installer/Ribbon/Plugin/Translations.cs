@@ -35,6 +35,20 @@ using Autodesk.Windows;
 
 namespace DynALisp.Ribbon
 {
+    // The Lisp functions of the translation. AutoCAD registers the LispFunction methods only of
+    // the classes listed in [assembly: CommandClass] (Plugin.cs): a static class like T is not
+    // one, so they are here.
+    public class LangCommands
+    {
+        // (Dyl:RibbonLang "fr"): the language of DynALisp, given when it is saved. Returns T.
+        [LispFunction("Dyl:RibbonLang")]
+        public static object RibbonLang(ResultBuffer args) => T.RibbonLang(args);
+
+        // (Dyl:RibbonLangInfo): what the translation of the tab found.
+        [LispFunction("Dyl:RibbonLangInfo")]
+        public static object RibbonLangInfo(ResultBuffer args) => T.RibbonLangInfo(args);
+    }
+
     public static class T
     {
         // The language of DynALisp: en, fr...
@@ -76,9 +90,8 @@ namespace DynALisp.Ribbon
         public static string S(string en) =>
             Strings.TryGetValue(Lang, out var d) && d.TryGetValue(en, out var s) ? s : en;
 
-        // The language when the plugin loads, read by the plugin itself: the Lisp call of
-        // dynalisp.mnl may come before the plugin is loaded, and AutoCAD may load the plugin
-        // after it. DynalispLanguage (the user setting of Dyl-Settings, FixedProfile\General of
+        // The language when the plugin loads, read by the plugin itself, so the tab is in it
+        // whatever the order in which AutoCAD loads the plugin and dynalisp.mnl. DynalispLanguage (the user setting of Dyl-Settings, FixedProfile\General of
         // the product), else the language of the AutoCAD installed (the lcid ending its product
         // key, ...\ACAD-A104:40C), English for another one: the same rule as Dyl:Lang.
         static readonly Dictionary<string, string> Keys = new(StringComparer.OrdinalIgnoreCase)
@@ -108,7 +121,6 @@ namespace DynALisp.Ribbon
         static string _start;
 
         // (Dyl:RibbonLang "fr"): the language of DynALisp. Returns T.
-        [LispFunction("Dyl:RibbonLang")]
         public static object RibbonLang(ResultBuffer args)
         {
             try
@@ -131,7 +143,6 @@ namespace DynALisp.Ribbon
         // (Dyl:RibbonLangInfo): what the translation of the tab found, to see why an item is not
         // translated: the language, the texts read, the items of the tab and how they were found,
         // and a few items not found (their id | label | macro).
-        [LispFunction("Dyl:RibbonLangInfo")]
         public static object RibbonLangInfo(ResultBuffer args)
         {
             return string.Format(
@@ -166,8 +177,14 @@ namespace DynALisp.Ribbon
         {
             public string Text, Title;
             public object Content, Tip;
+            public bool Plain;   // its tooltip was not a RibbonToolTip (kept in Tip)
         }
         static readonly System.Runtime.CompilerServices.ConditionalWeakTable<object, Original> Originals = new();
+
+        // The English title of a panel (the title of the CUIx, before it was translated), so the
+        // parts still find their panel by its title on a translated tab (Host.Panel):
+        public static string OriginalTitle(RibbonPanelSource src) =>
+            src != null && Originals.TryGetValue(src, out var o) ? o.Text : src?.Title;
 
         public static void Dirty() => _dirty = true;
         public static bool Due => _dirty && _entries != null;
@@ -260,6 +277,10 @@ namespace DynALisp.Ribbon
             foreach (var it in items)
             {
                 if (it == null) continue;
+                // The drop-downs of the parts (DYL_*) and their items are the plugin's own: they
+                // are made in the language (T.S), never touched here (a RibbonCombo is also a
+                // RibbonListButton, its items would get back a text kept from before):
+                if ((it.Id != null && it.Id.StartsWith("DYL_")) || it is RibbonCombo) continue;
                 Item(it);
                 if (it is RibbonRowPanel rp) Walk(rp.Items);
                 else if (it is RibbonListButton lb) Walk(lb.Items.OfType<RibbonItem>());
@@ -273,7 +294,7 @@ namespace DynALisp.Ribbon
             if (it.Id != null && it.Id.StartsWith("DYL_")) return;   // the items of the parts
             var org = Originals.GetValue(it, _ =>
                 it.ToolTip is RibbonToolTip t0 ? new Original { Text = it.Text, Title = t0.Title, Content = t0.Content }
-                                               : new Original { Text = it.Text, Tip = it.ToolTip });
+                                               : new Original { Text = it.Text, Tip = it.ToolTip, Plain = true });
             string macro = (it as RibbonButton)?.CommandParameter as string;
             _items++;
             var e = Find(it.Id, macro, org.Text, out int how);
@@ -289,7 +310,13 @@ namespace DynALisp.Ribbon
             // (translated with it); one that keeps its name (the Quick Draw gallery) shows its own:
             bool follows = it is RibbonListButton lb && lb.IsSynchronizedWithCurrentItem;
             if (!follows && it.Text != text) it.Text = text;
-            if (it.ToolTip is RibbonToolTip tt)
+            // No text in the language (English): the tooltip of the CUIx back, also when it was
+            // not a RibbonToolTip (null or a string) and the language gave it one:
+            if (e == null && org.Plain)
+            {
+                if (!Equals(it.ToolTip, org.Tip)) it.ToolTip = org.Tip;
+            }
+            else if (it.ToolTip is RibbonToolTip tt)
             {
                 string title = e != null && e.Title != "" ? e.Title : org.Title;
                 object content = e != null && e.Desc != "" ? e.Desc : org.Content;
@@ -298,8 +325,6 @@ namespace DynALisp.Ribbon
             }
             else if (e != null && (e.Title != "" || e.Desc != ""))
                 it.ToolTip = new RibbonToolTip { Title = e.Title != "" ? e.Title : text, Content = e.Desc };
-            else if (e == null && !Equals(it.ToolTip, org.Tip))
-                it.ToolTip = org.Tip;
         }
 
         // The label on two lines when the label of the CUIx is (a large button), cut at the

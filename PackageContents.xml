@@ -6,9 +6,9 @@
 >
 
     <!-- The live drop-downs and the translation of the ribbon (.NET 8: AutoCAD 2025 and
-         later, Installer\Ribbon\Plugin). Listed first, but AutoCAD may load it after the MNL of
-         the CUIx has run: the plugin reads the settings it needs at startup itself and asks
-         the Lisp side for the state of the drawing when AutoCAD is idle. -->
+         later, Installer\Ribbon\Plugin), listed before the CUIx. It reads the settings it needs
+         at startup itself and asks the Lisp side for the state of the drawing when AutoCAD is
+         idle, so it never depends on a Lisp call made while DynALisp loads. -->
 
     <Components Description="Ribbon drop-downs">
         <RuntimeRequirements

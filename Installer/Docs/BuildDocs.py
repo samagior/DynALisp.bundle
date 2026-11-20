@@ -14,8 +14,8 @@
 # then reports the links that lead nowhere (a missing page or anchor) and the number of pages
 # of each language (--missing lists the pages without a copy).
 #
-# DynALisp opens a page in the language of the File Preferences (Dyl:DocsLocal of
-# dynalisp.mnl), English when the page has no copy in it. A page is written only when it
+# DynALisp opens a page in the language of DynALisp (Language in Dyl-Settings, Dyl:Lang;
+# Dyl:DocsLocal of dynalisp.mnl), English when the page has no copy in it. A page is written only when it
 # changed, its line endings kept.
 
 import glob

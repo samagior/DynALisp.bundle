@@ -34,6 +34,7 @@ using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
 [assembly: ExtensionApplication(typeof(DynALisp.Ribbon.Plugin))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.PhaseCombos))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.TransferCombos))]
+[assembly: CommandClass(typeof(DynALisp.Ribbon.LangCommands))]
 
 namespace DynALisp.Ribbon
 {
@@ -92,7 +93,7 @@ namespace DynALisp.Ribbon
 
         static readonly List<Part> Parts = new List<Part>();
         static bool _dirty = true;
-        static int _nextTry;
+        static int _nextTry = Environment.TickCount;   // not 0: TickCount is negative half of the time
         static readonly HashSet<Document> Watched = new HashSet<Document>();
 
         public static void Add(Part p) => Parts.Add(p);
@@ -163,7 +164,7 @@ namespace DynALisp.Ribbon
             PhaseCombos.AskOnIdle();
         }
 
-        static int _nextLang;
+        static int _nextLang = Environment.TickCount;
 
         // The drop-downs of every part made again (their language changed): Ensure puts them
         // back, the next time AutoCAD is idle.
@@ -191,7 +192,7 @@ namespace DynALisp.Ribbon
             var tab = ribbon?.Tabs.FirstOrDefault(t => IdIs(t.Id, TabId))
                       ?? ribbon?.Tabs.FirstOrDefault(t => t.Title == "DynALisp");
             var panel = tab?.Panels.FirstOrDefault(p => p.Source != null && IdIs(p.Source.Id, part.PanelId))
-                        ?? tab?.Panels.FirstOrDefault(p => p.Source != null && p.Source.Title == part.PanelTitle);
+                        ?? tab?.Panels.FirstOrDefault(p => p.Source != null && (p.Source.Title == part.PanelTitle || T.OriginalTitle(p.Source) == part.PanelTitle));
             return panel?.Source;
         }
 

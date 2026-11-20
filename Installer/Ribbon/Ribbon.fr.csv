@@ -45,7 +45,7 @@ PST-DRAWORDERAUTOTOGGLE;Ordre de tracé Auto activer/désactiver;Active ou désa
 PST-DRAWORDERCOUNT;Ordre de tracé Compter;Compte les entrées de la table d'ordre de tracé de l'espace objet par rapport aux objets de l'espace objet.
 PST-DRAWORDERRESET;Ordre de tracé Réinitialiser;Supprime la table d'ordre de tracé de l'espace objet : les objets reprennent leur ordre de création (U l'annule).
 PST-DRAWORDERREBUILD;Ordre de tracé Reconstruire;Supprime les tables d'ordre de tracé de l'espace objet, des présentations et des définitions de blocs, puis les réempile par niveau à partir de zéro pour garder le panoramique rapide.
-PST-TRANSFERFIELD;Transférer;Transfère les objets sélectionnés de la valeur From à la valeur To du niveau (Level) choisi dans les listes déroulantes.
+PST-TRANSFERFIELD;Transférer;Transfère les objets sélectionnés de la valeur De à la valeur À du Niveau choisi dans les listes déroulantes.
 DYL-LAYERTRANSFER;Gestion;Liste les transferts de calques avec leurs alias et exécute celui choisi sur les objets sélectionnés.
 DYL-LAYERKEYS;Clés de calque;Ouvre une fenêtre pour créer et modifier les clés de calque utilisées par les Apps Dynalisp.
 DYL-LAYERMAKE;Créer des calques;Liste les jeux de calques avec leurs alias et crée les calques de celui choisi.

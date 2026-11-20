@@ -315,7 +315,7 @@ def doc_link(cmd, cmds):
 
 
 # The words of the Panels section in each language of the docs (the names of the panels and
-# the buttons stay as the ribbon shows them, in English):
+# the buttons come translated from Ribbon.<lang>.csv, see localized_panels):
 TEXT = {
     'en': dict(intro='The whole tab, then each panel with its slide-out open under its title. '
                      'The drop-downs show sample values.',

@@ -38,7 +38,7 @@ RBN_DYL_CMD_PST_DRAWORDERCOUNT;PST-DRAWORDERCOUNT;Count;Compter;Ordre de tracé 
 RBN_DYL_CMD_PST_DRAWORDERRESET;PST-DRAWORDERRESET;Reset;Réinitialiser;Ordre de tracé Réinitialiser;Supprime la table d'ordre de tracé de l'espace objet : les objets reprennent leur ordre de création (U l'annule).
 RBN_DYL_CMD_PST_DRAWORDERREBUILD;PST-DRAWORDERREBUILD;Rebuild;Reconstruire;Ordre de tracé Reconstruire;Supprime les tables d'ordre de tracé de l'espace objet, des présentations et des définitions de blocs, puis les réempile par niveau à partir de zéro pour garder le panoramique rapide.
 RBN_DYL_PANEL_LAYER_TRANSFER;;Layer Transfer;Transfert de calques;;
-RBN_DYL_CMD_PST_TRANSFERFIELD;PST-TRANSFERFIELD;Transfer;Transférer;Transférer;Transfère les objets sélectionnés de la valeur From à la valeur To du niveau (Level) choisi dans les listes déroulantes.
+RBN_DYL_CMD_PST_TRANSFERFIELD;PST-TRANSFERFIELD;Transfer;Transférer;Transférer;Transfère les objets sélectionnés de la valeur De à la valeur À du Niveau choisi dans les listes déroulantes.
 RBN_DYL_CMD_DYL_LAYERTRANSFER;DYL-LAYERTRANSFER;Manager;Gestion;Gestion;Liste les transferts de calques avec leurs alias et exécute celui choisi sur les objets sélectionnés.
 RBN_DYL_PANEL_LAYER_TOOLS;;Layer Tools;Outils de calques;;
 RBN_DYL_CMD_DYL_LAYERKEYS;DYL-LAYERKEYS;Layer Keys;Clés de calque;Clés de calque;Ouvre une fenêtre pour créer et modifier les clés de calque utilisées par les Apps Dynalisp.
