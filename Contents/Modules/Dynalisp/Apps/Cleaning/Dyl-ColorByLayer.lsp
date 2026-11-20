@@ -21,7 +21,7 @@
   (setq ss (ssget))
   (if ss 
     (progn 
-      (command "_.chprop" ss "" "c" "bylayer")
+      (command "_.chprop" ss "" "_c" "_bylayer")
       (princ "\nObjects' color changed to Bylayer.")
     )
     (princ "\nNothing selected.")

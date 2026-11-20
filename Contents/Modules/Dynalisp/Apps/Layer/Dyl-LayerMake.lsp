@@ -384,9 +384,9 @@
     ;;  Default value reset:
     (setq *lw  "0.18"
           *lt  "Continuous"
-          *plt "P"
+          *plt "_P"
     )
-    (if (wcmatch *lyr "*Nplt*,*Rdme*") (setq *plt "N"))
+    (if (wcmatch *lyr "*Nplt*,*Rdme*") (setq *plt "_N"))
 
 
     ;; Default line weight attribution based on layer color:
@@ -440,15 +440,15 @@
       (if (not (tblsearch "LAYER" *lyr)) 
         (progn 
           (if (= "Yes" *truecolor) 
-            (command "-layer" "m" *lyr "lw" *lw "" "l" *lt "" "c" "t" *col "" "p" *plt "" "d" *dsc *lyr "")
-            (command "-layer" "m" *lyr "lw" *lw "" "l" *lt "" "c" *col "" "p" *plt "" "d" *dsc *lyr "")
+            (command "_.-layer" "_m" *lyr "_lw" *lw "" "_l" *lt "" "_c" "_t" *col "" "_p" *plt "" "_d" *dsc *lyr "")
+            (command "_.-layer" "_m" *lyr "_lw" *lw "" "_l" *lt "" "_c" *col "" "_p" *plt "" "_d" *dsc *lyr "")
           )
           (prompt (strcat "\n..." *lyr " - created"))
         )
         (progn 
           (if (= "Yes" *truecolor) 
-            (command "-layer" "m" *lyr "lw" *lw "" "l" *lt "" "c" "t" *col "" "p" *plt "" "d" *dsc *lyr "y" "")
-            (command "-layer" "m" *lyr "lw" *lw "" "l" *lt "" "c" *col "" "p" *plt "" "d" *dsc *lyr "y" "")
+            (command "_.-layer" "_m" *lyr "_lw" *lw "" "_l" *lt "" "_c" "_t" *col "" "_p" *plt "" "_d" *dsc *lyr "_y" "")
+            (command "_.-layer" "_m" *lyr "_lw" *lw "" "_l" *lt "" "_c" *col "" "_p" *plt "" "_d" *dsc *lyr "_y" "")
           )
           (prompt (strcat "\n..." *lyr " - updated"))
         )

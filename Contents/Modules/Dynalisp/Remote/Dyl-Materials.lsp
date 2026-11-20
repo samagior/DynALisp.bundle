@@ -1155,29 +1155,29 @@
       (if (/= "SOLID" (nth 3 mat))
         (apply 'command
                (append
-                 '("-hatch")
+                 '("_.-hatch")
                  (if org (list "_o" "_s" "_non" (Remote>>Dyl:MaterialUcs2d org) "_n"))
-                 (list "s"
+                 (list "_s"
                        ss
                        ""
-                       "an"
+                       "_an"
                        ;;  mt:scale: a scale given by the caller (Quick Draw Linear: width x factor),
                        ;;  a model size: never annotative (AutoCAD would multiply it by the
                        ;;  annotation scale, 25 wide drawn at 1:50 -> 1250):
-                       (if (and (= "1" (nth 9 mat)) (not (numberp mt:scale))) "y" "n")
-                       "p"
+                       (if (and (= "1" (nth 9 mat)) (not (numberp mt:scale))) "_y" "_n")
+                       "_p"
                        (nth 3 mat)
                        (if (numberp mt:scale) mt:scale (Remote>>Dyl:MaterialScale mat))
                        (rtos (+ (cond ((distof (nth 6 mat) 2)) (0.0)) ang) 2 6)
-                       "a"
-                       "a"
-                       (if asc "y" "n")
+                       "_a"
+                       "_a"
+                       (if asc "_y" "_n")
                        ""
                        ""
                  )
                )
         )
-        (command "-hatch" "s" ss "" "an" "n" "p" (nth 3 mat) "a" "a" (if asc "y" "n") "" "")
+        (command "_.-hatch" "_s" ss "" "_an" "_n" "_p" (nth 3 mat) "_a" "_a" (if asc "_y" "_n") "" "")
       )
       (foreach v vars (if (cdr v) (vl-catch-all-apply 'setvar (list (car v) (cdr v)))))
       ;;  Put the hatch on the layer of the hatch layer key, with the hatch settings:

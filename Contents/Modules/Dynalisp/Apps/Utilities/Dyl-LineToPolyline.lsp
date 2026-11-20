@@ -25,7 +25,7 @@
       (setq pl (ssadd))
       (repeat (setq i (sslength ss)) 
         (setq e (ssname ss (setq i (1- i))))
-        (command "PEDIT" e "Y" "")
+        (command "_.PEDIT" e "_Y" "")
         (ssadd (entlast) pl)
       )
       (if (and (= join "Yes") (> (sslength pl) 1)) 

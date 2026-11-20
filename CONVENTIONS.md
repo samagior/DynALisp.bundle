@@ -32,6 +32,14 @@ The **LeeMac** module is the **sample module**: in its docs index, its pages, th
 
 *Why: typing "Dyl" in the AutoCAD command line suggests only the main commands (a `DYL-*` alias would add a second, outdated name to that list). The child prefix must not contain "DYL" (the suggestion list matches mid-string), and a leading `_` or symbol is parsed by the command line, hence `Pst-`. A file named as its command is found from the command (and the command from the file) without opening the Startup Suite. PascalCase names read the same in the code, the docs and the AutoCAD command line, which shows them in capitals anyway. An alias of `acad.pgp` is what every AutoCAD user types: one of the two names would hide the other. An alias left behind by a program removed points to nothing and is reported by Dyl-Diagnostics on every computer.*
 
+### Calling AutoCAD Commands
+
+- Lisp code calls an AutoCAD command by its **international name**: the command with `_.` in front (`"_.-layer"`, `"_.undo"`, `"_.pedit"`), each keyword option and each Yes/No answer with `_` (`"_ON"`, `"_mark"`, `"_y"`, `"_n"`), in `command`, `command-s`, `vl-cmdf`, a list given to them (`(apply 'command ...)`, `MAJ:cmd-silent`) and a command sent as text (`vla-SendCommand`, `"_.DATALINK "`). Never a bare English name (`"undo"`, `"-layer"`, `"PEDIT"`, `"y"`).
+- The values given to a prompt stay as they are: a layer name, a pattern, a point, a number, `""`. A keyword kept in a variable gets its `_` there (`*plt "_P"` in Make Layers).
+- The commands of DynALisp itself (`Dyl-*`, `Pst-*` and their aliases) are Lisp commands, the same in every language: a macro of the ribbon runs them as they are.
+
+*Why: a French (or any other) AutoCAD reads a bare name in its own language: `"undo"` is not one of its commands and `"y"` not one of its answers (it asks O/N), so the program stops there. `_` makes every AutoCAD read the English name, and `.` runs the built-in command even when a program redefined it (as Command Optimizer redefines QSAVE and PLOT).*
+
 ### Preset aliases
 
 The alias of a Quick Draw preset tells how it draws: `PL-*` for a preset drawn with a polyline, `QD-*` for one that asks its method when drawn (the default for now). Quick Shape presets use `QS-*`. Pick the prefix to match when a preset's method changes or a preset is added.
