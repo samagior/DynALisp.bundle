@@ -325,6 +325,11 @@ def main():
             continue
         t = BuildDocs.twin(s)
         twin = site_of(t) if norm(t) in have else None
+        if twin is None:
+            # no page of the other set for this tool: the index of its module in that set
+            mod = BuildDocs.kind_of(s)[0]
+            idx = os.path.join(MODULES, mod, 'DevDocs' if kind == 'guide' else 'Docs', 'index.htm')
+            twin = site_of(idx) if norm(idx) in have else None
         with open(s, encoding='utf-8', newline='') as f:
             content = f.read()
         with open(d, 'w', encoding='utf-8', newline='') as f:
@@ -343,7 +348,7 @@ def main():
         if norm(idx) in have:
             with open(idx, encoding='utf-8') as f:
                 h1 = re.search(r'<h1>(.*?)</h1>', f.read(), re.S)
-            devmods.append((site_of(idx), BuildDocs.text_of(h1.group(1)) if h1 else mod))
+            devmods.append((site_of(idx), html.unescape(BuildDocs.text_of(h1.group(1))) if h1 else mod))
     for src, dst, title in MARKDOWN:
         write(out, dst, render_md(src, dst, title, devmods, missing))
     write(out, 'README.md', README.format(url=URL))
