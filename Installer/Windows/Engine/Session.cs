@@ -21,6 +21,8 @@
 //           index of the item picked for a list ("0"), the text of a text box or a text
 //   Lists   key -> the items of a list (start_list / add_list)
 //   Off     the keys greyed out by the Lisp (mode_tile 1), whatever their rules
+//   Rows    key -> rows of strings (a table: the presets of a preset window, see Presets.cs);
+//           those named in OutRows are given back to the Lisp with the values
 //
 // A control takes the value of its key when the window opens, and puts its value back
 // each time it changes, so the rules (Win.EnabledBy, Win.VisibleBy) and the sub-windows
@@ -51,6 +53,8 @@ namespace DynALisp.Windows
         public readonly Dictionary<string, string> Values = new Dictionary<string, string>(StringComparer.Ordinal);
         public readonly Dictionary<string, List<string>> Lists = new Dictionary<string, List<string>>(StringComparer.Ordinal);
         public readonly HashSet<string> Off = new HashSet<string>(StringComparer.Ordinal);
+        public readonly Dictionary<string, List<string[]>> Rows = new Dictionary<string, List<string[]>>(StringComparer.Ordinal);
+        public readonly HashSet<string> OutRows = new HashSet<string>(StringComparer.Ordinal);
 
         // The dark theme of AutoCAD (COLORTHEME 0), the light one else:
         public bool Dark;
@@ -217,6 +221,10 @@ namespace DynALisp.Windows
         public readonly Window Window;
         public int Status { get; private set; }
 
+        // The preset editor of a preset window (its list named "lst", the rows pst/rows):
+        internal PresetEditor Presets;
+        internal Session Session => _s;
+
         internal View(Session s, Window w, string dir)
         {
             _s = s;
@@ -279,6 +287,7 @@ namespace DynALisp.Windows
         {
             if (_filling) return;
             _s.Values[key] = value;
+            Presets?.Changed(key);
             // A checkbox turned on turns off the ones it excludes (one answer at most):
             string ex = Win.GetExcludes(from);
             if (value == "1" && !string.IsNullOrEmpty(ex))
@@ -292,7 +301,16 @@ namespace DynALisp.Windows
             Refresh();
         }
 
-        FrameworkElement Find(string key) => _all.FirstOrDefault(e => e.Name == key);
+        internal FrameworkElement Find(string key) => _all.FirstOrDefault(e => e.Name == key);
+
+        // Sets controls without their change being taken as the user's:
+        internal void Quiet(Action a)
+        {
+            bool was = _filling;
+            _filling = true;
+            try { a(); }
+            finally { _filling = was; }
+        }
 
         static IEnumerable<string> Keys(string list) =>
             list.Split(',').Select(k => k.Trim()).Where(k => k.Length > 0);
@@ -301,11 +319,15 @@ namespace DynALisp.Windows
         // so the Lisp gets every key back), then the rules:
         public void Fill()
         {
+            if (Presets == null && _s.Rows.ContainsKey(PresetEditor.RowsKey) && Find("lst") is ListBox)
+                Presets = new PresetEditor(this);
             _filling = true;
             try
             {
                 foreach (var fe in _all.Where(Named))
                 {
+                    // the controls of the presets, filled by the editor:
+                    if (Presets != null && Presets.Owns(fe.Name)) continue;
                     bool has = _s.Values.TryGetValue(fe.Name, out string v);
                     switch (fe)
                     {
@@ -335,6 +357,7 @@ namespace DynALisp.Windows
                 }
             }
             finally { _filling = false; }
+            Presets?.Fill();
             Refresh();
         }
 
@@ -350,18 +373,54 @@ namespace DynALisp.Windows
                 string vb = Win.GetVisibleBy(fe);
                 if (vb != null) fe.Visibility = Holds(vb) ? Visibility.Visible : Visibility.Collapsed;
             }
+            Presets?.Refresh();
         }
 
-        // "rea,!lkk": every key on ("1"), or off with !:
-        bool Holds(string rule)
+        // A rule of the values (Win.EnabledBy, Win.VisibleBy):
+        internal bool Holds(string rule) => Holds(rule, Stored);
+
+        // The value of a key as a rule reads it: "1" / "0" for a checkbox, the text of a text
+        // box, the value stored for the item picked in a list that has its values (key/vals,
+        // given by the Lisp: the values of the items of key/list), else its index:
+        internal string Stored(string key)
+        {
+            if (!_s.Values.TryGetValue(key, out string v)) return null;
+            if (_s.Lists.TryGetValue(key + "/vals", out var vals))
+                return int.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i) && i >= 0 && i < vals.Count ? vals[i] : null;
+            return v;
+        }
+
+        // "rea,!lkk": every key on ("1"), or off with !; "mth=Linear|Offset|": the value of the
+        // key is one of these (here also "", nothing), "mth!=Origin": none of them; the parts
+        // divided by "," must all hold, the rules divided by ";" are alternatives (one is
+        // enough). The value of a key is given by get:
+        internal static bool Holds(string rule, Func<string, string> get)
         {
             if (string.IsNullOrWhiteSpace(rule)) return true;
+            foreach (var alt in rule.Split(';'))
+                if (alt.Trim().Length > 0 && All(alt, get)) return true;
+            return false;
+        }
+
+        static bool All(string rule, Func<string, string> get)
+        {
             foreach (var k in Keys(rule))
             {
-                bool not = k.StartsWith("!");
-                string key = not ? k.Substring(1) : k;
-                bool on = _s.Values.TryGetValue(key, out string v) && v == "1";
-                if (on == not) return false;
+                int ne = k.IndexOf("!=", StringComparison.Ordinal), eq = k.IndexOf('=');
+                if (ne > 0 || eq > 0)
+                {
+                    bool not = ne > 0;
+                    string key = k.Substring(0, not ? ne : eq).Trim();
+                    var set = k.Substring(not ? ne + 2 : eq + 1).Split('|').Select(x => x.Trim());
+                    bool @in = set.Contains(get(key) ?? "", StringComparer.OrdinalIgnoreCase);
+                    if (@in == not) return false;
+                }
+                else
+                {
+                    bool not = k.StartsWith("!");
+                    bool on = get(not ? k.Substring(1) : k) == "1";
+                    if (on == not) return false;
+                }
             }
             return true;
         }
@@ -375,6 +434,7 @@ namespace DynALisp.Windows
         void Click(Button b)
         {
             if (b.Name == "docs") { try { Session.OpenTarget(Docs()); } catch (Exception e) { Error("Unable to open the docs: " + e.Message); } return; }
+            if (Presets != null && Presets.Click(b)) { Refresh(); return; }
             string all = Win.GetSetAll(b);
             if (all != null)
             {
@@ -394,6 +454,12 @@ namespace DynALisp.Windows
             else if (b.IsDefault) status = 1;
             else if (b.IsCancel) status = 0;
             else return;
+            CloseWith(status);
+        }
+
+        // Closes the window with status (its values checked first, unless it is 0, Cancel):
+        internal void CloseWith(int status)
+        {
             if (status != 0 && !Checks()) return;
             Status = status;
             // a Cancel button has closed it already (IsCancel):
@@ -403,6 +469,7 @@ namespace DynALisp.Windows
         // The text boxes checked (Win.Check) before the window closes:
         bool Checks()
         {
+            if (Presets != null) return Presets.Check();
             foreach (var x in _all.OfType<TextBox>())
             {
                 string kind = Win.GetCheck(x);
@@ -416,20 +483,60 @@ namespace DynALisp.Windows
             return true;
         }
 
-        static bool Valid(string kind, string text)
+        // A value checked by Win.Check: its kinds divided by ";", all of them true (number,
+        // positive, integer, min=0, max=90, text: not empty, widths: numbers greater than 0
+        // divided by commas, color: an AutoCAD color 1-255 or r,g,b), or empty when one of
+        // them is "empty" ("empty;integer;min=3": nothing, or a whole number of 3 or more):
+        internal static bool Valid(string kind, string text)
         {
             text = (text ?? "").Trim();
-            switch (kind)
+            var kinds = (kind ?? "").Split(';').Select(k => k.Trim()).Where(k => k.Length > 0).ToList();
+            if (text.Length == 0 && kinds.Contains("empty")) return true;
+            foreach (var k in kinds)
             {
-                case "integer": return int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out _);
-                case "number": return double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out _);
-                case "positive": return double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out double d) && d > 0;
-                default: return true;
+                double d;
+                bool num = double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out d);
+                switch (k)
+                {
+                    case "empty": break;
+                    case "text": if (text.Length == 0) return false; break;
+                    case "integer": if (!int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out _)) return false; break;
+                    case "number": if (!num) return false; break;
+                    case "positive": if (!num || d <= 0) return false; break;
+                    case "widths":
+                        foreach (var w in text.Split(','))
+                            if (!double.TryParse(w.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out double x) || x <= 0) return false;
+                        break;
+                    case "color": if (!Color(text)) return false; break;
+                    default:
+                        if (k.StartsWith("min=") || k.StartsWith("max="))
+                        {
+                            if (!num || !double.TryParse(k.Substring(4), NumberStyles.Float, CultureInfo.InvariantCulture, out double lim)) return false;
+                            if (k[1] == 'i' ? d < lim : d > lim) return false;
+                        }
+                        break;
+                }
             }
+            return true;
+        }
+
+        // An AutoCAD color: 1 to 255, or r,g,b (0 to 255 each), as Remote>>Dyl:MaterialColorParse:
+        static bool Color(string text)
+        {
+            var f = text.Split(',');
+            if (f.Length != 1 && f.Length != 3) return false;
+            foreach (var x in f)
+            {
+                string t = x.Trim();
+                if (t.Length == 0 || t.Length > 3 || !t.All(char.IsDigit)) return false;
+                int n = int.Parse(t, CultureInfo.InvariantCulture);
+                if (n > 255 || (f.Length == 1 && n < 1)) return false;
+            }
+            return true;
         }
 
         // The message in the text named "error", or a message box when the window has none:
-        void Error(string msg)
+        internal void Error(string msg)
         {
             if (Find("error") is TextBlock tb) { tb.Text = msg; tb.Visibility = msg == "" ? Visibility.Collapsed : Visibility.Visible; }
             else if (msg != "") MessageBox.Show(Window, msg, Window.Title, MessageBoxButton.OK, MessageBoxImage.Warning);

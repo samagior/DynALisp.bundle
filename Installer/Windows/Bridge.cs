@@ -20,12 +20,17 @@
 //   ("rea" . "1")                 the value of a key, a string as set_tile takes it
 //   ("lng/list" "English" ...)    the items of a list
 //   ("csu/off" . "1")             the key greyed out (mode_tile 1)
+//   ("mth/vals" "" "Polyline" ...) the values stored for the items of a list (its rules,
+//                                 a preset window)
+//   ("pst/rows" ("a" "b") ...)    rows of strings, a table (the presets of a preset window,
+//                                 Engine\Presets.cs)
 //   ("docs/Core\\Dyl-Settings.htm" . "https://...")   what the Open Docs button of the
 //                                 window of that page opens (Dyl:WinShow gives them)
 //
 // It returns (status (key . value) ...): the button that closed it (0 Cancel, 1 OK / Save, or
-// its Win.Close) and the value of every key, as get_tile gives it, nil when the window
-// could not be shown (the reason on the command line). Called through Dyl:WinShow of
+// its Win.Close) and the value of every key, as get_tile gives it, then the tables the window
+// gives back as (key row ...) (the presets edited: ("pst/rows" ("a" "b") ...)), nil when the
+// window could not be shown (the reason on the command line). Called through Dyl:WinShow of
 // dynalisp.mnl, which finds the file and the docs; the Lisp checks (if Dyl:Window ...) first.
 //
 // The window is the only thing running while it is open: no callback to the Lisp. A button
@@ -88,6 +93,19 @@ namespace DynALisp.Windows
                     rb.Add(new TypedValue((int)LispDataType.Text, kv.Value ?? ""));
                     rb.Add(new TypedValue((int)LispDataType.DottedPair));
                 }
+                foreach (var key in s.OutRows)
+                {
+                    if (!s.Rows.TryGetValue(key, out var rows)) continue;
+                    rb.Add(new TypedValue((int)LispDataType.ListBegin));
+                    rb.Add(new TypedValue((int)LispDataType.Text, key));
+                    foreach (var row in rows)
+                    {
+                        rb.Add(new TypedValue((int)LispDataType.ListBegin));
+                        foreach (var cell in row) rb.Add(new TypedValue((int)LispDataType.Text, cell ?? ""));
+                        rb.Add(new TypedValue((int)LispDataType.ListEnd));
+                    }
+                    rb.Add(new TypedValue((int)LispDataType.ListEnd));
+                }
                 rb.Add(new TypedValue((int)LispDataType.ListEnd));
                 return rb;
             }
@@ -123,6 +141,10 @@ namespace DynALisp.Windows
                 if (!(item is Lisp.List p) || p.Count == 0 || !(p[0] is string key)) continue;
                 if (key.EndsWith("/list", StringComparison.Ordinal))
                     s.Lists[key.Substring(0, key.Length - 5)] = p.Skip(1).Select(Lisp.Str).ToList();
+                else if (key.EndsWith("/vals", StringComparison.Ordinal))
+                    s.Lists[key] = p.Skip(1).Select(Lisp.Str).ToList();
+                else if (p.Count > 1 && p[1] is Lisp.List)
+                    s.Rows[key] = p.Skip(1).Select(r => r is Lisp.List l ? l.Select(Lisp.Str).ToArray() : new[] { Lisp.Str(r) }).ToList();
                 else if (key.EndsWith("/off", StringComparison.Ordinal))
                 {
                     if (p.Count > 1 && Lisp.True(p[1])) s.Off.Add(key.Substring(0, key.Length - 4));

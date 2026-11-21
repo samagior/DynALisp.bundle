@@ -120,6 +120,7 @@ namespace DynALisp.Windows
         public static readonly DependencyProperty FillProperty = Reg("Fill", typeof(Brush), Brushes.Transparent);
         public static readonly DependencyProperty LabelBackProperty = Reg("LabelBack", typeof(Brush), Brushes.White);
         public static readonly DependencyProperty RadiusProperty = Reg("Radius", typeof(double), 5.0);
+        public static readonly DependencyProperty ShowScaleProperty = Reg("ShowScale", typeof(bool), true);
 
         static DependencyProperty Reg(string n, Type t, object def) =>
             DependencyProperty.Register(n, t, typeof(HatchTile), new FrameworkPropertyMetadata(def, FrameworkPropertyMetadataOptions.AffectsRender));
@@ -129,6 +130,8 @@ namespace DynALisp.Windows
         public Brush Fill { get => (Brush)GetValue(FillProperty); set => SetValue(FillProperty, value); }
         public Brush LabelBack { get => (Brush)GetValue(LabelBackProperty); set => SetValue(LabelBackProperty, value); }
         public double Radius { get => (double)GetValue(RadiusProperty); set => SetValue(RadiusProperty, value); }
+        // The scale of a tile zoomed out in its corner (false: a thumbnail too small for it):
+        public bool ShowScale { get => (bool)GetValue(ShowScaleProperty); set => SetValue(ShowScaleProperty, value); }
 
         const double Dpi = 96;       // WPF units an inch
         const double Repeats = 3;    // repeats of a pattern at least, in the height of the tile
@@ -213,7 +216,7 @@ namespace DynALisp.Windows
                 if (x > 0) dc.DrawLine(pen, new Point(x, 0), new Point(x, r.Height));
                 x += w;
             }
-            if (zoom > 1) Label(dc, r, "1:" + (scale * zoom).ToString("0.##", Inv));
+            if (zoom > 1 && ShowScale) Label(dc, r, "1:" + (scale * zoom).ToString("0.##", Inv));
             dc.Pop();
         }
 
