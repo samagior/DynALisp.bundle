@@ -1,0 +1,58 @@
+<!--
+  Dyl-Settings-FilePreferences.xaml - the File Preferences window of Dyl-Settings
+  Copyright (C) 2023  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Opened over the Settings window by the open button of File Preferences (dyl:Win.Open of
+  Dyl-Settings.xaml), on its values: OK keeps them, saved with the other settings by Save.
+  The paths of the DynALisp profile (Remote\Dyl-FilePrefs.lsp, Res\FilePrefs.csv): the lists
+  in the *fp:prefs* order (*dyl:setprefs*: pcl pun pla), then whether the DynALisp custom
+  dictionary of the language is used (pcd, DynalispPrefCustomDict, when the language has
+  one), and the current profile (pfs).
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - File Preferences" dyl:Win.Docs="Setup\Dyl-SetFilePrefs.htm">
+  <StackPanel Margin="16,16,16,14" Width="520">
+    <GroupBox Header="DynALisp profile" Margin="0">
+      <StackPanel>
+        <TextBlock Style="{DynamicResource Dyl.Desc}" Text="Set in every drawing."/>
+        <DockPanel Margin="0,0,0,6">
+          <ComboBox x:Name="pcl" DockPanel.Dock="Right" Width="280"/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="AEC library classification"/>
+        </DockPanel>
+        <DockPanel Margin="0,0,0,6">
+          <ComboBox x:Name="pun" DockPanel.Dock="Right" Width="280"/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Drawing units"/>
+        </DockPanel>
+        <DockPanel Margin="0,0,0,6">
+          <ComboBox x:Name="pla" DockPanel.Dock="Right" Width="280"/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Content language"/>
+        </DockPanel>
+        <CheckBox x:Name="pcd" Content="Use the custom dictionary of the language"/>
+        <TextBlock x:Name="pfs" Style="{DynamicResource Dyl.Desc}" Margin="0,8,0,0"/>
+      </StackPanel>
+    </GroupBox>
+    <DockPanel Margin="0,14,0,0">
+      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+      <Button Content="OK" IsDefault="True"/>
+      <Button Content="_Cancel" IsCancel="True"/>
+      <Button x:Name="docs" Content="Open Docs"/>
+      </StackPanel>
+      <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="2,0,0,0" VerticalAlignment="Center" Text="Saved when Settings is saved."/>
+    </DockPanel>
+  </StackPanel>
+</Window>

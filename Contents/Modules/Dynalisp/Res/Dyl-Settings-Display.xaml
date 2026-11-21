@@ -1,0 +1,47 @@
+<!--
+  Dyl-Settings-Display.xaml - the Display window of Dyl-Settings
+  Copyright (C) 2023  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Opened over the Settings window by the open button of Display (dyl:Win.Open of
+  Dyl-Settings.xaml), on its values: OK keeps them, saved with the other settings by Save.
+  The display settings applied in every drawing while Display is on (Remote\Dyl-EnvColor.lsp):
+  the model space background colour, first item: not set, the current colour kept. More
+  display settings go in this box, one row each (Dyl:SetWinVals, Dyl:SetWinGet).
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - Display" dyl:Win.Docs="Core\Dyl-Settings.htm">
+  <StackPanel Margin="16,16,16,14" Width="380">
+    <GroupBox Header="Display" Margin="0">
+      <StackPanel>
+        <TextBlock Style="{DynamicResource Dyl.Desc}" Text="Applied in every drawing."/>
+        <DockPanel>
+          <ComboBox x:Name="bkg" DockPanel.Dock="Right" Width="180"/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Background"/>
+        </DockPanel>
+      </StackPanel>
+    </GroupBox>
+    <DockPanel Margin="0,14,0,0">
+      <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+      <Button Content="OK" IsDefault="True"/>
+      <Button Content="_Cancel" IsCancel="True"/>
+      <Button x:Name="docs" Content="Open Docs"/>
+      </StackPanel>
+      <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="2,0,0,0" VerticalAlignment="Center" Text="Saved when Settings is saved."/>
+    </DockPanel>
+  </StackPanel>
+</Window>
