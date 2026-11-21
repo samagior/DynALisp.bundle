@@ -11,12 +11,19 @@
 #   - sets <html lang> to the language of the page
 #   - points the links of a page to the pages of its own language: Dyl-LayerKeys.fr.htm from
 #     a French page once it exists, Dyl-LayerKeys.htm while it does not
-# then reports the links that lead nowhere (a missing page or anchor) and the number of pages
-# of each language (--missing lists the pages without a copy).
+# then reports the links that lead nowhere (a missing page or anchor), the LeeMac pages without
+# their credit to Lee Mac (LEEMAC_NOTE), and the number of pages of each language (--missing
+# lists the pages without a copy).
 #
-# DynALisp opens a page in the language of DynALisp (Language in Dyl-Settings, Dyl:Lang;
-# Dyl:DocsLocal of dynalisp.mnl), English when the page has no copy in it. A page is written only when it
-# changed, its line endings kept.
+# It also writes Contents\Resources\DocsPages.txt, the pages of the docs website
+# (https://samagior.github.io/DynALisp.docs/, built by BuildSite.py and published by
+# .github/workflows/docs.yml): <Module>/<path> of each page, a module index followed by its
+# title and the first sentence of its first paragraph (tabs between them). The setup ships
+# that list, not the Docs folders: DynALisp opens a page on the website when the list has it
+# (Dyl:DocsTarget of dynalisp.mnl), in the language of DynALisp (Language in Dyl-Settings,
+# Dyl:Lang), English when the page has no copy in it.
+#
+# A page is written only when it changed, its line endings kept.
 
 import glob
 import os
@@ -26,6 +33,9 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(os.path.dirname(HERE))
 MODULES = os.path.join(REPO, 'Contents', 'Modules')
+PAGES = os.path.join(REPO, 'Contents', 'Resources', 'DocsPages.txt')
+# Every page of the LeeMac sample module credits Lee Mac in a note that begins with:
+LEEMAC_NOTE = '<p class="note">This page is delivered for consistency purposes only'
 
 # (code, suffix of its pages, label, its name, "not translated" in that language):
 LANGS = [('en', '', 'EN', 'English', 'Not translated yet'),
@@ -125,6 +135,58 @@ def check(path):
     return bad
 
 
+def text_of(html):
+    """The text of an html fragment, without its tags, its spaces joined."""
+    return re.sub(r'\s+', ' ', re.sub(r'<[^>]*>', '', html)).strip()
+
+
+def index_info(path):
+    """(title, sentence) of a module index: its first h1, the first sentence of the first
+    paragraph after it (as Dyl:DocsIndexInfo reads a local index)."""
+    with open(path, encoding='utf-8') as f:
+        text = f.read()
+    title, sentence = '', ''
+    m = re.search(r'<h1>(.*?)</h1>', text, re.S)
+    if m:
+        title = text_of(m.group(1))
+        text = text[m.end():]
+    m = re.search(r'<p>(.*?)</p>', text, re.S)
+    if m:
+        sentence = text_of(m.group(1))
+        i = sentence.find('. ')
+        if i >= 0:
+            sentence = sentence[:i + 1]
+    return title, sentence
+
+
+def site_path(page):
+    """<Module>/<path> of a page on the website (Contents/Modules/<Module>/Docs/<path>)."""
+    mod, _, *rest = os.path.relpath(page, MODULES).split(os.sep)
+    return '/'.join([mod] + rest)
+
+
+def write_pages(pages):
+    """Write DocsPages.txt (only when it changed). Returns T when written."""
+    lines = ['# DocsPages.txt - the pages of the DynALisp docs website, written by Installer/Docs/BuildDocs.py',
+             '# <Module>/<path> of each page; a module index: its title and first sentence after tabs']
+    for p in sorted(pages, key=site_path):  # the same order on every system
+        line = site_path(p)
+        if os.path.basename(lang_of(p)[1]) == 'index.htm' and os.path.dirname(p).endswith(os.sep + 'Docs'):
+            line += '\t%s\t%s' % index_info(p)
+        lines.append(line)
+    new = '\r\n'.join(lines) + '\r\n'
+    old = None
+    if os.path.exists(PAGES):
+        with open(PAGES, encoding='utf-8', newline='') as f:
+            old = f.read()
+    # (its line endings as git checked it out: CRLF on Windows, LF on the Linux of the workflow)
+    if old is None or new.replace('\r\n', '\n') != old.replace('\r\n', '\n'):
+        with open(PAGES, 'w', encoding='utf-8', newline='') as f:
+            f.write(new)
+        return True
+    return False
+
+
 def main():
     pages = sorted(glob.glob(os.path.join(MODULES, '*', 'Docs', '**', '*.htm'), recursive=True))
     changed = [p for p in pages if build_page(p)]
@@ -133,7 +195,13 @@ def main():
         for href, why in check(p):
             print('Broken link: %s -> %s (%s)' % (os.path.relpath(p, MODULES), href, why))
             nbad += 1
-    print('%d pages written, %d broken links.' % (len(changed), nbad))
+        if os.path.relpath(p, MODULES).split(os.sep)[0] == 'LeeMac' and os.path.basename(p) != 'index.htm':
+            with open(p, encoding='utf-8') as f:
+                if LEEMAC_NOTE not in f.read():
+                    print('No credit to Lee Mac: %s (a note beginning %s...)' % (os.path.relpath(p, MODULES), LEEMAC_NOTE))
+                    nbad += 1
+    print('%d pages written, %d broken links or missing credits.' % (len(changed), nbad))
+    print('DocsPages.txt %s: %d pages.' % ('written' if write_pages(pages) else 'up to date', len(pages)))
     for mod in sorted({os.path.relpath(p, MODULES).split(os.sep)[0] for p in pages}):
         base = [p for p in pages if os.path.relpath(p, MODULES).startswith(mod + os.sep) and lang_of(p)[0] == 'en']
         for c, _, label, *_ in LANGS[1:]:
