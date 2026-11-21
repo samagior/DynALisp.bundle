@@ -2805,71 +2805,17 @@
 
 ;;-------------------------=={ Gallery }==------------------------;;
 
-;;  The Quick Draw Gallery window (Pst-QuickDrawGallery): a tile for each preset, its hatch
-;;  drawn from its pattern (see Remote>>Dyl:MaterialPatImage), its name under it, the
-;;  presets of one group or all of them, *qd:gtiles* tiles a page. A click draws the preset.
+;;  The Quick Draw Gallery window (Pst-QuickDrawGallery, Res\Dyl-QuickDrawGallery.xaml,
+;;  shown by DynALisp.Windows.dll): a tile for each preset, the preview of its hatch as it
+;;  plots (drawn by the plugin from its pattern, see Dyl:QuickDrawGalleryBand), its name and
+;;  its group under it. The group picked and the text searched filter the tiles in the window
+;;  itself. A click draws the preset.
 ;;  *qd:gallerygroup*: the group to open on, set by the ribbon (the groups under the arrow of
 ;;  the Quick Draw button run (setq *qd:gallerygroup* "Section") Pst-QuickDrawGallery), used
 ;;  once; else the group shown last (*qd:gallerylast*, for the session).
-;;  The functions below use the local variables of Dyl:QuickDrawGallery: qg:all (the presets
-;;  ((rec . mat) ...), mat: the material of the preset with its behaviors and border, see
-;;  Dyl:QuickDrawMat), qg:grps (the items of the Group popup: ("All" group...)), qg:grp (the
-;;  group shown, "All" for all), qg:lst (the presets shown), qg:page (the page shown, 0 first).
-
-(setq *qd:gcols* 6
-      *qd:gtiles* 24
-)
-
-;;  Write the window to a temporary DCL file, returns its path:
-(defun Dyl:QuickDrawGalleryDcl (/ path file i)
-  (setq path (vl-filename-mktemp "qdg" nil ".dcl")
-        file (open path "w")
-  )
-  (foreach line
-    '("dyl_qdg : dialog { label = \"DynALisp - Quick Draw Gallery\";"
-      "  : row {"
-      "    : popup_list { key = \"grp\"; label = \"Group:\"; edit_width = 28; fixed_width = true; }"
-      "    : text { key = \"cnt\"; width = 40; }"
-      "  }"
-     )
-    (write-line line file)
-  )
-  (setq i 0)
-  (repeat (/ *qd:gtiles* *qd:gcols*)
-    (write-line "  : row { fixed_width = true; alignment = left;" file)
-    (repeat *qd:gcols*
-      (write-line
-        (strcat "    : column { fixed_width = true;"
-                " : image_button { key = \"t" (itoa i) "\"; width = 17; height = 4; fixed_width = true; fixed_height = true; color = -15; }"
-                " : text { key = \"a" (itoa i) "\"; width = 17; fixed_width = true; }"
-                " : text { key = \"b" (itoa i) "\"; width = 17; fixed_width = true; }"
-                " }"
-        )
-        file
-      )
-      (setq i (1+ i))
-    )
-    (write-line "  }" file)
-  )
-  (foreach line
-    '("  : row { fixed_width = true; alignment = centered;"
-      "    : button { key = \"prv\"; label = \"< Previous\"; width = 12; fixed_width = true; }"
-      "    : text { key = \"pg\"; width = 14; }"
-      "    : button { key = \"nxt\"; label = \"Next >\"; width = 12; fixed_width = true; }"
-      "  }"
-      "  : row {"
-      "    : button { key = \"mgr\"; label = \"Quick Draw Manager...\"; width = 24; fixed_width = true; }"
-      "    : spacer { }"
-      "    : button { key = \"cancel\"; label = \"Cancel\"; is_cancel = true; width = 12; fixed_width = true; }"
-      "    : button { key = \"docs\"; label = \"Open Docs\"; width = 12; fixed_width = true; }"
-      "  }"
-      "}"
-     )
-    (write-line line file)
-  )
-  (close file)
-  path
-)
+;;  The functions below use the local variable qg:all of Dyl:QuickDrawGallery: the presets
+;;  ((rec . mat) ...), mat: the material of the preset with its behaviors and border (see
+;;  Dyl:QuickDrawMat).
 
 ;;  The group of the groups gs matching g (the ribbon gives a default group): the same name
 ;;  (any case), else one starting with it or that it starts with ("Floor" -> "Floors"):
@@ -2881,7 +2827,7 @@
   )
 )
 
-;;  The items of the Group popup: All, then every group (see Remote>>Dyl:Groups), also the
+;;  The items of the Group list: All, then every group (see Remote>>Dyl:Groups), also the
 ;;  ones without a preset, a group typed in the presets file that is not one of them last:
 (defun Dyl:QuickDrawGalleryGroups (/ res)
   (setq res (reverse (Remote>>Dyl:Groups)))
@@ -2891,112 +2837,64 @@
   (cons "All" (reverse res))
 )
 
-;;  The name n on two lines of a tile (about 17 characters each): cut at the last space that
-;;  fits, the end of a longer second line cut with "...":
-(defun Dyl:QuickDrawGalleryName (n / i cut)
-  (if (<= (strlen n) 17)
-    (list n "")
-    (progn
-      (setq i 1)
-      (while (setq i (vl-string-search " " n i))
-        (if (<= i 17) (setq cut i))
-        (setq i (1+ i))
-      )
-      (if (not cut) (setq cut 17))
-      (list (substr n 1 cut)
-            (Dyl:QuickDrawGalleryCut (vl-string-left-trim " " (substr n (1+ cut))))
-      )
-    )
-  )
-)
-
-(defun Dyl:QuickDrawGalleryCut (s)
-  (if (> (strlen s) 17) (strcat (substr s 1 15) "...") s)
-)
-
 ;;  The material of the preset id among the presets of the gallery (any case), nil when none:
 (defun Dyl:QuickDrawGalleryMat (id)
   (vl-some '(lambda (x) (if (= (strcase id) (strcase (car (car x)))) (cdr x))) qg:all)
 )
 
-;;  The color of the line of an assembly on the layer key key: the ACI color of the key (see
-;;  Dyl-LayerKeys), dark grey for 7 (white / black) or a color that is not an ACI number:
-(defun Dyl:QuickDrawGalleryLineColor (key / rec c)
-  (setq c (if (setq rec (Remote>>Dyl:LayerKeyGet key)) (atoi (cond ((nth 2 rec)) ("")))))
-  (if (and c (< 0 c 256) (/= 7 c)) c 250)
+;;  A band of the preview of a tile (see Installer\Windows\Engine\Hatch.cs), w wide: kind
+;;  "P" the hatch of the material mat (nil: missing, crossed out), "S" a space, "L" a line.
+;;  A hatch: "P?w?pattern?file?ppu?angle?scale", ppu the inches on paper of one unit of its
+;;  pattern: its scale in inches (a metric pattern: in mm), divided by the drawing scale
+;;  unless it keeps its size on paper (annotative or adaptive scaling: a Drafting hatch
+;;  preset; a Model one never does), as it plots:
+(defun Dyl:QuickDrawGalleryBand (kind mat w / pat u s ds)
+  (setq w (Remote>>Dyl:MaterialNumP w 6))
+  (cond
+    ((member kind '("S" "L")) (strcat kind "?" w))
+    ((not mat) (strcat "X?" w))
+    ((= "SOLID" (setq pat (strcase (nth 3 mat)))) (strcat "F?" w))
+    (T
+     (setq u  (Remote>>Dyl:MaterialPatUnits pat)
+           s  (cond ((distof (nth 4 mat) 2)) (1.0))
+           ds (if (or (= "1" (nth 9 mat)) (= "1" (nth 10 mat))) 1.0 (Remote>>Dyl:MaterialDrawScale))
+     )
+     (if (= "Metric" (car u)) (setq s (/ s 25.4)))
+     (strcat "P?" w "?" pat "?" (cond ((cdr u)) ("")) "?" (Remote>>Dyl:MaterialNumP (/ s ds) 8)
+             "?" (Remote>>Dyl:MaterialNumP (cond ((distof (nth 6 mat) 2)) (0.0)) 4)
+             "?" (Remote>>Dyl:MaterialNumP ds 4)
+     )
+    )
+  )
 )
 
-;;  Draw the tile key of the preset x ((rec . mat), see qg:all): an assembly (Linear, its
-;;  Assembly of layers checked) as its layers side by side, each band the hatch of its own
-;;  preset (see Remote>>Dyl:MaterialStripsImage); any other preset as its hatch:
-(defun Dyl:QuickDrawGalleryImage (key x / rec ls)
+;;  The preview of the preset x ((rec . mat), see qg:all): an assembly (Linear, its Assembly
+;;  of layers checked) as its layers side by side, each band the hatch of its own preset;
+;;  any other preset as its hatch. The bands divided by "*":
+(defun Dyl:QuickDrawGallerySpec (x / rec ls res)
   (setq rec (car x))
   (if (and (= "1" (nth 37 rec)) (setq ls (Remote>>Dyl:MaterialLayers (nth *qd:layerscol* rec))))
-    (Remote>>Dyl:MaterialStripsImage
-      key
-      (mapcar '(lambda (l)
-                 (list (car l)
-                       (if (= "P" (car l)) (Dyl:QuickDrawGalleryMat (cadr l)))
-                       (cond ((distof (caddr l) 2)) (0.0))
-                       (if (= "L" (car l)) (Dyl:QuickDrawGalleryLineColor (cadr l)))
-                 )
-               )
-              ls
+    (progn
+      (foreach l ls
+        (setq res (cons (Dyl:QuickDrawGalleryBand
+                          (car l)
+                          (if (= "P" (car l)) (Dyl:QuickDrawGalleryMat (cadr l)))
+                          (if (= "L" (car l)) 0.0 (cond ((distof (caddr l) 2)) (0.0)))
+                        )
+                        res
+                  )
+        )
       )
+      (setq res (reverse res))
+      (apply 'strcat (cons (car res) (mapcar '(lambda (b) (strcat "*" b)) (cdr res))))
     )
-    (Remote>>Dyl:MaterialPatImage key (cdr x))
-  )
-)
-
-;;  Show the group g (All: every preset), on its page pg. foc: the page button clicked ("prv"
-;;  or "nxt", nil otherwise), which has the focus: greying out the tile that has the focus
-;;  closes the window, so the focus goes to the other page button (or the Group list) first:
-(defun Dyl:QuickDrawGalleryShow (g pg foc / n pages i x k on)
-  (setq qg:grp  g
-        qg:lst  (if (= "All" g)
-                  qg:all
-                  (vl-remove-if-not '(lambda (x) (= (strcase g) (strcase (nth 1 (car x))))) qg:all)
-                )
-        n       (length qg:lst)
-        pages   (max 1 (/ (+ n *qd:gtiles* -1) *qd:gtiles*))
-        qg:page (max 0 (min pg (1- pages)))
-  )
-  (set_tile "grp" (itoa (cond ((vl-position g qg:grps)) (0))))
-  (set_tile "cnt" (strcat (itoa n) (if (= 1 n) " preset" " presets")))
-  (set_tile "pg" (strcat "Page " (itoa (1+ qg:page)) " of " (itoa pages)))
-  (setq on (list (cons "prv" (< 0 qg:page)) (cons "nxt" (< (1+ qg:page) pages))))
-  (foreach b on (if (cdr b) (mode_tile (car b) 0)))
-  (if (and foc (not (cdr (assoc foc on))))
-    (mode_tile (if (cdr (assoc (if (= "prv" foc) "nxt" "prv") on)) (if (= "prv" foc) "nxt" "prv") "grp") 2)
-  )
-  (foreach b on (if (not (cdr b)) (mode_tile (car b) 1)))
-  (setq i 0)
-  (repeat *qd:gtiles*
-    (setq k (itoa i)
-          x (nth (+ (* qg:page *qd:gtiles*) i) qg:lst)
-    )
-    (if x
-      (progn
-        (Dyl:QuickDrawGalleryImage (strcat "t" k) x)
-        (mapcar 'set_tile (list (strcat "a" k) (strcat "b" k)) (Dyl:QuickDrawGalleryName (nth 2 (car x))))
-        (mode_tile (strcat "t" k) 0)
-      )
-      (progn
-        (start_image (strcat "t" k))
-        (fill_image 0 0 (dimx_tile (strcat "t" k)) (dimy_tile (strcat "t" k)) -15)
-        (end_image)
-        (set_tile (strcat "a" k) "")
-        (set_tile (strcat "b" k) "")
-        (mode_tile (strcat "t" k) 1)
-      )
-    )
-    (setq i (1+ i))
+    (Dyl:QuickDrawGalleryBand "P" (cdr x) 1.0)
   )
 )
 
 ;;  The Quick Draw Gallery window. Returns the preset clicked (drawn by the caller), nil when
 ;;  closed; the Quick Draw Manager button opens the Quick Draw window in its place:
-(defun Dyl:QuickDrawGallery (/ qg:all qg:grps qg:grp qg:lst qg:page dcl id sta g mat mats i)
+(defun Dyl:QuickDrawGallery (/ qg:all qg:grps g mat mats res sta i)
   ;;  The materials read once (Remote>>Dyl:MaterialGet would read the file for each preset):
   (setq mats (Remote>>Dyl:MaterialRead))
   (foreach r (Dyl:QuickDrawRead)
@@ -3015,37 +2913,26 @@
                             ((Dyl:QuickDrawGalleryMatch g qg:grps))
                             (T (princ (strcat "\nNo Quick Draw group " g ": all the presets are shown.")) "All")
                           )
-        dcl               (Dyl:QuickDrawGalleryDcl)
-        id                (load_dialog dcl)
+        res               (Dyl:WinShow "Dyl-QuickDrawGallery.xaml"
+                                       (append (Dyl:WinList "grp" qg:grps (cond ((vl-position g qg:grps)) (0)))
+                                               (list (cons "gal/list"
+                                                           (mapcar '(lambda (x) (strcat (nth 2 (car x)) "\t" (nth 1 (car x)) "\t" (Dyl:QuickDrawGallerySpec x)))
+                                                                   qg:all
+                                                           )
+                                                     )
+                                               )
+                                       )
+                          )
   )
-  (if (and (<= 0 id) (new_dialog "dyl_qdg" id))
-    (progn
-      (start_list "grp")
-      (foreach x qg:grps (add_list x))
-      (end_list)
-      (Dyl:QuickDrawGalleryShow g 0 nil)
-      (Dyl:DocsTile "Draw\\Dyl-QuickDrawGallery.htm")
-      (action_tile "grp" "(Dyl:QuickDrawGalleryShow (nth (atoi $value) qg:grps) 0 nil)")
-      (action_tile "prv" "(Dyl:QuickDrawGalleryShow qg:grp (1- qg:page) \"prv\")")
-      (action_tile "nxt" "(Dyl:QuickDrawGalleryShow qg:grp (1+ qg:page) \"nxt\")")
-      (action_tile "mgr" "(done_dialog 2)")
-      (setq i 0)
-      (repeat *qd:gtiles*
-        (action_tile (strcat "t" (itoa i)) (strcat "(done_dialog " (itoa (+ 100 i)) ")"))
-        (setq i (1+ i))
-      )
-      (setq sta (start_dialog))
+  (if res
+    (setq sta               (car res)
+          *qd:gallerylast*  (nth (Dyl:WinIdx res "grp") qg:grps)
+          i                 (atoi (cond ((Dyl:WinGet res "gal")) ("-1")))
     )
-    (alert "\nError: the Quick Draw Gallery window could not be loaded")
   )
-  (if (<= 0 id) (unload_dialog id))
-  (vl-file-delete dcl)
-  (if qg:grp (setq *qd:gallerylast* qg:grp))
   (cond
     ((= 2 sta) (Dyl:QuickDrawDialog))
-    ((and sta (<= 100 sta))
-     (car (nth (+ (* qg:page *qd:gtiles*) (- sta 100)) qg:lst))
-    )
+    ((and (= 1 sta) (<= 0 i) (< i (length qg:all))) (car (nth i qg:all)))
   )
 )
 

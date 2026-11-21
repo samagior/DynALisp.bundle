@@ -115,6 +115,9 @@
               ;;  Linear and Offset: their own ends / corners ("1"), else the defaults (see
               ;;  Dyl:QuickDrawBandOpts): "" in an older file (see Remote>>Dyl:MaterialFix):
               "EndsOn" "CornersOn"
+              ;;  Drafting (a size on paper: annotative or adaptive scaling) or Model (a real
+              ;;  size: never annotative nor adaptive), see Remote>>Dyl:MaterialFix:
+              "Type"
       )
       (default . "MT-*")
       (title . "Hatch Presets")
@@ -268,6 +271,7 @@
                    "Square" "" "45" "Mitered" "4" "First" "Interrupted" "Line"
                    "0" ""
                    "" ""
+                   "Drafting"
                   )
 )
 
@@ -349,7 +353,11 @@
 ;;  the same size with the scales set for 1:1:
 (defun Remote>>Dyl:MaterialFix (row / v)
   (while (< (length row) 12) (setq row (append row (list ""))))
-  (while (< (length row) 63) (setq row (append row (list (nth (- (length row) 12) *mt:extra*)))))
+  (while (< (length row) 64) (setq row (append row (list (nth (- (length row) 12) *mt:extra*)))))
+  ;;  Its type (63): Drafting or Model (any case), Drafting in an older file. A Model hatch
+  ;;  is drawn at its real size: never annotative (9) nor scaled with the drawing (10):
+  (setq row (Remote>>Dyl:ListSubst row 63 (if (= "MODEL" (strcase (nth 63 row))) "Model" "Drafting")))
+  (if (= "Model" (nth 63 row)) (foreach i '(9 10) (setq row (Remote>>Dyl:ListSubst row i "0"))))
   ;;  The layers of the assembly, those that are valid only:
   (setq row (Remote>>Dyl:ListSubst row 60 (Remote>>Dyl:MaterialLayersStr (Remote>>Dyl:MaterialLayers (nth 60 row)))))
   ;;  Bands: a key of each list (else its default), an extension >= 0 or "", an end angle
@@ -682,302 +690,6 @@
   (if (setq fle (cdr (Remote>>Dyl:MaterialPatUnits nam)))
     (startapp "notepad" (strcat "\"" fle "\""))
   )
-)
-
-;;-------------------------=={ Pattern preview }==------------------------;;
-
-;;  The line families of the pattern nam, read from the .pat file defining it (see
-;;  Remote>>Dyl:MaterialPatUnits): ((angle x-origin y-origin delta-x delta-y dash...) ...),
-;;  nil when no file defines it. Kept for the session in *mt:patdefs* of the blackboard, so
-;;  every drawing open shares it (a variable of its own would be read again in each drawing):
-(defun Remote>>Dyl:MaterialPatDef (nam / key fle des str pos in done l res)
-  (setq key (strcase nam))
-  (if (assoc key (vl-bb-ref '*mt:patdefs*))
-    (cdr (assoc key (vl-bb-ref '*mt:patdefs*)))
-    (progn
-      (if (and (setq fle (cdr (Remote>>Dyl:MaterialPatUnits nam))) (setq des (open fle "r")))
-        (progn
-          (while (and (not done) (setq str (read-line des)))
-            ;;  A comment after the values (;) is dropped:
-            (if (setq pos (vl-string-search ";" str)) (setq str (substr str 1 pos)))
-            (setq str (vl-string-trim " \t" str))
-            (cond
-              ((= "*" (substr str 1 1))
-               (if in
-                 (setq done T)
-                 (setq in (= key
-                             (strcase (vl-string-trim " \t"
-                                                      (if (setq pos (vl-string-search "," str))
-                                                        (substr str 2 (1- pos))
-                                                        (substr str 2)
-                                                      )
-                                      )
-                             )
-                          )
-                 )
-               )
-              )
-              ((and in (/= "" str))
-               (setq l (mapcar '(lambda (x) (distof (vl-string-trim " \t" x) 2)) (Remote>>LM:str->lst str ",")))
-               (if (and (<= 5 (length l)) (vl-every 'numberp l)) (setq res (cons l res)))
-              )
-            )
-          )
-          (close des)
-        )
-      )
-      (setq res (reverse res))
-      (vl-bb-set '*mt:patdefs* (cons (cons key res) (vl-bb-ref '*mt:patdefs*)))
-      res
-    )
-  )
-)
-
-;;  The part of the line through p along the unit vector u inside the rectangle 0..xm, 0..ym:
-;;  its parameters along u (a b), nil when it misses the rectangle:
-(defun Remote>>Dyl:MaterialPatClip (p u xm ym / a b ok pa pb)
-  (setq a  -1e30
-        b  1e30
-        ok T
-  )
-  (foreach c (list (list (car p) (car u) xm) (list (cadr p) (cadr u) ym))
-    (if (equal 0.0 (cadr c) 1e-12)
-      (if (or (< (car c) 0.0) (> (car c) (caddr c))) (setq ok nil))
-      (setq pa (/ (- (car c)) (cadr c))
-            pb (/ (- (caddr c) (car c)) (cadr c))
-            a  (max a (min pa pb))
-            b  (min b (max pa pb))
-      )
-    )
-  )
-  (if (and ok (< a b)) (list a b))
-)
-
-;;  The integer below x (floor, also for a negative x):
-(defun Remote>>Dyl:MaterialFloor (x / i)
-  (setq i (fix x))
-  (if (and (< x 0) (/= x i)) (1- i) i)
-)
-
-;;  Draw the line family f of a pattern (see Remote>>Dyl:MaterialPatDef), turned by ang
-;;  degrees, in the image tile being made (start_image), s pixels per pattern unit, in the
-;;  rectangle of the tile whose top left pixel is ox, oy and h pixels high (xm, ym: its size
-;;  in pattern units), with the color col. A family whose lines are too dense or too many is
-;;  drawn in part (at most 150 lines of 300 dashes):
-(defun Remote>>Dyl:MaterialPatFamily (f s xm ym h col ang ox oy / px a u n o dx dy dashes per ks ke c v
-                                      k p ab q i d len x0 x1 m
-                                     )
-  (defun px (pt) (list (+ ox (fix (+ 0.5 (* s (car pt))))) (+ oy (- h 1 (fix (+ 0.5 (* s (cadr pt))))))))
-  (setq a      (* pi (/ (+ (car f) ang) 180.0))
-        u      (list (cos a) (sin a))
-        n      (list (- (sin a)) (cos a))
-        c      (* pi (/ ang 180.0))
-        ;;  The origin of the family, turned with the pattern:
-        o      (list (- (* (cos c) (nth 1 f)) (* (sin c) (nth 2 f))) (+ (* (sin c) (nth 1 f)) (* (cos c) (nth 2 f))))
-        dx     (nth 3 f)
-        dy     (nth 4 f)
-        dashes (cdr (cddddr f))
-        per    (apply '+ (mapcar 'abs dashes))
-  )
-  ;;  The lines crossing the tile: their offsets along n, from its corners:
-  (if (equal 0.0 dy 1e-9)
-    (setq ks 0
-          ke 0
-    )
-    (progn
-      (setq v (mapcar '(lambda (pt) (/ (+ (* (- (car pt) (car o)) (car n)) (* (- (cadr pt) (cadr o)) (cadr n))) dy))
-                      (list '(0.0 0.0) (list xm 0.0) (list 0.0 ym) (list xm ym))
-              )
-            ks (Remote>>Dyl:MaterialFloor (apply 'min v))
-            ke (1+ (Remote>>Dyl:MaterialFloor (apply 'max v)))
-      )
-      (if (> (- ke ks) 150) (setq ke (+ ks 150)))
-    )
-  )
-  (setq k ks)
-  (while (<= k ke)
-    (setq p (list (+ (car o) (* k (+ (* dx (car u)) (* dy (car n)))))
-                  (+ (cadr o) (* k (+ (* dx (cadr u)) (* dy (cadr n)))))
-            )
-    )
-    (if (setq ab (Remote>>Dyl:MaterialPatClip p u xm ym))
-      (if (or (not dashes) (< per 1e-9))
-        (apply 'vector_image
-               (append (px (mapcar '+ p (mapcar '(lambda (x) (* x (car ab))) u)))
-                       (px (mapcar '+ p (mapcar '(lambda (x) (* x (cadr ab))) u)))
-                       (list col)
-               )
-        )
-        ;;  Dashes (> 0), gaps (< 0) and dots (0) from the base point of the line:
-        (progn
-          (setq q (* per (Remote>>Dyl:MaterialFloor (/ (car ab) per)))
-                i 0
-                m 0
-          )
-          (while (and (< q (cadr ab)) (< m 300))
-            (setq d   (nth (rem i (length dashes)) dashes)
-                  len (abs d)
-                  x0  (max q (car ab))
-                  x1  (min (+ q len) (cadr ab))
-            )
-            (cond
-              ((and (> d 0) (< x0 x1))
-               (apply 'vector_image
-                      (append (px (mapcar '+ p (mapcar '(lambda (x) (* x x0)) u)))
-                              (px (mapcar '+ p (mapcar '(lambda (x) (* x x1)) u)))
-                              (list col)
-                      )
-               )
-              )
-              ((and (equal 0.0 d 1e-12) (<= (car ab) q (cadr ab)))
-               (apply 'vector_image (append (px (mapcar '+ p (mapcar '(lambda (x) (* x q)) u))) (px (mapcar '+ p (mapcar '(lambda (x) (* x q)) u))) (list col)))
-              )
-            )
-            (setq q (+ q len)
-                  i (1+ i)
-                  m (1+ m)
-            )
-          )
-        )
-      )
-    )
-    (setq k (1+ k))
-  )
-)
-
-;;  The ACI color of the color c (see Remote>>Dyl:MaterialColorParse), for an image tile:
-(defun Remote>>Dyl:MaterialAci (c)
-  (cond
-    ((not c) nil)
-    ((= 1 (length c)) (car c))
-    ((and Remote>>LM:RGB->ACI (Remote>>LM:RGB->ACI (car c) (cadr c) (caddr c))))
-  )
-)
-
-;;  The scale of the preview of the pattern defs (see Remote>>Dyl:MaterialPatDef), in pixels
-;;  per pattern unit: every pattern drawn about as dense, whatever its units or the size of
-;;  its lines. Its ink per unit area: each family adds its lines (the part of its period that
-;;  is dashes, over its spacing) and its dots (the dots, and the dashes shorter than 5% of the
-;;  period, a period apart, over its spacing). The scale gives one pixel in 7 of lines (a
-;;  simple hatch 7 pixels apart), a dot weighing 3 (about one dot in 20 pixels):
-(defun Remote>>Dyl:MaterialPatScale (defs / ln dt dy ds per)
-  (setq ln 0.0
-        dt 0.0
-  )
-  (foreach f defs
-    (setq dy     (abs (nth 4 f))
-          ds     (cdr (cddddr f))
-          per    (apply '+ (mapcar 'abs ds))
-    )
-    (cond
-      ((< dy 1e-9))
-      ((or (not ds) (< per 1e-9)) (setq ln (+ ln (/ 1.0 dy))))
-      (T
-       (setq ln (+ ln (/ (apply '+ (mapcar '(lambda (d) (if (> d (* 0.05 per)) d 0.0)) ds)) per dy))
-             dt (+ dt (/ (apply '+ (mapcar '(lambda (d) (if (<= 0.0 d (* 0.05 per)) 1.0 0.0)) ds)) per dy))
-       )
-      )
-    )
-  )
-  (setq dt (* 3.0 dt))
-  (if (and (<= ln 0.0) (<= dt 0.0))
-    7.0
-    (/ (+ (* 7.0 ln) (sqrt (+ (* 49.0 ln ln) (* 28.0 dt)))) 2.0)
-  )
-)
-
-;;  Draw the hatch of the material mat in the rectangle of the image tile being made
-;;  (start_image) whose top left pixel is x0, y0, w by h pixels: its background color (white
-;;  without one), its pattern drawn from its .pat file (see Remote>>Dyl:MaterialPatDef) at a
-;;  scale that suits a tile (see Remote>>Dyl:MaterialPatScale) and turned by its angle, a
-;;  SOLID hatch filled grey; a pattern that no file defines (or no material) crossed out:
-(defun Remote>>Dyl:MaterialPatFill (mat x0 y0 w h / bg fg defs s ang)
-  (setq bg (cond ((and mat (Remote>>Dyl:MaterialAci (Remote>>Dyl:MaterialBackground mat)))) (255))
-        fg (if (member bg '(7 8 18 28 38 48 58 250 251 252)) 254 250)
-  )
-  (fill_image x0 y0 w h bg)
-  (cond
-    ((and mat (= "SOLID" (strcase (cond ((nth 3 mat)) ("")))))
-     (fill_image x0 y0 w h (if (= bg 255) 253 bg))
-    )
-    ((and mat (setq defs (Remote>>Dyl:MaterialPatDef (nth 3 mat))))
-     (setq s   (Remote>>Dyl:MaterialPatScale defs)
-           ang (cond ((distof (cond ((nth 6 mat)) ("")) 2)) (0.0))
-     )
-     (foreach f defs (Remote>>Dyl:MaterialPatFamily f s (/ (1- w) s) (/ (1- h) s) h fg ang x0 y0))
-    )
-    (T
-     (vector_image x0 y0 (+ x0 w -1) (+ y0 h -1) 1)
-     (vector_image x0 (+ y0 h -1) (+ x0 w -1) y0 1)
-    )
-  )
-)
-
-;;  The frame of the image tile being made, w by h pixels:
-(defun Remote>>Dyl:MaterialPatFrame (w h)
-  (foreach l (list (list 0 0 (1- w) 0) (list (1- w) 0 (1- w) (1- h)) (list (1- w) (1- h) 0 (1- h)) (list 0 (1- h) 0 0))
-    (apply 'vector_image (append l '(250)))
-  )
-)
-
-;;  Draw the hatch of the material mat in the image tile key (see Remote>>Dyl:MaterialPatFill),
-;;  a frame around it:
-(defun Remote>>Dyl:MaterialPatImage (key mat / w h)
-  (setq w (dimx_tile key)
-        h (dimy_tile key)
-  )
-  (start_image key)
-  (Remote>>Dyl:MaterialPatFill mat 0 0 w h)
-  (Remote>>Dyl:MaterialPatFrame w h)
-  (end_image)
-)
-
-;;  Draw an assembly in the image tile key: its layers side by side from left to right, as
-;;  vertical bands as wide as their thickness (3 pixels at least), strips ((kind mat
-;;  thickness color) ...): kind "P" a band of the hatch of the material mat (nil: crossed
-;;  out), "S" a space (white), "L" a line of the ACI color (no thickness), a frame around it:
-(defun Remote>>Dyl:MaterialStripsImage (key strips / w h bands tot ws sum x x1 i)
-  (setq w     (dimx_tile key)
-        h     (dimy_tile key)
-        bands (vl-remove-if '(lambda (b) (= "L" (car b))) strips)
-        tot   (apply '+ (mapcar 'caddr bands))
-  )
-  (start_image key)
-  (fill_image 0 0 w h 255)
-  (if (and bands (< 0 tot))
-    (progn
-      ;;  The widths: in proportion to the thickness, 3 pixels at least, then fit to the tile:
-      (setq ws  (mapcar '(lambda (b) (max 3.0 (* (- w 2) (/ (caddr b) tot)))) bands)
-            sum (apply '+ ws)
-            ws  (mapcar '(lambda (v) (* v (/ (- w 2.0) sum))) ws)
-            x   1.0
-            i   0
-      )
-      (foreach b strips
-        (if (= "L" (car b))
-          ;;  A line where it is, between two bands (2 pixels wide):
-          (progn
-            (setq x1 (min (- w 3) (max 1 (fix x))))
-            (vector_image x1 1 x1 (- h 2) (cadddr b))
-            (vector_image (1+ x1) 1 (1+ x1) (- h 2) (cadddr b))
-          )
-          (progn
-            (setq x1 (+ x (nth i ws)))
-            (if (= "P" (car b))
-              (Remote>>Dyl:MaterialPatFill (cadr b) (fix x) 1 (max 1 (- (fix x1) (fix x))) (- h 2))
-            )
-            ;;  The border between two bands:
-            (if (< 0 i) (vector_image (fix x) 1 (fix x) (- h 2) 250))
-            (setq x x1
-                  i (1+ i)
-            )
-          )
-        )
-      )
-    )
-  )
-  (Remote>>Dyl:MaterialPatFrame w h)
-  (end_image)
 )
 
 ;;  Hatch scale of the material mat in the current drawing: its scale (set for 1:1, in the
@@ -1333,7 +1045,7 @@
 ;;  the layer key popups).
 
 ;;  Tiles of the materials and index of their value in a material:
-(setq *mt:tiles* '(("pat" . 3) ("simp" . 4) ("ang" . 6) ("hat" . 8) ("ano" . 9)
+(setq *mt:tiles* '(("pat" . 3) ("typ" . 63) ("simp" . 4) ("ang" . 6) ("hat" . 8) ("ano" . 9)
                    ("sdw" . 10)
                    ;;  Hatch settings (checkbox, value; the border settings: in the presets,
                    ;;  see *mt:bordertiles*):
@@ -1375,10 +1087,15 @@
                     )
 )
 
+;;  Types of a material (Type column): a size on paper, or a real size (see
+;;  Remote>>Dyl:MaterialFix):
+(setq *mt:types* '("Drafting" "Model"))
+
 ;;  Popup tiles -> list of their values (nil for the other tiles):
 (defun Remote>>Dyl:MaterialDlgItems (key)
   (cond
     ((= "pat" key) mt:pats)
+    ((= "typ" key) *mt:types*)
     ((member key '("out" "hat")) mt:keys)
     ((member key '("bwt" "hwt")) *mt:weights*)
     ((= "mth" key) (cons "" (mapcar 'car *mt:methods*)))
@@ -1501,6 +1218,9 @@
   )
   (end_list)
   (Remote>>Dyl:MaterialDlgKeys '("hat") (mapcar '(lambda (r) (nth 8 r)) (append (Remote>>Dyl:MaterialDefs) pst:lst)))
+  (start_list "typ")
+  (foreach x *mt:types* (add_list x))
+  (end_list)
   ;;  Lineweight popup, in mm:
   (start_list "hwt")
   (foreach w *mt:weights* (add_list (strcat (rtos (/ (atoi w) 100.0) 2 2) " mm")))
@@ -2089,20 +1809,32 @@
 )
 
 ;;  SOLID ignores the scale, angle and annotative values. The drawing scale applies only to
-;;  a hatch that is not annotative. The line under it gives the factor in the current drawing
+;;  a hatch that is not annotative. A Model hatch is neither (its real size): both greyed
+;;  out and turned off. The line under it gives the factor in the current drawing
 ;;  (the scales set for 1:1, here 1:50 -> x50):
 ;;  An optional setting has its value greyed out until its checkbox is checked:
-(defun Remote>>Dyl:MaterialDlgState (r / solid ano on tog)
+(defun Remote>>Dyl:MaterialDlgState (r / solid model ano on tog)
   (setq solid (= "SOLID" (nth 3 r))
-        ano   (= "1" (nth 9 r))
-        on    (and (not solid) (not ano) (= "1" (nth 10 r)))
+        model (= "Model" (nth 63 r))
   )
-  (foreach k '("simp" "ang" "ano") (mode_tile k (if solid 1 0)))
+  (if model
+    (foreach x '(("ano" . 9) ("sdw" . 10))
+      (if (= "1" (nth (cdr x) r))
+        (progn (Remote>>Dyl:PresetDlgPut (cdr x) "0") (set_tile (car x) "0") (setq r (Remote>>Dyl:ListSubst r (cdr x) "0")))
+      )
+    )
+  )
+  (setq ano (= "1" (nth 9 r))
+        on  (and (not solid) (not ano) (= "1" (nth 10 r)))
+  )
+  (foreach k '("simp" "ang") (mode_tile k (if solid 1 0)))
+  (mode_tile "typ" (if solid 1 0))
+  (mode_tile "ano" (if (or solid model) 1 0))
   ;;  The units of the pattern, the factor of the scale in this drawing:
   (set_tile "sunt" (if solid "" (Remote>>Dyl:MaterialUnitText r)))
   ;;  Its open button: the .pat file of the pattern, greyed out when no file defines it:
   (Remote>>Dyl:MaterialDlgMode "suo" (if (and (not solid) (cdr (Remote>>Dyl:MaterialPatUnits (nth 3 r)))) 0 1))
-  (mode_tile "sdw" (if (or solid ano) 1 0))
+  (mode_tile "sdw" (if (or solid ano model) 1 0))
   (foreach x *mt:optional*
     (setq tog (= "1" (nth (cdr (assoc (car x) *mt:tiles*)) r)))
     ;;  A SOLID hatch has no background, no existing phase background, no lineweight:
@@ -2260,6 +1992,8 @@
     (T
      (put 3 pat)
      (put 9 (if (Remote>>Dyl:MaterialAnno-p e) "1" "0"))
+     ;;  An annotative hatch is a size on paper:
+     (if (Remote>>Dyl:MaterialAnno-p e) (put 63 "Drafting"))
      (put 30 (if (= :vlax-true (vla-get-AssociativeHatch o)) "1" "0"))
      (if (/= "SOLID" pat)
        (progn
@@ -2348,11 +2082,10 @@
      nil
     )
     ((rpat:rebuild-hatch e)
-     ;;  Its units and its lines read again from the new file (they were kept as not found):
+     ;;  Its units read again from the new file (they were kept as not found):
      (setq key           (strcase pat)
            *mt:patunits* (vl-remove-if '(lambda (x) (= (strcat key "|") (substr (car x) 1 (1+ (strlen key))))) *mt:patunits*)
      )
-     (vl-bb-set '*mt:patdefs* (vl-remove (assoc key (vl-bb-ref '*mt:patdefs*)) (vl-bb-ref '*mt:patdefs*)))
      (if (not (member key mt:found)) (setq mt:found (cons key mt:found)))
      T
     )
@@ -2436,6 +2169,8 @@
             "            : column {"
             "              : column { fixed_height = true;"
             "              : row { : popup_list { key = \"pat\"; label = \"Pattern:\"; edit_width = 28; } }"
+            ;;  Drafting (a size on paper) or Model (a real size, see Remote>>Dyl:MaterialFix):
+            "              : row { : popup_list { key = \"typ\"; label = \"Type:\"; edit_width = 12; } }"
             ;;  One scale, in the units of the pattern; the line under it: those units and the
             ;;  factor in this drawing (see Remote>>Dyl:MaterialUnitText), its open button the
             ;;  .pat file of the pattern (see Remote>>Dyl:MaterialPatOpen):

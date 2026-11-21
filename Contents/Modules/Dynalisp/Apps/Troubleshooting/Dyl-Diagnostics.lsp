@@ -344,6 +344,15 @@
       (dg:bad "The ribbon stays in English: DynALisp.Ribbon.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)")
     )
   )
+  ;;  The windows of DynALisp (Dyl-Settings...) are shown by DynALisp.Windows.dll (AutoCAD
+  ;;  2015 and later, the Windows region of dynalisp.mnl):
+  (cond
+    (Dyl:Window)
+    ((< (atof (getvar "ACADVER")) 20.0)
+     (dg:bad "The windows of DynALisp cannot open: DynALisp.Windows.dll needs AutoCAD 2015 or later")
+    )
+    ((dg:bad "The windows of DynALisp cannot open: DynALisp.Windows.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
+  )
   (if (not (vl-some '(lambda (r) (= (strcase r) (strcase (vl-filename-directory *dyl:repo))))
                     (dg:pluginroots)
            )

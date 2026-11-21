@@ -25,7 +25,8 @@
 # guide page linking to its dev page, the stylesheet...). The switch of a page leads to the
 # page of the other set for the same tool when it has one, else to the home of that set.
 # The pictures a guide page names (<!-- picture: images/<Page>-window.png -->) are shown once
-# their file is in the images folder beside the page.
+# their file is in the images folder beside the page; its -dark copy (<Page>-window-dark.png),
+# when there is one, in dark mode.
 #
 # A page already in <folder> is kept, even when the docs no longer have it (renamed, moved,
 # deleted): an installed DynALisp opens the pages of its own version, which stay on the
@@ -167,7 +168,13 @@ def show_pictures(text_, src):
         if not os.path.exists(os.path.join(os.path.dirname(src), *name.split('/'))):
             return m.group(0)
         what = 'sample use' if name.lower().endswith('.gif') else 'window'
-        return '<figure class="shot"><img src="%s" alt="%s"></figure>' % (html.escape(name), html.escape('%s: %s' % (title, what)))
+        img = '<img src="%s" alt="%s">' % (html.escape(name), html.escape('%s: %s' % (title, what)))
+        # The picture of the window in the dark theme beside it (<Page>-window-dark.png, drawn
+        # by Installer\Windows\Shots), shown in dark mode:
+        dark = name[:-4] + '-dark' + name[-4:]
+        if os.path.exists(os.path.join(os.path.dirname(src), *dark.split('/'))):
+            img = '<picture><source srcset="%s" media="(prefers-color-scheme: dark)">%s</picture>' % (html.escape(dark), img)
+        return '<figure class="shot">%s</figure>' % img
     return BuildDocs.PICTURE.sub(sub, text_)
 
 
