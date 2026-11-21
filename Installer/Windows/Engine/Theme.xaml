@@ -3,7 +3,7 @@
   at run time by Theme.cs and merged into the resources of each window).
 
   The colours are the Dyl.* brushes, given by Theme.cs in the light or the dark theme of
-  AutoCAD (COLORTHEME), the blue of AutoCAD for the default button and the checkboxes on;
+  AutoCAD (COLORTHEME), the blue of AutoCAD for the default button and the switches on;
   never a colour written here or in a window file. A window file uses the keyed styles with
   {DynamicResource ...}: Dyl.Desc (the grey description under a setting or a section),
   Dyl.Label (the label of a value), Dyl.Error (the text named "error"), Dyl.OpenButton (set
@@ -15,19 +15,18 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 
-  <!-- A section: a white card, its title above its content (the boxed_column of DCL): -->
+  <!-- A section: a card without border, its title above its content (the boxed_column of DCL): -->
   <Style TargetType="GroupBox">
     <Setter Property="Foreground" Value="{DynamicResource Dyl.Text}"/>
-    <Setter Property="Margin" Value="0,0,0,12"/>
-    <Setter Property="Padding" Value="14,10,14,12"/>
+    <Setter Property="Margin" Value="0,0,0,10"/>
+    <Setter Property="Padding" Value="16,6,16,14"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="GroupBox">
-          <Border Background="{DynamicResource Dyl.Surface}" BorderBrush="{DynamicResource Dyl.Border}"
-                  BorderThickness="1" CornerRadius="8" SnapsToDevicePixels="True">
+          <Border Background="{DynamicResource Dyl.Surface}" CornerRadius="8" SnapsToDevicePixels="True">
             <DockPanel>
               <ContentPresenter DockPanel.Dock="Top" ContentSource="Header" RecognizesAccessKey="True"
-                                Margin="14,11,14,0" TextElement.FontWeight="SemiBold" TextElement.FontSize="13"
+                                Margin="16,14,16,0" TextElement.FontWeight="SemiBold" TextElement.FontSize="14"
                                 TextElement.Foreground="{DynamicResource Dyl.Heading}"/>
               <ContentPresenter Margin="{TemplateBinding Padding}"/>
             </DockPanel>
@@ -55,10 +54,12 @@
     <Setter Property="TextWrapping" Value="Wrap"/>
   </Style>
 
+  <!-- An on/off setting: a switch (as the settings of Windows 11), its label after it. A switch
+       without a label (the grid of Output Prep) takes no room for one: -->
   <Style TargetType="CheckBox">
     <Setter Property="Foreground" Value="{DynamicResource Dyl.Text}"/>
     <Setter Property="VerticalContentAlignment" Value="Center"/>
-    <Setter Property="Margin" Value="0,3"/>
+    <Setter Property="Margin" Value="0,4"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="CheckBox">
@@ -67,27 +68,30 @@
               <ColumnDefinition Width="Auto"/>
               <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Border x:Name="box" Width="16" Height="16" CornerRadius="3" BorderThickness="1" VerticalAlignment="Center"
-                    Background="{DynamicResource Dyl.Input}" BorderBrush="{DynamicResource Dyl.InputBorder}" SnapsToDevicePixels="True">
-              <Path x:Name="mark" Data="M2.5,7 L5.5,10 L11.5,3.5" Stroke="{DynamicResource Dyl.AccentText}" StrokeThickness="2"
-                    StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" Visibility="Collapsed"/>
+            <Border x:Name="track" Width="36" Height="18" CornerRadius="9" BorderThickness="1" VerticalAlignment="Center"
+                    Background="Transparent" BorderBrush="{DynamicResource Dyl.Muted}" SnapsToDevicePixels="True">
+              <Ellipse x:Name="knob" Width="10" Height="10" HorizontalAlignment="Left" Margin="3,0,0,0" Fill="{DynamicResource Dyl.Muted}"/>
             </Border>
-            <ContentPresenter Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Center" RecognizesAccessKey="True"/>
+            <ContentPresenter x:Name="cp" Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center" RecognizesAccessKey="True"/>
           </Grid>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="box" Property="BorderBrush" Value="{DynamicResource Dyl.Accent}"/>
-            </Trigger>
-            <Trigger Property="IsKeyboardFocused" Value="True">
-              <Setter TargetName="box" Property="BorderBrush" Value="{DynamicResource Dyl.Accent}"/>
+              <Setter TargetName="track" Property="BorderBrush" Value="{DynamicResource Dyl.Text}"/>
             </Trigger>
             <Trigger Property="IsChecked" Value="True">
-              <Setter TargetName="mark" Property="Visibility" Value="Visible"/>
-              <Setter TargetName="box" Property="Background" Value="{DynamicResource Dyl.Accent}"/>
-              <Setter TargetName="box" Property="BorderBrush" Value="{DynamicResource Dyl.Accent}"/>
+              <Setter TargetName="track" Property="Background" Value="{DynamicResource Dyl.Accent}"/>
+              <Setter TargetName="track" Property="BorderBrush" Value="{DynamicResource Dyl.Accent}"/>
+              <Setter TargetName="knob" Property="HorizontalAlignment" Value="Right"/>
+              <Setter TargetName="knob" Property="Margin" Value="0,0,3,0"/>
+              <Setter TargetName="knob" Property="Width" Value="12"/>
+              <Setter TargetName="knob" Property="Height" Value="12"/>
+              <Setter TargetName="knob" Property="Fill" Value="{DynamicResource Dyl.AccentText}"/>
+            </Trigger>
+            <Trigger Property="HasContent" Value="False">
+              <Setter TargetName="cp" Property="Margin" Value="0"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
-              <Setter TargetName="box" Property="Opacity" Value="0.45"/>
+              <Setter TargetName="track" Property="Opacity" Value="0.4"/>
               <Setter Property="Foreground" Value="{DynamicResource Dyl.Disabled}"/>
             </Trigger>
           </ControlTemplate.Triggers>
@@ -205,18 +209,18 @@
   <!-- The buttons of the window (Save, Cancel, Open Docs...), the default one in teal: -->
   <Style TargetType="Button">
     <Setter Property="Foreground" Value="{DynamicResource Dyl.Text}"/>
-    <Setter Property="Background" Value="{DynamicResource Dyl.Surface}"/>
+    <Setter Property="Background" Value="{DynamicResource Dyl.ButtonBack}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource Dyl.BorderStrong}"/>
-    <Setter Property="MinWidth" Value="88"/>
-    <Setter Property="MinHeight" Value="28"/>
-    <Setter Property="Padding" Value="14,4"/>
+    <Setter Property="MinWidth" Value="92"/>
+    <Setter Property="MinHeight" Value="32"/>
+    <Setter Property="Padding" Value="16,4"/>
     <Setter Property="Margin" Value="8,0,0,0"/>
     <Setter Property="Cursor" Value="Hand"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="Button">
           <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
-                  BorderThickness="1" CornerRadius="5" SnapsToDevicePixels="True">
+                  BorderThickness="1" CornerRadius="4" SnapsToDevicePixels="True">
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="{TemplateBinding Padding}"
                               RecognizesAccessKey="True"/>
           </Border>
@@ -253,12 +257,12 @@
     </Setter>
   </Style>
 
-  <!-- The square open button (OpenButton.cs), one line high: -->
+  <!-- The open button (OpenButton.cs), one line high: its icon alone, a square under it on hover: -->
   <Style x:Key="Dyl.OpenButton" TargetType="Button">
-    <Setter Property="Foreground" Value="{DynamicResource Dyl.Text}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Dyl.Muted}"/>
     <Setter Property="Background" Value="Transparent"/>
-    <Setter Property="Width" Value="24"/>
-    <Setter Property="Height" Value="24"/>
+    <Setter Property="Width" Value="26"/>
+    <Setter Property="Height" Value="26"/>
     <Setter Property="Margin" Value="8,0,0,0"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
     <Setter Property="Cursor" Value="Hand"/>
@@ -266,19 +270,20 @@
       <Setter.Value>
         <ControlTemplate TargetType="Button">
           <Border x:Name="bd" Background="{TemplateBinding Background}" BorderBrush="{DynamicResource Dyl.BorderStrong}"
-                  BorderThickness="1" CornerRadius="5" SnapsToDevicePixels="True">
+                  BorderThickness="0" CornerRadius="4" SnapsToDevicePixels="True">
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
               <Setter TargetName="bd" Property="Background" Value="{DynamicResource Dyl.Hover}"/>
+              <Setter Property="Foreground" Value="{DynamicResource Dyl.Text}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
               <Setter TargetName="bd" Property="Background" Value="{DynamicResource Dyl.Pressed}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
               <Setter Property="Foreground" Value="{DynamicResource Dyl.Disabled}"/>
-              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Dyl.Border}"/>
+              <Setter Property="Opacity" Value="0.5"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>

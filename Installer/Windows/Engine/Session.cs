@@ -135,11 +135,11 @@ namespace DynALisp.Windows
         // Dark: the grey blue of the palettes of AutoCAD; light: its light greys.
         static readonly Dictionary<string, string> DarkColors = new Dictionary<string, string>
         {
-            ["Back"] = "#2E343E", ["Surface"] = "#3B4453", ["Border"] = "#4A5466", ["BorderStrong"] = "#5B677A",
+            ["Back"] = "#252A32", ["Surface"] = "#313844", ["Border"] = "#3C4452", ["BorderStrong"] = "#4C5566",
             ["Text"] = "#E6EAF0", ["Heading"] = "#FFFFFF", ["Muted"] = "#A3ADBC", ["Disabled"] = "#6E7889",
-            ["Hover"] = "#465062", ["Pressed"] = "#525D71", ["Input"] = "#2E343E", ["InputBorder"] = "#5B677A",
+            ["Hover"] = "#434C5B", ["Pressed"] = "#525D71", ["Input"] = "#2A3039", ["InputBorder"] = "#4C5566",
             ["Accent"] = "#0696D7", ["AccentHover"] = "#22A9E8", ["AccentText"] = "#FFFFFF", ["ErrorText"] = "#FF8F85",
-            ["TitleBar"] = "#232831", ["TitleText"] = "#E6EAF0",
+            ["TitleBar"] = "#1E2229", ["TitleText"] = "#E6EAF0", ["ButtonBack"] = "#3A4250",
         };
         static readonly Dictionary<string, string> LightColors = new Dictionary<string, string>
         {
@@ -147,7 +147,7 @@ namespace DynALisp.Windows
             ["Text"] = "#1F2933", ["Heading"] = "#111820", ["Muted"] = "#5F6B7A", ["Disabled"] = "#A3ACB8",
             ["Hover"] = "#EDF1F5", ["Pressed"] = "#DEE5EC", ["Input"] = "#FFFFFF", ["InputBorder"] = "#B9C1CB",
             ["Accent"] = "#0696D7", ["AccentHover"] = "#0784BD", ["AccentText"] = "#FFFFFF", ["ErrorText"] = "#B42318",
-            ["TitleBar"] = "#FFFFFF", ["TitleText"] = "#1F2933",
+            ["TitleBar"] = "#FFFFFF", ["TitleText"] = "#1F2933", ["ButtonBack"] = "#FFFFFF",
         };
 
         static ResourceDictionary Styles()

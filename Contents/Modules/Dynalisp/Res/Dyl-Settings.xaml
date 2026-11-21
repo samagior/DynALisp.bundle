@@ -30,10 +30,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dyl="clr-namespace:DynALisp.Windows"
         Title="DynALisp - Settings" dyl:Win.Docs="Core\Dyl-Settings.htm">
-  <Grid Margin="16,16,16,14">
+  <Grid Margin="14,14,14,14">
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="320"/>
-      <ColumnDefinition Width="12"/>
+      <ColumnDefinition Width="10"/>
       <ColumnDefinition Width="320"/>
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
@@ -60,27 +60,27 @@
         <StackPanel>
           <TextBlock Style="{DynamicResource Dyl.Desc}" Text="Act on new objects as you draw."/>
           <CheckBox x:Name="rea" Content="DynALisp reactors"/>
-          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="22,0,0,6" Text="Off: no reactor runs."/>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,6" Text="Off: no reactor runs."/>
           <!-- runs Dyl-LayerPhase (4), then opens this window again: -->
           <DockPanel>
             <dyl:OpenButton x:Name="lph" DockPanel.Dock="Right" dyl:Win.Close="4"/>
             <CheckBox x:Name="aph" Content="Auto-phase new objects" dyl:Win.EnabledBy="rea"/>
           </DockPanel>
-          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="22,0,0,6" Text="Puts new objects on the active phase."/>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,6" Text="Puts new objects on the active phase."/>
           <!-- runs Dyl-DrawOrder (5): -->
           <DockPanel>
             <dyl:OpenButton x:Name="ldo" DockPanel.Dock="Right" dyl:Win.Close="5"/>
             <CheckBox x:Name="ado" Content="Auto draw order" dyl:Win.EnabledBy="rea"/>
           </DockPanel>
-          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="22,0,0,6" Text="Stacks new objects by layer level."/>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,6" Text="Stacks new objects by layer level."/>
           <!-- runs Dyl-ObjectLayerKeys (7): -->
           <DockPanel>
             <dyl:OpenButton x:Name="lol" DockPanel.Dock="Right" dyl:Win.Close="7"/>
             <CheckBox x:Name="alk" Content="Auto layer keys" dyl:Win.EnabledBy="rea"/>
           </DockPanel>
-          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="22,0,0,6" Text="Puts new dimensions, text on their key."/>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,6" Text="Puts new dimensions, text on their key."/>
           <CheckBox x:Name="syn" Content="Settings sync" dyl:Win.EnabledBy="rea"/>
-          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="22,0,0,0" Text="Open drawings follow saved settings."/>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,0" Text="Open drawings follow saved settings."/>
         </StackPanel>
       </GroupBox>
     </StackPanel>
@@ -133,7 +133,7 @@
           <TextBlock Style="{DynamicResource Dyl.Desc}" Text="Existing layers that differ from their key."/>
           <CheckBox x:Name="lku" Content="Update them without asking" dyl:Win.Excludes="lkk"/>
           <CheckBox x:Name="lkk" Content="Keep them without asking" dyl:Win.Excludes="lku"/>
-          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="22,0,0,0" Text="Both off: asked when the key is used."/>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,0" Text="Both off: asked when the key is used."/>
         </StackPanel>
       </GroupBox>
 
@@ -143,7 +143,7 @@
         <StackPanel>
           <TextBlock Style="{DynamicResource Dyl.Desc}" Text="New versions of DynALisp."/>
           <CheckBox x:Name="aup" Content="Install updates automatically"/>
-          <TextBlock x:Name="aud" Style="{DynamicResource Dyl.Desc}" Margin="22,0,0,0" Text="Checks daily, installs as AutoCAD closes."/>
+          <TextBlock x:Name="aud" Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,0" Text="Checks daily, installs as AutoCAD closes."/>
         </StackPanel>
       </GroupBox>
     </StackPanel>
