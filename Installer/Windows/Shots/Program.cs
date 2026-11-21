@@ -21,7 +21,8 @@
 // Each row of Shots.csv (Window;Sample;Picture, paths from the root of the repository) is a
 // window file opened as the plugin opens it (Session.Open: the same engine, the same theme),
 // on the values of its sample file (Samples\, as the Lisp gives them: key=value,
-// key/list=item|item, key/off=1), its Open Docs button enabled. Its content is drawn under a
+// key/list=item|item, key/off=1; {samples} the folder of the samples, \\t a tab), its Open Docs
+// button enabled. Its content is drawn under a
 // plain title bar, at twice its size (192 dpi), into the PNG its docs page names
 // (<!-- picture: images/<Page>-window.png -->), in the light theme of AutoCAD, and in its dark
 // theme beside it (<Page>-window-dark.png, shown by the website in dark mode). Nothing is
@@ -100,6 +101,8 @@ namespace DynALisp.Windows
                 int eq = line.IndexOf('=');
                 if (eq < 1) continue;
                 string key = line.Substring(0, eq).Trim(), value = line.Substring(eq + 1).Trim();
+                // {samples}: the folder of the sample (its .pat files); \t: a tab:
+                value = value.Replace("{samples}", Path.GetDirectoryName(Path.GetFullPath(sample))).Replace("\\t", "\t");
                 if (key.EndsWith("/list")) s.Lists[key.Substring(0, key.Length - 5)] = value.Split('|').ToList();
                 else if (key.EndsWith("/off")) { if (value == "1") s.Off.Add(key.Substring(0, key.Length - 4)); }
                 else s.Values[key] = value;

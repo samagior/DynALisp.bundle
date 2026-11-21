@@ -257,7 +257,22 @@ namespace DynALisp.Windows
                 case Button b:
                     b.Click += (a, e) => Click(b);
                     break;
+                case Gallery g when Named(g):
+                    g.Picked += i => Pick(g, i);
+                    break;
             }
+        }
+
+        // A tile of a gallery clicked: its index, then the window closes (status 1, or the
+        // Win.Close of the gallery):
+        void Pick(Gallery g, int index)
+        {
+            _s.Values[g.Name] = index.ToString(CultureInfo.InvariantCulture);
+            int status = 1;
+            string close = Win.GetClose(g);
+            if (close != null) int.TryParse(close, NumberStyles.Integer, CultureInfo.InvariantCulture, out status);
+            Status = status;
+            if (!_closed) Window.Close();
         }
 
         void Changed(string key, string value, FrameworkElement from)
@@ -310,6 +325,11 @@ namespace DynALisp.Windows
                             break;
                         case TextBlock tb:
                             if (has) tb.Text = v ?? "";
+                            break;
+                        case Gallery g:
+                            _s.Lists.TryGetValue(g.Name, out var tiles);
+                            g.Attach(tiles, Find(g.Group ?? "") as ComboBox, Find(g.Search ?? "") as TextBox, Find(g.Count ?? "") as TextBlock);
+                            if (!has) _s.Values[g.Name] = "-1";
                             break;
                     }
                 }
