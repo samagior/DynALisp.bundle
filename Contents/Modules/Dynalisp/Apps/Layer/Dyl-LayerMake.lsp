@@ -16,14 +16,23 @@
 ;;
 ;;-------------------------=={ End of Licence }==------------------------;;
 
-(Defun Dyl-LayerMake (*typ *dir *lst *cop) 
-  ;; *typ = "Csv" for layer list or "Lyr" for single layer
-  ;; *dir = directory subfolder name from:
+(Defun Dyl-LayerMake (*typ *dir *lst *cop / *error* *cme *doc *lys *lin *pha *data *lyl *nwl *lyr *dsc *sel *nbr
+                     *ddr *maj *mjd *trd *row *fld *str *col *truecolor *id *exp *lw *lt *plt *obj *new *upd *res)
+  ;; *typ = "Csv" for layer lists or "Lyr" for a list of (name . description)
+  ;; *dir = the folder of the files, under *dyl:layerlist (nil: *lst holds paths relative to it)
+  ;; *lst = the CSV files (Designator,Major,Minor1,Minor2,Minor3,Description)
+  ;; The placeholders of the files:
+  ;;   $$ or ?? (designator)  the discipline asked (General, Architectural...)
+  ;;   A? (designator)        the discipline alone: the ? is dropped (NCS)
+  ;;   Maj$ or Majr (major)   the major group asked, MajrDesc$ / GroupTyp its description
+  ;;   0000                   the stack asked (0001...), dropped for None
+  ;;   ----                   an empty field, dropped; a ~ pads a short field, dropped
 
   ;; Error handling function:
-  (defun *error* (*erm) 
+  (defun *error* (*erm)
     (if *cme (setvar 'cmdecho *cme))
-    (if (not (member *erm '("Function cancelled" "quit / exit abort"))) 
+    (if *doc (vla-EndUndoMark *doc))
+    (if (not (member *erm '("Function cancelled" "quit / exit abort")))
       (princ (strcat "\nError: " *erm))
     )
     (princ)
@@ -38,103 +47,120 @@
         *data '()
         *lyl  '()
         *nwl  '()
-        *lyr  nil
-        *dsc  nil
+        *nbr  "----"
+        *ddr  "G"
   )
 
 
   ;; Get CSV data:
-  (if (= *typ "Lyr") (setq *lyl *lst))
-  (if (= *typ "Csv") 
-    (foreach *fle *lst 
-      (setq *data (append *data (cdr (Local>>LM:readcsv (Dyl:UserFile (strcat *dyl:layerlist "\\" *dir "\\" *fle))))))
+  (if (= *typ "Lyr") (setq *lyl (reverse *lst)))
+  (if (= *typ "Csv")
+    (foreach *fle *lst
+      (setq *fle (strcat *dyl:layerlist "\\" (if *dir (strcat *dir "\\") "") *fle))
+      (if (findfile (Dyl:UserFile *fle))
+        (setq *data (append *data (cdr (Local>>LM:readcsv (Dyl:UserFile *fle)))))
+        (prompt (strcat "\nLayer list not found: " *fle))
+      )
     )
   )
+  ;; Only the rows with a name:
+  (setq *data (vl-remove-if-not '(lambda (r) (and (>= (length r) 2) (/= "" (car r)))) *data))
 
 
   ;; Check data for stackable layers (0000 in data) and ask user for the desired stack:
   (setq *trd (Local>>getMatching "*0000*" *data))
-  (if (= *trd "Yes") 
-    (progn 
-      (initget 
+  (if (= *trd "Yes")
+    (progn
+      (initget
         "None 1-First 2-Second 3-Third 4-Fourth 5-Fifth 6-Sixth 7-Seventh 8-Eighth 9-Ninth _N S1 S2 S3 S4 S5 S6 S7 S8 S9"
       )
-      (setq *sel (getkword 
-                   (strcat 
+      (setq *sel (getkword
+                   (strcat
                      "\nSelect layer stacked: [None/1-First/2-Second/3-Third/4-Fourth/5-Fifth/6-Sixth/7-Seventh/8-Eighth/9-Ninth] <N>: "
                    )
                  )
       )
-      (cond 
-        ((= *sel "N") (setq *nbr "0001"))
-        ((= *sel "S1") (setq *nbr "0001"))
-        ((= *sel "S2") (setq *nbr "0002"))
-        ((= *sel "S3") (setq *nbr "0003"))
-        ((= *sel "S4") (setq *nbr "0004"))
-        ((= *sel "S5") (setq *nbr "0005"))
-        ((= *sel "S6") (setq *nbr "0006"))
-        ((= *sel "S7") (setq *nbr "0007"))
-        ((= *sel "S8") (setq *nbr "0008"))
-        ((= *sel "S9") (setq *nbr "0009"))
-        (T (setq *nbr "----"))
-      )
+      (setq *nbr (if (and *sel (wcmatch *sel "S#")) (strcat "000" (substr *sel 2)) "----"))
     )
   )
 
 
-  ;; Check data for variable designatior layers (double question mark in data) and ask user for the desired stack:
-  (if (wcmatch *data "*$$*") 
-    (progn 
-      (initget 
+  ;; Check data for variable designator layers ($$ or ?? in data) and ask user for the discipline:
+  (if (= "Yes" (Local>>getMatching "$$,`?`?" (mapcar 'list (mapcar 'car *data))))
+    (progn
+      (initget
         "General Architectural Interior Structural Landscape _G A I S L"
       )
-      (setq *sel (getkword 
-                   (strcat 
+      (setq *sel (getkword
+                   (strcat
                      "\nSelect layer discipline: [General/Architectural/Interior/Structural/Landscape] <G>: "
                    )
                  )
       )
-      (cond 
-        ((= *sel "G") (setq *ddr "G"))
-        ((= *sel "A") (setq *ddr "A"))
-        ((= *sel "I") (setq *ddr "I"))
-        ((= *sel "S") (setq *ddr "S"))
-        ((= *sel "L") (setq *ddr "L"))
-        (T (setq *ddr "G"))
+      (setq *ddr (if *sel *sel "G"))
+    )
+  )
+
+
+  ;; Check data for a variable major group (Maj$ or Majr) and ask user for it:
+  (if (= "Yes" (Local>>getMatching "Maj$,Majr" (mapcar 'list (mapcar 'cadr *data))))
+    (progn
+      (while
+        (progn
+          (setq *maj (getstring "\nMajor group of the layers, 4 characters <Detl>: "))
+          (if (= "" *maj) (setq *maj "Detl"))
+          (if (or (/= 4 (strlen *maj)) (not (snvalid *maj)) (wcmatch *maj "*-*"))
+            (prompt "\nA major group is 4 characters, letters or digits (Detl, Wall, Flor...).")
+          )
+        )
+      )
+      (setq *maj (strcat (strcase (substr *maj 1 1)) (strcase (substr *maj 2) T))
+            *mjd (Local>>MajorDesc *maj)
       )
     )
   )
 
 
-  ;; Build data into a list of list made of a usable layer name and description:
-  (foreach *row *data 
-    (setq *dsc (nth 5 *row)
-          *str (Local>>LM:lst->str 
-                 (list (nth 0 *row) 
-                       (nth 1 *row)
-                       (nth 2 *row)
-                       (nth 3 *row)
-                       (nth 4 *row)
-                 )
-                 "-"
-               )
-          *lyr (vl-string-right-trim "-" 
-                                     (if (wcmatch *str "*0000*") 
-                                       (setq *str (vl-string-subst *ddr "$$" (vl-string-subst *nbr "0000" *str)))
-                                     )
-               )
-          *lyl (cons (cons *lyr *dsc) *lyl)
+  ;; Build data into a list of (name . description), without the names twice:
+  (foreach *row *data
+    (setq *str '())
+    (foreach *fld (Local>>FirstN 5 *row)
+      (cond
+        ((wcmatch *fld "$$,`?`?") (setq *fld *ddr))
+        ((wcmatch *fld "Maj$,Majr") (setq *fld *maj))
+        ((= *fld "0000") (setq *fld *nbr))
+      )
+      (setq *fld (vl-string-trim " " (vl-string-translate "?~" "  " *fld)))
+      (if (not (member *fld '("" "----"))) (setq *str (cons *fld *str)))
     )
+    (setq *lyr (Local>>LM:lst->str (reverse *str) "-")
+          *dsc (cond ((nth 5 *row)) (""))
+    )
+    (if *mjd
+      (foreach *pat '("MajrDesc$" "GroupTyp")
+        (while (vl-string-search *pat *dsc) (setq *dsc (vl-string-subst *mjd *pat *dsc)))
+      )
+    )
+    (if (and (/= "" *lyr) (not (assoc *lyr *lyl))) (setq *lyl (cons (cons *lyr *dsc) *lyl)))
   )
+  (setq *lyl (reverse *lyl))
 
   ;; Build a new list of list with phased layer name:
-  (foreach x *lyl 
-    (foreach z *pha 
+  (foreach x *lyl
+    (foreach z *pha
       (setq *lyr (car x))
       (setq *lyr (strcat *lyr z))
       (setq *nwl (cons (cons *lyr (cdr x)) *nwl))
     )
   )
+  (setq *nwl (reverse *nwl)
+        *doc (vla-get-ActiveDocument (vlax-get-acad-object))
+        *lys (vla-get-Layers *doc)
+        *lin (if (= 1 (getvar 'measurement)) "acadiso.lin" "acad.lin")
+        *new 0
+        *upd 0
+  )
+  (vla-StartUndoMark *doc)
 
 
 
@@ -435,31 +461,81 @@
 
 
 
-    (if (= *lyr "Delete") 
+    (if (= *lyr "Delete")
       (prompt (strcat "\n..." *lyr " - deleted from list"))
-      (if (not (tblsearch "LAYER" *lyr)) 
-        (progn 
-          (if (= "Yes" *truecolor) 
-            (command "_.-layer" "_m" *lyr "_lw" *lw "" "_l" *lt "" "_c" "_t" *col "" "_p" *plt "" "_d" *dsc *lyr "")
-            (command "_.-layer" "_m" *lyr "_lw" *lw "" "_l" *lt "" "_c" *col "" "_p" *plt "" "_d" *dsc *lyr "")
-          )
-          (prompt (strcat "\n..." *lyr " - created"))
+      (progn
+        (setq *obj (tblsearch "LAYER" *lyr)
+              *res (Local>>LayerPut *lys *lyr *col (= "Yes" *truecolor) *lw (Local>>Linetype *doc *lt *lin) (/= "_N" *plt) *dsc)
         )
-        (progn 
-          (if (= "Yes" *truecolor) 
-            (command "_.-layer" "_m" *lyr "_lw" *lw "" "_l" *lt "" "_c" "_t" *col "" "_p" *plt "" "_d" *dsc *lyr "_y" "")
-            (command "_.-layer" "_m" *lyr "_lw" *lw "" "_l" *lt "" "_c" *col "" "_p" *plt "" "_d" *dsc *lyr "_y" "")
+        (cond
+          ((vl-catch-all-error-p *res)
+           (prompt (strcat "\n..." *lyr " - not made: " (vl-catch-all-error-message *res)))
           )
-          (prompt (strcat "\n..." *lyr " - updated"))
+          (*obj (setq *upd (1+ *upd)) (prompt (strcat "\n..." *lyr " - updated")))
+          (T (setq *new (1+ *new)) (prompt (strcat "\n..." *lyr " - created")))
         )
       )
     )
   )
-  (princ)
-
-
+  (vla-EndUndoMark *doc)
+  (prompt (strcat "\n" (itoa *new) " layer(s) created, " (itoa *upd) " updated."))
   (setvar 'cmdecho *cme)
   (princ)
+)
+
+;; The first n items of a list (nil past its end).
+(defun Local>>FirstN (n lst / res)
+  (repeat n (setq res (cons (car lst) res) lst (cdr lst)))
+  (vl-remove nil (reverse res))
+)
+
+;; The description of a major group in the AEC standard (Major.csv), else the group itself.
+(defun Local>>MajorDesc (maj / row res)
+  (foreach row (Local>>LM:readcsv (Dyl:UserFile (strcat *dyl:dylres "\\AEC\\Standard\\Major.csv")))
+    (if (and (not res) (= (strcase maj) (strcase (vl-string-left-trim "\357\273\277" (car row)))) (nth 5 row) (/= "" (nth 5 row)))
+      (setq res (nth 5 row))
+    )
+  )
+  (cond (res) (maj))
+)
+
+;; The linetype to give a layer: lt, loaded from the .lin file of the drawing units when
+;; the drawing does not have it yet, else Continuous.
+(defun Local>>Linetype (doc lt lin)
+  (cond
+    ((tblsearch "LTYPE" lt) lt)
+    ((and (not (vl-catch-all-error-p (vl-catch-all-apply 'vla-Load (list (vla-get-Linetypes doc) lt lin))))
+          (tblsearch "LTYPE" lt))
+     lt
+    )
+    (T "Continuous")
+  )
+)
+
+;; Makes or updates the layer name with its properties, without making it current.
+;; col is an ACI ("151") or, rgb true, "R,G,B"; lw is in millimetres ("0.18").
+;; Returns the layer, or the error caught.
+(defun Local>>LayerPut (lys name col rgb lw lt plt dsc / lay clr rgbl)
+  (vl-catch-all-apply
+    '(lambda ()
+       (setq lay (if (tblsearch "LAYER" name) (vla-Item lys name) (vla-Add lys name)))
+       (if rgb
+         (progn
+           (setq rgbl (read (strcat "(" (vl-string-translate "," " " col) ")"))
+                 clr  (vla-get-TrueColor lay)
+           )
+           (vla-SetRGB clr (car rgbl) (cadr rgbl) (caddr rgbl))
+           (vla-put-TrueColor lay clr)
+         )
+         (vla-put-Color lay (atoi col))
+       )
+       (vla-put-Lineweight lay (fix (+ 0.5 (* 100 (atof lw)))))
+       (vla-put-Linetype lay lt)
+       (vla-put-Plottable lay (if plt :vlax-true :vlax-false))
+       (vla-put-Description lay dsc)
+       lay
+     )
+  )
 )
 (defun Local>>getMatching (*pat *lol) 
   (setq *trd "No")
@@ -483,8 +559,9 @@
 (defun Local>>LM:readcsv (csv / des lst sep str) 
   (if (setq des (open csv "r")) 
     (progn 
-      (setq sep (cond ((vl-registry-read "HKEY_CURRENT_USER\\Control Panel\\International" "sList")) (",")))
       (while (setq str (read-line des)) 
+        (if (not sep)
+          (setq sep (cond ((vl-string-search ";" str) ";") ((vl-string-search "\t" str) "\t") (","))))
         (setq lst (cons (Local>>LM:csv->lst str sep 0) lst))
       )
       (close des)
@@ -580,8 +657,8 @@
 
 (defun c:Pst-MakeBasicDrawingLayers () 
   (setq *typ "Csv"
-        *dir "Dyl//Drawing"
-        *lst '("Basic.csv")
+        *dir nil
+        *lst '("Dyl\\Drawing\\Basic.csv")
   )
   (Dyl-LayerMake *typ *dir *lst *cop)
 )
@@ -591,8 +668,8 @@
 
 (defun c:Pst-MakeArchitecturalElevationLayers () 
   (setq *typ "Csv"
-        *dir "Architecture"
-        *lst '("A-Elev.csv" "A-Eqpm.csv" "A-Anno.csv")
+        *dir nil
+        *lst '("Architecture\\A-Elevation.csv" "Architecture\\A-Anno.csv")
   )
   (Dyl-LayerMake *typ *dir *lst *cop)
 )
@@ -602,8 +679,8 @@
 
 (defun c:Pst-MakeArchitecturalSectionLayers () 
   (setq *typ "Csv"
-        *dir "Architecture"
-        *lst '("A-Elev.csv" "A-Eqpm.csv" "A-Anno.csv")
+        *dir nil
+        *lst '("Architecture\\A-Elevation.csv" "Architecture\\A-Anno.csv")
   )
   (Dyl-LayerMake *typ *dir *lst *cop)
 )
@@ -613,8 +690,8 @@
 
 (defun c:Pst-MakeArchitecturalDetailLayers () 
   (setq *typ "Csv"
-        *dir "Architecture"
-        *lst '("A-Drawing.csv" "A-Eqpm.csv" "A-Anno.csv")
+        *dir nil
+        *lst '("Architecture\\A-Detail.csv" "Architecture\\A-Anno.csv")
   )
   (Dyl-LayerMake *typ *dir *lst *cop)
 )
@@ -624,8 +701,8 @@
 
 (defun c:Pst-MakeArchitecturalFloorPlanLayers () 
   (setq *typ "Csv"
-        *dir "Architecture"
-        *lst '("A-Flor.csv" "A-Eqpm.csv" "A-Anno.csv")
+        *dir nil
+        *lst '("Dyl\\Model\\Floor.csv" "Architecture\\A-Anno.csv")
   )
   (Dyl-LayerMake *typ *dir *lst *cop)
 )
@@ -635,8 +712,8 @@
 
 (defun c:Pst-MakeArchitecturalRoofPlanLayers () 
   (setq *typ "Csv"
-        *dir "Architecture"
-        *lst '("A-Roof.csv" "A-Eqpm.csv" "A-Anno.csv")
+        *dir nil
+        *lst '("Architecture\\A-Roof.csv" "Architecture\\A-Anno.csv")
   )
   (Dyl-LayerMake *typ *dir *lst *cop)
 )
@@ -646,8 +723,8 @@
 
 (defun c:Pst-MakeArchitecturalCeilingPlanLayers () 
   (setq *typ "Csv"
-        *dir "Architecture"
-        *lst '("A-Ceil.csv" "A-Flor.csv" "A-Eqpm.csv" "A-Anno.csv")
+        *dir nil
+        *lst '("Architecture\\A-Ceiling.csv" "Architecture\\A-Anno.csv")
   )
   (Dyl-LayerMake *typ *dir *lst *cop)
 )
@@ -657,8 +734,8 @@
 
 (defun c:Pst-MakeArchitecturalFurniturePlanLayers () 
   (setq *typ "Csv"
-        *dir "Architecture"
-        *lst '("A-Furn.csv" "A-Flor.csv" "A-Anno.csv")
+        *dir nil
+        *lst '("Dyl\\Model\\Furniture.csv" "Dyl\\Model\\Floor.csv" "Architecture\\A-Anno.csv")
   )
   (Dyl-LayerMake *typ *dir *lst *cop)
 )
@@ -668,10 +745,8 @@
 
 (defun c:Pst-MakeNCSLevel1Layers () 
   (setq *typ "Csv"
-        *dir "NCS"
-        *lst '("1-Architectural.csv" "1-Civil.csv" "1-Interior.csv" "1-Landscape.csv" "1-Structural.csv" "1-Civil.csv" 
-               "1-Plumbing.csv" "1-Electrical.csv" "1-Mechanical.csv"
-              )
+        *dir nil
+        *lst '("NCSv5\\1\\Architectural.csv" "NCSv5\\1\\Civil.csv" "NCSv5\\1\\Interior.csv" "NCSv5\\1\\Landscape.csv" "NCSv5\\1\\Structural.csv" "NCSv5\\1\\Plumbing.csv" "NCSv5\\1\\Electrical.csv" "NCSv5\\1\\Mechanical.csv")
   )
   (Dyl-LayerMake *typ *dir *lst *cop)
 )
@@ -681,10 +756,8 @@
 
 (defun c:Pst-MakeNCSLevel2Layers () 
   (setq *typ "Csv"
-        *dir "NCS"
-        *lst '("2-Architectural.csv" "2-Interior.csv" "2-Landscape.csv" "2-Structural.csv" "2-Civil.csv" 
-               "2-Plumbing.csv" "2-Electrical.csv" "2-Mechanical.csv"
-              )
+        *dir nil
+        *lst '("NCSv5\\2\\Architectural.csv" "NCSv5\\2\\Civil.csv" "NCSv5\\2\\Interior.csv" "NCSv5\\2\\Landscape.csv" "NCSv5\\2\\Structural.csv" "NCSv5\\2\\Plumbing.csv" "NCSv5\\2\\Electrical.csv" "NCSv5\\2\\Mechanical.csv")
   )
   (Dyl-LayerMake *typ *dir *lst *cop)
 )
@@ -694,10 +767,8 @@
 
 (defun c:Pst-MakeNCSLevel3Layers () 
   (setq *typ "Csv"
-        *dir "NCS"
-        *lst '("3-Architectural.csv" "2-Interior.csv" "3-Landscape.csv" "3-Structural.csv" "3-Civil.csv" 
-               "2-Plumbing.csv" "3-Electrical.csv" "3-Mechanical.csv"
-              )
+        *dir nil
+        *lst '("NCSv5\\3\\Architectural.csv" "NCSv5\\3\\Civil.csv" "NCSv5\\2\\Interior.csv" "NCSv5\\3\\Landscape.csv" "NCSv5\\3\\Structural.csv" "NCSv5\\2\\Plumbing.csv" "NCSv5\\3\\Electrical.csv" "NCSv5\\3\\Mechanical.csv")
   )
   (Dyl-LayerMake *typ *dir *lst *cop)
 )
