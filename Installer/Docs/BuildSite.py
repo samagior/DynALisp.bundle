@@ -12,7 +12,8 @@
 # Two sets, a switch between them in the header of every page (User Guide | Developers):
 #
 #   <folder>\index.html             the User Guide home: the modules (index.fr.html in French,
-#                                   index.<code>.html for each language of BuildDocs.LANGS)
+#                                   index.<code>.html for each language of BuildDocs.LANGS),
+#                                   and a search box filtering the tools of every module
 #   <folder>\<Module>\...           the User Guide: Contents\Modules\<Module>\Docs
 #   <folder>\dev\index.html         the Developer home: README.md
 #   <folder>\dev\conventions.html   CONVENTIONS.md
@@ -35,6 +36,7 @@
 # list on the website (Dyl:DocsTarget of dynalisp.mnl).
 
 import html
+import json
 import os
 import re
 import shutil
@@ -71,9 +73,15 @@ OUTSIDE = {'CHANGELOG.MD': RELEASES,
 
 # The texts of the site in each language of BuildDocs.LANGS (English for another one):
 TEXTS = {'en': {'guide': 'User Guide', 'dev': 'Developers',
-                'footer': 'DynALisp &ndash; released under the GNU General Public License v3'},
+                'footer': 'DynALisp &ndash; released under the GNU General Public License v3',
+                'search': 'Search the tools', 'hint': 'Name, command, alias or keyword',
+                'tool': 'Tool', 'desc': 'Description',
+                'found': ['No tool found', '1 tool found', '{n} tools found']},
          'fr': {'guide': 'Guide d\'utilisation', 'dev': 'D&eacute;veloppeurs',
-                'footer': 'DynALisp &ndash; publi&eacute; sous la licence publique g&eacute;n&eacute;rale GNU v3'}}
+                'footer': 'DynALisp &ndash; publi&eacute; sous la licence publique g&eacute;n&eacute;rale GNU v3',
+                'search': 'Rechercher un outil', 'hint': 'Nom, commande, alias ou mot-clé',
+                'tool': 'Outil', 'desc': 'Description',
+                'found': ['Aucun outil trouvé', '1 outil trouvé', '{n} outils trouvés']}}
 HEADER = '<p>DynALisp <span>Docs</span></p>'
 LINK = re.compile(r'((?:href|src)=")([^"#:]*)((?:#[^"]*)?")')
 
@@ -203,9 +211,9 @@ def template(dst, code, kind, title, body, twin=None, langs=True):
                text(code, 'footer')))
 
 
-def guide_home(pages, code):
-    """The User Guide home in the language code: the modules, the Dynalisp module first, each
-    one its index in that language when it has one."""
+def module_indexes(pages, code):
+    """{module: (path, title, sentence)} of the module indexes of DocsPages.txt in the
+    language code, the English one for a module without an index in that language."""
     suf = next(s for c, s, *_ in BuildDocs.LANGS if c == code)
     idx = {}
     for path, t, s in pages:
@@ -214,11 +222,170 @@ def guide_home(pages, code):
             idx.setdefault(mod, (path, t, s))
         elif suf and rest == 'index%s.htm' % suf:
             idx[mod] = (path, t, s)
+    return idx
+
+
+ROW = re.compile(r'<tr><td><a href="([^"#:]+\.htm)[^"]*">(.*?)</a></td>(.*?)</tr>', re.S)
+HEADING = re.compile(r'<h([23])>(.*?)</h\1>', re.S)
+FIXW = re.compile(r'<span class="fixw">(.*?)</span>', re.S)
+
+
+def plain(fragment):
+    return html.unescape(BuildDocs.text_of(fragment))
+
+
+def command_names(fragments):
+    """The commands and aliases named in fixw in the html fragments, each once (never a
+    pattern such as Pst-*, a path or a file)."""
+    names = []
+    for frag in fragments:
+        for n in FIXW.findall(frag):
+            n = plain(n)
+            if re.fullmatch(r'[\w-]+', n) and n.upper() not in (x.upper() for x in names):
+                names.append(n)
+    return names
+
+
+def tools(pages, code):
+    """The tools of every module for the search box of the home in the language code:
+    [title, link, module, group, commands, description, words], read from the rows of the
+    module indexes (the group: their h3, else their h2) and from each page: its h1, its
+    commands and aliases (the syntax of its index row, its Function Syntax and its table of
+    command names and aliases, whose names go in words), and its description (the paragraphs
+    of its first h2; the first paragraph after its h1 when it has no h2)."""
+    out, seen = [], set()
+    listed = {p for p, *_ in pages}
+    for mod, (path, mtitle, _) in sorted(module_indexes(pages, code).items(),
+                                         key=lambda i: (i[0].upper() != 'DYNALISP', i[0].upper())):
+        src = os.path.join(MODULES, mod, 'Docs', *path.split('/')[1:])
+        with open(src, encoding='utf-8') as f:
+            index = f.read()
+        heads = [(m.start(), plain(m.group(2))) for m in HEADING.finditer(index)]
+        for m in ROW.finditer(index):
+            link = mod + '/' + m.group(1)
+            if link not in listed or link in seen:
+                continue
+            seen.add(link)
+            group = ''
+            for at, h in heads:
+                if at < m.start():
+                    group = h
+            with open(os.path.join(MODULES, mod, 'Docs', *m.group(1).split('/')), encoding='utf-8') as f:
+                text_ = f.read()
+            h1 = re.search(r'<h1>(.*?)</h1>', text_, re.S)
+            title = plain(h1.group(1)) if h1 else plain(m.group(2))
+            syntax = re.search(r'<td>Function Syntax</td>\s*<td>(.*?)</td>', text_, re.S)
+            block = re.search(r'<!-- dyl:aliases -->(.*?)<!-- /dyl:aliases -->', text_, re.S)
+            rows = re.findall(r'<tr><td>(.*?)</td><td>(.*?)</td><td>(.*?)</td></tr>', block.group(1), re.S) if block else []
+            names = command_names([m.group(3), syntax.group(1) if syntax else ''] + [r[0] + r[1] for r in rows])
+            h2 = re.search(r'<h2[^>]*>.*?</h2>(.*?)(?=<h2|$)', text_, re.S)
+            paras = [plain(x) for x in re.findall(r'<p>(.*?)</p>', h2.group(1) if h2 else '', re.S)]
+            if not paras:
+                first = re.search(r'<p>(.*?)</p>', text_[h1.end():] if h1 else text_, re.S)
+                paras = [plain(first.group(1))] if first else []
+            words = ' '.join(dict.fromkeys(plain(r[2]) for r in rows if plain(r[2]).upper() != title.upper()))
+            out.append([title, link, mtitle or mod, group, ' '.join(names), ' '.join(paras), words])
+    return out
+
+
+SEARCH_JS = """(function () {
+  var box = document.getElementById('search'), q = document.getElementById('q'),
+      found = document.getElementById('found'), res = document.getElementById('results'),
+      body = res.querySelector('tbody'), mods = document.getElementById('modules'),
+      tools = JSON.parse(document.getElementById('tools').textContent),
+      words = JSON.parse(box.getAttribute('data-found'));
+  function fold(s) {
+    return s.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase();
+  }
+  tools.forEach(function (t) {
+    t.name = fold(t[0]); t.cmds = fold(t[4]);
+    t.all = fold(t.join(' '));
+    var i = t[5].search(/[.!?](\\s|$)/);
+    t.short = i < 0 ? t[5] : t[5].slice(0, i + 1);
+  });
+  function cell(tr) {
+    var td = document.createElement('td');
+    tr.appendChild(td);
+    return td;
+  }
+  function show() {
+    var terms = fold(q.value).split(/\\s+/).filter(Boolean);
+    body.textContent = '';
+    if (!terms.length) {
+      res.hidden = true; mods.hidden = false; found.textContent = '';
+      return;
+    }
+    function all(s) { return terms.every(function (w) { return s.indexOf(w) >= 0; }); }
+    var hits = tools.filter(function (t) { return all(t.all); }).map(function (t) {
+      return [all(t.name) ? 0 : all(t.cmds) ? 1 : 2, t];
+    }).sort(function (a, b) { return a[0] - b[0] || a[1][0].localeCompare(b[1][0]); });
+    hits.forEach(function (h) {
+      var t = h[1], tr = document.createElement('tr'), td = cell(tr), a = document.createElement('a');
+      a.href = t[1]; a.textContent = t[0]; td.appendChild(a);
+      var where = document.createElement('span');
+      where.className = 'where'; where.textContent = t[2] + (t[3] ? ' \\u00b7 ' + t[3] : '');
+      td.appendChild(where);
+      cell(tr).textContent = t.short;
+      body.appendChild(tr);
+    });
+    var n = hits.length;
+    found.textContent = (n > 1 ? words[2] : words[n]).replace('{n}', n);
+    res.hidden = !n; mods.hidden = true;
+  }
+  function keep() {
+    try {
+      var u = new URL(location.href);
+      if (q.value) { u.searchParams.set('q', q.value); } else { u.searchParams.delete('q'); }
+      history.replaceState(null, '', u);
+    } catch (e) {}
+  }
+  q.addEventListener('input', function () { show(); keep(); });
+  q.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { q.value = ''; show(); keep(); }
+    if (e.key === 'Enter') {
+      var a = body.querySelector('a');
+      if (a) { location.href = a.href; }
+    }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === '/' && document.activeElement !== q && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)) {
+      e.preventDefault(); q.focus();
+    }
+  });
+  try { q.value = new URLSearchParams(location.search).get('q') || ''; } catch (e) {}
+  box.hidden = false;
+  show();
+})();"""
+
+
+def search_box(pages, code):
+    """The search box of the home: the tools as JSON in the page, filtered as the user types
+    (every word in the name, the commands, the module, the group or the description, accents
+    and case ignored), the module table hidden while it shows results. Without JavaScript
+    the box stays hidden and the home is the module table alone. (box, script): the script
+    goes after the module table, which it hides."""
+    data = json.dumps(tools(pages, code), ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
+    found = html.escape(json.dumps(text(code, 'found'), ensure_ascii=False), quote=True)
+    return ('<div class="search" id="search" data-found="%s" hidden>\n'
+            '<label for="q">%s</label>\n'
+            '<input type="search" id="q" placeholder="%s" autocomplete="off" spellcheck="false" aria-describedby="found">\n'
+            '<p class="found" id="found" aria-live="polite"></p>\n</div>\n'
+            '<div class="programs commands wide" id="results" hidden>\n<table>\n<thead><tr><th>%s</th><th>%s</th></tr></thead>\n'
+            '<tbody></tbody>\n</table>\n</div>\n'
+            % (found, text(code, 'search'), html.escape(text(code, 'hint')), text(code, 'tool'), text(code, 'desc')),
+            '\n<script type="application/json" id="tools">%s</script>\n<script>\n%s\n</script>' % (data, SEARCH_JS))
+
+
+def guide_home(pages, code):
+    """The User Guide home in the language code: the search box of the tools, then the
+    modules, the Dynalisp module first, each one its index in that language when it has one."""
+    idx = module_indexes(pages, code)
     mods = sorted(idx, key=lambda m: (m.upper() != 'DYNALISP', m.upper()))
     rows = ''.join('<tr><td><a href="%s">%s</a></td><td>%s</td></tr>\n' % (html.escape(idx[m][0]), idx[m][1] or m, idx[m][2])
                    for m in mods)
-    body = ('        <h1>DynALisp Docs</h1>\n<div class="programs commands wide">\n<table>\n'
-            '<tr><th>Module</th><th>Description</th></tr>\n%s</table>\n</div>' % rows)
+    box, script = search_box(pages, code)
+    body = ('        <h1>DynALisp Docs</h1>\n%s<div class="programs commands wide" id="modules">\n<table>\n'
+            '<tr><th>Module</th><th>Description</th></tr>\n%s</table>\n</div>%s' % (box, rows, script))
     return template(home_file(code), code, 'guide', 'DynALisp Docs', body)
 
 
