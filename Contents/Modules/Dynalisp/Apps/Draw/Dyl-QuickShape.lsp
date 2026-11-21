@@ -457,7 +457,7 @@
 
 ;;  The border of the preset r (see Remote>>Dyl:MaterialDlgBorderState; always a border):
 (defun Dyl:QuickShapeDlgState (r)
-  (Remote>>Dyl:MaterialDlgBorderState (Dyl:QuickShapeMat (cond ((assoc (nth 3 r) pst:mats)) (*mt:new*)) r) nil)
+  (Remote>>Dyl:MaterialDlgBorderState (Dyl:QuickShapeMat (cond ((assoc (nth 3 r) pst:mats)) (*mt:new*)) r))
 )
 
 ;;  Fill the Shape popup (each time the dialog is shown: a shape may have been added): the shapes
@@ -483,7 +483,7 @@
   (action_tile "sad" "(if (or (Remote>>Dyl:PresetDlgCommit) (not (member (nth 4 (nth pst:idx pst:lst)) qs:shapes))) (done_dialog 3))")
   (action_tile "sop" "(if (or (Remote>>Dyl:PresetDlgCommit) (not (member (nth 4 (nth pst:idx pst:lst)) qs:shapes))) (done_dialog 4))")
   ;;  The Border settings box (no Has a border):
-  (Remote>>Dyl:MaterialDlgBorderInit (mapcar '(lambda (r) (nth *qs:border* r)) (append *qs:defaults* pst:lst)) nil)
+  (Remote>>Dyl:MaterialDlgBorderInit (mapcar '(lambda (r) (nth *qs:border* r)) (append *qs:defaults* pst:lst)))
 )
 
 ;;  Code 3 = Add shape from selection: the new shape goes to the library of the shape of the
@@ -535,7 +535,7 @@
                     "      : edit_box { key = \"scl\"; label = \"Scale:\"; edit_width = 12; }"
                     "      spacer;"
                    )
-                  (Remote>>Dyl:MaterialBorderDcl nil nil)
+                  (Remote>>Dyl:MaterialBorderDcl)
                 )
           )
           (cons 'new (Dyl:QuickShapeDefault '("" "" "New shape" "mt-Brick" "Shapes|Stud-2x4" "1")))

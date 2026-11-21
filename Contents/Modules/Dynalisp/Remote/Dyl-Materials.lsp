@@ -1108,10 +1108,10 @@
   )
 )
 
-;;  Open button of a color: the AutoCAD color dialog on the color of the tile key, the color
-;;  picked put in it ("n" or "r,g,b") and stored:
-(defun Remote>>Dyl:MaterialDlgColor (key / c r tc val)
-  (setq c (Remote>>Dyl:MaterialColorParse (get_tile key))
+;;  The AutoCAD color dialog on the color str ("n" or "r,g,b"): the color picked, in the same
+;;  form, nil when it is cancelled:
+(defun Remote>>Dyl:MaterialColorPick (str / c r tc)
+  (setq c (Remote>>Dyl:MaterialColorParse str)
         r (acad_truecolordlg
             (if (= 3 (length c))
               (cons 420 (+ (* 65536 (car c)) (* 256 (cadr c)) (caddr c)))
@@ -1121,12 +1121,18 @@
           )
   )
   (if r
+    (if (setq tc (cdr (assoc 420 r)))
+      (strcat (itoa (lsh tc -16)) "," (itoa (logand (lsh tc -8) 255)) "," (itoa (logand tc 255)))
+      (itoa (cdr (assoc 62 r)))
+    )
+  )
+)
+
+;;  Open button of a color: the AutoCAD color dialog on the color of the tile key, the color
+;;  picked put in it and stored:
+(defun Remote>>Dyl:MaterialDlgColor (key / val)
+  (if (setq val (Remote>>Dyl:MaterialColorPick (get_tile key)))
     (progn
-      (setq val (if (setq tc (cdr (assoc 420 r)))
-                  (strcat (itoa (lsh tc -16)) "," (itoa (logand (lsh tc -8) 255)) "," (itoa (logand tc 255)))
-                  (itoa (cdr (assoc 62 r)))
-                )
-      )
       (set_tile key val)
       (if (Remote>>Dyl:PresetDlgField key val) (Remote>>Dyl:PresetDlgState))
     )
@@ -1244,13 +1250,15 @@
 
 ;;  The Border settings box of the Quick Draw and Quick Shape windows: the border of a preset
 ;;  (its layer key, the overrides of its properties, its transparency and, in Quick Draw, Has
-;;  a border). Each preset has its own; they are put in the border columns of its material
+;;  a border). The Quick Draw window is a WPF window (Res\Dyl-QuickDraw.xaml, its Border box:
+;;  the same keys, its rules in the window file); the DCL box below is that of Quick Shape.
+;;  Each preset has its own; they are put in the border columns of its material
 ;;  when it is drawn (Remote>>Dyl:MaterialBorderPut), so Remote>>Dyl:MaterialHatchAt and the
 ;;  box read them at the index of a material. Kept here with the materials, whose columns
 ;;  they use (no longer in the Materials window).
 
 ;;  Tiles of the box, with the index of their value in a material (No border, 31, is not a
-;;  tile: the Has a border checkbox shows it inverted, see Remote>>Dyl:MaterialDlgBorder):
+;;  tile: the Has a border checkbox of Quick Draw shows it inverted, hbr):
 (setq *mt:bordertiles* '(("out" . 7) ("bco" . 12) ("bcv" . 13) ("blo" . 14) ("blt" . 15) ("bso" . 16)
                          ("bsc" . 17) ("bwo" . 18) ("bwt" . 19) ("bto" . 20) ("btr" . 21)
                         )
@@ -1289,79 +1297,51 @@
   (if nob (Remote>>Dyl:ListSubst r nob (nth 31 mat)) r)
 )
 
-;;  DCL lines of the box (under the shape in Quick Shape, under the Behaviors box in Quick
-;;  Draw). nob T: with the Has a border checkbox (Quick Draw; a Quick Shape shape always has
-;;  its border). wide T: in two columns (Quick Draw), else one column. Each sub-section a
-;;  column of fixed height, the spacers between them take the extra height (see
-;;  CONVENTIONS.md, Windows):
-(defun Remote>>Dyl:MaterialBorderDcl (nob wide / key ovr opt)
-  ;;  The layer key (and Has a border: off, No border, the outlines erased once hatched, the
-  ;;  rest of the box greyed out):
-  (setq key (append
-              (if nob '("            : row { : toggle { key = \"hbr\"; label = \"Has a border\"; } }"))
-              '(;;  The layer key, its open button the Layer Keys window (see Remote>>Dyl:MaterialDlgBorderStatus):
-                "            : row { : text { key = \"outl\"; label = \"Layer key:\"; }"
-                "                    : image_button { key = \"okp\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
-                "                    : popup_list { key = \"out\"; edit_width = 28; fixed_width = true; } }"
-               )
-            )
-        ;;  The settings that override the properties of the layer key:
-        ovr '("            : row { : text { key = \"bovt\"; label = \"Layer key overrides:\"; } }"
-              "            : row { : toggle { key = \"bco\"; label = \"Color:\"; width = 28; }"
-              "                    : image_button { key = \"bcp\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
-              "                    : edit_box { key = \"bcv\"; edit_width = 12; fixed_width = true; } }"
-              "            : row { : toggle { key = \"blo\"; label = \"Linetype:\"; width = 28; }"
-              "                    : edit_box { key = \"blt\"; edit_width = 12; fixed_width = true; } }"
-              "            : row { : toggle { key = \"bso\"; label = \"Linetype scale:\"; width = 28; }"
-              "                    : edit_box { key = \"bsc\"; edit_width = 12; fixed_width = true; } }"
-              "            : row { : toggle { key = \"bwo\"; label = \"Lineweight:\"; width = 28; }"
-              "                    : popup_list { key = \"bwt\"; edit_width = 12; fixed_width = true; } }"
-             )
-        ;;  The settings that are not a property of the layer key, a dividing line over them:
-        opt '("            : image { key = \"bsep2\"; height = 0.8; fixed_height = true; color = -15; }"
-              "            : row { : text { key = \"bopt\"; label = \"Optional settings:\"; } }"
-              "            : row { : toggle { key = \"bto\"; label = \"Transparency:\"; width = 28; }"
-              "                    : edit_box { key = \"btr\"; edit_width = 12; fixed_width = true; } }"
-             )
-  )
+;;  DCL lines of the box (under the shape in Quick Shape, a shape always has its border): the
+;;  layer key, the overrides, the optional settings, each sub-section a column of fixed
+;;  height, a dividing line over the title of the last two, the spacers between them take the
+;;  extra height (see CONVENTIONS.md, Windows):
+(defun Remote>>Dyl:MaterialBorderDcl ()
   (append
-    '("          : boxed_column { label = \"Border settings\";")
-    (if wide
-      ;;  Two columns: the layer key and the optional settings, then the overrides, divided by
-      ;;  a vertical line (bsep, drawn by Dyl:LineTile as the line of the one column box):
-      (append '("            : row {" "            : column {" "            : column { fixed_height = true;")
-              key
-              '("            }" "            : spacer { }" "            : column { fixed_height = true;")
-              opt
-              '("            }" "            }"
-                "            : image { key = \"bsep\"; width = 2; height = 1; fixed_width = true; color = -15; }"
-                "            : column {" "            : column { fixed_height = true;"
-               )
-              ovr
-              '("            }" "            : spacer { }" "            }" "            }")
-      )
-      ;;  One column: the layer key, the overrides, the optional settings, a dividing line
-      ;;  over the title of the last two:
-      (append '("            : column { fixed_height = true;")
-              key
-              '("            }" "            : spacer { }" "            : column { fixed_height = true;"
-                "            : image { key = \"bsep\"; height = 0.8; fixed_height = true; color = -15; }"
-               )
-              ovr
-              '("            }" "            : spacer { }" "            : column { fixed_height = true;")
-              opt
-              '("            }")
-      )
-    )
-    '("          }")
+    '("          : boxed_column { label = \"Border settings\";"
+      "            : column { fixed_height = true;"
+      ;;  The layer key, its open button the Layer Keys window (see Remote>>Dyl:MaterialDlgBorderStatus):
+      "            : row { : text { key = \"outl\"; label = \"Layer key:\"; }"
+      "                    : image_button { key = \"okp\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
+      "                    : popup_list { key = \"out\"; edit_width = 28; fixed_width = true; } }"
+      "            }"
+      "            : spacer { }"
+      "            : column { fixed_height = true;"
+      "            : image { key = \"bsep\"; height = 0.8; fixed_height = true; color = -15; }"
+      ;;  The settings that override the properties of the layer key:
+      "            : row { : text { key = \"bovt\"; label = \"Layer key overrides:\"; } }"
+      "            : row { : toggle { key = \"bco\"; label = \"Color:\"; width = 28; }"
+      "                    : image_button { key = \"bcp\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
+      "                    : edit_box { key = \"bcv\"; edit_width = 12; fixed_width = true; } }"
+      "            : row { : toggle { key = \"blo\"; label = \"Linetype:\"; width = 28; }"
+      "                    : edit_box { key = \"blt\"; edit_width = 12; fixed_width = true; } }"
+      "            : row { : toggle { key = \"bso\"; label = \"Linetype scale:\"; width = 28; }"
+      "                    : edit_box { key = \"bsc\"; edit_width = 12; fixed_width = true; } }"
+      "            : row { : toggle { key = \"bwo\"; label = \"Lineweight:\"; width = 28; }"
+      "                    : popup_list { key = \"bwt\"; edit_width = 12; fixed_width = true; } }"
+      "            }"
+      "            : spacer { }"
+      "            : column { fixed_height = true;"
+      ;;  The settings that are not a property of the layer key, a dividing line over them:
+      "            : image { key = \"bsep2\"; height = 0.8; fixed_height = true; color = -15; }"
+      "            : row { : text { key = \"bopt\"; label = \"Optional settings:\"; } }"
+      "            : row { : toggle { key = \"bto\"; label = \"Transparency:\"; width = 28; }"
+      "                    : edit_box { key = \"btr\"; edit_width = 12; fixed_width = true; } }"
+      "            }"
+      "          }"
+     )
   )
 )
 
 ;;  The layer keys of the box, the Lineweight popup, the open buttons of the color and of the
-;;  layer key, the dividing lines, and Has a border (nob: the index of No border in a preset,
-;;  nil without the checkbox). used: the layer keys of the presets (kept in the popup when
+;;  layer key, the dividing lines. used: the layer keys of the presets (kept in the popup when
 ;;  they are not defined). Each time the dialog is shown:
-(defun Remote>>Dyl:MaterialDlgBorderInit (used nob)
+(defun Remote>>Dyl:MaterialDlgBorderInit (used)
   (Remote>>Dyl:MaterialDlgKeys '("out") used)
   (start_list "bwt")
   (foreach w *mt:weights* (add_list (strcat (rtos (/ (atoi w) 100.0) 2 2) " mm")))
@@ -1369,34 +1349,18 @@
   (action_tile "bcp" "(Remote>>Dyl:MaterialDlgColor \"bcv\")")
   (action_tile "okp" (strcat "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog " (itoa *mt:borderkeypick*) "))"))
   (foreach k '("bsep" "bsep2") (Dyl:LineTile k))
-  (if nob (action_tile "hbr" (strcat "(Remote>>Dyl:MaterialDlgBorder $value " (itoa nob) ")")))
-)
-
-;;  Has a border checkbox (value val): No border (index i in a preset) of the presets
-;;  selected, its inverse (see Remote>>Dyl:PresetDlgPut):
-(defun Remote>>Dyl:MaterialDlgBorder (val i)
-  (Remote>>Dyl:PresetDlgPut i (if (= "1" val) "0" "1"))
-  (Remote>>Dyl:PresetDlgState)
 )
 
 ;;  Enable the tiles of the box for the border of the material m (the material of a preset
-;;  with its border, see Remote>>Dyl:MaterialBorderPut). nob T: with Has a border, unchecked
-;;  it greys out the rest of the box. An optional setting has its value greyed out until its
-;;  checkbox is checked:
-(defun Remote>>Dyl:MaterialDlgBorderState (m nob / off tog)
-  (setq off (and nob (= "1" (nth 31 m))))
+;;  with its border, see Remote>>Dyl:MaterialBorderPut). An optional setting has its value
+;;  greyed out until its checkbox is checked:
+(defun Remote>>Dyl:MaterialDlgBorderState (m / tog)
   (foreach x *mt:borderoptional*
     (setq tog (= "1" (nth (cdr (assoc (car x) *mt:bordertiles*)) m)))
-    (if off
-      (foreach k x (Remote>>Dyl:MaterialDlgMode k 1))
-      (progn
-        (mode_tile (car x) 0)
-        (foreach k (cdr x) (Remote>>Dyl:MaterialDlgMode k (if tog 0 1)))
-      )
-    )
+    (mode_tile (car x) 0)
+    (foreach k (cdr x) (Remote>>Dyl:MaterialDlgMode k (if tog 0 1)))
   )
-  (if nob (set_tile "hbr" (if off "0" "1")))
-  (foreach k '("out" "outl" "okp" "bovt" "bopt") (Remote>>Dyl:MaterialDlgMode k (if off 1 0)))
+  (foreach k '("out" "outl" "okp" "bovt" "bopt") (Remote>>Dyl:MaterialDlgMode k 0))
 )
 
 ;;  Code *mt:borderkeypick* = the open button of the layer key of the box: the Layer Keys
@@ -1411,11 +1375,12 @@
 
 ;;-------------------------=={ Material behaviors box }==------------------------;;
 
-;;  The Material behaviors box of the Quick Draw window: how a preset is drawn (see
-;;  Dyl:QuickDrawRun, Apps\Draw\Dyl-QuickDraw.lsp). Each preset has its own behaviors; they
-;;  are put in the behavior columns of its material when it is drawn (Dyl:QuickDrawMat), so
-;;  the box and Dyl:QuickDraw read them at the index of a material. Kept here with the
-;;  materials, whose columns they use (no longer in the Materials window).
+;;  The Behaviors box of the Quick Draw window (Res\Dyl-QuickDraw.xaml, a WPF window: its
+;;  controls, their rules and their messages are in the window file): how a preset is drawn
+;;  (see Dyl:QuickDrawRun, Apps\Draw\Dyl-QuickDraw.lsp). Each preset has its own behaviors;
+;;  they are put in the behavior columns of its material when it is drawn
+;;  (Dyl:QuickDrawMat), so Dyl:QuickDraw reads them at the index of a material. Kept here
+;;  with the materials, whose columns they use (no longer in the Materials window).
 
 ;;  Tiles of the box, with the index of their value in a material:
 (setq *mt:behaviortiles* '(("mth" . 33) ("mwd" . 34) ("mjs" . 35) ("msd" . 36) ("msw" . 37) ("mfc" . 38)
@@ -1445,77 +1410,9 @@
       ;;  Dyl:QuickDrawBandDialog):
       *mt:endspick* 3
       *mt:cornerspick* 7
-)
-
-;;  DCL lines of the Behaviors box (see the parameters of Dyl:QuickDrawDialog): a row for
-;;  each value, its box at the right, in two columns divided by a vertical line (drawn by
-;;  Dyl:LineTile, see Remote>>Dyl:MaterialDlgBehaviorsInit). The left column: the hatch preset
-;;  of the preset (the rows of the preset engine, same keys, see (matinparams . T) in
-;;  Remote\Dyl-Presets.lsp; greyed out for an assembly: each layer is hatched as its own
-;;  preset says), the assembly of layers (Linear, Offset), the method and the values of
-;;  Polygon and Shrinkwrap. The right column: the bands of Linear and Offset (their width,
-;;  where the line is, their own ends and corners, set in the Ends and Corners windows by the
-;;  open buttons, see *mt:endspick*) and the hatch along the line. Each sub-section a column
-;;  of fixed height, the spacers between them take the extra height:
-(setq *mt:behaviordcl*
-  '("          : boxed_column { label = \"Behaviors\";"
-    "            : row {"
-    "            : column {"
-    "            : column { fixed_height = true;"
-    "            : row { : popup_list { key = \"mth\"; label = \"Draw with:\"; edit_width = 28; } }"
-    "            : row { : text { key = \"matl\"; label = \"Hatch preset:\"; }"
-    "                    : image_button { key = \"edm\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
-    "                    : popup_list { key = \"mat\"; edit_width = 28; fixed_width = true; } }"
-    ;;  A band of several layers (Linear, Offset; its width: their total, shown in Width),
-    ;;  edited in the Assembly Layers window (the open button):
-    "            : row { : toggle { key = \"mas\"; label = \"Assembly of layers\"; width = 20; }"
-    "                    : image_button { key = \"mae\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
-    "                    : text { key = \"mai\"; width = 12; fixed_width = true; } }"
-    "            : row { : edit_box { key = \"msd\"; label = \"Sides:\"; edit_width = 12; } }"
-    ;;  Shrinkwrap gap: off, the gap step of Dyl-Settings from 0; on, the gap of the
-    ;;  drawing units (MEASUREMENT), asked when drawn when it is empty:
-    "            : row { : toggle { key = \"mgo\"; label = \"Gap override\"; } }"
-    ;;  One gap, in drawing units whatever they are (the metric gap of an older file: see
-    ;;  Remote>>Dyl:MaterialFix):
-    "            : row { : edit_box { key = \"mgp\"; label = \"Gap:\"; edit_width = 12; } }"
-    "            }"
-    "            : spacer { }"
-    "            }"
-    "            : image { key = \"mbv\"; width = 2; height = 1; fixed_width = true; color = -15; }"
-    "            : column {"
-    "            : column { fixed_height = true;"
-    ;;  At the top of the column: its title only (the border of the box above it):
-    "            : text { label = \"Bands:\"; }"
-    ;;  Width: the total of the layers of an assembly, greyed out:
-    "            : row { : edit_box { key = \"mwd\"; label = \"Width:\"; edit_width = 12; edit_limit = 128; } }"
-    "            : row { : popup_list { key = \"mjs\"; label = \"Justification:\"; edit_width = 28; } }"
-    ;;  Off: square ends, mitered corners (see Dyl:QuickDrawBandOpts); on: those of the
-    ;;  Ends / Corners window (the open button), summed up beside it:
-    "            : row { : toggle { key = \"meo\"; label = \"Custom ends\"; width = 20; }"
-    "                    : image_button { key = \"mee\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
-    "                    : text { key = \"mei\"; width = 24; fixed_width = true; } }"
-    "            : row { : toggle { key = \"mcn\"; label = \"Custom corners\"; width = 20; }"
-    "                    : image_button { key = \"mce\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
-    "                    : text { key = \"mci\"; width = 24; fixed_width = true; } }"
-    "            }"
-    "            : spacer { }"
-    "            : column { fixed_height = true;"
-    "            : image { key = \"mbs2\"; height = 0.8; fixed_height = true; color = -15; }"
-    "            : text { label = \"Hatch:\"; }"
-    "            : row { : popup_list { key = \"mht\"; label = \"Align to:\"; edit_width = 28; } }"
-    "            : row { : toggle { key = \"msw\"; label = \"Scale by width\"; width = 28; }"
-    "                    : edit_box { key = \"mfc\"; edit_width = 12; fixed_width = true; } }"
-    ;;  Hatch origin on the line, offset X along the line and Y across it (Pick...: picked on
-    ;;  a sample band, see Remote>>Dyl:MaterialOriginPick):
-    "            : row { : toggle { key = \"mor\"; label = \"Origin on line\"; width = 28; }"
-    "                    : button { key = \"mop\"; label = \"Pick...\"; width = 12; fixed_width = true; } }"
-    "            : row { : edit_box { key = \"moa\"; label = \"Offset X:\"; edit_width = 12; } }"
-    "            : row { : edit_box { key = \"mof\"; label = \"Offset Y:\"; edit_width = 12; } }"
-    "            }"
-    "            }"
-    "            }"
-    "          }"
-   )
+      ;;  The open button of the color of the border: the color window of AutoCAD (see
+      ;;  Remote>>Dyl:MaterialColorPick):
+      *mt:colorpick* 11
 )
 
 ;;  The tiles of the Ends and of the Corners windows (Dyl:QuickDrawBandDialog), not tiles of
@@ -1559,26 +1456,6 @@
     )
     ("Mitered")
   )
-)
-
-;;  Fill the Draw with and Line on popups of the box, set the action of Pick... (the values
-;;  typed must be valid first):
-(defun Remote>>Dyl:MaterialDlgBehaviorsInit ()
-  (start_list "mth")
-  (foreach x (cons '("" "Ask when drawn") *mt:methods*) (add_list (cadr x)))
-  (end_list)
-  (start_list "mjs")
-  (foreach x *mt:justify* (add_list (cadr x)))
-  (end_list)
-  ;;  (the ends and corners: in their own windows, see Dyl:QuickDrawBandDialog)
-  (start_list "mht")
-  (foreach y *mt:hatchmodes* (add_list (cadr y)))
-  (end_list)
-  (foreach k '("mbs2" "mbv") (Dyl:LineTile k))
-  (action_tile "mop" (strcat "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog " (itoa *mt:originpick*) "))"))
-  (action_tile "mae" (strcat "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog " (itoa *mt:layerspick* ) "))"))
-  (action_tile "mee" (strcat "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog " (itoa *mt:endspick* ) "))"))
-  (action_tile "mce" (strcat "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog " (itoa *mt:cornerspick* ) "))"))
 )
 
 ;;  Repeat of the pattern of the hatch e, in drawing units (its scale and angle applied): the
@@ -1757,55 +1634,6 @@
     )
   )
   (princ)
-)
-
-;;  Enable the tiles of the box for the behaviors of the material r (on nil: all greyed out).
-;;  The width and justify of Linear, the sides of Polygon, set for their method and for Ask
-;;  when drawn (the method picked when drawn uses them too). The hatch scale from the width
-;;  and the hatch origin on the line: not for a SOLID hatch:
-(defun Remote>>Dyl:MaterialDlgBehaviors (r on / solid m asm)
-  (setq solid (= "SOLID" (nth 3 r))
-        m     (nth 33 r)
-        ;;  An assembly (Linear, Offset): each layer is hatched as its preset says, the width
-        ;;  is the total of the layers: the width and the hatch along the line of the preset
-        ;;  unused:
-        asm   (and on (member m '("Linear" "Offset" "")) (= "1" (nth 59 r)))
-  )
-  (mode_tile "mth" (if on 0 1))
-  ;;  Offset: the side of the band is picked, its justification is not used:
-  (mode_tile "mwd" (if (and on (not asm) (member m '("Linear" "Offset" ""))) 0 1))
-  (mode_tile "mjs" (if (and on (member m '("Linear" ""))) 0 1))
-  ;;  The assembly, its open button until it is checked:
-  (mode_tile "mas" (if (and on (member m '("Linear" "Offset" ""))) 0 1))
-  (Dyl:MoreTile "mae" asm)
-  (set_tile "mai" (Remote>>Dyl:MaterialLayersText (nth 60 r)))
-  (if asm (setq solid T))
-  (foreach k '("msw" "mor" "mop") (mode_tile k (if (and on (not solid) (member m '("Linear" "Offset" ""))) 0 1)))
-  (mode_tile "msd" (if (and on (member m '("Polygon" ""))) 0 1))
-  ;;  Shrinkwrap gap override, its imperial and metric gaps until it is checked:
-  (mode_tile "mgo" (if (and on (member m '("Shrinkwrap" ""))) 0 1))
-  (foreach k '("mgp")
-    (mode_tile k (if (and on (member m '("Shrinkwrap" "")) (= "1" (nth 44 r))) 0 1))
-  )
-  ;;  The width factor and the origin offsets, until their checkbox is checked (Pick... checks it):
-  (mode_tile "mfc" (if (and on (not solid) (member m '("Linear" "Offset" "")) (= "1" (nth 37 r))) 0 1))
-  (foreach k '("moa" "mof")
-    (mode_tile k (if (and on (not solid) (member m '("Linear" "Offset" "")) (= "1" (nth 39 r)) (/= "Origin" (nth 58 r))) 0 1))
-  )
-  ;;  Ends and corners: for Linear and Offset; the value each choice uses only with it (or
-  ;;  Ask when drawn). The hatch origin on the line only with the hatch following the line:
-  (setq on (and on (member m '("Linear" "Offset" ""))))
-  (mode_tile "mht" (if on 0 1))
-  ;;  Their own ends and corners, the open button of each one until it is checked, and what
-  ;;  they are beside it (the ends and corners themselves: in their own windows):
-  (foreach x '(("meo" "mee" "mei" 61 "Ends") ("mcn" "mce" "mci" 62 "Corners"))
-    (mode_tile (car x) (if on 0 1))
-    (Dyl:MoreTile (cadr x) (and on (= "1" (nth (cadddr x) r))))
-    (set_tile (caddr x) (Remote>>Dyl:MaterialBandText r (last x)))
-  )
-  (foreach k '("mor" "mop")
-    (mode_tile k (if (and on (not solid) (/= "Origin" (nth 58 r))) 0 1))
-  )
 )
 
 ;;  SOLID ignores the scale, angle and annotative values. The drawing scale applies only to
