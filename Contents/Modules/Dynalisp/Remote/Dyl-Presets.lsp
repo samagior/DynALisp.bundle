@@ -265,9 +265,8 @@
 ;;                                  ; its open button to the Preset Groups window (no groups:
 ;;                                  ; Group is an edit box)
 ;;    (material . 3)                ; index of a material id in a preset (see Materials below)
-;;    (matinparams . T)             ; the Hatch preset row (keys matl, edm, mat) is in the
-;;                                  ; params of the tool, not at the top of Parameters, and
-;;                                  ; has no summary line (mts) under it
+;;    (window . "Dyl-QuickDraw.xaml") ; shown in this WPF window (a .xaml of the Res folder of
+;;                                  ; the Dynalisp module), not in a DCL dialog: see Window below
 ;;
 ;;  An App button closes the dialog with a code from 3 to 8 (after Remote>>Dyl:PresetDlgCommit):
 ;;  status is called (e.g. to show another dialog, not nested in this one), then this
@@ -598,9 +597,7 @@
             )
             "      spacer;"
       )
-      ;;  (matinparams . T): the tool puts these rows in a box of its params (the Behaviors
-      ;;  box of Quick Draw, see *mt:behaviordcl*), with the same keys:
-      (if (and (Remote>>Dyl:PresetDlgMat) (not (cdr (assoc 'matinparams pst:dlg))))
+      (if (Remote>>Dyl:PresetDlgMat)
         ;;  The open button of the Hatch Presets window just left of the popup it edits (see
         ;;  CONVENTIONS.md, Windows), the popup at the right of the row as the boxes above:
         (list "      : row { : text { key = \"matl\"; label = \"Hatch preset:\"; }"
@@ -951,9 +948,8 @@
   (mode_tile "del" (if (vl-some '(lambda (x) (assoc (car x) (Remote>>Dyl:PresetDlgDefs))) sel) 1 0))
   (mode_tile "nam" (if (cdr sel) 1 0))
   (mode_tile "cpy" (if (cdr sel) 1 0))
-  ;;  The summary of the hatch preset under the popup (none when the tool puts the popup in
-  ;;  its params, see (matinparams . T)):
-  (if (and (Remote>>Dyl:PresetDlgMat) (not (cdr (assoc 'matinparams pst:dlg))))
+  ;;  The summary of the hatch preset under the popup:
+  (if (Remote>>Dyl:PresetDlgMat)
     (set_tile "mts"
               (cond
                 ((setq d (assoc (nth (Remote>>Dyl:PresetDlgMat) r) pst:mats)) (Remote>>Dyl:MaterialSummary d))
@@ -1264,50 +1260,14 @@
   )
 )
 
-;;-------------------------=={ Dialog box }==------------------------;;
-
-;;  Show the preset dialog of the tool pst:key with the App part pst:dlg (see above).
-;;  Draw and Save (OK for a tool without commands) write the presets file and the aliases.
-;;  Returns the preset to draw (the preset selected on OK for a tool without commands), or
-;;  nil on Save / Cancel:
-(defun Remote>>Dyl:PresetDialog (pst:key pst:dlg / dcl:pth dcl:sta pst:dcl pst:lst pst:lst0 pst:idx pst:sel pst:als0 pst:als
-                                 pst:acmd pst:alst pst:grps pst:gren pst:mats pst:matids sel mat
-                                 pst:view pst:flt pst:srt pst:lines pst:shw pst:shwlst
-                                )
-  ;;  The sort of the list of this tool, kept for the session (*dyl:presetsort*):
-  (setq pst:srt (cdr (assoc pst:key *dyl:presetsort*))
-        pst:srt (if (member pst:srt (Remote>>Dyl:PresetDlgSorts)) pst:srt "Name")
-        pst:flt ""
+;;  The DCL dialog: shown again after a code >= 3 (an App button: its status function runs,
+;;  then the dialog is shown again with the presets being edited, dialogs are not nested).
+;;  Returns the status it was closed with (1 Draw / OK, 2 Save, 0 Cancel, nil: not shown):
+(defun Remote>>Dyl:PresetDlgLoop (/ dcl:pth dcl:sta pst:dcl)
+  (setq dcl:pth (Remote>>Dyl:PresetDlgDcl)
+        pst:dcl (load_dialog dcl:pth)
+        dcl:sta 3
   )
-  (setq dcl:pth  (Remote>>Dyl:PresetDlgDcl)
-        pst:dcl  (load_dialog dcl:pth)
-        pst:lst  (Remote>>Dyl:PresetRead pst:key (Remote>>Dyl:PresetDlgDefs) (cdr (assoc 'fix pst:dlg)))
-        sel      (cdr (assoc 'select pst:dlg))
-        pst:idx  (min (cond
-                        ((if sel (vl-position (assoc sel pst:lst) pst:lst)))
-                        ((cdr (assoc pst:key *dyl:presetlast*)))
-                        (0)
-                      )
-                      (1- (length pst:lst))
-                 )
-        pst:sel  (list pst:idx)
-        pst:lst0 pst:lst
-        pst:als0 (Dyl:AliasRead)
-        pst:als  pst:als0
-        pst:gren (length *grp:renames*)
-        dcl:sta  3
-  )
-  ;;  Show: the default group of the tool when a preset is in it (else All); the preset shown
-  ;;  is then one of the group, but the one the window was opened on:
-  (setq pst:shw (cond ((getenv (Remote>>Dyl:PresetDlgShowEnv))) ("")))
-  (if (not (vl-some '(lambda (r) (Remote>>Dyl:PresetDlgInShow-p r)) pst:lst)) (setq pst:shw ""))
-  (if (and (not sel) (not (Remote>>Dyl:PresetDlgInShow-p (nth pst:idx pst:lst))))
-    (setq pst:idx (car (Remote>>Dyl:PresetDlgView nil))
-          pst:sel (list pst:idx)
-    )
-  )
-  ;;  Code >= 3 = App button: its status function runs, then this dialog is shown again
-  ;;  with the presets being edited (dialogs are not nested):
   (while (and dcl:sta (<= 3 dcl:sta))
     (setq dcl:sta nil)
     ;;  The groups renamed since the dialog was shown (here or in a window opened from it),
@@ -1374,25 +1334,306 @@
       )
       (alert (strcat "\nError: " (Remote>>Dyl:PresetProp pst:key 'title) " dialog could not be loaded"))
     )
-    (cond
-      ((not (and dcl:sta (<= 3 dcl:sta))))
-      ;;  The Preset Groups window: its renames are given to the presets being edited when
-      ;;  the dialog is shown again (see Remote>>Dyl:PresetDlgGroupsSync):
-      ((= 8 dcl:sta) (Remote>>Dyl:GroupsDialog (Remote>>Dyl:PresetDlgGroupCounts)))
-      ;;  Edit materials: the material selected on OK is given to the preset:
-      ((= 9 dcl:sta)
-       ;;  To every preset selected (see Remote>>Dyl:PresetDlgPut):
-       (if (setq mat (Remote>>Dyl:MaterialDialog (nth (Remote>>Dyl:PresetDlgMat) (nth pst:idx pst:lst))))
-         (Remote>>Dyl:PresetDlgPut (Remote>>Dyl:PresetDlgMat) (car mat))
-       )
-      )
-      ((= 'save (Remote>>Dyl:PresetDlgCall 'status (list dcl:sta (nth pst:idx pst:lst))))
-       (setq dcl:sta 2)
-      )
-    )
+    (if (and dcl:sta (<= 3 dcl:sta)) (setq dcl:sta (Remote>>Dyl:PresetDlgCode dcl:sta)))
   )
   (if (>= pst:dcl 0) (unload_dialog pst:dcl))
   (vl-file-delete dcl:pth)
+  dcl:sta
+)
+
+;;  A code >= 3 the dialog (or the window) was closed with: the Preset Groups window (8),
+;;  the Hatch Presets window (9), else the status function of the App. Returns the code
+;;  (the dialog is shown again), 2 when the status function asks to save and close:
+(defun Remote>>Dyl:PresetDlgCode (sta / mat)
+  (cond
+    ;;  The Preset Groups window: its renames are given to the presets being edited when
+    ;;  the dialog is shown again (see Remote>>Dyl:PresetDlgGroupsSync):
+    ((= 8 sta) (Remote>>Dyl:GroupsDialog (Remote>>Dyl:PresetDlgGroupCounts)) sta)
+    ;;  Edit materials: the material selected on OK is given to the presets selected (see
+    ;;  Remote>>Dyl:PresetDlgPut):
+    ((= 9 sta)
+     (if (setq mat (Remote>>Dyl:MaterialDialog (nth (Remote>>Dyl:PresetDlgMat) (nth pst:idx pst:lst))))
+       (Remote>>Dyl:PresetDlgPut (Remote>>Dyl:PresetDlgMat) (car mat))
+     )
+     sta
+    )
+    ((= 'save (Remote>>Dyl:PresetDlgCall 'status (list sta (nth pst:idx pst:lst)))) 2)
+    (sta)
+  )
+)
+
+;;-------------------------=={ Window }==------------------------;;
+
+;;  A tool with (window . "Dyl-QuickDraw.xaml") in the App part of its dialog is shown in
+;;  that WPF window (DynALisp.Windows.dll, Installer\Windows\Engine\Presets.cs), not in the
+;;  DCL dialog above. The window does it all itself, with the same rules (the list, its
+;;  filter, sort and Show group, the presets selected, New, Copy, Delete, the resets, the
+;;  aliases): the Lisp gives it the presets, gets them back as edited when it closes, and
+;;  saves them (Draw, Save) as the dialog does. A code >= 3 (an open button) runs as in the
+;;  dialog (see Remote>>Dyl:PresetDlgCode), then the window is shown again on the presets
+;;  being edited. The App part gives, besides the properties of the dialog it uses (defs,
+;;  fix, tiles, upper, new, check, status, groups, material):
+;;
+;;    (window . "Dyl-QuickDraw.xaml")   ; the window file, in the Res folder of the Dynalisp module
+;;    (wtiles . "hbr:28:inv,mai:41")    ; other controls of the window and their column (inv: a
+;;                                      ; checkbox showing the inverse of its column), added
+;;                                      ; to tiles (see pst/tiles in Presets.cs)
+;;    (extra . <function: preset -> the columns added after the columns of the file, for
+;;              the window only: a summary, a preview (read, never saved)>)
+;;    (spec 45 . "mas")                 ; the column of a preview of its own (an assembly), and
+;;                                      ; the rule of the window when it is used (else the
+;;                                      ; preview is the hatch of the material)
+;;    (mspec . <function: material -> its preview, see Installer\Windows\Engine\Hatch.cs>)
+;;    (wprefix . "4|Polyline=PL-|*=QD-") ; the text of a new alias, by the value of a column
+;;    (wprep . <function: called before the window is shown, nil>)
+;;    (wvals . <function: -> the values of the window the App gives (its lists...)>)
+;;
+;;  The values given are those of Presets.cs (pst/rows...). Before the presets are saved,
+;;  the values of every preset changed are checked again by the check function of the App,
+;;  and the new aliases by AutoCAD (an AutoCAD command): the first one not valid opens the
+;;  window again on its preset, with its message.
+
+;;  The columns of a preset in the file:
+(defun Remote>>Dyl:PresetWinCols ()
+  (length (Remote>>Dyl:PresetProp pst:key 'header))
+)
+
+;;  A preset for the window: its columns, then those of the App (extra):
+(defun Remote>>Dyl:PresetWinRow (r)
+  (append r (Remote>>Dyl:PresetDlgCall 'extra (list r)))
+)
+
+;;  A preset got back: its first n columns (the columns of the file):
+(defun Remote>>Dyl:PresetWinCut (r n / res)
+  (repeat n
+    (setq res (cons (cond ((car r)) ("")) res)
+          r   (cdr r)
+    )
+  )
+  (reverse res)
+)
+
+;;  The controls of the values and their column: "nam:2,grp:1,mth:4,out:17:up,...":
+(defun Remote>>Dyl:PresetWinTiles (/ up)
+  (setq up (cdr (assoc 'upper pst:dlg)))
+  (Remote>>LM:lst->str
+    (append
+      (mapcar '(lambda (x) (strcat (car x) ":" (itoa (cdr x)) (if (member (car x) up) ":up" "")))
+              (Remote>>Dyl:PresetDlgTiles)
+      )
+      (if (cdr (assoc 'wtiles pst:dlg)) (list (cdr (assoc 'wtiles pst:dlg))))
+    )
+    ","
+  )
+)
+
+;;  The names an alias cannot take: ((NAME what-has-it) ...), the Lisp commands defined
+;;  (not the aliases of DynALisp: they are aliases) and the aliases of acad.pgp. The
+;;  commands of AutoCAD are checked once the window is closed (see
+;;  Remote>>Dyl:PresetWinCheck):
+(defun Remote>>Dyl:PresetWinTaken (/ defs res v)
+  (setq defs (mapcar 'strcase *dyl:aliasdefs*))
+  (foreach a (atoms-family 1)
+    (if (and (wcmatch (strcase a) "C:?*")
+             (not (member (substr (strcase a) 3) defs))
+             (not (vl-catch-all-error-p (setq v (vl-catch-all-apply 'eval (list (read a))))))
+             v
+        )
+      (setq res (cons (list (substr (strcase a) 3) "a command") res))
+    )
+  )
+  (foreach p (if Dyl:PgpAliases (Dyl:PgpAliases))
+    (setq res (cons (list (car p) (strcat "an alias of acad.pgp (" (cdr p) ")")) res))
+  )
+  res
+)
+
+;;  The values of the window: the presets, the state of the list, the aliases, the hatch
+;;  presets, the values of the App. err: a message to show (nil: none):
+(defun Remote>>Dyl:PresetWinVals (err / spec)
+  (setq spec (assoc 'spec pst:dlg))
+  (append
+    (list (cons "pst/rows" (mapcar 'Remote>>Dyl:PresetWinRow pst:lst))
+          (cons "pst/defs" (mapcar 'Remote>>Dyl:PresetWinRow (Remote>>Dyl:PresetDlgDefs)))
+          (list "pst/new" (Remote>>Dyl:PresetWinRow (cdr (assoc 'new pst:dlg))))
+          (cons "pst/ncols" (itoa (Remote>>Dyl:PresetWinCols)))
+          (cons "pst/tiles" (Remote>>Dyl:PresetWinTiles))
+          (cons "pst.idx" (itoa pst:idx))
+          (cons "pst.sel" (Remote>>LM:lst->str (mapcar 'itoa (Remote>>Dyl:PresetDlgSel)) " "))
+          (cons "pst.shw" pst:shw)
+          (cons "flt" (cond (pst:flt) ("")))
+          (cons "pst/title" (Remote>>Dyl:PresetProp pst:key 'title))
+          (cons "pst/noun" (Remote>>Dyl:PresetDlgNoun))
+          (cons "error" (cond (err) ("")))
+    )
+    (Dyl:WinList "srt" (Remote>>Dyl:PresetDlgSorts) (cond ((vl-position pst:srt (Remote>>Dyl:PresetDlgSorts))) (0)))
+    (if pst:grps (list (cons "grp/list" pst:grps)))
+    (if (Remote>>Dyl:PresetDlgCmds-p)
+      (list (cons "pst/cmds" "1")
+            (cons "pst/base" (Remote>>Dyl:PresetProp pst:key 'base))
+            (cons "pst/cmd" (Remote>>Dyl:PresetProp pst:key 'cmd))
+            (cons "pst/als" (mapcar '(lambda (p) (list (car p) (cdr p))) pst:als))
+            (cons "pst/taken" (Remote>>Dyl:PresetWinTaken))
+            (cons "pst/prefix" (cond ((cdr (assoc 'wprefix pst:dlg))) ("")))
+      )
+    )
+    (if (Remote>>Dyl:PresetDlgMat)
+      (list (cons "pst/mat" (itoa (Remote>>Dyl:PresetDlgMat)))
+            (cons "pst/mats"
+                  (mapcar '(lambda (m)
+                             (list (car m) (nth 1 m) (nth 2 m)
+                                   (cond ((Remote>>Dyl:PresetDlgCall 'mspec (list m))) ("X?1"))
+                                   (strcase (nth 3 m))
+                             )
+                           )
+                          pst:mats
+                  )
+            )
+      )
+    )
+    (if spec (list (cons "pst/spec" (itoa (cadr spec))) (cons "pst/specby" (cddr spec))))
+    (Remote>>Dyl:PresetDlgCall 'wvals nil)
+  )
+)
+
+;;  The presets got back from the window res (Dyl:WinShow): the presets edited, the presets
+;;  selected, the aliases, the filter, the sort and the Show group (the view choices: also on
+;;  Cancel), its default when Set default was clicked:
+(defun Remote>>Dyl:PresetWinGet (res / rows n sel)
+  (setq rows (cdr (assoc "pst/rows" (cdr res)))
+        n    (Remote>>Dyl:PresetWinCols)
+  )
+  (if rows
+    (setq pst:lst (mapcar '(lambda (r) (Remote>>Dyl:PresetWinCut r n)) rows)
+          pst:als (mapcar '(lambda (p) (cons (car p) (cadr p))) (cdr (assoc "pst/als" (cdr res))))
+          pst:idx (max 0 (min (atoi (cond ((Dyl:WinGet res "pst.idx")) ("0"))) (1- (length pst:lst))))
+          sel     (vl-remove-if-not '(lambda (i) (and (= 'INT (type i)) (< -1 i (length pst:lst))))
+                                    (read (strcat "(" (cond ((Dyl:WinGet res "pst.sel")) ("")) ")"))
+                  )
+          pst:sel (if (member pst:idx sel) sel (list pst:idx))
+    )
+  )
+  (setq pst:flt          (cond ((Dyl:WinGet res "flt")) (""))
+        pst:shw          (cond ((Dyl:WinGet res "pst.shw")) (pst:shw))
+        pst:srt          (cond ((nth (Dyl:WinIdx res "srt") (Remote>>Dyl:PresetDlgSorts))) ("Name"))
+        *dyl:presetsort* (cons (cons pst:key pst:srt) (vl-remove (assoc pst:key *dyl:presetsort*) *dyl:presetsort*))
+  )
+  (if (= "1" (Dyl:WinGet res "pst.shd")) (setenv (Remote>>Dyl:PresetDlgShowEnv) pst:shw))
+)
+
+;;  The presets got back checked again: every value of a preset changed (or added) since the
+;;  window opened, by the check function of the App (as the dialog checks a value typed),
+;;  and the aliases added, by AutoCAD (an alias with the name of an AutoCAD command never
+;;  runs: it is removed). The message of the first one not valid, its preset shown (nil:
+;;  all valid):
+(defun Remote>>Dyl:PresetWinCheck (/ i msg)
+  (setq i -1)
+  (setq msg
+         (vl-some
+           '(lambda (r)
+              (setq i (1+ i))
+              (if (not (member r pst:lst0))
+                (vl-some
+                  '(lambda (x / m)
+                     (if (setq m (Remote>>Dyl:PresetDlgCall 'check (list (car x) (nth (cdr x) r))))
+                       (progn
+                         (setq pst:idx i
+                               pst:sel (list i)
+                         )
+                         (strcat (nth 2 r) ": " m)
+                       )
+                     )
+                   )
+                  (cdr (assoc 'tiles pst:dlg))
+                )
+              )
+            )
+           pst:lst
+         )
+  )
+  (foreach p pst:als
+    (if (and (not msg) (not (member p pst:als0)) (getcname (car p)))
+      (setq msg     (strcat (car p) " is an AutoCAD command: the alias would never run.")
+            pst:als (vl-remove p pst:als)
+      )
+    )
+  )
+  msg
+)
+
+;;  Show the window of the tool, again after each code >= 3 (see Remote>>Dyl:PresetDlgCode)
+;;  and after a value not valid (see Remote>>Dyl:PresetWinCheck). Returns the status it was
+;;  closed with (1 Draw, 2 Save, 0 Cancel, nil: not shown, see Dyl:WinShow):
+(defun Remote>>Dyl:PresetWin (/ sta res err)
+  (setq sta 3)
+  (while (and sta (<= 3 sta))
+    ;;  The groups renamed since the window was shown (here or in a window opened from it),
+    ;;  the groups of the Group list, the hatch presets (they may have been edited):
+    (Remote>>Dyl:PresetDlgGroupsSync)
+    (setq pst:grps (Remote>>Dyl:PresetDlgGrps)
+          pst:mats (if (Remote>>Dyl:PresetDlgMat) (Remote>>Dyl:MaterialRead))
+    )
+    (Remote>>Dyl:PresetDlgCall 'wprep nil)
+    (setq res (Dyl:WinShow (cdr (assoc 'window pst:dlg)) (Remote>>Dyl:PresetWinVals err))
+          err nil
+          sta (car res)
+    )
+    (if res (Remote>>Dyl:PresetWinGet res))
+    (cond
+      ((not sta))
+      ((= 0 sta))
+      ;;  A value not valid: shown again with its message (the code asked for is dropped):
+      ((setq err (Remote>>Dyl:PresetWinCheck)) (setq sta 99))
+      ((<= 3 sta) (setq sta (Remote>>Dyl:PresetDlgCode sta)))
+    )
+  )
+  sta
+)
+
+;;-------------------------=={ Dialog box }==------------------------;;
+
+;;  Show the preset dialog of the tool pst:key with the App part pst:dlg (see above).
+;;  Draw and Save (OK for a tool without commands) write the presets file and the aliases.
+;;  Returns the preset to draw (the preset selected on OK for a tool without commands), or
+;;  nil on Save / Cancel:
+(defun Remote>>Dyl:PresetDialog (pst:key pst:dlg / dcl:sta pst:lst pst:lst0 pst:idx pst:sel pst:als0 pst:als
+                                 pst:acmd pst:alst pst:grps pst:gren pst:mats pst:matids sel
+                                 pst:view pst:flt pst:srt pst:lines pst:shw pst:shwlst
+                                )
+  ;;  The sort of the list of this tool, kept for the session (*dyl:presetsort*):
+  (setq pst:srt (cdr (assoc pst:key *dyl:presetsort*))
+        pst:srt (if (member pst:srt (Remote>>Dyl:PresetDlgSorts)) pst:srt "Name")
+        pst:flt ""
+  )
+  (setq pst:lst  (Remote>>Dyl:PresetRead pst:key (Remote>>Dyl:PresetDlgDefs) (cdr (assoc 'fix pst:dlg)))
+        sel      (cdr (assoc 'select pst:dlg))
+        pst:idx  (min (cond
+                        ((if sel (vl-position (assoc sel pst:lst) pst:lst)))
+                        ((cdr (assoc pst:key *dyl:presetlast*)))
+                        (0)
+                      )
+                      (1- (length pst:lst))
+                 )
+        pst:sel  (list pst:idx)
+        pst:lst0 pst:lst
+        pst:als0 (Dyl:AliasRead)
+        pst:als  pst:als0
+        pst:gren (length *grp:renames*)
+  )
+  ;;  Show: the default group of the tool when a preset is in it (else All); the preset shown
+  ;;  is then one of the group, but the one the window was opened on:
+  (setq pst:shw (cond ((getenv (Remote>>Dyl:PresetDlgShowEnv))) ("")))
+  (if (not (vl-some '(lambda (r) (Remote>>Dyl:PresetDlgInShow-p r)) pst:lst)) (setq pst:shw ""))
+  (if (and (not sel) (not (Remote>>Dyl:PresetDlgInShow-p (nth pst:idx pst:lst))))
+    (setq pst:idx (car (Remote>>Dyl:PresetDlgView nil))
+          pst:sel (list pst:idx)
+    )
+  )
+  (if (cdr (assoc 'window pst:dlg))
+    ;;  In its WPF window (see Window below):
+    (setq dcl:sta (Remote>>Dyl:PresetWin))
+    (setq dcl:sta (Remote>>Dyl:PresetDlgLoop))
+  )
   (if (member dcl:sta '(1 2))
     (progn
       ;;  The dialog reopens on the last preset used during the session:

@@ -6,11 +6,11 @@
   AutoCAD (COLORTHEME), the blue of AutoCAD for the default button and the switches on;
   never a colour written here or in a window file. A window file uses the keyed styles with
   {DynamicResource ...}: Dyl.Desc (the grey description under a setting or a section),
-  Dyl.Label (the label of a value), Dyl.Error (the text named "error"), Dyl.OpenButton (set
-  by OpenButton itself), Dyl.Tile (set by Gallery itself). A TextBox shows its Tag as a hint
-  while it is empty. GroupBox, Button, CheckBox, ComboBox and TextBox take theirs on
-  their own. Windows are minimal (Windows convention): no colour or box that does not say
-  something.
+  Dyl.Label (the label of a value), Dyl.Sub (the title of a sub-section), Dyl.Error (the text
+  named "error"), Dyl.OpenButton (set by OpenButton itself), Dyl.Tile (set by Gallery
+  itself), Dyl.Chip (the items of a list of names). A TextBox shows its Tag as a hint while it is empty. GroupBox, Button, CheckBox,
+  ComboBox, ListBox and TextBox take theirs on their own. Windows are minimal (Windows
+  convention): no colour or box that does not say something.
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
@@ -48,6 +48,24 @@
     <Setter Property="Foreground" Value="{DynamicResource Dyl.Text}"/>
     <Setter Property="VerticalAlignment" Value="Center"/>
     <Setter Property="Margin" Value="0,0,12,0"/>
+    <Style.Triggers>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Foreground" Value="{DynamicResource Dyl.Disabled}"/>
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
+  <!-- The title of a sub-section of a card (Bands, Layer key overrides), over its values: -->
+  <Style x:Key="Dyl.Sub" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Dyl.Muted}"/>
+    <Setter Property="FontSize" Value="11.5"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="Margin" Value="0,10,0,4"/>
+    <Style.Triggers>
+      <Trigger Property="IsEnabled" Value="False">
+        <Setter Property="Foreground" Value="{DynamicResource Dyl.Disabled}"/>
+      </Trigger>
+    </Style.Triggers>
   </Style>
 
   <Style x:Key="Dyl.Error" TargetType="TextBlock">
@@ -208,6 +226,83 @@
             </Trigger>
             <Trigger Property="IsEnabled" Value="False">
               <Setter Property="Opacity" Value="0.5"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- A list (the presets of a preset window): no box of its own, it sits in its card; its
+       items a line each, rounded, the ones selected in a darker tone: -->
+  <Style TargetType="ListBox">
+    <Setter Property="Foreground" Value="{DynamicResource Dyl.Text}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ListBox">
+          <ScrollViewer Focusable="False" Padding="0,0,4,0">
+            <ItemsPresenter/>
+          </ScrollViewer>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.5"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style TargetType="ListBoxItem">
+    <Setter Property="Foreground" Value="{DynamicResource Dyl.Text}"/>
+    <Setter Property="Padding" Value="6,4"/>
+    <Setter Property="Margin" Value="0,0,0,1"/>
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ListBoxItem">
+          <Border x:Name="bd" Background="Transparent" CornerRadius="5" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Dyl.Hover}"/>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Dyl.Pressed}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- An item of a list of names (the aliases of a preset): a chip, blue when it is picked
+       (the ItemContainerStyle of its list, its items in a WrapPanel): -->
+  <Style x:Key="Dyl.Chip" TargetType="ListBoxItem">
+    <Setter Property="Foreground" Value="{DynamicResource Dyl.Text}"/>
+    <Setter Property="FontFamily" Value="Consolas"/>
+    <Setter Property="FontSize" Value="11.5"/>
+    <Setter Property="Margin" Value="0,0,6,6"/>
+    <Setter Property="Cursor" Value="Hand"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ListBoxItem">
+          <Border x:Name="bd" Background="{DynamicResource Dyl.ButtonBack}" BorderBrush="{DynamicResource Dyl.Border}"
+                  BorderThickness="1" CornerRadius="12" Padding="10,3" SnapsToDevicePixels="True">
+            <ContentPresenter/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Dyl.Hover}"/>
+            </Trigger>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Dyl.Accent}"/>
+              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Dyl.Accent}"/>
+              <Setter Property="Foreground" Value="{DynamicResource Dyl.AccentText}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>

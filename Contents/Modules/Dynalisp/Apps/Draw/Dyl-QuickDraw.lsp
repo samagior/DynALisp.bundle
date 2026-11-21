@@ -2129,51 +2129,27 @@
 
 ;;-------------------------=={ Dialog }==------------------------;;
 
-;;  The preset dialog is made by Remote>>Dyl:PresetDialog (Remote\Dyl-Presets.lsp): its
-;;  Parameters column has the Material popup (made by the engine, see (material . 3)), then
-;;  the Material behaviors box (*mt:behaviordcl*) and the Border settings box beside it
-;;  (Remote>>Dyl:MaterialBorderDcl, tiles *qd:tiles*): the behaviors and the border of the
-;;  preset.
+;;  The Quick Draw window (Res\Dyl-QuickDraw.xaml, shown by DynALisp.Windows.dll) is a window
+;;  of the preset engine (Remote>>Dyl:PresetDialog, (window . "Dyl-QuickDraw.xaml"), see
+;;  Remote\Dyl-Presets.lsp): its list and its buttons are those of every preset window; its
+;;  values are the hatch preset of the preset, its behaviors (the Behaviors box) and its border
+;;  (the Border box), tiles *qd:tiles*, edited in the window itself. Its open buttons close it
+;;  with their code (the Ends and Corners windows, Pick..., the Assembly Layers window, the
+;;  Layer Keys window, the color of AutoCAD), see Dyl:QuickDrawDlgStatus; then it opens again.
 ;;  The functions below use the local variables of Remote>>Dyl:PresetDialog (pst:lst,
-;;  pst:idx, pst:mats) and mt:keys (layer keys of the border popup, local of
-;;  Dyl:QuickDrawDialog).
+;;  pst:idx, pst:mats) and those of Dyl:QuickDrawDialog: mt:keys (the layer keys of the
+;;  border list), qg:all (the presets with their material, for the previews, as in the
+;;  Gallery, see Dyl:QuickDrawGallerySpec).
 
-;;  Popup tiles -> list of their values (nil for the other tiles):
-(defun Dyl:QuickDrawDlgItems (key)
-  (if (assoc key *qd:tiles*) (Remote>>Dyl:MaterialDlgItems key))
-)
-
-;;  Error message of an invalid behavior, nil when it is valid (as in the Materials window):
+;;  Error message of an invalid behavior, nil when it is valid (as in the Hatch Presets
+;;  window): the values got back from the window are checked again before they are saved:
 (defun Dyl:QuickDrawDlgCheck (key val)
   (if (assoc key *qd:tiles*) (Remote>>Dyl:MaterialDlgCheck key val))
 )
 
-;;  Fill the popups of the boxes (each time the dialog is shown):
-(defun Dyl:QuickDrawDlgInit ()
-  (Remote>>Dyl:MaterialDlgBehaviorsInit)
-  (Remote>>Dyl:MaterialDlgBorderInit (mapcar '(lambda (r) (nth *qd:border* r)) (append *qd:defaults* pst:lst)) *qd:noborder*)
-)
-
-;;  Material of the preset r in the dialog (pst:mats), the defaults when it no longer exists:
+;;  Material of the preset r in the window (pst:mats), the defaults when it no longer exists:
 (defun Dyl:QuickDrawDlgMat (r)
   (cond ((assoc (nth 3 r) pst:mats)) (*qd:matnew*))
-)
-
-;;  The boxes: the behaviors of the preset r, greyed out by method (see
-;;  Remote>>Dyl:MaterialDlgBehaviors), and its border (see Remote>>Dyl:MaterialDlgBorderState):
-(defun Dyl:QuickDrawDlgState (r / m asm)
-  (setq m   (Dyl:QuickDrawMat (Dyl:QuickDrawDlgMat r) r)
-        asm (Dyl:QuickDrawDlgAssembly-p r)
-  )
-  (Remote>>Dyl:MaterialDlgBehaviors m T)
-  (Remote>>Dyl:MaterialDlgBorderState m T)
-  ;;  An assembly: each layer is hatched as its own preset says, the hatch preset of the
-  ;;  preset greyed out (kept):
-  (foreach k '("matl" "mat") (mode_tile k (if asm 1 0)))
-  (Dyl:MoreTile "edm" (not asm))
-  ;;  Width: the total of the layers of an assembly (greyed out, not stored), else the width
-  ;;  of the preset:
-  (set_tile "mwd" (if (Dyl:QuickDrawDlgAssembly-p r) (Dyl:QuickDrawDlgLayersWidth r) (nth 6 r)))
 )
 
 ;;  T when the preset r is drawn as an assembly (Linear, Offset, or a method asked when drawn):
@@ -2188,17 +2164,63 @@
   )
 )
 
-;;  Tiles not stored: Width while it shows the width of the layers:
-(defun Dyl:QuickDrawDlgSkip (r)
-  (if (Dyl:QuickDrawDlgAssembly-p r) '("mwd"))
+;;  The columns the window shows after those of a preset r (41 to 45, read only, never saved):
+;;  what its layers are (beside Assembly of layers), its own ends and corners (beside Custom
+;;  ends, Custom corners: shown while they are checked), the width of its layers (Width, for
+;;  an assembly), and the preview of its layers side by side (an assembly with layers):
+(defun Dyl:QuickDrawWinExtra (r / m)
+  (setq m (Dyl:QuickDrawMat (Dyl:QuickDrawDlgMat r) r))
+  (list (Remote>>Dyl:MaterialLayersText (nth *qd:layerscol* r))
+        (Remote>>Dyl:MaterialBandText (Remote>>Dyl:ListSubst m 61 "1") "Ends")
+        (Remote>>Dyl:MaterialBandText (Remote>>Dyl:ListSubst m 62 "1") "Corners")
+        (Dyl:QuickDrawDlgLayersWidth r)
+        ;;  (as an assembly even while Assembly of layers is off: the window shows it once it is on)
+        (if (Remote>>Dyl:MaterialLayers (nth *qd:layerscol* r)) (Dyl:QuickDrawGallerySpec (list (Remote>>Dyl:ListSubst r 37 "1"))) "")
+  )
 )
 
-;;  Pick... of the behaviors: the hatch origin picked on a sample band of its material with
-;;  its behaviors, put in the preset (see Remote>>Dyl:MaterialOriginPick). The open button
-;;  of the assembly: the Assembly Layers window, its layers given to every preset selected
-;;  on OK (see Remote>>Dyl:PresetDlgPut). The open button of the border layer key: the Layer
-;;  Keys window (see Remote>>Dyl:MaterialDlgBorderStatus):
-(defun Dyl:QuickDrawDlgStatus (sta r / v)
+;;  The preview of a hatch preset mat, as it plots (see Dyl:QuickDrawGalleryBand):
+(defun Dyl:QuickDrawWinMatSpec (mat)
+  (Dyl:QuickDrawGalleryBand "P" mat 1.0)
+)
+
+;;  Before the window is shown: the presets with their material (qg:all, for the previews of
+;;  the layers of an assembly) and the layer keys of the border list (mt:keys):
+(defun Dyl:QuickDrawWinPrep (/ mat)
+  (setq qg:all nil)
+  (foreach r pst:lst
+    (if (setq mat (assoc (nth 3 r) pst:mats)) (setq qg:all (cons (cons r (Dyl:QuickDrawMat mat r)) qg:all)))
+  )
+  (setq qg:all (reverse qg:all))
+  (Remote>>Dyl:MaterialDlgKeys nil (mapcar '(lambda (r) (nth *qd:border* r)) (append *qd:defaults* pst:lst)))
+)
+
+;;  The lists of the window: the labels of their items (key/list) and the values they store
+;;  (key/vals): the methods, the justifications, what the hatch is aligned to, the layer keys
+;;  (marked when they are not defined), the lineweights:
+(defun Dyl:QuickDrawWinVals (/ lks)
+  (setq lks (Remote>>Dyl:LayerKeyRead))
+  (list (cons "mth/list" (mapcar 'cadr (cons '("" "Ask when drawn") *mt:methods*)))
+        (cons "mth/vals" (cons "" (mapcar 'car *mt:methods*)))
+        (cons "mjs/list" (mapcar 'cadr *mt:justify*))
+        (cons "mjs/vals" (mapcar 'car *mt:justify*))
+        (cons "mht/list" (mapcar 'cadr *mt:hatchmodes*))
+        (cons "mht/vals" (mapcar 'car *mt:hatchmodes*))
+        (cons "out/list" (mapcar '(lambda (k) (if (assoc k lks) k (strcat k "   (not defined)"))) mt:keys))
+        (cons "out/vals" mt:keys)
+        (cons "bwt/list" (mapcar '(lambda (w) (strcat (rtos (/ (atoi w) 100.0) 2 2) " mm")) *mt:weights*))
+        (cons "bwt/vals" *mt:weights*)
+  )
+)
+
+;;  The open buttons of the window (code sta, the preset shown r). Pick...: the hatch origin
+;;  picked on a sample band of its material with its behaviors, put in the presets selected
+;;  (see Remote>>Dyl:MaterialOriginPick). The open button of the assembly: the Assembly Layers
+;;  window, its layers given to every preset selected on OK (see Remote>>Dyl:PresetDlgPut).
+;;  The open button of the border layer key: the Layer Keys window (see
+;;  Remote>>Dyl:MaterialDlgBorderStatus). The open button of the border color: the color
+;;  window of AutoCAD:
+(defun Dyl:QuickDrawDlgStatus (sta r / v i)
   (if (= *mt:originpick* sta) (Remote>>Dyl:MaterialOriginPick (Dyl:QuickDrawMat (Dyl:QuickDrawDlgMat r) r) *qd:tiles*))
   (if (and (= *mt:layerspick* sta) (setq v (Dyl:QuickDrawLayersDialog r)))
     (Remote>>Dyl:PresetDlgPut *qd:layerscol* v)
@@ -2210,55 +2232,42 @@
       (foreach p v (Remote>>Dyl:PresetDlgPut (cdr (assoc (car p) *qd:behaviors*)) (cdr p)))
     )
   )
+  (if (and (= *mt:colorpick* sta) (setq i (cdr (assoc "bcv" *qd:tiles*)) v (Remote>>Dyl:MaterialColorPick (nth i r))))
+    (Remote>>Dyl:PresetDlgPut i v)
+  )
   (Remote>>Dyl:MaterialDlgBorderStatus sta r *qd:border*)
   nil
 )
 
-;;  Method a preset r is drawn with, "" (asked when drawn) when it has none:
-(defun Dyl:QuickDrawDlgMethod (r)
-  (cond ((nth 4 r)) (""))
-)
-
-;;  Text put in the new alias box: PL- for a preset drawn with a polyline, QD- for the others:
-(defun Dyl:QuickDrawDlgPrefix (r)
-  (if (= "Polyline" (Dyl:QuickDrawDlgMethod r)) "PL-" "QD-")
-)
-
-;;  Show the preset dialog. Draw and Save write the presets file and the aliases.
+;;  Show the Quick Draw window. Draw and Save write the presets file and the aliases.
 ;;  Returns the preset to draw, or nil on Save / Cancel:
-(defun Dyl:QuickDrawDialog (/ mt:keys)
+(defun Dyl:QuickDrawDialog (/ mt:keys qg:all)
   (Remote>>Dyl:PresetDialog
     "QuickDraw"
     (list (cons 'defs *qd:defaults*)
           (cons 'fix 'Dyl:QuickDrawFix)
           (cons 'tiles *qd:tiles*)
-          ;;  The Group popup of the Hatch Presets window (the other groups used by a preset
-          ;;  are added to it):
+          ;;  The Group list of the Hatch Presets window (the other groups used by a preset are
+          ;;  added to it):
           '(groups . T)
           '(material . 3)
-          ;;  The Hatch preset rows in the Behaviors box (see *mt:behaviordcl*):
-          '(matinparams . T)
           '(upper "out" "blt")
-          ;;  The Behaviors box (two columns: the hatch preset, the assembly and the method;
-          ;;  the bands), the Border settings box under it (two columns too):
-          (cons 'params (append '("      : column {")
-                                *mt:behaviordcl*
-                                (Remote>>Dyl:MaterialBorderDcl T T)
-                                '("      }")
-                        )
-          )
+          '(window . "Dyl-QuickDraw.xaml")
+          ;;  Has a border (No border, inverted), and the columns of Dyl:QuickDrawWinExtra:
+          '(wtiles . "hbr:28:inv,mai:41,mei:42,mci:43,mwl:44")
+          '(extra . Dyl:QuickDrawWinExtra)
+          ;;  The preview of an assembly: its layers side by side:
+          '(spec 45 . "mas,mth=Linear|Offset|")
+          '(mspec . Dyl:QuickDrawWinMatSpec)
+          ;;  The text put in the new alias box: PL- for a preset drawn with a polyline, QD- for
+          ;;  the others (see CONVENTIONS.md, Preset aliases):
+          '(wprefix . "4|Polyline=PL-|*=QD-")
+          '(wprep . Dyl:QuickDrawWinPrep)
+          '(wvals . Dyl:QuickDrawWinVals)
           ;;  A new preset: the defaults of a new preset for its behaviors:
           (cons 'new (Dyl:QuickDrawFix (Dyl:QuickDrawOverride (Dyl:QuickDrawPad '("" "" "New preset" "mt-Brick" "")) T nil)))
-          '(items . Dyl:QuickDrawDlgItems)
           '(check . Dyl:QuickDrawDlgCheck)
-          '(init . Dyl:QuickDrawDlgInit)
-          '(state . Dyl:QuickDrawDlgState)
           '(status . Dyl:QuickDrawDlgStatus)
-          '(skip . Dyl:QuickDrawDlgSkip)
-          '(prefix . Dyl:QuickDrawDlgPrefix)
-          ;;  A list as tall as the Parameters column (the Behaviors box, the Border settings
-          ;;  box under it):
-          '(height . 30)
     )
   )
 )
