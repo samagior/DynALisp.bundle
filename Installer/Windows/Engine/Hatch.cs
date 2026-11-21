@@ -102,15 +102,13 @@ namespace DynALisp.Windows
         }
 
         // The size of one repeat of the pattern, in its units: its widest spacing between
-        // lines or dash period:
+        // lines (a course of bricks, the length of a brick by its joints). The dash periods
+        // are left out: the dots of a stipple are far apart along their lines, but it reads
+        // as a texture at any size:
         public static double Repeat(List<PatLine> fams)
         {
             double r = 0;
-            foreach (var f in fams)
-            {
-                r = Math.Max(r, Math.Abs(f.Dy));
-                r = Math.Max(r, f.Dashes.Sum(d => Math.Abs(d)));
-            }
+            foreach (var f in fams) r = Math.Max(r, Math.Abs(f.Dy));
             return r;
         }
     }
@@ -134,7 +132,7 @@ namespace DynALisp.Windows
 
         const double Dpi = 96;       // WPF units an inch
         const double Repeats = 3;    // repeats of a pattern at least, in the height of the tile
-        const int MaxLines = 6000;   // segments of a tile at most (a pattern too fine is grey)
+        const int MaxLines = 20000;   // segments of a tile at most (a pattern too fine is grey)
         static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
         static readonly double[] Steps = { 1, 2, 2.5, 4, 5, 8, 10, 16, 20, 25, 40, 50, 100, 200, 250, 500, 1000, 2000, 5000, 10000 };
 
