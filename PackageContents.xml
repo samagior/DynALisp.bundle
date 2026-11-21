@@ -51,11 +51,40 @@
         />
     </Components>
 
+    <!-- The windows of DynALisp (Installer\Windows): WPF windows described by the .xaml files
+         of the Res folders, shown from Lisp by (Dyl:Window file values). The same code built
+         for .NET 8 (AutoCAD 2025 and later) and .NET Framework 4.8 (AutoCAD 2015 to 2024): -->
+    <Components Description="Windows">
+        <RuntimeRequirements
+            OS="Win64"
+            Platform="AutoCAD|AutoCAD*"
+            SeriesMin="R25.0"
+        />
+        <ComponentEntry
+            AppName="DynALisp windows"
+            ModuleName="./Contents/Resources/DynALisp.Windows.dll"
+            LoadOnAutoCADStartup="True"
+        />
+    </Components>
+    <Components Description="Windows (.NET Framework)">
+        <RuntimeRequirements
+            OS="Win64"
+            Platform="AutoCAD|AutoCAD*"
+            SeriesMin="R20.0"
+            SeriesMax="R24.3"
+        />
+        <ComponentEntry
+            AppName="DynALisp windows (.NET Framework)"
+            ModuleName="./Contents/Resources/Net48/DynALisp.Windows.dll"
+            LoadOnAutoCADStartup="True"
+        />
+    </Components>
+
     <Components>
         <RuntimeRequirements
             OS="Win32|Win64"
             Platform="AutoCAD|AutoCAD*"
-            SeriesMin="R18"
+            SeriesMin="R20.0"
             SupportPath="./Contents/Resources"
         />
         <ComponentEntry
