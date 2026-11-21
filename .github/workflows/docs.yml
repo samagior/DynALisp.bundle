@@ -5,7 +5,8 @@
 # each module (Installer/Docs/BuildSite.py) and pushes it to the public repository
 # samagior/DynALisp.docs, whose GitHub Pages publish it at
 # https://samagior.github.io/DynALisp.docs/ (*dyl:docsweb* in dynalisp.mnl). The docs are
-# edited only in this repository: DynALisp.docs is made again by every run.
+# edited only in this repository: DynALisp.docs is made again by every run, the pages it
+# already has kept (the versions of DynALisp installed open them).
 #
 # Needs the secret DOCS_DEPLOY_KEY: the private key of a deploy key of DynALisp.docs that
 # can write. Run it by hand (Actions > Docs > Run workflow) to publish again.
@@ -43,17 +44,11 @@ jobs:
         with:
           python-version: '3.12'
 
-      # BuildDocs.py run on the pages committed: it changes nothing when it was run before
-      # the commit (as CONVENTIONS.md asks). A page or DocsPages.txt it would change is only
-      # reported: the website is built from what is committed.
+      # BuildDocs.py must have been run before the commit (as CONVENTIONS.md asks): a page or
+      # DocsPages.txt not up to date, or a LeeMac page without its credit, stops the job, so
+      # the list installed by the setup always matches the website.
       - name: Check the docs
-        run: |
-          python Installer/Docs/BuildDocs.py
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "::warning::BuildDocs.py changes these files: run it and commit them."
-            git status --short
-            git checkout -- .
-          fi
+        run: python Installer/Docs/BuildDocs.py --check
 
       - name: Publish the website
         env:
@@ -62,7 +57,9 @@ jobs:
           mkdir -p ~/.ssh
           printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/docs_key
           chmod 600 ~/.ssh/docs_key
-          ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
+          # The host key GitHub publishes (https://api.github.com/meta), never the one a scan
+          # gets while the job runs:
+          echo "github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl" >> ~/.ssh/known_hosts
           export GIT_SSH_COMMAND="ssh -i ~/.ssh/docs_key -o IdentitiesOnly=yes"
           git clone --depth 1 "git@github.com:${DOCS_REPO}.git" "$RUNNER_TEMP/site"
           python Installer/Docs/BuildSite.py "$RUNNER_TEMP/site"

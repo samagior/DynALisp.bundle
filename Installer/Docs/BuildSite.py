@@ -3,7 +3,7 @@
 #
 #   python Installer\Docs\BuildSite.py <folder>
 #
-# Builds the docs website in <folder> (made empty first), published on GitHub Pages
+# Builds the docs website in <folder>, published on GitHub Pages
 # (https://samagior.github.io/DynALisp.docs/) by .github/workflows/docs.yml, which pushes it
 # to the public repository samagior/DynALisp.docs. The docs are edited only here, in
 # Contents\Modules\<Module>\Docs: the website is a copy of them, made again on every push
@@ -11,30 +11,41 @@
 #
 #   <folder>\<Module>\...     the Docs folder of each module (Dynalisp, LeeMac...)
 #   <folder>\docs.css         Contents\Resources\docs.css, the pages pointed to it
-#   <folder>\index.html       the docs of every module (as Dyl-Docs), index.fr.html in French
+#   <folder>\index.html       the docs of every module (as Dyl-Docs), index.<code>.html in
+#                             each other language of BuildDocs.LANGS (index.fr.html)
 #   <folder>\README.md, .nojekyll
 #
-# The pages are the ones of DocsPages.txt (BuildDocs.py): run BuildDocs.py first. DynALisp
-# opens a page of the list on the website (Dyl:DocsTarget of dynalisp.mnl).
+# A page already in <folder> is kept, even when the docs no longer have it (renamed, moved,
+# deleted): an installed DynALisp opens the pages of its own version, which stay on the
+# website. Only the pages the docs have are written again.
+#
+# The pages are the ones git knows (never those of MyTools, ignored) of the modules of
+# DocsPages.txt (BuildDocs.py): run BuildDocs.py first. DynALisp opens a page of the list on
+# the website (Dyl:DocsTarget of dynalisp.mnl).
 
 import html
 import os
 import shutil
 import sys
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-REPO = os.path.dirname(os.path.dirname(HERE))
-MODULES = os.path.join(REPO, 'Contents', 'Modules')
+import BuildDocs
+
+REPO = BuildDocs.REPO
+MODULES = BuildDocs.MODULES
+PAGES = BuildDocs.PAGES
 CSS = os.path.join(REPO, 'Contents', 'Resources', 'docs.css')
-PAGES = os.path.join(REPO, 'Contents', 'Resources', 'DocsPages.txt')
 URL = 'https://samagior.github.io/DynALisp.docs/'
 VIEWPORT = '<meta name="viewport" content="width=device-width, initial-scale=1">'
 
-# The texts of the home page, by language: (file, lang, title, Module, Description, footer)
-HOME = [('index.html', 'en', 'DynALisp Docs', 'Module', 'Description',
-         'DynALisp &ndash; released under the GNU General Public License v3'),
-        ('index.fr.html', 'fr', 'DynALisp Docs', 'Module', 'Description',
-         'DynALisp &ndash; publi&eacute; sous la licence publique g&eacute;n&eacute;rale GNU v3')]
+# The footer of the home page in each language of BuildDocs.LANGS (English for another one):
+FOOTER = {'en': 'DynALisp &ndash; released under the GNU General Public License v3',
+          'fr': 'DynALisp &ndash; publi&eacute; sous la licence publique g&eacute;n&eacute;rale GNU v3'}
+
+
+def home_file(code):
+    """The home page of a language: index.html in English, index.<code>.html otherwise (the
+    name Dyl:DocsAll opens)."""
+    return 'index.html' if code == 'en' else 'index.%s.html' % code
 
 
 def read_pages():
@@ -59,34 +70,34 @@ def page(text):
     return text
 
 
-def home(pages, file, lang, title, th1, th2, footer):
-    """The docs of every module: the Dynalisp module first, the others by name."""
-    suf = '' if lang == 'en' else '.' + lang
+def home(pages, code):
+    """The docs of every module in the language code: the Dynalisp module first, the others
+    by name, each one its index in that language when it has one."""
+    suf = next(s for c, s, *_ in BuildDocs.LANGS if c == code)
     idx = {}
     for path, t, s in pages:
         mod, _, rest = path.partition('/')
-        if rest == 'index.htm' or (rest == 'index%s.htm' % suf and suf):
-            if rest == 'index.htm':
-                idx.setdefault(mod, (path, t, s))
-            else:
-                idx[mod] = (path, t, s)
+        if rest == 'index.htm':
+            idx.setdefault(mod, (path, t, s))
+        elif suf and rest == 'index%s.htm' % suf:
+            idx[mod] = (path, t, s)
     mods = sorted(idx, key=lambda m: (m.upper() != 'DYNALISP', m.upper()))
-    other = [h for h in HOME if h[1] != lang][0]
     nav = ('<nav class="lang" aria-label="Language">'
-           + ''.join('<span class="on" title="%s">%s</span>' % (h[1], h[1].upper()) if h[1] == lang
-                     else '<a href="%s" hreflang="%s" lang="%s">%s</a>' % (h[0], h[1], h[1], h[1].upper())
-                     for h in HOME)
+           + ''.join('<span class="on" title="%s">%s</span>' % (name, label) if c == code
+                     else '<a href="%s" hreflang="%s" lang="%s" title="%s">%s</a>' % (home_file(c), c, c, name, label)
+                     for c, _, label, name, _ in BuildDocs.LANGS)
            + '</nav>')
+    alt = ''.join('    <link rel="alternate" hreflang="%s" href="%s">\n' % (c, home_file(c))
+                  for c, *_ in BuildDocs.LANGS if c != code)
     rows = ''.join('<tr><td><a href="%s">%s</a></td><td>%s</td></tr>\n' % (html.escape(idx[m][0]), idx[m][1] or m, idx[m][2])
                    for m in mods)
     return ('<!DOCTYPE html>\n<html lang="%s">\n<head>\n    <meta charset="utf-8">\n    %s\n'
-            '    <title>%s</title>\n    <link rel="stylesheet" href="docs.css">\n'
-            '    <link rel="alternate" hreflang="%s" href="%s">\n</head>\n<body>\n'
+            '    <title>DynALisp Docs</title>\n    <link rel="stylesheet" href="docs.css">\n%s</head>\n<body>\n'
             '    <div id="header">\n        <p>DynALisp <span>Docs</span></p>\n        %s\n    </div>\n'
-            '    <div id="content">\n        <h1>%s</h1>\n<div class="programs commands wide">\n<table>\n'
-            '<tr><th>%s</th><th>%s</th></tr>\n%s</table>\n</div>\n    </div>\n'
+            '    <div id="content">\n        <h1>DynALisp Docs</h1>\n<div class="programs commands wide">\n<table>\n'
+            '<tr><th>Module</th><th>Description</th></tr>\n%s</table>\n</div>\n    </div>\n'
             '    <div id="footer"><p>%s</p></div>\n</body>\n</html>\n'
-            % (lang, VIEWPORT, title, other[1], other[0], nav, title, th1, th2, rows, footer))
+            % (code, VIEWPORT, alt, nav, rows, FOOTER.get(code, FOOTER['en'])))
 
 
 README = """# DynALisp Docs
@@ -96,7 +107,8 @@ The documentation of [DynALisp](https://github.com/samagior/DynALisp.release), p
 
 This repository is **generated**: every push to the main branch of the DynALisp source
 rebuilds it (`Installer/Docs/BuildSite.py`, `.github/workflows/docs.yml`). Do not edit it
-here: a change made here is overwritten by the next publication.
+here: a change made here is overwritten by the next publication. A page the docs no longer
+have is kept, for the versions of DynALisp installed that still open it.
 
 The pages of the LeeMac sample module are copies of the help pages of Lee Mac's programs,
 delivered for consistency purposes only: the programs and their descriptions are the work
@@ -105,18 +117,25 @@ links to its original.
 """
 
 
+def inside(path, folder):
+    """True when path is folder or a folder under it (False on another drive)."""
+    try:
+        return os.path.commonpath([os.path.normcase(path), os.path.normcase(folder)]) == os.path.normcase(folder)
+    except ValueError:
+        return False
+
+
 def main():
     if len(sys.argv) != 2:
         sys.exit('Usage: python Installer\\Docs\\BuildSite.py <folder>')
     out = os.path.abspath(sys.argv[1])
-    if os.path.commonpath([out, REPO]) == REPO and not os.path.relpath(out, REPO).startswith('Releases'):
-        sys.exit('Build the website outside the repository (or under Releases): ' + out)
+    releases = os.path.join(REPO, 'Releases')
+    # Outside the repository, or in a folder of its own under Releases (never Releases itself,
+    # which holds the build of the setup):
+    if inside(out, REPO) and not (inside(out, releases) and os.path.normcase(out) != os.path.normcase(releases)):
+        sys.exit('Build the website outside the repository, or in a folder under Releases: ' + out)
     pages = read_pages()
-    if os.path.isdir(out):
-        for name in os.listdir(out):
-            if name != '.git':
-                p = os.path.join(out, name)
-                shutil.rmtree(p) if os.path.isdir(p) else os.remove(p)
+    known = BuildDocs.git_files()
     os.makedirs(out, exist_ok=True)
     count = 0
     for mod in sorted({p.split('/')[0] for p, *_ in pages}):
@@ -124,6 +143,8 @@ def main():
         for root, _, files in os.walk(src):
             for name in files:
                 s = os.path.join(root, name)
+                if os.path.normcase(os.path.normpath(s)) not in known:
+                    continue
                 d = os.path.join(out, mod, os.path.relpath(s, src))
                 os.makedirs(os.path.dirname(d), exist_ok=True)
                 if name.lower().endswith('.htm'):
@@ -135,13 +156,14 @@ def main():
                 else:
                     shutil.copyfile(s, d)
     shutil.copyfile(CSS, os.path.join(out, 'docs.css'))
-    for h in HOME:
-        with open(os.path.join(out, h[0]), 'w', encoding='utf-8', newline='\n') as f:
-            f.write(home(pages, *h))
+    for code, *_ in BuildDocs.LANGS:
+        with open(os.path.join(out, home_file(code)), 'w', encoding='utf-8', newline='\n') as f:
+            f.write(home(pages, code))
     with open(os.path.join(out, 'README.md'), 'w', encoding='utf-8', newline='\n') as f:
         f.write(README.format(url=URL))
     open(os.path.join(out, '.nojekyll'), 'w').close()
-    print('Docs website built in %s: %d pages (%d in DocsPages.txt).' % (out, count, len(pages)))
+    print('Docs website built in %s: %d pages written (%d in DocsPages.txt), the pages already there kept.'
+          % (out, count, len(pages)))
 
 
 if __name__ == '__main__':

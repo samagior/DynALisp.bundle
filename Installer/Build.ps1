@@ -9,7 +9,8 @@
 # never the ignored ones: User, MyTools...), without the dev files (Installer,
 # .github, .vscode, CLAUDE.md, CONVENTIONS.md) and without the Docs folder of each
 # module: the docs open on the website (Resources\DocsPages.txt, the list of its pages,
-# is installed), and a git clone has them to edit. Needs git and Inno Setup 6.
+# is installed), and a git clone has them to edit: Installer\Docs\BuildDocs.py --check
+# must find that list up to date. Needs git, Python 3 and Inno Setup 6.
 # Works in Windows PowerShell 5.1 and PowerShell 7 (the release workflow runs it).
 
 param([string]$Iscc)
@@ -34,6 +35,13 @@ foreach ($line in Get-Content -LiteralPath (Join-Path $repo 'CHANGELOG.md') -Enc
     }
 }
 if (-not ($notes -match '\S')) { throw "CHANGELOG.md has no notes for version $version (a '## $version' section)." }
+
+# The list of the pages of the docs website, installed in place of the Docs folders, must
+# have every page (BuildDocs.py run and committed), or their Open Docs buttons are greyed out:
+$python = @('python', 'py', 'python3') | Where-Object { Get-Command $_ -ErrorAction SilentlyContinue } | Select-Object -First 1
+if (-not $python) { throw 'Python 3 not found: it checks the list of the docs pages (Installer\Docs\BuildDocs.py --check).' }
+& $python (Join-Path $PSScriptRoot 'Docs\BuildDocs.py') --check
+if ($LASTEXITCODE -ne 0) { throw 'The docs are not up to date: run python Installer\Docs\BuildDocs.py, then commit what it changed.' }
 
 # ISCC.exe of Inno Setup 6:
 if (-not $Iscc) {

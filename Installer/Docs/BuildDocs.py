@@ -1,7 +1,7 @@
 # BuildDocs.py - the languages of the DynALisp docs
 # Copyright (C) 2026  Samuel Martineau, GNU General Public License v3
 #
-#   python Installer\Docs\BuildDocs.py [--missing]
+#   python Installer\Docs\BuildDocs.py [--missing] [--check]
 #
 # Every docs page (Contents\Modules\<Module>\Docs\**\*.htm) is in English, Page.htm, and may
 # have a copy in another language beside it, Page.fr.htm (LANGS below). Run this script after
@@ -21,13 +21,18 @@
 # title and the first sentence of its first paragraph (tabs between them). The setup ships
 # that list, not the Docs folders: DynALisp opens a page on the website when the list has it
 # (Dyl:DocsTarget of dynalisp.mnl), in the language of DynALisp (Language in Dyl-Settings,
-# Dyl:Lang), English when the page has no copy in it.
+# Dyl:Lang), English when the page has no copy in it. The list holds only the pages git knows
+# (committed, or new and not ignored): never those of MyTools, ignored, which open from the
+# computer.
 #
-# A page is written only when it changed, its line endings kept.
+# A page is written only when it changed, its line endings kept. --check writes nothing: it
+# fails (exit code 1) when a page or DocsPages.txt is not up to date, or a LeeMac page has no
+# credit to Lee Mac (the docs workflow and Build.ps1 run it).
 
 import glob
 import os
 import re
+import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -93,7 +98,16 @@ def fix_links(text, path):
     return LINK.sub(sub, text)
 
 
-def build_page(path):
+def git_files():
+    """The files git knows under Contents/Modules (committed, or new and not ignored), as
+    normalized full paths."""
+    out = subprocess.run(['git', '-C', REPO, '-c', 'core.quotepath=false', 'ls-files', '--cached', '--others',
+                          '--exclude-standard', '--', 'Contents/Modules'],
+                         capture_output=True, text=True, encoding='utf-8', check=True).stdout
+    return {os.path.normcase(os.path.normpath(os.path.join(REPO, f))) for f in out.splitlines() if f}
+
+
+def build_page(path, write=True):
     with open(path, encoding='utf-8', newline='') as f:
         old = f.read()
     eol = '\r\n' if '\r\n' in old else '\n'
@@ -108,8 +122,9 @@ def build_page(path):
     code, _ = lang_of(path)
     text = re.sub(r'<html lang="[^"]*">', '<html lang="%s">' % code, text, count=1)
     if text != old:
-        with open(path, 'w', encoding='utf-8', newline='') as f:
-            f.write(text)
+        if write:
+            with open(path, 'w', encoding='utf-8', newline='') as f:
+                f.write(text)
         return True
     return False
 
@@ -165,8 +180,8 @@ def site_path(page):
     return '/'.join([mod] + rest)
 
 
-def write_pages(pages):
-    """Write DocsPages.txt (only when it changed). Returns T when written."""
+def write_pages(pages, write=True):
+    """Write DocsPages.txt (only when it changed). Returns True when it changed."""
     lines = ['# DocsPages.txt - the pages of the DynALisp docs website, written by Installer/Docs/BuildDocs.py',
              '# <Module>/<path> of each page; a module index: its title and first sentence after tabs']
     for p in sorted(pages, key=site_path):  # the same order on every system
@@ -181,16 +196,19 @@ def write_pages(pages):
             old = f.read()
     # (its line endings as git checked it out: CRLF on Windows, LF on the Linux of the workflow)
     if old is None or new.replace('\r\n', '\n') != old.replace('\r\n', '\n'):
-        with open(PAGES, 'w', encoding='utf-8', newline='') as f:
-            f.write(new)
+        if write:
+            with open(PAGES, 'w', encoding='utf-8', newline='') as f:
+                f.write(new)
         return True
     return False
 
 
 def main():
+    check_only = '--check' in sys.argv
     pages = sorted(glob.glob(os.path.join(MODULES, '*', 'Docs', '**', '*.htm'), recursive=True))
-    changed = [p for p in pages if build_page(p)]
+    changed = [p for p in pages if build_page(p, not check_only)]
     nbad = 0
+    ncredit = 0
     for p in pages:
         for href, why in check(p):
             print('Broken link: %s -> %s (%s)' % (os.path.relpath(p, MODULES), href, why))
@@ -199,9 +217,24 @@ def main():
             with open(p, encoding='utf-8') as f:
                 if LEEMAC_NOTE not in f.read():
                     print('No credit to Lee Mac: %s (a note beginning %s...)' % (os.path.relpath(p, MODULES), LEEMAC_NOTE))
-                    nbad += 1
-    print('%d pages written, %d broken links or missing credits.' % (len(changed), nbad))
-    print('DocsPages.txt %s: %d pages.' % ('written' if write_pages(pages) else 'up to date', len(pages)))
+                    ncredit += 1
+    # The website has the pages git knows only (never MyTools, ignored):
+    known = git_files()
+    site = [p for p in pages if os.path.normcase(os.path.normpath(p)) in known]
+    listed = write_pages(site, not check_only)
+    if check_only:
+        for p in changed:
+            print('Not up to date: %s' % os.path.relpath(p, MODULES))
+        if listed:
+            print('Not up to date: Contents/Resources/DocsPages.txt')
+        print('%d broken links, %d LeeMac pages without their credit.' % (nbad, ncredit))
+        if changed or listed or ncredit:
+            print('Run python Installer\\Docs\\BuildDocs.py, then commit what it changed.')
+            sys.exit(1)
+        print('The docs are up to date (%d pages on the website).' % len(site))
+        return
+    print('%d pages written, %d broken links, %d LeeMac pages without their credit.' % (len(changed), nbad, ncredit))
+    print('DocsPages.txt %s: %d pages.' % ('written' if listed else 'up to date', len(site)))
     for mod in sorted({os.path.relpath(p, MODULES).split(os.sep)[0] for p in pages}):
         base = [p for p in pages if os.path.relpath(p, MODULES).startswith(mod + os.sep) and lang_of(p)[0] == 'en']
         for c, _, label, *_ in LANGS[1:]:
