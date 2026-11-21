@@ -64,6 +64,7 @@ Dynalisp/Output/Dyl-CmdOptimizer.fr.htm
 Dynalisp/Output/Dyl-CmdOptimizer.htm
 Dynalisp/Output/Dyl-PrepDrawing.fr.htm
 Dynalisp/Output/Dyl-PrepDrawing.htm
+Dynalisp/Output/Dyl-Revisions.fr.htm
 Dynalisp/Output/Dyl-Revisions.htm
 Dynalisp/Plugins/CleanStartup.fr.htm
 Dynalisp/Plugins/CleanStartup.htm
