@@ -24,35 +24,33 @@
 <td><span class="fixw">UNGROUPNEXT</span></td>
 </tr>
 <tr>
-<td>Fichier source</td>
-<td><span class="fixw">Modules\Dynalisp\Apps\Utilities\Dyl-UngroupNext.lsp</span></td>
-</tr>
-<tr class="alt">
 <td>Requis</td>
 <td>AutoCAD pour Windows (ActiveX / Visual LISP)</td>
 </tr>
-<tr>
+<tr class="alt">
 <td>Licence</td>
 <td>Licence publique générale GNU v3</td>
 </tr>
 </table>
 </div>
 <h2>Description</h2>
-<p>Retire chaque groupe qui contient les objets sélectionnés, y compris les objets qui appartiennent à plusieurs groupes superposés à la fois &ndash; le cas où la commande native UNGROUP demande de répéter son option <em>Suivant</em> pour chaque groupe. Seules les définitions de groupes sont supprimées; les objets ne changent pas.</p>
+<p>Retirez chaque groupe auquel appartiennent les objets sélectionnés, imbriqués et superposés compris, en une commande : là où UNGROUP d'AutoCAD demande à nouveau son option Suivant pour chaque groupe. Les objets eux-mêmes ne sont pas modifiés.</p>
+<!-- picture: images/Dyl-UngroupNext-window.png -->
+<!-- picture: images/Dyl-UngroupNext-use.gif -->
+<h2>Utilisation</h2>
+<div class="spacedbullets">
+<ol>
+<li>Tapez <span class="fixw">UNGROUPNEXT</span>.</li>
+<li>Sélectionnez les objets ou les groupes : un membre d'un groupe suffit.</li>
+<li>Chaque groupe retiré est nommé à la ligne de commande, jusqu'à ce qu'il n'en reste aucun.</li>
+</ol>
+</div>
 <h2 id="commands">Commandes</h2>
 <div class="programs commands wide">
 <table>
 <tr><th>Commande</th><th>Nom</th><th>Description</th></tr>
 <tr><td><span class="fixw">UNGROUPNEXT</span></td><td>Ungroup Nested</td><td>Retire chaque groupe, à tous les niveaux d'imbrication, qui contient les objets sélectionnés.</td></tr>
 </table>
-</div>
-<h2>Fonctionnement</h2>
-<div class="spacedbullets">
-<ol>
-<li>Sélectionnez les objets ou les groupes à dégrouper. Un clic sur n'importe quel membre d'un groupe suffit.</li>
-<li>La routine parcourt chaque groupe du dessin et supprime chaque groupe qui contient l'un des objets sélectionnés, en affichant <em>Ungrouping: &lt;name&gt;</em>.</li>
-<li>Le parcours est répété jusqu'à ce qu'un passage complet ne retire plus rien, puis la commande confirme que la sélection est entièrement dégroupée.</li>
-</ol>
 </div>
 <h2>Limites connues</h2>
 <div class="spacedbullets">

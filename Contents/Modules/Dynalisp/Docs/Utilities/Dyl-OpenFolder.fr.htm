@@ -24,21 +24,27 @@
 <td><span class="fixw">DYL-OPENFOLDER</span></td>
 </tr>
 <tr>
-<td>Fichier source</td>
-<td><span class="fixw">Modules\Dynalisp\Apps\Utilities\Dyl-OpenFolder.lsp</span></td>
-</tr>
-<tr class="alt">
 <td>Requis</td>
 <td>AutoCAD pour Windows (Explorateur Windows)</td>
 </tr>
-<tr>
+<tr class="alt">
 <td>Licence</td>
 <td>Licence publique générale GNU v3</td>
 </tr>
 </table>
 </div>
 <h2>Description</h2>
-<p>Ouvre un dossier de travail dans l'Explorateur Windows : le paquet DynALisp, le dossier du dessin courant, les gabarits de modèle Dynalisp, le dossier du jeu de feuilles du projet courant ou le dossier de support d'AutoCAD.</p>
+<p>Ouvrez un dossier de travail dans l'Explorateur Windows en deux touches : le dossier de DynALisp, le dossier du dessin, les gabarits de DynALisp, le dossier du jeu de feuilles du projet ou le dossier de support d'AutoCAD.</p>
+<!-- picture: images/Dyl-OpenFolder-window.png -->
+<!-- picture: images/Dyl-OpenFolder-use.gif -->
+<h2>Utilisation</h2>
+<div class="spacedbullets">
+<ol>
+<li>Tapez <span class="fixw">Dyl-OpenFolder</span>.</li>
+<li>Choisissez le dossier : <em>Repository</em>, <em>CurrentDrawing</em>, <em>Template</em>, <em>SheetSet</em> ou <em>sUpport</em> (tapez sa majuscule).</li>
+<li>L'Explorateur Windows s'ouvre dessus; un dossier qui n'existe pas est signalé.</li>
+</ol>
+</div>
 <h2 id="commands">Commandes</h2>
 <div class="programs commands wide">
 <table>
@@ -46,18 +52,6 @@
 <tr><td><span class="fixw">DYL-OPENFOLDER</span></td><td>Open Folder</td><td>Ouvre dans l'Explorateur Windows le dossier du dépôt, du dessin courant, des gabarits, du jeu de feuilles ou de support d'AutoCAD.</td></tr>
 </table>
 </div>
-<h2>Fonctionnement</h2>
-<p>La commande demande <span class="fixw">Open folder: [Repository/CurrentDrawing/Template/SheetSet/sUpport]</span> et ouvre le dossier dans l'Explorateur Windows :</p>
-<div class="unspacedbullets">
-<ul>
-<li><em>Repository</em> : le dossier <span class="fixw">DynALisp.bundle</span>;</li>
-<li><em>CurrentDrawing</em> : le dossier du dessin courant;</li>
-<li><em>Template</em> : <span class="fixw">Modules\Dynalisp\Res\Templates\Model</span>;</li>
-<li><em>SheetSet</em> : le dossier le plus proche qui contient un fichier <span class="fixw">.dst</span>, cherché à partir du dossier du dessin en remontant ses dossiers parents;</li>
-<li><em>sUpport</em> (tapez <span class="fixw">U</span>) : le dossier Support utilisateur de l'AutoCAD en cours, <span class="fixw">%APPDATA%\Autodesk\&lt;product&gt;\&lt;language&gt;\Support</span> (<span class="fixw">ROAMABLEROOTPREFIX</span>) : <span class="fixw">acad.cuix</span>, les copies des menus partiels (<span class="fixw">.cuix</span>) qu'AutoCAD y enregistre, les fichiers <span class="fixw">.pat</span> et <span class="fixw">.lin</span> de l'utilisateur.</li>
-</ul>
-</div>
-<p>Un dossier manquant est signalé par <em>Folder not found</em>.</p>
 <h2>Limites connues</h2>
 <div class="spacedbullets">
 <ul>

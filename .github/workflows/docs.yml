@@ -1,0 +1,84 @@
+# docs.yml - publish the DynALisp docs website
+# Copyright (C) 2026  Samuel Martineau, GNU General Public License v3
+#
+# On every push to main that changes the docs, builds the website (Installer/Docs/BuildSite.py)
+# from the User Guide (the Docs folder of each module), the Developer docs (its DevDocs folder),
+# README.md and CONVENTIONS.md, and pushes it to the public repository
+# samagior/DynALisp.docs, whose GitHub Pages publish it at
+# https://samagior.github.io/DynALisp.docs/ (*dyl:docsweb* in dynalisp.mnl). The docs are
+# edited only in this repository: DynALisp.docs is made again by every run, the pages it
+# already has kept (the versions of DynALisp installed open them).
+#
+# Needs the secret DOCS_DEPLOY_KEY: the private key of a deploy key of DynALisp.docs that
+# can write. Run it by hand (Actions > Docs > Run workflow) to publish again.
+
+name: Docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Contents/Modules/*/Docs/**'
+      - 'Contents/Modules/*/DevDocs/**'
+      - 'Contents/Modules/LeeMac/LEE-MAC-LICENCE.md'
+      - 'Contents/Resources/Icons/dynalisp-banner-readme.svg'
+      - 'README.md'
+      - 'CONVENTIONS.md'
+      - 'Contents/Resources/docs.css'
+      - 'Contents/Resources/DocsPages.txt'
+      - 'Installer/Docs/**'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: docs
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  DOCS_REPO: samagior/DynALisp.docs
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install markdown
+        run: pip install markdown
+
+      # BuildDocs.py must have been run before the commit (as CONVENTIONS.md asks): a page or
+      # DocsPages.txt not up to date, or a LeeMac page without its credit, stops the job, so
+      # the list installed by the setup always matches the website.
+      - name: Check the docs
+        run: python Installer/Docs/BuildDocs.py --check
+
+      - name: Publish the website
+        env:
+          DEPLOY_KEY: ${{ secrets.DOCS_DEPLOY_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/docs_key
+          chmod 600 ~/.ssh/docs_key
+          # The host key GitHub publishes (https://api.github.com/meta), never the one a scan
+          # gets while the job runs:
+          echo "github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl" >> ~/.ssh/known_hosts
+          export GIT_SSH_COMMAND="ssh -i ~/.ssh/docs_key -o IdentitiesOnly=yes"
+          git clone --depth 1 "git@github.com:${DOCS_REPO}.git" "$RUNNER_TEMP/site"
+          python Installer/Docs/BuildSite.py "$RUNNER_TEMP/site"
+          cd "$RUNNER_TEMP/site"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "The website is up to date."
+            exit 0
+          fi
+          git commit -q -m "Publish the docs (DynALisp ${GITHUB_SHA::7})"
+          git push origin HEAD:main

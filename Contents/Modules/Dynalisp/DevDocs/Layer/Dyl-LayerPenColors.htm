@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Layer Pen Colors &ndash; Developer docs</title>
+    <link rel="stylesheet" href="../../../../Resources/docs.css">
+</head>
+
+<body>
+    <div id="header">
+        <p>DynALisp <span>Docs</span></p>
+        <nav class="lang" aria-label="Language"><span class="on" title="English">EN</span><span class="off" title="The developer docs are in English only">FR</span></nav>
+    </div>
+
+    <div id="content">
+        <h1>Layer Pen Colors</h1>
+
+<p class="note">The developer docs of Layer Pen Colors: its files and how its code works. What it does and how to use it are in its <a href="../../Docs/Layer/Dyl-LayerPenColors.htm">User Guide</a> page.</p>
+<div class="programs">
+<table>
+<tr class="alt"><td>Source Files</td><td><span class="fixw">Modules\Dynalisp\Apps\Layer\Dyl-LayerPenColors.lsp</span></td></tr>
+<tr><td>Data</td><td><span class="fixw">Modules\Dynalisp\Res\Layer\PenColors.csv</span> (the rules, <span class="fixw">Name;Layers;Colors;Color;Description</span>, your copy under <span class="fixw">User</span>); the <span class="fixw">dyl-pens</span> ldata of each layer (its saved color)</td></tr>
+</table>
+</div>
+<h2>How It Works</h2>
+<div class="spacedbullets">
+<ol>
+<li>With <span class="fixw">DYL-LAYERPENCOLORS</span>, choose <span class="fixw">Pens</span> (default) or <span class="fixw">Restore</span>. The two child commands skip this question.</li>
+<li>Choose <span class="fixw">All</span> (default, every layer of the drawing) or <span class="fixw">Select</span> (the layers of the objects you select).</li>
+<li><b>Pens:</b> each layer matching a rule gets the color of the rule (or keeps its own). Any other layer gets the pen color of its current lineweight, its color is not read. A lineweight that is not in the table takes the nearest one (0.30 mm gives 3).</li>
+<li>The first time a layer changes, its color is saved in the layer itself (true colors and color books too). Running Pens again later, for example on layers added since, never replaces a color already saved.</li>
+<li><b>Restore:</b> each layer with a saved color gets it back, and the saved color is removed.</li>
+<li>The changes are one undo step. The command reports the layers changed, already matching, kept by a rule, and lists the layers not changed.</li>
+</ol>
+</div>
+<h2>The Code</h2>
+<div class="spacedbullets">
+<ul>
+<li><span class="fixw">LPC:pens</span> &ndash; the pen color of each standard lineweight; <span class="fixw">(LPC:PenOf lw)</span> the one nearest to a lineweight, nil for Default, ByLayer, ByBlock and 2.00.</li>
+<li><span class="fixw">LPC:Rules</span> &ndash; reads <span class="fixw">PenColors.csv</span> through <span class="fixw">Dyl:UserFile</span> and <span class="fixw">Remote&gt;&gt;Dyl:CsvRead</span>, <span class="fixw">LPC:defaults</span> when it is missing; <span class="fixw">(LPC:Rule name aci rules)</span> returns the first rule whose layer pattern and color pattern match (a true color never matches a rule on colors).</li>
+<li><span class="fixw">LPC:ColorGet</span> / <span class="fixw">LPC:ColorPut</span> &ndash; the color of a layer as <span class="fixw">(method index red green blue book name)</span>, through its <span class="fixw">TrueColor</span>, and back: an RGB color and its color book are restored as they were.</li>
+<li><span class="fixw">(LPC:Run restore)</span> &ndash; asks <em>All/Select</em>, then in one undo mark: for <em>Pens</em>, a layer gets the color of its rule or of <span class="fixw">LPC:PenOf</span>, its color first saved with <span class="fixw">(vlax-ldata-put lay "dyl-pens" ...)</span> when it has none saved; for <em>Restore</em>, a layer with saved data gets it back and the data is deleted. Xref layers are left out.</li>
+<li><span class="fixw">c:Dyl-LayerPenColors</span> asks <em>Pens/Restore</em>; <span class="fixw">c:Pst-LayerColorsToPens</span> and <span class="fixw">c:Pst-LayerColorsRestore</span> run <span class="fixw">LPC:Run</span> directly.</li>
+</ul>
+</div>
+<p><a href="../index.htm">&larr; Dynalisp developer docs</a></p>
+
+    </div>
+
+    <div id="footer">
+        <p>Author: Samuel Martineau, Copyright &copy; 2026 &ndash; released under the GNU General Public License v3</p>
+    </div>
+</body>
+
+</html>

@@ -24,17 +24,24 @@
 <td><span class="fixw">DYL-LAYERPENCOLORS</span></td>
 </tr>
 <tr>
-<td>Source File</td>
-<td><span class="fixw">Modules\Dynalisp\Apps\Layer\Dyl-LayerPenColors.lsp</span></td>
-</tr>
-<tr class="alt">
 <td>Licence</td>
 <td>GNU General Public License v3</td>
 </tr>
 </table>
 </div>
 <h2>Program Description</h2>
-<p>Switches the layers from the 255 colors of the Dyl Standard to a small set of pen colors, 1 to 7, chosen from the current lineweight of each layer. A few colors and layer names are kept or get a color of their own (rules in <span class="fixw">Res\Layer\PenColors.csv</span>). The colors of the layers are saved in the drawing, so the switch can be undone at any time with Restore.</p>
+<p>Switch the layers from the 255 colors of the Dyl Standard to a few pen colors, 1 to 7, chosen from the lineweight of each layer, for a plotter or a client that wants them. A few colors and layer names keep theirs or get one of their own. The colors are saved in the drawing: <em>Restore</em> gives them back at any time.</p>
+<!-- picture: images/Dyl-LayerPenColors-window.png -->
+<!-- picture: images/Dyl-LayerPenColors-use.gif -->
+<h2>How To Use</h2>
+<div class="spacedbullets">
+<ol>
+<li>Type <span class="fixw">Dyl-LayerPenColors</span> and choose <em>Pens</em> (the default) or <em>Restore</em>. The two child commands of the table below skip this question.</li>
+<li>Choose <em>All</em> (every layer, the default) or <em>Select</em> (the layers of the objects you select).</li>
+<li>The command line says how many layers changed, matched already or were kept by a rule, and which it left. One <span class="fixw">U</span> undoes it all.</li>
+<li>To go back, run it again with <em>Restore</em>: each layer gets its former color.</li>
+</ol>
+</div>
 <h2 id="commands">Commands</h2>
 <div class="programs commands wide">
 <table>
@@ -71,17 +78,6 @@
 <tr><td>Screened</td><td>*-Scrn, *-Scrn-*</td><td>&ndash;</td><td>8 (dark grey)</td></tr>
 <tr><td>Existing</td><td>*-Exst, *-Exst-*</td><td>&ndash;</td><td>9 (light grey)</td></tr>
 </table>
-</div>
-<h2>How It Works</h2>
-<div class="spacedbullets">
-<ol>
-<li>With <span class="fixw">DYL-LAYERPENCOLORS</span>, choose <span class="fixw">Pens</span> (default) or <span class="fixw">Restore</span>. The two child commands skip this question.</li>
-<li>Choose <span class="fixw">All</span> (default, every layer of the drawing) or <span class="fixw">Select</span> (the layers of the objects you select).</li>
-<li><b>Pens:</b> each layer matching a rule gets the color of the rule (or keeps its own). Any other layer gets the pen color of its current lineweight, its color is not read. A lineweight that is not in the table takes the nearest one (0.30 mm gives 3).</li>
-<li>The first time a layer changes, its color is saved in the layer itself (true colors and color books too). Running Pens again later, for example on layers added since, never replaces a color already saved.</li>
-<li><b>Restore:</b> each layer with a saved color gets it back, and the saved color is removed.</li>
-<li>The changes are one undo step. The command reports the layers changed, already matching, kept by a rule, and lists the layers not changed.</li>
-</ol>
 </div>
 <h2>Known Limitations</h2>
 <div class="spacedbullets">

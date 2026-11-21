@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shrinkwrap &ndash; Developer docs</title>
+    <link rel="stylesheet" href="../../../../Resources/docs.css">
+</head>
+
+<body>
+    <div id="header">
+        <p>DynALisp <span>Docs</span></p>
+        <nav class="lang" aria-label="Language"><span class="on" title="English">EN</span><span class="off" title="The developer docs are in English only">FR</span></nav>
+    </div>
+
+    <div id="content">
+        <h1>Shrinkwrap</h1>
+
+<p class="note">The developer docs of Shrinkwrap: its files and how its code works. What it does and how to use it are in its <a href="../../Docs/Draw/Dyl-Shrinkwrap.htm">User Guide</a> page.</p>
+<div class="programs">
+<table>
+<tr class="alt"><td>Source Files</td><td><span class="fixw">Modules\Dynalisp\Remote\Dyl-Shrinkwrap.lsp</span> (the outline, loaded at startup, used by Quick Draw too), <span class="fixw">Modules\Dynalisp\Apps\Draw\Dyl-Shrinkwrap.lsp</span> (the command). The same technique as Lee Mac's Outline Objects (LeeMac module).</td></tr>
+<tr><td>Data</td><td>The gap step of the imperial and of the metric drawings, the user settings <span class="fixw">DynalispShrinkGapImperial</span> and <span class="fixw">DynalispShrinkGapMetric</span> (<span class="fixw">Remote&gt;&gt;Dyl:ShrinkwrapStep</span>, <span class="fixw">ShrinkwrapStepSet</span>)</td></tr>
+</table>
+</div>
+<h2>The Technique</h2>
+<p>A temporary frame is drawn around the selection, and <span class="fixw">BOUNDARY</span> with island detection traces the islands inside it: the outlines of the objects; the outline of the frame is then deleted. <span class="fixw">BOUNDARY</span> sees geometry only, so temporary objects are added to its boundary set first, and all deleted at the end:</p>
+<div class="spacedbullets">
+<ul>
+<li>a rectangle around each text, mtext and visible attribute (<span class="fixw">Remote&gt;&gt;Dyl:ShrinkwrapTextRect</span>, <span class="fixw">ShrinkwrapAttribs</span>);</li>
+<li>the pieces of exploded copies of blocks, dimensions, multileaders and tables (<span class="fixw">Remote&gt;&gt;Dyl:ShrinkwrapExplode</span>), so the text inside them is wrapped too;</li>
+<li>the boundary of each hatch, made again with <span class="fixw">-HATCHEDIT</span>;</li>
+<li>the bounding box of images, wipeouts and OLE frames (<span class="fixw">Remote&gt;&gt;Dyl:ShrinkwrapBoxRect</span>).</li>
+</ul>
+</div>
+<p>With a gap tolerance, the objects are thickened to bands of that width (<span class="fixw">Remote&gt;&gt;Dyl:ShrinkwrapBands</span>, <span class="fixw">ShrinkwrapBuffer</span>), traced, and the outline offset back inward (<span class="fixw">Remote&gt;&gt;Dyl:ShrinkwrapShrink</span>). <span class="fixw">Remote&gt;&gt;Dyl:Shrinkwrap</span> traces once and returns the new polylines (nil when nothing was found or something failed, the temporary objects deleted in every case); <span class="fixw">Remote&gt;&gt;Dyl:ShrinkwrapGap</span> tries again with a larger gap, by the gap step of the drawing, up to <span class="fixw">*sw:tries*</span> times, and prints the gap used. <span class="fixw">Remote&gt;&gt;Dyl:ShrinkwrapCmd</span> runs a command that never raises an error (a <span class="fixw">COMMAND</span> left unfinished by <span class="fixw">EXPLODE</span> or <span class="fixw">BOUNDARY</span> made the next one fail), <span class="fixw">Remote&gt;&gt;Dyl:ShrinkwrapNew</span> returns the entities a command made.</p>
+<h2>How It Works</h2>
+<div class="spacedbullets">
+<ol>
+<li>Each selected object is added to a boundary set, or replaced by temporary objects that <span class="fixw">BOUNDARY</span> can trace:
+<ul>
+<li>texts, mtexts and visible attributes &rarr; a rectangle around the text, following its rotation;</li>
+<li>blocks, dimensions, multileaders and tables &rarr; the pieces of an exploded copy (texts in the pieces get a rectangle, attribute definitions are skipped);</li>
+<li>hatches &rarr; their boundary, recreated with <span class="fixw">-HATCHEDIT</span>;</li>
+<li>images, wipeouts and OLE frames &rarr; a rectangle on their bounding box;</li>
+<li>points, construction lines and rays are ignored.</li>
+</ul>
+</li>
+<li>With a gap tolerance, every curve of the boundary set is replaced by bands of the gap width (rectangles along its straight pieces, its curved pieces divided every half gap). The bands are made regions and united (<span class="fixw">UNION</span>), so they no longer overlap, and the united regions are exploded to their outlines: <span class="fixw">BOUNDARY</span> traces those reliably.</li>
+<li>A temporary rectangular frame is drawn around the extents of the boundary set, and the view zooms on it (<span class="fixw">BOUNDARY</span> only analyses what is on screen).</li>
+<li><span class="fixw">-BOUNDARY</span> runs with island detection on the boundary set, from a point between the objects and the frame. It creates the outline of the frame and the outline of each island, i.e. of each group of objects. With a gap tolerance, each outline is then offset inwards by half the gap.</li>
+<li>The outline of the frame and every temporary object are deleted, and the previous view is restored. When no outline was found, it is tried again with a larger gap (see <a href="../../Docs/Draw/Dyl-Shrinkwrap.htm#gap">Gap Tolerance</a>).</li>
+<li>Every AutoCAD command is run with <span class="fixw">command-s</span> (AutoCAD 2015 and later): a command that fails, e.g. <span class="fixw">BOUNDARY</span> finding no closed area, leaves nothing pending, so the next tries still run.</li>
+</ol>
+</div>
+<h2>Using It In An App</h2>
+<p><span class="fixw">(Remote&gt;&gt;Dyl:Shrinkwrap ss)</span> returns a selection set of the new polylines, or nil (it starts with a gap of 0). <span class="fixw">(Remote&gt;&gt;Dyl:ShrinkwrapGap ss gap)</span> starts with the gap tolerance <span class="fixw">gap</span> (drawing units). Both try larger gaps when no outline is found and print the gap used. They are used by the <em>Shrinkwrap</em> drawing method of <a href="../../Docs/Draw/Dyl-QuickDraw.htm">Quick Draw</a>.</p>
+<p><a href="../index.htm">&larr; Dynalisp developer docs</a></p>
+
+    </div>
+
+    <div id="footer">
+        <p>Author: Samuel Martineau, Copyright &copy; 2026 &ndash; released under the GNU General Public License v3</p>
+    </div>
+</body>
+
+</html>

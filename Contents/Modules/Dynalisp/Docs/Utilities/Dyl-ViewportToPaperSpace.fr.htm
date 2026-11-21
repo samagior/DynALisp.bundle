@@ -24,43 +24,33 @@
 <td><span class="fixw">VP2PS</span></td>
 </tr>
 <tr>
-<td>Fichier source</td>
-<td><span class="fixw">Modules\Dynalisp\Apps\Utilities\Dyl-ViewportToPaperSpace.lsp</span></td>
-</tr>
-<tr class="alt">
 <td>Requis</td>
 <td>AutoCAD pour Windows (ActiveX / Visual LISP)</td>
 </tr>
-<tr>
+<tr class="alt">
 <td>Licence</td>
 <td>Licence publique générale GNU v3</td>
 </tr>
 </table>
 </div>
 <h2>Description</h2>
-<p>Recrée directement dans la présentation, à 1:1 et exactement là où ils apparaissaient sur la feuille, les objets de l'espace objet visibles par les fenêtres sélectionnées, puis supprime les fenêtres. La feuille a la même apparence mais ne dépend plus de l'espace objet. Les invites et les messages sont en français.</p>
+<p>Transformez le contenu de fenêtres en objets de l'espace papier : ce qu'on voit par les fenêtres est copié dans la présentation à 1:1, exactement là où c'était sur la feuille, et les fenêtres sont supprimées. La feuille a le même aspect, mais ne dépend plus de l'espace objet.</p>
+<!-- picture: images/Dyl-ViewportToPaperSpace-window.png -->
+<!-- picture: images/Dyl-ViewportToPaperSpace-use.gif -->
+<h2>Utilisation</h2>
+<div class="spacedbullets">
+<ol>
+<li>Allez dans une présentation et tapez <span class="fixw">VP2PS</span>.</li>
+<li>Choisissez le résultat : <em>Decouper</em> (par défaut : les copies dans un bloc découpé par la fenêtre, comme elle apparaissait) ou <em>Libre</em> (objets libres, non coupés au bord).</li>
+<li>Sélectionnez les fenêtres. Chacune est remplacée par son contenu; un <span class="fixw">U</span> annule le tout.</li>
+</ol>
+</div>
 <h2 id="commands">Commandes</h2>
 <div class="programs commands wide">
 <table>
 <tr><th>Commande</th><th>Nom</th><th>Description</th></tr>
 <tr><td><span class="fixw">VP2PS</span></td><td>Viewport To Paper Space</td><td>Recrée dans l'espace papier les objets de l'espace objet vus par les fenêtres sélectionnées, puis supprime les fenêtres.</td></tr>
 </table>
-</div>
-<h2>Fonctionnement</h2>
-<div class="spacedbullets">
-<ol>
-<li>Lancez la commande depuis un onglet de présentation (elle refuse de s'exécuter dans l'espace objet et passe à l'espace papier si une fenêtre est active).</li>
-<li>Choisissez le mode de résultat à <span class="fixw">Mode de resultat [Decouper/Libre]</span>; le dernier choix est la valeur par défaut :<div class="unspacedbullets">
-<ul>
-<li><span class="fixw">Decouper</span> (par défaut) &ndash; les copies sont regroupées dans un bloc (préfixe <span class="fixw">VP2PS_</span>) découpé selon le contour de la fenêtre : le résultat ressemble exactement à la fenêtre;</li>
-<li><span class="fixw">Libre</span> &ndash; les copies sont des objets libres dans l'espace papier et les objets qui traversent le bord de la fenêtre ne sont pas coupés.</li>
-</ul>
-</div></li>
-<li>Sélectionnez les fenêtres à convertir (la fenêtre de l'espace papier elle-même est exclue).</li>
-<li>Les objets de l'espace objet sont rassemblés une fois. Pour chaque fenêtre, les objets des calques visibles sont copiés et transformés selon l'échelle, le centre de la vue et l'angle de rotation de la fenêtre; les fenêtres rectangulaires et découpées sont prises en charge.</li>
-<li>Avec <span class="fixw">PSLTSCALE</span> = 0, les échelles de types de ligne sont ajustées pour garder la longueur des tirets; les cotes gardent leur valeur et leur taille affichées.</li>
-<li>Chaque fenêtre convertie est supprimée. Les calques déverrouillés temporairement sont reverrouillés, le dessin est régénéré et un rapport donne le nombre de fenêtres et d'objets convertis. Toute l'opération est un seul groupe d'annulation.</li>
-</ol>
 </div>
 <h2>Limites connues</h2>
 <div class="spacedbullets">

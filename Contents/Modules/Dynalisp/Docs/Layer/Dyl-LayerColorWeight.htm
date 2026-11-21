@@ -24,17 +24,23 @@
 <td><span class="fixw">DYL-LAYERCOLORWEIGHT</span></td>
 </tr>
 <tr>
-<td>Source File</td>
-<td><span class="fixw">Modules\Dynalisp\Apps\Layer\Dyl-LayerColorWeight.lsp</span></td>
-</tr>
-<tr class="alt">
 <td>Licence</td>
 <td>GNU General Public License v3</td>
 </tr>
 </table>
 </div>
 <h2>Program Description</h2>
-<p>Makes the layers follow the Dyl Standard plot style (<span class="fixw">Res\Layer\Dyl Standard.pdf</span>, <span class="fixw">Dyl Standard.ctb</span>), where the color of a layer gives its plotted lineweight. It either sets the lineweight of each layer from its color, or the other way around, sets the color of each layer from its lineweight, keeping its hue.</p>
+<p>Make the layers follow the Dyl Standard plot style, where the color of a layer gives its plotted lineweight: set the lineweight of each layer from its color, or the other way around, its color from its lineweight, keeping its hue.</p>
+<!-- picture: images/Dyl-LayerColorWeight-window.png -->
+<!-- picture: images/Dyl-LayerColorWeight-use.gif -->
+<h2>How To Use</h2>
+<div class="spacedbullets">
+<ol>
+<li>Type <span class="fixw">Dyl-LayerColorWeight</span> and choose <em>Lineweight</em> (the lineweight follows the color, the default) or <em>Color</em> (the color follows the lineweight). The two child commands of the table below skip this question.</li>
+<li>Choose <em>All</em> (every layer, the default) or <em>Select</em> (the layers of the objects you select).</li>
+<li>The command line says how many layers changed and which ones it left as they were. One <span class="fixw">U</span> undoes it all.</li>
+</ol>
+</div>
 <h2 id="commands">Commands</h2>
 <div class="programs commands wide">
 <table>
@@ -59,16 +65,6 @@
 <tr><td>##8</td><td>2.00 mm</td></tr>
 <tr><td>##9, 8, 9, 250 to 255</td><td>0.13 mm (greys)</td></tr>
 </table>
-</div>
-<h2>How It Works</h2>
-<div class="spacedbullets">
-<ol>
-<li>With <span class="fixw">DYL-LAYERCOLORWEIGHT</span>, choose <span class="fixw">Lineweight</span> (default, the lineweight follows the color) or <span class="fixw">Color</span> (the color follows the lineweight). The two child commands skip this question.</li>
-<li>Choose <span class="fixw">All</span> (default, every layer of the drawing) or <span class="fixw">Select</span> (the layers of the objects you select).</li>
-<li><b>Lineweight from color:</b> each layer takes the lineweight of its color in the table above.</li>
-<li><b>Color from lineweight:</b> a color from 10 to 249 keeps its tens (its hue) and takes the last digit of its lineweight: color 11 with 0.35 mm becomes 13. A pen color 1 to 6 goes to its hue: red 1 with 0.35 mm becomes 13. Black (7) and the greys go to the pen color of the lineweight: 7 with 0.35 mm becomes 3. A lineweight that is not in the standard (0.30 mm) takes the nearest one (0.35 mm). A layer that already matches is left as is, so a dark grey ##9 layer at 0.13 mm stays dark grey.</li>
-<li>The changes are one undo step. The command reports how many layers changed, how many already matched, and lists the layers not changed.</li>
-</ol>
 </div>
 <h2>Known Limitations</h2>
 <div class="spacedbullets">

@@ -1609,18 +1609,19 @@
   ;;;   Modules\<Module>\Docs\<Group>\<File>.htm   (or .html .pdf .md .txt)
   ;;; A file without a page of its own uses the index.htm (or .html) of its
   ;;; group folder, then of each parent folder up to the module Docs folder.
-  ;;; Returns the full path of the page, or nil.
+  ;;; Returns the full path of the page, or nil. A page is found on the website or
+  ;;; on this computer (Dyl:DocsFind): the setup does not install the Docs folders.
   ;;; ---------------------------------------------------------------------------
   (defun Dyl:SuiteDocs (r / top dir bse fnd) 
     (setq top (strcat *dyl:module "\\" (nth 3 r) "\\Docs")
           dir (if (= "" (nth 4 r)) top (strcat top "\\" (nth 4 r)))
           bse (vl-filename-base (nth 2 r))
-          fnd (vl-some '(lambda (x) (findfile (strcat dir "\\" bse x))) 
+          fnd (vl-some '(lambda (x) (Dyl:DocsFind (strcat dir "\\" bse x))) 
                        '(".htm" ".html" ".pdf" ".md" ".txt")
               )
     )
     (while (and (not fnd) dir) 
-      (setq fnd (vl-some '(lambda (x) (findfile (strcat dir "\\index" x))) '(".htm" ".html"))
+      (setq fnd (vl-some '(lambda (x) (Dyl:DocsFind (strcat dir "\\index" x))) '(".htm" ".html"))
             dir (if (/= (strcase dir) (strcase top)) (vl-filename-directory dir))
       )
     )
@@ -2228,7 +2229,7 @@
                   )
         )
         (foreach f fils
-          (setq f (Dyl:DocsLocal f))
+          (setq f (Dyl:DocsTarget f))
           (cond
             ((and (not (vl-catch-all-error-p shl)) 
                   (not 
@@ -2237,6 +2238,11 @@
                     )
                   )
              )
+            )
+            ;;  A web address (a docs page on the website) is not a file for Notepad: given on
+            ;;  the command line, to open it by hand:
+            ((wcmatch (strcase f) "HTTP://*,HTTPS://*")
+             (princ (strcat "\nOpen this page in a web browser: " f))
             )
             ((startapp "notepad" (strcat "\"" f "\"")))
           )
@@ -2833,13 +2839,100 @@
   ;#region Docs
 
   ;;; ---------------------------------------------------------------------------
+  ;;; The docs website. The docs are published on GitHub Pages (*dyl:docsweb*, the
+  ;;; public repository samagior/DynALisp.docs, built by Installer\Docs\BuildSite.py
+  ;;; on every push to main). The setup does not install the Docs folders, only the
+  ;;; list of the pages of the website, Resources\DocsPages.txt (written by
+  ;;; Installer\Docs\BuildDocs.py); a git clone has the folders, to edit them. A docs
+  ;;; page is still named by its path in Modules\<Module>\Docs: a page of the list
+  ;;; opens on the website, whether this computer has it or not; another one (the docs
+  ;;; of a module of one's own, MyTools) opens from this computer.
+  ;;; ---------------------------------------------------------------------------
+  (setq *dyl:docsweb* "https://samagior.github.io/DynALisp.docs/")
+
+  ;;  The pages of the website, read once: (("DYNALISP/DRAW/DYL-QUICKDRAW.HTM"
+  ;;  "Dynalisp/Draw/Dyl-QuickDraw.htm") ...), a module index with its title and first
+  ;;  sentence after them; nil without DocsPages.txt. Read in the code page of Windows,
+  ;;  as Dyl:DocsIndexInfo reads an index: the bytes of the accents are written as they
+  ;;  are to the page of Dyl:DocsAll, in UTF-8 like the file:
+  (defun Dyl:DocsPages (/ f des str row lst)
+    (cond
+      ((eq 'NONE *dyl:docspages*) nil)
+      (*dyl:docspages*)
+      (T
+       (if (setq f (findfile (strcat *dyl:res "\\DocsPages.txt")))
+         (progn
+           (setq des (open f "r"))
+           (if des
+             (progn
+               (while (setq str (read-line des))
+                 (setq str (vl-string-right-trim "\r" str))
+                 (if (and (/= "" str) (/= "#" (substr str 1 1)))
+                   (progn
+                     (setq row (Dyl:DocsSplit str "\t"))
+                     (setq lst (cons (cons (strcase (car row)) row) lst))
+                   )
+                 )
+               )
+               (close des)
+             )
+           )
+         )
+       )
+       (setq *dyl:docspages* (cond ((reverse lst)) ('NONE)))
+       (if (listp *dyl:docspages*) *dyl:docspages*)
+      )
+    )
+  )
+
+  ;;  The string s divided at each sep:
+  (defun Dyl:DocsSplit (s sep / i lst)
+    (while (setq i (vl-string-search sep s))
+      (setq lst (cons (substr s 1 i) lst)
+            s   (substr s (+ i 1 (strlen sep)))
+      )
+    )
+    (reverse (cons s lst))
+  )
+
+  ;;  The path on the website of the page f, a full path in the Docs folder of a module
+  ;;  ("...\\Modules\\Dynalisp\\Docs\\Draw\\Dyl-QuickDraw.htm" ->
+  ;;  "Dynalisp/Draw/Dyl-QuickDraw.htm"), nil for another path:
+  (defun Dyl:DocsRel (f / top s i m)
+    (setq top (strcase (strcat *dyl:module "\\")))
+    (if (and (= 'STR (type f))
+             (= top (substr (setq s (strcase (vl-string-translate "/" "\\" f))) 1 (strlen top)))
+             (setq i (vl-string-search "\\DOCS\\" s (strlen top)))
+             (not (vl-string-search "\\" (setq m (substr f (1+ (strlen top)) (- i (strlen top))))))
+        )
+      (strcat m "/" (vl-string-translate "\\" "/" (substr f (+ i 7))))
+    )
+  )
+
+  ;;  The entry of DocsPages.txt of the page f (see Dyl:DocsPages), nil when the website
+  ;;  does not have it:
+  (defun Dyl:DocsWeb (f / r)
+    (if (setq r (Dyl:DocsRel f)) (assoc (strcase r) (Dyl:DocsPages)))
+  )
+
+  ;;  The page f when it can be opened, on the website or on this computer, nil
+  ;;  otherwise. In place of findfile for a docs page, which the setup does not install:
+  (defun Dyl:DocsFind (f)
+    (cond
+      ((/= 'STR (type f)) nil)
+      ((Dyl:DocsWeb f) f)
+      ((findfile f))
+    )
+  )
+
+  ;;; ---------------------------------------------------------------------------
   ;;; Open the docs index of a module (Modules\<Module>\Docs\index.htm) with its
   ;;; Windows association. mod is the module folder (*dyl:dyl, *dyl:lmapps...):
   ;;;   Dyl-Docs -> every module, see Dyl:DocsAll below
   ;;;   LM-Docs  -> LeeMac sample module docs
   ;;; ---------------------------------------------------------------------------
   (defun Dyl:DocsOpen (mod / f)
-    (if (findfile (setq f (strcat mod "\\Docs\\index.htm")))
+    (if (Dyl:DocsFind (setq f (strcat mod "\\Docs\\index.htm")))
       (Dyl:SuiteDlgShell (list f))
       (princ (strcat "\n--> Docs index not found: " f))
     )
@@ -2847,11 +2940,13 @@
   )
 
   ;;; ---------------------------------------------------------------------------
-  ;;; The docs of every module (Dyl-Docs, the Docs button of the ribbon): a page
-  ;;; listing each folder of Modules that has a Docs\index.htm (the Dynalisp module
-  ;;; first), with the title and the first sentence of that index, made each time
-  ;;; (a module added is listed), written to the temp folder (never under Contents)
-  ;;; and opened.
+  ;;; The docs of every module (Dyl-Docs, the Docs button of the ribbon): the home
+  ;;; page of the website (index.html, index.fr.html in French), which lists its
+  ;;; modules. When a module has docs the website does not have (Modules\MyTools\Docs),
+  ;;; a page listing each folder of Modules that has a Docs\index.htm (the Dynalisp
+  ;;; module first), with the title and the first sentence of that index, made each
+  ;;; time (a module added is listed), written to the temp folder (never under
+  ;;; Contents) and opened: its links lead to the website for the modules it has.
   ;;; ---------------------------------------------------------------------------
   ;;  The text of the html s without its tags, its spaces joined:
   (defun Dyl:DocsText (s / i j)
@@ -2895,16 +2990,40 @@
     s
   )
 
-  ;;  Write the page of every module and open it:
-  (defun Dyl:DocsAll (/ mods f out des info)
+  ;;  The (title . sentence) of the index f of the module m (f in the docs language):
+  ;;  read from the index on this computer, else from DocsPages.txt:
+  (defun Dyl:DocsModInfo (f m / e)
+    (cond
+      ((findfile f) (Dyl:DocsIndexInfo f m))
+      ((setq e (Dyl:DocsWeb f))
+       ;;  (the title itself, never the T of an and):
+       (cons (cond ((and (caddr e) (/= "" (caddr e))) (caddr e)) (m)) (cond ((cadddr e)) ("")))
+      )
+      ((cons m ""))
+    )
+  )
+
+  ;;  Open the home page of the website, or write the page of every module and open it:
+  (defun Dyl:DocsAll (/ mods f lng)
     (foreach m (vl-directory-files *dyl:module nil -1)
       (if (and (not (member m '("." "..")))
-               (findfile (setq f (strcat *dyl:module "\\" m "\\Docs\\index.htm")))
+               (Dyl:DocsFind (setq f (strcat *dyl:module "\\" m "\\Docs\\index.htm")))
           )
         ;;  its index in the docs language when it has one (index.fr.htm):
-        (setq mods (cons (list m (Dyl:DocsLocal f)) mods))
+        (setq mods (cons (list m (Dyl:DocsInLang f)) mods))
       )
     )
+    (if (vl-every '(lambda (x) (Dyl:DocsWeb (cadr x))) mods)
+      (Dyl:SuiteDlgShell
+        (list (strcat *dyl:docsweb* (if (setq lng (Dyl:DocsLang)) (strcat "index." lng ".html") "index.html")))
+      )
+      (Dyl:DocsAllPage mods)
+    )
+    (princ)
+  )
+
+  ;;  The page of the modules mods ((name index) ...), written to the temp folder:
+  (defun Dyl:DocsAllPage (mods / out des info)
     ;;  The Dynalisp module first, the others by name:
     (setq mods (vl-sort mods
                         '(lambda (a b)
@@ -2939,8 +3058,13 @@
           (write-line line des)
         )
         (foreach x mods
-          (setq info (Dyl:DocsIndexInfo (cadr x) (car x)))
-          (write-line (strcat "<tr><td><a href=\"" (Dyl:DocsUrl (cadr x)) "\">" (car info) "</a></td><td>" (cdr info) "</td></tr>") des)
+          (setq info (Dyl:DocsModInfo (cadr x) (car x)))
+          (write-line (strcat "<tr><td><a href=\""
+                              (if (Dyl:DocsWeb (cadr x)) (Dyl:DocsTarget (cadr x)) (Dyl:DocsUrl (cadr x)))
+                              "\">" (car info) "</a></td><td>" (cdr info) "</td></tr>"
+                      )
+                      des
+          )
         )
         (foreach line
           (list "</table>"
@@ -2960,7 +3084,6 @@
       )
       (princ (strcat "\n--> The docs page could not be written: " out))
     )
-    (princ)
   )
 
   ;;; ---------------------------------------------------------------------------
@@ -2968,15 +3091,15 @@
   ;;;   : button {label = "Open Docs"; key = "docs"; width = 12; fixed_width = true;}
   ;;; page: a docs page relative to the Docs folder of the Dynalisp module (e.g.
   ;;; "Layer\\Dyl-LayerKeys.htm"), or a full path. After new_dialog, (Dyl:DocsTile
-  ;;; page) makes the button open the page (the window stays open), greyed out
-  ;;; when the page is missing.
+  ;;; page) makes the button open the page (the window stays open), on the website
+  ;;; (Dyl:DocsTarget), greyed out when neither the website nor this computer has it.
   ;;; ---------------------------------------------------------------------------
-  ;;  Full path of the docs page, nil when it is not found:
+  ;;  Full path of the docs page, nil when it is not found (Dyl:DocsFind):
   (defun Dyl:DocsPage (page)
     (cond
       ((/= 'STR (type page)) nil)
-      ((findfile (strcat *dyl:dyl "\\Docs\\" page)))
-      ((wcmatch page "?:\\*,\\\\*") (findfile page))
+      ((wcmatch page "?:\\*,\\\\*") (Dyl:DocsFind page))
+      ((Dyl:DocsFind (strcat *dyl:dyl "\\Docs\\" page)))
     )
   )
 
@@ -2985,7 +3108,7 @@
   ;;; another language beside it (Page.fr.htm). The language opened is the language
   ;;; of DynALisp (Language in Dyl-Settings, Dyl:Lang in the Settings region),
   ;;; English when the page has no copy in it. Every docs page is opened through
-  ;;; Dyl:SuiteDlgShell, which calls Dyl:DocsLocal. The pages link to each other in
+  ;;; Dyl:SuiteDlgShell, which calls Dyl:DocsTarget. The pages link to each other in
   ;;; their own language and have an EN / FR switch at their top right
   ;;; (Installer\Docs\BuildDocs.py).
   ;;; ---------------------------------------------------------------------------
@@ -2994,20 +3117,28 @@
     (if (/= "en" (setq code (Dyl:LangCode))) code)
   )
 
-  ;;  The page f in the docs language when it has a copy in it (a page of a Docs
-  ;;  folder only), else f:
-  (defun Dyl:DocsLocal (f / lng loc)
+  ;;  The page f in the docs language when it has a copy in it, on the website or on
+  ;;  this computer (a page of a Docs folder only), else f:
+  (defun Dyl:DocsInLang (f / lng loc)
     (cond
       ((and (= 'STR (type f))
             (setq lng (Dyl:DocsLang))
             (wcmatch (strcase f) "*\\DOCS\\*.HTM")
             (not (wcmatch (strcase f) (strcat "*." (strcase lng) ".HTM")))
-            (findfile (setq loc (strcat (substr f 1 (- (strlen f) 4)) "." lng ".htm")))
+            (Dyl:DocsFind (setq loc (strcat (substr f 1 (- (strlen f) 4)) "." lng ".htm")))
        )
        loc
       )
       (f)
     )
+  )
+
+  ;;  What opens the page f: in the docs language, the address of the page on the
+  ;;  website when it has it, else f itself (another file, a page of a module of one's
+  ;;  own):
+  (defun Dyl:DocsTarget (f / e)
+    (setq f (Dyl:DocsInLang f))
+    (if (setq e (Dyl:DocsWeb f)) (strcat *dyl:docsweb* (Dyl:DocsSpaces (cadr e))) f)
   )
 
   ;;  Open the docs page (the message goes to the error tile when it is missing):
@@ -3578,17 +3709,18 @@
 
   (defun c:Dyl-Info (/ cmds mods dch sta idx res)
     (if (not *dyl:latest*) (Dyl:InfoCheck))
-    ;; Core commands defined, and the modules with a docs index: ((name . index) ...)
+    ;; Core commands defined, and the modules with a docs index, on the website or on
+    ;; this computer (Dyl:DocsFind): ((name . index) ...)
     (setq cmds (vl-remove-if-not '(lambda (c) (eval (read (strcat "C:" (car c)))))
                                  *dyl:core*
                )
           mods (vl-remove nil
-                          (mapcar '(lambda (d)
-                                     (if (findfile (strcat d "\\index.htm"))
-                                       (cons (vl-filename-base (vl-filename-directory d)) (strcat d "\\index.htm"))
+                          (mapcar '(lambda (m / f)
+                                     (if (Dyl:DocsFind (setq f (strcat *dyl:module "\\" m "\\Docs\\index.htm")))
+                                       (cons m f)
                                      )
                                    )
-                                  (Dyl:moddirs "Docs")
+                                  (vl-remove-if '(lambda (x) (wcmatch x "*.*")) (vl-directory-files *dyl:module nil -1))
                           )
                )
           dch  (load_dialog (strcat *dyl:res "\\Dyl-Info.dcl"))

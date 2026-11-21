@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Multileader List &ndash; Developer docs</title>
+    <link rel="stylesheet" href="../../../../Resources/docs.css">
+</head>
+
+<body>
+    <div id="header">
+        <p>DynALisp <span>Docs</span></p>
+        <nav class="lang" aria-label="Language"><span class="on" title="English">EN</span><span class="off" title="The developer docs are in English only">FR</span></nav>
+    </div>
+
+    <div id="content">
+        <h1>Multileader List</h1>
+
+<p class="note">The developer docs of Multileader List: its files and how its code works. What it does and how to use it are in its <a href="../../Docs/Utilities/Dyl-MultileaderList.htm">User Guide</a> page.</p>
+<div class="programs">
+<table>
+<tr class="alt"><td>Source Files</td><td><span class="fixw">Modules\Dynalisp\Apps\Utilities\Dyl-MultileaderList.lsp</span></td></tr>
+</table>
+</div>
+<h2>How It Works</h2>
+<div class="spacedbullets">
+<ol>
+<li>Uses the pre-selected multileaders and blocks, or prompts for a selection.</li>
+<li>Each object is keyed on its content:<div class="unspacedbullets"><ul><li>block reference: block name and every <em>TAG=value</em> pair of its attributes;</li><li>multileader with block content: block name and its attribute values;</li><li>multileader with text content: the text;</li><li>anything else: <em>&lt;no content&gt;</em>.</li></ul></div></li>
+<li>Identical keys are counted together and one line is printed per group, sorted, as <em>content [xN]</em>.</li>
+<li>A last line gives the total number of objects and of groups.</li>
+</ol>
+</div>
+<h2>The Code</h2>
+<p>One command, <span class="fixw">c:Dyl-MultileaderList</span>: the selection made first (<span class="fixw">(ssget "_I")</span>) or a new one, filtered to <span class="fixw">MULTILEADER</span> and <span class="fixw">INSERT</span>; each object is keyed on its content (the name and <span class="fixw">TAG=value</span> of a block, the block or the text of a multileader), the keys counted with an association list, then printed sorted.</p>
+<p><a href="../index.htm">&larr; Dynalisp developer docs</a></p>
+
+    </div>
+
+    <div id="footer">
+        <p>Author: Samuel Martineau, Copyright &copy; 2026 &ndash; released under the GNU General Public License v3</p>
+    </div>
+</body>
+
+</html>

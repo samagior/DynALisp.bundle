@@ -24,23 +24,27 @@
 <td><span class="fixw">DYL-QUICKDRAW</span> (preset dialog) + 35 preset commands &ndash; see <a href="#commands">Commands</a></td>
 </tr>
 <tr>
-<td>Fichier source</td>
-<td><span class="fixw">Modules\Dynalisp\Apps\Draw\Dyl-QuickDraw.lsp</span></td>
-</tr>
-<tr class="alt">
 <td>Requis</td>
 <td>AutoCAD pour Windows (ActiveX / Visual LISP); les motifs de hachures listés ci-dessous sur le chemin de recherche; les clés de calque Dynalisp (<a href="../Layer/Dyl-LayerKeys.fr.htm">Clés de calque</a>), le moteur de préréglages (<span class="fixw">Remote\Dyl-Presets.lsp</span>) et les préréglages de hachures (<span class="fixw">Remote\Dyl-Materials.lsp</span>), chargés au démarrage</td>
 </tr>
-<tr>
+<tr class="alt">
 <td>Licence</td>
 <td>Licence publique générale GNU v3</td>
 </tr>
 </table>
 </div>
 <h2>Description</h2>
-<p>Trente-cinq commandes de dessin et de remplissage pour les trames de phase et les préréglages de hachures de coupe. Chaque commande fait un contour fermé avec un outil de dessin standard d'AutoCAD (polyligne, rectangle, cercle&hellip; voir <a href="#drawwith">Draw With</a>), le met sur le calque de la clé de calque du contour de son <a href="#materials">préréglage de hachure</a>, et le remplit d'une hachure (associative ou non, selon le préréglage de hachure) avec le motif, l'échelle, l'angle et la clé de calque de hachure du préréglage. L'échelle de la hachure passe d'elle-même des valeurs impériales aux métriques.</p>
-<p>La commande principale <span class="fixw">DYL-QUICKDRAW</span> ouvre un éditeur de préréglages : un préréglage est un nom, un <a href="#materials">préréglage de hachure</a> (la hachure) et ses propres <a href="#behaviors">comportements</a> (comment il se dessine : sa méthode <a href="#drawwith">Draw with</a>...). Plusieurs préréglages peuvent partager un préréglage de hachure : <span class="fixw">QD-BRICK</span> (qui demande la méthode) et un préréglage <span class="fixw">PL-BRICK</span> dessiné avec une polyligne utilisent tous deux le préréglage de hachure <em>Brick</em>, et modifier ce préréglage de hachure change donc les deux. Les préréglages peuvent être modifiés, créés et remis à leurs valeurs par défaut. Les préréglages sont enregistrés dans <span class="fixw">Modules\Dynalisp\Res\QuickDraw.csv</span>, les préréglages de hachures dans <span class="fixw">Materials.csv</span>; les commandes <span class="fixw">QD-*</span> utilisent les valeurs qui y sont enregistrées : un préréglage par défaut modifié dans la fenêtre change aussi sa commande. Chaque préréglage personnalisé reçoit aussi une commande, <span class="fixw">Pst-QuickDrawCustom&lt;Name&gt;</span> (p. ex. <span class="fixw">Pst-QuickDrawCustomTest</span>) : elle est listée dans <span class="fixw">Dyl-Suite</span> sous <span class="fixw">DYL-QUICKDRAW</span>, où on peut lui ajouter des alias, et elle continue de fonctionner quand le préréglage est renommé (son identifiant est enregistré dans la colonne Id).</p>
-<p>Pour choisir un préréglage par son apparence, la <a href="Dyl-QuickDrawGallery.fr.htm">Galerie de dessin rapide</a> (<span class="fixw">Pst-QuickDrawGallery</span>, alias <span class="fixw">QDG</span>, le bouton <strong>Dessin rapide</strong> du ruban) montre une vignette par préréglage avec sa hachure, par groupe : un clic la dessine. Dans le ruban, cette fenêtre est <strong>Gestion du dessin rapide</strong>.</p>
+<p>Dessinez et hachurez en une commande : un préréglage dessine son contour avec l'outil de dessin qu'il dit (une polyligne, un rectangle, une bande le long d'une ligne...), le met sur le bon calque et le remplit de sa hachure, à l'échelle du dessin. Trente-cinq préréglages sont prêts (béton, brique, isolant, les trames de phase...), et vous créez les vôtres dans la fenêtre Quick Draw.</p>
+<!-- picture: images/Dyl-QuickDraw-window.png -->
+<!-- picture: images/Dyl-QuickDraw-use.gif -->
+<h2>Utilisation</h2>
+<div class="spacedbullets">
+<ol>
+<li><strong>Dessinez un préréglage</strong> &ndash; tapez son alias, <span class="fixw">QD-BRICK</span> ou <span class="fixw">PL-BRICK</span>... (le tableau ci-dessous), ou choisissez sa vignette dans la galerie Quick Draw (<em>Dessin rapide</em> dans le ruban). Dessinez le contour comme les invites le disent; la hachure suit.</li>
+<li>Un préréglage <span class="fixw">QD-*</span> demande comment le dessiner (polyligne, rectangle, cercle, bande linéaire...); un préréglage <span class="fixw">PL-*</span> dessine toujours une polyligne.</li>
+<li><strong>Modifiez ou ajoutez des préréglages</strong> &ndash; tapez <span class="fixw">Dyl-QuickDraw</span> (<em>Gestion du dessin rapide</em> dans le ruban) : choisissez un préréglage, changez son préréglage de hachure, sa façon d'être dessiné et sa bordure, ou cliquez <strong>New</strong>. Un nouveau préréglage reçoit une commande à lui; donnez-lui un alias dans <span class="fixw">Dyl-Suite</span>.</li>
+</ol>
+</div>
 <h2>Fenêtre des préréglages</h2>
 <div class="spacedbullets">
 <ul>
@@ -316,17 +320,6 @@
 <li><strong>Offset</strong> &ndash; les objets droits comme Linear, la première couche sur l'objet. Le long d'une courbe (un arc, un cercle, une spline, une polyligne avec arcs), une courbe est faite à chaque joint de deux couches par le décalage d'AutoCAD, et chaque couche Hatch est le contour entre ses deux courbes, hachuré avec l'angle de son préréglage de hachure; les courbes sont gardées comme bordures (les bords et les joints de la bande, les couches Line sur leur clé de calque), avec une ligne en travers de chaque extrémité. Sur une courbe, les extrémités d'un assemblage sont Square ou Open (Round, Extended et Angled sont d'équerre). <span class="fixw">Both sides</span> centre l'assemblage sur l'objet, sa première couche à gauche en regardant le long de l'objet.</li>
 <li>Dessiné avec une autre méthode que Linear et Offset, un préréglage d'assemblage est un seul contour de son propre préréglage de hachure. Un préréglage qui est un assemblage ne peut pas être une couche d'un autre.</li>
 </ul>
-</div>
-<h2>Fonctionnement</h2>
-<div class="spacedbullets">
-<ol>
-<li>L'échelle de la hachure est l'échelle du préréglage de hachure, dans les unités de son motif : multipliée par 25,4 pour un motif impérial (<span class="fixw">acad.pat</span>, la plupart des fichiers de motifs à part) dans un dessin métrique (<span class="fixw">MEASUREMENT</span> = 1), divisée par 25,4 pour un motif métrique dans un dessin impérial (voir <a href="Dyl-HatchPresets.fr.htm#hatch">Préréglages de hachures</a>).</li>
-<li>Le calque de la clé de calque du contour devient courant (créé d'abord avec les propriétés de la clé quand le dessin ne l'a pas), puis les contours sont faits avec la méthode <a href="#drawwith">Draw with</a> du préréglage (demandée d'abord quand le préréglage n'en a pas). Le calque courant est rétabli ensuite, aussi quand la commande est annulée.</li>
-<li>Seuls les polylignes fermées, cercles, ellipses et splines sont gardés : un contour ouvert dessiné est effacé (un sélectionné est sauté) et une alerte s'affiche.</li>
-<li>Les contours sont mis sur le calque de la clé de calque du contour.</li>
-<li>Une hachure est créée sur tous les contours avec <span class="fixw">-HATCH</span> (Sélectionner des objets), associative ou non et annotative ou non selon le préréglage de hachure, avec le motif, l'échelle et l'angle du préréglage de hachure (l'échelle multipliée par l'échelle du dessin divisée par celle pour laquelle elle a été réglée, quand le préréglage la suit) (<span class="fixw">SOLID</span> n'utilise ni échelle ni angle). Comme les contours sont hachurés ensemble, un contour dans un autre reste ouvert (îlot). La hachure est ensuite mise sur le calque de la clé de calque de hachure (créé s'il manque).</li>
-<li>Les contours et la hachure forment une seule étape d'annulation. Si rien n'a été fait, rien n'est hachuré.</li>
-</ol>
 </div>
 <h2 id="commands">Commandes</h2>
 <p>Les préréglages par défaut et les valeurs par défaut de leur préréglage de hachure (rétablis par <em>Reset Selected</em> / <em>Reset All</em> de la fenêtre Hatch Presets). Échelle est l'échelle du préréglage de hachure, dans les unités de son motif. <em>Anno.</em> = hachure annotative. Chaque préréglage par défaut dessine avec <em>Ask when drawn</em>, sauf <span class="fixw">QD-RIGIDINSULATION</span> (Linear, largeurs 25, 50, 75 et 100 demandées, ligne demandée, échelle de hachure = largeur x 1). Voir <a href="Dyl-HatchPresets.fr.htm#defaults">Préréglages de hachures &ndash; Préréglages de hachures par défaut</a> pour les autres réglages de chaque préréglage de hachure.</p>

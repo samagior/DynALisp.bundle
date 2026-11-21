@@ -498,11 +498,12 @@
   (setq doc (Remote>>Dyl:PresetProp pst:key 'doc)
         app (Remote>>Dyl:PresetProp pst:key 'path)
   )
-  ;;  The path found (not the T of an and):
+  ;;  The path found (not the T of an and), on the website or on this computer
+  ;;  (Dyl:DocsFind of dynalisp.mnl: the setup does not install the Docs folders):
   (cond
-    ((and doc (findfile (strcat *dyl:dyl "\\Docs\\" doc))) (findfile (strcat *dyl:dyl "\\Docs\\" doc)))
+    ((and doc (setq doc (Dyl:DocsFind (strcat *dyl:dyl "\\Docs\\" doc)))) doc)
     ((and app
-          (setq app (findfile (strcat *dyl:dyl "\\Docs\\"
+          (setq app (Dyl:DocsFind (strcat *dyl:dyl "\\Docs\\"
                                       (vl-filename-base (vl-filename-directory app)) "\\" (vl-filename-base app) ".htm"
                               )
                     )

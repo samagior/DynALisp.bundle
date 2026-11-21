@@ -24,36 +24,33 @@
 <td><span class="fixw">TXTPS</span></td>
 </tr>
 <tr>
-<td>Fichier source</td>
-<td><span class="fixw">Modules\Dynalisp\Apps\Utilities\Dyl-AddPrefixSuffix.lsp</span></td>
-</tr>
-<tr class="alt">
 <td>Requis</td>
 <td>AutoCAD pour Windows (ActiveX / Visual LISP)</td>
 </tr>
-<tr>
+<tr class="alt">
 <td>Licence</td>
 <td>Licence publique générale GNU v3</td>
 </tr>
 </table>
 </div>
 <h2>Description</h2>
-<p>Ajoute le même texte au début ou à la fin de chaque objet texte et texte multiligne sélectionné, en une seule étape d'annulation.</p>
+<p>Ajoutez le même texte au début ou à la fin de chaque texte et texte multiligne sélectionné, en une étape : un numéro d'étage devant chaque nom de pièce, une unité après chaque valeur.</p>
+<!-- picture: images/Dyl-AddPrefixSuffix-window.png -->
+<!-- picture: images/Dyl-AddPrefixSuffix-use.gif -->
+<h2>Utilisation</h2>
+<div class="spacedbullets">
+<ol>
+<li>Tapez <span class="fixw">TXTPS</span> et sélectionnez les textes; seuls les textes et textes multilignes sont gardés.</li>
+<li>Choisissez <em>Prefix</em> ou <em>Suffix</em> (Entrée : Suffix), puis tapez le texte à ajouter, espaces compris.</li>
+<li>Chaque texte sélectionné le reçoit; un <span class="fixw">U</span> annule tout le changement.</li>
+</ol>
+</div>
 <h2 id="commands">Commandes</h2>
 <div class="programs commands wide">
 <table>
 <tr><th>Commande</th><th>Nom</th><th>Description</th></tr>
 <tr><td><span class="fixw">TXTPS</span></td><td>Text Prefix Suffix</td><td>Ajoute un texte choisi comme préfixe ou suffixe aux textes et textes multilignes sélectionnés.</td></tr>
 </table>
-</div>
-<h2>Fonctionnement</h2>
-<div class="spacedbullets">
-<ol>
-<li>Sélectionnez les objets; seuls les textes et textes multilignes sont gardés.</li>
-<li>Choisissez <span class="fixw">Prefix</span> ou <span class="fixw">Suffix</span> (Entrée = Suffix).</li>
-<li>Tapez le texte à ajouter; les espaces sont acceptées. Un texte vide annule la commande.</li>
-<li>Le texte est ajouté au contenu de chaque objet et la commande indique combien ont été mis à jour. Un seul <span class="fixw">U</span> annule tout le changement.</li>
-</ol>
 </div>
 <h2>Limites connues</h2>
 <div class="spacedbullets">

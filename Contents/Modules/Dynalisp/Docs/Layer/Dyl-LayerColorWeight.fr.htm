@@ -24,17 +24,23 @@
 <td><span class="fixw">DYL-LAYERCOLORWEIGHT</span></td>
 </tr>
 <tr>
-<td>Fichier source</td>
-<td><span class="fixw">Modules\Dynalisp\Apps\Layer\Dyl-LayerColorWeight.lsp</span></td>
-</tr>
-<tr class="alt">
 <td>Licence</td>
 <td>Licence publique générale GNU v3</td>
 </tr>
 </table>
 </div>
 <h2>Description</h2>
-<p>Fait suivre aux calques le style de tracé Dyl Standard (<span class="fixw">Res\Layer\Dyl Standard.pdf</span>, <span class="fixw">Dyl Standard.ctb</span>), où la couleur d'un calque donne son épaisseur de ligne tracée. Elle règle soit l'épaisseur de ligne de chaque calque selon sa couleur, soit à l'inverse la couleur de chaque calque selon son épaisseur de ligne, en gardant sa teinte.</p>
+<p>Faites suivre aux calques le style de tracé Dyl Standard, où la couleur d'un calque donne son épaisseur de ligne tracée : réglez l'épaisseur de chaque calque d'après sa couleur, ou l'inverse, sa couleur d'après son épaisseur, en gardant sa teinte.</p>
+<!-- picture: images/Dyl-LayerColorWeight-window.png -->
+<!-- picture: images/Dyl-LayerColorWeight-use.gif -->
+<h2>Utilisation</h2>
+<div class="spacedbullets">
+<ol>
+<li>Tapez <span class="fixw">Dyl-LayerColorWeight</span> et choisissez <em>Lineweight</em> (l'épaisseur suit la couleur, par défaut) ou <em>Color</em> (la couleur suit l'épaisseur). Les deux commandes enfants du tableau ci-dessous sautent cette question.</li>
+<li>Choisissez <em>All</em> (chaque calque, par défaut) ou <em>Select</em> (les calques des objets que vous sélectionnez).</li>
+<li>La ligne de commande dit combien de calques ont changé et lesquels elle a laissés tels quels. Un <span class="fixw">U</span> annule le tout.</li>
+</ol>
+</div>
 <h2 id="commands">Commandes</h2>
 <div class="programs commands wide">
 <table>
@@ -59,16 +65,6 @@
 <tr><td>##8</td><td>2.00 mm</td></tr>
 <tr><td>##9, 8, 9, 250 à 255</td><td>0,13 mm (gris)</td></tr>
 </table>
-</div>
-<h2>Fonctionnement</h2>
-<div class="spacedbullets">
-<ol>
-<li>Avec <span class="fixw">DYL-LAYERCOLORWEIGHT</span>, choisissez <span class="fixw">Lineweight</span> (par défaut, l'épaisseur suit la couleur) ou <span class="fixw">Color</span> (la couleur suit l'épaisseur). Les deux commandes enfants sautent cette question.</li>
-<li>Choisissez <span class="fixw">All</span> (par défaut, chaque calque du dessin) ou <span class="fixw">Select</span> (les calques des objets que vous sélectionnez).</li>
-<li><b>Épaisseur selon la couleur :</b> chaque calque prend l'épaisseur de ligne de sa couleur dans le tableau ci-dessus.</li>
-<li><b>Couleur selon l'épaisseur :</b> une couleur de 10 à 249 garde ses dizaines (sa teinte) et prend le dernier chiffre de son épaisseur : la couleur 11 à 0,35 mm devient 13. Une couleur de plume 1 à 6 va à sa teinte : le rouge 1 à 0,35 mm devient 13. Le noir (7) et les gris vont à la couleur de plume de l'épaisseur : 7 à 0,35 mm devient 3. Une épaisseur absente de la norme (0,30 mm) prend la plus proche (0,35 mm). Un calque qui correspond déjà est laissé tel quel : un calque gris foncé ##9 à 0,13 mm reste gris foncé.</li>
-<li>Les changements forment une seule étape d'annulation. La commande indique combien de calques ont changé, combien correspondaient déjà, et liste les calques non modifiés.</li>
-</ol>
 </div>
 <h2>Limites connues</h2>
 <div class="spacedbullets">

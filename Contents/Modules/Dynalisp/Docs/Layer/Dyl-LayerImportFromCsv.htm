@@ -24,21 +24,28 @@
 <td>12 commands &ndash; see <a href="#commands">Commands</a></td>
 </tr>
 <tr>
-<td>Source File</td>
-<td><span class="fixw">Modules\Dynalisp\Apps\Layer\Dyl-LayerImportFromCsv.lsp</span></td>
-</tr>
-<tr class="alt">
 <td>Requires</td>
 <td>AutoCAD for Windows (ActiveX / Visual LISP)</td>
 </tr>
-<tr>
+<tr class="alt">
 <td>Licence</td>
 <td>GNU General Public License v3</td>
 </tr>
 </table>
 </div>
 <h2>Program Description</h2>
-<p>Applies layer properties stored in a CSV file to the layers of the current drawing. The preset commands load a named CSV for a type of plan and save the result as a named layer state, so the setup can be restored later; IMPORTLAYERS lets you browse for any CSV. The CSV format is the one written by <a href="Dyl-LayerExportToCsv.htm">Export Layers To CSV</a>.</p>
+<p>Apply the layer properties of a CSV file to the layers of the drawing: colors, lineweights, linetypes, plot, transparency, on/off and freeze. A preset command does it for one type of plan and saves the result as a layer state, to restore it later. The file is the one <a href="Dyl-LayerExportToCsv.htm">Export Layers To CSV</a> writes.</p>
+<!-- picture: images/Dyl-LayerImportFromCsv-window.png -->
+<!-- picture: images/Dyl-LayerImportFromCsv-use.gif -->
+<h2>How To Use</h2>
+<div class="spacedbullets">
+<ol>
+<li><strong>Any file</strong> &ndash; type <span class="fixw">IMPORTLAYERS</span> and pick the CSV (the window opens in Downloads).</li>
+<li><strong>A plan preset</strong> &ndash; type its alias, <span class="fixw">A-FLOR</span> for an architectural floor plan... (the table below). Its CSV is applied and saved as a layer state.</li>
+<li>When the layer state of the preset already exists, choose <em>U</em> to restore it (the CSV is not read), <em>I</em> to apply the CSV again and replace the state, or <em>C</em> to cancel.</li>
+<li>The command line gives the layers updated and those of the file the drawing does not have.</li>
+</ol>
+</div>
 <h2 id="commands">Commands</h2>
 <div class="programs commands wide">
 <table>
@@ -57,31 +64,12 @@
 <tr><td><span class="fixw">IMPORTLAYERS</span></td><td>Import Layers From CSV</td><td>Browse (starts in Downloads)</td><td>None</td></tr>
 </table>
 </div>
-<h2>How It Works</h2>
-<h3>Preset commands</h3>
-<div class="spacedbullets">
-<ol>
-<li>The preset CSV is looked up in the program folder. If it is missing, a file dialog opens instead.</li>
-<li>If the layer state of the preset already exists in the drawing, you choose <span class="fixw">U</span> (restore the existing state, CSV ignored), <span class="fixw">I</span> (apply the CSV and overwrite the state) or <span class="fixw">C</span> (cancel).</li>
-<li>Otherwise the CSV is applied and the layer state is created.</li>
-<li>All viewports are regenerated.</li>
-</ol>
-</div>
-<h3>Applying a CSV</h3>
-<div class="spacedbullets">
-<ol>
-<li>The header row and any UTF-8 BOM are skipped; quoted fields are supported.</li>
-<li>Each row is matched to an existing layer by name (case-insensitive). Layers that are not in the drawing are <em>not</em> created: they are counted and listed as <em>MISSING</em>.</li>
-<li>Colour, lineweight, linetype, plot, transparency, on/off, freeze, new viewport freeze and description are applied. A missing linetype is loaded from acad.lin / acadiso.lin; if it cannot be found, the layer keeps its linetype and a note is printed.</li>
-<li>A summary gives the number of layers updated and missing.</li>
-</ol>
-</div>
 <h2>Known Limitations</h2>
 <div class="spacedbullets">
 <ul>
-<li>The program folder is found by searching for <span class="fixw">import_layers_from_csv.lsp</span>, a file name that does not exist in the bundle, so presets are looked up in the drawing folder and the file dialog opens in most cases.</li>
-<li>Only <span class="fixw">preset_arch_floor.csv</span> is shipped (in <span class="fixw">Modules\Dynalisp\Res</span>); the other presets have no CSV yet.</li>
-<li>Colours are read as index colours (<span class="fixw">Red (1)</span>, <span class="fixw">ACI 151</span>, <span class="fixw">151</span>); true colours are not supported.</li>
+<li>Layers are updated, never created: a layer of the file that the drawing does not have is only listed.</li>
+<li>Only the architectural floor plan preset has its CSV so far; the other presets open the file window.</li>
+<li>Colors are index colors only.</li>
 </ul>
 </div>
 <!-- dyl:aliases -->

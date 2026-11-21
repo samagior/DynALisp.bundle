@@ -24,22 +24,29 @@
 <td><span class="fixw">DYL-HATCHPRESETS</span></td>
 </tr>
 <tr>
-<td>Source File</td>
-<td><span class="fixw">Modules\Dynalisp\Apps\Draw\Dyl-Materials.lsp</span> (command) and <span class="fixw">Modules\Dynalisp\Remote\Dyl-Materials.lsp</span> (hatch presets, loaded at startup)</td>
-</tr>
-<tr class="alt">
 <td>Requires</td>
 <td>AutoCAD for Windows (ActiveX / Visual LISP)</td>
 </tr>
-<tr>
+<tr class="alt">
 <td>Licence</td>
 <td>GNU General Public License v3</td>
 </tr>
 </table>
 </div>
 <h2>Program Description</h2>
-<p><span class="fixw">DYL-HATCHPRESETS</span> opens the Hatch Presets window. A hatch preset is the hatch of an outline: pattern, scale and angle, hatch layer key, optional colors, linetype, lineweight and transparency. How it is drawn (polyline, linear band, shrinkwrap...) is set in each preset, in the <a href="Dyl-QuickDraw.htm#behaviors">Behaviors</a> box of the Quick Draw window, and its border (layer key, color, linetype...) in the <a href="Dyl-QuickDraw.htm#border">Border settings</a> box of the Quick Draw and Quick Shape windows. The hatch presets are shared by every preset of Quick Draw and <a href="Dyl-QuickShape.htm">Quick Shape</a>, which open the same window with the open button beside their <em>Hatch preset</em>: changing a hatch preset changes every preset that uses it.</p>
-
+<p>Keep the hatches of your presets in one place: a hatch preset is the hatch of an outline (pattern, scale, angle, layer key and the optional colors, linetype, lineweight and transparency), shared by every Quick Draw and Quick Shape preset that uses it. Change a hatch preset, and every preset that uses it draws the new hatch.</p>
+<!-- picture: images/Dyl-HatchPresets-window.png -->
+<!-- picture: images/Dyl-HatchPresets-use.gif -->
+<h2>How To Use</h2>
+<div class="spacedbullets">
+<ol>
+<li>Type <span class="fixw">Dyl-HatchPresets</span>, or click the open button beside <em>Hatch preset</em> in the Quick Draw or Quick Shape window.</li>
+<li>Pick a hatch preset, or click <strong>New</strong> or <strong>Copy</strong>; change its pattern, scale and layer key, and check the optional settings you want.</li>
+<li><strong>Pick hatch...</strong> copies the settings of a hatch of the drawing; <strong>Draw legend...</strong> draws a box of each hatch preset selected, with its name.</li>
+<li>Click <strong>OK</strong>. Opened from a preset, the hatch preset selected becomes the one of that preset.</li>
+</ol>
+</div>
+<p>How a preset is drawn and its border are set in each preset, in the Quick Draw and Quick Shape windows, never here.</p>
 <h2 id="window">The Window</h2>
 <div class="spacedbullets">
 <ul>
@@ -55,7 +62,6 @@
 <li>A value that is not valid is shown at the bottom of the window, and the hatch preset cannot be left until it is corrected.</li>
 </ul>
 </div>
-
 <h2 id="parameters">Parameters</h2>
 <p>The right side of the window shows the <strong>Name</strong> (unique), the <strong>Group</strong> and the <a href="#hatch">Hatch settings</a> box, in two columns: the basic settings and the layer key overrides on the left, the optional settings on the right. The basic settings are always used. Every other setting has a checkbox: its value stays greyed out until it is checked, and while it is unchecked the property is left as the layer of the layer key (ByLayer) or the AutoCAD default.</p>
 <div class="spacedbullets">
@@ -93,7 +99,6 @@
 
 <h3 id="new">New Hatch Preset</h3>
 <p><strong>New</strong> starts from: pattern <span class="fixw">ANSI31</span>, scale 1.0, angle 0, hatch key <span class="fixw">HATCH</span>, annotative and associative, and every optional setting unchecked. <strong>Copy</strong> starts from the selected hatch preset.</p>
-
 <h2 id="defaults">Default Hatch Presets</h2>
 <p>The hatch presets shipped with DynALisp (<span class="fixw">Res\Materials.csv</span>). Unless noted, they are not annotative, not associative, and every optional setting is unchecked. <em>Border key</em>: the border layer key of the default presets of the hatch preset (the border is set in each preset). Scale: the scale of the hatch preset, in the units of its pattern (see <em>Scale</em> above). Layer keys: <span class="fixw">FINE</span> A-Detl-Fine, <span class="fixw">THIN</span> A-Detl-Thin, <span class="fixw">MED</span> A-Detl-Medm, <span class="fixw">WIDE</span> A-Detl-Wide, <span class="fixw">XLINE</span> A-Detl-XFin, <span class="fixw">HATCH</span> A-Detl-Patt (see <a href="../Layer/Dyl-LayerKeys.htm">Layer Keys</a>).</p>
 <div class="programs commands wide">
@@ -144,19 +149,6 @@
 </table>
 </div>
 <p>Each default preset of Quick Draw uses the default hatch preset of the same name (<span class="fixw">QD-BRICK</span> &rarr; <em>Brick</em>).</p>
-
-<h2 id="file">Hatch Presets File</h2>
-<p>The hatch presets are saved in <span class="fixw">Res\Materials.csv</span> (semicolons, one hatch preset per row, with a header). Your changes go to its copy under <span class="fixw">User</span>; the shipped file under <span class="fixw">Contents</span> gives the default values (status, Reset Selected, Reset All). The columns, in order: <span class="fixw">Id, Group, Name, Pattern, Scale, ScaleMetric (no longer used: one scale; kept for the order of the columns), Angle, OutlineKey, HatchKey, Annotative, ScaleDrawing, ScaleRef</span>; the optional settings, each one an <span class="fixw">...On</span> column (<span class="fixw">1</span>: checked) and its value: <span class="fixw">BorderColor, BorderLinetype, BorderLtScale, BorderLineweight</span> (hundredths of mm, <span class="fixw">25</span> = 0.25 mm), <span class="fixw">BorderTransparency, HatchColor, Background, HatchLineweight, HatchTransparency</span>; then <span class="fixw">Associative, NoBorder, BehindBorder (no longer used, kept for the order of the columns), Method, Width, Justify, Sides, ScaleWidth, WidthFactor, OriginOnLine, OriginOffset, ExistingBackgroundOn, ExistingBackground, ShrinkGap</span> (in drawing units), <span class="fixw">ShrinkGapOn, ShrinkGapMetric</span> (no longer used: an older gap moved to ShrinkGap), <span class="fixw">OriginAlong, HatchLinetypeOn, HatchLinetype, HatchLtScaleOn, HatchLtScale</span>; then the slots of the bands of Quick Draw Linear and Offset, set in each preset (see <a href="Dyl-QuickDraw.htm#endscorners">Ends and Corners</a>): <span class="fixw">Ends, EndExtension, EndAngle, Corners, MiterLimit, LapThrough, Joints, HatchFollows</span>; the assembly of Linear (<a href="Dyl-QuickDraw.htm#assembly">Assemblies</a>): <span class="fixw">AssemblyOn, Assembly</span>. An id starting with <span class="fixw">mt-</span> is a default hatch preset, <span class="fixw">cu-</span> a custom one. Missing columns get their default value, so a file of an older version still reads.</p>
-<!-- dyl:aliases -->
-<h2 id="aliases">Command Names And Aliases</h2>
-<p>Each program has one main command starting with <span class="fixw">Dyl-</span>. The short names are its aliases: they run the same command, and can be added, renamed or removed in <span class="fixw">Dyl-Suite</span> (saved in <span class="fixw">Resources\Aliases.csv</span>).</p>
-<div class="programs commands wide">
-<table>
-<tr><th>Command</th><th>Aliases</th><th>Name</th></tr>
-<tr><td><span class="fixw">Dyl-HatchPresets</span></td><td>&ndash;</td><td>Hatch Presets</td></tr>
-</table>
-</div>
-<!-- /dyl:aliases -->
 <p><a href="../index.htm">&larr; Dynalisp module docs index</a></p>
 
     </div>

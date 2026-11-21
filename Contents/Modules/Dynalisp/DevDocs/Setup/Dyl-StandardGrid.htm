@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Standard Grid &ndash; Developer docs</title>
+    <link rel="stylesheet" href="../../../../Resources/docs.css">
+</head>
+
+<body>
+    <div id="header">
+        <p>DynALisp <span>Docs</span></p>
+        <nav class="lang" aria-label="Language"><span class="on" title="English">EN</span><span class="off" title="The developer docs are in English only">FR</span></nav>
+    </div>
+
+    <div id="content">
+        <h1>Standard Grid</h1>
+
+<p class="note">The developer docs of Standard Grid: its files and how its code works. What it does and how to use it are in its <a href="../../Docs/Setup/Dyl-StandardGrid.htm">User Guide</a> page.</p>
+<div class="programs">
+<table>
+<tr class="alt"><td>Source Files</td><td><span class="fixw">Modules\Dynalisp\Remote\Dyl-DrawingSetup.lsp</span> (the presets and the check of each drawing, loaded at startup), <span class="fixw">Modules\Dynalisp\Apps\Setup\Dyl-StandardGrid.lsp</span> (the commands)</td></tr>
+<tr><td>Data</td><td>The grid and snap system variables of the current viewport; the user settings <span class="fixw">DynalispGridImperial</span>, <span class="fixw">DynalispGridMetric</span> (a preset key, <span class="fixw">""</span>: not checked) and <span class="fixw">DynalispSetupOn</span></td></tr>
+<tr class="alt"><td>Shared with</td><td><a href="Dyl-SetUnits.htm">Set Units</a> (the same Remote file and the same check of every drawing), the Drawing Settings window of <a href="../Core/Dyl-Settings.htm">Dyl-Settings</a></td></tr>
+</table>
+</div>
+
+<h2>The Presets</h2>
+<p><span class="fixw">*ds:grids*</span> holds each preset as <span class="fixw">(key label (snap grid) (snap grid) major)</span>: the spacings in inches for the imperial drawings, in millimeters for the metric ones (<span class="fixw">MEASUREMENT</span>), and the grid lines per major line. <span class="fixw">Remote&gt;&gt;Dyl:GridValues</span> returns <span class="fixw">(snap grid major)</span> in the units of the drawing.</p>
+<h2>How It Works</h2>
+<p>The command reads <span class="fixw">MEASUREMENT</span> (0 = imperial, 1 = metric), sets the snap spacing, the grid spacing and the number of grid lines per major line, then turns the grid on:</p>
+<div class="programs commands wide">
+<table>
+<tr><th>Command</th><th>Imperial snap / grid</th><th>Metric snap / grid</th><th>Major line every</th></tr>
+<tr><td><span class="fixw">GRID-IN</span></td><td>1/8&Prime; / 1/4&Prime;</td><td>3.175 / 6.35</td><td>4 lines (1&Prime;)</td></tr>
+<tr><td><span class="fixw">GRID-FT</span></td><td>1/8&Prime; / 1&Prime;</td><td>3.175 / 25.4</td><td>12 lines (1&prime;)</td></tr>
+<tr><td><span class="fixw">GRID-CM</span></td><td>0.0394 / 0.0787</td><td>1 / 2</td><td>5 lines (1 cm)</td></tr>
+<tr><td><span class="fixw">GRID-M</span></td><td>0.9843 / 3.9370</td><td>25 / 100</td><td>10 lines (1 m)</td></tr>
+</table>
+</div>
+<p>It also sets <span class="fixw">SNAPTYPE</span> to grid snap, <span class="fixw">AUTOSNAP</span> to 15 and turns <span class="fixw">ORTHOMODE</span> off.</p>
+
+<h2>The Commands</h2>
+<div class="spacedbullets">
+<ul>
+<li>Each child, <span class="fixw">c:Pst-GridInch</span>, <span class="fixw">c:Pst-GridFoot</span>, <span class="fixw">c:Pst-GridCentimeter</span>, <span class="fixw">c:Pst-GridMeter</span>, is <span class="fixw">(sg:apply key)</span>: <span class="fixw">(Remote&gt;&gt;Dyl:GridApply key)</span>, then the label is printed.</li>
+<li><span class="fixw">Remote&gt;&gt;Dyl:GridApply</span> sets <span class="fixw">SNAPUNIT</span> and <span class="fixw">GRIDUNIT</span> (the same spacing in X and Y), <span class="fixw">GRIDMAJOR</span>, <span class="fixw">GRIDMODE</span> 1, <span class="fixw">SNAPTYPE</span> 0 (grid snap), <span class="fixw">AUTOSNAP</span> 15 and <span class="fixw">ORTHOMODE</span> 0.</li>
+<li><span class="fixw">c:Dyl-StandardGrid</span> is <span class="fixw">Dyl:ChildPicker</span> of <span class="fixw">dynalisp.mnl</span>, as <a href="Dyl-SetUnits.htm">Set Units</a>; <span class="fixw">*sg:last*</span> keeps the grid picked last.</li>
+</ul>
+</div>
+
+<h2>Every Drawing</h2>
+<p><span class="fixw">Remote&gt;&gt;Dyl:SetupWatch</span> checks the grid with the units (see <a href="Dyl-SetUnits.htm">Set Units</a>): <span class="fixw">Remote&gt;&gt;Dyl:Grid-p</span> compares <span class="fixw">SNAPUNIT</span>, <span class="fixw">GRIDUNIT</span> (fuzz 1e-6) and <span class="fixw">GRIDMAJOR</span> with the preset, and <span class="fixw">GridApply</span> runs when they differ.</p>
+
+<h2 id="api">Using It In An App</h2>
+<div class="programs commands wide">
+<table>
+<tr><th>Call</th><th>Does</th></tr>
+<tr><td><span class="fixw">(Remote&gt;&gt;Dyl:GridApply "Inch")</span></td><td>Sets the grid of a preset in the current viewport.</td></tr>
+<tr><td><span class="fixw">(Remote&gt;&gt;Dyl:Grid-p "Inch")</span></td><td>T when the current viewport has it.</td></tr>
+</table>
+</div>
+
+<h2>Known Limitations</h2>
+<div class="spacedbullets">
+<ul>
+<li><span class="fixw">AUTOSNAP</span> 15 keeps the marker, the tooltip, the magnet and polar tracking, and turns object snap tracking (16) and its tooltips (32) off.</li>
+<li>The snap and grid variables belong to the current viewport: the other viewports keep theirs, and the check of a drawing looks at the one current when it opens.</li>
+</ul>
+</div>
+<p><a href="../index.htm">&larr; Dynalisp developer docs</a></p>
+
+    </div>
+
+    <div id="footer">
+        <p>Author: Samuel Martineau, Copyright &copy; 2026 &ndash; released under the GNU General Public License v3</p>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Import Layers From CSV &ndash; Developer docs</title>
+    <link rel="stylesheet" href="../../../../Resources/docs.css">
+</head>
+
+<body>
+    <div id="header">
+        <p>DynALisp <span>Docs</span></p>
+        <nav class="lang" aria-label="Language"><span class="on" title="English">EN</span><span class="off" title="The developer docs are in English only">FR</span></nav>
+    </div>
+
+    <div id="content">
+        <h1>Import Layers From CSV</h1>
+
+<p class="note">The developer docs of Import Layers From CSV: its files and how its code works. What it does and how to use it are in its <a href="../../Docs/Layer/Dyl-LayerImportFromCsv.htm">User Guide</a> page.</p>
+<div class="programs">
+<table>
+<tr class="alt"><td>Source Files</td><td><span class="fixw">Modules\Dynalisp\Apps\Layer\Dyl-LayerImportFromCsv.lsp</span></td></tr>
+<tr><td>Data</td><td>The preset CSV files (<span class="fixw">Modules\Dynalisp\Res\preset_arch_floor.csv</span> only, so far), in the format of <a href="Dyl-LayerExportToCsv.htm">Export Layers To CSV</a>; the layer states of the drawing</td></tr>
+</table>
+</div>
+<h2>How It Works</h2>
+<h3>Preset commands</h3>
+<div class="spacedbullets">
+<ol>
+<li>The preset CSV is looked up in the program folder. If it is missing, a file dialog opens instead.</li>
+<li>If the layer state of the preset already exists in the drawing, you choose <span class="fixw">U</span> (restore the existing state, CSV ignored), <span class="fixw">I</span> (apply the CSV and overwrite the state) or <span class="fixw">C</span> (cancel).</li>
+<li>Otherwise the CSV is applied and the layer state is created.</li>
+<li>All viewports are regenerated.</li>
+</ol>
+</div>
+<h3>Applying a CSV</h3>
+<div class="spacedbullets">
+<ol>
+<li>The header row and any UTF-8 BOM are skipped; quoted fields are supported.</li>
+<li>Each row is matched to an existing layer by name (case-insensitive). Layers that are not in the drawing are <em>not</em> created: they are counted and listed as <em>MISSING</em>.</li>
+<li>Colour, lineweight, linetype, plot, transparency, on/off, freeze, new viewport freeze and description are applied. A missing linetype is loaded from acad.lin / acadiso.lin; if it cannot be found, the layer keeps its linetype and a note is printed.</li>
+<li>A summary gives the number of layers updated and missing.</li>
+</ol>
+</div>
+<h2>The Code</h2>
+<div class="spacedbullets">
+<ul>
+<li><strong>Presets</strong> &ndash; each child, <span class="fixw">c:Pst-ArchitecturalFloorPlanLayers</span>&hellip;, is <span class="fixw">(il:run-preset csv state label)</span>. It looks for the CSV in <span class="fixw">*il-lsp-folder*</span> and opens <span class="fixw">getfiled</span> when it is not there; <span class="fixw">il:state-exists-p</span> checks the layer state (through the <span class="fixw">LayerStateManager</span> of ActiveX), <span class="fixw">il:ask-conflict</span> asks U/I/C, <span class="fixw">il:state-restore</span> or <span class="fixw">il:apply-csv</span> then <span class="fixw">il:state-save</span> runs, and every viewport is regenerated.</li>
+<li><strong>Reading the file</strong> &ndash; <span class="fixw">il:apply-csv</span> reads it line by line: <span class="fixw">il:strip-bom</span>, <span class="fixw">il:csv-split</span> (quoted fields), then per layer of the drawing: <span class="fixw">il:parse-color</span> (<span class="fixw">Red (1)</span>, <span class="fixw">ACI 151</span>, <span class="fixw">151</span>), <span class="fixw">il:parse-lw</span>, <span class="fixw">il:parse-trans</span>; a missing linetype is loaded from <span class="fixw">acad.lin</span> or <span class="fixw">acadiso.lin</span> (<span class="fixw">il:find-lt</span>, <span class="fixw">il:load-lt</span>).</li>
+<li><span class="fixw">c:Dyl-LayerImportFromCsv</span> (<span class="fixw">IMPORTLAYERS</span>) opens <span class="fixw">getfiled</span> in Downloads and runs <span class="fixw">il:apply-csv</span>, without a layer state.</li>
+</ul>
+</div>
+<h2>Known Limitations</h2>
+<div class="spacedbullets">
+<ul>
+<li><span class="fixw">*il-lsp-folder*</span> is found by looking for <span class="fixw">import_layers_from_csv.lsp</span>, the former name of the file, which the bundle no longer has: the presets are looked up in the drawing folder, and the file window opens in most cases. The folder should be <span class="fixw">*dyl:dylres</span>.</li>
+<li>The file is divided by commas, not <span class="fixw">;</span>; it is read with the raw path, not through <span class="fixw">Dyl:UserFile</span>.</li>
+<li>Colors are read as index colors.</li>
+</ul>
+</div>
+<p><a href="../index.htm">&larr; Dynalisp developer docs</a></p>
+
+    </div>
+
+    <div id="footer">
+        <p>Author: Samuel Martineau, Copyright &copy; 2026 &ndash; released under the GNU General Public License v3</p>
+    </div>
+</body>
+
+</html>
