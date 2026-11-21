@@ -151,7 +151,7 @@ The alias of a Quick Draw preset tells how it draws: `PL-*` for a preset drawn w
 
 ## Git
 
-Claude commits as the work goes, without being asked; it pushes, merges into `main` and tags only when asked.
+Claude commits and pushes as the work goes, without being asked: each commit is pushed to the branch it was made on. It merges into `main` and tags only when asked.
 
 - **Branches**: `main` always loads in AutoCAD, since git clones `git pull` it and releases are tagged from it.
   - Work of several steps (a new tool, a rename across files, a window rebuilt) goes on a branch made from `main` before its first edit: `feature/<name>`, `fix/<name>` or `refactor/<name>`, in lower case with hyphens (`feature/object-layer-keys`).
@@ -166,7 +166,7 @@ Claude commits as the work goes, without being asked; it pushes, merges into `ma
   - The message is a short summary line in the imperative (*Add Object Layer Keys*, 72 characters at most), a blank line, then, when it helps, short lines on what changed and why; plain ASCII; it ends with the `Co-Authored-By` line.
 - **Never**: force push, rebase or amend a commit already pushed, skip the hooks, or commit to `main` work that does not load yet. A version raised (`AppVersion` and its `CHANGELOG.md` section) is one commit of its own; the `v<version>` tag is pushed only when the user asks for the release.
 
-*Why: `main` is what every git clone runs and what every release is built from, so it must always work; small commits by path keep each change easy to review and undo, keep the user's own edits and the files made by AutoCAD out of them, and let git follow a file through its renames.*
+*Why: `main` is what every git clone runs and what every release is built from, so it must always work; a commit pushed at once is never lost with the computer or the session it was made in, while merging and tagging, which change what users get, stay the user's call; small commits by path keep each change easy to review and undo, keep the user's own edits and the files made by AutoCAD out of them, and let git follow a file through its renames.*
 
 ## Ribbon
 
