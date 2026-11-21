@@ -314,6 +314,14 @@
   )
   (dg:kv "Installed" (if (setq git (dg:git)) (strcat "git clone, " git) "with the setup"))
   (dg:kv "Folder" *dyl:repo*)
+  ;;  The docs open on the website, from the list of its pages (Resources\DocsPages.txt,
+  ;;  Dyl:DocsPages); without it, only the pages of a git clone open:
+  (if Dyl:DocsPages
+    (if (Dyl:DocsPages)
+      (dg:kv "Docs" (strcat *dyl:docsweb* " (" (itoa (length (Dyl:DocsPages))) " pages)"))
+      (dg:bad "Resources\\DocsPages.txt is missing: the Open Docs buttons find only the pages of a git clone")
+    )
+  )
   ;;  The language of DynALisp, its docs (Language in Dyl-Settings, Dyl:Lang):
   (if Dyl:Lang
     (dg:kv "Docs language"
@@ -692,11 +700,12 @@
       )
     )
   )
-  ;;  The docs page of each main command (Dyl-*, LM-*):
+  ;;  The docs page of each main command (Dyl-*, LM-*), on the website or on this
+  ;;  computer (Dyl:DocsFind):
   (foreach r recs
     (if (and (wcmatch (dg:cmd (nth 1 r)) "DYL-*,LM-*")
              (wcmatch (strcase (nth 5 r)) "*\\APPS\\*")
-             (not (findfile (strcat *dyl:module "\\"
+             (not (Dyl:DocsFind (strcat *dyl:module "\\"
                                     (vl-filename-directory (dg:repl (nth 5 r) "\\Apps\\" "\\Docs\\"))
                                     "\\" (vl-filename-base (nth 5 r)) ".htm"
                             )
