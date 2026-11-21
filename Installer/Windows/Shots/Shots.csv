@@ -1,0 +1,9 @@
+# The windows drawn by DynALisp.Windows.Shots for the docs (Program.cs): the window file, its
+# sample values (Samples\), the picture its docs page names. Paths from the root of the
+# repository. A window added or changed gets its row in the same change.
+# Window;Sample;Picture
+Contents/Modules/Dynalisp/Res/Dyl-Settings.xaml;Dyl-Settings.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Settings-window.png
+Contents/Modules/Dynalisp/Res/Dyl-Settings-DrawingSettings.xaml;Dyl-Settings.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Settings-DrawingSettings.png
+Contents/Modules/Dynalisp/Res/Dyl-Settings-Display.xaml;Dyl-Settings.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Settings-Display.png
+Contents/Modules/Dynalisp/Res/Dyl-Settings-FilePreferences.xaml;Dyl-Settings.txt;Contents/Modules/Dynalisp/Docs/Setup/images/Dyl-SetFilePrefs-window.png
+Contents/Modules/Dynalisp/Res/Dyl-Settings-OutputPrep.xaml;Dyl-Settings.txt;Contents/Modules/Dynalisp/Docs/Output/images/Dyl-CmdOptimizer-window.png

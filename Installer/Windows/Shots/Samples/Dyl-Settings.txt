@@ -1,0 +1,57 @@
+# Sample values of the Settings window and its sub-windows (Dyl:SetWinVals in dynalisp.mnl),
+# as the Lisp gives them: key=value, key/list=item|item, key/off=1.
+lng/list=English|French
+lng=0
+rea=1
+aph=1
+ado=1
+alk=0
+syn=1
+dso=1
+prp=1
+pfo=1
+svo=0
+dpo=1
+rvo=0
+csu=1
+lku=0
+lkk=0
+aup=1
+# Drawing Settings:
+uim/list=(Not checked)|Metric 1 mm|Metric 0.1 mm|Metric 0.01 mm|Imperial 1/16 in
+uim=4
+umt/list=(Not checked)|Metric 1 mm|Metric 0.1 mm|Metric 0.01 mm|Imperial 1/16 in
+umt=1
+gim/list=(Not checked)|Inch: 1/4 in grid, 1 in major, 1/8 in snap|Foot: 1 in grid, 1 ft major, 1/8 in snap|Centimeter: 2 mm grid, 1 cm major, 1 mm snap|Meter: 100 mm grid, 1 m major, 25 mm snap
+gim=1
+gmt/list=(Not checked)|Inch: 1/4 in grid, 1 in major, 1/8 in snap|Foot: 1 in grid, 1 ft major, 1/8 in snap|Centimeter: 2 mm grid, 1 cm major, 1 mm snap|Meter: 100 mm grid, 1 m major, 25 mm snap
+gmt=0
+gpi=1
+gpm=25
+# Display:
+bkg/list=(Not set)|Black|Default|White
+bkg=2
+# File Preferences:
+pcl/list=NBS CAWS (Global)|CSI MasterFormat (US)|OmniClass
+pcl=1
+pun/list=Metric (Global)|Imperial (US)
+pun=0
+pla/list=English|French|German|Italian|Spanish
+pla=1
+pcd=1
+pfs=Current profile: DynALisp
+# Output Prep (t_<STEP>_<COLUMN>):
+t_LAYERS_SAVE=1
+t_LAYERS_PLOT=1
+t_UNHIDE_SAVE=1
+t_UNHIDE_PLOT=1
+t_XREFS_PLOT=1
+t_DATALINKS_SAVE=1
+t_DATALINKS_PLOT=1
+t_TABLES_PLOT=1
+t_TABLES_PREVIEW=1
+t_DRAWORDER_SAVE=1
+t_DRAWORDER_PLOT=1
+t_DRAWORDER_REGEN=1
+t_DRAWORDERCLEAN_SAVE=1
+t_REGEN_PLOT=1

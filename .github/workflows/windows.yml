@@ -1,0 +1,35 @@
+# Windows: builds the windows plugin (Installer\Windows) and draws the pictures of its windows
+# (Installer\Windows\Shots, Shots.csv) on a Windows runner, as the docs show them, when a window
+# file or the plugin changes. The pictures are an artifact of the run (windows-pictures), to
+# look at before they are drawn again and committed (dotnet run in Installer\Windows\Shots).
+name: Windows
+
+on:
+  push:
+    paths:
+      - 'Installer/Windows/**'
+      - 'Contents/Modules/*/Res/*.xaml'
+      - '.github/workflows/windows.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Build the plugin
+        shell: pwsh
+        run: dotnet build Installer/Windows -c Debug
+
+      - name: Draw the pictures of the windows
+        shell: pwsh
+        run: dotnet run -c Release --project Installer/Windows/Shots -- -out pictures
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-pictures
+          path: pictures/
