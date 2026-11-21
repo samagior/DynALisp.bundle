@@ -4,6 +4,23 @@ The changes of each version of DynALisp, newest first. Dyl-Info shows them befor
 update, and once after it. Each version is a `## <version> - <date>` heading (the
 AppVersion of PackageContents.xml), then one short line per change.
 
+## 1.1 - 2026-11-20
+
+- Docs website: every Open Docs button opens https://samagior.github.io/DynALisp.docs/; the setup no longer installs the docs.
+- The docs in two sets: a User Guide (English and French, how to use each tool) and Developer docs (how the code works).
+- Language in Dyl-Settings > Environment: the language of the docs. The ribbon follows the language of the AutoCAD installed.
+- Works in a French (or any other) AutoCAD: every AutoCAD command is called by its international name.
+- Revisions: the revisions of a Project Navigator project and of its sheets, shared by the whole team.
+- Ribbon drop-downs (AutoCAD 2025 and later): Auto-phase and Phase, Level, From and To of Layer Transfer.
+- Dyl-Diagnostics: a report of the setup, the settings, the reactors and the drawing, to send in an issue.
+- Clean startup (Dyl-Settings > Overrides): the command line keeps only the useful lines once AutoCAD has started.
+- Hatch Presets (formerly Materials), shared Preset Groups, behaviors and border set on each preset, assembly layers.
+- Pick hatch... of the Hatch Presets rebuilds a missing pattern from a hatch of the drawing.
+- Commands renamed in PascalCase; their short aliases are kept.
+- Fixed: AutoCAD Architecture froze on the first drawing with auto-phase on; reactors stuck after some commands.
+- Quick Draw Gallery: every group listed, also the empty ones; keeps its first and last pages.
+- New words in the French dictionary.
+
 ## 1.0 - 2026-11-09
 
 - First release, installed with DynALisp-Setup-1.0.exe or cloned with git.
