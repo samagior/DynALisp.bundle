@@ -24,14 +24,10 @@
 <td><span class="fixw">DYL-LAYERPHASE</span> (PH), <span class="fixw">PH-E</span>, <span class="fixw">PH-D</span>, <span class="fixw">PH-N</span>, <span class="fixw">PH-F</span>, <span class="fixw">PH-T</span>, <span class="fixw">PH-NONE</span>, <span class="fixw">PH-NEXT</span>, <span class="fixw">PH-AUTO</span></td>
 </tr>
 <tr>
-<td>Fichier source</td>
-<td><span class="fixw">Modules\Dynalisp\Apps\Layer\Dyl-LayerPhase.lsp</span> (commandes), <span class="fixw">Modules\Dynalisp\Remote\Dyl-LayerPhase.lsp</span> (phase active et paramètre d'auto-phase, chargé au démarrage) et <span class="fixw">Modules\Dynalisp\Reactor\Dyl-LayerPhase.lsp</span> (réacteurs d'auto-phase, chargés au démarrage tant que les réacteurs DynALisp sont activés)</td>
-</tr>
-<tr class="alt">
 <td>Requis</td>
 <td>AutoCAD pour Windows (ActiveX / Visual LISP)</td>
 </tr>
-<tr>
+<tr class="alt">
 <td>Licence</td>
 <td>Licence publique générale GNU v3</td>
 </tr>
@@ -60,27 +56,6 @@
 <li><strong>Show / Hide</strong> &ndash; un bouton qui suit la sélection : il affiche <em>Hide</em> quand chaque phase sélectionnée est affichée, et alors désactive et gèle leurs calques (le calque courant est seulement désactivé); sinon il affiche <em>Show</em> et les active et les libère. <strong>Hide</strong> &ndash; l'inverse de <em>Show</em> : désactive et gèle les calques des phases sélectionnées, quel que soit leur état (grisé quand elles sont déjà toutes masquées). <strong>Isolate phase</strong> &ndash; affiche les phases sélectionnées et masque les autres phases; les calques sans phase ne sont jamais masqués par lui (ils sont affichés quand <em>Unphased</em> est sélectionnée). Show / Hide et Hide fonctionnent aussi sur la ligne <em>Unphased</em>. Les calques des xréfs sont inclus. Le dessin est régénéré tout de suite : le changement se voit derrière la fenêtre sans la fermer.</li>
 <li><strong>Layer keys Editor</strong> &ndash; ouvre la fenêtre Layer Keys (chaque clé de calque est en phase tant que l'auto-phase est activée).</li>
 <li>L'auto-phase s'active ou se désactive dans <span class="fixw">Dyl-Settings</span> (<em>Auto-phase new objects</em>, à côté du bouton <em>ouvrir</em> qui ouvre cette fenêtre) ou avec <span class="fixw">PH-AUTO</span>. Elle ne s'exécute que tant que les <em>DynALisp reactors</em> de <span class="fixw">Dyl-Settings</span> sont activés (grisée sinon, et la barre d'état n'affiche plus <span class="fixw">[Auto]</span>).</li>
-</ul>
-</div>
-<h2>Fonctionnement</h2>
-<div class="spacedbullets">
-<ol>
-<li>La phase active est enregistrée dans le dessin (dictionnaire <span class="fixw">dyl-layer</span>) : chaque dessin garde donc sa propre phase. L'auto-phase est un paramètre utilisateur (<span class="fixw">DynalispPhaseAuto</span>, désactivé par défaut) : elle est activée ou désactivée dans tous les dessins, et un dessin déjà ouvert suit un changement quand il devient courant.</li>
-<li>L'auto-phase surveille les objets ajoutés au dessin et les déplace à la fin de la commande qui les a créés (un objet ne peut pas être modifié pendant qu'il est ajouté). Les objets créés par une commande Lisp sont déplacés à la fin de la commande Lisp.</li>
-<li>Seuls les objets de l'espace objet et des présentations sont déplacés; les définitions de blocs ne changent jamais. Les attributs d'une référence de bloc la suivent.</li>
-<li>Un calque de la phase active que le dessin n'a pas encore est créé à partir du calque source : mêmes type de ligne, épaisseur de ligne, réglage de traçage et description, et les couleurs de phase de <a href="Dyl-LayerTransfer.fr.htm">Layer Transfer</a> (<span class="fixw">2#</span> pour existant à démolir, <span class="fixw">20#</span> pour existant à conserver). Le calque d'une clé de calque qui garde sa couleur dans chaque phase (<a href="Dyl-LayerKeys.fr.htm">Layer Keys</a>, <em>Keep this color in every phase</em>) reçoit plutôt la couleur de sa clé.</li>
-<li>Les calques <span class="fixw">0</span>, <span class="fixw">Defpoints</span> et ceux des xréfs ne sont jamais mis en phase.</li>
-<li>Les objets créés par les commandes qui modifient ou divisent des objets existants (<span class="fixw">BREAK</span>, <span class="fixw">TRIM</span>, <span class="fixw">FILLET</span>, <span class="fixw">PEDIT</span>, <span class="fixw">JOIN</span>, <span class="fixw">EXPLODE</span>...) ou qui apportent des objets (<span class="fixw">PASTECLIP</span>, <span class="fixw">COPYTOLAYER</span>, <span class="fixw">XBIND</span>...), et par <span class="fixw">UNDO</span> / <span class="fixw">REDO</span>, sont laissés sur leur calque. La liste peut être remplacée par la variable d'environnement <span class="fixw">DynalispPhaseSkip</span>, par exemple <span class="fixw">(setenv "DynalispPhaseSkip" "U,UNDO,EXPLODE,BREAK,TRIM,PASTE*")</span>.</li>
-<li>La ligne de commande dit combien d'objets ont été déplacés, et nomme les calques visés qui sont désactivés ou gelés.</li>
-</ol>
-</div>
-<h2>Utiliser les phases dans une App</h2>
-<div class="spacedbullets">
-<ul>
-<li><span class="fixw">(Remote&gt;&gt;Dyl:PhaseGet)</span> &ndash; renvoie le code de la phase active (<span class="fixw">"N"</span>), ou nil quand il n'y en a pas.</li>
-<li><span class="fixw">(Remote&gt;&gt;Dyl:PhaseSet "N")</span> &ndash; règle la phase active (nil : aucune phase).</li>
-<li><span class="fixw">(Remote&gt;&gt;Dyl:PhaseLayer "A-Wall-Full-E" "N")</span> &ndash; renvoie <span class="fixw">"A-Wall-Full-N"</span>, créé s'il manque.</li>
-<li><span class="fixw">(Remote&gt;&gt;Dyl:LayerKeyLayer "THIN")</span> &ndash; donne le calque de la clé dans la phase active tant que l'auto-phase est activée.</li>
 </ul>
 </div>
 <h2>Limites connues</h2>

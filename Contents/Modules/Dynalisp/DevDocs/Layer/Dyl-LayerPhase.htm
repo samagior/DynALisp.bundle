@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Layer Phase &ndash; Developer docs</title>
+    <link rel="stylesheet" href="../../../../Resources/docs.css">
+</head>
+
+<body>
+    <div id="header">
+        <p>DynALisp <span>Docs</span></p>
+        <nav class="lang" aria-label="Language"><span class="on" title="English">EN</span><span class="off" title="The developer docs are in English only">FR</span></nav>
+    </div>
+
+    <div id="content">
+        <h1>Layer Phase</h1>
+
+<p class="note">The developer docs of Layer Phase: its files and how its code works. What it does and how to use it are in its <a href="../../Docs/Layer/Dyl-LayerPhase.htm">User Guide</a> page.</p>
+<div class="programs">
+<table>
+<tr class="alt">
+<td>Source Files</td>
+<td><span class="fixw">Modules\Dynalisp\Apps\Layer\Dyl-LayerPhase.lsp</span> (commands), <span class="fixw">Modules\Dynalisp\Remote\Dyl-LayerPhase.lsp</span> (active phase and the auto-phase setting, loaded at startup) and <span class="fixw">Modules\Dynalisp\Reactor\Dyl-LayerPhase.lsp</span> (auto-phase reactors, loaded at startup while the DynALisp reactors are on)</td>
+</tr>
+</table>
+</div>
+<h2>How It Works</h2>
+<div class="spacedbullets">
+<ol>
+<li>The active phase is saved in the drawing (dictionary <span class="fixw">dyl-layer</span>), so each drawing keeps its own phase. Auto-phase is a user setting (<span class="fixw">DynalispPhaseAuto</span>, off by default): it is on or off in every drawing, and a drawing already open follows a change when it is made current.</li>
+<li>Auto-phase watches the objects added to the drawing and moves them when the command that created them ends (an object cannot be changed while it is being added). Objects created by a Lisp command are moved when the Lisp command ends.</li>
+<li>Only objects in model space and in the layouts are moved; block definitions are never changed. The attributes of a block reference follow it.</li>
+<li>A layer of the active phase that the drawing does not have yet is created from the source layer: same linetype, lineweight, plot setting and description, and the phase colors of <a href="../../Docs/Layer/Dyl-LayerTransfer.htm">Layer Transfer</a> (<span class="fixw">2#</span> for existing to demolish, <span class="fixw">20#</span> for existing to remain). The layer of a layer key that keeps its color in every phase (<a href="../../Docs/Layer/Dyl-LayerKeys.htm">Layer Keys</a>, <em>Keep this color in every phase</em>) gets the color of its key instead.</li>
+<li>Layers <span class="fixw">0</span>, <span class="fixw">Defpoints</span> and xref layers are never phased.</li>
+<li>The objects created by commands that edit or split existing objects (<span class="fixw">BREAK</span>, <span class="fixw">TRIM</span>, <span class="fixw">FILLET</span>, <span class="fixw">PEDIT</span>, <span class="fixw">JOIN</span>, <span class="fixw">EXPLODE</span>...) or bring objects in (<span class="fixw">PASTECLIP</span>, <span class="fixw">COPYTOLAYER</span>, <span class="fixw">XBIND</span>...) and by <span class="fixw">UNDO</span> / <span class="fixw">REDO</span> are left on their layer. The list can be replaced with the <span class="fixw">DynalispPhaseSkip</span> environment variable, for example <span class="fixw">(setenv "DynalispPhaseSkip" "U,UNDO,EXPLODE,BREAK,TRIM,PASTE*")</span>.</li>
+<li>The command line says how many objects were moved, and names the target layers that are off or frozen.</li>
+</ol>
+</div>
+<h2>Using Phases In An App</h2>
+<div class="spacedbullets">
+<ul>
+<li><span class="fixw">(Remote&gt;&gt;Dyl:PhaseGet)</span> &ndash; returns the active phase code (<span class="fixw">"N"</span>), or nil when there is none.</li>
+<li><span class="fixw">(Remote&gt;&gt;Dyl:PhaseSet "N")</span> &ndash; sets the active phase (nil: no phase).</li>
+<li><span class="fixw">(Remote&gt;&gt;Dyl:PhaseLayer "A-Wall-Full-E" "N")</span> &ndash; returns <span class="fixw">"A-Wall-Full-N"</span>, created if missing.</li>
+<li><span class="fixw">(Remote&gt;&gt;Dyl:LayerKeyLayer "THIN")</span> &ndash; gives the layer of the key in the active phase while auto-phase is on.</li>
+</ul>
+</div>
+<p><a href="../index.htm">&larr; Dynalisp developer docs</a></p>
+
+    </div>
+
+    <div id="footer">
+        <p>Author: Samuel Martineau, Copyright &copy; 2026 &ndash; released under the GNU General Public License v3</p>
+    </div>
+</body>
+
+</html>

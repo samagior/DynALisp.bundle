@@ -24,14 +24,10 @@
 <td><span class="fixw">DYL-LAYERPHASE</span> (PH), <span class="fixw">PH-E</span>, <span class="fixw">PH-D</span>, <span class="fixw">PH-N</span>, <span class="fixw">PH-F</span>, <span class="fixw">PH-T</span>, <span class="fixw">PH-NONE</span>, <span class="fixw">PH-NEXT</span>, <span class="fixw">PH-AUTO</span></td>
 </tr>
 <tr>
-<td>Source File</td>
-<td><span class="fixw">Modules\Dynalisp\Apps\Layer\Dyl-LayerPhase.lsp</span> (commands), <span class="fixw">Modules\Dynalisp\Remote\Dyl-LayerPhase.lsp</span> (active phase and the auto-phase setting, loaded at startup) and <span class="fixw">Modules\Dynalisp\Reactor\Dyl-LayerPhase.lsp</span> (auto-phase reactors, loaded at startup while the DynALisp reactors are on)</td>
-</tr>
-<tr class="alt">
 <td>Requires</td>
 <td>AutoCAD for Windows (ActiveX / Visual LISP)</td>
 </tr>
-<tr>
+<tr class="alt">
 <td>Licence</td>
 <td>GNU General Public License v3</td>
 </tr>
@@ -60,27 +56,6 @@
 <li><strong>Show / Hide</strong> &ndash; one button that follows the selection: it reads <em>Hide</em> when every selected phase is shown, and then turns their layers off and freezes them (the current layer is only turned off); otherwise it reads <em>Show</em> and turns them on and thaws them. <strong>Hide</strong> &ndash; the opposite of <em>Show</em>: turns off and freezes the layers of the selected phases, whatever their state (disabled when they are all hidden already). <strong>Isolate phase</strong> &ndash; shows the selected phases and hides the other phases; the unphased layers are never hidden by it (they are shown when <em>Unphased</em> is selected). Show / Hide and Hide also work on the <em>Unphased</em> line. Xref layers are included. The drawing is regenerated at once, so the change shows behind the dialog without closing it.</li>
 <li><strong>Layer keys Editor</strong> &ndash; opens the Layer Keys dialog (every layer key is phased while auto-phase is on).</li>
 <li>Auto-phase is turned on or off in <span class="fixw">Dyl-Settings</span> (<em>Auto-phase new objects</em>, next to the <em>open</em> button that opens this window) or with <span class="fixw">PH-AUTO</span>. It runs only while the <em>DynALisp reactors</em> of <span class="fixw">Dyl-Settings</span> are on (greyed out there otherwise, and the status bar no longer shows <span class="fixw">[Auto]</span>).</li>
-</ul>
-</div>
-<h2>How It Works</h2>
-<div class="spacedbullets">
-<ol>
-<li>The active phase is saved in the drawing (dictionary <span class="fixw">dyl-layer</span>), so each drawing keeps its own phase. Auto-phase is a user setting (<span class="fixw">DynalispPhaseAuto</span>, off by default): it is on or off in every drawing, and a drawing already open follows a change when it is made current.</li>
-<li>Auto-phase watches the objects added to the drawing and moves them when the command that created them ends (an object cannot be changed while it is being added). Objects created by a Lisp command are moved when the Lisp command ends.</li>
-<li>Only objects in model space and in the layouts are moved; block definitions are never changed. The attributes of a block reference follow it.</li>
-<li>A layer of the active phase that the drawing does not have yet is created from the source layer: same linetype, lineweight, plot setting and description, and the phase colors of <a href="Dyl-LayerTransfer.htm">Layer Transfer</a> (<span class="fixw">2#</span> for existing to demolish, <span class="fixw">20#</span> for existing to remain). The layer of a layer key that keeps its color in every phase (<a href="Dyl-LayerKeys.htm">Layer Keys</a>, <em>Keep this color in every phase</em>) gets the color of its key instead.</li>
-<li>Layers <span class="fixw">0</span>, <span class="fixw">Defpoints</span> and xref layers are never phased.</li>
-<li>The objects created by commands that edit or split existing objects (<span class="fixw">BREAK</span>, <span class="fixw">TRIM</span>, <span class="fixw">FILLET</span>, <span class="fixw">PEDIT</span>, <span class="fixw">JOIN</span>, <span class="fixw">EXPLODE</span>...) or bring objects in (<span class="fixw">PASTECLIP</span>, <span class="fixw">COPYTOLAYER</span>, <span class="fixw">XBIND</span>...) and by <span class="fixw">UNDO</span> / <span class="fixw">REDO</span> are left on their layer. The list can be replaced with the <span class="fixw">DynalispPhaseSkip</span> environment variable, for example <span class="fixw">(setenv "DynalispPhaseSkip" "U,UNDO,EXPLODE,BREAK,TRIM,PASTE*")</span>.</li>
-<li>The command line says how many objects were moved, and names the target layers that are off or frozen.</li>
-</ol>
-</div>
-<h2>Using Phases In An App</h2>
-<div class="spacedbullets">
-<ul>
-<li><span class="fixw">(Remote&gt;&gt;Dyl:PhaseGet)</span> &ndash; returns the active phase code (<span class="fixw">"N"</span>), or nil when there is none.</li>
-<li><span class="fixw">(Remote&gt;&gt;Dyl:PhaseSet "N")</span> &ndash; sets the active phase (nil: no phase).</li>
-<li><span class="fixw">(Remote&gt;&gt;Dyl:PhaseLayer "A-Wall-Full-E" "N")</span> &ndash; returns <span class="fixw">"A-Wall-Full-N"</span>, created if missing.</li>
-<li><span class="fixw">(Remote&gt;&gt;Dyl:LayerKeyLayer "THIN")</span> &ndash; gives the layer of the key in the active phase while auto-phase is on.</li>
 </ul>
 </div>
 <h2>Known Limitations</h2>
