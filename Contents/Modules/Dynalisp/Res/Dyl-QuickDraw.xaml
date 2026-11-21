@@ -285,23 +285,23 @@
           <StackPanel Grid.Column="2">
             <TextBlock x:Name="bovt" Style="{DynamicResource Dyl.Sub}" Margin="0,0,0,4" Text="Layer key overrides" dyl:Win.EnabledBy="hbr"/>
             <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="hbr">
-              <TextBox x:Name="bcv" DockPanel.Dock="Right" Width="90" dyl:Win.EnabledBy="bco"
+              <TextBox x:Name="bcv" DockPanel.Dock="Right" Width="120" dyl:Win.EnabledBy="bco"
                        dyl:Win.Check="color" dyl:Win.CheckMessage="A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it."/>
               <dyl:OpenButton x:Name="bcp" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="11" ToolTip="Select Color" dyl:Win.EnabledBy="bco"/>
               <CheckBox x:Name="bco" Content="Color"/>
             </DockPanel>
             <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="hbr">
-              <TextBox x:Name="blt" DockPanel.Dock="Right" Width="90" CharacterCasing="Upper" dyl:Win.EnabledBy="blo"
+              <TextBox x:Name="blt" DockPanel.Dock="Right" Width="120" CharacterCasing="Upper" dyl:Win.EnabledBy="blo"
                        dyl:Win.Check="text" dyl:Win.CheckMessage="The linetype cannot be empty."/>
               <CheckBox x:Name="blo" Content="Linetype"/>
             </DockPanel>
             <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="hbr">
-              <TextBox x:Name="bsc" DockPanel.Dock="Right" Width="90" dyl:Win.EnabledBy="bso"
+              <TextBox x:Name="bsc" DockPanel.Dock="Right" Width="120" dyl:Win.EnabledBy="bso"
                        dyl:Win.Check="positive" dyl:Win.CheckMessage="The linetype scale must be a number greater than 0."/>
               <CheckBox x:Name="bso" Content="Linetype scale"/>
             </DockPanel>
             <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="hbr">
-              <ComboBox x:Name="bwt" DockPanel.Dock="Right" Width="90" dyl:Win.EnabledBy="bwo"/>
+              <ComboBox x:Name="bwt" DockPanel.Dock="Right" Width="120" dyl:Win.EnabledBy="bwo"/>
               <CheckBox x:Name="bwo" Content="Lineweight"/>
             </DockPanel>
           </StackPanel>
