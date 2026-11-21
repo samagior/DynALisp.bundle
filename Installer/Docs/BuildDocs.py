@@ -3,19 +3,25 @@
 #
 #   python Installer\Docs\BuildDocs.py [--missing] [--check]
 #
-# Every docs page (Contents\Modules\<Module>\Docs\**\*.htm) is in English, Page.htm, and may
-# have a copy in another language beside it, Page.fr.htm (LANGS below). Run this script after
-# adding, translating, moving or deleting a page. In every page it:
+# The docs are two sets: the User Guide (Contents\Modules\<Module>\Docs\**\*.htm), what each
+# tool does and how to use it, opened by the Open Docs buttons, and the Developer docs
+# (Contents\Modules\<Module>\DevDocs\**\*.htm, the same group folders and page names), how the
+# code works. A guide page is in English, Page.htm, and may have a copy in another language
+# beside it, Page.fr.htm (LANGS below); a dev page is in English only. Run this script after
+# adding, translating, moving or deleting a page. In every page of both sets it:
 #   - writes the language switch at the top right of the header (EN | FR): a link to the page
 #     in each language, greyed out for a language the page has no copy in yet
 #   - sets <html lang> to the language of the page
 #   - points the links of a page to the pages of its own language: Dyl-LayerKeys.fr.htm from
 #     a French page once it exists, Dyl-LayerKeys.htm while it does not
 # then reports the links that lead nowhere (a missing page or anchor), the LeeMac pages without
-# their credit to Lee Mac (LEEMAC_NOTE), and the number of pages of each language (--missing
-# lists the pages without a copy).
+# their credit to Lee Mac (LEEMAC_NOTE), the number of guide pages of each language, with a dev
+# page and with their pictures (--missing lists the others). A guide page names its pictures
+# in placeholders, <!-- picture: images/<Page>-window.png --> (the window) and
+# <!-- picture: images/<Page>-use.gif --> (a sample use), shown by BuildSite.py once the file
+# is in the images folder beside the page.
 #
-# It also writes Contents\Resources\DocsPages.txt, the pages of the docs website
+# It also writes Contents\Resources\DocsPages.txt, the pages of the User Guide on the docs website
 # (https://samagior.github.io/DynALisp.docs/, built by BuildSite.py and published by
 # .github/workflows/docs.yml): <Module>/<path> of each page, a module index followed by its
 # title and the first sentence of its first paragraph (tabs between them). The setup ships
@@ -41,6 +47,8 @@ MODULES = os.path.join(REPO, 'Contents', 'Modules')
 PAGES = os.path.join(REPO, 'Contents', 'Resources', 'DocsPages.txt')
 # Every page of the LeeMac sample module credits Lee Mac in a note that begins with:
 LEEMAC_NOTE = '<p class="note">This page is delivered for consistency purposes only'
+# The pictures named by a guide page (BuildSite.py shows the ones found):
+PICTURE = re.compile(r'<!--\s*picture:\s*(\S+)\s*-->')
 
 # (code, suffix of its pages, label, its name, "not translated" in that language):
 LANGS = [('en', '', 'EN', 'English', 'Not translated yet'),
@@ -66,6 +74,8 @@ def in_lang(base, code):
 def nav(path, eol, indent):
     code, base = lang_of(path)
     off = next(t for c, _, _, _, t in LANGS if c == code)
+    if os.sep + 'DevDocs' + os.sep in path:
+        off = 'The developer docs are in English only'
     out = []
     for c, _, label, name, _ in LANGS:
         target = in_lang(base, c)
@@ -203,9 +213,33 @@ def write_pages(pages, write=True):
     return False
 
 
+def kind_of(path):
+    """(module, set, path in the set) of a page: set 'guide' (Docs) or 'dev' (DevDocs)."""
+    mod, folder, *rest = os.path.relpath(path, MODULES).split(os.sep)
+    return mod, ('dev' if folder == 'DevDocs' else 'guide'), rest
+
+
+def twin(path):
+    """The page of the other set for the same tool (a dev page has no language: the twin of
+    a French guide page is the English dev page), whether it exists or not."""
+    mod, kind, rest = kind_of(path)
+    if kind == 'guide':
+        rest = rest[:-1] + [os.path.basename(lang_of(path)[1])]
+    return os.path.join(MODULES, mod, 'Docs' if kind == 'dev' else 'DevDocs', *rest)
+
+
+def pictures(path):
+    """[(name, found)] of the pictures a page names."""
+    with open(path, encoding='utf-8') as f:
+        names = PICTURE.findall(f.read())
+    return [(n, os.path.exists(os.path.join(os.path.dirname(path), *n.split('/')))) for n in names]
+
+
 def main():
     check_only = '--check' in sys.argv
-    pages = sorted(glob.glob(os.path.join(MODULES, '*', 'Docs', '**', '*.htm'), recursive=True))
+    missing = '--missing' in sys.argv
+    pages = sorted(glob.glob(os.path.join(MODULES, '*', 'Docs', '**', '*.htm'), recursive=True)
+                   + glob.glob(os.path.join(MODULES, '*', 'DevDocs', '**', '*.htm'), recursive=True))
     changed = [p for p in pages if build_page(p, not check_only)]
     nbad = 0
     ncredit = 0
@@ -213,15 +247,17 @@ def main():
         for href, why in check(p):
             print('Broken link: %s -> %s (%s)' % (os.path.relpath(p, MODULES), href, why))
             nbad += 1
-        if os.path.relpath(p, MODULES).split(os.sep)[0] == 'LeeMac' and os.path.basename(p) != 'index.htm':
+        mod, kind, _ = kind_of(p)
+        if mod == 'LeeMac' and kind == 'guide' and os.path.basename(p) != 'index.htm':
             with open(p, encoding='utf-8') as f:
                 if LEEMAC_NOTE not in f.read():
                     print('No credit to Lee Mac: %s (a note beginning %s...)' % (os.path.relpath(p, MODULES), LEEMAC_NOTE))
                     ncredit += 1
-    # The website has the pages git knows only (never MyTools, ignored):
+    # The website has the pages git knows only (never MyTools, ignored); the app opens the
+    # guide pages, the ones of DocsPages.txt:
     known = git_files()
-    site = [p for p in pages if os.path.normcase(os.path.normpath(p)) in known]
-    listed = write_pages(site, not check_only)
+    guide = [p for p in pages if kind_of(p)[1] == 'guide' and os.path.normcase(os.path.normpath(p)) in known]
+    listed = write_pages(guide, not check_only)
     if check_only:
         for p in changed:
             print('Not up to date: %s' % os.path.relpath(p, MODULES))
@@ -231,19 +267,37 @@ def main():
         if changed or listed or ncredit:
             print('Run python Installer\\Docs\\BuildDocs.py, then commit what it changed.')
             sys.exit(1)
-        print('The docs are up to date (%d pages on the website).' % len(site))
+        print('The docs are up to date (%d guide pages listed for the app).' % len(guide))
         return
     print('%d pages written, %d broken links, %d LeeMac pages without their credit.' % (len(changed), nbad, ncredit))
-    print('DocsPages.txt %s: %d pages.' % ('written' if listed else 'up to date', len(site)))
-    for mod in sorted({os.path.relpath(p, MODULES).split(os.sep)[0] for p in pages}):
-        base = [p for p in pages if os.path.relpath(p, MODULES).startswith(mod + os.sep) and lang_of(p)[0] == 'en']
+    print('DocsPages.txt %s: %d guide pages.' % ('written' if listed else 'up to date', len(guide)))
+    for mod in sorted({kind_of(p)[0] for p in pages}):
+        base = [p for p in pages if kind_of(p)[0] == mod and kind_of(p)[1] == 'guide' and lang_of(p)[0] == 'en']
+        dev = [p for p in pages if kind_of(p)[0] == mod and kind_of(p)[1] == 'dev']
         for c, _, label, *_ in LANGS[1:]:
             have = [p for p in base if os.path.exists(in_lang(p, c))]
-            print('%s: %d of %d pages in %s.' % (mod, len(have), len(base), label))
-            if '--missing' in sys.argv:
+            print('%s: %d of %d guide pages in %s.' % (mod, len(have), len(base), label))
+            if missing:
                 for p in base:
                     if p not in have:
                         print('   ' + os.path.relpath(p, MODULES))
+        if mod == 'LeeMac':
+            print('%s: %d dev pages (the guide pages are Lee Mac\'s own: no dev page each).' % (mod, len(dev)))
+            continue
+        withdev = [p for p in base if os.path.exists(twin(p))]
+        print('%s: %d of %d guide pages with a dev page (%d dev pages).' % (mod, len(withdev), len(base), len(dev)))
+        if missing:
+            for p in base:
+                if p not in withdev:
+                    print('   ' + os.path.relpath(p, MODULES))
+        pics = [(p, pictures(p)) for p in base]
+        done = [p for p, l in pics if l and all(f for _, f in l)]
+        print('%s: %d of %d guide pages with their pictures.' % (mod, len(done), len(base)))
+        if missing:
+            for p, l in pics:
+                if p not in done:
+                    what = ', '.join(n for n, f in l if not f) if l else 'no picture placeholder'
+                    print('   %s (%s)' % (os.path.relpath(p, MODULES), what))
 
 
 if __name__ == '__main__':

@@ -5,74 +5,207 @@
 #
 # Builds the docs website in <folder>, published on GitHub Pages
 # (https://samagior.github.io/DynALisp.docs/) by .github/workflows/docs.yml, which pushes it
-# to the public repository samagior/DynALisp.docs. The docs are edited only here, in
-# Contents\Modules\<Module>\Docs: the website is a copy of them, made again on every push
-# to main, never edited in DynALisp.docs.
+# to the public repository samagior/DynALisp.docs. The docs are edited only here: the
+# website is a copy of them, made again on every push to main, never edited in DynALisp.docs.
+# Needs the markdown package (pip install markdown).
 #
-#   <folder>\<Module>\...     the Docs folder of each module (Dynalisp, LeeMac...)
-#   <folder>\docs.css         Contents\Resources\docs.css, the pages pointed to it
-#   <folder>\index.html       the docs of every module (as Dyl-Docs), index.<code>.html in
-#                             each other language of BuildDocs.LANGS (index.fr.html)
-#   <folder>\README.md, .nojekyll
+# Two sets, a switch between them in the header of every page (User Guide | Developers):
+#
+#   <folder>\index.html             the User Guide home: the modules (index.fr.html in French,
+#                                   index.<code>.html for each language of BuildDocs.LANGS)
+#   <folder>\<Module>\...           the User Guide: Contents\Modules\<Module>\Docs
+#   <folder>\dev\index.html         the Developer home: README.md
+#   <folder>\dev\conventions.html   CONVENTIONS.md
+#   <folder>\dev\<Module>\...       the Developer docs: Contents\Modules\<Module>\DevDocs
+#   <folder>\dev\licences\...       the licences the README links to
+#   <folder>\docs.css, images\, README.md, .nojekyll
+#
+# Every relative link of a page is pointed to the place of its target on the website (a
+# guide page linking to its dev page, the stylesheet...). The switch of a page leads to the
+# page of the other set for the same tool when it has one, else to the home of that set.
+# The pictures a guide page names (<!-- picture: images/<Page>-window.png -->) are shown once
+# their file is in the images folder beside the page.
 #
 # A page already in <folder> is kept, even when the docs no longer have it (renamed, moved,
 # deleted): an installed DynALisp opens the pages of its own version, which stay on the
 # website. Only the pages the docs have are written again.
 #
 # The pages are the ones git knows (never those of MyTools, ignored) of the modules of
-# DocsPages.txt (BuildDocs.py): run BuildDocs.py first. DynALisp opens a page of the list on
-# the website (Dyl:DocsTarget of dynalisp.mnl).
+# DocsPages.txt (BuildDocs.py): run BuildDocs.py first. DynALisp opens a guide page of the
+# list on the website (Dyl:DocsTarget of dynalisp.mnl).
 
 import html
 import os
+import re
 import shutil
 import sys
 
 import BuildDocs
 
+try:
+    import markdown
+except ImportError:
+    markdown = None
+
 REPO = BuildDocs.REPO
 MODULES = BuildDocs.MODULES
 PAGES = BuildDocs.PAGES
-CSS = os.path.join(REPO, 'Contents', 'Resources', 'docs.css')
+RESOURCES = os.path.join(REPO, 'Contents', 'Resources')
 URL = 'https://samagior.github.io/DynALisp.docs/'
+RELEASES = 'https://github.com/samagior/DynALisp.release/releases/latest'
 VIEWPORT = '<meta name="viewport" content="width=device-width, initial-scale=1">'
 
-# The footer of the home page in each language of BuildDocs.LANGS (English for another one):
-FOOTER = {'en': 'DynALisp &ndash; released under the GNU General Public License v3',
-          'fr': 'DynALisp &ndash; publi&eacute; sous la licence publique g&eacute;n&eacute;rale GNU v3'}
+# The Markdown files rendered on the website: (source, page on the website, title):
+MARKDOWN = [('README.md', 'dev/index.html', 'DynALisp for Developers'),
+            ('CONVENTIONS.md', 'dev/conventions.html', 'DynALisp Conventions'),
+            (os.path.join('Contents', 'Modules', 'LeeMac', 'LEE-MAC-LICENCE.md'), 'dev/licences/LEE-MAC-LICENCE.html',
+             'Lee Mac Licence')]
+# Other files the pages link to, copied to the website:
+FILES = [(os.path.join('Contents', 'Resources', 'docs.css'), 'docs.css'),
+         (os.path.join('Contents', 'Resources', 'Icons', 'dynalisp-banner-readme.svg'), 'images/dynalisp-banner.svg')]
+# The links of the Markdown files to what is not on the website: their address (or None:
+# the text is kept, without its link):
+OUTSIDE = {'CHANGELOG.MD': RELEASES,
+           'LICENSE': 'https://www.gnu.org/licenses/gpl-3.0.html',
+           'LICENCES/LEE-MAC-LICENCE.MD': 'dev/licences/LEE-MAC-LICENCE.html'}
+
+# The texts of the site in each language of BuildDocs.LANGS (English for another one):
+TEXTS = {'en': {'guide': 'User Guide', 'dev': 'Developers',
+                'footer': 'DynALisp &ndash; released under the GNU General Public License v3'},
+         'fr': {'guide': 'Guide d\'utilisation', 'dev': 'D&eacute;veloppeurs',
+                'footer': 'DynALisp &ndash; publi&eacute; sous la licence publique g&eacute;n&eacute;rale GNU v3'}}
+HEADER = '<p>DynALisp <span>Docs</span></p>'
+LINK = re.compile(r'((?:href|src)=")([^"#:]*)((?:#[^"]*)?")')
+
+
+def text(code, key):
+    return TEXTS.get(code, TEXTS['en'])[key]
 
 
 def home_file(code):
-    """The home page of a language: index.html in English, index.<code>.html otherwise (the
-    name Dyl:DocsAll opens)."""
+    """The User Guide home of a language: index.html in English, index.<code>.html otherwise
+    (the name Dyl:DocsAll opens)."""
     return 'index.html' if code == 'en' else 'index.%s.html' % code
 
 
-def read_pages():
-    """The pages of DocsPages.txt: [(path, title, sentence)], title and sentence for an index."""
-    out = []
-    with open(PAGES, encoding='utf-8') as f:
-        for line in f:
-            line = line.rstrip('\r\n')
-            if line and not line.startswith('#'):
-                path, *info = line.split('\t')
-                out.append((path, *(info + ['', ''])[:2]))
-    return out
+def norm(path):
+    return os.path.normcase(os.path.normpath(path))
 
 
-def page(text):
-    """A page for the website: its stylesheet at the root, a viewport for phones."""
-    # ../../../Resources/docs.css (a page at the top of Docs) -> ../docs.css: the module
-    # folder is one level under the root, where docs.css is:
-    text = text.replace('../../Resources/docs.css', 'docs.css')
-    if 'name="viewport"' not in text:
-        text = text.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n    ' + VIEWPORT, 1)
-    return text
+def site_of(src):
+    """The place on the website (a path with /) of the source file src (a full path), None
+    when the website does not have it."""
+    rel = os.path.relpath(src, REPO).split(os.sep)
+    if len(rel) > 4 and rel[0] == 'Contents' and rel[1] == 'Modules' and rel[3] in ('Docs', 'DevDocs'):
+        return '/'.join((['dev'] if rel[3] == 'DevDocs' else []) + [rel[2]] + rel[4:])
+    for s, d, *_ in MARKDOWN + FILES:
+        if norm(src) == norm(os.path.join(REPO, s)):
+            return d
+    return None
 
 
-def home(pages, code):
-    """The docs of every module in the language code: the Dynalisp module first, the others
-    by name, each one its index in that language when it has one."""
+def relative(target, frm):
+    """The link from the page frm to target, both places on the website."""
+    return os.path.relpath(target, os.path.dirname(frm) or '.').replace(os.sep, '/')
+
+
+def fix_links(text_, src, dst, missing):
+    """Every relative link of the page src (on the website at dst) pointed to the place of
+    its target on the website. A target the website does not have is listed in missing."""
+    def sub(m):
+        file = m.group(2)
+        if not file:
+            return m.group(0)
+        target = site_of(os.path.normpath(os.path.join(os.path.dirname(src), file)))
+        if target is None:
+            missing.append((dst, file))
+            return m.group(0)
+        return m.group(1) + relative(target, dst) + m.group(3)
+    return LINK.sub(sub, text_)
+
+
+def set_nav(dst, code, kind, twin, indent):
+    """The switch User Guide | Developers of the page dst (on the website): the page of the
+    other set for the same tool (twin, a place on the website or None), else its home."""
+    other = twin or ('dev/index.html' if kind == 'guide' else home_file(code))
+    items = []
+    for k in ('guide', 'dev'):
+        label = text(code, k)
+        if k == kind:
+            items.append('<span class="on">%s</span>' % label)
+        else:
+            items.append('<a href="%s">%s</a>' % (relative(other, dst), label))
+    return indent + '<nav class="set" aria-label="Docs">' + ''.join(items) + '</nav>'
+
+
+def add_nav(text_, nav):
+    """The switch in the header of the page, after its language switch."""
+    i = text_.find(HEADER)
+    if i < 0:
+        return text_
+    j = text_.find('</nav>', i)
+    k = text_.find('</div>', i)
+    at = j + len('</nav>') if 0 <= j < k else i + len(HEADER)
+    return text_[:at] + '\n' + nav + text_[at:]
+
+
+def show_pictures(text_, src):
+    """The pictures the page names, shown when their file is beside it."""
+    title = re.search(r'<h1>(.*?)</h1>', text_, re.S)
+    title = BuildDocs.text_of(title.group(1)) if title else ''
+
+    def sub(m):
+        name = m.group(1)
+        if not os.path.exists(os.path.join(os.path.dirname(src), *name.split('/'))):
+            return m.group(0)
+        what = 'sample use' if name.lower().endswith('.gif') else 'window'
+        return '<figure class="shot"><img src="%s" alt="%s"></figure>' % (html.escape(name), html.escape('%s: %s' % (title, what)))
+    return BuildDocs.PICTURE.sub(sub, text_)
+
+
+def page(text_, src, dst, kind, twin, missing):
+    """A page of the docs for the website."""
+    code = BuildDocs.lang_of(src)[0]
+    text_ = fix_links(text_, src, dst, missing)
+    if kind == 'guide':
+        text_ = show_pictures(text_, src)
+    m = re.search(r'\n([ \t]*)' + re.escape(HEADER), text_)
+    text_ = add_nav(text_, set_nav(dst, code, kind, twin, m.group(1) if m else '        '))
+    if 'name="viewport"' not in text_:
+        text_ = text_.replace('<meta charset="utf-8">', '<meta charset="utf-8">\n    ' + VIEWPORT, 1)
+    return text_
+
+
+def template(dst, code, kind, title, body, twin=None, langs=True):
+    """A page of the website made here (the homes, the Markdown files)."""
+    nav = ''
+    if langs:
+        if kind == 'guide':
+            nav = ('\n        <nav class="lang" aria-label="Language">'
+                   + ''.join('<span class="on" title="%s">%s</span>' % (name, label) if c == code
+                             else '<a href="%s" hreflang="%s" lang="%s" title="%s">%s</a>'
+                             % (home_file(c), c, c, name, label)
+                             for c, _, label, name, _ in BuildDocs.LANGS)
+                   + '</nav>')
+        else:
+            nav = ('\n        <nav class="lang" aria-label="Language">'
+                   + ''.join('<span class="on" title="%s">%s</span>' % (name, label) if c == 'en'
+                             else '<span class="off" title="The developer docs are in English only">%s</span>' % label
+                             for c, _, label, name, _ in BuildDocs.LANGS)
+                   + '</nav>')
+    return ('<!DOCTYPE html>\n<html lang="%s">\n<head>\n    <meta charset="utf-8">\n    %s\n'
+            '    <title>%s</title>\n    <link rel="stylesheet" href="%s">\n</head>\n<body>\n'
+            '    <div id="header">\n        %s%s\n%s\n    </div>\n'
+            '    <div id="content"%s>\n%s\n    </div>\n'
+            '    <div id="footer"><p>%s</p></div>\n</body>\n</html>\n'
+            % (code, VIEWPORT, html.escape(title), relative('docs.css', dst), HEADER, nav,
+               set_nav(dst, code, kind, twin, '        '), ' class="md"' if kind == 'dev' else '', body,
+               text(code, 'footer')))
+
+
+def guide_home(pages, code):
+    """The User Guide home in the language code: the modules, the Dynalisp module first, each
+    one its index in that language when it has one."""
     suf = next(s for c, s, *_ in BuildDocs.LANGS if c == code)
     idx = {}
     for path, t, s in pages:
@@ -82,28 +215,51 @@ def home(pages, code):
         elif suf and rest == 'index%s.htm' % suf:
             idx[mod] = (path, t, s)
     mods = sorted(idx, key=lambda m: (m.upper() != 'DYNALISP', m.upper()))
-    nav = ('<nav class="lang" aria-label="Language">'
-           + ''.join('<span class="on" title="%s">%s</span>' % (name, label) if c == code
-                     else '<a href="%s" hreflang="%s" lang="%s" title="%s">%s</a>' % (home_file(c), c, c, name, label)
-                     for c, _, label, name, _ in BuildDocs.LANGS)
-           + '</nav>')
-    alt = ''.join('    <link rel="alternate" hreflang="%s" href="%s">\n' % (c, home_file(c))
-                  for c, *_ in BuildDocs.LANGS if c != code)
     rows = ''.join('<tr><td><a href="%s">%s</a></td><td>%s</td></tr>\n' % (html.escape(idx[m][0]), idx[m][1] or m, idx[m][2])
                    for m in mods)
-    return ('<!DOCTYPE html>\n<html lang="%s">\n<head>\n    <meta charset="utf-8">\n    %s\n'
-            '    <title>DynALisp Docs</title>\n    <link rel="stylesheet" href="docs.css">\n%s</head>\n<body>\n'
-            '    <div id="header">\n        <p>DynALisp <span>Docs</span></p>\n        %s\n    </div>\n'
-            '    <div id="content">\n        <h1>DynALisp Docs</h1>\n<div class="programs commands wide">\n<table>\n'
-            '<tr><th>Module</th><th>Description</th></tr>\n%s</table>\n</div>\n    </div>\n'
-            '    <div id="footer"><p>%s</p></div>\n</body>\n</html>\n'
-            % (code, VIEWPORT, alt, nav, rows, FOOTER.get(code, FOOTER['en'])))
+    body = ('        <h1>DynALisp Docs</h1>\n<div class="programs commands wide">\n<table>\n'
+            '<tr><th>Module</th><th>Description</th></tr>\n%s</table>\n</div>' % rows)
+    return template(home_file(code), code, 'guide', 'DynALisp Docs', body)
+
+
+def render_md(src, dst, title, devmods, missing):
+    """A Markdown file of the repository as a page of the Developer docs."""
+    with open(os.path.join(REPO, src), encoding='utf-8') as f:
+        md = f.read()
+    body = markdown.markdown(md, extensions=['tables', 'fenced_code', 'toc', 'sane_lists'])
+
+    def sub(m):
+        file = m.group(2)
+        if not file:
+            return m.group(0)
+        target = site_of(os.path.normpath(os.path.join(REPO, os.path.dirname(src), file)))
+        if target is None:
+            target = OUTSIDE.get(file.replace('\\', '/').upper())
+            if target and target.startswith('http'):
+                return m.group(1) + target + m.group(3)
+        if target is None:
+            missing.append((dst, file))
+            return m.group(1) + '#' + m.group(3)
+        return m.group(1) + relative(target, dst) + m.group(3)
+    body = LINK.sub(sub, body)
+    # A link to nothing on the website keeps its text only:
+    body = re.sub(r'<a href="#">(.*?)</a>', r'\1', body)
+    box = ('<p class="devnav"><strong>Developer docs</strong> &ndash; <a href="%s">Conventions</a>%s'
+           ' &middot; <a href="%s">User Guide</a></p>\n'
+           % (relative('dev/conventions.html', dst),
+              ''.join(' &middot; <a href="%s">%s</a>' % (relative(p, dst), html.escape(t)) for p, t in devmods),
+              relative('index.html', dst)))
+    if not body.lstrip().startswith('<h1'):
+        body = '<h1>%s</h1>\n%s' % (html.escape(title), body)
+    i = body.find('</h1>') + len('</h1>')
+    return template(dst, 'en', 'dev', title, body[:i] + '\n' + box + body[i:])
 
 
 README = """# DynALisp Docs
 
 The documentation of [DynALisp](https://github.com/samagior/DynALisp.release), published at
-{url}
+{url}: the **User Guide** (what each tool does and how to use it) and the **Developer docs**
+(`dev/`: how the code works).
 
 This repository is **generated**: every push to the main branch of the DynALisp source
 rebuilds it (`Installer/Docs/BuildSite.py`, `.github/workflows/docs.yml`). Do not edit it
@@ -120,50 +276,94 @@ links to its original.
 def inside(path, folder):
     """True when path is folder or a folder under it (False on another drive)."""
     try:
-        return os.path.commonpath([os.path.normcase(path), os.path.normcase(folder)]) == os.path.normcase(folder)
+        return os.path.commonpath([norm(path), norm(folder)]) == norm(folder)
     except ValueError:
         return False
+
+
+def write(out, dst, content):
+    d = os.path.join(out, *dst.split('/'))
+    os.makedirs(os.path.dirname(d), exist_ok=True)
+    with open(d, 'w', encoding='utf-8', newline='\n') as f:
+        f.write(content)
 
 
 def main():
     if len(sys.argv) != 2:
         sys.exit('Usage: python Installer\\Docs\\BuildSite.py <folder>')
+    if markdown is None:
+        sys.exit('The markdown package is needed: pip install markdown')
     out = os.path.abspath(sys.argv[1])
     releases = os.path.join(REPO, 'Releases')
     # Outside the repository, or in a folder of its own under Releases (never Releases itself,
     # which holds the build of the setup):
-    if inside(out, REPO) and not (inside(out, releases) and os.path.normcase(out) != os.path.normcase(releases)):
+    if inside(out, REPO) and not (inside(out, releases) and norm(out) != norm(releases)):
         sys.exit('Build the website outside the repository, or in a folder under Releases: ' + out)
     pages = read_pages()
     known = BuildDocs.git_files()
+    mods = sorted({p.split('/')[0] for p, *_ in pages})
     os.makedirs(out, exist_ok=True)
-    count = 0
-    for mod in sorted({p.split('/')[0] for p, *_ in pages}):
-        src = os.path.join(MODULES, mod, 'Docs')
-        for root, _, files in os.walk(src):
-            for name in files:
-                s = os.path.join(root, name)
-                if os.path.normcase(os.path.normpath(s)) not in known:
-                    continue
-                d = os.path.join(out, mod, os.path.relpath(s, src))
-                os.makedirs(os.path.dirname(d), exist_ok=True)
-                if name.lower().endswith('.htm'):
-                    with open(s, encoding='utf-8', newline='') as f:
-                        text = f.read()
-                    with open(d, 'w', encoding='utf-8', newline='') as f:
-                        f.write(page(text))
-                    count += 1
-                else:
-                    shutil.copyfile(s, d)
-    shutil.copyfile(CSS, os.path.join(out, 'docs.css'))
+    missing = []
+    count = {'guide': 0, 'dev': 0}
+    # The files of both sets, and the twin of each page (the same tool in the other set):
+    files = []
+    for mod in mods:
+        for folder, kind in (('Docs', 'guide'), ('DevDocs', 'dev')):
+            src_dir = os.path.join(MODULES, mod, folder)
+            for root, _, names in os.walk(src_dir):
+                for name in names:
+                    s = os.path.join(root, name)
+                    if norm(s) in known:
+                        files.append((s, kind))
+    have = {norm(s) for s, _ in files}
+    for s, kind in files:
+        dst = site_of(s)
+        d = os.path.join(out, *dst.split('/'))
+        os.makedirs(os.path.dirname(d), exist_ok=True)
+        if not s.lower().endswith('.htm'):
+            shutil.copyfile(s, d)
+            continue
+        t = BuildDocs.twin(s)
+        twin = site_of(t) if norm(t) in have else None
+        with open(s, encoding='utf-8', newline='') as f:
+            content = f.read()
+        with open(d, 'w', encoding='utf-8', newline='') as f:
+            f.write(page(content, s, dst, kind, twin, missing))
+        count[kind] += 1
+    for s, d in FILES:
+        d = os.path.join(out, *d.split('/'))
+        os.makedirs(os.path.dirname(d), exist_ok=True)
+        shutil.copyfile(os.path.join(REPO, s), d)
     for code, *_ in BuildDocs.LANGS:
-        with open(os.path.join(out, home_file(code)), 'w', encoding='utf-8', newline='\n') as f:
-            f.write(home(pages, code))
-    with open(os.path.join(out, 'README.md'), 'w', encoding='utf-8', newline='\n') as f:
-        f.write(README.format(url=URL))
+        write(out, home_file(code), guide_home(pages, code))
+    # The dev index of each module, linked from the box of the dev home:
+    devmods = []
+    for mod in mods:
+        idx = os.path.join(MODULES, mod, 'DevDocs', 'index.htm')
+        if norm(idx) in have:
+            with open(idx, encoding='utf-8') as f:
+                h1 = re.search(r'<h1>(.*?)</h1>', f.read(), re.S)
+            devmods.append((site_of(idx), BuildDocs.text_of(h1.group(1)) if h1 else mod))
+    for src, dst, title in MARKDOWN:
+        write(out, dst, render_md(src, dst, title, devmods, missing))
+    write(out, 'README.md', README.format(url=URL))
     open(os.path.join(out, '.nojekyll'), 'w').close()
-    print('Docs website built in %s: %d pages written (%d in DocsPages.txt), the pages already there kept.'
-          % (out, count, len(pages)))
+    for dst, file in missing:
+        print('Not on the website: %s links to %s' % (dst, file))
+    print('Docs website built in %s: %d guide pages, %d dev pages written, the pages already there kept.'
+          % (out, count['guide'], count['dev']))
+
+
+def read_pages():
+    """The pages of DocsPages.txt: [(path, title, sentence)], title and sentence for an index."""
+    out = []
+    with open(PAGES, encoding='utf-8') as f:
+        for line in f:
+            line = line.rstrip('\r\n')
+            if line and not line.startswith('#'):
+                path, *info = line.split('\t')
+                out.append((path, *(info + ['', ''])[:2]))
+    return out
 
 
 if __name__ == '__main__':
