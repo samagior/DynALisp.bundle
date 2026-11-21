@@ -23,7 +23,9 @@
 // on the values of its sample file (Samples\, as the Lisp gives them: key=value,
 // key/list=item|item, key/off=1), its Open Docs button enabled. Its content is drawn under a
 // plain title bar, at twice its size (192 dpi), into the PNG its docs page names
-// (<!-- picture: images/<Page>-window.png -->). Nothing is shown on the screen.
+// (<!-- picture: images/<Page>-window.png -->), in the light theme of AutoCAD, and in its dark
+// theme beside it (<Page>-window-dark.png, shown by the website in dark mode). Nothing is
+// shown on the screen.
 
 using System;
 using System.Collections.Generic;
@@ -64,8 +66,9 @@ namespace DynALisp.Windows
                 string png = outDir != null ? Path.Combine(outDir, f[2]) : Path.Combine(root, f[2]);
                 try
                 {
-                    Shot(xaml, sample, png);
-                    Console.WriteLine("Drawn " + f[2]);
+                    Shot(xaml, sample, png, false);
+                    Shot(xaml, sample, Path.ChangeExtension(png, null) + "-dark.png", true);
+                    Console.WriteLine("Drawn " + f[2] + " (light, dark)");
                     done++;
                 }
                 catch (Exception e)
@@ -103,9 +106,9 @@ namespace DynALisp.Windows
             }
         }
 
-        static void Shot(string xaml, string sample, string png)
+        static void Shot(string xaml, string sample, string png, bool dark)
         {
-            var s = new Session();
+            var s = new Session { Dark = dark };
             Read(s, sample);
             var view = s.Open(xaml);
             var w = view.Window;
@@ -116,9 +119,14 @@ namespace DynALisp.Windows
             // settings of the window (its styles, its theme):
             var content = (UIElement)w.Content;
             w.Content = null;
-            var title = new Grid { Height = 32, Background = Brushes.White };
-            title.Children.Add(new TextBlock { Text = w.Title, Margin = new Thickness(12, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center, Foreground = new SolidColorBrush(Color.FromRgb(0x1F, 0x29, 0x37)) });
-            title.Children.Add(new TextBlock { Text = "✕", Margin = new Thickness(0, 0, 14, 0), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center, Foreground = new SolidColorBrush(Color.FromRgb(0x5B, 0x65, 0x77)) });
+            var title = new Grid { Height = 32 };
+            title.SetResourceReference(Panel.BackgroundProperty, "Dyl.TitleBar");
+            var caption = new TextBlock { Text = w.Title, Margin = new Thickness(12, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+            caption.SetResourceReference(TextBlock.ForegroundProperty, "Dyl.TitleText");
+            var close = new TextBlock { Text = "\u2715", Margin = new Thickness(0, 0, 14, 0), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
+            close.SetResourceReference(TextBlock.ForegroundProperty, "Dyl.Muted");
+            title.Children.Add(caption);
+            title.Children.Add(close);
             var dock = new DockPanel();
             DockPanel.SetDock(title, Dock.Top);
             dock.Children.Add(title);
@@ -126,7 +134,6 @@ namespace DynALisp.Windows
             var frame = new Border
             {
                 Child = dock,
-                BorderBrush = new SolidColorBrush(Color.FromRgb(0xC5, 0xCD, 0xD8)),
                 BorderThickness = new Thickness(1),
                 UseLayoutRounding = true,
                 SnapsToDevicePixels = true,
@@ -136,6 +143,7 @@ namespace DynALisp.Windows
             TextElement.SetFontFamily(frame, w.FontFamily);
             TextElement.SetFontSize(frame, w.FontSize);
             frame.SetResourceReference(Border.BackgroundProperty, "Dyl.Back");
+            frame.SetResourceReference(Border.BorderBrushProperty, "Dyl.BorderStrong");
             frame.SetResourceReference(TextElement.ForegroundProperty, "Dyl.Text");
 
             frame.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));

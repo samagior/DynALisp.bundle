@@ -75,7 +75,7 @@ namespace DynALisp.Windows
                 var a = Lisp.Read(args);
                 string file = a.Count > 0 ? a[0] as string : null;
                 if (string.IsNullOrEmpty(file)) throw new ArgumentException("(Dyl:Window file values): no file given");
-                var s = new Session { ShowRoot = w => AcApp.ShowModalWindow(w) };
+                var s = new Session { ShowRoot = w => AcApp.ShowModalWindow(w), Dark = DarkTheme() };
                 if (a.Count > 1 && a[1] is Lisp.List vals) Give(s, vals);
                 int status = s.Show(file);
                 var rb = new ResultBuffer();
@@ -96,6 +96,13 @@ namespace DynALisp.Windows
                 try { AcApp.DocumentManager.MdiActiveDocument?.Editor.WriteMessage("\n--> Unable to show the window: " + Message(e)); } catch { }
                 return null;
             }
+        }
+
+        // The theme of AutoCAD: COLORTHEME 0 dark, 1 light:
+        static bool DarkTheme()
+        {
+            try { return Convert.ToInt32(AcApp.GetSystemVariable("COLORTHEME")) == 0; }
+            catch { return false; }
         }
 
         static string Message(System.Exception e)

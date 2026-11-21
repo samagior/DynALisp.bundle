@@ -34,9 +34,11 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Xaml;
 using System.Xml;
@@ -49,6 +51,9 @@ namespace DynALisp.Windows
         public readonly Dictionary<string, string> Values = new Dictionary<string, string>(StringComparer.Ordinal);
         public readonly Dictionary<string, List<string>> Lists = new Dictionary<string, List<string>>(StringComparer.Ordinal);
         public readonly HashSet<string> Off = new HashSet<string>(StringComparer.Ordinal);
+
+        // The dark theme of AutoCAD (COLORTHEME 0), the light one else:
+        public bool Dark;
 
         // Shows the first window (over AutoCAD); ShowDialog when null:
         public Func<Window, bool?> ShowRoot;
@@ -79,7 +84,7 @@ namespace DynALisp.Windows
         // The window of path on the values, not shown yet (the pictures tool renders it):
         public View Open(string path)
         {
-            var w = Load(path);
+            var w = Load(path, Dark);
             var view = new View(this, w, Path.GetDirectoryName(Path.GetFullPath(path)));
             view.Fill();
             return view;
@@ -99,7 +104,7 @@ namespace DynALisp.Windows
 
         // A window file: its root is a Window. The dyl: prefix (clr-namespace:DynALisp.Windows,
         // no assembly) is this assembly, wherever AutoCAD loaded it from:
-        public static Window Load(string path)
+        public static Window Load(string path, bool dark)
         {
             if (!File.Exists(path)) throw new FileNotFoundException("Window file not found: " + path, path);
             object root;
@@ -109,7 +114,7 @@ namespace DynALisp.Windows
                 root = WpfXamlReader.Load(reader);
             var w = root as Window;
             if (w == null) throw new InvalidDataException("Not a window (its root must be a Window): " + path);
-            Theme.Apply(w);
+            Theme.Apply(w, dark);
             return w;
         }
 
@@ -120,38 +125,84 @@ namespace DynALisp.Windows
         }
     }
 
-    // The look of the windows (Theme.xaml, embedded), read once:
+    // The look of the windows: the styles of Theme.xaml (embedded, read once) and the Dyl.*
+    // brushes of the light or the dark theme of AutoCAD (COLORTHEME 1 or 0), its blue for
+    // what is picked. A dark window also gets the dark title bar of Windows.
     public static class Theme
     {
-        static ResourceDictionary _dict;
+        static ResourceDictionary _styles;
 
-        public static ResourceDictionary Get()
+        // Dark: the grey blue of the palettes of AutoCAD; light: its light greys.
+        static readonly Dictionary<string, string> DarkColors = new Dictionary<string, string>
         {
-            if (_dict != null) return _dict;
+            ["Back"] = "#2E343E", ["Surface"] = "#3B4453", ["Border"] = "#4A5466", ["BorderStrong"] = "#5B677A",
+            ["Text"] = "#E6EAF0", ["Heading"] = "#FFFFFF", ["Muted"] = "#A3ADBC", ["Disabled"] = "#6E7889",
+            ["Hover"] = "#465062", ["Pressed"] = "#525D71", ["Input"] = "#2E343E", ["InputBorder"] = "#5B677A",
+            ["Accent"] = "#0696D7", ["AccentHover"] = "#22A9E8", ["AccentText"] = "#FFFFFF", ["ErrorText"] = "#FF8F85",
+            ["TitleBar"] = "#232831", ["TitleText"] = "#E6EAF0",
+        };
+        static readonly Dictionary<string, string> LightColors = new Dictionary<string, string>
+        {
+            ["Back"] = "#E9ECEF", ["Surface"] = "#FFFFFF", ["Border"] = "#D5DAE0", ["BorderStrong"] = "#B9C1CB",
+            ["Text"] = "#1F2933", ["Heading"] = "#111820", ["Muted"] = "#5F6B7A", ["Disabled"] = "#A3ACB8",
+            ["Hover"] = "#EDF1F5", ["Pressed"] = "#DEE5EC", ["Input"] = "#FFFFFF", ["InputBorder"] = "#B9C1CB",
+            ["Accent"] = "#0696D7", ["AccentHover"] = "#0784BD", ["AccentText"] = "#FFFFFF", ["ErrorText"] = "#B42318",
+            ["TitleBar"] = "#FFFFFF", ["TitleText"] = "#1F2933",
+        };
+
+        static ResourceDictionary Styles()
+        {
+            if (_styles != null) return _styles;
             using (var s = typeof(Theme).Assembly.GetManifestResourceStream("DynALisp.Windows.Theme.xaml"))
-                _dict = (ResourceDictionary)WpfXamlReader.Load(s);
-            return _dict;
+                _styles = (ResourceDictionary)WpfXamlReader.Load(s);
+            return _styles;
         }
 
-        public static void Apply(Window w)
+        // The Dyl.* brushes of a theme:
+        public static ResourceDictionary Brushes(bool dark)
         {
-            w.Resources.MergedDictionaries.Insert(0, Get());
+            var d = new ResourceDictionary();
+            foreach (var kv in dark ? DarkColors : LightColors)
+            {
+                var b = new SolidColorBrush((Color)ColorConverter.ConvertFromString(kv.Value));
+                b.Freeze();
+                d["Dyl." + kv.Key] = b;
+            }
+            return d;
+        }
+
+        public static void Apply(Window w, bool dark)
+        {
+            w.Resources.MergedDictionaries.Insert(0, Styles());
+            w.Resources.MergedDictionaries.Insert(0, Brushes(dark));
             w.SetResourceReference(Control.BackgroundProperty, "Dyl.Back");
             w.SetResourceReference(Control.ForegroundProperty, "Dyl.Text");
             w.FontFamily = new FontFamily("Segoe UI");
             w.FontSize = 12.5;
             TextOptions.SetTextFormattingMode(w, TextFormattingMode.Display);
-            UseLayoutRounding(w);
+            w.UseLayoutRounding = true;
+            w.SnapsToDevicePixels = true;
             if (w.ReadLocalValue(Window.SizeToContentProperty) == DependencyProperty.UnsetValue) w.SizeToContent = SizeToContent.WidthAndHeight;
             if (w.ReadLocalValue(Window.ResizeModeProperty) == DependencyProperty.UnsetValue) w.ResizeMode = ResizeMode.NoResize;
             w.ShowInTaskbar = false;
             w.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            if (dark) w.SourceInitialized += (a, b) => DarkTitleBar(w);
         }
 
-        static void UseLayoutRounding(Window w)
+        [DllImport("dwmapi.dll")]
+        static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int value, int size);
+
+        // The dark title bar of Windows 10 (20H1) and 11; nothing in an older Windows:
+        static void DarkTitleBar(Window w)
         {
-            w.UseLayoutRounding = true;
-            w.SnapsToDevicePixels = true;
+            try
+            {
+                var hwnd = new WindowInteropHelper(w).Handle;
+                int on = 1;
+                if (DwmSetWindowAttribute(hwnd, 20, ref on, sizeof(int)) != 0)
+                    DwmSetWindowAttribute(hwnd, 19, ref on, sizeof(int));
+            }
+            catch { }
         }
     }
 
