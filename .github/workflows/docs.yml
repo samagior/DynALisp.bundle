@@ -1,6 +1,11 @@
 # docs.yml - publish the DynALisp docs website
 # Copyright (C) 2026  Samuel Martineau, GNU General Public License v3
 #
+# TEMPORARY, while DynALisp is developed: on every push to ANY branch that changes the docs
+# (not main only), the website is built from that branch, so the last push wins. To go back,
+# set branches to [main] below, drop the branch from the commit message, and update the Docs
+# website bullet of CONVENTIONS.md (Windows section).
+#
 # On every push to main that changes the docs, builds the website (Installer/Docs/BuildSite.py)
 # from the User Guide (the Docs folder of each module), the Developer docs (its DevDocs folder),
 # README.md and CONVENTIONS.md, and pushes it to the public repository
@@ -16,7 +21,7 @@ name: Docs
 
 on:
   push:
-    branches: [main]
+    branches: ['**']   # TEMPORARY: [main] once the development period is over
     paths:
       - 'Contents/Modules/*/Docs/**'
       - 'Contents/Modules/*/DevDocs/**'
@@ -80,5 +85,5 @@ jobs:
             echo "The website is up to date."
             exit 0
           fi
-          git commit -q -m "Publish the docs (DynALisp ${GITHUB_SHA::7})"
+          git commit -q -m "Publish the docs (DynALisp ${GITHUB_SHA::7}, ${GITHUB_REF_NAME})"
           git push origin HEAD:main
