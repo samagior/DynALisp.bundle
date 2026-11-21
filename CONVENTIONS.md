@@ -84,6 +84,13 @@ The alias of a Quick Draw preset tells how it draws: `PL-*` for a preset drawn w
 
 *Why: One scale per material is one value to keep right, and a pattern draws at the same size in imperial and metric drawings.*
 
+- A material is of one of two **types** (`Type` column, `*mt:types*`), as the patterns of Revit:
+  - **Drafting**: a size on paper (a section hatch). It is annotative or follows the drawing scale (*Adaptive scaling*), so it plots at the same size at every scale.
+  - **Model**: a real size in the model (a brick in elevation, a course of 2-2/3 in). Its scale makes the lines of its pattern real dimensions; it is never annotative nor adaptive (`Remote>>Dyl:MaterialFix` turns both off, the Hatch Presets window greys them out), so it plots smaller at 1:100 than at 1:50.
+  - A material of an older file is Drafting.
+
+*Why: a section hatch and an elevation are not scaled the same way: one keeps its size on paper, the other its size in the building.*
+
 - The `G-DS-ANNO-STD-*` layer keys are kept for compatibility only (the display configurations of AutoCAD Architecture) and are **never the layer key of a material** (`*lk:nomaterial*`, `Remote>>Dyl:LayerKeyMaterial-p`):
   - The Hatch Presets window does not list them, and a double-click on one in the Layer Keys window opened from it is refused.
   - A material read with one gets `HATCH` in its place (`Remote>>Dyl:MaterialFix`).

@@ -115,6 +115,9 @@
               ;;  Linear and Offset: their own ends / corners ("1"), else the defaults (see
               ;;  Dyl:QuickDrawBandOpts): "" in an older file (see Remote>>Dyl:MaterialFix):
               "EndsOn" "CornersOn"
+              ;;  Drafting (a size on paper: annotative or adaptive scaling) or Model (a real
+              ;;  size: never annotative nor adaptive), see Remote>>Dyl:MaterialFix:
+              "Type"
       )
       (default . "MT-*")
       (title . "Hatch Presets")
@@ -268,6 +271,7 @@
                    "Square" "" "45" "Mitered" "4" "First" "Interrupted" "Line"
                    "0" ""
                    "" ""
+                   "Drafting"
                   )
 )
 
@@ -349,7 +353,11 @@
 ;;  the same size with the scales set for 1:1:
 (defun Remote>>Dyl:MaterialFix (row / v)
   (while (< (length row) 12) (setq row (append row (list ""))))
-  (while (< (length row) 63) (setq row (append row (list (nth (- (length row) 12) *mt:extra*)))))
+  (while (< (length row) 64) (setq row (append row (list (nth (- (length row) 12) *mt:extra*)))))
+  ;;  Its type (63): Drafting or Model (any case), Drafting in an older file. A Model hatch
+  ;;  is drawn at its real size: never annotative (9) nor scaled with the drawing (10):
+  (setq row (Remote>>Dyl:ListSubst row 63 (if (= "MODEL" (strcase (nth 63 row))) "Model" "Drafting")))
+  (if (= "Model" (nth 63 row)) (foreach i '(9 10) (setq row (Remote>>Dyl:ListSubst row i "0"))))
   ;;  The layers of the assembly, those that are valid only:
   (setq row (Remote>>Dyl:ListSubst row 60 (Remote>>Dyl:MaterialLayersStr (Remote>>Dyl:MaterialLayers (nth 60 row)))))
   ;;  Bands: a key of each list (else its default), an extension >= 0 or "", an end angle
@@ -1333,7 +1341,7 @@
 ;;  the layer key popups).
 
 ;;  Tiles of the materials and index of their value in a material:
-(setq *mt:tiles* '(("pat" . 3) ("simp" . 4) ("ang" . 6) ("hat" . 8) ("ano" . 9)
+(setq *mt:tiles* '(("pat" . 3) ("typ" . 63) ("simp" . 4) ("ang" . 6) ("hat" . 8) ("ano" . 9)
                    ("sdw" . 10)
                    ;;  Hatch settings (checkbox, value; the border settings: in the presets,
                    ;;  see *mt:bordertiles*):
@@ -1375,10 +1383,15 @@
                     )
 )
 
+;;  Types of a material (Type column): a size on paper, or a real size (see
+;;  Remote>>Dyl:MaterialFix):
+(setq *mt:types* '("Drafting" "Model"))
+
 ;;  Popup tiles -> list of their values (nil for the other tiles):
 (defun Remote>>Dyl:MaterialDlgItems (key)
   (cond
     ((= "pat" key) mt:pats)
+    ((= "typ" key) *mt:types*)
     ((member key '("out" "hat")) mt:keys)
     ((member key '("bwt" "hwt")) *mt:weights*)
     ((= "mth" key) (cons "" (mapcar 'car *mt:methods*)))
@@ -1501,6 +1514,9 @@
   )
   (end_list)
   (Remote>>Dyl:MaterialDlgKeys '("hat") (mapcar '(lambda (r) (nth 8 r)) (append (Remote>>Dyl:MaterialDefs) pst:lst)))
+  (start_list "typ")
+  (foreach x *mt:types* (add_list x))
+  (end_list)
   ;;  Lineweight popup, in mm:
   (start_list "hwt")
   (foreach w *mt:weights* (add_list (strcat (rtos (/ (atoi w) 100.0) 2 2) " mm")))
@@ -2089,20 +2105,32 @@
 )
 
 ;;  SOLID ignores the scale, angle and annotative values. The drawing scale applies only to
-;;  a hatch that is not annotative. The line under it gives the factor in the current drawing
+;;  a hatch that is not annotative. A Model hatch is neither (its real size): both greyed
+;;  out and turned off. The line under it gives the factor in the current drawing
 ;;  (the scales set for 1:1, here 1:50 -> x50):
 ;;  An optional setting has its value greyed out until its checkbox is checked:
-(defun Remote>>Dyl:MaterialDlgState (r / solid ano on tog)
+(defun Remote>>Dyl:MaterialDlgState (r / solid model ano on tog)
   (setq solid (= "SOLID" (nth 3 r))
-        ano   (= "1" (nth 9 r))
-        on    (and (not solid) (not ano) (= "1" (nth 10 r)))
+        model (= "Model" (nth 63 r))
   )
-  (foreach k '("simp" "ang" "ano") (mode_tile k (if solid 1 0)))
+  (if model
+    (foreach x '(("ano" . 9) ("sdw" . 10))
+      (if (= "1" (nth (cdr x) r))
+        (progn (Remote>>Dyl:PresetDlgPut (cdr x) "0") (set_tile (car x) "0") (setq r (Remote>>Dyl:ListSubst r (cdr x) "0")))
+      )
+    )
+  )
+  (setq ano (= "1" (nth 9 r))
+        on  (and (not solid) (not ano) (= "1" (nth 10 r)))
+  )
+  (foreach k '("simp" "ang") (mode_tile k (if solid 1 0)))
+  (mode_tile "typ" (if solid 1 0))
+  (mode_tile "ano" (if (or solid model) 1 0))
   ;;  The units of the pattern, the factor of the scale in this drawing:
   (set_tile "sunt" (if solid "" (Remote>>Dyl:MaterialUnitText r)))
   ;;  Its open button: the .pat file of the pattern, greyed out when no file defines it:
   (Remote>>Dyl:MaterialDlgMode "suo" (if (and (not solid) (cdr (Remote>>Dyl:MaterialPatUnits (nth 3 r)))) 0 1))
-  (mode_tile "sdw" (if (or solid ano) 1 0))
+  (mode_tile "sdw" (if (or solid ano model) 1 0))
   (foreach x *mt:optional*
     (setq tog (= "1" (nth (cdr (assoc (car x) *mt:tiles*)) r)))
     ;;  A SOLID hatch has no background, no existing phase background, no lineweight:
@@ -2260,6 +2288,8 @@
     (T
      (put 3 pat)
      (put 9 (if (Remote>>Dyl:MaterialAnno-p e) "1" "0"))
+     ;;  An annotative hatch is a size on paper:
+     (if (Remote>>Dyl:MaterialAnno-p e) (put 63 "Drafting"))
      (put 30 (if (= :vlax-true (vla-get-AssociativeHatch o)) "1" "0"))
      (if (/= "SOLID" pat)
        (progn
@@ -2436,6 +2466,8 @@
             "            : column {"
             "              : column { fixed_height = true;"
             "              : row { : popup_list { key = \"pat\"; label = \"Pattern:\"; edit_width = 28; } }"
+            ;;  Drafting (a size on paper) or Model (a real size, see Remote>>Dyl:MaterialFix):
+            "              : row { : popup_list { key = \"typ\"; label = \"Type:\"; edit_width = 12; } }"
             ;;  One scale, in the units of the pattern; the line under it: those units and the
             ;;  factor in this drawing (see Remote>>Dyl:MaterialUnitText), its open button the
             ;;  .pat file of the pattern (see Remote>>Dyl:MaterialPatOpen):
