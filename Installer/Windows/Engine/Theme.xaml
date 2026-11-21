@@ -26,7 +26,7 @@
   <SolidColorBrush x:Key="Dyl.Accent" Color="#178C8C"/>
   <SolidColorBrush x:Key="Dyl.AccentHover" Color="#127373"/>
   <SolidColorBrush x:Key="Dyl.AccentText" Color="#FFFFFF"/>
-  <SolidColorBrush x:Key="Dyl.Error" Color="#B42318"/>
+  <SolidColorBrush x:Key="Dyl.ErrorText" Color="#B42318"/>
 
   <!-- A section: a white card, its title above its content (the boxed_column of DCL): -->
   <Style TargetType="GroupBox">
@@ -64,7 +64,7 @@
   </Style>
 
   <Style x:Key="Dyl.Error" TargetType="TextBlock">
-    <Setter Property="Foreground" Value="{DynamicResource Dyl.Error}"/>
+    <Setter Property="Foreground" Value="{DynamicResource Dyl.ErrorText}"/>
     <Setter Property="TextWrapping" Value="Wrap"/>
   </Style>
 

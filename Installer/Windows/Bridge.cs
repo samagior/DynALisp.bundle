@@ -100,8 +100,12 @@ namespace DynALisp.Windows
 
         static string Message(System.Exception e)
         {
-            while (e is TargetInvocationException && e.InnerException != null) e = e.InnerException;
-            return e.Message;
+            // the message of each exception down to the first one (a file that does not read
+            // says which line, its inner exception why):
+            string msg = e.Message;
+            for (var i = e.InnerException; i != null; i = i.InnerException)
+                if (!(i is TargetInvocationException)) msg += " " + i.Message;
+            return msg;
         }
 
         // The values of the Lisp into the session:

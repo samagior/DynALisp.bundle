@@ -70,7 +70,7 @@ namespace DynALisp.Windows
                 }
                 catch (Exception e)
                 {
-                    Console.Error.WriteLine("--> " + f[0] + ": " + e.Message);
+                    Console.Error.WriteLine("--> " + f[0] + ": " + e);
                     errors++;
                 }
             }
