@@ -501,7 +501,7 @@
   ;;  The path found (not the T of an and), on the website or on this computer
   ;;  (Dyl:DocsFind of dynalisp.mnl: the setup does not install the Docs folders):
   (cond
-    ((and doc (Dyl:DocsFind (strcat *dyl:dyl "\\Docs\\" doc))))
+    ((and doc (setq doc (Dyl:DocsFind (strcat *dyl:dyl "\\Docs\\" doc)))) doc)
     ((and app
           (setq app (Dyl:DocsFind (strcat *dyl:dyl "\\Docs\\"
                                       (vl-filename-base (vl-filename-directory app)) "\\" (vl-filename-base app) ".htm"

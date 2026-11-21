@@ -2239,6 +2239,11 @@
                   )
              )
             )
+            ;;  A web address (a docs page on the website) is not a file for Notepad: given on
+            ;;  the command line, to open it by hand:
+            ((wcmatch (strcase f) "HTTP://*,HTTPS://*")
+             (princ (strcat "\nOpen this page in a web browser: " f))
+            )
             ((startapp "notepad" (strcat "\"" f "\"")))
           )
         )
@@ -2991,7 +2996,8 @@
     (cond
       ((findfile f) (Dyl:DocsIndexInfo f m))
       ((setq e (Dyl:DocsWeb f))
-       (cons (cond ((and (caddr e) (/= "" (caddr e)) (caddr e))) (m)) (cond ((cadddr e)) ("")))
+       ;;  (the title itself, never the T of an and):
+       (cons (cond ((and (caddr e) (/= "" (caddr e))) (caddr e)) (m)) (cond ((cadddr e)) ("")))
       )
       ((cons m ""))
     )
