@@ -70,6 +70,8 @@ Dynalisp/Plugins/CleanStartup.fr.htm
 Dynalisp/Plugins/CleanStartup.htm
 Dynalisp/Plugins/Ribbon.fr.htm
 Dynalisp/Plugins/Ribbon.htm
+Dynalisp/Plugins/Windows.fr.htm
+Dynalisp/Plugins/Windows.htm
 Dynalisp/Setup/Dyl-SetFilePrefs.fr.htm
 Dynalisp/Setup/Dyl-SetFilePrefs.htm
 Dynalisp/Setup/Dyl-SetUnits.fr.htm

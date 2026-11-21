@@ -1,7 +1,8 @@
 # Windows: builds the windows plugin (Installer\Windows) and draws the pictures of its windows
 # (Installer\Windows\Shots, Shots.csv) on a Windows runner, as the docs show them, when a window
-# file or the plugin changes. The pictures are an artifact of the run (windows-pictures), to
-# look at before they are drawn again and committed (dotnet run in Installer\Windows\Shots).
+# file or the plugin changes. On a work branch, the pictures that changed are committed to it
+# (pull before pushing again); on main, they are only an artifact of the run (windows-pictures):
+# they came with the branch merged.
 name: Windows
 
 on:
@@ -13,7 +14,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   windows:
@@ -27,9 +28,19 @@ jobs:
 
       - name: Draw the pictures of the windows
         shell: pwsh
-        run: dotnet run -c Release --project Installer/Windows/Shots -- -out pictures
+        run: dotnet run -c Release --project Installer/Windows/Shots
+
+      - name: Commit the pictures to the branch
+        if: github.ref != 'refs/heads/main'
+        shell: pwsh
+        run: |
+          git add -- 'Contents/Modules/*/Docs/*/images/*.png'
+          git diff --cached --quiet
+          if ($LASTEXITCODE -eq 0) { Write-Output 'The pictures are up to date.'; exit 0 }
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Draw the pictures of the windows' -m 'Drawn by the Windows workflow (Installer\Windows\Shots).'
+          git push origin HEAD:${{ github.ref_name }}
 
       - uses: actions/upload-artifact@v4
         with:
           name: windows-pictures
-          path: pictures/
+          path: Contents/Modules/*/Docs/*/images/*.png
