@@ -57,7 +57,12 @@
 // {count} how many, {count:rule|one|many} how many a rule holds for, with their noun (a rule
 // without "|": lk=L, lk!=L), {sum:n:rule} the total of column n (of the rows the rule holds
 // for, all without it), {sel|text} the text, # the number of rows selected, when there are two
-// or more; dyl:Win.SummaryEmpty in its place while the list is empty. dyl:Win.Check="rows" on
+// or more; {per:m:w:list} the total over the rows of a value of the item each one picks in the
+// field of column m, from the list key/list given with that field's items ("a b": a per unit of
+// column w, plus b; the data of the materials of an assembly, Remote>>Dyl:MaterialDataLists),
+// 4 significant digits, the rows whose item has none ("") left out; {miss:m:list|one|many} the
+// text one (1) or many (more) with # their number, for the rows left out, "" when there are
+// none; dyl:Win.SummaryEmpty in its place while the list is empty. dyl:Win.Check="rows" on
 // the list: at least one row before OK, its dyl:Win.CheckMessage else.
 //
 // A button with dyl:Win.Open and dyl:Win.Columns="men:7,mex:8" opens that window (beside this
@@ -138,7 +143,7 @@ namespace DynALisp.Windows
         }
 
         static readonly StringComparer Ic = StringComparer.OrdinalIgnoreCase;
-        static readonly Regex Token = new Regex(@"\{(count|sum|sel)([^}]*)\}");
+        static readonly Regex Token = new Regex(@"\{(count|sum|sel|per|miss)([^}]*)\}");
 
         readonly View _v;
         readonly Session _s;
@@ -765,6 +770,32 @@ namespace DynALisp.Windows
                 {
                     case "sel":
                         return nsel >= 2 ? (rest.StartsWith("|") ? rest.Substring(1) : rest).Replace("#", nsel.ToString(CultureInfo.InvariantCulture)) : "";
+                    case "per":
+                    case "miss":
+                        var a = rest.TrimStart(':').Split('|');
+                        var ps = a[0].Split(':');
+                        bool per = m.Groups[1].Value == "per";
+                        if (ps.Length < (per ? 3 : 2) || !int.TryParse(ps[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int mc)) return "";
+                        int wc = -1;
+                        if (per && !int.TryParse(ps[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out wc)) return "";
+                        var mf = _fields.FirstOrDefault(f => f.Col == mc);
+                        _s.Lists.TryGetValue(ps[per ? 2 : 1], out List<string> data);
+                        double tot = 0;
+                        int nmiss = 0;
+                        foreach (var r in _rows)
+                        {
+                            int j = mf != null ? IndexOf(mf, Cell(r, mc)) : -1;
+                            var d = (data != null && j >= 0 && j < data.Count ? data[j] : "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                            if (d.Length == 0 || !double.TryParse(d[0], NumberStyles.Float, CultureInfo.InvariantCulture, out double pu)) { nmiss++; continue; }
+                            if (!per) continue;
+                            double.TryParse(Cell(r, wc), NumberStyles.Float, CultureInfo.InvariantCulture, out double w);
+                            double fx = 0;
+                            if (d.Length > 1) double.TryParse(d[1], NumberStyles.Float, CultureInfo.InvariantCulture, out fx);
+                            tot += pu * w + fx;
+                        }
+                        if (per) return Sig(tot);
+                        if (nmiss == 0) return "";
+                        return (nmiss == 1 || a.Length < 3 ? (a.Length > 1 ? a[1] : "") : a[2]).Replace("#", nmiss.ToString(CultureInfo.InvariantCulture));
                     case "sum":
                         var p = rest.TrimStart(':').Split(new[] { ':' }, 2);
                         if (!int.TryParse(p[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int col)) return "";
@@ -781,6 +812,16 @@ namespace DynALisp.Windows
                         return q.Length >= 3 ? ns + " " + (n == 1 ? q[1] : q[2]) : ns;
                 }
             });
+        }
+
+        // The number v with 4 significant digits at most (as Remote>>Dyl:MaterialSig):
+        static string Sig(double v)
+        {
+            if (v <= 0 || double.IsNaN(v) || double.IsInfinity(v)) return "0";
+            int e = (int)Math.Floor(Math.Log10(v));
+            int d = Math.Max(0, Math.Min(8, 3 - e));
+            string s = v.ToString("F" + d.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
+            return s.Contains(".") ? s.TrimEnd('0').TrimEnd('.') : s;
         }
 
         // Before the window closes: a value not valid is shown (false), every row is checked

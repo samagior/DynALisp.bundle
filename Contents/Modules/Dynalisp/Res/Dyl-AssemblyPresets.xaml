@@ -43,7 +43,9 @@
   the properties its hatch overrides (as its border; edited with its layer key, column 3, in
   the Hatch Settings window, opened by lho on the layers selected), 38 to 42 the scale and the
   origin of its hatch, with its band settings (scale by width, width factor, origin on line,
-  origin X, origin Y), 43 the group of its material (read, never saved). Add, Remove,
+  origin X, origin Y), 43 the group of its material (read, never saved). Under the list, ltm
+  (metric) and lti (imperial, mt.imp) add up the thermal resistance and the mass of the layers
+  from lp/rsi and lp/mass, the data of each material (Remote>>Dyl:MaterialDataLists). Add, Remove,
   Move up, Move down and Flip run in the window. The preview (an AssemblyTile,
   Installer\Windows\Engine\Assembly.cs) draws the rows as they are edited: lp/specs the
   preview of each material (scaled by the thickness of a layer whose band settings say so), ll/ends the ends of the whole band, ll/paper the inches of a drawing
@@ -179,6 +181,15 @@
           <Button x:Name="lu" DockPanel.Dock="Right" Content="Move up" dyl:Win.Do="up"/>
           <Border/>
         </DockPanel>
+        <!-- Under the layers: their thermal resistance and their mass per area, added up from
+             the data of their materials (lp/rsi, lp/mass), in the units of the drawing, the
+             layers whose material has no such data counted apart: -->
+        <TextBlock x:Name="ltm" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="!mt.imp"
+                   dyl:Win.Summary="Thermal resistance {per:1:2:lp/rsi} m²·K/W{miss:1:lp/rsi|, 1 layer unknown|, # layers unknown}  ·  Mass {per:1:2:lp/mass} kg/m²{miss:1:lp/mass|, 1 layer unknown|, # layers unknown}"
+                   dyl:Win.SummaryEmpty=""/>
+        <TextBlock x:Name="lti" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="mt.imp"
+                   dyl:Win.Summary="Thermal resistance R {per:1:2:lp/rsi}{miss:1:lp/rsi|, 1 layer unknown|, # layers unknown}  ·  Mass {per:1:2:lp/mass} lb/ft²{miss:1:lp/mass|, 1 layer unknown|, # layers unknown}"
+                   dyl:Win.SummaryEmpty=""/>
         <TextBlock x:Name="lt" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,8,0,0"
                    dyl:Win.Summary="{}{count:|layer|layers}, width {sum:2}"
                    dyl:Win.SummaryEmpty="No layers."/>

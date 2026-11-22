@@ -2851,4 +2851,105 @@
   )
 )
 
+;;-------------------------=={ Data of an assembly }==------------------------;;
+
+;;  What the layers of an assembly are worth, from the data of their materials: its thermal
+;;  resistance and its mass per area. A layer t thick of a material of conductivity k has the
+;;  resistance t / k, plus the fixed resistance of its material (an air space, a membrane);
+;;  its mass per area is its density x t. The totals are those of the layers whose value is
+;;  known, the layers without it counted apart: a value is never made up. The air films of
+;;  the faces are not counted (they depend on where the assembly is: see the docs).
+
+;;  The factors of the data of an assembly in imperial units: thermal resistance (RSI m2.K/W
+;;  -> R h.ft2.F/Btu), mass per area (kg/m2 -> lb/ft2):
+(setq *mt:asmdata* '(5.678263 0.2048161))
+
+;;  The metres of a drawing unit (INSUNITS, else MEASUREMENT: millimetres or inches):
+(defun Remote>>Dyl:MaterialUnitMetres (/ u)
+  (setq u (getvar "INSUNITS"))
+  (cond
+    ((= u 1) 0.0254)
+    ((= u 2) 0.3048)
+    ((= u 4) 0.001)
+    ((= u 5) 0.01)
+    ((= u 6) 1.0)
+    ((= 1 (getvar "MEASUREMENT")) 0.001)
+    (0.0254)
+  )
+)
+
+;;  The data of a layer of the material row m (Materials.csv: its data in SI) per drawing unit
+;;  of its thickness, in the units of the drawing (see *mt:asmdata*): (r-per-unit r-fixed
+;;  mass-per-unit), each nil when it is not known (no conductivity nor fixed resistance: no
+;;  resistance; no density: no mass):
+(defun Remote>>Dyl:MaterialLayerData (m / u k r d fr fm)
+  (setq u  (Remote>>Dyl:MaterialUnitMetres)
+        k  (distof (cond ((nth 5 m)) ("")) 2)
+        d  (distof (cond ((nth 6 m)) ("")) 2)
+        r  (distof (cond ((nth 7 m)) ("")) 2)
+        fr (if (Remote>>Dyl:MaterialImperial-p) (car *mt:asmdata*) 1.0)
+        fm (if (Remote>>Dyl:MaterialImperial-p) (cadr *mt:asmdata*) 1.0)
+  )
+  (list (if (or k r) (if k (* fr (/ u k)) 0.0))
+        (if (or k r) (if r (* fr r) 0.0))
+        (if d (* fm d u))
+  )
+)
+
+;;  The data of the layers ls of an assembly (see Remote>>Dyl:MaterialLayers: their material
+;;  and their thickness, in drawing units), their materials among the material rows mats (nil:
+;;  read): (resistance mass n-resistance n-mass), in the units of the drawing, the totals of
+;;  the layers whose value is known, then how many layers it is not known for:
+(defun Remote>>Dyl:MaterialAssemblyData (ls mats / rs ms nr nm m th d)
+  (if (not mats) (setq mats (cadr (Remote>>Dyl:MaterialBoth))))
+  (setq rs 0.0 ms 0.0 nr 0 nm 0)
+  (foreach l ls
+    (setq m  (vl-some '(lambda (x) (if (= (strcase (cadr l)) (strcase (car x))) x)) mats)
+          th (cond ((distof (cond ((caddr l)) ("")) 2)) (0.0))
+          d  (if m (Remote>>Dyl:MaterialLayerData m) '(nil nil nil))
+    )
+    (if (car d) (setq rs (+ rs (* th (car d)) (cadr d))) (setq nr (1+ nr)))
+    (if (caddr d) (setq ms (+ ms (* th (caddr d)))) (setq nm (1+ nm)))
+  )
+  (list rs ms nr nm)
+)
+
+;;  The data d of an assembly (see Remote>>Dyl:MaterialAssemblyData) as two lines of text, in
+;;  the units of the drawing: "Thermal resistance RSI 3.52" (R in an imperial drawing) and
+;;  "Mass 182 kg/m2", each with the number of layers it does not count:
+(defun Remote>>Dyl:MaterialAssemblyText (d / imp)
+  (setq imp (Remote>>Dyl:MaterialImperial-p))
+  (strcat "Thermal resistance  " (if imp "R " "RSI ") (Remote>>Dyl:MaterialSig (car d))
+          (Remote>>Dyl:MaterialAssemblyMiss (caddr d))
+          "\nMass  " (Remote>>Dyl:MaterialSig (cadr d)) (if imp " lb/ft2" " kg/m2")
+          (Remote>>Dyl:MaterialAssemblyMiss (cadddr d))
+  )
+)
+
+;;  The layers n a value of an assembly does not count, as text ("" for none):
+(defun Remote>>Dyl:MaterialAssemblyMiss (n)
+  (cond
+    ((= 0 n) "")
+    ((= 1 n) "  (1 layer unknown)")
+    ((strcat "  (" (itoa n) " layers unknown)"))
+  )
+)
+
+;;  The data of each material of a list, for the windows that add them up as the layers are
+;;  edited (the Assembly Presets window, {per} and {miss} of Win.Summary, see
+;;  Installer\Windows\Engine\Rows.cs): for each id of ids, the material rows mats (nil:
+;;  read), its resistance "per-unit fixed" and its mass "per-unit", "" when not known:
+;;  (resistances masses):
+(defun Remote>>Dyl:MaterialDataLists (ids mats / rs ms m d)
+  (if (not mats) (setq mats (cadr (Remote>>Dyl:MaterialBoth))))
+  (foreach id ids
+    (setq m  (vl-some '(lambda (x) (if (= (strcase id) (strcase (car x))) x)) mats)
+          d  (if m (Remote>>Dyl:MaterialLayerData m) '(nil nil nil))
+          rs (cons (if (car d) (strcat (Remote>>Dyl:MaterialNumP (car d) 10) " " (Remote>>Dyl:MaterialNumP (cadr d) 10)) "") rs)
+          ms (cons (if (caddr d) (Remote>>Dyl:MaterialNumP (caddr d) 10) "") ms)
+    )
+  )
+  (list (reverse rs) (reverse ms))
+)
+
 (princ)
