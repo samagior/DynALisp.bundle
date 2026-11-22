@@ -215,13 +215,7 @@
         <DockPanel Style="{StaticResource Row}">
           <ComboBox x:Name="lk" DockPanel.Dock="Right" Width="220" dyl:Win.Column="0"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Kind"/>
-        <!-- The assembly as it is drawn, a wall in plan, built as the layers are edited: -->
-    <GroupBox Header="Preview" Margin="0,10,0,0">
-      <dyl:AssemblyTile MinHeight="120" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14 6 16" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
-                        Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"
-                        Accent="{DynamicResource Dyl.Accent}"/>
-    </GroupBox>
-    </DockPanel>
+        </DockPanel>
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
           <ComboBox x:Name="lp" DockPanel.Dock="Right" Width="220" dyl:Win.Column="1"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Preset"/>
@@ -256,6 +250,12 @@
           <CheckBox x:Name="lbr" Content="Border" dyl:Win.Column="14"/>
         </DockPanel>
       </StackPanel>
+    </GroupBox>
+    <!-- The assembly as it is drawn, a wall in plan, built as the layers are edited: -->
+    <GroupBox Header="Preview" Margin="0,10,0,0">
+      <dyl:AssemblyTile MinHeight="120" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14 6 16" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
+                        Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"
+                        Accent="{DynamicResource Dyl.Accent}"/>
     </GroupBox>
     </DockPanel>
 
