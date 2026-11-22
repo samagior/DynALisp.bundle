@@ -1925,6 +1925,7 @@
 (defun Dyl:QuickDrawRun (rec / mat)
   (if (setq mat (Remote>>Dyl:MaterialGet (nth 3 rec)))
     (progn
+      (Dyl:QuickDrawRecentAdd (car rec))
       (setq mat (Dyl:QuickDrawMat mat rec))
       (Dyl:QuickDraw mat (cond ((nth 33 mat)) ("")))
     )
@@ -1936,6 +1937,24 @@
            )
     )
   )
+)
+
+;;  The presets drawn last, the last one first (their ids, 12 at most), for the Recent group
+;;  of the gallery: kept on the blackboard, so every drawing of the session shares them:
+(defun Dyl:QuickDrawRecent ()
+  (vl-bb-ref '*qd:recent*)
+)
+
+(defun Dyl:QuickDrawRecentAdd (id / l u res)
+  (setq u (strcase id)
+        l (cons id (vl-remove-if '(lambda (x) (= u (strcase x))) (Dyl:QuickDrawRecent)))
+  )
+  (while (and l (< (length res) 12))
+    (setq res (cons (car l) res)
+          l   (cdr l)
+    )
+  )
+  (vl-bb-set '*qd:recent* (reverse res))
 )
 
 ;;-------------------------=={ Presets }==------------------------;;
@@ -2837,13 +2856,28 @@
 )
 
 ;;  The items of the Group list: All, then every group (see Remote>>Dyl:Groups), also the
-;;  ones without a preset, a group typed in the presets file that is not one of them last:
+;;  ones without a preset (the gallery shows a pill only for a group with presets), a group
+;;  typed in the presets file that is not one of them, then Recent:
 (defun Dyl:QuickDrawGalleryGroups (/ res)
   (setq res (reverse (Remote>>Dyl:Groups)))
   (foreach x qg:all
     (if (not (member (strcase (nth 1 (car x))) (mapcar 'strcase res))) (setq res (cons (nth 1 (car x)) res)))
   )
-  (cons "All" (reverse res))
+  ;;  Recent last, when presets of the gallery were drawn in this session:
+  (setq res (cons "All" (reverse res)))
+  (if (vl-some '(lambda (x) (Dyl:QuickDrawGalleryRank (car x))) qg:all)
+    (append res (list "Recent"))
+    res
+  )
+)
+
+;;  The rank of the preset rec among the presets drawn last ("1": the last one), "" when it
+;;  is not one of them:
+(defun Dyl:QuickDrawGalleryRank (rec / u i)
+  (setq u (strcase (car rec))
+        i (vl-position u (mapcar 'strcase (Dyl:QuickDrawRecent)))
+  )
+  (if i (itoa (1+ i)))
 )
 
 ;;  The material of the preset id among the presets of the gallery (any case), nil when none:
@@ -2901,9 +2935,30 @@
   )
 )
 
-;;  The Quick Draw Gallery window. Returns the preset clicked (drawn by the caller), nil when
-;;  closed; the Quick Draw Manager button opens the Quick Draw window in its place:
-(defun Dyl:QuickDrawGallery (/ qg:all qg:grps g mat mats res sta i)
+;;  The kind of the preset x ((rec . mat), see qg:all), for the kind pills of the gallery:
+;;  Assembly, else the type of its hatch preset (Drafting, Model, see *mt:types*):
+(defun Dyl:QuickDrawGalleryKind (x)
+  (cond
+    ((Dyl:QuickDrawDlgAssembly-p (car x)) "Assembly")
+    ((= "Model" (nth 63 (cdr x))) "Model")
+    ("Drafting")
+  )
+)
+
+;;  The methods the preset rec can be drawn with, for the method pills of the gallery: Linear
+;;  and Offset for an assembly (its layers are bands), else Ask when drawn ("") and every
+;;  method of *qd:modes*:
+(defun Dyl:QuickDrawGalleryMethods (rec)
+  (if (Dyl:QuickDrawDlgAssembly-p rec)
+    '("Linear" "Offset")
+    (cons "" (mapcar 'car *qd:modes*))
+  )
+)
+
+;;  The Quick Draw Gallery window. Returns the preset double-clicked (or selected on Draw),
+;;  its method the one picked in the gallery (drawn by the caller), nil when closed; the Quick
+;;  Draw Manager button opens the Quick Draw window in its place:
+(defun Dyl:QuickDrawGallery (/ qg:all qg:grps g mat mats res sta i m)
   ;;  The materials read once (Remote>>Dyl:MaterialGet would read the file for each preset):
   (setq mats (Remote>>Dyl:MaterialRead))
   (foreach r (Dyl:QuickDrawRead)
@@ -2924,8 +2979,19 @@
                           )
         res               (Dyl:WinShow "Dyl-QuickDrawGallery.xaml"
                                        (append (Dyl:WinList "grp" qg:grps (cond ((vl-position g qg:grps)) (0)))
-                                               (list (cons "gal/list"
-                                                           (mapcar '(lambda (x) (strcat (nth 2 (car x)) "\t" (nth 1 (car x)) "\t" (Dyl:QuickDrawGallerySpec x)))
+                                               (list (cons "gal/kinds/list" '("Drafting" "Model" "Assembly"))
+                                                     ;;  The methods: value, label, tooltip:
+                                                     (cons "gal/methods/list"
+                                                           (cons "\tAsk\tAsk when drawn"
+                                                                 (mapcar '(lambda (x) (strcat (car x) "\t" (car x) "\t" (cadr x))) *qd:modes*)
+                                                           )
+                                                     )
+                                                     (cons "gal/list"
+                                                           (mapcar '(lambda (x) (strcat (nth 2 (car x)) "\t" (nth 1 (car x)) "\t" (Dyl:QuickDrawGallerySpec x)
+                                                                                   "\t" (cond ((Dyl:QuickDrawGalleryRank (car x))) (""))
+                                                                                   "\t" (Dyl:QuickDrawGalleryKind x)
+                                                                                   "\t" (Remote>>LM:lst->str (Dyl:QuickDrawGalleryMethods (car x)) ",")
+                                                                                   "\t" (nth 4 (car x))))
                                                                    qg:all
                                                            )
                                                      )
@@ -2937,11 +3003,18 @@
     (setq sta               (car res)
           *qd:gallerylast*  (nth (Dyl:WinIdx res "grp") qg:grps)
           i                 (atoi (cond ((Dyl:WinGet res "gal")) ("-1")))
+          m                 (Dyl:WinGet res "gal.method")
     )
   )
   (cond
     ((= 2 sta) (Dyl:QuickDrawDialog))
-    ((and (= 1 sta) (<= 0 i) (< i (length qg:all))) (car (nth i qg:all)))
+    ((and (= 1 sta) (<= 0 i) (< i (length qg:all)))
+     ;;  The method picked, when the preset can be drawn with it (else its own):
+     (if (and m (member m (Dyl:QuickDrawGalleryMethods (car (nth i qg:all)))))
+       (Remote>>Dyl:ListSubst (car (nth i qg:all)) 4 m)
+       (car (nth i qg:all))
+     )
+    )
   )
 )
 
@@ -2956,7 +3029,8 @@
 )
 
 ;; Quick Draw Gallery
-;; Opens the gallery of the quick draw presets by group, and draws the one clicked.
+;; Opens the gallery of the quick draw presets by group and kind, and draws the one
+;; double-clicked with the method picked.
 
 (defun c:Pst-QuickDrawGallery (/ rec)
   (if (setq rec (Dyl:QuickDrawGallery)) (Dyl:QuickDrawRun rec))

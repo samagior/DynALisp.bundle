@@ -78,7 +78,7 @@
         <DockPanel>
           <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
             <ComboBox x:Name="srt" DockPanel.Dock="Right" Width="110" Margin="8,0,0,0" ToolTip="Sort by"/>
-            <TextBox x:Name="flt" Tag="Filter" MaxLength="64"/>
+            <TextBox x:Name="flt" Style="{DynamicResource Dyl.Search}" Tag="Filter" MaxLength="64"/>
           </DockPanel>
           <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
             <TextBlock DockPanel.Dock="Left" Style="{DynamicResource Dyl.Label}" Text="Show"/>
@@ -171,7 +171,7 @@
             </DockPanel>
             <DockPanel Style="{StaticResource Row}">
               <ComboBox x:Name="mth" DockPanel.Dock="Right" Width="150"/>
-              <TextBlock Style="{DynamicResource Dyl.Label}" Text="Draw with"/>
+              <TextBlock Style="{DynamicResource Dyl.Label}" Text="Default method"/>
             </DockPanel>
             <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Polygon|">
               <TextBox x:Name="msd" DockPanel.Dock="Right" Width="150"
