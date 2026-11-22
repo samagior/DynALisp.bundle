@@ -2695,22 +2695,27 @@
 ;;  The description of the assembly of the layers ls (see Remote>>Dyl:MaterialLayers) under
 ;;  its preview: its total thickness, then each layer on a line of its own, from its left
 ;;  border, with its thickness (the structural layer marked), in the
-;;  units of the drawing; "" without layers:
+;;  units of the drawing, then its thermal resistance and its mass per area (from the data of
+;;  its materials, qd:mrows: the material rows read by the window, see
+;;  Remote>>Dyl:MaterialAssemblyData); "" without layers:
 (defun Dyl:QuickDrawLayersDesc (ls / rec)
   (if ls
     (apply 'strcat
            (cons (strcat "Total thickness  "
                          (rtos (apply '+ (cons 0.0 (mapcar '(lambda (l) (cond ((distof (caddr l) 2)) (0.0))) ls))))
                  )
-                 (mapcar '(lambda (l)
-                            (strcat "\n"
-                                    (progn
-                                      (setq rec (Dyl:QuickDrawGalleryMat (cadr l)))
-                                      (strcat (if rec (nth 2 rec) (cadr l)) "  " (rtos (distof (caddr l) 2)) (if (= "1" (nth 6 l)) "  (structural)" ""))
-                                    )
+                 (append
+                   (mapcar '(lambda (l)
+                              (strcat "\n"
+                                      (progn
+                                        (setq rec (Dyl:QuickDrawGalleryMat (cadr l)))
+                                        (strcat (if rec (nth 2 rec) (cadr l)) "  " (rtos (distof (caddr l) 2)) (if (= "1" (nth 6 l)) "  (structural)" ""))
+                                      )
+                              )
                             )
-                          )
-                         ls
+                           ls
+                   )
+                   (list "\n\n" (Remote>>Dyl:MaterialAssemblyText (Remote>>Dyl:MaterialAssemblyData ls qd:mrows)))
                  )
            )
     )
@@ -2724,9 +2729,12 @@
 )
 
 ;;  Before the window is shown: the presets with their material (qg:all, for the previews of
-;;  the layers of an assembly; joined to the hatch preset of their view) and the layer keys of the border list (mt:keys):
+;;  the layers of an assembly; joined to the hatch preset of their view), the material rows
+;;  (qd:mrows, their data for the description of an assembly) and the layer keys of the border list (mt:keys):
 (defun Dyl:QuickDrawWinPrep (/ mat)
-  (setq qg:all nil)
+  (setq qg:all   nil
+        qd:mrows (cadr (Remote>>Dyl:MaterialBoth))
+  )
   (foreach r pst:lst
     (if (setq mat (Remote>>Dyl:PresetDlgMatOf r)) (setq qg:all (cons (cons r (Dyl:QuickDrawMat mat r)) qg:all)))
   )
@@ -2799,7 +2807,7 @@
 
 ;;  Show the Quick Draw window. Draw and Save write the presets file and the aliases.
 ;;  Returns the preset to draw, or nil on Save / Cancel:
-(defun Dyl:QuickDrawDialog (/ mt:keys qg:all)
+(defun Dyl:QuickDrawDialog (/ mt:keys qg:all qd:mrows)
   (Dyl:QuickDrawAsmMigrate)
   (Remote>>Dyl:PresetDialog
     "QuickDraw"
@@ -3601,10 +3609,13 @@
 ;;  Dyl:QuickDrawMat), the drawing units and scale (ll/paper), the lists of the Band Settings
 ;;  window of a layer (the method "Layer", see Dyl:QuickDrawLayersBandLists) and those of the
 ;;  Border Settings and Hatch Settings windows of a layer and of the lines (sub "1": their
-;;  open buttons, which close them for the Lisp, greyed out):
-(defun Dyl:QuickDrawAsmWinVals (/ lks mark)
+;;  open buttons, which close them for the Lisp, greyed out), the data of each material (its
+;;  thermal resistance and its mass per unit of thickness, lp/rsi and lp/mass, added up by the
+;;  window under the layers):
+(defun Dyl:QuickDrawAsmWinVals (/ lks mark data)
   (setq lks  (Remote>>Dyl:LayerKeyRead)
         mark (mapcar '(lambda (k) (if (assoc k lks) k (strcat k "   (not defined)"))) mt:keys)
+        data (Remote>>Dyl:MaterialDataLists (mapcar 'car qa:mats) nil)
   )
   (append (list (list "ll/new" qa:def)
                 (cons "lg/list" qa:grps)
@@ -3623,6 +3634,11 @@
                 (cons "ll/ends/list" (list (nth 1 *qd:layerband*) (nth 2 *qd:layerband*) (nth 3 *qd:layerband*)))
                 (cons "ll/paper/list" (list (Remote>>Dyl:MaterialNumP (Dyl:QuickDrawUnitInches) 10) (Remote>>Dyl:MaterialNumP (Remote>>Dyl:MaterialDrawScale) 4)))
                 (cons "mth" "Layer")
+                ;;  The data of each material, added up under the layers (see
+                ;;  Remote>>Dyl:MaterialDataLists), in the units of the drawing (mt.imp):
+                (cons "lp/rsi/list" (car data))
+                (cons "lp/mass/list" (cadr data))
+                (cons "mt.imp" (if (Remote>>Dyl:MaterialImperial-p) "1" "0"))
           )
           (Dyl:QuickDrawLayersBandLists)
           (Dyl:WinOff "lp" (not qa:mats))
