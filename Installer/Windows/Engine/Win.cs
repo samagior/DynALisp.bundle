@@ -40,6 +40,7 @@
 //   dyl:Win.Rows="1"                        on a ListBox: its rows (key/rows) are edited here
 //   dyl:Win.Column="2"                      on a field: the column of the row shown it edits
 //   dyl:Win.Unique="message"                on a field: its column unique (any case)
+//   dyl:Win.Exclusive="1"                   on a checkbox field: on in one row at most
 //   dyl:Win.Follows="lp/widths"             on a field: takes the item of that list when the
 //                                           field lp changes
 //   dyl:Win.Do="add"                        on a button: add, remove, up, down, flip, reset
@@ -107,6 +108,10 @@ namespace DynALisp.Windows
         public static readonly DependencyProperty UniqueProperty = Prop("Unique");
         public static string GetUnique(DependencyObject o) => (string)o.GetValue(UniqueProperty);
         public static void SetUnique(DependencyObject o, string v) => o.SetValue(UniqueProperty, v);
+
+        public static readonly DependencyProperty ExclusiveProperty = Prop("Exclusive");
+        public static string GetExclusive(DependencyObject o) => (string)o.GetValue(ExclusiveProperty);
+        public static void SetExclusive(DependencyObject o, string v) => o.SetValue(ExclusiveProperty, v);
 
         public static readonly DependencyProperty FollowsProperty = Prop("Follows");
         public static string GetFollows(DependencyObject o) => (string)o.GetValue(FollowsProperty);

@@ -28,7 +28,12 @@
 //
 //   Rows      the key of the list (ll)
 //   Columns   the columns of a row: kind, preset, thickness, band settings on, ends,
-//             extension, end angle, border on, justification ("0 1 2 5 7 8 9 14 16")
+//             extension, end angle, border on, hatch aligned to (Edge: the line of the layer
+//             on its edge), structural ("0 1 2 5 7 8 9 14 6 16")
+//   Line      the key of the justification of the assembly (Center, Edge, Structural): the
+//             line drawn, in the accent colour, in the middle of the band, on the border of
+//             its first layer, or in the middle of its structural layer; what the Angled ends
+//             of the band turn around
 //   Specs     a list of the Lisp: the preview of each preset (as HatchTile draws it), one
 //             for each item of the field of the preset column (its width replaced by the
 //             thickness of the row; its ppu "w0.0005": the ppu of a unit of thickness, a
@@ -40,9 +45,9 @@
 //
 // Spec: the bands divided by "*", each a band of HatchTile (P, F, S, L, X) then, divided by
 // "~": its ends, extension ("": half its width), end angle (degrees), own ("1": across its
-// own thickness), border ("1": its own border), selected ("1"), justification (Edge: its own
-// line on its border nearer to the line of the band, else in its middle: what its Angled
-// ends turn around).
+// own thickness), border ("1": its own border), selected ("1"), its own line (Edge: on its
+// border nearer to the line of the band, else in its middle: what its Angled ends turn
+// around), structural ("1": the structural layer).
 
 using System;
 using System.Collections.Generic;
@@ -59,7 +64,11 @@ namespace DynALisp.Windows
 
         public Brush Accent { get => (Brush)GetValue(AccentProperty); set => SetValue(AccentProperty, value); }
         public string Rows { get; set; }
-        public string Columns { get; set; } = "0 1 2 5 7 8 9 14 16";
+        public string Columns { get; set; } = "0 1 2 5 7 8 9 14 6 16";
+        public string Line { get; set; }
+
+        // The justification of the assembly (the value of Line), set by the editor:
+        internal string Justify = "";
         public string Specs { get; set; }
         public string Ends { get; set; }
         public string Paper { get; set; }
@@ -73,7 +82,7 @@ namespace DynALisp.Windows
             public string End = "Square";
             public double? Ext;
             public double Angle = 45;
-            public bool Own, Border, Sel, Edge;
+            public bool Own, Border, Sel, Edge, Core;
             public double Top, Bottom;     // on the screen
             public double Reach;           // how far its end goes past the end of the line
         }
@@ -94,6 +103,7 @@ namespace DynALisp.Windows
                 l.Border = f.Length > 5 && f[5] == "1";
                 l.Sel = f.Length > 6 && f[6] == "1";
                 l.Edge = f.Length > 7 && f[7] == "Edge";
+                l.Core = f.Length > 8 && f[8] == "1";
                 res.Add(l);
             }
             return res;
@@ -138,6 +148,10 @@ namespace DynALisp.Windows
             if (!real && h > avail) { hs = hs.Select(x => x * avail / h).ToList(); h = avail; }
             double y = padY + (avail - h) / 2, yc = y + h / 2;
             for (int i = 0; i < wide.Count; i++) { wide[i].Top = y; y += hs[i]; wide[i].Bottom = y; }
+            // The line drawn (Line): what the ends of the band turn around:
+            var core = wide.FirstOrDefault(l => l.Core && l.B.Kind == "P");
+            if (Justify == "Edge") yc = wide[0].Top;
+            else if (Justify == "Structural" && core != null) yc = (core.Top + core.Bottom) / 2;
 
             // How far each end goes past the end of the line, so the longest one fits:
             // The whole band, ending as the layers without their own band settings (its Line
@@ -145,7 +159,7 @@ namespace DynALisp.Windows
             var whole = new Layer { Top = wide[0].Top, Bottom = wide[wide.Count - 1].Bottom, B = new HatchTile.Band { Width = tot } };
             var common = wide.FirstOrDefault(l => !l.Own);
             if (common != null) { whole.End = common.End; whole.Ext = common.Ext; whole.Angle = common.Angle; }
-            foreach (var l in wide) l.Reach = Reach(l, whole, k);
+            foreach (var l in wide) l.Reach = Reach(l, whole, yc, k);
             double reach = Math.Min(r.Width * 0.3, wide.Max(l => l.Reach));
             double x0 = r.Width - padR - reach;
 
@@ -191,6 +205,14 @@ namespace DynALisp.Windows
                 double ly = at == 0 ? wide[0].Top : wide[Math.Min(at, wide.Count) - 1].Bottom;
                 dc.DrawLine(dash, new Point(0, ly), new Point(x0 + EndAt(whole, whole, ly, yc, k), ly));
             }
+            // The line drawn, to its end (Line given):
+            if (Line != null)
+            {
+                var lp = new Pen(Accent, 1.5) { DashStyle = new DashStyle(new double[] { 8, 3, 1.5, 3 }, 0) };
+                lp.Freeze();
+                dc.DrawLine(lp, new Point(0, yc), new Point(x0, yc));
+                dc.DrawEllipse(Accent, null, new Point(x0, yc), 3, 3);
+            }
             if (Math.Abs(zoom - 1) > 1e-9 && ShowScale) Label(dc, r, "1:" + label.ToString("0.##", Inv));
             dc.Pop();
         }
@@ -200,10 +222,9 @@ namespace DynALisp.Windows
         Layer Across(Layer l, Layer w) => l.Own ? l : w;
 
         // How far past the end of the line the end of l reaches, on the screen:
-        double Reach(Layer l, Layer w, double k)
+        double Reach(Layer l, Layer w, double yc, double k)
         {
             var a = Across(l, w);
-            double yc = (w.Top + w.Bottom) / 2;
             switch (l.End)
             {
                 case "Extended": return Ext(l, a, k);
@@ -232,7 +253,7 @@ namespace DynALisp.Windows
         static double Ext(Layer l, Layer a, double k) => l.Ext.HasValue ? l.Ext.Value * k : (a.Bottom - a.Top) / 2;
 
         // Where the end of l is at the height y, past the end of the line (its own ends or
-        // those of the band w; yc: the line, the middle of the band):
+        // those of the band w; yc: the line drawn):
         double EndAt(Layer l, Layer w, double y, double yc, double k)
         {
             var a = Across(l, w);

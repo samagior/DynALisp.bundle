@@ -37,6 +37,8 @@
 //   dyl:Win.Unique="message"   no two rows with the same text in its column (any case): the
 //                              message when it is typed, a row added gets " (2)"... It is for
 //                              one row only: greyed out while several are selected.
+//   dyl:Win.Exclusive="1"      a checkbox on in one row at most: checked, it is cleared in
+//                              the other rows (several selected: the first one keeps it).
 //   dyl:Win.Follows="lp/widths"  this field takes the item of lp/widths (a list of the Lisp,
 //                              one item for each item of the field lp) when lp changes, if
 //                              it was empty or the item of its former value.
@@ -61,7 +63,9 @@
 // lists) are given by the Lisp with the rows.
 //
 // An AssemblyTile (Assembly.cs) whose Rows is the key of the list draws the rows (the layers
-// of an assembly): the editor gives it its Spec each time the rows or the selection change.
+// of an assembly): the editor gives it its Spec each time the rows or the selection change,
+// and the value of its Line (the justification of the assembly, a key of the window that is
+// not a field) each time it changes.
 
 using System;
 using System.Collections.Generic;
@@ -113,6 +117,7 @@ namespace DynALisp.Windows
         sealed class Field
         {
             public string Key, Unique, Follows;
+            public bool Exclusive;
             public int Col;
             public FrameworkElement El;
             public List<string> Vals;
@@ -154,7 +159,8 @@ namespace DynALisp.Windows
                 string c = Win.GetColumn(fe);
                 if (c == null || string.IsNullOrEmpty(fe.Name)) continue;
                 if (!int.TryParse(c, NumberStyles.Integer, CultureInfo.InvariantCulture, out int col) || col < 0) continue;
-                var f = new Field { Key = fe.Name, Col = col, El = fe, Unique = Win.GetUnique(fe), Follows = Win.GetFollows(fe) };
+                var f = new Field { Key = fe.Name, Col = col, El = fe, Unique = Win.GetUnique(fe), Follows = Win.GetFollows(fe),
+                                    Exclusive = fe is ToggleButton && Win.GetExclusive(fe) == "1" };
                 f.Vals = _s.Lists.TryGetValue(fe.Name + "/vals", out var vals) ? vals : null;
                 // Its rules and those of the panels holding it, up to the window:
                 for (DependencyObject o = fe; o != null && !(o is Window); o = LogicalTreeHelper.GetParent(o))
@@ -321,7 +327,7 @@ namespace DynALisp.Windows
         {
             if (key == _k) { Picked(); return; }
             var f = _fields.FirstOrDefault(x => x.Key == key);
-            if (f == null) return;
+            if (f == null) { if (_tiles.Any(t => t.Line == key)) Tiles(); return; }
             string val = Read(f);
             var sel = Selected();
             string msg = Problem(f, val, sel.Count == 1 ? sel[0] : -1);
@@ -332,14 +338,25 @@ namespace DynALisp.Windows
                 return;
             }
             if (_bad == f.Key) { _bad = null; _v.Error(""); }
+            int kept = -1;
             foreach (int i in sel)
             {
                 var r = _rows[i];
                 if (!Applies(f, r)) continue;
+                // on in one row at most: the first one selected it applies to:
+                if (f.Exclusive && val == "1") { if (kept >= 0) continue; kept = i; }
                 var nr = Put(r, f.Col, val);
                 foreach (var g in _fields.Where(g => g.Follows != null && g.Follows.Split('/')[0] == f.Key))
                     nr = Follow(g, f, Cell(r, f.Col), val, nr);
                 Set(i, nr);
+            }
+            // an exclusive checkbox checked: cleared in the other rows (the row shown too, when
+            // another one kept it):
+            if (kept >= 0)
+            {
+                for (int i = 0; i < _rows.Count; i++)
+                    if (i != kept && Cell(_rows[i], f.Col) == "1") Set(i, Put(_rows[i], f.Col, "0"));
+                if (sel.Count > 0 && sel[0] != kept) _v.Quiet(() => ShowField(f, _rows[sel[0]]));
             }
             // the fields that followed it, in the row shown:
             if (sel.Count > 0)
@@ -578,6 +595,7 @@ namespace DynALisp.Windows
                     t.DrawScale = ds;
                 }
                 string End(int i) => ends != null && i < ends.Count ? ends[i] : "";
+                t.Justify = t.Line != null ? _v.Stored(t.Line) ?? "" : "";
                 var pf = _fields.FirstOrDefault(f => f.Col == c[1]);
                 var parts = new List<string>();
                 for (int i = 0; i < _rows.Count; i++)
@@ -602,7 +620,8 @@ namespace DynALisp.Windows
                     parts.Add(string.Join("~", band,
                         own ? Cell(r, c[4]) : End(0), own ? Cell(r, c[5]) : End(1), own ? Cell(r, c[6]) : End(2),
                         own ? "1" : "0", kind == "P" && Cell(r, c[7]) == "1" ? "1" : "0", sel.Contains(i) ? "1" : "0",
-                        own && c.Length > 8 ? Cell(r, c[8]) : ""));
+                        own && c.Length > 8 ? Cell(r, c[8]) : "",
+                        kind == "P" && c.Length > 9 && Cell(r, c[9]) == "1" ? "1" : "0"));
                 }
                 t.Spec = string.Join("*", parts);
             }
