@@ -37,6 +37,8 @@
 ;;     (file . "QuickDraw.csv")                         ; presets file, in the Dynalisp Res folder
 ;;     (header "Id" "Group" "Name" ...)                 ; columns of the presets file
 ;;     (default . "QD-*")                               ; wcmatch of the default ids (upper case)
+;;     (blank3 . T)                                     ; the column 3 may be empty (the pattern
+;;                                                      ; of a material: None, Void)
 ;;     (base . "Pst-QuickDraw")                         ; command prefix of the default presets
 ;;     (cmd . "Pst-QuickDrawCustom")                    ; command prefix of the custom presets
 ;;     (title . "Quick Draw")                           ; name of the tool
@@ -118,8 +120,8 @@
 ;;  Clean the rows read from the presets file of the tool key. defs are the default
 ;;  presets of the App (nil when the App is not loaded: the default ids are then told
 ;;  apart by their prefix). Any other id that is not a custom id (cu-...), or a repeated
-;;  custom id, is cleared; rows without name or column 3 and repeated default ids are
-;;  dropped; then the presets without id get one:
+;;  custom id, is cleared; rows without name or column 3 (unless the tool says it may be
+;;  empty, blank3) and repeated default ids are dropped; then the presets without id get one:
 (defun Remote>>Dyl:PresetClean (key rows defs / lst)
   (foreach row rows
     (cond
@@ -133,7 +135,7 @@
     )
     (if
       (and (/= "" (nth 2 row))
-           (/= "" (nth 3 row))
+           (or (/= "" (nth 3 row)) (Remote>>Dyl:PresetProp key 'blank3))
            (or (= "" (car row)) (not (assoc (car row) lst)))
       )
       (setq lst (cons row lst))

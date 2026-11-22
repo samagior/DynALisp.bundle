@@ -71,7 +71,9 @@
 )
 
 ;;  The assembly presets of Quick Draw, picked by a preset with Assembly checked: each one its
-;;  layers (see Remote>>Dyl:MaterialLayers), edited in the Assembly Presets window (opened from
+;;  layers (see Remote>>Dyl:MaterialLayers), its Border lines (its two faces and its ends) and
+;;  its Dividing lines (between its layers; see Remote>>Dyl:MaterialLines), each replaced by
+;;  the own border of a layer, edited in the Assembly Presets window (opened from
 ;;  the Quick Draw window, see Dyl:QuickDrawAsmDialog). No commands of their own: OK gives the
 ;;  assembly selected to the Quick Draw presets selected. No default assembly: the user makes
 ;;  them (their thicknesses are in the units of the drawings):
@@ -79,7 +81,7 @@
   (cons
     '("QuickDrawAssembly"
       (file . "QuickDrawAssemblies.csv")
-      (header "Id" "Group" "Name" "Layers")
+      (header "Id" "Group" "Name" "Layers" "BorderLines" "DividingLines")
       (default . "AS-*")
       (title . "Assembly Presets")
       (doc . "Draw\\Dyl-AssemblyPresets.htm")

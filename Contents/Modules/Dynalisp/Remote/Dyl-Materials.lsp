@@ -86,6 +86,8 @@
   (cons
     '("Material"
       (file . "Materials.csv")
+      ;;  A material without pattern (None: Void) is kept:
+      (blank3 . T)
       (header "Id" "Group" "Name" "Pattern" "Scale" "ScaleMetric" "Angle" "OutlineKey" "HatchKey"
               "Annotative" "ScaleDrawing" "ScaleRef"
               ;;  Optional settings: each one an On column ("1": used) and its value (see *mt:extra*):
@@ -167,6 +169,9 @@
     ("mt-Asphalt" "Section" "Asphalt" "SITEWORK_ASPHALT" "1" "25.4" "90.0" "MED" "HATCH" "1")
     ("mt-Gravel" "Section" "Gravel" "SITEWORK_GRAVEL" "3.0" "76.2" "22.5" "FINE" "HATCH" "0")
     ("mt-CrushedStone" "Section" "Crushed Stone" "SITEWORK_GRAVEL" "3.0" "76.2" "22.5" "FINE" "HATCH" "0")
+    ;;  No pattern: no hatch (see Remote>>Dyl:MaterialHatchAt), the space of a layer of an
+    ;;  assembly (an air space, a cavity):
+    ("mt-Void" "Section" "Void" "" "1.0" "1.0" "0" "THIN" "HATCH" "0")
    )
 )
 
@@ -288,6 +293,28 @@
     ((not (vl-some '(lambda (i) (= "1" (nth i b))) '(2 4 6 8 10))) (list (car b) (cadr b)))
     ((Remote>>Dyl:ListSubst b 3 (vl-string-translate "," "." (cond ((nth 3 b)) ("")))))
   )
+)
+
+;;  The lines of an assembly (Border lines, Dividing lines: the columns 4 and 5 of an assembly
+;;  preset, see Dyl:QuickDrawAsmFix) of the text str, as the border of a layer (on key, then
+;;  the properties they override, 12 values, see Remote>>Dyl:MaterialLayers): on "1" or "0",
+;;  key, overrides; off on no key, overriding nothing, when str is empty (an older file). And
+;;  the text of the lines b, as they are written (see Remote>>Dyl:MaterialLayerBorderStr):
+(defun Remote>>Dyl:MaterialLines (str / d)
+  (setq d (Remote>>LM:str->lst (if (= 'STR (type str)) str "") "~"))
+  (cond
+    ((= 2 (length d)) (append (list (if (= "1" (car d)) "1" "0") (strcase (cadr d))) (Remote>>LM:sublst *mt:new* 12 10)))
+    ((= 12 (length d))
+     (append (list (if (= "1" (car d)) "1" "0") (strcase (cadr d)) (nth 2 d) (vl-string-translate "." "," (nth 3 d)) (nth 4 d) (strcase (nth 5 d)))
+             (Remote>>LM:sublst d 6 6)
+     )
+    )
+    ((append (list "0" "") (Remote>>LM:sublst *mt:new* 12 10)))
+  )
+)
+
+(defun Remote>>Dyl:MaterialLinesStr (b)
+  (Remote>>LM:lst->str (Remote>>Dyl:MaterialLayerBorderStr b) "~")
 )
 
 ;;  The hatch field of a layer as it is written (see Remote>>Dyl:MaterialLayers): its key k,
@@ -964,7 +991,8 @@
         nob (= "1" (nth 31 mat))
         asc (and (= "1" (nth 30 mat)) (not nob))
   )
-  (if (= "1" (nth *mt:nohatch* mat)) (setq ss nil))
+  ;;  A material without pattern (Pattern None: Void) has no hatch either:
+  (if (or (= "1" (nth *mt:nohatch* mat)) (= "" (nth 3 mat))) (setq ss nil))
   (foreach e outs
     (if (not mt:legend)
       (progn
@@ -1136,8 +1164,8 @@
 
 ;;  One line describing the material mat:
 (defun Remote>>Dyl:MaterialSummary (mat)
-  (strcat (nth 3 mat)
-          (if (= "SOLID" (nth 3 mat))
+  (strcat (if (= "" (nth 3 mat)) "No pattern" (nth 3 mat))
+          (if (member (nth 3 mat) '("SOLID" ""))
             ""
             (strcat ", scale "
                     (nth 4 mat)
@@ -1284,7 +1312,6 @@
 ;;  Error message of an invalid value, nil when it is valid:
 (defun Remote>>Dyl:MaterialDlgCheck (key val)
   (cond
-    ((and (= "" val) (= "pat" key)) "The pattern cannot be empty.")
     ((and (= "" val) (member key '("out" "hat"))) "The layer key cannot be empty.")
     ((and (= "simp" key) (not (and (distof val) (< 0 (distof val)))))
      "The scale must be a number greater than 0."
@@ -1357,12 +1384,13 @@
       (foreach nam (append '("SOLID" "ANSI31") (mapcar 'cadddr (Remote>>Dyl:MaterialDefs)) (mapcar 'cadddr pst:lst))
         (if (not (member nam mt:pats)) (setq mt:pats (cons nam mt:pats)))
       )
-      (setq mt:pats (acad_strlsort mt:pats))
+      ;;  None first (""): a material without hatch (Void):
+      (setq mt:pats (cons "" (acad_strlsort (vl-remove "" mt:pats))))
     )
   )
   (start_list "pat")
   (foreach nam mt:pats
-    (add_list (if (member nam mt:found) nam (strcat nam "   (not found on the support path)")))
+    (add_list (cond ((= "" nam) "None") ((member nam mt:found) nam) ((strcat nam "   (not found on the support path)"))))
   )
   (end_list)
   (Remote>>Dyl:MaterialDlgKeys '("hat") (mapcar '(lambda (r) (nth 8 r)) (append (Remote>>Dyl:MaterialDefs) pst:lst)))
@@ -1790,13 +1818,15 @@
   res
 )
 
-;;  SOLID ignores the scale, angle and annotative values. The drawing scale applies only to
+;;  SOLID ignores the scale, angle and annotative values; no pattern (None, a material that
+;;  is not hatched: Void) the hatch settings too. The drawing scale applies only to
 ;;  a hatch that is not annotative. A Model hatch is neither (its real size): both greyed
 ;;  out and turned off. The line under it gives the factor in the current drawing
 ;;  (the scales set for 1:1, here 1:50 -> x50):
 ;;  An optional setting has its value greyed out until its checkbox is checked:
-(defun Remote>>Dyl:MaterialDlgState (r / solid model ano on tog)
-  (setq solid (= "SOLID" (nth 3 r))
+(defun Remote>>Dyl:MaterialDlgState (r / solid none model ano on tog)
+  (setq none  (= "" (nth 3 r))
+        solid (or none (= "SOLID" (nth 3 r)))
         model (= "Model" (nth 63 r))
   )
   (if model
@@ -1819,8 +1849,9 @@
   (mode_tile "sdw" (if (or solid ano model) 1 0))
   (foreach x *mt:optional*
     (setq tog (= "1" (nth (cdr (assoc (car x) *mt:tiles*)) r)))
-    ;;  A SOLID hatch has no background, no existing phase background, no lineweight:
-    (if (and solid (member (car x) *mt:solidoff*))
+    ;;  A SOLID hatch has no background, no existing phase background, no lineweight; no
+    ;;  pattern (None), no hatch at all:
+    (if (or none (and solid (member (car x) *mt:solidoff*)))
       (foreach k x (Remote>>Dyl:MaterialDlgMode k 1))
       (progn
         (mode_tile (car x) 0)
@@ -1828,7 +1859,8 @@
       )
     )
   )
-  (Remote>>Dyl:MaterialDlgMode "hkp" 0)
+  (mode_tile "hat" (if none 1 0))
+  (Remote>>Dyl:MaterialDlgMode "hkp" (if none 1 0))
   (set_tile "sinf"
             (if on
               (strcat "This drawing is at 1:"
@@ -2103,7 +2135,7 @@
   (if (and e (setq vals (Remote>>Dyl:MaterialFromHatch (car e) r)))
     (progn
       (foreach x vals (Remote>>Dyl:PresetDlgPut (car x) (cdr x)))
-      (if (not (member (cdr (assoc 3 vals)) mt:pats)) (setq mt:pats (acad_strlsort (cons (cdr (assoc 3 vals)) mt:pats))))
+      (if (not (member (cdr (assoc 3 vals)) mt:pats)) (setq mt:pats (cons "" (acad_strlsort (vl-remove "" (cons (cdr (assoc 3 vals)) mt:pats))))))
       (princ (strcat "\nHatch copied: " (Remote>>Dyl:MaterialSummary (nth pst:idx pst:lst)) "."))
     )
   )
