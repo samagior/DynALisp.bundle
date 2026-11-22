@@ -1992,9 +1992,10 @@
                       )
 )
 
-;;  The behaviors set in the Ends and Corners windows (see Dyl:QuickDrawBandDialog), not
-;;  tiles of the Quick Draw window:
-(setq *qd:subtiles* '("men" "mex" "mea" "mco" "mml" "mlt" "mjo"))
+;;  The behaviors set in the Band Settings window (see Dyl:QuickDrawBandDialog), not tiles
+;;  of the Quick Draw window (what the hatch is aligned to is shown there all the same, hidden,
+;;  for the rules of the hatch origin: mht in wtiles of Dyl:QuickDrawDialog):
+(setq *qd:subtiles* '("mjs" "mht" "men" "mex" "mea" "mco" "mml" "mlt" "mjo" "meo" "mcn"))
 
 ;;  The layers of the assembly in a preset (see Remote>>Dyl:MaterialLayers):
 (setq *qd:layerscol* 38)
@@ -2153,7 +2154,7 @@
 ;;  Remote\Dyl-Presets.lsp): its list and its buttons are those of every preset window; its
 ;;  values are the hatch preset of the preset, its behaviors (the Behaviors box) and its border
 ;;  (the Border box), tiles *qd:tiles*, edited in the window itself. Its open buttons close it
-;;  with their code (the Ends and Corners windows, Pick..., the Assembly Layers window, the
+;;  with their code (the Band Settings window, Pick..., the Assembly Layers window, the
 ;;  Layer Keys window, the color of AutoCAD), see Dyl:QuickDrawDlgStatus; then it opens again.
 ;;  The functions below use the local variables of Remote>>Dyl:PresetDialog (pst:lst,
 ;;  pst:idx, pst:mats) and those of Dyl:QuickDrawDialog: mt:keys (the layer keys of the
@@ -2183,15 +2184,13 @@
   )
 )
 
-;;  The columns the window shows after those of a preset r (41 to 45, read only, never saved):
-;;  what its layers are (beside Assembly of layers), its own ends and corners (beside Custom
-;;  ends, Custom corners: shown while they are checked), the width of its layers (Width, for
-;;  an assembly), and the preview of its layers side by side (an assembly with layers):
-(defun Dyl:QuickDrawWinExtra (r / m)
-  (setq m (Dyl:QuickDrawMat (Dyl:QuickDrawDlgMat r) r))
+;;  The columns the window shows after those of a preset r (41 to 44, read only, never saved):
+;;  what its layers are (beside Assembly of layers), its justification, ends and corners
+;;  (beside Band settings), the width of its layers (Width, for an assembly), and the preview
+;;  of its layers side by side (an assembly with layers):
+(defun Dyl:QuickDrawWinExtra (r)
   (list (Remote>>Dyl:MaterialLayersText (nth *qd:layerscol* r))
-        (Remote>>Dyl:MaterialBandText (Remote>>Dyl:ListSubst m 61 "1") "Ends")
-        (Remote>>Dyl:MaterialBandText (Remote>>Dyl:ListSubst m 62 "1") "Corners")
+        (Remote>>Dyl:MaterialBandText (Dyl:QuickDrawMat (Dyl:QuickDrawDlgMat r) r))
         (Dyl:QuickDrawDlgLayersWidth r)
         ;;  (as an assembly even while Assembly of layers is off: the window shows it once it is on)
         (if (Remote>>Dyl:MaterialLayers (nth *qd:layerscol* r)) (Dyl:QuickDrawGallerySpec (list (Remote>>Dyl:ListSubst r 37 "1"))) "")
@@ -2215,16 +2214,12 @@
 )
 
 ;;  The lists of the window: the labels of their items (key/list) and the values they store
-;;  (key/vals): the methods, the justifications, what the hatch is aligned to, the layer keys
-;;  (marked when they are not defined), the lineweights:
+;;  (key/vals): the methods, the layer keys (marked when they are not defined), the
+;;  lineweights. What the hatch is aligned to (mht, hidden) has no list: a rule reads its key:
 (defun Dyl:QuickDrawWinVals (/ lks)
   (setq lks (Remote>>Dyl:LayerKeyRead))
   (list (cons "mth/list" (mapcar 'cadr (cons '("" "Ask when drawn") *mt:methods*)))
         (cons "mth/vals" (cons "" (mapcar 'car *mt:methods*)))
-        (cons "mjs/list" (mapcar 'cadr *mt:justify*))
-        (cons "mjs/vals" (mapcar 'car *mt:justify*))
-        (cons "mht/list" (mapcar 'cadr *mt:hatchmodes*))
-        (cons "mht/vals" (mapcar 'car *mt:hatchmodes*))
         (cons "out/list" (mapcar '(lambda (k) (if (assoc k lks) k (strcat k "   (not defined)"))) mt:keys))
         (cons "out/vals" mt:keys)
         (cons "bwt/list" (mapcar '(lambda (w) (strcat (rtos (/ (atoi w) 100.0) 2 2) " mm")) *mt:weights*))
@@ -2244,12 +2239,10 @@
   (if (and (= *mt:layerspick* sta) (setq v (Dyl:QuickDrawLayersDialog r)))
     (Remote>>Dyl:PresetDlgPut *qd:layerscol* v)
   )
-  ;;  The open buttons of the ends and of the corners: their window, its values given to every
-  ;;  preset selected on OK:
-  (foreach x (list (cons *mt:endspick* "Ends") (cons *mt:cornerspick* "Corners"))
-    (if (and (= (car x) sta) (setq v (Dyl:QuickDrawBandDialog (cdr x) r)))
-      (foreach p v (Remote>>Dyl:PresetDlgPut (cdr (assoc (car p) *qd:behaviors*)) (cdr p)))
-    )
+  ;;  The open button of Band settings: its window, its values given to every preset selected
+  ;;  on OK:
+  (if (and (= *mt:bandpick* sta) (setq v (Dyl:QuickDrawBandDialog r)))
+    (foreach p v (Remote>>Dyl:PresetDlgPut (cdr (assoc (car p) *qd:behaviors*)) (cdr p)))
   )
   (if (and (= *mt:colorpick* sta) (setq i (cdr (assoc "bcv" *qd:tiles*)) v (Remote>>Dyl:MaterialColorPick (nth i r))))
     (Remote>>Dyl:PresetDlgPut i v)
@@ -2273,10 +2266,10 @@
           '(upper "out" "blt")
           '(window . "Dyl-QuickDraw.xaml")
           ;;  Has a border (No border, inverted), and the columns of Dyl:QuickDrawWinExtra:
-          '(wtiles . "hbr:28:inv,mai:41,mei:42,mci:43,mwl:44")
+          '(wtiles . "hbr:28:inv,mai:41,mei:42,mwl:43,mht:36")
           '(extra . Dyl:QuickDrawWinExtra)
           ;;  The preview of an assembly: its layers side by side:
-          '(spec 45 . "mas,mth=Linear|Offset|")
+          '(spec 44 . "mas,mth=Linear|Offset|")
           '(mspec . Dyl:QuickDrawWinMatSpec)
           ;;  The text put in the new alias box: PL- for a preset drawn with a polyline, QD- for
           ;;  the others (see CONVENTIONS.md, Preset aliases):
@@ -2291,14 +2284,15 @@
   )
 )
 
-;;-------------------------=={ Ends and Corners windows }==------------------------;;
+;;-------------------------=={ Band Settings window }==------------------------;;
 
-;;  The open buttons of Custom ends and Custom corners (Behaviors box) open the Ends or the
-;;  Corners window (Res\Dyl-QuickDrawEnds.xaml, Res\Dyl-QuickDrawCorners.xaml, shown by
-;;  DynALisp.Windows.dll) on the preset shown: the tiles of *mt:bandwindows* (kind title
-;;  tiles...), their values those of the material of the preset with its behaviors. The window
-;;  greys out the values the ends or the corners picked do not use and checks the numbers; OK
-;;  gives them to every preset selected (see Dyl:QuickDrawDlgStatus).
+;;  The open button of Band settings (Behaviors box) opens the Band Settings window
+;;  (Res\Dyl-QuickDrawBandSettings.xaml, shown by DynALisp.Windows.dll) on the preset shown:
+;;  the tiles of *mt:bandwindows*, their values those of the material of the preset with its
+;;  behaviors, its ends and corners those it draws with (the defaults while it has none of its
+;;  own, see Remote>>Dyl:MaterialBandOwn). The window greys out the values what is picked does
+;;  not use, checks the numbers and sketches the ends and the corners; OK gives them to every
+;;  preset selected, with their own ends and corners on (see Dyl:QuickDrawDlgStatus).
 
 ;;  The values of the window for the tiles of a band window, the material m: a popup its
 ;;  labels, the keys of its items and the index of the one picked, an edit box its text:
@@ -2319,13 +2313,16 @@
   res
 )
 
-;;  The Ends ("Ends") or Corners ("Corners") window on the preset r. Returns its values
-;;  ((key . value) ...) on OK, nil on Cancel (or when the window cannot be shown). The values
-;;  are checked again (see Remote>>Dyl:MaterialDlgCheck): one not valid is said, nothing given:
-(defun Dyl:QuickDrawBandDialog (kind r / tiles res vals msg)
-  (setq tiles (cddr (assoc kind *mt:bandwindows*))
-        res   (Dyl:WinShow (strcat "Dyl-QuickDraw" kind ".xaml")
-                           (Dyl:QuickDrawBandVals tiles (Dyl:QuickDrawMat (Dyl:QuickDrawDlgMat r) r))
+;;  The Band Settings window on the preset r. Returns its values ((key . value) ...) on OK,
+;;  with the own ends and corners of the preset on (meo, mcn), nil on Cancel (or when the
+;;  window cannot be shown). The method of the preset (mth, no control: the justification is
+;;  for Linear) is given with them. The values are checked again (see
+;;  Remote>>Dyl:MaterialDlgCheck): one not valid is said, nothing given:
+(defun Dyl:QuickDrawBandDialog (r / tiles m res vals msg)
+  (setq tiles (cddr (assoc "BandSettings" *mt:bandwindows*))
+        m     (Remote>>Dyl:MaterialBandOwn (Dyl:QuickDrawMat (Dyl:QuickDrawDlgMat r) r))
+        res   (Dyl:WinShow "Dyl-QuickDrawBandSettings.xaml"
+                           (cons (cons "mth" (cond ((nth 4 r)) (""))) (Dyl:QuickDrawBandVals tiles m))
               )
   )
   (if (= 1 (car res))
@@ -2342,7 +2339,7 @@
                  )
       )
       (foreach v vals (if (not msg) (setq msg (Remote>>Dyl:MaterialDlgCheck (car v) (cdr v)))))
-      (if msg (progn (alert msg) nil) vals)
+      (if msg (progn (alert msg) nil) (append vals '(("meo" . "1") ("mcn" . "1"))))
     )
   )
 )

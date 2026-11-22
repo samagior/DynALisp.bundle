@@ -1,8 +1,0 @@
-# Sample values of the Ends window of Quick Draw (Dyl:QuickDrawBandDialog in Dyl-QuickDraw.lsp,
-# Dyl:QuickDrawBandVals), as the Lisp gives them, for a preset whose bands end Extended:
-# key=value, key/list=item|item, key/vals=value|value.
-men/list=Ask when drawn|Square|Open|Extended|Round|Angled
-men/vals=Ask|Square|Open|Extended|Round|Angled
-men=3
-mex=
-mea=45

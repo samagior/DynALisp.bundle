@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Ends and Corners</title>
+    <title>Band Settings</title>
     <link rel="stylesheet" href="../../../../Resources/docs.css">
 </head>
 
@@ -15,13 +15,13 @@
     </div>
 
     <div id="content">
-        <h1>Ends and Corners</h1>
+        <h1>Band Settings</h1>
 
 <div class="programs">
 <table>
 <tr class="alt">
 <td>Opened by</td>
-<td>The open buttons of <em>Custom ends</em> and <em>Custom corners</em>, in the Behaviors box of the <a href="Dyl-QuickDraw.htm">Quick Draw</a> window</td>
+<td>The open button of <em>Band settings</em>, in the Behaviors box of the <a href="Dyl-QuickDraw.htm">Quick Draw</a> window</td>
 </tr>
 <tr>
 <td>Requires</td>
@@ -34,32 +34,26 @@
 </table>
 </div>
 <h2>Program Description</h2>
-<p>Choose how the bands of a Quick Draw preset drawn with Linear or Offset end and turn their corners: square, open, extended, round or angled ends; mitered, beveled, round or lapped corners, their joints interrupted or not.</p>
+<p>Set how the bands of a Quick Draw preset drawn with Linear or Offset are made: where the line is in the band, what the hatch is aligned to, how the bands end and how they turn their corners. A sketch under the ends and under the corners shows what is picked, and changes with the justification, the hatch, the lap and the joints.</p>
 <!-- picture: images/Dyl-QuickDrawBandSettings-use.gif -->
 <h2>How To Use</h2>
 <div class="spacedbullets">
 <ol>
-<li>In the <a href="Dyl-QuickDraw.htm">Quick Draw</a> window, pick the preset and check <em>Custom ends</em> or <em>Custom corners</em> in its Behaviors box.</li>
-<li>Click the square open button beside it: the Ends or the Corners window opens.</li>
-<li>Pick the settings, then OK. Unchecked again, the bands end square with mitered corners; the settings are kept for when it is checked.</li>
-<li>While drawing, the <em>Ends</em> and <em>Corners</em> options of the prompts change them for the next bands. The sketches of each setting are in <a href="Dyl-QuickDraw.htm#endscorners">Quick Draw &ndash; Ends and Corners</a>.</li>
+<li>In the <a href="Dyl-QuickDraw.htm">Quick Draw</a> window, pick the preset and click the square open button of <em>Band settings</em>, in its Behaviors box: the Band Settings window opens.</li>
+<li>Pick the settings, then OK. The text beside <em>Band settings</em> sums them up (<em>Center, Extended, Lapped</em>).</li>
+<li>While drawing, the <em>Ends</em> and <em>Corners</em> options of the prompts (and <em>Justification</em> with Linear) change them for the next bands. The sketches of each setting are in <a href="Dyl-QuickDraw.htm#endscorners">Quick Draw &ndash; Ends and Corners</a>.</li>
 </ol>
 </div>
-<h2>Ends Window</h2>
+<h2>Band Settings Window</h2>
 <!-- picture: images/Dyl-QuickDrawBandSettings-window.png -->
 <div class="programs commands wide">
 <table>
 <tr><th>Setting</th><th>Use</th></tr>
-<tr><td>Ends</td><td>How an open band ends: <em>Ask when drawn</em>, <em>Square</em> (the default), <em>Open</em> (no line across the end), <em>Extended</em>, <em>Round</em> or <em>Angled</em>. See <a href="Dyl-QuickDraw.htm#endscorners">Ends and Corners</a>.</td></tr>
+<tr><td>Justification</td><td>Linear only: where the line drawn is in the band. <em>Ask when drawn</em>, <em>Center</em> or <em>Edge</em> (the line is a border of the band, the band on the side picked once the line is drawn, as with Offset). A preset of an older version on <em>Left border</em> or <em>Right border</em> is on <em>Edge</em>.</td></tr>
+<tr><td>Hatch aligned to</td><td><em>Line</em> (each segment hatched along it, the default) or <em>Drawing origin</em> (the angle of the hatch preset and the origin of the drawing, the pattern continuous across the corners).</td></tr>
+<tr><td>Ends</td><td>How an open band ends: <em>Ask when drawn</em>, <em>Square</em> (the default), <em>Open</em> (no line across the end), <em>Extended</em>, <em>Round</em> or <em>Angled</em>.</td></tr>
 <tr><td>Extension</td><td>Extended: the distance past each end, in drawing units; empty: half the width of the band.</td></tr>
 <tr><td>Angle</td><td>Angled: the angle of the cut from square, -80 to 80 degrees (45 by default).</td></tr>
-</table>
-</div>
-<h2>Corners Window</h2>
-<!-- picture: images/Dyl-QuickDrawBandSettings-window.png -->
-<div class="programs commands wide">
-<table>
-<tr><th>Setting</th><th>Use</th></tr>
 <tr><td>Corners</td><td>How two segments meet: <em>Ask when drawn</em>, <em>Mitered</em> (the default), <em>Beveled</em>, <em>Round</em> or <em>Lapped</em>.</td></tr>
 <tr><td>Miter limit</td><td>Mitered: a corner whose miter is longer than this times the width is beveled (4 by default, 1 or more).</td></tr>
 <tr><td>Lap</td><td>Lapped: the segment that runs through each corner, <em>First segment</em> or <em>Next segment</em>; the other one stops against it.</td></tr>
@@ -68,10 +62,10 @@
 </div>
 <div class="spacedbullets">
 <ul>
-<li>Under the list, a <strong>sketch</strong> shows the ends or the corners picked, as in <a href="Dyl-QuickDraw.htm#endscorners">Ends and Corners</a>: the band, its hatch, the line drawn (dashed) and its points. The Corners sketch also shows the segment that runs through a lapped corner, and the joint, drawn or dashed when <em>Uninterrupted</em>. With <em>Ask when drawn</em>, it says so.</li>
-<li>A value is greyed out when the ends or corners picked do not use it: the extension for <em>Extended</em>, the end angle for <em>Angled</em>, the miter limit for <em>Mitered</em>, <em>Lap</em> for <em>Lapped</em> (all of them with <em>Ask when drawn</em>: the one picked when drawn uses them).</li>
-<li><strong>OK</strong> gives the values to every preset selected in the Quick Draw window (saved with them by <em>Draw</em> or <em>Save</em>), once they are valid (a message under the box says what to fix, and OK waits). <strong>Cancel</strong> discards the changes, <strong>Open Docs</strong> opens this page.</li>
-<li>The ends and corners can also be changed for one band when it is drawn, at the first prompt of Linear or Offset (<span class="fixw">Ends</span>, <span class="fixw">Corners</span>).</li>
+<li>Under the ends and under the corners, a <strong>sketch</strong> shows what is picked, as in <a href="Dyl-QuickDraw.htm#endscorners">Ends and Corners</a>: the band, its hatch, the line drawn (dashed) and its points. The line is in the middle of the band with <em>Center</em>, on a border with <em>Edge</em> or with Offset. The corners also show the segment that runs through a lapped corner, the hatch of the next segment (turned along it, or the same as the first one with <em>Drawing origin</em>) and the joint: drawn, dashed when <em>Uninterrupted</em>, gone when <em>Uninterrupted</em> from the drawing origin. With <em>Ask when drawn</em>, the sketch says so.</li>
+<li>A value is greyed out when what is picked does not use it: <em>Justification</em> unless the method of the preset is Linear (or asked when drawn), the extension for <em>Extended</em>, the end angle for <em>Angled</em>, the miter limit for <em>Mitered</em>, <em>Lap</em> for <em>Lapped</em> (all of them with <em>Ask when drawn</em>: the one picked when drawn uses them).</li>
+<li><strong>OK</strong> gives the values to every preset selected in the Quick Draw window (saved with them by <em>Draw</em> or <em>Save</em>), once they are valid (a message under the boxes says what to fix, and OK waits). A preset that drew with the defaults keeps them until it is set here. <strong>Cancel</strong> discards the changes, <strong>Open Docs</strong> opens this page.</li>
+<li>The justification, the ends and the corners can also be changed for one band when it is drawn, at the first prompt of Linear or Offset (<span class="fixw">Ends</span>, <span class="fixw">Corners</span>, and <span class="fixw">Justification</span> with Linear).</li>
 </ul>
 </div>
 <p><a href="Dyl-QuickDraw.htm">&larr; Quick Draw</a> &nbsp; <a href="../index.htm">&larr; Dynalisp module docs index</a></p>

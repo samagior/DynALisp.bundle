@@ -21,11 +21,12 @@
   in the window itself by the preset editor (Installer\Windows\Engine\Presets.cs: the list,
   New, Copy, Delete, the resets, the aliases), the Lisp saves them on Draw (1) and Save (2).
   The controls of the values are named as the tiles of the presets (pst/tiles, the column
-  of each one in a preset, see *qd:tiles*); mai, mei, mci and mwl show the columns the Lisp
-  adds for the window (the layers of the assembly, the ends and the corners, the width of
-  the layers). The open buttons close the window with the code of what they open, as the
-  DCL window did: 3 Ends, 4 Pick (the hatch origin), 5 Assembly Layers, 6 Layer Keys,
-  7 Corners, 8 Preset Groups, 9 Hatch Presets, 11 the color of AutoCAD; the Lisp opens the
+  of each one in a preset, see *qd:tiles*); mai, mei and mwl show the columns the Lisp adds
+  for the window (the layers of the assembly, the justification, ends and corners of the
+  bands, the width of the layers), mht (hidden) what the hatch is aligned to. The open
+  buttons close the window with the code of what they open, as the DCL window did: 3 Band
+  Settings, 4 Pick (the hatch origin), 5 Assembly Layers, 6 Layer Keys, 8 Preset Groups,
+  9 Hatch Presets, 11 the color of AutoCAD; the Lisp opens the
   window again once it is done. What each control greys out, as Remote>>Dyl:MaterialDlgBehaviors
   and Remote>>Dyl:MaterialDlgBorderState did: its dyl:Win.EnabledBy (the method, an
   assembly, a solid hatch: pst/solid, Has a border).
@@ -206,34 +207,18 @@
               </Grid>
               <TextBlock Style="{DynamicResource Dyl.Label}" Text="Width"/>
             </DockPanel>
-            <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|">
-              <ComboBox x:Name="mjs" DockPanel.Dock="Right" Width="150"/>
-              <TextBlock Style="{DynamicResource Dyl.Label}" Text="Justification"/>
-            </DockPanel>
-            <!-- Off: square ends, mitered corners; on: those of the Ends / Corners window: -->
+            <!-- The justification, the hatch along the line, the ends and the corners: the Band
+                 Settings window, its summary beside its open button: -->
             <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|Offset|">
-              <Grid DockPanel.Dock="Right" Width="120">
-                <TextBlock x:Name="mei" VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}" TextTrimming="CharacterEllipsis" dyl:Win.VisibleBy="meo"/>
-                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}" Text="Square" dyl:Win.VisibleBy="!meo"/>
-              </Grid>
-              <dyl:OpenButton x:Name="mee" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="3" ToolTip="Ends"
-                              dyl:Win.EnabledBy="meo"/>
-              <CheckBox x:Name="meo" Content="Custom ends"/>
-            </DockPanel>
-            <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|Offset|">
-              <Grid DockPanel.Dock="Right" Width="120">
-                <TextBlock x:Name="mci" VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}" TextTrimming="CharacterEllipsis" dyl:Win.VisibleBy="mcn"/>
-                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}" Text="Mitered" dyl:Win.VisibleBy="!mcn"/>
-              </Grid>
-              <dyl:OpenButton x:Name="mce" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="7" ToolTip="Corners"
-                              dyl:Win.EnabledBy="mcn"/>
-              <CheckBox x:Name="mcn" Content="Custom corners"/>
+              <TextBlock x:Name="mei" DockPanel.Dock="Right" Width="150" VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}"
+                         TextTrimming="CharacterEllipsis"/>
+              <dyl:OpenButton x:Name="mbe" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="3" ToolTip="Band Settings"/>
+              <TextBlock Style="{DynamicResource Dyl.Label}" Text="Band settings"/>
             </DockPanel>
             <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Hatch"/>
-            <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|Offset|">
-              <ComboBox x:Name="mht" DockPanel.Dock="Right" Width="150"/>
-              <TextBlock Style="{DynamicResource Dyl.Label}" Text="Align to"/>
-            </DockPanel>
+            <!-- What the hatch is aligned to, set in the Band Settings window: hidden, for the
+                 rules of the origin (mht!=Origin): -->
+            <TextBlock x:Name="mht" Visibility="Collapsed"/>
             <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas,!pst/solid,mth=Linear|Offset|">
               <TextBox x:Name="mfc" DockPanel.Dock="Right" Width="90" dyl:Win.EnabledBy="msw"
                        dyl:Win.Check="positive" dyl:Win.CheckMessage="The width factor must be a number greater than 0."/>

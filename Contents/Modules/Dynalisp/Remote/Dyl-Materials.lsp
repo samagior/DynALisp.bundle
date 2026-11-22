@@ -1392,8 +1392,8 @@
                            ;;  The assembly of Linear (on/off; its layers, column 60, are edited
                            ;;  in the Assembly Layers window, see *mt:layerspick*):
                            ("mas" . 59)
-                           ;;  Its own ends and corners (their values: the Ends and Corners
-                           ;;  windows, see *mt:endspick*):
+                           ;;  Its own ends and corners (their values: the Band Settings
+                           ;;  window, see *mt:bandpick*):
                            ("meo" . 61) ("mcn" . 62)
                           )
 )
@@ -1406,25 +1406,25 @@
 ;;  button of the assembly (the Assembly Layers window, see Dyl:QuickDrawLayersDialog):
 (setq *mt:originpick* 4
       *mt:layerspick* 5
-      ;;  The open buttons of the ends and of the corners: the Ends and Corners windows (see
+      ;;  The open button of Band settings: the Band Settings window (see
       ;;  Dyl:QuickDrawBandDialog):
-      *mt:endspick* 3
-      *mt:cornerspick* 7
+      *mt:bandpick* 3
       ;;  The open button of the color of the border: the color window of AutoCAD (see
       ;;  Remote>>Dyl:MaterialColorPick):
       *mt:colorpick* 11
 )
 
-;;  The tiles of the Ends and of the Corners windows (Dyl:QuickDrawBandDialog), not tiles of
-;;  the Behaviors box: kind -> (title (key label kind) ...), kind of a tile: list (a popup of
-;;  the list), edit (an edit box):
+;;  The tiles of the Band Settings window (Dyl:QuickDrawBandDialog), not tiles of the
+;;  Behaviors box: kind -> (title (key label kind) ...), kind of a tile: list (a popup of the
+;;  list), edit (an edit box). The justification, what the hatch is aligned to, the ends and
+;;  the corners: what the sketches of the window show:
 (setq *mt:bandwindows*
-  (list (list "Ends" "Ends"
+  (list (list "BandSettings" "Band Settings"
+              (list "mjs" "Justification:" *mt:justify*)
+              (list "mht" "Hatch aligned to:" *mt:hatchmodes*)
               (list "men" "Ends:" *mt:ends*)
               (list "mex" "Extension:" 'edit)
               (list "mea" "Angle:" 'edit)
-        )
-        (list "Corners" "Corners"
               (list "mco" "Corners:" *mt:corners*)
               (list "mml" "Miter limit:" 'edit)
               (list "mlt" "Lap:" *mt:laps*)
@@ -1433,28 +1433,32 @@
   )
 )
 
-;;  A summary of the ends (61) or corners (62) of the material r, beside their checkbox:
-(defun Remote>>Dyl:MaterialBandText (r kind / on)
-  (setq on (= "1" (nth (if (= "Ends" kind) 61 62) r)))
-  (cond
-    ((= "Ends" kind)
-     (if on
-       (strcat (cond ((cadr (assoc (nth 51 r) *mt:ends*))) ((nth 51 r)))
-               (cond
-                 ((= "Extended" (nth 51 r)) (if (= "" (nth 52 r)) ", half width" (strcat ", " (nth 52 r))))
-                 ((= "Angled" (nth 51 r)) (strcat ", " (nth 53 r) " deg"))
-                 ("")
-               )
-       )
-       "Square"
-     )
+;;  The material r with the ends and corners its bands are drawn with: its own when they are
+;;  checked (61, 62), else the defaults (Square, Mitered, as a new one: see *mt:extra*):
+(defun Remote>>Dyl:MaterialBandOwn (r)
+  (if (/= "1" (nth 61 r))
+    (setq r (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst r 51 "Square") 52 "") 53 "45"))
+  )
+  (if (/= "1" (nth 62 r))
+    (setq r (Remote>>Dyl:ListSubst
+              (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst r 54 "Mitered") 55 "4") 56 "First")
+              57
+              "Interrupted"
+            )
     )
-    (on
-     (strcat (cond ((cadr (assoc (nth 54 r) *mt:corners*))) ((nth 54 r)))
-             (if (= "Uninterrupted" (nth 57 r)) ", one border" "")
-     )
-    )
-    ("Mitered")
+  )
+  r
+)
+
+;;  A summary of the bands of the material r, beside Band settings: its justification (not
+;;  with Offset, whose line is always a border), its ends and its corners, by their keys
+;;  (Center, Extended, Lapped):
+(defun Remote>>Dyl:MaterialBandText (r)
+  (setq r (Remote>>Dyl:MaterialBandOwn r))
+  (strcat (if (= "Offset" (nth 33 r)) "" (strcat (cond ((/= "" (nth 35 r)) (nth 35 r)) ("Center")) ", "))
+          (nth 51 r)
+          ", "
+          (nth 54 r)
   )
 )
 

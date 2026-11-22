@@ -41,8 +41,8 @@
               "Ends" "EndExtension" "EndAngle" "Corners" "MiterLimit" "LapThrough" "Joints" "HatchFollows"
               ;;  Linear: the assembly, a band of several layers (see Remote>>Dyl:MaterialLayers):
               "AssemblyOn" "Assembly"
-              ;;  Linear and Offset: their own ends / corners (off: the defaults), set in the
-              ;;  Ends and Corners windows:
+              ;;  Linear and Offset: their own ends / corners (off: the defaults), turned on
+              ;;  by the Band Settings window:
               "EndsOn" "CornersOn"
       )
       (default . "QD-*")
