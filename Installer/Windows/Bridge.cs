@@ -145,6 +145,9 @@ namespace DynALisp.Windows
                     s.Lists[key] = p.Skip(1).Select(Lisp.Str).ToList();
                 else if (p.Count > 1 && p[1] is Lisp.List)
                     s.Rows[key] = p.Skip(1).Select(r => r is Lisp.List l ? l.Select(Lisp.Str).ToArray() : new[] { Lisp.Str(r) }).ToList();
+                // a table without rows (no presets yet, no layers): a table all the same
+                else if (p.Count == 1 && (key.EndsWith("/rows", StringComparison.Ordinal) || key.EndsWith("/defs", StringComparison.Ordinal) || key.EndsWith("/als", StringComparison.Ordinal)))
+                    s.Rows[key] = new List<string[]>();
                 else if (key.EndsWith("/off", StringComparison.Ordinal))
                 {
                     if (p.Count > 1 && Lisp.True(p[1])) s.Off.Add(key.Substring(0, key.Length - 4));

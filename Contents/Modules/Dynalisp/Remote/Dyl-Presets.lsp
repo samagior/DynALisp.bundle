@@ -1516,7 +1516,8 @@
   (setq rows (cdr (assoc "pst/rows" (cdr res)))
         n    (Remote>>Dyl:PresetWinCols)
   )
-  (if rows
+  ;;  (the table given back, even without rows: every preset deleted)
+  (if (assoc "pst/rows" (cdr res))
     (setq pst:lst (mapcar '(lambda (r) (Remote>>Dyl:PresetWinCut (cond ((Remote>>Dyl:PresetDlgCall 'wget (list r))) (r)) n)) rows)
           ;;  (the aliases only from a window that has them: a tool without commands keeps
           ;;  every alias as it was)
