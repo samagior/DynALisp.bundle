@@ -187,6 +187,12 @@
     ("hp-Iron" "Section" "Iron" "ANSI31" "0.5" "0.5" "0" "MED" "HATCH" "1")
     ("hp-Steel" "Section" "Steel" "ANSI32" "0.5" "0.5" "0" "MED" "HATCH" "1")
     ("hp-Bronze" "Section" "Bronze" "ANSI33" "0.5" "0.5" "0" "MED" "HATCH" "1")
+    ;;  A Model hatch of the brick in elevation (a course of 2-2/3 in), the Surface of Brick:
+    ("hp-ModularBrick" "Elevation" "Modular Brick" "BRICK" "10.6667" "" "0" "THIN" "HATCH"
+     "0" "0" "1" "0" "7" "0" "CONTINUOUS" "0" "1" "0" "25" "0" "50" "0" "7" "0" "254" "0"
+     "13" "0" "50" "0" "0" "0" "" "" "Center" "" "0" "1" "0" "0" "0" "253" "" "0" "" "0" "0"
+     "CONTINUOUS" "0" "1" "Square" "" "45" "Mitered" "4" "First" "Interrupted" "Line" "0" ""
+     "" "" "Model")
     ("hp-Lead" "Section" "Lead" "ANSI37" "0.5" "0.5" "0" "MED" "HATCH" "1")
     ("hp-Aluminium" "Section" "Aluminium" "ANSI38" "0.5" "0.5" "0" "MED" "HATCH" "1")
     ("hp-Plywood" "Section" "Plywood" "WOOD_GLU-LAMBEAM" "1.0" "1.0" "0" "MED" "HATCH" "1")
@@ -211,7 +217,8 @@
 )
 
 ;;  Default materials, the same way (see Remote>>Dyl:MaterialRowDefs): their Cut hatch preset,
-;;  no Surface yet (the same as Cut), their data only from a source (see below):
+;;  their Surface when it is not the same (Brick: Modular Brick), their data only from a source
+;;  (see below):
 (setq *mt:defaults*
   '(("mt-Demolition" "Phase" "Demolition" "hp-Demolition" "" "" "" "")
     ("mt-NotInContract" "Phase" "Not In Contract" "hp-NotInContract" "" "" "" "")
@@ -219,7 +226,7 @@
     ("mt-Concrete" "Section" "Concrete" "hp-Concrete" "" "2.5" "2400" "")
     ("mt-LightweightConcrete" "Section" "Lightweight Concrete" "hp-LightweightConcrete" "" "0.7692" "1600" "")
     ("mt-Mortar" "Section" "Mortar" "hp-Mortar" "" "1.111" "" "")
-    ("mt-Brick" "Section" "Brick" "hp-Brick" "" "1.286" "2400" "")
+    ("mt-Brick" "Section" "Brick" "hp-Brick" "hp-ModularBrick" "1.286" "2400" "")
     ("mt-Stone" "Section" "Stone" "hp-Stone" "" "2.5" "2240" "")
     ("mt-CMU" "Section" "CMU" "hp-CMU" "" "" "" "")
     ("mt-Firebrick" "Section" "Firebrick" "hp-Firebrick" "" "" "" "")
@@ -1096,13 +1103,31 @@
   (if (/= "" (nth 3 m)) (assoc (nth 3 m) hps))
 )
 
-;;  The material row m joined to its hatch preset in hps: the row of 64 columns every tool draws
-;;  with (its id, group and name, then the columns of its hatch preset, see the header of the
-;;  HatchPreset spec above); without a hatch preset, a material without hatch (*hp:none*):
-(defun Remote>>Dyl:MaterialJoin (m hps)
-  (append (list (car m) (cadr m) (caddr m))
-          (cdddr (cond ((Remote>>Dyl:MaterialHatchPreset m hps)) (*hp:none*)))
+;;  The hatch preset of the material row m in hps for the view v of a preset ("Surface": its
+;;  Surface, the hatch of its elevation; any other: its Cut). A Surface left empty is the same
+;;  as Cut; nil when it has none or it no longer exists:
+(defun Remote>>Dyl:MaterialHatchPresetAs (m hps v)
+  (if (and (= "SURFACE" (strcase (cond (v) (""))))
+           (/= "" (cond ((nth 4 m)) ("")))
+      )
+    (assoc (nth 4 m) hps)
+    (Remote>>Dyl:MaterialHatchPreset m hps)
   )
+)
+
+;;  The material row m joined to its hatch preset in hps for the view v ("Cut" or "Surface",
+;;  see Remote>>Dyl:MaterialHatchPresetAs): the row of 64 columns every tool draws with (its
+;;  id, group and name, then the columns of its hatch preset, see the header of the
+;;  HatchPreset spec above); without a hatch preset, a material without hatch (*hp:none*):
+(defun Remote>>Dyl:MaterialJoinAs (m hps v)
+  (append (list (car m) (cadr m) (caddr m))
+          (cdddr (cond ((Remote>>Dyl:MaterialHatchPresetAs m hps v)) (*hp:none*)))
+  )
+)
+
+;;  The material row m joined to its Cut hatch preset (see Remote>>Dyl:MaterialJoinAs):
+(defun Remote>>Dyl:MaterialJoin (m hps)
+  (Remote>>Dyl:MaterialJoinAs m hps "Cut")
 )
 
 ;;  T when the user copy of the materials file is a file of DynALisp 1.1 and older (a hatch in
@@ -1217,20 +1242,66 @@
   (car (Remote>>Dyl:MaterialBoth))
 )
 
-;;  Read the materials file, each material joined to its hatch preset (see
-;;  Remote>>Dyl:MaterialJoin). Default materials missing from the file are added with their
-;;  default values:
-(defun Remote>>Dyl:MaterialRead (/ b)
+;;  Read the materials file, each material joined to its hatch preset for the view v ("Cut" or
+;;  "Surface", see Remote>>Dyl:MaterialJoinAs). Default materials missing from the file are
+;;  added with their default values:
+(defun Remote>>Dyl:MaterialReadAs (v / b)
   (setq b (Remote>>Dyl:MaterialBoth))
-  (mapcar '(lambda (m) (Remote>>Dyl:MaterialJoin m (car b))) (cadr b))
+  (mapcar '(lambda (m) (Remote>>Dyl:MaterialJoinAs m (car b) v)) (cadr b))
 )
 
-;;  Return the material id joined to its hatch preset, with the values edited by the user (nil
-;;  when it no longer exists):
-(defun Remote>>Dyl:MaterialGet (id / b m)
+;;  The same, joined to their Cut hatch preset:
+(defun Remote>>Dyl:MaterialRead ()
+  (Remote>>Dyl:MaterialReadAs "Cut")
+)
+
+;;  The materials joined to their Cut and to their Surface hatch presets, the files read once:
+;;  (cut surface), the same materials in the same order:
+(defun Remote>>Dyl:MaterialReadViews (/ b)
+  (setq b (Remote>>Dyl:MaterialBoth))
+  (list (mapcar '(lambda (m) (Remote>>Dyl:MaterialJoinAs m (car b) "Cut")) (cadr b))
+        (mapcar '(lambda (m) (Remote>>Dyl:MaterialJoinAs m (car b) "Surface")) (cadr b))
+  )
+)
+
+;;  Return the material id joined to its hatch preset for the view v ("Cut" or "Surface"), with
+;;  the values edited by the user (nil when it no longer exists):
+(defun Remote>>Dyl:MaterialGetAs (id v / b m)
   (setq b (Remote>>Dyl:MaterialBoth))
   (if (setq m (cond ((assoc id (cadr b))) ((assoc id (Remote>>Dyl:MaterialRowDefs)))))
-    (Remote>>Dyl:MaterialJoin m (car b))
+    (Remote>>Dyl:MaterialJoinAs m (car b) v)
+  )
+)
+
+;;  The same, joined to its Cut hatch preset:
+(defun Remote>>Dyl:MaterialGet (id)
+  (Remote>>Dyl:MaterialGetAs id "Cut")
+)
+
+;;  The view of a preset, the hatch preset of its material it is drawn with: "Cut" (in
+;;  section) or "Surface" (in elevation), the value v of its column (any case); a preset of
+;;  an older file, without it (""), "Surface" when its group grp is Elevation, else "Cut":
+(defun Remote>>Dyl:MaterialView (v grp)
+  (setq v (strcase (vl-string-trim " " (cond (v) ("")))))
+  (cond
+    ((= "SURFACE" v) "Surface")
+    ((= "CUT" v) "Cut")
+    ((= "ELEVATION" (strcase (cond (grp) ("")))) "Surface")
+    ("Cut")
+  )
+)
+
+;;  Materials renamed or folded into another one: (old-id new-id view). A preset whose material
+;;  is old-id and no longer exists gets new-id and that view (see Remote>>Dyl:MaterialMoved):
+;;  the Modular Brick material of DynALisp 1.1 is the Surface of Brick:
+(setq *mt:moved* '(("cu-ModularBrick" "mt-Brick" "Surface")))
+
+;;  The material and the view of a preset (its material id and its view v) after
+;;  *mt:moved*: (id view), the same when its material still exists:
+(defun Remote>>Dyl:MaterialMoved (id v / x)
+  (if (and (setq x (assoc id *mt:moved*)) (not (Remote>>Dyl:MaterialGet id)))
+    (cdr x)
+    (list id v)
   )
 )
 

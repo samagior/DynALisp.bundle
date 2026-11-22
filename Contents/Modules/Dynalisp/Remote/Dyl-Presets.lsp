@@ -291,6 +291,9 @@
 ;;    (matnoun . "hatch preset")    ; what those rows are called in the messages of the window
 ;;    (matfree . T)                 ; the window lists every one of them, never only those of
 ;;                                  ; the group of the preset (see pst/matfree in Presets.cs)
+;;    (mview . 54)                  ; index of the view of a preset: "Surface", its material is
+;;                                  ; joined to its Surface hatch preset (pst:smats), else to its
+;;                                  ; Cut (pst:mats), see Remote>>Dyl:PresetDlgMatOf
 ;;    (window . "Dyl-QuickDraw.xaml") ; shown in this WPF window (a .xaml of the Res folder of
 ;;                                  ; the Dynalisp module), not in a DCL dialog: see Window below
 ;;
@@ -318,7 +321,8 @@
 ;;  presets as read, see Remote>>Dyl:PresetDlgChanged), pst:idx (index of the preset shown),
 ;;  pst:sel (indexes of the presets selected, pst:idx included: several with (multi . T)), pst:dcl (dialog id), pst:grps (groups of the Group popup),
 ;;  pst:mats and pst:matids (materials, ids of the Material popup: the materials of the
-;;  group of the preset shown), and the variables of the
+;;  group of the preset shown), pst:smats (with (mview . i), the same materials joined to their
+;;  Surface hatch preset), and the variables of the
 ;;  aliases panel (see Aliases below).
 
 ;;  Call the function prop of the App part of the dialog (nil when it has none):
@@ -402,10 +406,35 @@
   (if (assoc 'mats pst:dlg) (Remote>>Dyl:PresetDlgCall 'mats nil) (Remote>>Dyl:MaterialRead))
 )
 
+;;  Read the materials into pst:mats, joined to their Cut hatch preset, and with (mview . i)
+;;  into pst:smats too, joined to their Surface (see Remote>>Dyl:MaterialReadViews; nil
+;;  without it), the files read once:
+(defun Remote>>Dyl:PresetDlgMatsRead (/ v)
+  (if (and (cdr (assoc 'mview pst:dlg)) (not (assoc 'mats pst:dlg)))
+    (setq v        (Remote>>Dyl:MaterialReadViews)
+          pst:mats (car v)
+          pst:smats (cadr v)
+    )
+    (setq pst:mats  (Remote>>Dyl:PresetDlgMats)
+          pst:smats nil
+    )
+  )
+)
+
+;;  The material of the preset r as it is drawn: joined to the hatch preset of its view
+;;  ((mview . i) of the App: "Surface" in its column i, pst:smats, else pst:mats), nil when
+;;  it no longer exists:
+(defun Remote>>Dyl:PresetDlgMatOf (r / i)
+  (setq i (cdr (assoc 'mview pst:dlg)))
+  (assoc (nth (Remote>>Dyl:PresetDlgMat) r)
+         (if (and i pst:smats (= "Surface" (Remote>>Dyl:MaterialView (nth i r) (nth 1 r)))) pst:smats pst:mats)
+  )
+)
+
 ;;  Read the materials (each time the dialog is shown: they may have been edited), draw the
 ;;  open button of the Materials window and set its action:
 (defun Remote>>Dyl:PresetDlgMatInit ()
-  (setq pst:mats (Remote>>Dyl:PresetDlgMats))
+  (Remote>>Dyl:PresetDlgMatsRead)
   (Dyl:MoreTile "edm" T)
   (action_tile
     "edm"
@@ -984,7 +1013,7 @@
   (if (Remote>>Dyl:PresetDlgMat)
     (set_tile "mts"
               (cond
-                ((setq d (assoc (nth (Remote>>Dyl:PresetDlgMat) r) pst:mats)) (Remote>>Dyl:MaterialSummary d))
+                ((setq d (Remote>>Dyl:PresetDlgMatOf r)) (Remote>>Dyl:MaterialSummary d))
                 ("")
               )
     )
@@ -1419,7 +1448,8 @@
 ;;    (spec 45 . "mas")                 ; the column of a preview of its own (an assembly), and
 ;;                                      ; the rule of the window when it is used (else the
 ;;                                      ; preview is the hatch of the material)
-;;    (mspec . <function: material -> its preview, see Installer\Windows\Engine\Hatch.cs>)
+;;    (mspec . <function: material -> its preview, see Installer\Windows\Engine\Hatch.cs>; with
+;;             (mview . i), given its Surface too: pst/matview)
 ;;    (outline . "hbr")                 ; the rule of the window when the preview is outlined
 ;;                                      ; (the preset has a border)
 ;;    (blank . "!hha")                  ; the rule of the window when the preview is a space
@@ -1531,16 +1561,24 @@
             (cons "pst/matnoun" (cond ((cdr (assoc 'matnoun pst:dlg))) ("material")))
             (cons "pst/matfree" (if (cdr (assoc 'matfree pst:dlg)) "1" "0"))
             (cons "pst/mats"
-                  (mapcar '(lambda (m)
-                             (list (car m) (nth 1 m) (nth 2 m)
-                                   (cond ((Remote>>Dyl:PresetDlgCall 'mspec (list m))) ("X?1"))
-                                   (strcase (nth 3 m))
+                  (mapcar '(lambda (m / s)
+                             (append (list (car m) (nth 1 m) (nth 2 m)
+                                           (cond ((Remote>>Dyl:PresetDlgCall 'mspec (list m))) ("X?1"))
+                                           (strcase (nth 3 m))
+                                     )
+                                     ;;  Joined to its Surface: its preview and its pattern too:
+                                     (if (setq s (assoc (car m) pst:smats))
+                                       (list (cond ((Remote>>Dyl:PresetDlgCall 'mspec (list s))) ("X?1")) (strcase (nth 3 s)))
+                                     )
                              )
                            )
                           pst:mats
                   )
             )
       )
+    )
+    (if (and pst:smats (cdr (assoc 'mview pst:dlg)))
+      (list (cons "pst/matview" (itoa (cdr (assoc 'mview pst:dlg)))))
     )
     (if spec (list (cons "pst/spec" (itoa (cadr spec))) (cons "pst/specby" (cddr spec))))
     (if (assoc 'outline pst:dlg) (list (cons "pst/outline" (cdr (assoc 'outline pst:dlg)))))
@@ -1634,9 +1672,8 @@
     ;;  The groups renamed since the window was shown (here or in a window opened from it),
     ;;  the groups of the Group list, the materials (they may have been edited):
     (Remote>>Dyl:PresetDlgGroupsSync)
-    (setq pst:grps (Remote>>Dyl:PresetDlgGrps)
-          pst:mats (if (Remote>>Dyl:PresetDlgMat) (Remote>>Dyl:PresetDlgMats))
-    )
+    (setq pst:grps (Remote>>Dyl:PresetDlgGrps))
+    (if (Remote>>Dyl:PresetDlgMat) (Remote>>Dyl:PresetDlgMatsRead) (setq pst:mats nil pst:smats nil))
     (Remote>>Dyl:PresetDlgCall 'wprep nil)
     (setq res (Dyl:WinShow (cdr (assoc 'window pst:dlg)) (Remote>>Dyl:PresetWinVals err))
           err nil
@@ -1661,7 +1698,7 @@
 ;;  Returns the preset to draw (the preset selected on OK for a tool without commands), or
 ;;  nil on Save / Cancel:
 (defun Remote>>Dyl:PresetDialog (pst:key pst:dlg / dcl:sta pst:lst pst:lst0 pst:idx pst:sel pst:als0 pst:als
-                                 pst:acmd pst:alst pst:grps pst:gren pst:mats pst:matids sel
+                                 pst:acmd pst:alst pst:grps pst:gren pst:mats pst:smats pst:matids sel
                                  pst:view pst:flt pst:srt pst:lines pst:shw pst:shwlst
                                 )
   ;;  The sort of the list of this tool, kept for the session (*dyl:presetsort*):

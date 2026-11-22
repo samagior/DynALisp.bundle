@@ -2195,10 +2195,11 @@
   (princ)
 )
 
-;;  Draw a preset: its material gives the hatch, the preset how it is drawn and its border
-;;  (its behaviors and border settings, put in the columns of the material):
+;;  Draw a preset: its material gives the hatch (the hatch preset of its view, Cut or
+;;  Surface), the preset how it is drawn and its border (its behaviors and border settings,
+;;  put in the columns of the material):
 (defun Dyl:QuickDrawRun (rec / mat)
-  (if (setq mat (Remote>>Dyl:MaterialGet (nth 3 rec)))
+  (if (setq mat (Remote>>Dyl:MaterialGetAs (nth 3 rec) (nth *qd:view* rec)))
     (progn
       (Dyl:QuickDrawRecentAdd (car rec))
       (setq mat (Dyl:QuickDrawMat mat rec))
@@ -2300,13 +2301,20 @@
       *qd:nohatch* 53
 )
 
+;;  The view of a preset (54): the hatch preset of its material it is drawn with, "Cut" (in
+;;  section) or "Surface" (in elevation, its Cut when its material has none), see
+;;  Remote>>Dyl:MaterialView. The layers of an assembly are always drawn with their Cut (a band
+;;  of layers is a section): the View list is greyed out while Assembly is checked:
+(setq *qd:view* 54)
+
 ;;  The hatch of a preset of an older file, without it: the key of its material, the
 ;;  properties of the material, a hatch:
 (setq *qd:hatchnew* (append '("") (Remote>>LM:sublst *mt:new* 12 10) '("0")))
 
-;;  Tiles of the Quick Draw window: the behaviors and the border:
+;;  Tiles of the Quick Draw window: the behaviors, the border and the view:
 (setq *qd:tiles* (append (vl-remove-if '(lambda (x) (member (car x) *qd:subtiles*)) *qd:behaviors*)
                          (Remote>>Dyl:MaterialBorderTiles *qd:border*)
+                         (list (cons "mvw" *qd:view*))
                  )
 )
 
@@ -2408,12 +2416,12 @@
   (Remote>>Dyl:ListSubst (Dyl:QuickDrawFrom r (if (and ovr mat) mat *qd:matnew*)) 5 (if ovr "1" "0"))
 )
 
-;;  A row of the presets file with its 54 columns (the band, assembly, ends, corners, Custom
-;;  band settings and hatch columns of an older file: empty, given their defaults by
+;;  A row of the presets file with its 55 columns (the band, assembly, ends, corners, Custom
+;;  band settings, hatch and view columns of an older file: empty, given their defaults by
 ;;  Dyl:QuickDrawFix; ends and corners on when they are not the defaults, see
 ;;  Remote>>Dyl:MaterialFix):
 (defun Dyl:QuickDrawPad (row)
-  (while (< (length row) 54) (setq row (append row (list ""))))
+  (while (< (length row) 55) (setq row (append row (list ""))))
   row
 )
 
@@ -2423,9 +2431,15 @@
 ;;  behaviors) gets those of its material (the material as edited), and keeps a method of
 ;;  its own when it had one; Override is then "1". A preset of a file without the border
 ;;  columns (no outline key) gets the border of its material. Its group as in the groups
-;;  (any case; a group not listed there is kept, as in the Materials window):
+;;  (any case; a group not listed there is kept, as in the Materials window). Its view Cut or
+;;  Surface (an older file: Surface in the Elevation group), its material and view after
+;;  *mt:moved* (the Modular Brick of DynALisp 1.1: Brick, Surface):
 (defun Dyl:QuickDrawFix (row / m)
   (setq row (Dyl:QuickDrawPad row))
+  (setq row (Remote>>Dyl:ListSubst row *qd:view* (Remote>>Dyl:MaterialView (nth *qd:view* row) (nth 1 row)))
+        m   (Remote>>Dyl:MaterialMoved (nth 3 row) (nth *qd:view* row))
+        row (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst row 3 (car m)) *qd:view* (cadr m))
+  )
   ;;  One gap (13), in drawing units: the metric gap (15) of an older file is its gap when it
   ;;  has none, then no longer used:
   (if (= "" (vl-string-trim " " (nth 13 row))) (setq row (Remote>>Dyl:ListSubst row 13 (nth 15 row))))
@@ -2608,9 +2622,10 @@
   )
 )
 
-;;  Material of the preset r in the window (pst:mats), the defaults when it no longer exists:
+;;  Material of the preset r in the window, joined to the hatch preset of its view (see
+;;  Remote>>Dyl:PresetDlgMatOf), the defaults when it no longer exists:
 (defun Dyl:QuickDrawDlgMat (r)
-  (cond ((assoc (nth 3 r) pst:mats)) (*qd:matnew*))
+  (cond ((Remote>>Dyl:PresetDlgMatOf r)) (*qd:matnew*))
 )
 
 ;;  T when the preset r is drawn as an assembly (Linear, Offset, or a method asked when drawn):
@@ -2618,15 +2633,15 @@
   (and (member (nth 4 r) '("Linear" "Offset" "")) (= "1" (nth 37 r)))
 )
 
-;;  The columns the window shows after those of a preset r (54 to 60, read only, never saved):
+;;  The columns the window shows after those of a preset r (55 to 61, read only, never saved):
 ;;  what the layers of its assembly preset are, its own ends and corners (under Custom band
 ;;  settings, shown while it is on), the width of its layers (Width, for an assembly), the
 ;;  preview of its layers side by side (as an assembly even while Assembly is off: the window
 ;;  shows it once it is on; its outline added by the window, Has a border as it is:
 ;;  pst/outline), and the description of the assembly under the preview (see
-;;  Dyl:QuickDrawAsmShow), then the summary of its border under Has a border (59, see
-;;  Dyl:QuickDrawBorderText) and of its hatch under Has a hatch (60, see
-;;  Dyl:QuickDrawHatchText). The window gives the columns 54, 56, 57 and 58 those of the
+;;  Dyl:QuickDrawAsmShow), then the summary of its border under Has a border (60, see
+;;  Dyl:QuickDrawBorderText) and of its hatch under Has a hatch (61, see
+;;  Dyl:QuickDrawHatchText). The window gives the columns 55, 57, 58 and 59 those of the
 ;;  assembly picked in its list (pst/follow, see Dyl:QuickDrawWinVals):
 (defun Dyl:QuickDrawWinExtra (r / a)
   (setq a (Dyl:QuickDrawAsmShow (Dyl:QuickDrawAsmRow (nth *qd:layerscol* r))))
@@ -2709,11 +2724,11 @@
 )
 
 ;;  Before the window is shown: the presets with their material (qg:all, for the previews of
-;;  the layers of an assembly) and the layer keys of the border list (mt:keys):
+;;  the layers of an assembly; joined to the hatch preset of their view) and the layer keys of the border list (mt:keys):
 (defun Dyl:QuickDrawWinPrep (/ mat)
   (setq qg:all nil)
   (foreach r pst:lst
-    (if (setq mat (assoc (nth 3 r) pst:mats)) (setq qg:all (cons (cons r (Dyl:QuickDrawMat mat r)) qg:all)))
+    (if (setq mat (Remote>>Dyl:PresetDlgMatOf r)) (setq qg:all (cons (cons r (Dyl:QuickDrawMat mat r)) qg:all)))
   )
   (setq qg:all (reverse qg:all))
   (Remote>>Dyl:MaterialDlgKeys nil (mapcar '(lambda (r) (nth *qd:border* r)) (append *qd:defaults* pst:lst)))
@@ -2722,8 +2737,8 @@
 ;;  The lists of the window: the labels of their items (key/list) and the values they store
 ;;  (key/vals): the methods, the justifications (the line drawn), the assembly presets (by
 ;;  name; one a preset has that no longer exists marked missing) with what the window shows of
-;;  each one (pst/follow: the columns 54, 56, 57 and 58, see Dyl:QuickDrawWinExtra), the layer
-;;  keys (marked when they are not defined), the lineweights:
+;;  each one (pst/follow: the columns 55, 57, 58 and 59, see Dyl:QuickDrawWinExtra), the layer
+;;  keys (marked when they are not defined), the lineweights, the views:
 (defun Dyl:QuickDrawWinVals (/ lks asms ids)
   (setq lks  (Remote>>Dyl:LayerKeyRead)
         asms (vl-sort (Dyl:QuickDrawAsmRead)
@@ -2743,7 +2758,7 @@
   )
   (list (cons "mak/list" (mapcar 'caddr asms))
         (cons "mak/vals" ids)
-        (cons "pst/follow" "38:54,56,57,58")
+        (cons "pst/follow" "38:55,57,58,59")
         (cons "pst/follow/rows" (mapcar '(lambda (a) (cons (car a) (Dyl:QuickDrawAsmShow a))) asms))
         (cons "mth/list" (mapcar 'cadr (cons '("" "Ask when drawn") *mt:methods*)))
         (cons "mth/vals" (cons "" (mapcar 'car *mt:methods*)))
@@ -2753,6 +2768,8 @@
         (cons "out/vals" mt:keys)
         (cons "bwt/list" (mapcar '(lambda (w) (strcat (rtos (/ (atoi w) 100.0) 2 2) " mm")) *mt:weights*))
         (cons "bwt/vals" *mt:weights*)
+        (cons "mvw/list" '("Cut" "Surface"))
+        (cons "mvw/vals" '("Cut" "Surface"))
   )
 )
 
@@ -2793,14 +2810,16 @@
           ;;  added to it):
           '(groups . T)
           '(material . 3)
+          ;;  The view of a preset: its material joined to its Cut or Surface hatch preset:
+          (cons 'mview *qd:view*)
           '(upper "out" "blt")
           '(window . "Dyl-QuickDraw.xaml")
           ;;  Has a border (No border, inverted), Has a hatch (No hatch, inverted), Custom band
           ;;  settings, the assembly preset, the columns of Dyl:QuickDrawWinExtra:
-          '(wtiles . "hbr:28:inv,hha:53:inv,mbs:41,mak:38,mei:55,mwl:56,mld:58,hbi:59,hhi:60")
+          '(wtiles . "hbr:28:inv,hha:53:inv,mbs:41,mak:38,mei:56,mwl:57,mld:59,hbi:60,hhi:61")
           '(extra . Dyl:QuickDrawWinExtra)
           ;;  The preview of an assembly: its layers side by side:
-          '(spec 57 . "mas,mth=Linear|Offset|")
+          '(spec 58 . "mas,mth=Linear|Offset|")
           ;;  The preview of a preset without Has a hatch (not Replace hatches): a space:
           '(blank . "!hha,mth!=Replace")
           ;;  The preview outlined while Has a border is checked, as in the gallery (an assembly
@@ -3415,7 +3434,7 @@
 )
 
 ;;  What the Quick Draw window shows of the assembly a (an assembly preset, see
-;;  Dyl:QuickDrawAsmRow; nil: none), the columns 54, 56, 57 and 58 of a preset (see
+;;  Dyl:QuickDrawAsmRow; nil: none), the columns 55, 57, 58 and 59 of a preset (see
 ;;  Dyl:QuickDrawWinExtra): what its layers are, their width, its preview (its layers side by
 ;;  side, with its lines, see Dyl:QuickDrawGalleryLayers; "" without layers) and its
 ;;  description (see Dyl:QuickDrawLayersDesc):
@@ -3781,12 +3800,14 @@
 ;;  its method the one picked in the gallery (drawn by the caller), nil when closed; the Quick
 ;;  Draw Manager button opens the Quick Draw window in its place:
 (defun Dyl:QuickDrawGallery (/ qg:all qg:grps qg:mats g mat mats res sta i m)
-  ;;  The materials read once (Remote>>Dyl:MaterialGet would read the file for each preset):
-  (setq mats    (Remote>>Dyl:MaterialRead)
-        qg:mats mats
+  ;;  The materials read once (Remote>>Dyl:MaterialGet would read the file for each preset),
+  ;;  joined to their Cut and to their Surface (each preset its view; the layers of the
+  ;;  assemblies their Cut, qg:mats):
+  (setq mats    (Remote>>Dyl:MaterialReadViews)
+        qg:mats (car mats)
   )
   (foreach r (Dyl:QuickDrawRead)
-    (if (setq mat (assoc (nth 3 r) mats))
+    (if (setq mat (assoc (nth 3 r) (if (= "Surface" (nth *qd:view* r)) (cadr mats) (car mats))))
       (setq qg:all (cons (cons r (Dyl:QuickDrawMat mat r)) qg:all))
     )
   )

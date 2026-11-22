@@ -33,6 +33,10 @@
               "OutlineKey" "BorderColorOn" "BorderColor" "BorderLinetypeOn" "BorderLinetype"
               "BorderLtScaleOn" "BorderLtScale" "BorderLineweightOn" "BorderLineweight"
               "BorderTransparencyOn" "BorderTransparency"
+              ;;  The view of the preset, the hatch preset of its material it is drawn with:
+              ;;  Cut (in section) or Surface (in elevation; an older file: Surface for a preset
+              ;;  of the Elevation group, see Remote>>Dyl:MaterialView):
+              "View"
       )
       (default . "QS-*")
       (base . "Pst-QuickShape")

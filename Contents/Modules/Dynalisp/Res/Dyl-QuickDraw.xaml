@@ -25,7 +25,8 @@
   preset of an assembly (its id), hbr Has a border and hha Has a hatch (the border and the
   hatch themselves, their layer key and the properties they override, are columns of the
   preset with no control here: they are edited in the Border Settings and Hatch Settings
-  windows); mei, mwl, mld, hbi and hhi show the columns the Lisp adds for the window (the own
+  windows); mvw the view of the preset (Cut or Surface: the hatch preset of its material it is
+  drawn with, pst/matview); mei, mwl, mld, hbi and hhi show the columns the Lisp adds for the window (the own
   ends and corners of the bands, the width of the layers of the assembly, its description
   beside the preview: those of the assembly picked in mak, pst/follow; the summaries of the
   border and of the hatch); mpv is the
@@ -166,11 +167,17 @@
             </Grid.ColumnDefinitions>
             <StackPanel>
               <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0,0,0,4" Text="Drawing"/>
-              <!-- An assembly: each layer is hatched as its own preset says: -->
+              <!-- An assembly: each layer is hatched with its own material: -->
               <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas;mth!=Linear|Offset|">
                 <ComboBox x:Name="mat" DockPanel.Dock="Right" Width="150"/>
                 <dyl:OpenButton x:Name="edm" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="9" ToolTip="Materials"/>
                 <TextBlock x:Name="matl" Style="{DynamicResource Dyl.Label}" Text="Material"/>
+              </DockPanel>
+              <!-- The hatch preset of the material it is drawn with: Cut (in section) or
+                   Surface (in elevation); an assembly, its layers always with their Cut: -->
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas;mth!=Linear|Offset|">
+                <ComboBox x:Name="mvw" DockPanel.Dock="Right" Width="150"/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="View"/>
               </DockPanel>
               <DockPanel Style="{StaticResource Row}">
                 <ComboBox x:Name="mth" DockPanel.Dock="Right" Width="150"/>

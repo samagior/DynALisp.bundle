@@ -15,7 +15,7 @@ qd-Grout;Section;Grout;mt-Grout;;1;;Center;;0;1;0;0;;0;;0;XLINE;0;7;0;CONTINUOUS
 qd-Iron;Section;Iron;mt-Iron;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
 qd-Steel;Section;Steel;mt-Steel;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
 qd-Bronze;Section;Bronze;mt-Bronze;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
-cu-ModularBrick;Elevation;Modular Brick;cu-ModularBrick;;1;;Center;;0;1;0;0;;0;;0;THIN;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
+cu-ModularBrick;Elevation;Modular Brick;mt-Brick;;1;;Center;;0;1;0;0;;0;;0;THIN;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
 qd-Lead;Section;Lead;mt-Lead;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
 qd-Aluminium;Section;Aluminium;mt-Aluminium;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
 qd-Plywood;Section;Plywood;mt-Plywood;;1;;Center;;0;1;0;0;;0;;0;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;0
