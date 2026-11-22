@@ -35,6 +35,17 @@
 //   dyl:Win.CheckMessage="..."              what is shown when it fails, in the text named
 //                                           "error"
 //
+// A list of rows edited in the window (Rows.cs: the layers of an assembly, the groups):
+//
+//   dyl:Win.Rows="1"                        on a ListBox: its rows (key/rows) are edited here
+//   dyl:Win.Column="2"                      on a field: the column of the row shown it edits
+//   dyl:Win.Unique="message"                on a field: its column unique (any case)
+//   dyl:Win.Follows="lp/widths"             on a field: takes the item of that list when the
+//                                           field lp changes
+//   dyl:Win.Do="add"                        on a button: add, remove, up, down, flip, reset
+//   dyl:Win.Summary="{count} rows"          on a TextBlock or a GroupBox: what the rows hold
+//   dyl:Win.SummaryEmpty="No rows."         in its place while there is no row
+//
 // A button with IsDefault closes the window with 1 (OK, Save), one with IsCancel with 0.
 
 using System.Windows;
@@ -81,5 +92,33 @@ namespace DynALisp.Windows
         public static readonly DependencyProperty CheckMessageProperty = Prop("CheckMessage");
         public static string GetCheckMessage(DependencyObject o) => (string)o.GetValue(CheckMessageProperty);
         public static void SetCheckMessage(DependencyObject o, string v) => o.SetValue(CheckMessageProperty, v);
+
+        public static readonly DependencyProperty RowsProperty = Prop("Rows");
+        public static string GetRows(DependencyObject o) => (string)o.GetValue(RowsProperty);
+        public static void SetRows(DependencyObject o, string v) => o.SetValue(RowsProperty, v);
+
+        public static readonly DependencyProperty ColumnProperty = Prop("Column");
+        public static string GetColumn(DependencyObject o) => (string)o.GetValue(ColumnProperty);
+        public static void SetColumn(DependencyObject o, string v) => o.SetValue(ColumnProperty, v);
+
+        public static readonly DependencyProperty UniqueProperty = Prop("Unique");
+        public static string GetUnique(DependencyObject o) => (string)o.GetValue(UniqueProperty);
+        public static void SetUnique(DependencyObject o, string v) => o.SetValue(UniqueProperty, v);
+
+        public static readonly DependencyProperty FollowsProperty = Prop("Follows");
+        public static string GetFollows(DependencyObject o) => (string)o.GetValue(FollowsProperty);
+        public static void SetFollows(DependencyObject o, string v) => o.SetValue(FollowsProperty, v);
+
+        public static readonly DependencyProperty DoProperty = Prop("Do");
+        public static string GetDo(DependencyObject o) => (string)o.GetValue(DoProperty);
+        public static void SetDo(DependencyObject o, string v) => o.SetValue(DoProperty, v);
+
+        public static readonly DependencyProperty SummaryProperty = Prop("Summary");
+        public static string GetSummary(DependencyObject o) => (string)o.GetValue(SummaryProperty);
+        public static void SetSummary(DependencyObject o, string v) => o.SetValue(SummaryProperty, v);
+
+        public static readonly DependencyProperty SummaryEmptyProperty = Prop("SummaryEmpty");
+        public static string GetSummaryEmpty(DependencyObject o) => (string)o.GetValue(SummaryEmptyProperty);
+        public static void SetSummaryEmpty(DependencyObject o, string v) => o.SetValue(SummaryEmptyProperty, v);
     }
 }
