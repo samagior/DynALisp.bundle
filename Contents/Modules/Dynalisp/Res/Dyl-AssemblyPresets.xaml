@@ -57,14 +57,14 @@
       <ColumnDefinition Width="360"/>
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
-      <RowDefinition Height="*"/>
       <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
     <!-- The assemblies (Ctrl / Shift click: several edited at once): -->
-    <GroupBox Header="Assemblies" Margin="0">
+    <GroupBox Grid.RowSpan="2" Header="Assemblies" Margin="0">
       <DockPanel>
         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
           <ComboBox x:Name="srt" DockPanel.Dock="Right" Width="90" Margin="8,0,0,0" ToolTip="Sort by"/>
@@ -89,7 +89,7 @@
           <Button x:Name="cpy" Content="Copy"/>
           <Button x:Name="del" Content="Delete"/>
         </StackPanel>
-        <ListBox x:Name="lst" Height="330">
+        <ListBox x:Name="lst" MinHeight="200">
           <ListBox.ItemTemplate>
             <DataTemplate>
               <Grid>
@@ -107,9 +107,9 @@
     </GroupBox>
 
     <!-- The assembly shown: its name and group, then its layers, from the left border of the
-         band (Flip: the other way), for one assembly only: -->
-    <DockPanel Grid.Column="2">
-      <GroupBox DockPanel.Dock="Top" Padding="16,0,16,14" Margin="0">
+         band (Flip: the other way), for one assembly only; the layers as tall as the preview
+         and the parameters beside them: -->
+    <GroupBox Grid.Column="2" Padding="16,0,16,14" Margin="0">
         <StackPanel>
           <DockPanel Style="{StaticResource Row}">
             <TextBox x:Name="nam" DockPanel.Dock="Right" Width="300" MaxLength="64"/>
@@ -122,8 +122,8 @@
           </DockPanel>
           <TextBlock x:Name="prm" Style="{DynamicResource Dyl.Desc}" Margin="0,4,0,0"/>
         </StackPanel>
-      </GroupBox>
-    <GroupBox Header="Layers" Margin="0,10,0,0" dyl:Win.EnabledBy="!pst.many">
+    </GroupBox>
+    <GroupBox Grid.Row="1" Grid.Column="2" Header="Layers" Margin="0,10,0,0" dyl:Win.EnabledBy="!pst.many">
       <DockPanel>
         <Grid DockPanel.Dock="Top" Margin="6,0,10,4">
           <Grid.ColumnDefinitions>
@@ -147,7 +147,7 @@
                    dyl:Win.Summary="{}{count:lk!=L|layer|layers}, {count:lk=L|line|lines}, width {sum:2:lk!=L}"
                    dyl:Win.SummaryEmpty="No layers."/>
         <!-- Ctrl / Shift click: several layers edited at once: -->
-        <ListBox x:Name="ll" Height="262" dyl:Win.Rows="1" dyl:Win.RowsIn="4">
+        <ListBox x:Name="ll" MinHeight="200" dyl:Win.Rows="1" dyl:Win.RowsIn="4">
           <ListBox.ItemTemplate>
             <DataTemplate>
               <Grid>
@@ -207,11 +207,16 @@
         </ListBox>
       </DockPanel>
     </GroupBox>
-    </DockPanel>
 
-    <StackPanel Grid.Column="4" dyl:Win.EnabledBy="!pst.many">
+    <DockPanel Grid.Row="1" Grid.Column="4" Margin="0,10,0,0">
+    <!-- The assembly as it is drawn, a wall in plan, built as the layers are edited: -->
+    <GroupBox DockPanel.Dock="Top" Header="Preview" Margin="0">
+      <dyl:AssemblyTile Height="120" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14 6 16" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
+                        Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"
+                        Accent="{DynamicResource Dyl.Accent}"/>
+    </GroupBox>
     <!-- The layer shown (the first one selected); with none selected, the layer Add adds: -->
-    <GroupBox Header="Layer" Margin="0" dyl:Win.Summary="Layer{sel| (# selected)}">
+    <GroupBox Header="Parameters" Margin="0,10,0,0" dyl:Win.EnabledBy="!pst.many" dyl:Win.Summary="Parameters{sel| (# selected)}">
       <StackPanel>
         <DockPanel Style="{StaticResource Row}">
           <ComboBox x:Name="lk" DockPanel.Dock="Right" Width="220" dyl:Win.Column="0"/>
@@ -252,14 +257,7 @@
         </DockPanel>
       </StackPanel>
     </GroupBox>
-    </StackPanel>
-
-    <!-- The assembly as it is drawn, a wall in plan, built as the layers are edited: -->
-    <GroupBox Grid.Row="1" Grid.ColumnSpan="5" Header="Preview" Margin="0,10,0,0">
-      <dyl:AssemblyTile Height="150" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14 6 16" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
-                        Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"
-                        Accent="{DynamicResource Dyl.Accent}"/>
-    </GroupBox>
+    </DockPanel>
 
     <TextBlock x:Name="error" Grid.Row="2" Grid.ColumnSpan="5" Style="{DynamicResource Dyl.Error}" Margin="2,10,0,0" TextWrapping="Wrap" Visibility="Collapsed"/>
     <StackPanel Grid.Row="3" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
