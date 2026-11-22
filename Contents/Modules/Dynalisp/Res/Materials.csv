@@ -14,7 +14,7 @@ mt-Grout;Section;Grout;hp-Grout;;;;
 mt-Iron;Section;Iron;hp-Iron;;;;
 mt-Steel;Section;Steel;hp-Steel;;;;
 mt-Bronze;Section;Bronze;hp-Bronze;;;;
-cu-ModularBrick;Elevation;Modular Brick;hp-ModularBrick;;;;
+cu-ModularBrick;Elevation;Modular Brick;cu-ModularBrick;;;;
 mt-Lead;Section;Lead;hp-Lead;;;;
 mt-Aluminium;Section;Aluminium;hp-Aluminium;;;;
 mt-Plywood;Section;Plywood;hp-Plywood;;;;

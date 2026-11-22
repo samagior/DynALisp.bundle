@@ -14,7 +14,7 @@ hp-Grout;Section;Grout;GENERAL_STIPPLE;2.0;;0;XLINE;HATCH;1;0;1;0;7;0;CONTINUOUS
 hp-Iron;Section;Iron;ANSI31;0.5;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1;;;;;;;;;;;;;
 hp-Steel;Section;Steel;ANSI32;0.5;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1;;;;;;;;;;;;;
 hp-Bronze;Section;Bronze;ANSI33;0.5;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1;;;;;;;;;;;;;
-hp-ModularBrick;Elevation;Modular Brick;BRICK;10.6667;;0;THIN;HATCH;0;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1;Square;;45;Mitered;4;First;Interrupted;Line;0;;;;Model
+cu-ModularBrick;Elevation;Modular Brick;BRICK;10.6667;;0;THIN;HATCH;0;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1;Square;;45;Mitered;4;First;Interrupted;Line;0;;;;Model
 hp-Lead;Section;Lead;ANSI37;0.5;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1;;;;;;;;;;;;;
 hp-Aluminium;Section;Aluminium;ANSI38;0.5;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1;;;;;;;;;;;;;
 hp-Plywood;Section;Plywood;WOOD_GLU-LAMBEAM;1.0;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1;;;;;;;;;;;;;
