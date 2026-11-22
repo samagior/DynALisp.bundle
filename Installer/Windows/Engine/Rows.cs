@@ -62,7 +62,9 @@
 // column w, plus b; the data of the materials of an assembly, Remote>>Dyl:MaterialDataLists),
 // 4 significant digits, the rows whose item has none ("") left out; {miss:m:list|one|many} the
 // text one (1) or many (more) with # their number, for the rows left out, "" when there are
-// none; dyl:Win.SummaryEmpty in its place while the list is empty. dyl:Win.Check="rows" on
+// none; dyl:Win.SummaryEmpty in its place while the list is empty. The same value for one
+// row is {Binding P[m:w:list|text]} in the list (its layer: pu x its thickness + b, 4
+// significant digits), text (else "") when its item has none. dyl:Win.Check="rows" on
 // the list: at least one row before OK, its dyl:Win.CheckMessage else.
 //
 // A button with dyl:Win.Open and dyl:Win.Columns="men:7,mex:8" opens that window (beside this
@@ -120,13 +122,28 @@ namespace DynALisp.Windows
                 _v = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("V"));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(Binding.IndexerName));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("P"));
             }
         }
+
+        // The value of the item each row picks, for this row ({Binding P[m:w:list|text]}, see
+        // the {per} of dyl:Win.Summary):
+        public PerOfRow P => new PerOfRow(this);
+
+        internal string Per(string spec) => _ed.PerText(_v, spec);
 
         // The text of column col, as the list shows it:
         public string this[int col] => _ed.Text(_v, col);
 
         public event PropertyChangedEventHandler PropertyChanged;
+    }
+
+    // The values of one row by their spec (see RowItem.P):
+    public sealed class PerOfRow
+    {
+        readonly RowItem _r;
+        internal PerOfRow(RowItem r) { _r = r; }
+        public string this[string spec] => _r.Per(spec);
     }
 
     sealed class RowsEditor
@@ -784,14 +801,8 @@ namespace DynALisp.Windows
                         int nmiss = 0;
                         foreach (var r in _rows)
                         {
-                            int j = mf != null ? IndexOf(mf, Cell(r, mc)) : -1;
-                            var d = (data != null && j >= 0 && j < data.Count ? data[j] : "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                            if (d.Length == 0 || !double.TryParse(d[0], NumberStyles.Float, CultureInfo.InvariantCulture, out double pu)) { nmiss++; continue; }
-                            if (!per) continue;
-                            double.TryParse(Cell(r, wc), NumberStyles.Float, CultureInfo.InvariantCulture, out double w);
-                            double fx = 0;
-                            if (d.Length > 1) double.TryParse(d[1], NumberStyles.Float, CultureInfo.InvariantCulture, out fx);
-                            tot += pu * w + fx;
+                            if (!PerOf(r, mf, mc, wc, data, out double x)) nmiss++;
+                            else tot += x;
                         }
                         if (per) return Sig(tot);
                         if (nmiss == 0) return "";
@@ -812,6 +823,35 @@ namespace DynALisp.Windows
                         return q.Length >= 3 ? ns + " " + (n == 1 ? q[1] : q[2]) : ns;
                 }
             });
+        }
+
+        // The value of the item the row r picks in the field mf (of column mc), from the list
+        // data ("a b": a per unit of column wc, plus b): a x the value of column wc + b (b alone
+        // without wc, -1); false when the item has none:
+        bool PerOf(string[] r, Field mf, int mc, int wc, List<string> data, out double v)
+        {
+            v = 0;
+            int j = mf != null ? IndexOf(mf, Cell(r, mc)) : -1;
+            var d = (data != null && j >= 0 && j < data.Count ? data[j] : "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (d.Length == 0 || !double.TryParse(d[0], NumberStyles.Float, CultureInfo.InvariantCulture, out double pu)) return false;
+            double w = 0, fx = 0;
+            if (wc >= 0) double.TryParse(Cell(r, wc), NumberStyles.Float, CultureInfo.InvariantCulture, out w);
+            if (d.Length > 1) double.TryParse(d[1], NumberStyles.Float, CultureInfo.InvariantCulture, out fx);
+            v = pu * w + fx;
+            return true;
+        }
+
+        // The value of one row r by its spec "m:w:list|text" (see {per}): 4 significant digits,
+        // text (else "") when its item has none:
+        internal string PerText(string[] r, string spec)
+        {
+            var a = (spec ?? "").Split(new[] { '|' }, 2);
+            string none = a.Length > 1 ? a[1] : "";
+            var ps = a[0].Split(':');
+            if (ps.Length < 3 || !int.TryParse(ps[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int mc)
+                || !int.TryParse(ps[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int wc)) return none;
+            _s.Lists.TryGetValue(ps[2], out List<string> data);
+            return PerOf(r, _fields.FirstOrDefault(f => f.Col == mc), mc, wc, data, out double x) ? Sig(x) : none;
         }
 
         // The number v with 4 significant digits at most (as Remote>>Dyl:MaterialSig):

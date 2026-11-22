@@ -43,7 +43,9 @@
   the properties its hatch overrides (as its border; edited with its layer key, column 3, in
   the Hatch Settings window, opened by lho on the layers selected), 38 to 42 the scale and the
   origin of its hatch, with its band settings (scale by width, width factor, origin on line,
-  origin X, origin Y), 43 the group of its material (read, never saved). Under the list, ltm
+  origin X, origin Y), 43 the group of its material (read, never saved). Each row shows the
+  thermal resistance and the mass of its layer (P[1:2:lp/rsi], P[1:2:lp/mass], Rows.cs), from
+  the data of its material and its thickness, a dash when it has none. Under the list, ltm
   (metric) and lti (imperial, mt.imp) add up the thermal resistance and the mass of the layers
   from lp/rsi and lp/mass, the data of each material (Remote>>Dyl:MaterialDataLists). Add, Remove,
   Move up, Move down and Flip run in the window. The preview (an AssemblyTile,
@@ -165,13 +167,20 @@
       <DockPanel>
         <Grid DockPanel.Dock="Top" Margin="6,0,10,4">
           <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="90"/>
-            <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="56"/>
           </Grid.ColumnDefinitions>
           <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Group"/>
           <TextBlock Grid.Column="1" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Material"/>
           <TextBlock Grid.Column="2" Style="{DynamicResource Dyl.Sub}" Margin="0" HorizontalAlignment="Right" Text="Thickness"/>
+          <!-- The thermal resistance and the mass per area of each layer (RSI and kg/m2 in a
+               metric drawing, R and lb/ft2 in an imperial one, mt.imp): -->
+          <TextBlock Grid.Column="3" Style="{DynamicResource Dyl.Sub}" Margin="0" HorizontalAlignment="Right" Text="RSI" dyl:Win.VisibleBy="!mt.imp"/>
+          <TextBlock Grid.Column="3" Style="{DynamicResource Dyl.Sub}" Margin="0" HorizontalAlignment="Right" Text="R" dyl:Win.VisibleBy="mt.imp"/>
+          <TextBlock Grid.Column="4" Style="{DynamicResource Dyl.Sub}" Margin="0" HorizontalAlignment="Right" Text="Mass"/>
         </Grid>
         <DockPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
           <Button x:Name="la" DockPanel.Dock="Left" Margin="0" Content="Add" dyl:Win.Do="add"/>
@@ -199,9 +208,11 @@
             <DataTemplate>
               <Grid>
                 <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="90"/>
-                  <ColumnDefinition Width="*"/>
                   <ColumnDefinition Width="80"/>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="70"/>
+                  <ColumnDefinition Width="56"/>
+                  <ColumnDefinition Width="56"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Foreground="{DynamicResource Dyl.Muted}" Text="{Binding [43]}" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
                 <StackPanel Grid.Column="1" Margin="0,0,8,0">
@@ -214,6 +225,10 @@
                   </TextBlock>
                 </StackPanel>
                 <TextBlock x:Name="thk" Grid.Column="2" HorizontalAlignment="Right" Text="{Binding V[2]}"/>
+                <!-- From the data of its material and its thickness (lp/rsi, lp/mass, as the
+                     total under the list), a dash when its material has none: -->
+                <TextBlock Grid.Column="3" HorizontalAlignment="Right" Text="{Binding P[1:2:lp/rsi|–]}"/>
+                <TextBlock Grid.Column="4" HorizontalAlignment="Right" Text="{Binding P[1:2:lp/mass|–]}"/>
               </Grid>
               <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding V[5]}" Value="0">
