@@ -227,13 +227,13 @@
              thermal bridges of the structure), and the low permeance ratio: the layers from
              the exterior (aex) to the one checked Low permeance, over the others: -->
         <TextBlock x:Name="lcm" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="!mt.imp"
-                   dyl:Win.Summary="{over:1:2:lp/rsi:44:45:lfm/rsi:p@lci|Continuous insulation # m²·K/W|Continuous insulation unknown}" dyl:Win.SummaryEmpty=""/>
+                   dyl:Win.Summary="{}{over:1:2:lp/rsi:44:45:lfm/rsi:p@lci|Continuous insulation # m²·K/W|Continuous insulation unknown}" dyl:Win.SummaryEmpty=""/>
         <TextBlock x:Name="lcu" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="mt.imp"
-                   dyl:Win.Summary="{over:1:2:lp/rsi:44:45:lfm/rsi:p@lci|Continuous insulation R #|Continuous insulation unknown}" dyl:Win.SummaryEmpty=""/>
+                   dyl:Win.Summary="{}{over:1:2:lp/rsi:44:45:lfm/rsi:p@lci|Continuous insulation R #|Continuous insulation unknown}" dyl:Win.SummaryEmpty=""/>
         <TextBlock x:Name="lrf" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="aex!=Last"
-                   dyl:Win.Summary="{ratio:first:1:2:lp/rsi:44:45:lfm/rsi:p@llp|Low permeance ratio #|Low permeance ratio unknown}" dyl:Win.SummaryEmpty=""/>
+                   dyl:Win.Summary="{}{ratio:first:1:2:lp/rsi:44:45:lfm/rsi:p@llp|Low permeance ratio #|Low permeance ratio unknown}" dyl:Win.SummaryEmpty=""/>
         <TextBlock x:Name="lrl" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="aex=Last"
-                   dyl:Win.Summary="{ratio:last:1:2:lp/rsi:44:45:lfm/rsi:p@llp|Low permeance ratio #|Low permeance ratio unknown}" dyl:Win.SummaryEmpty=""/>
+                   dyl:Win.Summary="{}{ratio:last:1:2:lp/rsi:44:45:lfm/rsi:p@llp|Low permeance ratio #|Low permeance ratio unknown}" dyl:Win.SummaryEmpty=""/>
         <TextBlock x:Name="lt" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,8,0,0"
                    dyl:Win.Summary="{}{count:|layer|layers}, width {sum:2}"
                    dyl:Win.SummaryEmpty="No layers."/>
