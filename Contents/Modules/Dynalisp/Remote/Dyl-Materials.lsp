@@ -2190,7 +2190,7 @@
       )
       (setvar "CMDECHO" cmd)
       (vla-EndUndoMark doc)
-      (princ (strcat "\nLegend: " (itoa n) " material(s) drawn."))
+      (princ (strcat "\nLegend: " (itoa n) " hatch preset(s) drawn."))
       n
     )
   )
@@ -2318,7 +2318,7 @@
                    "No"
           )
      )
-     (princ (strcat "\nPattern " pat " not rebuilt: a material cannot draw it until a .pat file has it (see RPAT)."))
+     (princ (strcat "\nPattern " pat " not rebuilt: a hatch preset cannot draw it until a .pat file has it (see RPAT)."))
      nil
     )
     ((not (or (Dyl:SuiteFileOn-p *mt:rebuildpat*)

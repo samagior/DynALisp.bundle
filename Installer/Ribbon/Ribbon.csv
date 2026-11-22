@@ -3,6 +3,7 @@ Draw;;PST-QUICKDRAWGALLERY;@*qd:gallerygroup*=All|Phase|Section|Detail|Elevation
 Draw;;DYL-QUICKSHAPE;*;;
 Draw;1;DYL-QUICKDRAW;;Quick Draw Manager;
 Draw;1;DYL-MATERIALS;;;
+Draw;1;DYL-HATCHPRESETS;;;
 Draw;1;DYL-SHRINKWRAP;;;
 Drawing Behaviors;;DYL-LAYERPHASE;;;
 Drawing Behaviors;1;DYL-OBJECTLAYERKEYS;;;

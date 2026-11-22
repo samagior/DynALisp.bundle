@@ -16,6 +16,8 @@ Dynalisp/Core/Dyl-Suite.fr.htm
 Dynalisp/Core/Dyl-Suite.htm
 Dynalisp/Draw/Dyl-AssemblyPresets.fr.htm
 Dynalisp/Draw/Dyl-AssemblyPresets.htm
+Dynalisp/Draw/Dyl-HatchPresets.fr.htm
+Dynalisp/Draw/Dyl-HatchPresets.htm
 Dynalisp/Draw/Dyl-Materials.fr.htm
 Dynalisp/Draw/Dyl-Materials.htm
 Dynalisp/Draw/Dyl-PresetGroups.fr.htm
