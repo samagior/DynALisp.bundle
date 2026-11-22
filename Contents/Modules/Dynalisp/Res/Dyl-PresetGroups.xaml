@@ -31,7 +31,7 @@
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="300"/>
       <ColumnDefinition Width="10"/>
-      <ColumnDefinition Width="300"/>
+      <ColumnDefinition Width="360"/>
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>
@@ -47,7 +47,7 @@
           <Button x:Name="gu" DockPanel.Dock="Right" Content="Move up" dyl:Win.Do="up"/>
           <Border/>
         </DockPanel>
-        <ListBox x:Name="gl" Height="360" dyl:Win.Rows="1"
+        <ListBox x:Name="gl" Height="380" dyl:Win.Rows="1"
                  dyl:Win.Check="rows" dyl:Win.CheckMessage="Keep at least one group.">
           <ListBox.ItemTemplate>
             <DataTemplate>
@@ -65,7 +65,7 @@
     <GroupBox Grid.Column="2" Header="Group" Margin="0" VerticalAlignment="Top" dyl:Win.Summary="Group{sel| (# selected)}">
       <StackPanel>
         <DockPanel Margin="0,3">
-          <TextBox x:Name="gn" DockPanel.Dock="Right" Width="200" MaxLength="32" dyl:Win.Column="0"
+          <TextBox x:Name="gn" DockPanel.Dock="Right" Width="240" MaxLength="32" dyl:Win.Column="0"
                    dyl:Win.Unique="There is already a group with this name."
                    dyl:Win.Check="text;plain" dyl:Win.CheckMessage="Type a group name, without ; , or &quot;."/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Name"/>

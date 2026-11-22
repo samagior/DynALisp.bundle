@@ -36,9 +36,9 @@
   </Window.Resources>
   <Grid Margin="14">
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="460"/>
+      <ColumnDefinition Width="580"/>
       <ColumnDefinition Width="10"/>
-      <ColumnDefinition Width="400"/>
+      <ColumnDefinition Width="380"/>
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>
@@ -71,7 +71,7 @@
                    dyl:Win.Summary="{}{count:lk!=L|layer|layers}, {count:lk=L|line|lines}, width {sum:2:lk!=L}"
                    dyl:Win.SummaryEmpty="No layers."/>
         <!-- Ctrl / Shift click: several layers edited at once: -->
-        <ListBox x:Name="ll" Height="300" dyl:Win.Rows="1">
+        <ListBox x:Name="ll" Height="280" dyl:Win.Rows="1">
           <ListBox.ItemTemplate>
             <DataTemplate>
               <Grid>
