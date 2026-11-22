@@ -173,7 +173,27 @@ namespace DynALisp.Windows
                 b.Freeze();
                 d["Dyl." + kv.Key] = b;
             }
+            // The hatches of the sketches (Dyl.Sketch.* of Theme.xaml): lines of the muted
+            // ink, at 45 and -45 degrees, as the sketches of the docs:
+            var ink = (Color)ColorConverter.ConvertFromString((dark ? DarkColors : LightColors)["Muted"]);
+            d["Dyl.HatchA"] = Hatch(ink, 45);
+            d["Dyl.HatchB"] = Hatch(ink, -45);
             return d;
+        }
+
+        static Brush Hatch(Color ink, double angle)
+        {
+            var pen = new Pen(new SolidColorBrush(ink), 0.8);
+            var tile = new Rect(0, 0, 7, 7);
+            var b = new DrawingBrush(new GeometryDrawing(null, pen, new LineGeometry(new Point(3.5, -1), new Point(3.5, 8))))
+            {
+                TileMode = TileMode.Tile,
+                Viewport = tile, ViewportUnits = BrushMappingMode.Absolute,
+                Viewbox = tile, ViewboxUnits = BrushMappingMode.Absolute,
+                Transform = new RotateTransform(angle),
+            };
+            b.Freeze();
+            return b;
         }
 
         public static void Apply(Window w, bool dark)
