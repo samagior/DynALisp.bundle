@@ -191,14 +191,14 @@
             <ColumnDefinition Width="70"/>
             <ColumnDefinition Width="70"/>
           </Grid.ColumnDefinitions>
-          <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Group"/>
-          <TextBlock Grid.Column="1" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Material"/>
-          <TextBlock Grid.Column="2" Style="{DynamicResource Dyl.Sub}" Margin="0" HorizontalAlignment="Right" Text="Thickness"/>
+          <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" Text="Group"/>
+          <TextBlock Grid.Column="1" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" Text="Material"/>
+          <TextBlock Grid.Column="2" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" HorizontalAlignment="Right" Text="Thickness"/>
           <!-- The thermal resistance and the mass per area of each layer (RSI and kg/m2 in a
                metric drawing, R and lb/ft2 in an imperial one, mt.imp): -->
-          <TextBlock Grid.Column="3" Style="{DynamicResource Dyl.Sub}" Margin="0" HorizontalAlignment="Right" Text="RSI" dyl:Win.VisibleBy="!mt.imp"/>
-          <TextBlock Grid.Column="3" Style="{DynamicResource Dyl.Sub}" Margin="0" HorizontalAlignment="Right" Text="R" dyl:Win.VisibleBy="mt.imp"/>
-          <TextBlock Grid.Column="4" Style="{DynamicResource Dyl.Sub}" Margin="0" HorizontalAlignment="Right" Text="Mass"/>
+          <TextBlock Grid.Column="3" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" HorizontalAlignment="Right" Text="RSI" dyl:Win.VisibleBy="!mt.imp"/>
+          <TextBlock Grid.Column="3" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" HorizontalAlignment="Right" Text="R" dyl:Win.VisibleBy="mt.imp"/>
+          <TextBlock Grid.Column="4" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" HorizontalAlignment="Right" Text="Mass"/>
           <!-- Load-bearing (16), Variable thickness (46), Continuous insulation (47) and Low
                permeance (48), checked in the list itself: -->
           <TextBlock Grid.Column="5" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" TextAlignment="Center" TextWrapping="Wrap" Text="Load-bearing"/>
@@ -214,15 +214,6 @@
           <Button x:Name="lu" DockPanel.Dock="Right" Content="Move up" dyl:Win.Do="up"/>
           <Border/>
         </DockPanel>
-        <!-- Under the layers: their thermal resistance and their mass per area, added up from
-             the data of their materials (lp/rsi, lp/mass), in the units of the drawing, the
-             layers whose material has no such data counted apart: -->
-        <TextBlock x:Name="ltm" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="!mt.imp"
-                   dyl:Win.Summary="Thermal resistance {per:1:2:lp/rsi:44:45:lfm/rsi:p} m²·K/W{miss:1:lp/rsi:44:45:lfm/rsi|, 1 layer unknown|, # layers unknown}  ·  Mass {per:1:2:lp/mass:44:45:lfm/mass:a} kg/m²{miss:1:lp/mass:44:45:lfm/mass|, 1 layer unknown|, # layers unknown}"
-                   dyl:Win.SummaryEmpty=""/>
-        <TextBlock x:Name="lti" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="mt.imp"
-                   dyl:Win.Summary="Thermal resistance R {per:1:2:lp/rsi:44:45:lfm/rsi:p}{miss:1:lp/rsi:44:45:lfm/rsi|, 1 layer unknown|, # layers unknown}  ·  Mass {per:1:2:lp/mass:44:45:lfm/mass:a} lb/ft²{miss:1:lp/mass:44:45:lfm/mass|, 1 layer unknown|, # layers unknown}"
-                   dyl:Win.SummaryEmpty=""/>
         <!-- The thermal resistance of the layers checked Continuous insulation (over the
              thermal bridges of the structure), and the low permeance ratio: the layers from
              the exterior (aex) to the one checked Low permeance, over the others: -->
@@ -234,6 +225,15 @@
                    dyl:Win.Summary="{}{ratio:first:1:2:lp/rsi:44:45:lfm/rsi:p@llp|Low permeance ratio #|Low permeance ratio unknown}" dyl:Win.SummaryEmpty=""/>
         <TextBlock x:Name="lrl" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="aex=Last"
                    dyl:Win.Summary="{}{ratio:last:1:2:lp/rsi:44:45:lfm/rsi:p@llp|Low permeance ratio #|Low permeance ratio unknown}" dyl:Win.SummaryEmpty=""/>
+        <!-- Under the layers: their thermal resistance and their mass per area, added up from
+             the data of their materials (lp/rsi, lp/mass), in the units of the drawing, the
+             layers whose material has no such data counted apart: -->
+        <TextBlock x:Name="ltm" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="!mt.imp"
+                   dyl:Win.Summary="Thermal resistance {per:1:2:lp/rsi:44:45:lfm/rsi:p} m²·K/W{miss:1:lp/rsi:44:45:lfm/rsi|, 1 layer unknown|, # layers unknown}  ·  Mass {per:1:2:lp/mass:44:45:lfm/mass:a} kg/m²{miss:1:lp/mass:44:45:lfm/mass|, 1 layer unknown|, # layers unknown}"
+                   dyl:Win.SummaryEmpty=""/>
+        <TextBlock x:Name="lti" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="mt.imp"
+                   dyl:Win.Summary="Thermal resistance R {per:1:2:lp/rsi:44:45:lfm/rsi:p}{miss:1:lp/rsi:44:45:lfm/rsi|, 1 layer unknown|, # layers unknown}  ·  Mass {per:1:2:lp/mass:44:45:lfm/mass:a} lb/ft²{miss:1:lp/mass:44:45:lfm/mass|, 1 layer unknown|, # layers unknown}"
+                   dyl:Win.SummaryEmpty=""/>
         <TextBlock x:Name="lt" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,8,0,0"
                    dyl:Win.Summary="{}{count:|layer|layers}, width {sum:2}"
                    dyl:Win.SummaryEmpty="No layers."/>
