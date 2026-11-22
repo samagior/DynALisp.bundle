@@ -541,6 +541,9 @@
           ;;  are added to it); the Material popup lists the materials of the group:
           '(groups . T)
           '(material . 3)
+          ;;  The Material popup lists the materials of the group picked in the Material group
+          ;;  popup above it (the groups of the materials, by what they are made of):
+          '(matgroups . T)
           ;;  The view of a preset: its material joined to its Cut or Surface hatch preset:
           (cons 'mview *qs:view*)
           '(upper "out" "blt")

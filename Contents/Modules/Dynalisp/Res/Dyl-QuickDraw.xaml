@@ -25,7 +25,8 @@
   preset of an assembly (its id), hbr Has a border and hha Has a hatch (the border and the
   hatch themselves, their layer key and the properties they override, are columns of the
   preset with no control here: they are edited in the Border Settings and Hatch Settings
-  windows); mvw the view of the preset (Cut or Surface: the hatch preset of its material it is
+  windows); mgr the group of the materials the Material list lists (mgr/list, not a column:
+  see Presets.cs); mvw the view of the preset (Cut or Surface: the hatch preset of its material it is
   drawn with, pst/matview); mei, mwl, mld, hbi and hhi show the columns the Lisp adds for the window (the own
   ends and corners of the bands, the width of the layers of the assembly, its description
   beside the preview: those of the assembly picked in mak, pst/follow; the summaries of the
@@ -167,7 +168,13 @@
             </Grid.ColumnDefinitions>
             <StackPanel>
               <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0,0,0,4" Text="Drawing"/>
-              <!-- An assembly: each layer is hatched with its own material: -->
+              <!-- The group of the materials the Material list lists (the groups of the
+                   materials, by what they are made of; the group of the material of the
+                   preset shown). An assembly: each layer is hatched with its own material: -->
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas;mth!=Linear|Offset|">
+                <ComboBox x:Name="mgr" DockPanel.Dock="Right" Width="150"/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="Material group"/>
+              </DockPanel>
               <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas;mth!=Linear|Offset|">
                 <ComboBox x:Name="mat" DockPanel.Dock="Right" Width="150"/>
                 <dyl:OpenButton x:Name="edm" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="9" ToolTip="Materials"/>

@@ -868,8 +868,10 @@
 
 ;;  The materials and their hatch presets: a materials file of DynALisp 1.1 and older not split
 ;;  yet (each material its own hatch), a material whose hatch preset no longer exists (drawn
-;;  without hatch), a User copy of the HatchPresets.csv of DynALisp 1.0 (not read):
-(defun dg:set-mat (/ b ids bad f)
+;;  without hatch), the materials in a group that is not one of the groups of the materials
+;;  (MaterialGroups.csv: still listed, after the others), a User copy of the HatchPresets.csv
+;;  of DynALisp 1.0 (not read):
+(defun dg:set-mat (/ b ids bad f grps odd)
   (if Remote>>Dyl:MaterialBoth
     (progn
       (dg:sub "Materials")
@@ -891,6 +893,18 @@
           )
           (if bad
             (dg:bad (strcat "Materials whose hatch preset no longer exists: " (Remote>>LM:lst->str (reverse bad) ", ")))
+          )
+          (if Remote>>Dyl:GroupsOf
+            (progn
+              (setq grps (mapcar 'strcase (Remote>>Dyl:GroupsOf "Material")))
+              (dg:kv "Groups of the materials" (itoa (length grps)))
+              (foreach m (cadr b)
+                (if (not (member (strcase (nth 1 m)) grps)) (setq odd (cons (strcat (nth 2 m) " (" (nth 1 m) ")") odd)))
+              )
+              (if odd
+                (dg:note (strcat "Materials in a group that is not one of the groups of the materials: " (Remote>>LM:lst->str (reverse odd) ", ")))
+              )
+            )
           )
         )
       )

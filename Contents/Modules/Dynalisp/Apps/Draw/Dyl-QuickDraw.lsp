@@ -2818,6 +2818,9 @@
           ;;  added to it):
           '(groups . T)
           '(material . 3)
+          ;;  The Material list lists the materials of the group picked in the Group list above
+          ;;  it (mgr: the groups of the materials, by what they are made of):
+          '(matgroups . T)
           ;;  The view of a preset: its material joined to its Cut or Surface hatch preset:
           (cons 'mview *qd:view*)
           '(upper "out" "blt")
@@ -3556,8 +3559,8 @@
 ;;  border off, on that key, overriding nothing; its hatch on, on the key of its material,
 ;;  overriding nothing):
 (defun Dyl:QuickDrawAsmWinPrep (/ mats ls)
-  (setq mats    (mapcar '(lambda (m) (list (car m) (nth 2 m) m (Remote>>Dyl:GroupCase (nth 1 m)))) (Remote>>Dyl:MaterialRead))
-        qa:grps (Remote>>Dyl:Groups)
+  (setq mats    (mapcar '(lambda (m) (list (car m) (nth 2 m) m (Remote>>Dyl:GroupCaseOf (nth 1 m) "Material"))) (Remote>>Dyl:MaterialRead))
+        qa:grps (Remote>>Dyl:GroupsOf "Material")
   )
   (foreach m mats
     (if (not (member (strcase (cadddr m)) (mapcar 'strcase qa:grps))) (setq qa:grps (append qa:grps (list (cadddr m)))))
