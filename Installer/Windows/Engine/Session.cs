@@ -350,7 +350,7 @@ namespace DynALisp.Windows
                             break;
                         case Gallery g:
                             _s.Lists.TryGetValue(g.Name, out var tiles);
-                            g.Attach(tiles, Find(g.Group ?? "") as ComboBox, Find(g.Search ?? "") as TextBox, Find(g.Count ?? "") as TextBlock);
+                            g.Attach(tiles, Find(g.Group ?? "") as ComboBox, Find(g.Pills ?? "") as Panel, Find(g.Search ?? "") as TextBox, Find(g.Count ?? "") as TextBlock);
                             if (!has) _s.Values[g.Name] = "-1";
                             break;
                     }

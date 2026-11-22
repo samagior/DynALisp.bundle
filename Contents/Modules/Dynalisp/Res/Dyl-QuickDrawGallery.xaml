@@ -18,8 +18,11 @@
   Shown by DynALisp.Windows.dll (Installer\Windows): (Dyl:WinShow "Dyl-QuickDrawGallery.xaml"
   ...) in Dyl:QuickDrawGallery (Apps\Draw\Dyl-QuickDraw.lsp), which gives the groups (grp)
   and a tile for each preset (gal/list: its name, its group and the preview of its hatch, see
-  Installer\Windows\Engine\Hatch.cs). The group and the search filter the tiles in the window
-  itself (Gallery.cs); a tile clicked closes it with its index (gal), and the preset is drawn.
+  Installer\Windows\Engine\Hatch.cs; its rank among the presets drawn last). The pills (one
+  per group with presets, All first, Recent last when presets were drawn) and the search filter
+  the tiles in the window itself (Gallery.cs); the pills pick the group of the hidden list grp,
+  which the Lisp gets back. A tile clicked closes it with its index (gal), and the preset is
+  drawn.
   Quick Draw Manager closes it with 2: the Quick Draw window opens in its place.
 -->
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -31,19 +34,23 @@
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
-    <DockPanel Margin="0,0,0,12">
-      <ComboBox x:Name="grp" DockPanel.Dock="Left" Width="170"/>
+    <DockPanel Margin="0,0,0,10">
+      <ComboBox x:Name="grp" Visibility="Collapsed"/>
       <TextBlock x:Name="cnt" DockPanel.Dock="Right" Tag="preset,presets" VerticalAlignment="Center" Margin="12,0,4,0"
                  Foreground="{DynamicResource Dyl.Muted}"/>
-      <TextBox x:Name="find" Tag="Search presets" Width="300" Margin="10,0,0,0" HorizontalAlignment="Left"/>
+      <TextBox x:Name="find" Style="{DynamicResource Dyl.Search}" Tag="Search presets" Width="340" HorizontalAlignment="Left"/>
     </DockPanel>
 
-    <!-- Six tiles a row, four rows shown, the others under them (scroll): -->
-    <dyl:Gallery x:Name="gal" Grid.Row="1" Group="grp" Search="find" Count="cnt" Width="976" Height="568"/>
+    <!-- The groups, filled by the gallery from grp: -->
+    <WrapPanel x:Name="pills" Grid.Row="1" Margin="0,0,0,12"/>
 
-    <DockPanel Grid.Row="2" Margin="0,6,0,0">
+    <!-- Six tiles a row, four rows shown, the others under them (scroll): -->
+    <dyl:Gallery x:Name="gal" Grid.Row="2" Group="grp" Pills="pills" Recent="Recent" Search="find" Count="cnt" Width="976" Height="568"/>
+
+    <DockPanel Grid.Row="3" Margin="0,6,0,0">
       <Button DockPanel.Dock="Left" Margin="0" Content="Quick Draw _Manager" dyl:Win.Close="2"/>
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
         <Button Content="_Cancel" IsCancel="True"/>

@@ -1925,6 +1925,7 @@
 (defun Dyl:QuickDrawRun (rec / mat)
   (if (setq mat (Remote>>Dyl:MaterialGet (nth 3 rec)))
     (progn
+      (Dyl:QuickDrawRecentAdd (car rec))
       (setq mat (Dyl:QuickDrawMat mat rec))
       (Dyl:QuickDraw mat (cond ((nth 33 mat)) ("")))
     )
@@ -1936,6 +1937,24 @@
            )
     )
   )
+)
+
+;;  The presets drawn last, the last one first (their ids, 12 at most), for the Recent group
+;;  of the gallery: kept on the blackboard, so every drawing of the session shares them:
+(defun Dyl:QuickDrawRecent ()
+  (vl-bb-ref '*qd:recent*)
+)
+
+(defun Dyl:QuickDrawRecentAdd (id / l u res)
+  (setq u (strcase id)
+        l (cons id (vl-remove-if '(lambda (x) (= u (strcase x))) (Dyl:QuickDrawRecent)))
+  )
+  (while (and l (< (length res) 12))
+    (setq res (cons (car l) res)
+          l   (cdr l)
+    )
+  )
+  (vl-bb-set '*qd:recent* (reverse res))
 )
 
 ;;-------------------------=={ Presets }==------------------------;;
@@ -2837,13 +2856,28 @@
 )
 
 ;;  The items of the Group list: All, then every group (see Remote>>Dyl:Groups), also the
-;;  ones without a preset, a group typed in the presets file that is not one of them last:
+;;  ones without a preset (the gallery shows a pill only for a group with presets), a group
+;;  typed in the presets file that is not one of them, then Recent:
 (defun Dyl:QuickDrawGalleryGroups (/ res)
   (setq res (reverse (Remote>>Dyl:Groups)))
   (foreach x qg:all
     (if (not (member (strcase (nth 1 (car x))) (mapcar 'strcase res))) (setq res (cons (nth 1 (car x)) res)))
   )
-  (cons "All" (reverse res))
+  ;;  Recent last, when presets of the gallery were drawn in this session:
+  (setq res (cons "All" (reverse res)))
+  (if (vl-some '(lambda (x) (Dyl:QuickDrawGalleryRank (car x))) qg:all)
+    (append res (list "Recent"))
+    res
+  )
+)
+
+;;  The rank of the preset rec among the presets drawn last ("1": the last one), "" when it
+;;  is not one of them:
+(defun Dyl:QuickDrawGalleryRank (rec / u i)
+  (setq u (strcase (car rec))
+        i (vl-position u (mapcar 'strcase (Dyl:QuickDrawRecent)))
+  )
+  (if i (itoa (1+ i)))
 )
 
 ;;  The material of the preset id among the presets of the gallery (any case), nil when none:
@@ -2925,7 +2959,8 @@
         res               (Dyl:WinShow "Dyl-QuickDrawGallery.xaml"
                                        (append (Dyl:WinList "grp" qg:grps (cond ((vl-position g qg:grps)) (0)))
                                                (list (cons "gal/list"
-                                                           (mapcar '(lambda (x) (strcat (nth 2 (car x)) "\t" (nth 1 (car x)) "\t" (Dyl:QuickDrawGallerySpec x)))
+                                                           (mapcar '(lambda (x) (strcat (nth 2 (car x)) "\t" (nth 1 (car x)) "\t" (Dyl:QuickDrawGallerySpec x)
+                                                                                   "\t" (cond ((Dyl:QuickDrawGalleryRank (car x))) (""))))
                                                                    qg:all
                                                            )
                                                      )
