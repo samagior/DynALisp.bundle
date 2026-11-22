@@ -17,12 +17,18 @@
 
   Opened by the open button of Assembly of layers in the Quick Draw window (it closes with 5,
   the Lisp shows this one: Dyl:QuickDrawLayersDialog of Apps\Draw\Dyl-QuickDraw.lsp), on the
-  layers of the preset shown. A list of rows edited in the window (Installer\Windows\Engine  Rows.cs): ll/rows, a row per layer, its columns (kind preset thickness hatch-key line-key):
-  the kind (P Hatch, S Space, L Line), the Quick Draw preset of a Hatch layer (its id), the
-  thickness of a Hatch or a Space, the hatch layer key of a Hatch layer ("": the key of its
-  preset), the layer key of a Line. Every column is kept in every row, so a layer turned into
-  another kind and back gets its values again; the Lisp keeps those of its kind. Add, Remove,
-  Move up, Move down and Flip run in the window; OK gives the layers to every preset selected.
+  layers of the preset shown. A list of rows edited in the window (Installer\Windows\Engine  Rows.cs): ll/rows, a row per layer, its columns: 0 the kind (P Hatch, S Space, L Line), 1
+  the Quick Draw preset of a Hatch layer (its id), 2 the thickness of a Hatch or a Space, 3
+  the hatch layer key of a Hatch layer ("": the key of its preset), 4 the layer key of a Line;
+  a Hatch layer: 5 its own band settings on ("1"), 6 to 13 those settings (hatch aligned to,
+  ends, extension, angle, corners, miter limit, lap, joints: edited in the Band Settings
+  window, opened by lbe on the layers selected), 14 its own border on, 15 the layer key of
+  that border. Every column is kept in every row, so a layer turned into another kind and
+  back gets its values again; the Lisp keeps those of its kind. Add, Remove, Move up, Move
+  down and Flip run in the window; OK gives the layers to every preset selected. The preview
+  (an AssemblyTile, Installer\Windows\Engine\Assembly.cs) draws the rows as they are edited:
+  lp/specs the preview of each preset, ll/ends the ends of the whole band, ll/paper the
+  inches of a drawing unit and the drawing scale.
 -->
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -42,6 +48,7 @@
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
       <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
@@ -81,21 +88,44 @@
                   <ColumnDefinition Width="80"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Text="{Binding [0]}"/>
-                <TextBlock x:Name="pre" Grid.Column="1" TextTrimming="CharacterEllipsis" Margin="0,0,8,0">
-                  <Run Text="{Binding [1], Mode=OneWay}"/><Run x:Name="hk" Foreground="{DynamicResource Dyl.Muted}" Text="{Binding V[3], Mode=OneWay, StringFormat='{}  [{0}]'}"/>
-                </TextBlock>
-                <TextBlock x:Name="key" Grid.Column="1" Visibility="Collapsed" Text="{Binding [4]}" TextTrimming="CharacterEllipsis"/>
+                <StackPanel Grid.Column="1" Margin="0,0,8,0">
+                  <TextBlock x:Name="pre" TextTrimming="CharacterEllipsis">
+                    <Run Text="{Binding [1], Mode=OneWay}"/><Run x:Name="hk" Foreground="{DynamicResource Dyl.Muted}" Text="{Binding V[3], Mode=OneWay, StringFormat='{}  [{0}]'}"/>
+                  </TextBlock>
+                  <TextBlock x:Name="key" Visibility="Collapsed" Text="{Binding [4]}" TextTrimming="CharacterEllipsis"/>
+                  <!-- Its own band settings (its ends, its corners) and its own border: -->
+                  <TextBlock x:Name="own" Foreground="{DynamicResource Dyl.Muted}" FontSize="11" TextTrimming="CharacterEllipsis">
+                    <Run x:Name="bd" Text="{Binding V[7], Mode=OneWay}"/><Run x:Name="bc" Text="{Binding V[10], Mode=OneWay, StringFormat='{}, {0}'}"/><Run x:Name="bk" Text="{Binding V[15], Mode=OneWay, StringFormat='{}  |  Border {0}'}"/>
+                  </TextBlock>
+                </StackPanel>
                 <TextBlock x:Name="thk" Grid.Column="2" HorizontalAlignment="Right" Text="{Binding V[2]}"/>
               </Grid>
               <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding V[5]}" Value="0">
+                  <Setter TargetName="bd" Property="Text" Value=""/>
+                  <Setter TargetName="bc" Property="Text" Value=""/>
+                  <Setter TargetName="bk" Property="Text" Value="{Binding V[15], Mode=OneWay, StringFormat='Border {0}'}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding V[14]}" Value="0">
+                  <Setter TargetName="bk" Property="Text" Value=""/>
+                </DataTrigger>
+                <MultiDataTrigger>
+                  <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding V[5]}" Value="0"/>
+                    <Condition Binding="{Binding V[14]}" Value="0"/>
+                  </MultiDataTrigger.Conditions>
+                  <Setter TargetName="own" Property="Visibility" Value="Collapsed"/>
+                </MultiDataTrigger>
                 <DataTrigger Binding="{Binding V[3]}" Value="">
                   <Setter TargetName="hk" Property="Text" Value=""/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding V[0]}" Value="S">
                   <Setter TargetName="pre" Property="Visibility" Value="Collapsed"/>
+                  <Setter TargetName="own" Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding V[0]}" Value="L">
                   <Setter TargetName="pre" Property="Visibility" Value="Collapsed"/>
+                  <Setter TargetName="own" Property="Visibility" Value="Collapsed"/>
                   <Setter TargetName="key" Property="Visibility" Value="Visible"/>
                   <Setter TargetName="thk" Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
@@ -130,11 +160,30 @@
           <ComboBox x:Name="ly" DockPanel.Dock="Right" Width="220" dyl:Win.Column="4"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Line layer key"/>
         </DockPanel>
+        <!-- A Hatch layer: its own band settings (the Band Settings window on the layers
+             selected), its own border on its layer key: -->
+        <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
+          <dyl:OpenButton x:Name="lbe" DockPanel.Dock="Right" ToolTip="Band Settings" dyl:Win.EnabledBy="lbs"
+                          dyl:Win.Open="Dyl-QuickDrawBandSettings.xaml"
+                          dyl:Win.Columns="mht:6,men:7,mex:8,mea:9,mco:10,mml:11,mlt:12,mjo:13"/>
+          <CheckBox x:Name="lbs" Content="Custom band settings" dyl:Win.Column="5"/>
+        </DockPanel>
+        <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
+          <ComboBox x:Name="lbk" DockPanel.Dock="Right" Width="220" dyl:Win.Column="15" dyl:Win.EnabledBy="lbr"/>
+          <CheckBox x:Name="lbr" Content="Border" dyl:Win.Column="14"/>
+        </DockPanel>
       </StackPanel>
     </GroupBox>
 
-    <TextBlock x:Name="error" Grid.Row="1" Grid.ColumnSpan="3" Style="{DynamicResource Dyl.Error}" Margin="2,10,0,0" TextWrapping="Wrap" Visibility="Collapsed"/>
-    <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+    <!-- The assembly as it is drawn, a wall in plan, built as the layers are edited: -->
+    <GroupBox Grid.Row="1" Grid.ColumnSpan="3" Header="Preview" Margin="0,10,0,0">
+      <dyl:AssemblyTile Height="150" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
+                        Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"
+                        Accent="{DynamicResource Dyl.Accent}"/>
+    </GroupBox>
+
+    <TextBlock x:Name="error" Grid.Row="2" Grid.ColumnSpan="3" Style="{DynamicResource Dyl.Error}" Margin="2,10,0,0" TextWrapping="Wrap" Visibility="Collapsed"/>
+    <StackPanel Grid.Row="3" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
       <Button Content="OK" IsDefault="True"/>
       <Button Content="_Cancel" IsCancel="True"/>
       <Button x:Name="docs" Content="Open Docs"/>

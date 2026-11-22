@@ -172,7 +172,7 @@
     (progn
       (setq g (car (Dyl:QuickDrawLayersBand pp closed jus opt)))
       (foreach b (append (cadr g) (cadddr g)) (Dyl:QdGrPath (car b) (cadr b)))
-      (if (= "Interrupted" (nth 6 opt)) (foreach j (caddr g) (grdraw (car j) (cadr j) -1 0)))
+      (foreach j (caddr g) (grdraw (car j) (cadr j) -1 0))
     )
     (Dyl:QdGrBand (Dyl:QdBand pp closed w jus opt) opt)
   )
@@ -795,7 +795,10 @@
 ;;  (pieces unions borders joints): pieces, the outline of each segment ((path index) ...);
 ;;  unions, the outline of the whole band (one path; two around a closed line, the inner one
 ;;  an island of the hatch); borders, its border once drawn ((path closed) ...: the union, its
-;;  two sides apart when the ends are Open); joints, the joint at each corner ((a b) ...):
+;;  two sides apart when the ends are Open); joints, the joint at each corner ((a b) ...); sides,
+;;  the pieces of its border (left right start end): its left and right sides along the line
+;;  (paths from its start to its end; around a closed line, loops), the paths across its start
+;;  and its end (nil around a closed line), see Dyl:QdLayersBorders:
 (defun Dyl:QdBandOne (pp closed us trims dl dr bd w opt / np n i cors sc ec pcs st en lf rt un brd)
   (setq np (length pp)
         n  (length us)
@@ -841,7 +844,19 @@
               )
     )
   )
-  (list (reverse pcs) un brd (mapcar '(lambda (x) (nth 4 x)) cors))
+  (list (reverse pcs)
+        un
+        brd
+        (mapcar '(lambda (x) (nth 4 x)) cors)
+        (if closed
+          (list lf rt nil nil)
+          (list (append (list (cons (car (last sc)) 0.0)) lf (list (cons (car (car ec)) 0.0)))
+                (append (list (cons (car (car sc)) 0.0)) rt (list (cons (car (last ec)) 0.0)))
+                sc
+                ec
+          )
+        )
+  )
 )
 
 ;;  The line at d from the line pp (a join of two layers of an assembly, a Line layer): the
@@ -868,13 +883,33 @@
   )
 )
 
+;;  How the band of the line pp (closed: the last point joins the first) turns at each of its
+;;  corners (see Dyl:QdTrim), us the direction of each segment, its borders bd (dl dr), width
+;;  w, options opt:
+(defun Dyl:QdTrims (pp closed us bd w opt / np n i res)
+  (setq np (length pp)
+        n  (length us)
+        i  0
+  )
+  (repeat (if closed n (1- n))
+    (setq res (cons (Dyl:QdTrim (nth (rem (1+ i) np) pp) (nth i us) (nth (rem (1+ i) n) us) (car bd) (cadr bd) w opt) res)
+          i   (1+ i)
+    )
+  )
+  (reverse res)
+)
+
 ;;  The geometry of the band of the line pp (see Dyl:QdBandOne) made of the layers lays,
-;;  ((dl dr) ...) from its left border to its right one, options opt, and the lines at the
-;;  distances offs from the line. Every layer turns its corners and ends as the whole band
-;;  does, so they meet. Returns (layers borders joints lines): layers, the pieces and unions
-;;  of each layer ((pieces unions) ...); borders, the border of the whole band; joints, the
-;;  joints of every layer; lines, ((path closed) ...) for offs:
-(defun Dyl:QdBandLayers (pp closed lays opt offs / bd w np n i us trims res)
+;;  ((dl dr [lopt [bkey]]) ...) from its left border to its right one, options opt, and the
+;;  lines at the distances offs from the line. Every layer turns its corners and ends as the
+;;  whole band does, so they meet; a layer with its own options lopt (its own band settings)
+;;  turns and ends as a band of its own, across its own thickness. Returns (layers borders
+;;  joints lines): layers, the pieces and unions of each layer ((pieces unions) ...);
+;;  borders, the border of the whole band ((path closed [key]) ...); joints, those drawn (the
+;;  joints Interrupted: (a b [key]) ...); lines, ((path closed) ...) for offs. When a layer
+;;  has its own options or its own border (bkey), each layer is outlined apart (see
+;;  Dyl:QdLayersBorders):
+(defun Dyl:QdBandLayers (pp closed lays opt offs / bd w np n i us trims res bj)
   (setq bd (list (car (car lays)) (cadr (last lays)))
         w  (- (car bd) (cadr bd))
         np (length pp)
@@ -886,22 +921,113 @@
           i  (1+ i)
     )
   )
-  (setq us (reverse us)
-        i  0
-  )
-  (repeat (if closed n (1- n))
-    (setq trims (cons (Dyl:QdTrim (nth (rem (1+ i) np) pp) (nth i us) (nth (rem (1+ i) n) us) (car bd) (cadr bd) w opt) trims)
-          i     (1+ i)
-    )
-  )
-  (setq trims (reverse trims)
-        res   (mapcar '(lambda (ly) (Dyl:QdBandOne pp closed us trims (car ly) (cadr ly) bd w opt)) lays)
+  (setq us    (reverse us)
+        trims (Dyl:QdTrims pp closed us bd w opt)
+        res   (mapcar '(lambda (ly / sd lw)
+                         (if (caddr ly)
+                           (progn
+                             (setq sd (list (car ly) (cadr ly))
+                                   lw (- (car ly) (cadr ly))
+                             )
+                             (Dyl:QdBandOne pp closed us (Dyl:QdTrims pp closed us sd lw (caddr ly)) (car ly) (cadr ly) sd lw (caddr ly))
+                           )
+                           (Dyl:QdBandOne pp closed us trims (car ly) (cadr ly) bd w opt)
+                         )
+                       )
+                      lays
+              )
+        bj    (if (vl-some '(lambda (ly) (or (caddr ly) (cadddr ly))) lays)
+                (Dyl:QdLayersBorders lays res opt closed offs)
+                (list (caddr (if (cdr lays) (Dyl:QdBandOne pp closed us trims (car bd) (cadr bd) bd w opt) (car res)))
+                      (if (= "Interrupted" (nth 6 opt)) (apply 'append (mapcar 'cadddr res)))
+                )
+              )
   )
   (list (mapcar '(lambda (x) (list (car x) (cadr x))) res)
-        (caddr (if (cdr lays) (Dyl:QdBandOne pp closed us trims (car bd) (cadr bd) bd w opt) (car res)))
-        (apply 'append (mapcar 'cadddr res))
+        (car bj)
+        (cadr bj)
         (mapcar '(lambda (d) (Dyl:QdLineAt pp closed us trims d bd w opt)) offs)
   )
+)
+
+;;  T when the paths a and b are the same (their points and bulges):
+(defun Dyl:QdSamePath (a b)
+  (and (= (length a) (length b))
+       (vl-every '(lambda (x y) (and (< (distance (car x) (car y)) 1e-8) (equal (cdr x) (cdr y) 1e-8))) a b)
+  )
+)
+
+;;  The borders and the joints of the layers lays of an assembly ((dl dr lopt bkey) ...) when
+;;  some have their own band settings (lopt) or their own border (bkey): res, their geometry
+;;  (see Dyl:QdBandOne); opt, the options of the band; offs, where its Line layers are. Each
+;;  layer is outlined as it ends: its sides, its start and end (but Open). The line between two
+;;  layers is drawn once when they meet on it (twice when they turn their corners apart): by
+;;  the layer with its own border (the first one when both have one), else as the border of
+;;  the band, but where a Line layer is (the line of that layer is drawn). A layer with its own
+;;  border draws its lines on its layer key, its whole outline as one closed polyline when it
+;;  has it. The joints of each layer when its joints are drawn (Interrupted), on its key.
+;;  Returns (borders joints): ((path closed key) ...), key nil for the border of the band;
+;;  ((a b key) ...):
+(defun Dyl:QdLayersBorders (lays res opt closed offs / n i ly x o k sd nsd own jts out pcs)
+  (setq n   (length lays)
+        own (mapcar '(lambda (ly) nil) lays)
+        i   0
+  )
+  (while (< i n)
+    (setq ly (nth i lays)
+          x  (nth i res)
+          o  (cond ((caddr ly)) (opt))
+          k  (cadddr ly)
+          sd (nth 4 x)
+    )
+    ;;  Its start and its end:
+    (if (and (not closed) (/= "Open" (car o)))
+      (setq own (Remote>>Dyl:ListSubst own i (append (nth i own) (list (list (caddr sd) nil) (list (cadddr sd) nil)))))
+    )
+    ;;  The left side of the first layer, the right side of the last one:
+    (if (= i 0) (setq own (Remote>>Dyl:ListSubst own i (append (nth i own) (list (list (car sd) closed))))))
+    (if (= i (1- n))
+      (setq own (Remote>>Dyl:ListSubst own i (append (nth i own) (list (list (cadr sd) closed)))))
+      ;;  Its right side and the left side of the next layer:
+      (progn
+        (setq nsd (nth 4 (nth (1+ i) res)))
+        (cond
+          ((not (Dyl:QdSamePath (cadr sd) (car nsd)))
+           (setq own (Remote>>Dyl:ListSubst own i (append (nth i own) (list (list (cadr sd) closed))))
+                 own (Remote>>Dyl:ListSubst own (1+ i) (append (nth (1+ i) own) (list (list (car nsd) closed))))
+           )
+          )
+          (k (setq own (Remote>>Dyl:ListSubst own i (append (nth i own) (list (list (cadr sd) closed))))))
+          ((cadddr (nth (1+ i) lays))
+           (setq own (Remote>>Dyl:ListSubst own (1+ i) (append (nth (1+ i) own) (list (list (car nsd) closed)))))
+          )
+          ((not (vl-some '(lambda (d) (equal d (cadr ly) 1e-9)) offs))
+           (setq own (Remote>>Dyl:ListSubst own i (append (nth i own) (list (list (cadr sd) closed)))))
+          )
+        )
+      )
+    )
+    (if (= "Interrupted" (nth 6 o))
+      (setq jts (append jts (mapcar '(lambda (j) (list (car j) (cadr j) k)) (cadddr x))))
+    )
+    (setq i (1+ i))
+  )
+  (setq i 0)
+  (foreach pcs own
+    (setq ly (nth i lays)
+          k  (cadddr ly)
+          o  (cond ((caddr ly)) (opt))
+          i  (1+ i)
+    )
+    (setq out (append out
+                      (if (and k (not closed) (/= "Open" (car o)) (= 4 (length pcs)))
+                        (list (list (car (cadr (nth (1- i) res))) T k))
+                        (mapcar '(lambda (p) (list (car p) (cadr p) k)) pcs)
+                      )
+              )
+    )
+  )
+  (list out jts)
 )
 
 ;;  The geometry of the band of the line pp (closed: the last point joins the first), width
@@ -1047,10 +1173,12 @@
 )
 
 ;;  The layers of the assembly of the material mat (its behaviors, see Dyl:QuickDrawMat), nil
-;;  when its assembly is off or has no thickness: ((kind thickness mat key name) ...). A Hatch
-;;  layer (P) has the material of its preset with the behaviors of that preset, its name;
-;;  a Line layer (L) its layer key and no thickness. A Hatch layer whose preset no longer
-;;  exists is drawn as a space (S), with a message:
+;;  when its assembly is off or has no thickness: ((kind thickness mat key name lopt bkey)
+;;  ...). A Hatch layer (P) has the material of its preset with the behaviors of that preset,
+;;  its name, the options of its own band settings when they are on (see
+;;  Dyl:QuickDrawLayerOpts, nil: those of the band) and the layer key of its own border when
+;;  it has one (nil: none); a Line layer (L) its layer key and no thickness. A Hatch layer
+;;  whose preset no longer exists is drawn as a space (S), with a message:
 (defun Dyl:QuickDrawLayersGet (mat / res rec m w)
   (if (= "1" (nth 59 mat))
     (progn
@@ -1063,7 +1191,13 @@
            (setq m (Dyl:QuickDrawMat m rec))
            ;;  The layer's own hatch layer key, in place of the one of its preset (index 8):
            (if (and (cadddr l) (/= "" (cadddr l))) (setq m (Remote>>Dyl:ListSubst m 8 (cadddr l))))
-           (setq res (cons (list "P" w m nil (nth 2 rec)) res))
+           (setq res (cons (list "P" w m nil (nth 2 rec)
+                                 (if (= "1" (car (nth 4 l))) (Dyl:QuickDrawLayerOpts (nth 4 l)))
+                                 (if (and (= "1" (car (nth 5 l))) (/= "" (cadr (nth 5 l)))) (cadr (nth 5 l)))
+                           )
+                           res
+                     )
+           )
           )
           (T
            (princ (strcat "\n--> Assembly: the preset of a layer no longer exists (" (cadr l) "), drawn as a space."))
@@ -1077,6 +1211,24 @@
         (progn (princ "\n--> Assembly: no layer with a thickness, drawn as one band.") nil)
       )
     )
+  )
+)
+
+;;  The options of a band (see Dyl:QuickDrawBandOpts) of the own band settings b of a layer of
+;;  an assembly (see Remote>>Dyl:MaterialLayers: on hatch ends extension angle corners miter
+;;  lap joints), never asked (Ask: the default):
+(defun Dyl:QuickDrawLayerOpts (b / e c)
+  (setq e (if (assoc (nth 2 b) (cdr *mt:ends*)) (nth 2 b) "Square")
+        c (if (assoc (nth 5 b) (cdr *mt:corners*)) (nth 5 b) "Mitered")
+  )
+  (list e
+        (distof (nth 3 b) 2)
+        (* pi (/ (cond ((distof (nth 4 b) 2)) (45.0)) 180.0))
+        c
+        (cond ((distof (nth 6 b) 2)) (4.0))
+        (if (assoc (nth 7 b) *mt:laps*) (nth 7 b) "First")
+        (if (assoc (nth 8 b) *mt:joints*) (nth 8 b) "Interrupted")
+        (if (assoc (nth 1 b) *mt:hatchmodes*) (nth 1 b) "Line")
   )
 )
 
@@ -1094,11 +1246,14 @@
 ;;  (Center), from the line toward the band when the line is a border ("Right": the band on
 ;;  its left, the layers then the other way). Returns (g bands sides keys): g, the geometry of
 ;;  the bands of the Hatch and Space layers (see Dyl:QdBandLayers), with their lines: the
-;;  joins of two of them (but where a Line layer is), then the Line layers; bands, those
-;;  layers; sides, their borders ((dl dr) ...); keys, the layer key of each line (nil: the
-;;  border of the preset):
-(defun Dyl:QuickDrawLayersBand (pp closed jus opt / cur lays bands lnat joins lines keys)
-  (setq cur (car (Dyl:QuickDrawSides (Dyl:QuickDrawLayersWidth qd:layers) jus)))
+;;  joins of two of them (but where a Line layer is; none when a layer has its own band
+;;  settings or border: each layer is outlined then), then the Line layers; bands, those
+;;  layers; sides, their borders ((dl dr lopt bkey) ...); keys, the layer key of each line
+;;  (nil: the border of the preset):
+(defun Dyl:QuickDrawLayersBand (pp closed jus opt / cur own lays bands lnat joins lines keys)
+  (setq cur (car (Dyl:QuickDrawSides (Dyl:QuickDrawLayersWidth qd:layers) jus))
+        own (vl-some '(lambda (l) (or (nth 5 l) (nth 6 l))) qd:layers)
+  )
   (foreach l (if (= "Right" jus) (reverse qd:layers) qd:layers)
     (if (= "L" (car l))
       (setq lines (cons cur lines)
@@ -1106,8 +1261,8 @@
             lnat  (cons cur lnat)
       )
       (progn
-        (if (and bands (not (vl-some '(lambda (x) (equal x cur 1e-9)) lnat))) (setq joins (cons cur joins)))
-        (setq lays  (cons (list cur (- cur (cadr l))) lays)
+        (if (and bands (not own) (not (vl-some '(lambda (x) (equal x cur 1e-9)) lnat))) (setq joins (cons cur joins)))
+        (setq lays  (cons (list cur (- cur (cadr l)) (nth 5 l) (nth 6 l)) lays)
               bands (cons l bands)
               cur   (- cur (cadr l))
         )
@@ -1171,29 +1326,30 @@
 )
 
 ;;  The outlines of the assembly qd:layers along the line pp (see Dyl:QuickDrawSegs): those of
-;;  each Hatch layer; the border of the band, the joins of its layers, its Line layers and
-;;  its joints (Interrupted) go to qd:borders, drawn after the hatches (see
+;;  each Hatch layer (its joints and its hatch following the line or not as its own band
+;;  settings say, else as the band); the border of the band, the joins of its layers (or the
+;;  outline of each one, on its own border key when it has one), its Line layers and its
+;;  joints (Interrupted) go to qd:borders, drawn after the hatches (see
 ;;  Dyl:QuickDrawBorderMake):
-(defun Dyl:QuickDrawLayersSegs (pp closed jus z / opt sep line r g res)
-  (setq opt  (cond (qd:opt) ((Dyl:QuickDrawBandDefaults)))
-        sep  (= "Interrupted" (nth 6 opt))
-        line (= "Line" (nth 7 opt))
-        r    (Dyl:QuickDrawLayersBand pp closed jus opt)
-        g    (car r)
+(defun Dyl:QuickDrawLayersSegs (pp closed jus z / opt r g res)
+  (setq opt (cond (qd:opt) ((Dyl:QuickDrawBandDefaults)))
+        r   (Dyl:QuickDrawLayersBand pp closed jus opt)
+        g   (car r)
   )
-  (mapcar '(lambda (geo ly sd)
-             (if (= "P" (car ly)) (setq res (append res (Dyl:QuickDrawLayerHatch pp geo ly sd sep line z))))
+  (mapcar '(lambda (geo ly sd / o)
+             (setq o (cond ((nth 5 ly)) (opt)))
+             (if (= "P" (car ly))
+               (setq res (append res (Dyl:QuickDrawLayerHatch pp geo ly sd (= "Interrupted" (nth 6 o)) (= "Line" (nth 7 o)) z)))
+             )
            )
           (car g)
           (cadr r)
           (caddr r)
   )
   (setq qd:borders (append qd:borders
-                           (mapcar '(lambda (x) (list (car x) (cadr x) z)) (cadr g))
+                           (mapcar '(lambda (x) (list (car x) (cadr x) z (caddr x))) (cadr g))
                            (mapcar '(lambda (x k) (list (car x) (cadr x) z k)) (cadddr g) (cadddr r))
-                           (if sep
-                             (mapcar '(lambda (j) (list (list (cons (car j) 0.0) (cons (cadr j) 0.0)) nil z)) (caddr g))
-                           )
+                           (mapcar '(lambda (j) (list (list (cons (car j) 0.0) (cons (cadr j) 0.0)) nil z (caddr j))) (caddr g))
                    )
   )
   res
@@ -1486,14 +1642,18 @@
 ;;  both sides: centered on e, the first layer on its left (looking along it). A curve made at
 ;;  every place across it (the offsets of e, see Dyl:QuickDrawOffsetCurve): each Hatch layer
 ;;  is the outline between its two curves (see Dyl:QuickDrawCurveOutline, its ends square),
-;;  hatched with the angle of its hatch preset (from the drawing origin with Drawing origin);
+;;  hatched with the angle of its hatch preset (from the drawing origin with Drawing origin,
+;;  its own or that of the band);
 ;;  the curves are the borders of the band (its edges and the joins of its layers, the Line
-;;  layers on their layer key), with lines across its ends but Open (qd:borderents). Returns
-;;  ((outlines angle origin T fixed mat scale) ...) as Dyl:QuickDrawLayerHatch, nil with a
-;;  message when the curves cannot be made:
-(defun Dyl:QuickDrawCurveLayers (e p / w k smp org pl we cums crvs ok res c a b q ln lst ends m sc)
+;;  layers on their layer key), with lines across its ends but Open (qd:borderents). When a
+;;  layer has its own band settings or border, the lines across the ends are those of each
+;;  layer (but Open, its own or the band's), and a curve on the side of a layer with its own
+;;  border is on that border's layer key (but where a Line layer is), as Dyl:QdLayersBorders.
+;;  Returns ((outlines angle origin T fixed mat scale) ...) as Dyl:QuickDrawLayerHatch, nil
+;;  with a message when the curves cannot be made:
+(defun Dyl:QuickDrawCurveLayers (e p / w k smp org pl we cums crvs ok res c a b q ln lst ends m sc own bk)
   (setq w   (Dyl:QuickDrawLayersWidth qd:layers)
-        org (= "Origin" (nth 7 qd:opt))
+        own (vl-some '(lambda (l) (or (nth 5 l) (nth 6 l))) qd:layers)
         pl  (Dyl:QuickDrawLayersPlaces)
         ;;  The place of the far edge (the end of the last layer):
         we  (cadr (last (car pl)))
@@ -1533,9 +1693,10 @@
       (foreach bd (car pl)
         (if (= "P" (car (caddr bd)))
           (progn
-            (setq a  (car (Dyl:QuickDrawOffsetCurve (cdr (assoc (car bd) crvs)) 0.0))
-                  b  (car (Dyl:QuickDrawOffsetCurve (cdr (assoc (cadr bd) crvs)) 0.0))
-                  m  (caddr (caddr bd))
+            (setq a   (car (Dyl:QuickDrawOffsetCurve (cdr (assoc (car bd) crvs)) 0.0))
+                  b   (car (Dyl:QuickDrawOffsetCurve (cdr (assoc (cadr bd) crvs)) 0.0))
+                  org (= "Origin" (nth 7 (cond ((nth 5 (caddr bd))) (qd:opt))))
+                  m   (caddr (caddr bd))
                   sc (if (= "1" (nth 37 m)) (* (cadr (caddr bd)) (cond ((distof (nth 38 m) 2)) (1.0))))
             )
             (if (and a b (setq q (Dyl:QuickDrawCurveOutline e a b T)))
@@ -1551,10 +1712,18 @@
       ;;  The curves, borders of the band: its edges (a Line layer there: a copy on its key)
       ;;  and the joins of its layers (a Line layer there: on its key):
       (foreach x crvs
-        (setq ln (vl-remove-if-not '(lambda (y) (equal (car y) (car x) 1e-9)) (cadr pl)))
+        (setq ln (vl-remove-if-not '(lambda (y) (equal (car y) (car x) 1e-9)) (cadr pl))
+              ;;  The key of the own border of a layer on that side (the one before it first):
+              bk (if own
+                   (cond
+                     ((vl-some '(lambda (bd) (if (and (nth 6 (caddr bd)) (equal (cadr bd) (car x) 1e-9)) (nth 6 (caddr bd)))) (car pl)))
+                     ((vl-some '(lambda (bd) (if (and (nth 6 (caddr bd)) (equal (car bd) (car x) 1e-9)) (nth 6 (caddr bd)))) (car pl)))
+                   )
+                 )
+        )
         (cond
           ((or (equal (car x) 0.0 1e-9) (equal (car x) we 1e-9))
-           (setq lst (cons (cdr x) lst))
+           (setq lst (cons (if bk (cons (cdr x) bk) (cdr x)) lst))
            (foreach y ln
              (setq lst (append (mapcar '(lambda (z) (cons z (cdr y))) (Dyl:QuickDrawOffsetCurve (cdr x) 0.0)) lst))
            )
@@ -1565,17 +1734,35 @@
              (setq lst (append (mapcar '(lambda (z) (cons z (cdr y))) (Dyl:QuickDrawOffsetCurve (cdr x) 0.0)) lst))
            )
           )
+          ;;  On the side of a layer with its own border:
+          (bk (setq lst (cons (cons (cdr x) bk) lst)))
           ((setq lst (cons (cdr x) lst)))
         )
       )
-      ;;  The lines across the ends of an open object, but Open:
-      (if (and (not (vlax-curve-isClosed e)) (/= "Open" (car qd:opt)))
-        (progn
-          (setq ends (Dyl:QuickDrawCurveEnds (cdr (assoc 0.0 crvs)) (cdr (assoc we crvs))))
-          (setq lst (cons (Dyl:QuickDrawCurveEnd e (car ends) (caddr ends) T)
-                          (cons (Dyl:QuickDrawCurveEnd e (cadr ends) (cadddr ends) T) lst)
-                    )
-          )
+      ;;  The lines across the ends of an open object, but Open: across the whole band, or
+      ;;  across each layer when one has its own band settings or border (on its key):
+      (cond
+        ((vlax-curve-isClosed e))
+        (own
+         (foreach bd (car pl)
+           (if (/= "Open" (car (cond ((nth 5 (caddr bd))) (qd:opt))))
+             (progn
+               (setq ends (Dyl:QuickDrawCurveEnds (cdr (assoc (car bd) crvs)) (cdr (assoc (cadr bd) crvs)))
+                     bk   (nth 6 (caddr bd))
+               )
+               (foreach q (list (Dyl:QuickDrawCurveEnd e (car ends) (caddr ends) T) (Dyl:QuickDrawCurveEnd e (cadr ends) (cadddr ends) T))
+                 (setq lst (cons (if bk (cons q bk) q) lst))
+               )
+             )
+           )
+         )
+        )
+        ((/= "Open" (car qd:opt))
+         (setq ends (Dyl:QuickDrawCurveEnds (cdr (assoc 0.0 crvs)) (cdr (assoc we crvs))))
+         (setq lst (cons (Dyl:QuickDrawCurveEnd e (car ends) (caddr ends) T)
+                         (cons (Dyl:QuickDrawCurveEnd e (cadr ends) (cadddr ends) T) lst)
+                   )
+         )
         )
       )
       (setq qd:borderents (append qd:borderents lst))
@@ -2411,25 +2598,43 @@
 ;;  The kinds of layers: (kind label):
 (setq *qd:layerkinds* '(("P" "Hatch") ("S" "Space") ("L" "Line")))
 
-;;  The rows of the window for the layers lst ((kind ref thickness [hatch-key]) ...): (kind
-;;  preset thickness hatch-key line-key), the columns a layer of its kind does not use taken
-;;  from the new layer def (a row of the same columns), so that it can become another kind:
+;;  The rows of the window for the layers lst ((kind ref thickness [hatch-key [band
+;;  [border]]]) ...): (kind preset thickness hatch-key line-key band... border...): the band
+;;  settings of a Hatch layer in the columns 5 to 13 (on hatch ends extension angle corners
+;;  miter lap joints), its border in 14 and 15 (on key). The columns a layer of its kind does
+;;  not use taken from the new layer def (a row of the same columns), so that it can become
+;;  another kind:
 (defun Dyl:QuickDrawLayersRows (lst def)
   (mapcar '(lambda (l)
              (cond
-               ((= "P" (car l)) (list "P" (cadr l) (caddr l) (cond ((cadddr l)) ("")) (nth 4 def)))
-               ((= "S" (car l)) (list "S" (nth 1 def) (caddr l) "" (nth 4 def)))
-               ((list "L" (nth 1 def) (nth 2 def) "" (cadr l)))
+               ((= "P" (car l))
+                (append (list "P" (cadr l) (caddr l) (cond ((cadddr l)) ("")) (nth 4 def))
+                        (cond ((nth 4 l)) ((Remote>>LM:sublst def 5 9)))
+                        (cond ((nth 5 l)) ((Remote>>LM:sublst def 14 2)))
+                )
+               )
+               ((= "S" (car l)) (append (list "S" (nth 1 def) (caddr l) "" (nth 4 def)) (Remote>>LM:sublst def 5 11)))
+               ((append (list "L" (nth 1 def) (nth 2 def) "" (cadr l)) (Remote>>LM:sublst def 5 11)))
              )
            )
           lst
   )
 )
 
+;;  The band settings of a layer of an assembly when they are the defaults (see
+;;  Dyl:QuickDrawBandDefaults): kept off, they are not written:
+(setq *qd:layerband* '("Line" "Square" "" "45" "Mitered" "4" "First" "Interrupted"))
+
 ;;  The layers of the rows of the window, each one as its kind keeps it (see
-;;  Remote>>Dyl:MaterialLayers): (layers), or (nil message) for the first one not valid:
-(defun Dyl:QuickDrawLayersOf (rows / res msg)
+;;  Remote>>Dyl:MaterialLayers): (layers), or (nil message) for the first one not valid. The
+;;  band settings of a Hatch layer when they are on, or off but not the defaults (kept for
+;;  when they are on again); its border when it is on, or off on another key than the new
+;;  layer def:
+(defun Dyl:QuickDrawLayersOf (rows def / res msg b d)
   (foreach r rows
+    (setq b (Remote>>LM:sublst r 5 9)
+          d (Remote>>LM:sublst r 14 2)
+    )
     (cond
       (msg)
       ((and (/= "L" (car r)) (not (Remote>>Dyl:MaterialScale-p (caddr r))))
@@ -2438,7 +2643,26 @@
       ((and (= "P" (car r)) (= "" (cadr r)))
        (setq msg "No preset to use: save the preset first (a new one gets its id once saved).")
       )
-      ((= "P" (car r)) (setq res (cons (list "P" (cadr r) (caddr r) (cadddr r)) res)))
+      ((and (= "P" (car r))
+            (= "1" (car b))
+            (setq msg (vl-some '(lambda (k v) (Remote>>Dyl:MaterialDlgCheck k v)) '("mex" "mea" "mml") (list (nth 3 b) (nth 4 b) (nth 6 b))))
+       )
+      )
+      ((and (= "P" (car r)) (= "1" (car d)) (= "" (cadr d)))
+       (setq msg "No layer key for the border: add one in the Layer Keys window.")
+      )
+      ((= "P" (car r))
+       (setq res (cons (list "P"
+                             (cadr r)
+                             (caddr r)
+                             (cadddr r)
+                             (if (or (= "1" (car b)) (not (equal (cdr b) *qd:layerband*))) b)
+                             (if (or (= "1" (car d)) (/= (cadr d) (nth 15 def))) d)
+                       )
+                       res
+                 )
+       )
+      )
       ((= "S" (car r)) (setq res (cons (list "S" "" (caddr r)) res)))
       ((= "" (nth 4 r)) (setq msg "No layer key: add one in the Layer Keys window."))
       ((setq res (cons (list "L" (nth 4 r) "") res)))
@@ -2447,13 +2671,72 @@
   (if msg (list nil msg) (list (reverse res)))
 )
 
+;;  The band settings of the preset r a new layer starts from: (hatch ends extension angle
+;;  corners miter lap joints), its own (Custom band settings) or the defaults, never asked
+;;  (Ask: the default):
+(defun Dyl:QuickDrawLayersBandOf (r / v)
+  (if (= "1" (nth *qd:bandon* r))
+    (mapcar '(lambda (k def / v)
+               (setq v (cond ((nth (cdr (assoc k *qd:behaviors*)) r)) ("")))
+               (if (or (= "Ask" v) (and (/= "" def) (= "" v) (not (member k '("mex"))))) def v)
+             )
+            '("mht" "men" "mex" "mea" "mco" "mml" "mlt" "mjo")
+            *qd:layerband*
+    )
+    *qd:layerband*
+  )
+)
+
+;;  The inches of a drawing unit (INSUNITS, else MEASUREMENT: millimeters or inches), for the
+;;  preview of an assembly:
+(defun Dyl:QuickDrawUnitInches (/ u)
+  (setq u (getvar "INSUNITS"))
+  (cond
+    ((= u 1) 1.0)
+    ((= u 2) 12.0)
+    ((= u 4) (/ 1.0 25.4))
+    ((= u 5) (/ 1.0 2.54))
+    ((= u 6) (/ 1000.0 25.4))
+    ((= 1 (getvar "MEASUREMENT")) (/ 1.0 25.4))
+    (1.0)
+  )
+)
+
+;;  The preview of the preset x (a row of pst:lst) in the preview of an assembly (see
+;;  Installer\Windows\Engine\Assembly.cs): its hatch as in the Gallery (see
+;;  Dyl:QuickDrawGalleryBand); its hatch scale from its thickness (Hatch scale from width), its
+;;  ppu "w" and the ppu of a unit of thickness, at the drawing scale:
+(defun Dyl:QuickDrawLayersSpec (x / m f)
+  (if (setq m (Remote>>Dyl:MaterialGet (nth 3 x)))
+    (progn
+      (setq m (Dyl:QuickDrawMat m x)
+            f (Remote>>LM:str->lst (Dyl:QuickDrawGalleryBand "P" m 1.0) "?")
+      )
+      (if (and (= "P" (car f)) (= 7 (length f)) (= "1" (nth 37 m)))
+        (setq f (Remote>>Dyl:ListSubst
+                  (Remote>>Dyl:ListSubst f 4 (strcat "w" (Remote>>Dyl:MaterialNumP (/ (* (cond ((distof (nth 38 m) 2)) (1.0)) (Dyl:QuickDrawUnitInches)) (Remote>>Dyl:MaterialDrawScale)) 10)))
+                  6
+                  (Remote>>Dyl:MaterialNumP (Remote>>Dyl:MaterialDrawScale) 4)
+                )
+        )
+      )
+      (Remote>>LM:lst->str f "?")
+    )
+    "X?1"
+  )
+)
+
 ;;  The Assembly Layers window on the layers of the preset r (see Remote>>Dyl:MaterialLayers),
 ;;  the presets of the Quick Draw window (pst:lst, local of Remote>>Dyl:PresetDialog) for its
 ;;  Preset list: those saved (with an id) but r, not assemblies, sorted by group and name, then
-;;  the presets of its layers that no longer exist (marked). Shown again on the layers edited
-;;  while one is not valid. Returns the text of the layers on OK (see
+;;  the presets of its layers that no longer exist (marked). The Band Settings window of
+;;  a layer (its open button) is opened by the window itself, on the lists given here: the
+;;  justification of the preset shown greyed out (the method "Layer": the line is the one of
+;;  the band), never Ask. The preview of the assembly: the preview of each preset (lp/specs),
+;;  the ends of the band (ll/ends), the drawing units and scale (ll/paper). Shown again on the
+;;  layers edited while one is not valid. Returns the text of the layers on OK (see
 ;;  Remote>>Dyl:MaterialLayersStr), nil on Cancel:
-(defun Dyl:QuickDrawLayersDialog (r / lst pre lks mark def rows sel res out w)
+(defun Dyl:QuickDrawLayersDialog (r / lst pre lks mark def rows sel res out w bnd bk)
   (setq lst (Remote>>Dyl:MaterialLayers (nth *qd:layerscol* r))
         pre (mapcar '(lambda (x)
                        (list (car x)
@@ -2474,16 +2757,27 @@
     )
   )
   ;;  The layer keys, those of the layers kept when they are not defined (marked):
-  (Remote>>Dyl:MaterialDlgKeys nil (mapcar '(lambda (l) (if (= "L" (car l)) (cadr l) (cadddr l))) lst))
+  (Remote>>Dyl:MaterialDlgKeys nil
+                               (append (mapcar '(lambda (l) (if (= "L" (car l)) (cadr l) (cadddr l))) lst)
+                                       (mapcar '(lambda (l) (cadr (nth 5 l))) lst)
+                               )
+  )
   (setq lks  (Remote>>Dyl:LayerKeyRead)
         mark (mapcar '(lambda (k) (if (assoc k lks) k (strcat k "   (not defined)"))) mt:keys)
+        bk   (cond ((car (member (nth *qd:border* r) mt:keys))) ((car mt:keys)) (""))
+        bnd  (Dyl:QuickDrawLayersBandOf r)
         ;;  A new layer: a Hatch layer of the first preset (its width), a Line on the border
-        ;;  layer key of the preset:
-        def  (list "P"
-                   (cond ((car (car pre))) (""))
-                   (cond ((/= "" (cond ((caddr (car pre))) (""))) (caddr (car pre))) ("10"))
-                   ""
-                   (cond ((car (member (nth *qd:border* r) mt:keys))) ((car mt:keys)) (""))
+        ;;  layer key of the preset; its band settings off (from those of the preset), its
+        ;;  border off (on that key):
+        def  (append (list "P"
+                           (cond ((car (car pre))) (""))
+                           (cond ((/= "" (cond ((caddr (car pre))) (""))) (caddr (car pre))) ("10"))
+                           ""
+                           bk
+                           "0"
+                     )
+                     bnd
+                     (list "0" bk)
              )
         rows (Dyl:QuickDrawLayersRows lst def)
   )
@@ -2502,9 +2796,19 @@
                                                      (cons "lh/vals" (cons "" mt:keys))
                                                      (cons "ly/list" mark)
                                                      (cons "ly/vals" mt:keys)
+                                                     (cons "lbk/list" mark)
+                                                     (cons "lbk/vals" mt:keys)
+                                                     ;;  The preview of the assembly:
+                                                     (cons "lp/specs" (mapcar '(lambda (p) (cond ((assoc (car p) pst:lst) (Dyl:QuickDrawLayersSpec (assoc (car p) pst:lst))) ("X?1"))) pre))
+                                                     (cons "ll/ends" (list (nth 1 bnd) (nth 2 bnd) (nth 3 bnd)))
+                                                     (cons "ll/paper" (list (Remote>>Dyl:MaterialNumP (Dyl:QuickDrawUnitInches) 10) (Remote>>Dyl:MaterialNumP (Remote>>Dyl:MaterialDrawScale) 4)))
+                                                     ;;  The Band Settings window of a layer:
+                                                     (cons "mth" "Layer")
                                                )
+                                               (Dyl:QuickDrawLayersBandLists r)
                                                (Dyl:WinOff "lp" (not pre))
                                                (Dyl:WinOff "ly" (not mt:keys))
+                                               (Dyl:WinOff "lbk" (not mt:keys))
                                        )
                           )
                 )
@@ -2512,13 +2816,35 @@
       )
       (setq rows (cdr (assoc "ll/rows" (cdr res)))
             sel  (Dyl:WinGet res "ll.sel")
-            out  (Dyl:QuickDrawLayersOf rows)
+            out  (Dyl:QuickDrawLayersOf rows def)
       )
       (cadr out)
     )
     (alert (cadr out))
   )
   (if (= 1 (car res)) (Remote>>Dyl:MaterialLayersStr (car out)))
+)
+
+;;  The lists of the Band Settings window of a layer (see Dyl:QuickDrawBandVals): never Ask;
+;;  the justification of the preset r, greyed out:
+(defun Dyl:QuickDrawLayersBandLists (r / res)
+  (foreach x (cddr (assoc "BandSettings" *mt:bandwindows*))
+    (if (/= 'edit (caddr x))
+      (setq res (append res
+                        (list (cons (strcat (car x) "/list") (mapcar 'cadr (Dyl:QuickDrawNoAsk (car x) (caddr x))))
+                              (cons (strcat (car x) "/vals") (mapcar 'car (Dyl:QuickDrawNoAsk (car x) (caddr x))))
+                        )
+                )
+      )
+    )
+  )
+  (cons (cons "mjs" (itoa (cond ((vl-position (nth 7 r) (mapcar 'car *mt:justify*))) (1)))) res)
+)
+
+;;  The items lst of the list key of the Band Settings window, without Ask but for the
+;;  justification (shown greyed out):
+(defun Dyl:QuickDrawNoAsk (key lst)
+  (if (and (/= "mjs" key) (= "Ask" (car (car lst)))) (cdr lst) lst)
 )
 
 ;;-------------------------=={ Gallery }==------------------------;;

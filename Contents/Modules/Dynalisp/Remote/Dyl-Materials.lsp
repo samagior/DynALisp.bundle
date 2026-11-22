@@ -193,23 +193,37 @@
 ;;  layer is kind:ref:thickness, the layers divided by | (never ; or , : the separators of
 ;;  the CSV files). Its kind: P, a band hatched as a Quick Draw preset (ref: its id) draws
 ;;  it; S, a space (no hatch); L, a line (ref: its layer key, no thickness). The thickness of
-;;  P and S in drawing units. A P layer can have a fourth field, the layer key of its hatch
-;;  in place of the hatch layer key of its preset (P:qd-Brick:90:HATCH). Returns
-;;  ((kind ref thickness [hatch-key]) ...), the layers that are valid only (ref and layer key
-;;  in upper case for L; the hatch key in upper case, "" for the key of the preset):
-(defun Remote>>Dyl:MaterialLayers (str / res k r w)
+;;  P and S in drawing units. A P layer can have three more fields: the layer key of its
+;;  hatch in place of the hatch layer key of its preset (P:qd-Brick:90:HATCH, "": the key of
+;;  its preset), its own band settings, and its own border, the values of each divided by ~:
+;;    band    on~hatch~ends~extension~angle~corners~miter~lap~joints (on "1"; off "0", the
+;;            values kept for when it is on again; see *mt:bandwindows*)
+;;    border  on~key (its outline on that layer key)
+;;  (P:qd-Brick:90::1~Line~Extended~~45~Lapped~4~First~Interrupted:1~A-WALL). Returns
+;;  ((kind ref thickness [hatch-key [band [border]]]) ...), the layers that are valid only
+;;  (ref and layer key in upper case for L; the hatch key in upper case, "" for the key of the
+;;  preset; band and border as lists of their values, nil when there are none):
+(defun Remote>>Dyl:MaterialLayers (str / res k r w b d)
   (if (= 'STR (type str))
     (foreach x (Remote>>LM:str->lst str "|")
       (setq x (mapcar '(lambda (y) (vl-string-trim " " y)) (Remote>>LM:str->lst x ":")))
-      (if (member (length x) '(3 4))
+      (if (member (length x) '(3 4 5 6))
         (progn
           (setq k (strcase (car x))
                 r (cadr x)
                 w (caddr x)
+                b (Remote>>LM:str->lst (cond ((nth 4 x)) ("")) "~")
+                d (Remote>>LM:str->lst (cond ((nth 5 x)) ("")) "~")
           )
           (cond
             ((and (= "P" k) (/= "" r) (Remote>>Dyl:MaterialScale-p w))
-             (setq res (cons (list "P" r w (strcase (cond ((cadddr x)) ("")))) res))
+             (setq res (cons (list "P" r w (strcase (cond ((cadddr x)) ("")))
+                                   (if (= 9 (length b)) b)
+                                   (if (= 2 (length d)) (list (car d) (strcase (cadr d))))
+                             )
+                             res
+                       )
+             )
             )
             ((and (= "S" k) (Remote>>Dyl:MaterialScale-p w)) (setq res (cons (list "S" "" w) res)))
             ((and (= "L" k) (/= "" r)) (setq res (cons (list "L" (strcase r) "") res)))
@@ -221,15 +235,24 @@
   (reverse res)
 )
 
-;;  The text of the layers lst (see Remote>>Dyl:MaterialLayers) for the Assembly column:
+;;  The text of the layers lst (see Remote>>Dyl:MaterialLayers) for the Assembly column (the
+;;  fields of a P layer after its thickness only when it has them):
 (defun Remote>>Dyl:MaterialLayersStr (lst)
   (cond
     ((Remote>>LM:lst->str
-       (mapcar '(lambda (l)
-                  (strcat (car l) ":" (cadr l) ":" (caddr l)
-                          ;;  The hatch layer key of a P layer, only when it has one:
-                          (if (and (= "P" (car l)) (cadddr l) (/= "" (cadddr l))) (strcat ":" (cadddr l)) "")
+       (mapcar '(lambda (l / x)
+                  (setq x (if (= "P" (car l))
+                            (list (cond ((cadddr l)) (""))
+                                  (cond ((Remote>>LM:lst->str (nth 4 l) "~")) (""))
+                                  (cond ((Remote>>LM:lst->str (nth 5 l) "~")) (""))
+                            )
+                          )
                   )
+                  ;;  The empty fields at the end left out:
+                  (while (and x (= "" (last x)))
+                    (setq x (reverse (cdr (reverse x))))
+                  )
+                  (Remote>>LM:lst->str (append (list (car l) (cadr l) (caddr l)) x) ":")
                 )
                lst
        )
