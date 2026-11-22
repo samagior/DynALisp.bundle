@@ -1,5 +1,5 @@
 """BuildAssemblies.py - the default assemblies of Quick Draw: the typical assemblies of the
-building code (NBC Tables 9.10.3.1.-A, walls, and -B, floors), written to
+building code (NBC 2020 Tables 9.10.3.1.-A, walls, and -B, floors, ceilings and roofs), written to
 Contents/Modules/Dynalisp/Res/QuickDrawAssemblies.csv, their thicknesses in millimetres.
 
 The rows of the tables are in Walls.txt and Floors.txt beside this script (their values as the
@@ -91,9 +91,11 @@ def number(v):
 
 
 def higher(note, what):
-    """'1 h(8)' -> ' Higher rating 1 h under note 8.'"""
+    """'1 h(8)' -> ' Higher rating 1 h under note 8.'; '30 min(18), 45 min(28)' -> one sentence each."""
     if not note:
         return ""
+    if ", " in note:
+        return "".join(higher(n, what) for n in note.split(", "))
     m = re.fullmatch(r"(.*?)\((\d+)\)", note)
     if m:
         return f" {what} {m.group(1).strip()} under note {m.group(2)}."
@@ -111,20 +113,21 @@ def rc_layer(fill=False):
 
 
 def wall(r):
-    i, kind, studs, ab, rc, s1, s2, lb, nlb, stc = r
+    i, kind, studs, ab, rc, s1, s2, lb, nlb, stc = r[:10]
+    notes = r[10] if len(r) > 10 else ""
     ls, ext, desc = [], "First", ""
     side1 = boards(s1) if s1 not in ("-", "sheathing", "veneer") else []
     rcs = rc if rc != "-" else ""
     if kind == "W":
-        core = [layer(ABS if ab == "89" else VOID, "89", True, f"{WOOD}~{PCT[studs]}")]
+        core = [layer(VOID if ab == "0" else ABS, "89", True, f"{WOOD}~{PCT[studs]}")]
         desc = f"38x89 wood studs at {spacing_text(studs)} o.c."
     elif kind == "ST":
         core = [layer(ABS if ab == "89" else VOID, "140", True)]
         desc = "Two rows of 38x89 wood studs at 400 or 600 mm o.c., staggered on a 38x140 plate."
     elif kind == "DP":
-        a = ab in ("both", "one")
+        a = ab in ("both", "one", "rwboth")
         core = [layer(ABS if a else VOID, "89", True, f"{WOOD}~23"), layer(VOID, "25"),
-                layer(ABS if ab == "both" else VOID, "89", True, f"{WOOD}~23")]
+                layer(ABS if ab in ("both", "rwboth") else VOID, "89", True, f"{WOOD}~23")]
         desc = "Two rows of 38x89 wood studs at 400 or 600 mm o.c. on separate 38x89 plates 25 mm apart."
     elif kind in ("EW", "EW140"):
         d = "140" if kind == "EW140" else "89"
@@ -156,6 +159,15 @@ def wall(r):
         desc += f" {t} mm {'glass fibre' if ab.endswith('g') else 'absorptive material'} in the cavity."
     elif ab == "both":
         desc += " 89 mm absorptive material in each row."
+    elif ab == "rwboth":
+        desc += " 89 mm rock or slag fibre insulation in each row (note 11)."
+    elif ab == "rw89":
+        desc += " 89 mm rock or slag fibre insulation (note 11)."
+    elif ab == "cel89":
+        desc += " 89 mm dry-blown cellulose fibre insulation (note 12)."
+    elif ab in ("rw", "gf", "cel"):
+        desc += {"rw": " Rock or slag fibre insulation (note 11).", "gf": " Glass fibre insulation (note 21).",
+                 "cel": " Dry-blown cellulose fibre insulation (note 12)."}[ab]
     elif ab == "one":
         desc += " 89 mm absorptive material in one row."
     elif ab == "0":
@@ -193,12 +205,19 @@ def wall(r):
         desc += f" Resilient metal channels at {spacing_text(rcs)} o.c. on one side."
 
     # The faces:
+    inside = board_text(s1)[0].upper() + board_text(s1)[1:] + " on the inside"
     if s2 == "sheathing":
         side2 = [layer("mt-OSB", "11")]
-        desc += f" {board_text(s1)[0].upper() + board_text(s1)[1:]} on the inside; sheathing and cladding outside (any of Part 9, note 12)."
+        desc += f" {inside}, exterior OSB or plywood sheathing (note 17) or exterior gypsum sheathing (note 18) and cladding (note 19)."
+    elif s2 == "osb":
+        side2 = [layer("mt-OSB", "11")]
+        desc += f" {inside}, exterior OSB or plywood sheathing (note 17) and cladding (note 19)."
+    elif s2 == "gypsheath":
+        side2 = [layer("mt-GypsumSheathing", "15.9")]
+        desc += f" {inside}, exterior gypsum sheathing (note 18) and cladding (note 19)."
     elif s2 == "veneer":
         side2 = [layer("mt-OSB", "11"), layer("mt-AirWall20", "25"), layer("mt-Brick", "90")]
-        desc += f" {board_text(s1)[0].upper() + board_text(s1)[1:]} on the inside; sheathing and masonry veneer outside (note 13)."
+        desc += f" {inside}, exterior wood, gypsum or insulated sheathing (note 20) and a masonry veneer 89 mm thick at least."
     elif s2.endswith("+osb"):
         side2 = [layer("mt-OSB", "12.7")] + boards(s2[:-4])
         desc += f" {board_text(s1)} on the channel side, 12.7 mm OSB and {board_text(s2[:-4])} on the other."
@@ -219,12 +238,19 @@ def wall(r):
     nlm, nln = minutes(nlb)
     stm, stn = number(stc)
     desc += higher(lbn, "Load-bearing rating") + higher(nln, "Non-load-bearing rating") + higher(stn, "STC")
-    desc += " NBC Table 9.10.3.1.-A."
+    desc += (" " + notes if notes else "") + " NBC Table 9.10.3.1.-A."
     return [f"as-{i}", "Wall", i, "|".join(ls), "1~MED", "1~THIN", ext, "mm", desc.strip().replace("; ", ", "), lbm, nlm, stm, ""]
 
 
+JOISTS = {  # kind: (depth here, text)
+    "WJ": ("235", "Wood joists or wood I-joists"), "WS": ("235", "Wood joists"), "WI": ("241", "Wood I-joists"),
+    "TR": ("305", "Wood floor trusses"), "SC": ("203", "Cold-formed steel joists"),
+    "RT": ("300", "Wood roof trusses"), "MS": ("300", "Supports of the membrane"),
+}
+
+
 def floor(r):
-    i, kind, joists, ab, sup, ceil, fire, stc, iic = r
+    i, top, sub, kind, sp, ab, sup, ceil, fire, stc, iic = r
     ls, desc = [], ""
     if kind == "SLAB90":
         ls, desc = [layer("mt-Concrete", "90", True)], "90 mm reinforced concrete slab, 20 mm cover."
@@ -240,41 +266,55 @@ def floor(r):
     elif kind == "CSJ65":
         ls = [layer("mt-Concrete", "65"), layer(VOID, "300", True)]
         desc = "Composite steel joists at 1250 mm o.c. with 65 mm of concrete (155 kg/m2 at least); the depth of the joists is not set by the table (300 here)."
-    elif kind in ("WJ", "WJ2", "WI", "WI2"):
-        two = kind.endswith("2")
-        ij = kind.startswith("WI")
-        sub = [layer("mt-Plywood", "11"), layer("mt-Plywood", "15.5")] if two else [layer("mt-Plywood", "15.5")]
-        d = "241" if ij else "235"
-        sp = "400" if joists == "400" else "600"
-        what = "Wood I-joists" if ij else ("Wood joists" if kind == "WJ2" and joists == "400" else "Wood joists or I-joists")
-        ls = sub + [layer(ABS if ab == "abs" else VOID, d, True)]
-        desc = f"{what} at {'400 mm o.c.' if joists == '400' else '600 mm o.c. at most'} (depth not set by the table: {d} here), "
-        desc += ("11 mm plywood or OSB under 15.5 mm plywood or OSB (or 17 mm T&G) subfloor" if two else "15.5 mm plywood or OSB (or 17 mm T&G) subfloor") + ", "
-        desc += ("absorptive material in the cavity." if ab == "abs" else "no absorptive material.")
+    elif kind in JOISTS:
+        d, what = JOISTS[kind]
+        if top == "GC25":
+            ls.append(layer("mt-GypsumConcrete", "25"))
+            desc += "25 mm gypsum-concrete topping (44 kg/m2 at least). "
+        elif top == "C38":
+            ls.append(layer("mt-Concrete", "38"))
+            desc += "38 mm concrete topping (70 kg/m2 at least). "
+        elif top.startswith("C50D"):
+            rib = top[4:]
+            ls += [layer("mt-Concrete", "50"), layer("mt-SteelDeck", rib)]
+            desc += f"50 mm concrete on a steel deck with {rib} mm ribs. "
+        if sub == "15.5":
+            ls.append(layer("mt-Plywood", "15.5"))
+            desc += "15.5 mm plywood, OSB or waferboard (or 17 mm T&G lumber) subfloor. "
+        elif sub == "11+15.5":
+            ls += [layer("mt-Plywood", "11"), layer("mt-Plywood", "15.5")]
+            desc += "Subfloor of 11 mm sanded plywood, OSB or waferboard under 15.5 mm plywood, OSB or waferboard (or 17 mm T&G lumber). "
+        elif sub == "15.5+15.5":
+            ls += [layer("mt-Plywood", "15.5"), layer("mt-Plywood", "15.5")]
+            desc += "Subfloor of 2 layers of 15.5 mm plywood, OSB or waferboard (or 17 mm T&G lumber on top). "
+        ls.append(layer(ABS if ab == "abs" else VOID, d, True))
+        at = f"not more than {sp[:-3]} mm o.c." if sp.endswith("max") else f"{sp} mm o.c."
+        desc += f"{what} at {at} (depth not set by the table: {d} here)"
+        desc += {"abs": ", absorptive material in the cavity.", "0": ", no absorptive material."}.get(ab, ".")
     else:
         raise ValueError(kind)
     if sup.startswith("RC"):
-        s = sup[2:]
         ls.append(rc_layer())
-        desc += f" Resilient metal channels at {s.replace('/', ' or ')} mm o.c."
+        desc += f" Resilient metal channels at {sup[2:].replace('/', ' or ')} mm o.c."
     elif sup.startswith("SF"):
         ls.append(layer(SF, "22"))
-        desc += f" Steel furring channels at {sup[2:]} mm o.c."
+        desc += f" Steel furring channels at {sup[2:].replace('/', ' or ')} mm o.c."
     elif sup.startswith("FC"):
         ls.append(layer(SF, "22"))
         desc += " Furring channels at 600 mm o.c. at most, wired to the joists."
     if sup == "DRC":
         a, b = ceil.split("+")
         ls += boards(a) + [rc_layer()] + boards(b)
-        desc += f" {board_text(a)[0].upper() + board_text(a)[1:]} fixed to the joists, resilient metal channels at 400 or 600 mm o.c., {board_text(b)} on the channels."
+        desc += f" {board_text(a)[0].upper() + board_text(a)[1:]} fixed to the framing, resilient metal channels at 400 or 600 mm o.c. through it, {board_text(b)} on the channels."
     elif ceil != "-":
         ls += boards(ceil)
         desc += f" Ceiling of {board_text(ceil)}."
     fm, fn = minutes(fire)
     sm, sn = number(stc)
     im, inn = number(iic)
-    desc += higher(fn, "Rating") + higher(sn, "STC") + " NBC Table 9.10.3.1.-B."
-    return [f"as-{i}", "Floor", i, "|".join(ls), "1~MED", "1~THIN", "First", "mm", desc.strip().replace("; ", ", "), fm, "", sm, im]
+    desc += higher(fn, "Rating") + higher(sn, "STC") + higher(inn, "IIC") + " NBC Table 9.10.3.1.-B."
+    group = {"R": "Roof", "M": "Ceiling"}.get(i[0], "Floor")
+    return [f"as-{i}", group, i, "|".join(ls), "1~MED", "1~THIN", "First", "mm", desc.strip().replace("; ", ", "), fm, "", sm, im]
 
 
 def rows(name, fn):
@@ -296,6 +336,9 @@ if __name__ == "__main__":
     all_rows = rows("Walls.txt", wall) + rows("Floors.txt", floor)
     ids = [r[0] for r in all_rows]
     assert len(ids) == len(set(ids)), "repeated id"
+    if len(sys.argv) > 1 and sys.argv[1].startswith("-"):
+        print(__doc__)
+        sys.exit(0)
     out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "..", "Contents", "Modules", "Dynalisp", "Res", "QuickDrawAssemblies.csv")
     with open(out, "w", encoding="utf-8", newline="\n") as f:
         f.write(";".join(head) + "\n")

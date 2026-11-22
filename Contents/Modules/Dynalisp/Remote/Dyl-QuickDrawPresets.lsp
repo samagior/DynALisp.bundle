@@ -85,7 +85,7 @@
 ;;  assembly is worth by the building code: its description, its fire-resistance ratings in
 ;;  minutes (load-bearing, non-load-bearing), its sound transmission class (STC) and its
 ;;  impact insulation class (IIC). The default assemblies (as-*) are the typical assemblies of
-;;  the building code (NBC Tables 9.10.3.1.-A and -B), named by their number (W1a, F4c...),
+;;  the building code (NBC 2020 Tables 9.10.3.1.-A and -B), named by their number (W1a, F4c...),
 ;;  their thicknesses in millimetres:
 (setq *dyl:presetspecs*
   (cons

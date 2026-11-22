@@ -1,7 +1,11 @@
-# The walls of NBC Table 9.10.3.1.-A (fire and sound resistance of walls), read by BuildAssemblies.py.
-# Id;Kind;Studs;Abs;RC;Side1;Side2;LB;NLB;STC
+# The walls of NBC 2020 Table 9.10.3.1.-A (fire and sound resistance of walls), read by BuildAssemblies.py.
+# Id;Kind;Studs;Abs;RC;Side1;Side2;LB;NLB;STC[;Notes]
 # Kind: W1 single 38x89, ST staggered 140, DP double on separate plates, EW exterior, SN steel NLB, SL steel LB, B block
-# Studs: spacing (400, 600, 400/600) or depth for steel/block; Abs: 89/65/150/0/opt/both/one/fill; RC: none, 1@400, 1@600, 1@400/600, 2@400/600
+# Studs: spacing (400, 600, 400/600) or depth for steel/block; Abs: 89/65/150/0/opt/both/one/fill, rw89 rock or slag wool
+# (note 11), cel89 dry-blown cellulose (note 12), rwboth rock wool in both rows, and for EW the insulation: rw, gf glass fibre
+# (note 21), cel; RC: none, 1@400, 1@600, 1@400/600, 2@400/600; Side2 of EW: sheathing (OSB, plywood or gypsum sheathing),
+# osb (OSB or plywood only), gypsheath (gypsum sheathing only), veneer (any sheathing and a masonry veneer); Notes: added to
+# the description.
 W1a;W;400/600;89;-;1x15.9X;1x15.9X;1 h;1 h;36
 W1b;W;400/600;89;-;1x12.7X;1x12.7X;45 min [1 h(8)];45 min [1 h(8)];34
 W1c;W;400/600;89;-;1x12.7R;1x12.7R;30 min;30 min [45 min(8)];32
@@ -25,13 +29,13 @@ W5b;W;600;89;400/600;1x15.9X;2x15.9X;45 min;1 h;54
 W5c;W;400;89;400/600;1x12.7X;2x12.7X;45 min;1 h;49
 W5d;W;600;89;400/600;1x12.7X;2x12.7X;45 min;1 h;53
 W6a;W;400/600;89;400;2x15.9X;2x15.9X;1.5 h;2 h;55
-W6b;W;400/600;89;600;2x15.9X;2x15.9X;1.5 h;2 h;58
-W6c;W;400;89;400;2x12.7X;2x12.7X;1 h;1.5 h;53
-W6d;W;400;89;600;2x12.7X;2x12.7X;1 h;1.5 h;55
-W6e;W;600;89;400;2x12.7X;2x12.7X;1 h;1.5 h;55
-W6f;W;600;89;600;2x12.7X;2x12.7X;1 h;1.5 h;58
-W6g;W;400/600;89;400;2x12.7R;2x12.7R;45 min;1 h;50
-W6h;W;400/600;89;600;2x12.7R;2x12.7R;45 min;1 h;52
+W6b;W;400/600;rw89;400/600;2x15.9X;2x15.9X;2 h;2 h;-;Blocking at mid-height (note 10).
+W6c;W;400;cel89;400;2x15.9X;2x15.9X;2 h;2 h;-;Blocking at mid-height (note 10).
+W6d;W;400/600;89;600;2x15.9X;2x15.9X;1.5 h;2 h;58
+W6e;W;400;89;400;2x12.7X;2x12.7X;1 h;1.5 h;53
+W6f;W;400;89;600;2x12.7X;2x12.7X;1 h;1.5 h;55
+W6g;W;600;89;400;2x12.7X;2x12.7X;1 h;1.5 h;55
+W6h;W;600;89;600;2x12.7X;2x12.7X;1 h;1.5 h;58
 W6i;W;400/600;0;400/600;2x15.9X;2x15.9X;1.5 h;2 h;47
 W6j;W;400/600;0;400/600;2x12.7X;2x12.7X;1 h;1.5 h;46
 W7a;ST;400/600;89;-;1x15.9X;1x15.9X;1 h;1 h;47
@@ -72,13 +76,39 @@ W15f;DP;400/600;one;-;2x12.7R;2x12.7R;45 min;1 h;57
 W15g;DP;400/600;0;-;2x15.9X;2x15.9X;1.5 h;2 h;56
 W15h;DP;400/600;0;-;2x12.7X;2x12.7X;1 h;1.5 h;55
 W15i;DP;400/600;0;-;2x12.7R;2x12.7R;45 min;1 h;51
-EW1a;EW;400/600;89;-;1x15.9X;sheathing;1 h;1 h;-
-EW1b;EW;400/600;89;-;1x12.7X;sheathing;45 min;45 min;-
-EW1c;EW;400/600;89;-;2x12.7R;sheathing;45 min;45 min;-
-EW1d;EW;400/600;89;-;1x12.7X;veneer;45 min;45 min;-
-EW2a;EW;400;89g;-;1x15.9X;sheathing;1 h;1 h;-
-EW2b;EW;400;89g;-;1x12.7X;veneer;45 min;45 min;-
-EW2c;EW140;600;140g;-;1x15.9X;sheathing;45 min;45 min;-
+W16a;DP;400/600;both;400/600;2x15.9X;2x15.9X;1.5 h;2 h;66
+W16b;DP;400;rwboth;400;2x15.9X;2x15.9X;2 h;2 h;-;Blocking at mid-height in both rows (note 10), board fasteners at 200 mm o.c. at most (note 14).
+W16c;DP;400/600;both;400/600;2x12.7X;2x12.7X;1 h;1.5 h;65
+W16d;DP;400/600;one;400/600;2x15.9X;2x15.9X;1.5 h;2 h;62
+W16e;DP;400/600;one;400/600;2x12.7X;2x12.7X;1 h;1.5 h;60
+W16f;DP;400/600;0;400/600;2x15.9X;2x15.9X;1.5 h;2 h;56
+W16g;DP;400/600;0;400/600;2x12.7X;2x12.7X;1 h;1.5 h;55
+EW1a;EW;400/600;rw;-;1x15.9X;sheathing;1 h;1 h;-;Interior board fastened at 200 mm o.c. at most (note 16).
+EW1b;EW;400/600;rw;-;1x15.9X;sheathing;45 min;1 h;-
+EW1c;EW;400/600;rw;-;1x12.7X;sheathing;45 min;1 h;-;Interior board fastened at 200 mm o.c. at most (note 16).
+EW1d;EW;400/600;rw;-;1x12.7X;sheathing;-;45 min;-
+EW1e;EW140;400;rw;-;1x15.9X;veneer;45 min;45 min;-;Interior board fastened at 200 mm o.c. at most (note 16).
+EW2a;EW;400;gf;-;1x15.9X;sheathing;1 h;1 h;-;Interior board fastened at 150 mm o.c. at most (note 22), gypsum sheathing 12.7 mm at least (note 23).
+EW2b;EW;400/600;gf;-;1x15.9X;sheathing;45 min;1 h;-;Interior board fastened at 200 mm o.c. at most (note 16).
+EW2c;EW;400;gf;-;1x15.9X;osb;45 min;1 h;-
+EW2d;EW;600;gf;-;1x15.9X;osb;-;45 min;-
+EW2e;EW;400/600;gf;-;1x15.9X;gypsheath;-;45 min;-
+EW2f;EW;400;gf;-;1x12.7X;osb;45 min;1 h;-;Interior board fastened at 200 mm o.c. at most (note 16).
+EW2g;EW;600;gf;-;1x12.7X;osb;-;45 min;-;Interior board fastened at 200 mm o.c. at most (note 16).
+EW2h;EW;400/600;gf;-;1x12.7X;gypsheath;-;45 min;-;Interior board fastened at 200 mm o.c. at most (note 16).
+EW2i;EW;400;gf;-;1x12.7X;osb;-;45 min;-
+EW2j;EW140;400;gf;-;1x15.9X;veneer;45 min;45 min;-;Interior board fastened at 200 mm o.c. at most (note 16).
+EW3a;EW;400;cel;-;1x15.9X;sheathing;1 h;1 h;-;Interior board fastened at 200 mm o.c. at most (note 16).
+EW3b;EW;600;cel;-;1x15.9X;osb;1 h;1 h;-;Interior board fastened at 200 mm o.c. at most (note 16).
+EW3c;EW;600;cel;-;1x15.9X;gypsheath;45 min;1 h;-;Interior board fastened at 200 mm o.c. at most (note 16).
+EW3d;EW;400;cel;-;1x15.9X;sheathing;45 min;1 h;-
+EW3e;EW;600;cel;-;1x15.9X;osb;45 min;1 h;-
+EW3f;EW;400;cel;-;1x12.7X;sheathing;45 min;1 h;-;Interior board fastened at 200 mm o.c. at most (note 16).
+EW3g;EW;600;cel;-;1x12.7X;osb;45 min;1 h;-;Interior board fastened at 200 mm o.c. at most (note 16).
+EW3h;EW;600;cel;-;1x12.7X;gypsheath;-;45 min;-;Interior board fastened at 200 mm o.c. at most (note 16).
+EW3i;EW;400;cel;-;1x12.7X;sheathing;-;45 min;-
+EW3j;EW;600;cel;-;1x12.7X;osb;-;45 min;-
+EW3k;EW140;400;cel;-;1x15.9X;veneer;45 min;45 min;-;Interior board fastened at 200 mm o.c. at most (note 16).
 S1a;SN64;600;65;-;1x15.9X;1x15.9X;-;45 min [1 h(8)];43
 S1b;SN64;400;65;-;1x15.9X;1x15.9X;-;45 min [1 h(8)];39
 S1c;SN64;400/600;0;-;1x15.9X;1x15.9X;-;45 min;35
