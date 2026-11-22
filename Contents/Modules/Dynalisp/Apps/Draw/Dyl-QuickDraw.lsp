@@ -2610,18 +2610,12 @@
   (Dyl:QuickDrawPropsText (cond ((nth *qd:border* r)) ("")) (Remote>>LM:sublst r (1+ *qd:border*) 10))
 )
 
-;;  The summary of the hatch of the preset r (its hatch columns from *qd:hatch*): the name of
-;;  its material (marked missing when it no longer exists), its layer key when it has one of
-;;  its own, then each property it overrides (Brick, Color 8); the material alone for Replace
-;;  hatches, which gives it as it is:
-(defun Dyl:QuickDrawHatchText (r / m k)
-  (setq m (cond ((assoc (nth 3 r) pst:mats)) ((Remote>>Dyl:MaterialGet (nth 3 r))))
-        m (if m (nth 2 m) (strcat (nth 3 r) "   (missing material)"))
-        k (cond ((nth *qd:hatch* r)) (""))
-  )
-  (if (= "Replace" (nth 4 r))
-    m
-    (Dyl:QuickDrawPropsText (if (= "" k) m (strcat m ", " k)) (Remote>>LM:sublst r (1+ *qd:hatch*) 10))
+;;  The summary of the hatch of the preset r (its hatch columns from *qd:hatch*): its layer
+;;  key (From material when it has none: the material can change in the window), then
+;;  each property it overrides:
+(defun Dyl:QuickDrawHatchText (r)
+  (Dyl:QuickDrawPropsText (cond ((/= "" (cond ((nth *qd:hatch* r)) (""))) (nth *qd:hatch* r)) ("From material"))
+                          (Remote>>LM:sublst r (1+ *qd:hatch*) 10)
   )
 )
 
@@ -2937,58 +2931,32 @@
 ;;  values ((column . value) ...) on OK, nil on Cancel (or when the window cannot be shown).
 ;;  An override on is checked again (see Remote>>Dyl:MaterialDlgCheck): one not valid is said,
 ;;  nothing given. The layer key of a hatch may be "" (From material), not that of a
-;;  border. The hatch has its material too (mat, column 3, see Remote>>Dyl:MaterialChoices),
-;;  its open button the Materials window (code 9: the material selected there on OK is the
-;;  one of the hatch); for Replace hatches (rep), its material only:
-(defun Dyl:QuickDrawPropsDialog (r file tiles / hatch col lks keys mats mids res k v msg)
+;;  border:
+(defun Dyl:QuickDrawPropsDialog (r file tiles / hatch col lks keys res k v msg)
   (setq hatch (= "hky" (caar tiles))
         col   (cdar tiles)
         lks   (Remote>>Dyl:LayerKeyRead)
         keys  (if hatch (cons "" mt:keys) mt:keys)
-        mats  (if hatch (Remote>>Dyl:MaterialRead))
   )
   (while
     (progn
       (if (and (/= "" (nth col r)) (not (member (nth col r) keys)))
         (setq keys (append keys (list (nth col r))))
       )
-      (setq mids (if hatch (Remote>>Dyl:MaterialChoices mats (nth 3 r) (nth 1 r)))
-            res  (Dyl:WinShow file
-                              (append (list (cons "sub" "0"))
-                                      (if hatch
-                                        (list (cons "rep" (if (= "Replace" (nth 4 r)) "1" "0"))
-                                              (cons "mat/list" (mapcar 'cdr mids))
-                                              (cons "mat/vals" (mapcar 'car mids))
-                                              (cons "mat" (itoa (cond ((vl-position (nth 3 r) (mapcar 'car mids))) (0))))
-                                        )
-                                      )
-                                      (Dyl:QuickDrawPropsVals r tiles keys lks)
-                              )
-                 )
-      )
-      (if (member (car res) (list 1 9 *mt:borderkeypick* *mt:colorpick*))
-        (progn
-          (foreach x tiles
-            (setq v (cond ((= col (cdr x)) (cond ((nth (Dyl:WinIdx res (car x)) keys)) ("")))
-                          ((= "bwt" (car x)) (nth (Dyl:WinIdx res "bwt") *mt:weights*))
-                          ((vl-string-trim " " (cond ((Dyl:WinGet res (car x))) (""))))
-                    )
-                  r (Remote>>Dyl:ListSubst r (cdr x) (if (= "blt" (car x)) (strcase v) v))
-            )
-          )
-          (if (and hatch (setq v (car (nth (Dyl:WinIdx res "mat") mids))))
-            (setq r (Remote>>Dyl:ListSubst r 3 v))
+      (setq res (Dyl:WinShow file (cons (cons "sub" "0") (Dyl:QuickDrawPropsVals r tiles keys lks))))
+      (if (member (car res) (list 1 *mt:borderkeypick* *mt:colorpick*))
+        (foreach x tiles
+          (setq v (cond ((= col (cdr x)) (cond ((nth (Dyl:WinIdx res (car x)) keys)) ("")))
+                        ((= "bwt" (car x)) (nth (Dyl:WinIdx res "bwt") *mt:weights*))
+                        ((vl-string-trim " " (cond ((Dyl:WinGet res (car x))) (""))))
+                  )
+                r (Remote>>Dyl:ListSubst r (cdr x) (if (= "blt" (car x)) (strcase v) v))
           )
         )
       )
-      (member (car res) (list 9 *mt:borderkeypick* *mt:colorpick*))
+      (member (car res) (list *mt:borderkeypick* *mt:colorpick*))
     )
     (cond
-      ;;  The Materials window, on the material of the hatch (they may be edited there):
-      ((= 9 (car res))
-       (if (setq v (Remote>>Dyl:MaterialDialog (nth 3 r))) (setq r (Remote>>Dyl:ListSubst r 3 (car v))))
-       (setq mats (Remote>>Dyl:MaterialRead))
-      )
       ((= *mt:borderkeypick* (car res))
        (if (setq k (Remote>>Dyl:LayerKeyPick (nth col r))) (setq r (Remote>>Dyl:ListSubst r col k)))
       )
@@ -3007,7 +2975,7 @@
       (cond
         (msg (alert msg) nil)
         ((and (not hatch) (= "" (nth col r))) (alert "No layer key for the border: add one in the Layer Keys window.") nil)
-        ((append (if hatch (list (cons 3 (nth 3 r)))) (mapcar '(lambda (x) (cons (cdr x) (nth (cdr x) r))) tiles)))
+        ((mapcar '(lambda (x) (cons (cdr x) (nth (cdr x) r))) tiles))
       )
     )
   )
@@ -3018,8 +2986,7 @@
   (Dyl:QuickDrawPropsDialog r "Dyl-QuickDrawBorderSettings.xaml" (Remote>>Dyl:MaterialBorderTiles *qd:border*))
 )
 
-;;  The Hatch Settings window on the preset r (see Dyl:QuickDrawPropsDialog), its material
-;;  (column 3) given with the hatch tiles:
+;;  The Hatch Settings window on the preset r (see Dyl:QuickDrawPropsDialog):
 (defun Dyl:QuickDrawHatchDialog (r)
   (Dyl:QuickDrawPropsDialog r "Dyl-QuickDrawHatchSettings.xaml" (Dyl:QuickDrawHatchTiles))
 )

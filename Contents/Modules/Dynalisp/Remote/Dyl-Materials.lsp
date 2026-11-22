@@ -1144,62 +1144,27 @@
   )
 )
 
-;;  The items of a list of the materials mats (see Remote>>Dyl:MaterialRead), then the ids of
-;;  ids that are not a material (deleted: they stay selectable, marked missing), as
-;;  ((id . label) ...). A material of the group grp is shown by its name, the others
-;;  "group - name" (grp nil: all of them):
-(defun Remote>>Dyl:MaterialItems (mats ids grp / lst m)
+;;  Fill the material popup tile of a dialog with the materials mats (see
+;;  Remote>>Dyl:MaterialRead), then the ids of ids that are not a material (deleted: they stay
+;;  selectable, marked missing). A material of the group grp is shown by its name, the others
+;;  "group - name" (grp nil: all of them, see Remote>>Dyl:PresetDlgMatFill). Returns the ids
+;;  of the popup, in its order:
+(defun Remote>>Dyl:MaterialPopup (tile mats ids grp / lst m)
   (setq lst (mapcar 'car mats))
   (foreach id ids
     (if (and (/= "" id) (not (member id lst))) (setq lst (append lst (list id))))
   )
-  (mapcar '(lambda (id)
-             (cons id
-                   (cond
-                     ((not (setq m (assoc id mats))) (strcat id "   (missing material)"))
-                     ((and grp (= (strcase grp) (strcase (nth 1 m)))) (nth 2 m))
-                     ((strcat (nth 1 m) " - " (nth 2 m)))
-                   )
-             )
-           )
-          lst
-  )
-)
-
-;;  The items of the material list of a preset of the group grp whose material is cur (see
-;;  Remote>>Dyl:MaterialItems): the materials of the group by name, then cur when it is not
-;;  one of them ("group - name", or marked missing); every material, sorted by group and
-;;  name, when the group has none (as Remote>>Dyl:PresetDlgMatFill):
-(defun Remote>>Dyl:MaterialChoices (mats cur grp / in m)
-  (setq in (vl-sort (vl-remove-if-not '(lambda (x) (= (strcase grp) (strcase (nth 1 x)))) mats)
-                    '(lambda (a b) (< (strcase (nth 2 a)) (strcase (nth 2 b))))
-           )
-  )
-  (if in
-    (Remote>>Dyl:MaterialItems (if (and (setq m (assoc cur mats)) (not (member m in))) (append in (list m)) in)
-                               (list cur)
-                               grp
-    )
-    (Remote>>Dyl:MaterialItems (vl-sort mats
-                                        '(lambda (a b)
-                                           (< (strcase (strcat (nth 1 a) "\t" (nth 2 a))) (strcase (strcat (nth 1 b) "\t" (nth 2 b))))
-                                         )
-                               )
-                               (list cur)
-                               nil
-    )
-  )
-)
-
-;;  Fill the material popup tile of a dialog with the items of Remote>>Dyl:MaterialItems
-;;  (grp nil: all of them shown "group - name", see Remote>>Dyl:PresetDlgMatFill). Returns
-;;  the ids of the popup, in its order:
-(defun Remote>>Dyl:MaterialPopup (tile mats ids grp / lst)
-  (setq lst (Remote>>Dyl:MaterialItems mats ids grp))
   (start_list tile)
-  (foreach x lst (add_list (cdr x)))
+  (foreach id lst
+    (add_list (cond
+                ((not (setq m (assoc id mats))) (strcat id "   (missing material)"))
+                ((and grp (= (strcase grp) (strcase (nth 1 m)))) (nth 2 m))
+                ((strcat (nth 1 m) " - " (nth 2 m)))
+              )
+    )
+  )
   (end_list)
-  (mapcar 'car lst)
+  lst
 )
 
 ;;-------------------------=={ Dialog }==------------------------;;
