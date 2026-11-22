@@ -19,14 +19,14 @@
   (Remote>>Dyl:PresetWin of Remote\Dyl-Presets.lsp, for Dyl:QuickDrawDialog of
   Apps\Draw\Dyl-QuickDraw.lsp). A preset window: its list is "lst", the presets are edited
   in the window itself by the preset editor (Installer\Windows\Engine\Presets.cs: the list,
-  New, Copy, Delete, the resets, the aliases), the Lisp saves them on Draw (1) and Save (2).
+  New, Copy, Delete, the resets, the aliases, at the bottom of Parameters), the Lisp saves them on Draw (1) and Save (2).
   The controls of the values are named as the tiles of the presets (pst/tiles, the column
   of each one in a preset, see *qd:tiles*); mbs is Custom band settings, mak the assembly
   preset of an assembly (its id), hbr Has a border (the border itself, its layer key and the
   properties it overrides, are columns of the preset with no control here: they are edited in
   the Border Settings window); mei, mwl, mld and hbi show the columns the Lisp adds for the
   window (the own ends and corners of the bands, the width of the layers of the assembly, its
-  description under the preview: those of the assembly picked in mak, pst/follow; the summary
+  description beside the preview: those of the assembly picked in mak, pst/follow; the summary
   of the border); mpv is the
   preview of the preset shown (pst/spec, pst/outline). The open
   buttons close the window with the code of what they open, as the DCL window did: 3 Band
@@ -59,26 +59,8 @@
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
 
-    <!-- The presets, then the aliases of the one shown: -->
+    <!-- The presets: -->
     <DockPanel>
-      <GroupBox Header="Aliases" DockPanel.Dock="Bottom" Margin="0">
-        <StackPanel>
-          <ListBox x:Name="als" ItemContainerStyle="{DynamicResource Dyl.Chip}" MinHeight="30" MaxHeight="64" Margin="0,0,0,4">
-            <ListBox.ItemsPanel>
-              <ItemsPanelTemplate>
-                <WrapPanel/>
-              </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-          </ListBox>
-          <DockPanel>
-            <Button x:Name="adel" DockPanel.Dock="Right" Content="Remove" MinWidth="76"/>
-            <Button x:Name="aren" DockPanel.Dock="Right" Content="Rename" MinWidth="76"/>
-            <Button x:Name="aad" DockPanel.Dock="Right" Content="Add" MinWidth="60"/>
-            <TextBox x:Name="aln" Tag="New alias" MaxLength="64"/>
-          </DockPanel>
-          <TextBlock x:Name="ams" Style="{DynamicResource Dyl.Desc}" Margin="2,6,0,0"/>
-        </StackPanel>
-      </GroupBox>
       <GroupBox Header="Presets">
         <DockPanel>
           <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
@@ -109,7 +91,7 @@
             <Button x:Name="del" Content="Delete"/>
           </StackPanel>
           <!-- Double-click: draws the preset. Ctrl / Shift click: several presets edited at once: -->
-          <ListBox x:Name="lst" Height="468">
+          <ListBox x:Name="lst" Height="600">
             <ListBox.ItemTemplate>
               <DataTemplate>
                 <Grid>
@@ -153,105 +135,135 @@
         </StackPanel>
       </GroupBox>
 
-      <Grid>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*"/>
-          <ColumnDefinition Width="14"/>
-          <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <!-- The preview of the preset shown, as in the Quick Draw Gallery: its hatch, or the
-             layers of its assembly side by side, outlined when it has a border; under an
-             assembly, its total thickness and its layers (mld), pale: -->
-        <GroupBox Header="Preview">
-          <StackPanel>
-            <dyl:HatchTile x:Name="mpv" Height="148" Radius="6"
-                           Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"/>
-            <TextBlock x:Name="mld" Style="{DynamicResource Dyl.Desc}" Margin="2,10,0,0" Opacity="0.8"
-                       dyl:Win.VisibleBy="mas,mth=Linear|Offset|"/>
-          </StackPanel>
-        </GroupBox>
+      <!-- The preview of the preset shown, as in the Quick Draw Gallery: its hatch, or the
+           layers of its assembly side by side, outlined when it has a border; beside an
+           assembly, its total thickness and its layers (mld), pale: -->
+      <GroupBox Header="Preview">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+          <dyl:HatchTile x:Name="mpv" Height="128" Radius="6"
+                         Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"/>
+          <TextBlock x:Name="mld" Grid.Column="1" Style="{DynamicResource Dyl.Desc}" Margin="16,0,0,0" MinWidth="170" Opacity="0.8"
+                     dyl:Win.VisibleBy="mas,mth=Linear|Offset|"/>
+        </Grid>
+      </GroupBox>
 
-        <!-- How the preset is drawn: its hatch preset, its method and their values; its bands
-             (Linear, Offset): their width, an assembly of layers, their band settings; its
-             border: -->
-        <GroupBox Grid.Column="2" Header="Parameters">
-          <StackPanel>
-            <!-- An assembly: each layer is hatched as its own preset says: -->
-            <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas;mth!=Linear|Offset|">
-              <ComboBox x:Name="mat" DockPanel.Dock="Right" Width="150"/>
-              <dyl:OpenButton x:Name="edm" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="9" ToolTip="Hatch Presets"/>
-              <TextBlock x:Name="matl" Style="{DynamicResource Dyl.Label}" Text="Hatch preset"/>
-            </DockPanel>
-            <DockPanel Style="{StaticResource Row}">
-              <ComboBox x:Name="mth" DockPanel.Dock="Right" Width="150"/>
-              <TextBlock Style="{DynamicResource Dyl.Label}" Text="Default method"/>
-            </DockPanel>
-            <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Polygon|">
-              <TextBox x:Name="msd" DockPanel.Dock="Right" Width="150"
-                       dyl:Win.Check="empty;integer;min=3;max=1024"
-                       dyl:Win.CheckMessage="The number of sides must be a whole number from 3 to 1024 (empty: asked when drawn)."/>
-              <TextBlock Style="{DynamicResource Dyl.Label}" Text="Sides"/>
-            </DockPanel>
-            <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Shrinkwrap|">
-              <TextBox x:Name="mgp" DockPanel.Dock="Right" Width="90" dyl:Win.EnabledBy="mgo"
-                       dyl:Win.Check="empty;number;min=0"
-                       dyl:Win.CheckMessage="The gap tolerance must be a number, 0 or more (empty: asked when drawn)."/>
-              <CheckBox x:Name="mgo" Content="Gap override"/>
-            </DockPanel>
-            <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Bands" dyl:Win.EnabledBy="mth=Linear|Offset|"/>
-            <!-- The width of an assembly: the total of its layers, greyed out: -->
-            <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|Offset|">
-              <Grid DockPanel.Dock="Right" Width="150">
-                <TextBox x:Name="mwd" MaxLength="128" dyl:Win.VisibleBy="!mas;mth!=Linear|Offset|"
-                         dyl:Win.Check="empty;widths"
-                         dyl:Win.CheckMessage="Widths must be numbers greater than 0, divided by commas (empty: the last width used)."/>
-                <TextBox x:Name="mwl" IsEnabled="False" dyl:Win.VisibleBy="mas,mth=Linear|Offset|"/>
+      <!-- How the preset is drawn, in two columns: its hatch preset, its method and their
+           values, then its border; its bands (Linear, Offset): their width, an assembly of
+           layers, their band settings. Under them, the aliases of the preset: -->
+      <GroupBox Header="Parameters">
+        <StackPanel>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="29"/>
+              <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+              <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0,0,0,4" Text="Drawing"/>
+              <!-- An assembly: each layer is hatched as its own preset says: -->
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas;mth!=Linear|Offset|">
+                <ComboBox x:Name="mat" DockPanel.Dock="Right" Width="150"/>
+                <dyl:OpenButton x:Name="edm" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="9" ToolTip="Hatch Presets"/>
+                <TextBlock x:Name="matl" Style="{DynamicResource Dyl.Label}" Text="Hatch preset"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}">
+                <ComboBox x:Name="mth" DockPanel.Dock="Right" Width="150"/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="Default method"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Polygon|">
+                <TextBox x:Name="msd" DockPanel.Dock="Right" Width="150"
+                         dyl:Win.Check="empty;integer;min=3;max=1024"
+                         dyl:Win.CheckMessage="The number of sides must be a whole number from 3 to 1024 (empty: asked when drawn)."/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="Sides"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Shrinkwrap|">
+                <TextBox x:Name="mgp" DockPanel.Dock="Right" Width="90" dyl:Win.EnabledBy="mgo"
+                         dyl:Win.Check="empty;number;min=0"
+                         dyl:Win.CheckMessage="The gap tolerance must be a number, 0 or more (empty: asked when drawn)."/>
+                <CheckBox x:Name="mgo" Content="Gap override"/>
+              </DockPanel>
+              <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Border"/>
+              <!-- Has a border: the outline of what is drawn, on the layer key of the Border
+                   Settings window (its open button), with the properties it overrides, summed
+                   up under it; greyed out for an assembly (each layer has its own, in the
+                   Assembly Presets window): -->
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas;mth!=Linear|Offset|">
+                <dyl:OpenButton x:Name="hbe" DockPanel.Dock="Right" dyl:Win.Close="12" ToolTip="Border Settings"
+                                dyl:Win.EnabledBy="hbr"/>
+                <CheckBox x:Name="hbr" Content="Has a border"/>
+              </DockPanel>
+              <Grid Margin="46,0,0,4" dyl:Win.EnabledBy="!mas;mth!=Linear|Offset|">
+                <TextBlock x:Name="hbi" Style="{DynamicResource Dyl.Desc}" Margin="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" dyl:Win.VisibleBy="hbr"/>
               </Grid>
-              <TextBlock Style="{DynamicResource Dyl.Label}" Text="Width"/>
-            </DockPanel>
-            <!-- Where the line drawn is in the band (Linear), an assembly's too (Structural
-                 layer: the middle of the layer of its assembly checked Structural): -->
-            <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|">
-              <ComboBox x:Name="mjs" DockPanel.Dock="Right" Width="150"/>
-              <TextBlock Style="{DynamicResource Dyl.Label}" Text="Justification"/>
-            </DockPanel>
-            <!-- A band of several layers: an assembly preset, picked in the list; its open
-                 button opens the Assembly Presets window, to make or edit them: -->
-            <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|Offset|">
-              <ComboBox x:Name="mak" DockPanel.Dock="Right" Width="150" dyl:Win.EnabledBy="mas"/>
-              <dyl:OpenButton x:Name="mae" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="5" ToolTip="Assembly Presets"
-                              dyl:Win.EnabledBy="mas"/>
-              <CheckBox x:Name="mas" Content="Assembly"/>
-            </DockPanel>
-            <!-- Custom band settings: on, the hatch along the line (its scale
-                 and origin), the ends and the corners of the Band Settings window (its open
-                 button); off, the defaults; greyed out for an assembly (each layer has its own,
-                 in the Assembly Presets window). What the bands are drawn with is summed up
-                 under it: -->
-            <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas,mth=Linear|Offset|">
-              <dyl:OpenButton x:Name="mbe" DockPanel.Dock="Right" dyl:Win.Close="3" ToolTip="Band Settings"
-                              dyl:Win.EnabledBy="mbs"/>
-              <CheckBox x:Name="mbs" Content="Custom band settings"/>
-            </DockPanel>
-            <Grid Margin="46,0,0,4" dyl:Win.EnabledBy="!mas,mth=Linear|Offset|">
-              <TextBlock x:Name="mei" Style="{DynamicResource Dyl.Desc}" Margin="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" dyl:Win.VisibleBy="mbs"/>
-              <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="0" Text="Square, Mitered" dyl:Win.VisibleBy="!mbs"/>
-            </Grid>
-            <!-- Has a border: the outline of what is drawn, on the layer key of the Border
-                 Settings window (its open button), with the properties it overrides, summed
-                 up under it; greyed out for an assembly (each layer has its own, in the
-                 Assembly Presets window): -->
-            <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas;mth!=Linear|Offset|">
-              <dyl:OpenButton x:Name="hbe" DockPanel.Dock="Right" dyl:Win.Close="12" ToolTip="Border Settings"
-                              dyl:Win.EnabledBy="hbr"/>
-              <CheckBox x:Name="hbr" Content="Has a border"/>
-            </DockPanel>
-            <Grid Margin="46,0,0,4" dyl:Win.EnabledBy="!mas;mth!=Linear|Offset|">
-              <TextBlock x:Name="hbi" Style="{DynamicResource Dyl.Desc}" Margin="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" dyl:Win.VisibleBy="hbr"/>
-            </Grid>
-          </StackPanel>
-        </GroupBox>
-      </Grid>
+            </StackPanel>
+            <!-- The line between the two columns: -->
+            <Border Grid.Column="1" Width="1" HorizontalAlignment="Center" Background="{DynamicResource Dyl.Border}"/>
+            <StackPanel Grid.Column="2">
+              <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0,0,0,4" Text="Bands" dyl:Win.EnabledBy="mth=Linear|Offset|"/>
+              <!-- The width of an assembly: the total of its layers, greyed out: -->
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|Offset|">
+                <Grid DockPanel.Dock="Right" Width="150">
+                  <TextBox x:Name="mwd" MaxLength="128" dyl:Win.VisibleBy="!mas;mth!=Linear|Offset|"
+                           dyl:Win.Check="empty;widths"
+                           dyl:Win.CheckMessage="Widths must be numbers greater than 0, divided by commas (empty: the last width used)."/>
+                  <TextBox x:Name="mwl" IsEnabled="False" dyl:Win.VisibleBy="mas,mth=Linear|Offset|"/>
+                </Grid>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="Width"/>
+              </DockPanel>
+              <!-- Where the line drawn is in the band (Linear), an assembly's too (Structural
+                   layer: the middle of the layer of its assembly checked Structural): -->
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|">
+                <ComboBox x:Name="mjs" DockPanel.Dock="Right" Width="150"/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="Justification"/>
+              </DockPanel>
+              <!-- A band of several layers: an assembly preset, picked in the list; its open
+                   button opens the Assembly Presets window, to make or edit them: -->
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|Offset|">
+                <ComboBox x:Name="mak" DockPanel.Dock="Right" Width="150" dyl:Win.EnabledBy="mas"/>
+                <dyl:OpenButton x:Name="mae" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="5" ToolTip="Assembly Presets"
+                                dyl:Win.EnabledBy="mas"/>
+                <CheckBox x:Name="mas" Content="Assembly"/>
+              </DockPanel>
+              <!-- Custom band settings: on, the hatch along the line (its scale
+                   and origin), the ends and the corners of the Band Settings window (its open
+                   button); off, the defaults; greyed out for an assembly (each layer has its own,
+                   in the Assembly Presets window). What the bands are drawn with is summed up
+                   under it: -->
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas,mth=Linear|Offset|">
+                <dyl:OpenButton x:Name="mbe" DockPanel.Dock="Right" dyl:Win.Close="3" ToolTip="Band Settings"
+                                dyl:Win.EnabledBy="mbs"/>
+                <CheckBox x:Name="mbs" Content="Custom band settings"/>
+              </DockPanel>
+              <Grid Margin="46,0,0,4" dyl:Win.EnabledBy="!mas,mth=Linear|Offset|">
+                <TextBlock x:Name="mei" Style="{DynamicResource Dyl.Desc}" Margin="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" dyl:Win.VisibleBy="mbs"/>
+                <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="0" Text="Square, Mitered" dyl:Win.VisibleBy="!mbs"/>
+              </Grid>
+            </StackPanel>
+          </Grid>
+          <!-- The aliases of the preset shown (the short names that run it), picked to be renamed
+               or removed: -->
+          <Border Height="1" Margin="0,12,0,0" Background="{DynamicResource Dyl.Border}"/>
+          <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Aliases"/>
+          <ListBox x:Name="als" ItemContainerStyle="{DynamicResource Dyl.Chip}" MinHeight="30" MaxHeight="64" Margin="0,0,0,4">
+            <ListBox.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel/>
+              </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+          </ListBox>
+          <DockPanel>
+            <Button x:Name="adel" DockPanel.Dock="Right" Content="Remove" MinWidth="76"/>
+            <Button x:Name="aren" DockPanel.Dock="Right" Content="Rename" MinWidth="76"/>
+            <Button x:Name="aad" DockPanel.Dock="Right" Content="Add" MinWidth="60"/>
+            <TextBox x:Name="aln" Tag="New alias" MaxLength="64"/>
+          </DockPanel>
+          <TextBlock x:Name="ams" Style="{DynamicResource Dyl.Desc}" Margin="2,6,0,0"/>
+        </StackPanel>
+      </GroupBox>
 
     </StackPanel>
 
