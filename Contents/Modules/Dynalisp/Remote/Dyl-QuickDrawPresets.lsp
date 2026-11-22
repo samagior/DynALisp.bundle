@@ -55,6 +55,10 @@
               "HatchKey" "HatchColorOn" "HatchColor" "HatchLinetypeOn" "HatchLinetype"
               "HatchLtScaleOn" "HatchLtScale" "HatchLineweightOn" "HatchLineweight"
               "HatchTransparencyOn" "HatchTransparency" "NoHatch"
+              ;;  The view of the preset, the hatch preset of its material it is drawn with:
+              ;;  Cut (in section) or Surface (in elevation; an older file: Surface for a preset
+              ;;  of the Elevation group, see Remote>>Dyl:MaterialView):
+              "View"
       )
       (default . "QD-*")
       (base . "Pst-QuickDraw")

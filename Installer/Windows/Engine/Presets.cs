@@ -43,7 +43,9 @@
 //               ((NAME what-has-it) ...), pst/prefix the text of a new alias by the value of a
 //               column ("4|Polyline=PL-|*=QD-")
 //   pst/mat     the column of the material id, pst/mats the materials
-//               ((id group name spec pattern) ...), spec drawn by a HatchTile (Hatch.cs);
+//               ((id group name spec pattern [surface-spec surface-pattern]) ...), spec drawn
+//               by a HatchTile (Hatch.cs); pst/matview the column of the view of a preset:
+//               "Surface", its material is previewed with its surface spec and pattern;
 //               pst/matnoun what they are called in the messages ("material"), pst/matfree
 //               "1": the list holds every one of them, never only those of the group of the
 //               preset, and another group does not change it (the hatch presets of a
@@ -136,7 +138,7 @@ namespace DynALisp.Windows
         readonly bool _cmds;
         readonly string _base, _cmd, _noun, _title, _specBy, _blankBy, _outlineBy, _prefix, _matNoun;
         readonly bool _matFree;
-        readonly int _matCol = -1, _specCol = -1, _followCol = -1;
+        readonly int _matCol = -1, _specCol = -1, _followCol = -1, _viewCol = -1;
         readonly int[] _followTo = new int[0];
         readonly List<string[]> _follow;
 
@@ -182,6 +184,7 @@ namespace DynALisp.Windows
             _matNoun = Val("pst/matnoun") is string mn && mn.Length > 0 ? mn : "material";
             _matFree = Val("pst/matfree") == "1";
             _specCol = Int(Val("pst/spec"), -1);
+            _viewCol = Int(Val("pst/matview"), -1);
             var fw = (Val("pst/follow") ?? "").Split(':');
             if (fw.Length == 2)
             {
@@ -293,7 +296,12 @@ namespace DynALisp.Windows
         string[] MatOf(string[] r) =>
             _matCol < 0 ? null : _mats.FirstOrDefault(m => m.Length > 0 && m[0] == Cell(r, _matCol));
 
-        bool Solid(string[] r) => string.Equals(Cell(MatOf(r), 4), "SOLID", StringComparison.OrdinalIgnoreCase);
+        // The cell of the material m for the preset r: its Cut (spec 3, pattern 4), or its
+        // Surface (5, 6) while the view of r (pst/matview) is Surface:
+        string MatCell(string[] r, string[] m, int i) =>
+            _viewCol >= 0 && m != null && m.Length > i + 2 && Ic.Equals(Cell(r, _viewCol), "Surface") ? Cell(m, i + 2) : Cell(m, i);
+
+        bool Solid(string[] r) => string.Equals(MatCell(r, MatOf(r), 4), "SOLID", StringComparison.OrdinalIgnoreCase);
 
         // The preview of the preset r: its own (an assembly), else a space while pst/blank holds
         // for it (no hatch), else the hatch of its material; outlined while pst/outline holds
@@ -303,7 +311,7 @@ namespace DynALisp.Windows
             string sp;
             if (_specCol >= 0 && Cell(r, _specCol).Length > 0 && View.Holds(_specBy, k => RowGet(r, k))) sp = Cell(r, _specCol);
             else if (!string.IsNullOrWhiteSpace(_blankBy) && View.Holds(_blankBy, k => RowGet(r, k))) sp = "S?1";
-            else sp = MatOf(r) is string[] m ? Cell(m, 3) : "X?1";
+            else sp = MatOf(r) is string[] m ? MatCell(r, m, 3) : "X?1";
             if (!string.IsNullOrWhiteSpace(_outlineBy) && View.Holds(_outlineBy, k => RowGet(r, k))) sp = "O*" + sp;
             return sp;
         }
