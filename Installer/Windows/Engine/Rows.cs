@@ -39,6 +39,9 @@
 //                              one row only: greyed out while several are selected.
 //   dyl:Win.Exclusive="1"      a checkbox on in one row at most: checked, it is cleared in
 //                              the other rows (several selected: the first one keeps it).
+//                              "lock": while one row has it, it is greyed out in the others
+//                              (the field, and in the list {Binding Free[n]} of the row,
+//                              true while no other row has column n on).
 //   dyl:Win.Follows="lp/widths"  this field takes the item of lp/widths (a list of the Lisp,
 //                              one item for each item of the field lp) when lp changes, if
 //                              it was empty or the item of its former value.
@@ -145,7 +148,23 @@ namespace DynALisp.Windows
         // The text of column col, as the list shows it:
         public string this[int col] => _ed.Text(_v, col);
 
+        // Whether column n can be checked in this row ({Binding Free[n]}): it is on in this row,
+        // or in no other (Win.Exclusive="lock"):
+        public FreeOfRow Free => new FreeOfRow(this);
+
+        internal bool FreeAt(int col) => _ed.Free(_v, col);
+
+        internal void FreeChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Free"));
+
         public event PropertyChangedEventHandler PropertyChanged;
+    }
+
+    // Whether a column of one row can be checked (see RowItem.Free):
+    public sealed class FreeOfRow
+    {
+        readonly RowItem _r;
+        internal FreeOfRow(RowItem r) { _r = r; }
+        public bool this[int col] => _r.FreeAt(col);
     }
 
     // The values of one row by their spec (see RowItem.P):
@@ -161,7 +180,7 @@ namespace DynALisp.Windows
         sealed class Field
         {
             public string Key, Unique, Follows, ListBy;
-            public bool Exclusive;
+            public bool Exclusive, Lock;
             public int Col;
             public FrameworkElement El;
             public List<string> Vals, All, By;   // All: its labels, By: the group of each (ListBy)
@@ -208,7 +227,8 @@ namespace DynALisp.Windows
                 if (c == null || string.IsNullOrEmpty(fe.Name)) continue;
                 if (!int.TryParse(c, NumberStyles.Integer, CultureInfo.InvariantCulture, out int col) || col < 0) continue;
                 var f = new Field { Key = fe.Name, Col = col, El = fe, Unique = Win.GetUnique(fe), Follows = Win.GetFollows(fe),
-                                    Exclusive = fe is ToggleButton && Win.GetExclusive(fe) == "1", ListBy = Win.GetListBy(fe) };
+                                    Exclusive = fe is ToggleButton && (Win.GetExclusive(fe) == "1" || Win.GetExclusive(fe) == "lock"),
+                                    Lock = fe is ToggleButton && Win.GetExclusive(fe) == "lock", ListBy = Win.GetListBy(fe) };
                 f.Vals = _s.Lists.TryGetValue(fe.Name + "/vals", out var vals) ? vals : null;
                 if (f.ListBy != null && !_s.Lists.TryGetValue(fe.Name + "/by", out f.By)) f.ListBy = null;
                 // Its rules and those of the panels holding it, up to the window:
@@ -731,12 +751,20 @@ namespace DynALisp.Windows
                 if (sel.Count > 1) f.El.IsEnabled = false;
                 else if (Win.GetEnabledBy(f.El) == null && !_s.Off.Contains(f.Key)) f.El.IsEnabled = true;
             }
+            // a checkbox on in one row at most, locked: greyed out while another row has it (the
+            // row shown, or the row Add adds while none is selected):
+            foreach (var f in _fields.Where(x => x.Lock && Win.GetEnabledBy(x.El) == null && !_s.Off.Contains(x.Key)))
+                f.El.IsEnabled = sel.Count > 0 ? Free(_rows[sel[0]], f.Col) : !_rows.Any(r => Cell(r, f.Col) == "1");
             Summary();
         }
+
+        // Column col can be checked in the row v: on in it, or in no other row:
+        internal bool Free(string[] v, int col) => Cell(v, col) == "1" || !_rows.Any(r => !ReferenceEquals(r, v) && Cell(r, col) == "1");
 
         void Summary()
         {
             Tiles();
+            foreach (var it in _items) it.FreeChanged();
             foreach (var e in _summaries)
             {
                 string text = _rows.Count == 0 && Win.GetSummaryEmpty(e) is string empty ? empty : Summary(Win.GetSummary(e));
