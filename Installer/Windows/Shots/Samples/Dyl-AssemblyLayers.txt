@@ -1,0 +1,21 @@
+# Sample values of the Assembly Layers window of Quick Draw (Dyl:QuickDrawLayersDialog in
+# Dyl-QuickDraw.lsp), as the Lisp gives them, for an exterior wall drawn with Linear, the
+# Brick layer selected: key=value, key/list=item|item, key/vals=value|value, +key=field\tfield
+# a row of the table key (ll/rows: kind preset thickness hatch-key line-key); \t is a tab.
++ll/rows=P\tqd-Gypsum\t16\t\tMED
++ll/rows=S\tqd-Brick\t92\t\tMED
++ll/rows=P\tqd-RigidInsulation\t25\t\tMED
++ll/rows=S\tqd-Brick\t25\t\tMED
++ll/rows=P\tqd-Brick\t90\tTHIN\tMED
++ll/rows=L\tqd-Brick\t90\t\tWIDE
++ll/new=P\tqd-Existing\t10\t\tMED
+ll.sel=4
+lk/list=Hatch|Space|Line
+lk/vals=P|S|L
+lp/list=Phase - Existing|Section - Brick|Section - CMU|Section - Concrete|Section - Gypsum|Section - Plywood|Section - Rigid Insulation|Section - Wood Plank
+lp/vals=qd-Existing|qd-Brick|qd-CMU|qd-Concrete|qd-Gypsum|qd-Plywood|qd-RigidInsulation|qd-WoodPlank
+lp/widths/list=||||||25|
+lh/list=From preset|HATCH|MED|THIN|WIDE|XTHIN
+lh/vals=|HATCH|MED|THIN|WIDE|XTHIN
+ly/list=HATCH|MED|THIN|WIDE|XTHIN
+ly/vals=HATCH|MED|THIN|WIDE|XTHIN

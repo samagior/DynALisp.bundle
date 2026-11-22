@@ -1,0 +1,13 @@
+# Sample values of the Corners window of Quick Draw (Dyl:QuickDrawBandDialog in
+# Dyl-QuickDraw.lsp, Dyl:QuickDrawBandVals), as the Lisp gives them, for a preset whose corners
+# are Mitered: key=value, key/list=item|item, key/vals=value|value.
+mco/list=Ask when drawn|Mitered|Beveled|Round|Lapped
+mco/vals=Ask|Mitered|Beveled|Round|Lapped
+mco=1
+mml=4
+mlt/list=First segment|Next segment
+mlt/vals=First|Second
+mlt=0
+mjo/list=Interrupted|Uninterrupted
+mjo/vals=Interrupted|Uninterrupted
+mjo=0

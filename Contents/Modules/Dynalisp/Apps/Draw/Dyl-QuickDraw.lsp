@@ -2293,542 +2293,180 @@
 
 ;;-------------------------=={ Ends and Corners windows }==------------------------;;
 
-;;  The open buttons of Ends of their own and Corners of their own (Behaviors box) open the
-;;  Ends or the Corners window on the preset shown: the tiles of *mt:bandwindows* (kind
-;;  title tiles...), their values those of the material of the preset with its behaviors. OK
-;;  gives them to every preset selected (see Dyl:QuickDrawDlgStatus). The functions below use
-;;  qb:tiles (local of Dyl:QuickDrawBandDialog): ((key label list-or-edit) ...).
+;;  The open buttons of Custom ends and Custom corners (Behaviors box) open the Ends or the
+;;  Corners window (Res\Dyl-QuickDrawEnds.xaml, Res\Dyl-QuickDrawCorners.xaml, shown by
+;;  DynALisp.Windows.dll) on the preset shown: the tiles of *mt:bandwindows* (kind title
+;;  tiles...), their values those of the material of the preset with its behaviors. The window
+;;  greys out the values the ends or the corners picked do not use and checks the numbers; OK
+;;  gives them to every preset selected (see Dyl:QuickDrawDlgStatus).
 
-;;  Write the window of the spec (kind title tiles...) to a temporary DCL file, returns its path:
-(defun Dyl:QuickDrawBandDcl (spec / path file)
-  (setq path (vl-filename-mktemp "qdb" nil ".dcl")
-        file (open path "w")
-  )
-  (foreach line
-    (append
-      (list (strcat "dyl_qdb : dialog { label = \"DynALisp - " (car spec) "\";")
-            (strcat "  : boxed_column { label = \"" (cadr spec) "\";")
-            "    : column { fixed_height = true;"
-      )
-      (mapcar '(lambda (x)
-                 (if (= 'edit (caddr x))
-                   (strcat "      : row { : edit_box { key = \"" (car x) "\"; label = \"" (cadr x) "\"; edit_width = 12; } }")
-                   (strcat "      : row { : popup_list { key = \"" (car x) "\"; label = \"" (cadr x) "\"; edit_width = 28; } }")
-                 )
-               )
-              (cddr spec)
-      )
-      (list "    }"
-            "    : spacer { }"
-            "  }"
-            "  : text { key = \"bmg\"; width = 50; }"
-            "  : row {"
-            "    : spacer { }"
-            "    : button { key = \"accept\"; label = \"OK\"; is_default = true; width = 12; fixed_width = true; }"
-            "    : button { key = \"cancel\"; label = \"Cancel\"; is_cancel = true; width = 12; fixed_width = true; }"
-            "    : button { key = \"docs\"; label = \"Open Docs\"; width = 12; fixed_width = true; }"
-            "  }"
-            "}"
-      )
-    )
-    (write-line line file)
-  )
-  (close file)
-  path
-)
-
-;;  The value of the tile key of the window: the key of the item picked in a popup, the text
-;;  of an edit box; nil when the window has no such tile:
-(defun Dyl:QuickDrawBandVal (key / x)
-  (if (setq x (assoc key qb:tiles))
-    (if (= 'edit (caddr x))
-      (vl-string-trim " " (get_tile key))
-      (car (nth (atoi (get_tile key)) (caddr x)))
+;;  The values of the window for the tiles of a band window, the material m: a popup its
+;;  labels, the keys of its items and the index of the one picked, an edit box its text:
+(defun Dyl:QuickDrawBandVals (tiles m / v res)
+  (foreach x tiles
+    (setq v   (cond ((nth (cdr (assoc (car x) *mt:behaviortiles*)) m)) (""))
+          res (append res
+                      (if (= 'edit (caddr x))
+                        (list (cons (car x) v))
+                        (list (cons (strcat (car x) "/list") (mapcar 'cadr (caddr x)))
+                              (cons (strcat (car x) "/vals") (mapcar 'car (caddr x)))
+                              (cons (car x) (itoa (cond ((vl-position v (mapcar 'car (caddr x)))) (0))))
+                        )
+                      )
+              )
     )
   )
-)
-
-;;  The values used by the ends or the corners picked only: the extension of Extended, the
-;;  angle of Angled, the miter limit of Mitered, the segment running through Lapped (Ask:
-;;  all of them, the one picked when drawn uses them):
-(defun Dyl:QuickDrawBandState (/ e c)
-  (if (setq e (Dyl:QuickDrawBandVal "men"))
-    (progn
-      (mode_tile "mex" (if (member e '("Extended" "Ask")) 0 1))
-      (mode_tile "mea" (if (member e '("Angled" "Ask")) 0 1))
-    )
-  )
-  (if (setq c (Dyl:QuickDrawBandVal "mco"))
-    (progn
-      (mode_tile "mml" (if (member c '("Mitered" "Ask")) 0 1))
-      (mode_tile "mlt" (if (member c '("Lapped" "Ask")) 0 1))
-    )
-  )
-)
-
-;;  OK: the values of the window ((key . value) ...), nil (and the message under the box)
-;;  when a value is not valid (see Remote>>Dyl:MaterialDlgCheck):
-(defun Dyl:QuickDrawBandValues (/ res msg v)
-  (foreach x qb:tiles
-    (setq v (Dyl:QuickDrawBandVal (car x)))
-    (if (and (not msg) (= 'edit (caddr x))) (setq msg (Remote>>Dyl:MaterialDlgCheck (car x) v)))
-    (setq res (cons (cons (car x) v) res))
-  )
-  (if msg
-    (progn (set_tile "bmg" msg) nil)
-    (reverse res)
-  )
+  res
 )
 
 ;;  The Ends ("Ends") or Corners ("Corners") window on the preset r. Returns its values
-;;  ((key . value) ...) on OK, nil on Cancel:
-(defun Dyl:QuickDrawBandDialog (kind r / qb:tiles spec m dcl id sta res v)
-  (setq spec     (assoc kind *mt:bandwindows*)
-        qb:tiles (cddr spec)
-        m        (Dyl:QuickDrawMat (Dyl:QuickDrawDlgMat r) r)
-        dcl      (Dyl:QuickDrawBandDcl spec)
-        id       (load_dialog dcl)
+;;  ((key . value) ...) on OK, nil on Cancel (or when the window cannot be shown). The values
+;;  are checked again (see Remote>>Dyl:MaterialDlgCheck): one not valid is said, nothing given:
+(defun Dyl:QuickDrawBandDialog (kind r / tiles res vals msg)
+  (setq tiles (cddr (assoc kind *mt:bandwindows*))
+        res   (Dyl:WinShow (strcat "Dyl-QuickDraw" kind ".xaml")
+                           (Dyl:QuickDrawBandVals tiles (Dyl:QuickDrawMat (Dyl:QuickDrawDlgMat r) r))
+              )
   )
-  (if (and (<= 0 id) (new_dialog "dyl_qdb" id))
+  (if (= 1 (car res))
     (progn
-      (foreach x qb:tiles
-        (setq v (cond ((nth (cdr (assoc (car x) *mt:behaviortiles*)) m)) ("")))
-        (if (= 'edit (caddr x))
-          (set_tile (car x) v)
-          (progn
-            (start_list (car x))
-            (foreach y (caddr x) (add_list (cadr y)))
-            (end_list)
-            (set_tile (car x) (itoa (cond ((vl-position v (mapcar 'car (caddr x)))) (0))))
-            (action_tile (car x) "(Dyl:QuickDrawBandState)")
-          )
-        )
+      (setq vals (mapcar '(lambda (x)
+                            (cons (car x)
+                                  (if (= 'edit (caddr x))
+                                    (vl-string-trim " " (cond ((Dyl:WinGet res (car x))) ("")))
+                                    (car (nth (Dyl:WinIdx res (car x)) (caddr x)))
+                                  )
+                            )
+                          )
+                         tiles
+                 )
       )
-      (Dyl:QuickDrawBandState)
-      (Dyl:DocsTile "Draw\\Dyl-QuickDrawEndsCorners.htm")
-      (action_tile "accept" "(if (setq res (Dyl:QuickDrawBandValues)) (done_dialog 1))")
-      (setq sta (start_dialog))
+      (foreach v vals (if (not msg) (setq msg (Remote>>Dyl:MaterialDlgCheck (car v) (cdr v)))))
+      (if msg (progn (alert msg) nil) vals)
     )
-    (alert (strcat "\nError: the " kind " window could not be loaded"))
   )
-  (if (<= 0 id) (unload_dialog id))
-  (vl-file-delete dcl)
-  (if (= 1 sta) res)
 )
 
 ;;-------------------------=={ Assembly Layers window }==------------------------;;
 
-;;  The open button of Assembly of layers (Behaviors box) opens the Assembly Layers window on the layers of
-;;  the preset shown (see Remote>>Dyl:MaterialLayers): add, edit, remove, order and flip them;
-;;  OK gives them to every preset selected. A Hatch layer uses a Quick Draw preset saved (a new
-;;  preset gets its id once saved) that is not an assembly itself.
-;;  The functions below run inside Dyl:QuickDrawLayersDialog and use its local variables:
-;;  ql:lst (the layers being edited, ((kind ref thickness) ...)), ql:pre (the presets a layer
-;;  can use, ((id label width) ...), width: its first width, nil when it has none), ql:pw (the
-;;  width of the preset in the Preset popup) and mt:keys (the layer keys of the Layer key
-;;  popup, see Remote>>Dyl:MaterialDlgKeys).
+;;  The open button of Assembly of layers (Behaviors box) opens the Assembly Layers window
+;;  (Res\Dyl-AssemblyLayers.xaml, shown by DynALisp.Windows.dll) on the layers of the preset
+;;  shown (see Remote>>Dyl:MaterialLayers): add, edit, remove, order and flip them, in the
+;;  window itself (a list of rows, Installer\Windows\Engine\Rows.cs); OK gives them to every
+;;  preset selected. A Hatch layer uses a Quick Draw preset saved (a new preset gets its id
+;;  once saved) that is not an assembly itself.
 
-;;  The kinds of layers: (kind label name):
-(setq *qd:layerkinds* '(("P" "Hatch" "Hatch")
-                        ("S" "Space" "Space")
-                        ("L" "Line" "Line")
-                       )
-)
+;;  The kinds of layers: (kind label):
+(setq *qd:layerkinds* '(("P" "Hatch") ("S" "Space") ("L" "Line")))
 
-;;  Write the window to a temporary DCL file, returns its path:
-(defun Dyl:QuickDrawLayersDcl (/ path file)
-  (setq path (vl-filename-mktemp "qdl" nil ".dcl")
-        file (open path "w")
-  )
-  (foreach line
-    '("dyl_qdl : dialog { label = \"DynALisp - Assembly Layers\";"
-      "  : row {"
-      "    : column {"
-      "      : list_box { key = \"ll\"; label = \"Layers:\"; width = 70; height = 15; multiple_select = true; tabs = \"8 46\"; }"
-      "      : text { key = \"lt\"; width = 70; }"
-      "    }"
-      "    : column {"
-      "      : boxed_column { key = \"lbx\"; label = \"Layer\";"
-      "        : column { fixed_height = true;"
-      "        : row { : popup_list { key = \"lk\"; label = \"Kind:\"; edit_width = 28; } }"
-      "        : row { : popup_list { key = \"lp\"; label = \"Preset:\"; edit_width = 28; } }"
-      "        : row { : popup_list { key = \"lh\"; label = \"Hatch layer key:\"; edit_width = 28; } }"
-      "        : row { : edit_box { key = \"lw\"; label = \"Thickness:\"; edit_width = 12; } }"
-      "        : row { : popup_list { key = \"ly\"; label = \"Line layer key:\"; edit_width = 28; } }"
-      "        }"
-      "        : spacer { }"
-      "      }"
-      "      : row { : button { key = \"la\"; label = \"Add\"; } : button { key = \"ld\"; label = \"Remove\"; } }"
-      "      : row { : button { key = \"lu\"; label = \"Move up\"; } : button { key = \"lv\"; label = \"Move down\"; } }"
-      "      : row { : button { key = \"lf\"; label = \"Flip\"; } : spacer { } }"
-      "      : spacer { }"
-      "    }"
-      "  }"
-      "  : text { key = \"lm\"; width = 64; }"
-      "  : row {"
-      "    : spacer { }"
-      "    : button { label = \"OK\"; key = \"accept\"; is_default = true; width = 12; fixed_width = true; }"
-      "    : button { label = \"Cancel\"; key = \"cancel\"; is_cancel = true; width = 12; fixed_width = true; }"
-      "    : button { label = \"Open Docs\"; key = \"docs\"; width = 12; fixed_width = true; }"
-      "  }"
-      "}"
-     )
-    (write-line line file)
-  )
-  (close file)
-  path
-)
-
-;;  Indexes of the layers selected in the list:
-(defun Dyl:QuickDrawLayersSel ()
-  (read (strcat "(" (get_tile "ll") ")"))
-)
-
-;;  The line of the list of the layer l: its kind, its preset (or layer key), its thickness:
-(defun Dyl:QuickDrawLayersLine (l / p)
-  (strcat (caddr (assoc (car l) *qd:layerkinds*))
-          "\t"
-          (cond
-            ((= "P" (car l))
-             (strcat (if (setq p (assoc (cadr l) ql:pre)) (cadr p) (strcat "(missing) " (cadr l)))
-                     ;;  Its own hatch layer key:
-                     (if (and (cadddr l) (/= "" (cadddr l))) (strcat " [" (cadddr l) "]") "")
+;;  The rows of the window for the layers lst ((kind ref thickness [hatch-key]) ...): (kind
+;;  preset thickness hatch-key line-key), the columns a layer of its kind does not use taken
+;;  from the new layer def (a row of the same columns), so that it can become another kind:
+(defun Dyl:QuickDrawLayersRows (lst def)
+  (mapcar '(lambda (l)
+             (cond
+               ((= "P" (car l)) (list "P" (cadr l) (caddr l) (cond ((cadddr l)) ("")) (nth 4 def)))
+               ((= "S" (car l)) (list "S" (nth 1 def) (caddr l) "" (nth 4 def)))
+               ((list "L" (nth 1 def) (nth 2 def) "" (cadr l)))
              )
-            )
-            ((= "L" (car l)) (cadr l))
-            ("")
-          )
-          "\t"
-          (caddr l)
+           )
+          lst
   )
 )
 
-;;  The total of the layers, under the list:
-(defun Dyl:QuickDrawLayersTotal (/ w n k)
-  (setq w 0.0
-        n 0
-        k 0
-  )
-  (foreach l ql:lst
-    (if (= "L" (car l))
-      (setq k (1+ k))
-      (setq n (1+ n)
-            w (+ w (cond ((distof (caddr l) 2)) (0.0)))
+;;  The layers of the rows of the window, each one as its kind keeps it (see
+;;  Remote>>Dyl:MaterialLayers): (layers), or (nil message) for the first one not valid:
+(defun Dyl:QuickDrawLayersOf (rows / res msg)
+  (foreach r rows
+    (cond
+      (msg)
+      ((and (/= "L" (car r)) (not (Remote>>Dyl:MaterialScale-p (caddr r))))
+       (setq msg "The thickness must be a number greater than 0.")
       )
-    )
-  )
-  (if ql:lst
-    (strcat "Width " (Remote>>Dyl:MaterialNum w) ", " (itoa n) (if (= 1 n) " layer" " layers")
-             (if (< 0 k) (strcat ", " (itoa k) (if (= 1 k) " line" " lines")) "")
-    )
-    "No layers."
-  )
-)
-
-;;  Fill the list with ql:lst, the layers sel (indexes) selected, msg shown under it:
-(defun Dyl:QuickDrawLayersFill (sel msg)
-  (start_list "ll")
-  (foreach l ql:lst (add_list (Dyl:QuickDrawLayersLine l)))
-  (end_list)
-  (set_tile "ll" (cond ((Remote>>LM:lst->str (mapcar 'itoa sel) " ")) ("")))
-  (set_tile "lt" (Dyl:QuickDrawLayersTotal))
-  (Dyl:QuickDrawLayersPick msg)
-)
-
-;;  The first width of the preset of the Preset popup, nil when it has none:
-(defun Dyl:QuickDrawLayersPresetWidth ()
-  (if ql:pre (caddr (nth (atoi (get_tile "lp")) ql:pre)))
-)
-
-;;  The fields show the layer l:
-(defun Dyl:QuickDrawLayersShow (l / i)
-  (set_tile "lk" (itoa (vl-position (assoc (car l) *qd:layerkinds*) *qd:layerkinds*)))
-  (if (and (= "P" (car l)) (setq i (vl-position (cadr l) (mapcar 'car ql:pre)))) (set_tile "lp" (itoa i)))
-  (if (and (= "L" (car l)) (setq i (vl-position (cadr l) mt:keys))) (set_tile "ly" (itoa i)))
-  ;;  The hatch layer key of a Hatch layer (0: the key of its preset):
-  (if (= "P" (car l))
-    (set_tile "lh" (itoa (if (and (cadddr l) (setq i (vl-position (cadddr l) mt:keys))) (1+ i) 0)))
-  )
-  (set_tile "lw" (caddr l))
-  (setq ql:pw (Dyl:QuickDrawLayersPresetWidth))
-)
-
-;;  The fields of the kind of the Kind popup: the preset for Hatch, the thickness for Hatch
-;;  and Space, the layer key for Line:
-(defun Dyl:QuickDrawLayersKind (/ k)
-  (setq k (car (nth (atoi (get_tile "lk")) *qd:layerkinds*)))
-  (mode_tile "lp" (if (and (= "P" k) ql:pre) 0 1))
-  (mode_tile "lh" (if (and (= "P" k) ql:pre) 0 1))
-  (mode_tile "lw" (if (= "L" k) 1 0))
-  (mode_tile "ly" (if (and (= "L" k) mt:keys) 0 1))
-)
-
-;;  The selection changed: its layer in the fields (one selected), the state of the buttons
-;;  (Move up and Move down for one layer, Remove for one or more):
-(defun Dyl:QuickDrawLayersPick (msg / sel)
-  (setq sel (Dyl:QuickDrawLayersSel))
-  ;;  The fields show the first layer selected; the heading gives the number selected:
-  (if sel (Dyl:QuickDrawLayersShow (nth (car sel) ql:lst)))
-  (set_tile "lbx" (if (cdr sel) (strcat "Layer (" (itoa (length sel)) " selected)") "Layer"))
-  (foreach k '("lu" "lv") (mode_tile k (if (and sel (not (cdr sel))) 0 1)))
-  (mode_tile "ld" (if sel 0 1))
-  (mode_tile "lf" (if (cdr ql:lst) 0 1))
-  (Dyl:QuickDrawLayersKind)
-  (set_tile "lm" (cond (msg) ("")))
-)
-
-;;  The layer of the fields ((kind ref thickness), see Remote>>Dyl:MaterialLayers), or the
-;;  message of what is missing (a text):
-(defun Dyl:QuickDrawLayersFields (/ k w)
-  (setq k (car (nth (atoi (get_tile "lk")) *qd:layerkinds*))
-        w (vl-string-trim " " (get_tile "lw"))
-  )
-  (cond
-    ((and (= "P" k) (not ql:pre)) "No preset to use: save the preset first (a new one gets its id once saved).")
-    ((and (/= "L" k) (not (Remote>>Dyl:MaterialScale-p w))) "The thickness must be a number greater than 0.")
-    ((and (= "L" k) (not mt:keys)) "No layer key: add one in the Layer Keys window.")
-    ((= "P" k)
-     (list "P"
-           (car (nth (atoi (get_tile "lp")) ql:pre))
-           w
-           ;;  Its hatch layer key, "" for the key of the preset (the first item):
-           (if (< 0 (atoi (get_tile "lh"))) (nth (1- (atoi (get_tile "lh"))) mt:keys) "")
-     )
-    )
-    ((= "S" k) (list "S" "" w))
-    ((list "L" (nth (atoi (get_tile "ly")) mt:keys) ""))
-  )
-)
-
-;;  Another preset in the Preset popup: its width in Thickness when it has one, unless another
-;;  thickness was typed:
-(defun Dyl:QuickDrawLayersPreset (/ w)
-  (setq w (Dyl:QuickDrawLayersPresetWidth))
-  (if (and w (member (vl-string-trim " " (get_tile "lw")) (list "" (cond (ql:pw) ("")))))
-    (set_tile "lw" w)
-  )
-  (setq ql:pw w)
-)
-
-;;  A thickness for a layer turned into a Hatch or a Space (a Line has none): the width of the
-;;  preset of the Preset popup (Hatch), else the thickness this layer had before it became a
-;;  line (ql:lw), else that of another layer, else 10:
-(defun Dyl:QuickDrawLayersDefaultWidth (k)
-  (cond
-    ((and (= "P" k) (Dyl:QuickDrawLayersPresetWidth)))
-    ((and ql:lw (Remote>>Dyl:MaterialScale-p ql:lw)) ql:lw)
-    ((vl-some '(lambda (l) (if (Remote>>Dyl:MaterialScale-p (caddr l)) (caddr l))) ql:lst))
-    ("10")
-  )
-)
-
-;;  The layer l with the field key changed (several layers selected, see
-;;  Dyl:QuickDrawLayersEditAll), the values of the fields: k kind, p preset, h hatch layer
-;;  key, w thickness, y layer key of a line. A field that does not apply to l (Thickness to a
-;;  Line...) leaves it as it is. A layer of another kind keeps its thickness (a Line turned
-;;  into a Hatch or a Space gets one, see Dyl:QuickDrawLayersDefaultWidth), a Hatch the preset
-;;  of the fields, a Line the layer key of the fields:
-(defun Dyl:QuickDrawLayersEditOne (l key k p h w y / tw)
-  (setq tw (if (Remote>>Dyl:MaterialScale-p (caddr l)) (caddr l) (Dyl:QuickDrawLayersDefaultWidth k)))
-  (cond
-    ((= "lk" key)
-     (cond
-       ((= k (car l)) l)
-       ((= "P" k) (list "P" p tw ""))
-       ((= "S" k) (list "S" "" tw))
-       ((list "L" y ""))
-     )
-    )
-    ((and (= "lp" key) (= "P" (car l))) (list "P" p (caddr l) (cond ((cadddr l)) (""))))
-    ((and (= "lh" key) (= "P" (car l))) (list "P" (cadr l) (caddr l) h))
-    ((and (= "lw" key) (/= "L" (car l))) (append (list (car l) (cadr l) w) (cdddr l)))
-    ((and (= "ly" key) (= "L" (car l))) (list "L" y ""))
-    (l)
-  )
-)
-
-;;  A field changed (tile key) with several layers selected sel (indexes): that field only is
-;;  given to each of them it applies to (see Dyl:QuickDrawLayersEditOne), their other values
-;;  kept; a message says how many changed:
-(defun Dyl:QuickDrawLayersEditAll (key sel / k p h w y n l new)
-  (setq k (car (nth (atoi (get_tile "lk")) *qd:layerkinds*))
-        p (if ql:pre (car (nth (atoi (get_tile "lp")) ql:pre)))
-        h (if (< 0 (atoi (get_tile "lh"))) (nth (1- (atoi (get_tile "lh"))) mt:keys) "")
-        w (vl-string-trim " " (get_tile "lw"))
-        y (if mt:keys (nth (atoi (get_tile "ly")) mt:keys))
-        n 0
-  )
-  (cond
-    ((and (= "lw" key) (not (Remote>>Dyl:MaterialScale-p w))) (set_tile "lm" "The thickness must be a number greater than 0."))
-    ((and (member key '("lk" "lp")) (= "P" k) (not p)) (set_tile "lm" "No preset to use: save the preset first (a new one gets its id once saved)."))
-    ((and (member key '("lk" "ly")) (= "L" k) (not y)) (set_tile "lm" "No layer key: add one in the Layer Keys window."))
-    (T
-     (foreach i sel
-       (setq l   (nth i ql:lst)
-             new (Dyl:QuickDrawLayersEditOne l key k p h w y)
-       )
-       (if (not (equal new l))
-         (setq ql:lst (Remote>>Dyl:ListSubst ql:lst i new)
-               n      (1+ n)
-         )
-       )
-     )
-     (Dyl:QuickDrawLayersFill sel (strcat (itoa n) " of " (itoa (length sel)) " layers selected changed."))
-    )
-  )
-)
-
-;;  A field changed (tile key): the layer selected (one) gets the fields, when they are valid;
-;;  several layers selected get that field only (see Dyl:QuickDrawLayersEditAll).
-;;  A Line turned into a Hatch or a Space gets a thickness (see above), so it changes at once:
-(defun Dyl:QuickDrawLayersEdit (key / sel l k)
-  (setq sel (Dyl:QuickDrawLayersSel))
-  (if (cdr sel)
-    (progn
-      (Dyl:QuickDrawLayersKind)
-      (Dyl:QuickDrawLayersEditAll key sel)
-    )
-    (Dyl:QuickDrawLayersEditSingle key)
-  )
-)
-
-;;  A field changed (tile key), one layer selected (or none): see Dyl:QuickDrawLayersEdit:
-(defun Dyl:QuickDrawLayersEditSingle (key / sel l k)
-  (if (= "lp" key) (Dyl:QuickDrawLayersPreset))
-  (if (= "lk" key)
-    (progn
-      (setq k (car (nth (atoi (get_tile "lk")) *qd:layerkinds*)))
-      (if (and (/= "L" k) (not (Remote>>Dyl:MaterialScale-p (vl-string-trim " " (get_tile "lw")))))
-        (set_tile "lw" (Dyl:QuickDrawLayersDefaultWidth k))
+      ((and (= "P" (car r)) (= "" (cadr r)))
+       (setq msg "No preset to use: save the preset first (a new one gets its id once saved).")
       )
+      ((= "P" (car r)) (setq res (cons (list "P" (cadr r) (caddr r) (cadddr r)) res)))
+      ((= "S" (car r)) (setq res (cons (list "S" "" (caddr r)) res)))
+      ((= "" (nth 4 r)) (setq msg "No layer key: add one in the Layer Keys window."))
+      ((setq res (cons (list "L" (nth 4 r) "") res)))
     )
   )
-  ;;  The thickness typed, kept for a layer turned into a line and back:
-  (if (Remote>>Dyl:MaterialScale-p (vl-string-trim " " (get_tile "lw")))
-    (setq ql:lw (vl-string-trim " " (get_tile "lw")))
-  )
-  (Dyl:QuickDrawLayersKind)
-  (setq sel (Dyl:QuickDrawLayersSel))
-  (cond
-    ((not (and sel (not (cdr sel)))) (set_tile "lm" ""))
-    ((= 'STR (type (setq l (Dyl:QuickDrawLayersFields)))) (set_tile "lm" l))
-    (T
-     (setq ql:lst (Remote>>Dyl:ListSubst ql:lst (car sel) l))
-     (Dyl:QuickDrawLayersFill sel nil)
-    )
-  )
-)
-
-;;  Add: the layer of the fields, after the layers selected (else last), selected:
-(defun Dyl:QuickDrawLayersAdd (/ l sel i)
-  (if (= 'STR (type (setq l (Dyl:QuickDrawLayersFields))))
-    (set_tile "lm" l)
-    (progn
-      (setq sel    (Dyl:QuickDrawLayersSel)
-            i      (if sel (1+ (apply 'max sel)) (length ql:lst))
-            ql:lst (append (Remote>>Dyl:GroupsTake ql:lst i) (list l) (Remote>>Dyl:GroupsDrop ql:lst i))
-      )
-      (Dyl:QuickDrawLayersFill (list i) "Layer added: change its fields to edit it.")
-    )
-  )
-)
-
-;;  Remove: the layers selected:
-(defun Dyl:QuickDrawLayersRemove (/ sel i)
-  (setq sel    (Dyl:QuickDrawLayersSel)
-        i      -1
-        ql:lst (vl-remove-if '(lambda (x) (member (setq i (1+ i)) sel)) ql:lst)
-  )
-  (Dyl:QuickDrawLayersFill nil (strcat (itoa (length sel)) " layer(s) removed."))
-)
-
-;;  Move up (d -1) / Move down (d 1) the layer selected:
-(defun Dyl:QuickDrawLayersMove (d / i j l)
-  (setq i (car (Dyl:QuickDrawLayersSel))
-        j (+ i d)
-  )
-  (if (and (<= 0 j) (< j (length ql:lst)))
-    (progn
-      (setq l      (nth i ql:lst)
-            ql:lst (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst ql:lst i (nth j ql:lst)) j l)
-      )
-      (Dyl:QuickDrawLayersFill (list j) nil)
-    )
-  )
-)
-
-;;  Flip: the layers the other way (the first one on the right border):
-(defun Dyl:QuickDrawLayersFlip (/ n)
-  (setq n      (1- (length ql:lst))
-        ql:lst (reverse ql:lst)
-  )
-  (Dyl:QuickDrawLayersFill (mapcar '(lambda (i) (- n i)) (Dyl:QuickDrawLayersSel)) "Layers flipped.")
+  (if msg (list nil msg) (list (reverse res)))
 )
 
 ;;  The Assembly Layers window on the layers of the preset r (see Remote>>Dyl:MaterialLayers),
 ;;  the presets of the Quick Draw window (pst:lst, local of Remote>>Dyl:PresetDialog) for its
-;;  Preset popup: those saved (with an id) but r, not assemblies, sorted by group and name.
-;;  Returns the text of the layers on OK (see Remote>>Dyl:MaterialLayersStr), nil on Cancel:
-(defun Dyl:QuickDrawLayersDialog (r / ql:lst ql:pre ql:pw ql:lw mt:keys dcl id sta w i)
-  (setq ql:lst (Remote>>Dyl:MaterialLayers (nth *qd:layerscol* r))
-        ql:pre (mapcar '(lambda (x)
-                          (list (car x)
-                                (strcat (nth 1 x) " - " (nth 2 x))
-                                (if (setq w (car (Remote>>Dyl:MaterialWidths (nth 6 x)))) (Remote>>Dyl:MaterialNum w))
-                          )
-                        )
-                       (vl-sort (vl-remove-if '(lambda (x) (or (= "" (car x)) (= (car x) (car r)) (= "1" (nth 37 x)))) pst:lst)
-                                '(lambda (a b)
-                                   (< (strcase (strcat (nth 1 a) "\t" (nth 2 a))) (strcase (strcat (nth 1 b) "\t" (nth 2 b))))
-                                 )
+;;  Preset list: those saved (with an id) but r, not assemblies, sorted by group and name, then
+;;  the presets of its layers that no longer exist (marked). Shown again on the layers edited
+;;  while one is not valid. Returns the text of the layers on OK (see
+;;  Remote>>Dyl:MaterialLayersStr), nil on Cancel:
+(defun Dyl:QuickDrawLayersDialog (r / lst pre lks mark def rows sel res out w)
+  (setq lst (Remote>>Dyl:MaterialLayers (nth *qd:layerscol* r))
+        pre (mapcar '(lambda (x)
+                       (list (car x)
+                             (strcat (nth 1 x) " - " (nth 2 x))
+                             (if (setq w (car (Remote>>Dyl:MaterialWidths (nth 6 x)))) (Remote>>Dyl:MaterialNum w) "")
                        )
-               )
-        dcl    (Dyl:QuickDrawLayersDcl)
-        id     (load_dialog dcl)
+                     )
+                    (vl-sort (vl-remove-if '(lambda (x) (or (= "" (car x)) (= (car x) (car r)) (= "1" (nth 37 x)))) pst:lst)
+                             '(lambda (a b)
+                                (< (strcase (strcat (nth 1 a) "\t" (nth 2 a))) (strcase (strcat (nth 1 b) "\t" (nth 2 b))))
+                              )
+                    )
+            )
   )
-  (if (and (<= 0 id) (new_dialog "dyl_qdl" id))
-    (progn
-      (start_list "lk")
-      (foreach k *qd:layerkinds* (add_list (cadr k)))
-      (end_list)
-      (start_list "lp")
-      (foreach p ql:pre (add_list (cadr p)))
-      (end_list)
-      ;;  The layer keys, those of the Line layers kept when they are not defined:
-      ;;  (and the hatch layer keys of the Hatch layers, in the Hatch layer key popup after
-      ;;  the item of the key of the preset):
-      (Remote>>Dyl:MaterialDlgKeys '("ly")
-                                   (append (mapcar 'cadr (vl-remove-if-not '(lambda (l) (= "L" (car l))) ql:lst))
-                                           (mapcar 'cadddr (vl-remove-if-not '(lambda (l) (= "P" (car l))) ql:lst))
-                                   )
-      )
-      (start_list "lh")
-      (add_list "From preset")
-      (foreach k mt:keys (add_list k))
-      (end_list)
-      (set_tile "lh" "0")
-      ;;  The fields of a new layer: a Hatch layer of the first preset (its width), a Line
-      ;;  on the border layer key of the preset:
-      (set_tile "lk" "0")
-      (if (setq ql:pw (Dyl:QuickDrawLayersPresetWidth)) (set_tile "lw" ql:pw))
-      (if (setq i (vl-position (nth *qd:border* r) mt:keys)) (set_tile "ly" (itoa i)))
-      (Dyl:QuickDrawLayersFill nil nil)
-      (Dyl:DocsTile "Draw\\Dyl-AssemblyLayers.htm")
-      (action_tile "ll" "(Dyl:QuickDrawLayersPick nil)")
-      (foreach k '("lk" "lp" "lh" "lw" "ly") (action_tile k (strcat "(Dyl:QuickDrawLayersEdit \"" k "\")")))
-      (action_tile "la" "(Dyl:QuickDrawLayersAdd)")
-      (action_tile "ld" "(Dyl:QuickDrawLayersRemove)")
-      (action_tile "lu" "(Dyl:QuickDrawLayersMove -1)")
-      (action_tile "lv" "(Dyl:QuickDrawLayersMove 1)")
-      (action_tile "lf" "(Dyl:QuickDrawLayersFlip)")
-      (action_tile "accept" "(done_dialog 1)")
-      (setq sta (start_dialog))
+  (foreach l lst
+    (if (and (= "P" (car l)) (not (assoc (cadr l) pre)))
+      (setq pre (append pre (list (list (cadr l) (strcat "(missing) " (cadr l)) ""))))
     )
-    (alert "\nError: the Assembly Layers window could not be loaded")
   )
-  (if (<= 0 id) (unload_dialog id))
-  (vl-file-delete dcl)
-  (if (= 1 sta) (Remote>>Dyl:MaterialLayersStr ql:lst))
+  ;;  The layer keys, those of the layers kept when they are not defined (marked):
+  (Remote>>Dyl:MaterialDlgKeys nil (mapcar '(lambda (l) (if (= "L" (car l)) (cadr l) (cadddr l))) lst))
+  (setq lks  (Remote>>Dyl:LayerKeyRead)
+        mark (mapcar '(lambda (k) (if (assoc k lks) k (strcat k "   (not defined)"))) mt:keys)
+        ;;  A new layer: a Hatch layer of the first preset (its width), a Line on the border
+        ;;  layer key of the preset:
+        def  (list "P"
+                   (cond ((car (car pre))) (""))
+                   (cond ((/= "" (cond ((caddr (car pre))) (""))) (caddr (car pre))) ("10"))
+                   ""
+                   (cond ((car (member (nth *qd:border* r) mt:keys))) ((car mt:keys)) (""))
+             )
+        rows (Dyl:QuickDrawLayersRows lst def)
+  )
+  (while
+    (and
+      (= 1 (car (setq res (Dyl:WinShow "Dyl-AssemblyLayers.xaml"
+                                       (append (list (cons "ll/rows" rows)
+                                                     (list "ll/new" def)
+                                                     (cons "ll.sel" (cond (sel) ("")))
+                                                     (cons "lk/list" (mapcar 'cadr *qd:layerkinds*))
+                                                     (cons "lk/vals" (mapcar 'car *qd:layerkinds*))
+                                                     (cons "lp/list" (mapcar 'cadr pre))
+                                                     (cons "lp/vals" (mapcar 'car pre))
+                                                     (cons "lp/widths/list" (mapcar 'caddr pre))
+                                                     (cons "lh/list" (cons "From preset" mark))
+                                                     (cons "lh/vals" (cons "" mt:keys))
+                                                     (cons "ly/list" mark)
+                                                     (cons "ly/vals" mt:keys)
+                                               )
+                                               (Dyl:WinOff "lp" (not pre))
+                                               (Dyl:WinOff "ly" (not mt:keys))
+                                       )
+                          )
+                )
+           )
+      )
+      (setq rows (cdr (assoc "ll/rows" (cdr res)))
+            sel  (Dyl:WinGet res "ll.sel")
+            out  (Dyl:QuickDrawLayersOf rows)
+      )
+      (cadr out)
+    )
+    (alert (cadr out))
+  )
+  (if (= 1 (car res)) (Remote>>Dyl:MaterialLayersStr (car out)))
 )
 
 ;;-------------------------=={ Gallery }==------------------------;;

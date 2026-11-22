@@ -1,0 +1,33 @@
+# Sample values of the Preset Groups window (Remote>>Dyl:GroupsDialog in Remote\Dyl-Groups.lsp),
+# as the Lisp gives them, for the default groups and the default presets, Section selected:
+# +key=field\tfield a row of the table key (gl/rows: name presets original); \t is a tab.
++gl/rows=Floor\t\tFloor
++gl/rows=Wall\t\tWall
++gl/rows=Ceiling\t\tCeiling
++gl/rows=Roof\t\tRoof
++gl/rows=Finish\t\tFinish
++gl/rows=Structural\t\tStructural
++gl/rows=Site\t\tSite
++gl/rows=Elevation\t1 preset\tElevation
++gl/rows=Section\t33 presets\tSection
++gl/rows=Detail\t\tDetail
++gl/rows=Annotation\t\tAnnotation
++gl/rows=Phase\t3 presets\tPhase
++gl/rows=Area\t\tArea
++gl/rows=Generic\t\tGeneric
++gl/defs=Floor\t\tFloor
++gl/defs=Wall\t\tWall
++gl/defs=Ceiling\t\tCeiling
++gl/defs=Roof\t\tRoof
++gl/defs=Finish\t\tFinish
++gl/defs=Structural\t\tStructural
++gl/defs=Site\t\tSite
++gl/defs=Elevation\t1 preset\tElevation
++gl/defs=Section\t33 presets\tSection
++gl/defs=Detail\t\tDetail
++gl/defs=Annotation\t\tAnnotation
++gl/defs=Phase\t3 presets\tPhase
++gl/defs=Area\t\tArea
++gl/defs=Generic\t\tGeneric
++gl/new=New group\t\t
+gl.sel=8
