@@ -2504,7 +2504,7 @@
 )
 
 ;;  A default preset (id group name material): the behaviors and border of its default material
-;;  (Res\Materials.csv as shipped, see Remote>>Dyl:MaterialDefs):
+;;  (its hatch preset in Res\HatchPresets.csv as shipped, see Remote>>Dyl:MaterialDefs):
 (defun Dyl:QuickDrawDefault (row)
   (Dyl:QuickDrawFix (Dyl:QuickDrawOverride (Dyl:QuickDrawPad row) T (assoc (nth 3 row) (Remote>>Dyl:MaterialDefs))))
 )

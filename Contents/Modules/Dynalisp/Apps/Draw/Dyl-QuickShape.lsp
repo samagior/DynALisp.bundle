@@ -395,7 +395,7 @@
 )
 
 ;;  A default preset (id group name material shape scale): the border of its default
-;;  material (Res\Materials.csv as shipped, see Remote>>Dyl:MaterialDefs):
+;;  material (its hatch preset in Res\HatchPresets.csv as shipped, see Remote>>Dyl:MaterialDefs):
 (defun Dyl:QuickShapeDefault (row)
   (while (< (length row) 17) (setq row (append row (list ""))))
   (Dyl:QuickShapeFix

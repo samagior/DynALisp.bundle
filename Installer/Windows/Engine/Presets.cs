@@ -571,8 +571,10 @@ namespace DynALisp.Windows
             Out();
         }
 
-        // What one preset is called (pst/noun without its plural: "preset", "material"):
-        string One => _noun.EndsWith("s") ? _noun.Substring(0, _noun.Length - 1) : _noun;
+        // What one preset is called (pst/noun without its plural: "preset", "material",
+        // "assembly"):
+        string One => _noun.EndsWith("ies") ? _noun.Substring(0, _noun.Length - 3) + "y"
+                    : _noun.EndsWith("s") ? _noun.Substring(0, _noun.Length - 1) : _noun;
 
         int Ncols => Int(Val("pst/ncols"), int.MaxValue);
 

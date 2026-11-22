@@ -211,7 +211,7 @@
 )
 
 ;;  Default materials, the same way (see Remote>>Dyl:MaterialRowDefs): their Cut hatch preset,
-;;  no Surface yet (the same as Cut), no data:
+;;  no Surface yet (the same as Cut), their data only from a source (see below):
 (setq *mt:defaults*
   '(("mt-Demolition" "Phase" "Demolition" "hp-Demolition" "" "" "" "")
     ("mt-NotInContract" "Phase" "Not In Contract" "hp-NotInContract" "" "" "" "")
