@@ -1,4 +1,4 @@
-;; Groups - The groups of the presets and materials, and the Preset Groups window
+;; Groups - The groups of the presets and of the materials, and the Preset Groups window
 ;; Copyright (C) 2026  Samuel Martineau
 ;;
 ;; This program is free software: you can redistribute it and/or modify
@@ -14,28 +14,69 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-;;  The Group popup of every preset window (Quick Draw, Quick Shape, Materials) lists the
-;;  same groups: those of Res\Groups.csv (one group per row, header "Group"; the user's copy
-;;  under User, see Dyl:UserFile), edited in the Preset Groups window opened by the open
-;;  button beside each Group popup (Remote>>Dyl:GroupsDialog). A group renamed there is
-;;  renamed in the files of every preset tool (see Remote>>Dyl:GroupsRename), so the groups of
-;;  the presets and of their materials stay the same. This file loads before
+;;  Two lists of groups, each one a file of one group per row (header "Group"; the user's
+;;  copy under User, see Dyl:UserFile), its kind k:
+;;
+;;    nil         the groups of the presets (Res\Groups.csv): by the kind of drawing they are
+;;                used in (Quick Draw, Quick Shape, the assemblies, the hatch presets)
+;;    "Material"  the groups of the materials (Res\MaterialGroups.csv): by what they are made
+;;                of (Masonry, Wood, Insulation...); the Group list of the Materials window,
+;;                and the material Group list beside the Material list of a preset window
+;;                and of a layer of an assembly
+;;
+;;  The Group popup of every preset window lists the groups of its kind ((groups . T) or
+;;  (groups . "Material") of its dialog), edited in the Preset Groups window opened by the open
+;;  button beside it (Remote>>Dyl:GroupsDialogOf). A group renamed there is renamed in the
+;;  files of every preset tool of that kind ((groups . "Material") of its spec in
+;;  *dyl:presetspecs*, see Remote>>Dyl:GroupsRenameOf). This file loads before
 ;;  Dyl-Materials.lsp and Dyl-Paths.lsp (the readers of the presets files use it).
 ;;
-;;    (Remote>>Dyl:Groups)          -> the groups, in their order
-;;    (Remote>>Dyl:GroupCase g)     -> g as written in the groups (any case), else g
-;;    (Remote>>Dyl:GroupsDialog n)  -> the Preset Groups window, n: presets using each group
+;;    (Remote>>Dyl:Groups)              -> the groups of the presets, in their order
+;;    (Remote>>Dyl:GroupsOf k)          -> the groups of the kind k, in their order
+;;    (Remote>>Dyl:GroupCase g)         -> g as written in the groups of the presets (any
+;;                                         case), else g; Remote>>Dyl:GroupCaseOf: of kind k
+;;    (Remote>>Dyl:GroupsDialogOf n k)  -> the Preset Groups window on the groups of kind k,
+;;                                         n: presets using each group
 
-;;  The groups when Groups.csv cannot be read: by the kind of drawing they are used in, the
-;;  plans by their type:
+;;  The groups of the presets when Groups.csv cannot be read: by the kind of drawing they are
+;;  used in, the plans by their type:
 (setq *grp:defaults* '("Floor" "Wall" "Ceiling" "Roof" "Finish" "Structural" "Site"
                        "Elevation" "Section" "Detail" "Annotation" "Phase" "Area" "Generic"
                       )
 )
 
-;;  The default groups file (Res\Groups.csv under Contents):
+;;  The groups of the materials when MaterialGroups.csv cannot be read: by what they are made
+;;  of, then the space of an assembly (Air: the air spaces, Void), the materials of the phases
+;;  and the others:
+(setq *grp:matdefaults* '("Concrete" "Masonry" "Metal" "Wood" "Board" "Insulation" "Finish"
+                          "Roofing" "Site" "Air" "Phase" "Generic"
+                         )
+)
+
+;;  The kinds of groups: (kind file defaults noun), noun what uses them in the Preset Groups
+;;  window ("1 preset", "2 materials"):
+(setq *grp:kinds* '((nil "Groups.csv" *grp:defaults* "preset")
+                    ("Material" "MaterialGroups.csv" *grp:matdefaults* "material")
+                   )
+)
+
+;;  The groups read, by kind (see Remote>>Dyl:GroupsOf), read again when DynALisp loads:
+(setq *grp:cache* nil)
+
+;;  The kind k of groups ((kind file defaults noun), the groups of the presets for any other k):
+(defun Remote>>Dyl:GroupsKind (k)
+  (cond ((and k (assoc k *grp:kinds*))) ((assoc nil *grp:kinds*)))
+)
+
+;;  The default groups file of the kind k (Res\Groups.csv or Res\MaterialGroups.csv under
+;;  Contents):
+(defun Remote>>Dyl:GroupsFileOf (k)
+  (strcat (if *dyl:dylres *dyl:dylres(strcat *dyl:dyl "\\Res")) "\\" (cadr (Remote>>Dyl:GroupsKind k)))
+)
+
+;;  The default groups file of the presets:
 (defun Remote>>Dyl:GroupsFile ()
-  (strcat (if *dyl:dylres *dyl:dylres(strcat *dyl:dyl "\\Res")) "\\Groups.csv")
+  (Remote>>Dyl:GroupsFileOf nil)
 )
 
 ;;  The groups of the file f: its rows, without the empty and repeated ones (any case), nil
@@ -49,36 +90,50 @@
   (reverse lst)
 )
 
-;;  The groups (the user's copy of Groups.csv, else the default one), read again only when
-;;  the file changed (*grp:cache*: (file date) . groups):
-(defun Remote>>Dyl:Groups (/ f k)
-  (setq f (Dyl:UserFile (Remote>>Dyl:GroupsFile))
-        k (list f (if (findfile f) (vl-file-systime f)))
+;;  The groups of the kind k (the user's copy of its file, else the default one), read again
+;;  only when the file changed (*grp:cache*: ((kind (file date) . groups) ...)):
+(defun Remote>>Dyl:GroupsOf (k / d f c)
+  (setq d (Remote>>Dyl:GroupsKind k)
+        f (Dyl:UserFile (Remote>>Dyl:GroupsFileOf (car d)))
+        c (list f (if (findfile f) (vl-file-systime f)))
   )
-  (if (not (equal k (car *grp:cache*)))
-    (setq *grp:cache* (cons k (cond ((Remote>>Dyl:GroupsRead f)) (*grp:defaults*))))
+  (if (not (equal c (cadr (assoc (car d) *grp:cache*))))
+    (setq *grp:cache* (cons (cons (car d) (cons c (cond ((Remote>>Dyl:GroupsRead f)) ((eval (caddr d))))))
+                            (vl-remove (assoc (car d) *grp:cache*) *grp:cache*)
+                      )
+    )
   )
-  (cdr *grp:cache*)
+  (cddr (assoc (car d) *grp:cache*))
 )
 
-;;  The default groups (Res\Groups.csv as shipped, never its user copy):
-(defun Remote>>Dyl:GroupsDefaults ()
-  (cond ((Remote>>Dyl:GroupsRead (Remote>>Dyl:GroupsFile))) (*grp:defaults*))
+;;  The groups of the presets:
+(defun Remote>>Dyl:Groups ()
+  (Remote>>Dyl:GroupsOf nil)
 )
 
-;;  The group g as written in the groups (any case: "section" -> "Section"), else g itself
-;;  (a group typed in a presets file that is not one of them is kept):
-(defun Remote>>Dyl:GroupCase (g)
+;;  The default groups of the kind k (its file as shipped, never its user copy):
+(defun Remote>>Dyl:GroupsDefaultsOf (k)
+  (cond ((Remote>>Dyl:GroupsRead (Remote>>Dyl:GroupsFileOf k))) ((eval (caddr (Remote>>Dyl:GroupsKind k)))))
+)
+
+;;  The group g as written in the groups of the kind k (any case: "section" -> "Section"),
+;;  else g itself (a group typed in a presets file that is not one of them is kept):
+(defun Remote>>Dyl:GroupCaseOf (g k)
   (cond
-    ((vl-some '(lambda (x) (if (= (strcase x) (strcase g)) x)) (Remote>>Dyl:Groups)))
+    ((vl-some '(lambda (x) (if (= (strcase x) (strcase g)) x)) (Remote>>Dyl:GroupsOf k)))
     (g)
   )
 )
 
-;;  Save the groups lst (the user's copy of Groups.csv). Returns T, nil when it cannot be
-;;  written (open in Excel):
-(defun Remote>>Dyl:GroupsWrite (lst)
-  (if (Remote>>LM:writecsv (cons '("Group") (mapcar 'list lst)) (Dyl:UserFileW (Remote>>Dyl:GroupsFile)))
+;;  The same, in the groups of the presets:
+(defun Remote>>Dyl:GroupCase (g)
+  (Remote>>Dyl:GroupCaseOf g nil)
+)
+
+;;  Save the groups lst of the kind k (the user's copy of its file). Returns T, nil when it
+;;  cannot be written (open in Excel):
+(defun Remote>>Dyl:GroupsWriteOf (lst k)
+  (if (Remote>>LM:writecsv (cons '("Group") (mapcar 'list lst)) (Dyl:UserFileW (Remote>>Dyl:GroupsFileOf k)))
     (progn (setq *grp:cache* nil) t)
   )
 )
@@ -88,17 +143,19 @@
   (if (setq p (vl-some '(lambda (x) (if (= (strcase (car x)) (strcase g)) x)) pairs)) (cdr p) g)
 )
 
-;;  Rename the groups of the renames pairs ((old . new) ...) in the files of every preset tool
-;;  (*dyl:presetspecs*: Quick Draw, Quick Shape, the materials...), saved now: each file
-;;  as it is on disk (the user's copy, else the default), its other values kept. Returns the
-;;  tools whose file could not be written:
-(defun Remote>>Dyl:GroupsRename (pairs / key rows new bad)
+;;  Rename the groups of the renames pairs ((old . new) ...) of the kind k in the files of
+;;  every preset tool of that kind (*dyl:presetspecs*: its (groups . k), none for the groups
+;;  of the presets: Quick Draw, Quick Shape, the hatch presets...; "Material": the
+;;  materials), saved now: each file as it is on disk (the user's copy, else the default),
+;;  its other values kept. Returns the tools whose file could not be written:
+(defun Remote>>Dyl:GroupsRenameOf (pairs k / key rows new bad)
+  (setq k (car (Remote>>Dyl:GroupsKind k)))
   ;;  A materials file of DynALisp 1.1 and older is split first (its user copy is not read as
   ;;  it is, see Remote>>Dyl:PresetFile, and would be written over):
   (if Remote>>Dyl:MaterialMigrate (Remote>>Dyl:MaterialMigrate))
   (foreach spec *dyl:presetspecs*
     (setq key  (car spec)
-          rows (Remote>>Dyl:PresetCsv key)
+          rows (if (= k (car (Remote>>Dyl:GroupsKind (cdr (assoc 'groups (cdr spec)))))) (Remote>>Dyl:PresetCsv key))
           new  (mapcar '(lambda (r) (cons (car r) (cons (Remote>>Dyl:GroupRenamed (nth 1 r) pairs) (cddr r)))) rows)
     )
     (if (and (not (equal rows new))
@@ -129,10 +186,10 @@
 )
 
 ;;  The row of the group g of the window, its name in the file org ("": added), used: the
-;;  presets using each group (((GROUP . n) ...)):
-(defun Remote>>Dyl:GroupsRow (g org used / n)
+;;  presets using each group (((GROUP . n) ...)), noun what they are ("preset", "material"):
+(defun Remote>>Dyl:GroupsRow (g org used noun / n)
   (setq n (cdr (assoc (strcase org) used)))
-  (list g (cond ((not n) "") ((= 1 n) "1 preset") ((strcat (itoa n) " presets"))) org)
+  (list g (cond ((not n) "") ((= 1 n) (strcat "1 " noun)) ((strcat (itoa n) " " noun "s"))) org)
 )
 
 ;;  The problem of the names of groups lst (nil: none): a name with ; , or " (the
@@ -151,15 +208,19 @@
   bad
 )
 
-;;  The Preset Groups window: add, rename, remove and order the groups. used: the number of
+;;  The Preset Groups window on the groups of the kind k (titled Material Groups for the
+;;  groups of the materials): add, rename, remove and order the groups. used: the number of
 ;;  presets in each group (((group . n) ...), any case, shown beside each group). OK saves the
-;;  groups (Groups.csv) and renames the groups renamed in the files of every preset tool (see
-;;  Remote>>Dyl:GroupsRename). Returns the renames ((old . new) ...) on OK (nil: none, or T),
-;;  nil on Cancel; the caller renames them in the presets it is editing:
-(defun Remote>>Dyl:GroupsDialog (used / org res rows lst pairs bad msg)
-  (setq used (mapcar '(lambda (x) (cons (strcase (car x)) (cdr x))) used)
-        org  (Remote>>Dyl:Groups)
-        rows (mapcar '(lambda (g) (Remote>>Dyl:GroupsRow g g used)) org)
+;;  groups (Groups.csv or MaterialGroups.csv) and renames the groups renamed in the files of
+;;  every preset tool of that kind (see Remote>>Dyl:GroupsRenameOf). Returns the renames
+;;  ((old . new) ...) on OK (nil: none, or T), nil on Cancel; the caller renames them in the
+;;  presets it is editing:
+(defun Remote>>Dyl:GroupsDialogOf (used k / d org res rows lst pairs bad msg)
+  (setq d    (Remote>>Dyl:GroupsKind k)
+        k    (car d)
+        used (mapcar '(lambda (x) (cons (strcase (car x)) (cdr x))) used)
+        org  (Remote>>Dyl:GroupsOf k)
+        rows (mapcar '(lambda (g) (Remote>>Dyl:GroupsRow g g used (cadddr d))) org)
   )
   ;;  Shown again on the rows edited while a name is not valid (checked here too, the window
   ;;  checks them first):
@@ -167,14 +228,19 @@
     (progn
       (setq res  (Dyl:WinShow
                "Dyl-PresetGroups.xaml"
-               (list (cons "gl/rows" rows)
-                     ;;  Reset: the default groups, those of the file keep their presets:
-                     (cons "gl/defs"
-                           (mapcar '(lambda (g) (Remote>>Dyl:GroupsRow g (if (member g org) g "") used))
-                                   (Remote>>Dyl:GroupsDefaults)
-                           )
-                     )
-                     (list "gl/new" (list "New group" "" ""))
+               (append
+                 (list (cons "gl/rows" rows)
+                       ;;  Reset: the default groups, those of the file keep their presets:
+                       (cons "gl/defs"
+                             (mapcar '(lambda (g) (Remote>>Dyl:GroupsRow g (if (member g org) g "") used (cadddr d)))
+                                     (Remote>>Dyl:GroupsDefaultsOf k)
+                             )
+                       )
+                       (list "gl/new" (list "New group" "" ""))
+                 )
+                 ;;  The groups of the materials: the window is titled so (win/title, see
+                 ;;  Installer\Windows\Engine\Session.cs):
+                 (if k (list (cons "win/title" "DynALisp - Material Groups")))
                )
              )
       )
@@ -193,15 +259,16 @@
     (progn
       (cond
         ((not lst) (alert "Keep at least one group.") nil)
-        ((Remote>>Dyl:GroupsWrite lst)
+        ((Remote>>Dyl:GroupsWriteOf lst k)
          (setq pairs (vl-remove-if '(lambda (x) (or (= "" (car x)) (= (car x) (cdr x))))
                                    (mapcar '(lambda (x) (cons (caddr x) (vl-string-trim " " (car x)))) rows)
                      )
          )
-         ;;  The renames of the session, in their order: every preset window open renames them
-         ;;  in the presets it is editing (see Remote>>Dyl:PresetDlgGroupsSync):
-         (if pairs (setq *grp:renames* (append *grp:renames* (list pairs))))
-         (if (setq bad (Remote>>Dyl:GroupsRename pairs))
+         ;;  The renames of the session, in their order, each one with its kind ((k pairs)):
+         ;;  every preset window open renames those of its kind in the presets it is editing
+         ;;  (see Remote>>Dyl:PresetDlgGroupsSync):
+         (if pairs (setq *grp:renames* (append *grp:renames* (list (list k pairs)))))
+         (if (setq bad (Remote>>Dyl:GroupsRenameOf pairs k))
            (alert (strcat "The groups could not be renamed in the presets of: "
                           (Remote>>LM:lst->str bad ", ")
                           " (is the file open in Excel?)."
@@ -210,8 +277,18 @@
          )
          (cond (pairs) (T))
         )
-        (T (alert "The groups could not be saved: is Groups.csv open in Excel?") nil)
+        (T (alert (strcat "The groups could not be saved: is " (cadr d) " open in Excel?")) nil)
       )
     )
   )
+)
+
+;;  The Preset Groups window on the groups of the presets (see Remote>>Dyl:GroupsDialogOf):
+(defun Remote>>Dyl:GroupsDialog (used)
+  (Remote>>Dyl:GroupsDialogOf used nil)
+)
+
+;;  Rename the groups of the presets (see Remote>>Dyl:GroupsRenameOf):
+(defun Remote>>Dyl:GroupsRename (pairs)
+  (Remote>>Dyl:GroupsRenameOf pairs nil)
 )

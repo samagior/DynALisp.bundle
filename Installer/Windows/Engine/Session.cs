@@ -25,6 +25,10 @@
 //           the rows of a list edited in the window, see Rows.cs);
 //           those named in OutRows are given back to the Lisp with the values
 //
+// The value win/title, when the Lisp gives it, is the title of the next window shown in
+// place of the Title of its file (the Preset Groups window on the groups of the materials:
+// Material Groups), then dropped.
+//
 // A control takes the value of its key when the window opens, and puts its value back
 // each time it changes, so the rules (Win.EnabledBy, Win.VisibleBy) and the sub-windows
 // see it at once. A sub-window (Win.Open) works on the same values: its Cancel puts back
@@ -90,6 +94,11 @@ namespace DynALisp.Windows
         public View Open(string path)
         {
             var w = Load(path, Dark);
+            if (Values.TryGetValue("win/title", out string title) && !string.IsNullOrEmpty(title))
+            {
+                w.Title = title;
+                Values.Remove("win/title");
+            }
             var view = new View(this, w, Path.GetDirectoryName(Path.GetFullPath(path)));
             view.Fill();
             return view;

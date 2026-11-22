@@ -1,0 +1,32 @@
+# Sample values of the Preset Groups window on the groups of the materials (Remote>>Dyl:GroupsDialogOf
+# in Remote\Dyl-Groups.lsp, opened from the Materials window), as the Lisp gives them, for the
+# default groups of the materials and the default materials, Insulation selected; win/title the
+# title of the window: +key=field\tfield a row of the table key (gl/rows: name materials original);
+# \t is a tab.
+win/title=DynALisp - Material Groups
++gl/rows=Concrete\t4 materials\tConcrete
++gl/rows=Masonry\t17 materials\tMasonry
++gl/rows=Metal\t5 materials\tMetal
++gl/rows=Wood\t22 materials\tWood
++gl/rows=Board\t5 materials\tBoard
++gl/rows=Insulation\t18 materials\tInsulation
++gl/rows=Finish\t17 materials\tFinish
++gl/rows=Roofing\t6 materials\tRoofing
++gl/rows=Site\t7 materials\tSite
++gl/rows=Air\t9 materials\tAir
++gl/rows=Phase\t3 materials\tPhase
++gl/rows=Generic\t1 material\tGeneric
++gl/defs=Concrete\t4 materials\tConcrete
++gl/defs=Masonry\t17 materials\tMasonry
++gl/defs=Metal\t5 materials\tMetal
++gl/defs=Wood\t22 materials\tWood
++gl/defs=Board\t5 materials\tBoard
++gl/defs=Insulation\t18 materials\tInsulation
++gl/defs=Finish\t17 materials\tFinish
++gl/defs=Roofing\t6 materials\tRoofing
++gl/defs=Site\t7 materials\tSite
++gl/defs=Air\t9 materials\tAir
++gl/defs=Phase\t3 materials\tPhase
++gl/defs=Generic\t1 material\tGeneric
++gl/new=New group\t\t
+gl.sel=5

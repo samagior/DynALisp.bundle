@@ -5,7 +5,7 @@
 # key/vals=value|value, +key=field\tfield a row of the table key (pst/rows: id group name cut
 # surface conductivity density resistance; pst/mats: the hatch presets, id group name preview
 # pattern); \t is a tab. mt.imp "0": the units shown are SI (a metric drawing).
-grp/list=Floor|Wall|Ceiling|Roof|Finish|Structural|Site|Elevation|Section|Detail|Annotation|Phase|Area|Generic
+grp/list=Concrete|Masonry|Metal|Wood|Board|Insulation|Finish|Roofing|Site|Air|Phase|Generic
 srt/list=Name|Group
 srt=0
 flt=
@@ -21,20 +21,20 @@ pst/mat=3
 pst/matnoun=hatch preset
 pst/matfree=1
 mt.imp=0
-+pst/rows=mt-Brick\tSection\tBrick\thp-Brick\t\t\t\t
-+pst/rows=mt-Concrete\tSection\tConcrete\thp-Concrete\t\t\t\t
-+pst/rows=mt-ExpandedPolystyrene\tSection\tExpanded Polystyrene\thp-RigidInsulation\t\t0.03571\t\t
-+pst/rows=mt-ExtrudedPolystyrene\tSection\tExtruded Polystyrene\thp-RigidInsulation\t\t0.02857\t\t
-+pst/rows=mt-Gypsum\tSection\tGypsum\thp-Gypsum\t\t\t\t
-+pst/rows=mt-Hardboard\tSection\tHardboard\thp-Brick\t\t\t\t
-+pst/rows=mt-Polyisocyanurate\tSection\tPolyisocyanurate\thp-RigidInsulation\t\t0.02381\t\t
-+pst/rows=mt-Void\tSection\tVoid\thp-Void\t\t\t\t
-+pst/defs=mt-Brick\tSection\tBrick\thp-Brick\t\t\t\t
-+pst/defs=mt-Concrete\tSection\tConcrete\thp-Concrete\t\t\t\t
-+pst/defs=mt-Gypsum\tSection\tGypsum\thp-Gypsum\t\t\t\t
-+pst/defs=mt-Hardboard\tSection\tHardboard\thp-Brick\t\t\t\t
-+pst/defs=mt-Void\tSection\tVoid\thp-Void\t\t\t\t
-+pst/new=\tSection\tNew material\t\t\t\t\t
++pst/rows=mt-Brick\tMasonry\tBrick\thp-Brick\t\t\t\t
++pst/rows=mt-Concrete\tConcrete\tConcrete\thp-Concrete\t\t\t\t
++pst/rows=mt-ExpandedPolystyrene\tInsulation\tExpanded Polystyrene\thp-RigidInsulation\t\t0.03571\t\t
++pst/rows=mt-ExtrudedPolystyrene\tInsulation\tExtruded Polystyrene\thp-RigidInsulation\t\t0.02857\t\t
++pst/rows=mt-Gypsum\tBoard\tGypsum\thp-Gypsum\t\t\t\t
++pst/rows=mt-Hardboard\tWood\tHardboard\thp-Brick\t\t\t\t
++pst/rows=mt-Polyisocyanurate\tInsulation\tPolyisocyanurate\thp-RigidInsulation\t\t0.02381\t\t
++pst/rows=mt-Void\tAir\tVoid\thp-Void\t\t\t\t
++pst/defs=mt-Brick\tMasonry\tBrick\thp-Brick\t\t\t\t
++pst/defs=mt-Concrete\tConcrete\tConcrete\thp-Concrete\t\t\t\t
++pst/defs=mt-Gypsum\tBoard\tGypsum\thp-Gypsum\t\t\t\t
++pst/defs=mt-Hardboard\tWood\tHardboard\thp-Brick\t\t\t\t
++pst/defs=mt-Void\tAir\tVoid\thp-Void\t\t\t\t
++pst/new=\tGeneric\tNew material\t\t\t\t\t
 +pst/mats=hp-Brick\tSection\tBrick\tP?1?ANSI31?{samples}\Sample.pat?1?0?1\tANSI31
 +pst/mats=hp-Concrete\tSection\tConcrete\tP?1?CONCRETE_C?{samples}\Sample.pat?1?0?1\tCONCRETE_C
 +pst/mats=hp-Gypsum\tSection\tGypsum\tP?1?GENERAL_TEXTURE?{samples}\Sample.pat?0.5?0?1\tGENERAL_TEXTURE

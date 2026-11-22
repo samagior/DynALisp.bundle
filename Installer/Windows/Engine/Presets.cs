@@ -49,7 +49,10 @@
 //               pst/matnoun what they are called in the messages ("material"), pst/matfree
 //               "1": the list holds every one of them, never only those of the group of the
 //               preset, and another group does not change it (the hatch presets of a
-//               material)
+//               material); mgr/list the groups of the materials: the list mgr of the window
+//               (a ComboBox, not a column) picks the group the material list lists, never the
+//               group of the preset, and shows the group of the material of the preset shown
+//               (Quick Draw: (matgroups . T) of the Lisp)
 //   pst/spec    a column of the presets with a preview of their own (an assembly), used
 //               when pst/specby holds for the preset (a rule, as Win.EnabledBy); else the
 //               preview is the hatch of its material
@@ -76,7 +79,8 @@
 //   lst  the list (its items: PresetItem, shown by its ItemTemplate: Spec, Group, Name,
 //        Aliases), flt the filter, srt the sort (Name, Group), shg the Show group, shd Set
 //        default, pcn how many are listed, mpv the preview of the preset shown, prm its
-//        status, src its command, mat the material, new cpy del rst all the buttons,
+//        status, src its command, mat the material, mgr the group of the materials it
+//        lists (with mgr/list), new cpy del rst all the buttons,
 //        als aln aad aren adel ams the aliases panel, error the messages.
 
 using System;
@@ -149,10 +153,12 @@ namespace DynALisp.Windows
         List<string> _matIds = new List<string>();
         List<string> _alst = new List<string>();
         List<string> _shws = new List<string>();
+        List<string> _mgrs = new List<string>();
+        string _mgrVal = "";
 
         readonly ListBox _list, _alsList;
         readonly TextBox _flt, _aln;
-        readonly ComboBox _srt, _shg, _mat;
+        readonly ComboBox _srt, _shg, _mat, _mgr;
         readonly TextBlock _pcn, _prm, _src, _ams;
         readonly HatchTile _mpv;
 
@@ -200,6 +206,16 @@ namespace DynALisp.Windows
             _srt = v.Find("srt") as ComboBox;
             _shg = v.Find("shg") as ComboBox;
             _mat = v.Find("mat") as ComboBox;
+            // The group of the materials the material list lists (mgr/list): those groups,
+            // then the other groups of the materials:
+            if (_s.Lists.TryGetValue("mgr", out var mgrs) && mgrs != null && _matCol >= 0 && !_matFree)
+            {
+                _mgr = v.Find("mgr") as ComboBox;
+                _mgrs = mgrs.ToList();
+                foreach (var g in _mats.Select(m => Cell(m, 1)).Where(g => g.Length > 0).Distinct(Ic))
+                    if (!_mgrs.Contains(g, Ic)) _mgrs.Add(g);
+                if (_mgr != null) _mgr.ItemsSource = _mgrs;
+            }
             _pcn = v.Find("pcn") as TextBlock;
             _prm = v.Find("prm") as TextBlock;
             _src = v.Find("src") as TextBlock;
@@ -277,7 +293,7 @@ namespace DynALisp.Windows
 
         // The keys the editor fills itself (not the view):
         public bool Owns(string key) =>
-            key == "lst" || key == "als" || key == "shg" || key == "mat" || key == "mpv" || _fields.Any(f => f.Key == key);
+            key == "lst" || key == "als" || key == "shg" || key == "mat" || key == "mgr" || key == "mpv" || _fields.Any(f => f.Key == key);
 
         // ---- Values and rules ----
 
@@ -488,6 +504,7 @@ namespace DynALisp.Windows
         void Show()
         {
             var r = Row;
+            MgrShow();
             MatFill();
             _v.Quiet(() =>
             {
@@ -530,15 +547,15 @@ namespace DynALisp.Windows
             _v.Rows?.Load();
         }
 
-        // The material list of the preset shown: the materials of its group by name, then
-        // its material when it is not one of them ("group - name", or marked missing); every
-        // material when the group has none (Remote>>Dyl:PresetDlgMatFill), or always with
-        // pst/matfree:
+        // The material list of the preset shown: the materials of its group (with mgr, of the
+        // group picked there) by name, then its material when it is not one of them ("group -
+        // name", or marked missing); every material when the group has none
+        // (Remote>>Dyl:PresetDlgMatFill), or always with pst/matfree:
         void MatFill()
         {
             if (_mat == null || _matCol < 0) return;
             var r = Row;
-            string grp = Cell(r, GroupCol), cur = Cell(r, _matCol);
+            string grp = _mgr != null ? _mgrVal : Cell(r, GroupCol), cur = Cell(r, _matCol);
             var inGrp = _matFree ? new List<string[]>() : MatsOf(grp);
             List<string[]> lst;
             bool byName = inGrp.Count > 0;
@@ -554,6 +571,42 @@ namespace DynALisp.Windows
             if (cur.Length > 0 && !ids.Contains(cur)) { ids.Add(cur); labels.Add(cur + "   (missing " + _matNoun + ")"); }
             _matIds = ids;
             _v.Quiet(() => _mat.ItemsSource = labels);
+        }
+
+        // The group of the material of the preset shown in mgr (kept when it no longer
+        // exists, the first group when there is none yet):
+        void MgrShow()
+        {
+            if (_mgr == null) return;
+            if (MatOf(Row) is string[] m && Cell(m, 1).Length > 0) _mgrVal = Cell(m, 1);
+            if (_mgrVal.Length == 0 && _mgrs.Count > 0) _mgrVal = _mgrs[0];
+            int i = _mgrs.FindIndex(g => Ic.Equals(g, _mgrVal));
+            _v.Quiet(() => _mgr.SelectedIndex = i);
+            _s.Values["mgr"] = i.ToString(CultureInfo.InvariantCulture);
+        }
+
+        // Another group picked in mgr: the material list lists its materials, the first one
+        // given to the presets selected when the material of the preset shown is not one of
+        // them (as another group of the preset without mgr):
+        void MgrPicked()
+        {
+            int i = _mgr.SelectedIndex;
+            if (i < 0 || i >= _mgrs.Count) return;
+            _mgrVal = _mgrs[i];
+            var inGrp = MatsOf(_mgrVal);
+            if (inGrp.Count > 0 && !inGrp.Any(m => m[0] == Cell(Row, _matCol)))
+            {
+                PutAll(_matCol, inGrp[0][0]);
+                Show();
+                return;
+            }
+            MatFill();
+            _v.Quiet(() =>
+            {
+                int j = _matIds.IndexOf(Cell(Row, _matCol));
+                _mat.SelectedIndex = j;
+                _s.Values["mat"] = j.ToString(CultureInfo.InvariantCulture);
+            });
         }
 
         List<string[]> MatsOf(string grp) =>
@@ -636,6 +689,7 @@ namespace DynALisp.Windows
             if (key == "flt" || key == "srt") { Refilter(); return; }
             if (key == "shg") { ShowPicked(); return; }
             if (key == "als") { AliasPicked(); return; }
+            if (key == "mgr" && _mgr != null) { MgrPicked(); return; }
             var f = _fields.FirstOrDefault(x => x.Key == key);
             if (f != null) FieldChanged(f);
         }
@@ -680,7 +734,7 @@ namespace DynALisp.Windows
             }
             // Another group: the materials of the new group (the first one given to the
             // presets selected when theirs is not one of them):
-            if (f.Key == "grp" && _matCol >= 0 && !_matFree && !Ic.Equals(old, val))
+            if (f.Key == "grp" && _matCol >= 0 && !_matFree && _mgr == null && !Ic.Equals(old, val))
             {
                 var inGrp = MatsOf(val);
                 if (inGrp.Count > 0 && !inGrp.Any(m => m[0] == Cell(Row, _matCol))) PutAll(_matCol, inGrp[0][0]);
