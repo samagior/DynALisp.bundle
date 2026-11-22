@@ -22,8 +22,8 @@ Dynalisp/Draw/Dyl-PresetGroups.fr.htm
 Dynalisp/Draw/Dyl-PresetGroups.htm
 Dynalisp/Draw/Dyl-QuickDraw.fr.htm
 Dynalisp/Draw/Dyl-QuickDraw.htm
-Dynalisp/Draw/Dyl-QuickDrawEndsCorners.fr.htm
-Dynalisp/Draw/Dyl-QuickDrawEndsCorners.htm
+Dynalisp/Draw/Dyl-QuickDrawBandSettings.fr.htm
+Dynalisp/Draw/Dyl-QuickDrawBandSettings.htm
 Dynalisp/Draw/Dyl-QuickDrawGallery.fr.htm
 Dynalisp/Draw/Dyl-QuickDrawGallery.htm
 Dynalisp/Draw/Dyl-QuickShape.fr.htm

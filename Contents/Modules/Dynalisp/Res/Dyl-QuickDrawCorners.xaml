@@ -27,7 +27,7 @@
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dyl="clr-namespace:DynALisp.Windows"
-        Title="DynALisp - Corners" dyl:Win.Docs="Draw\Dyl-QuickDrawEndsCorners.htm">
+        Title="DynALisp - Corners" dyl:Win.Docs="Draw\Dyl-QuickDrawBandSettings.htm">
   <Window.Resources>
     <Style x:Key="Row" TargetType="DockPanel">
       <Setter Property="Margin" Value="0,3"/>
