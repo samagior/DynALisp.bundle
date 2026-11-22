@@ -1,4 +1,4 @@
-;; Groups - The groups of the presets and hatch presets, and the Preset Groups window
+;; Groups - The groups of the presets and materials, and the Preset Groups window
 ;; Copyright (C) 2026  Samuel Martineau
 ;;
 ;; This program is free software: you can redistribute it and/or modify
@@ -14,12 +14,12 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-;;  The Group popup of every preset window (Quick Draw, Quick Shape, Hatch Presets) lists the
+;;  The Group popup of every preset window (Quick Draw, Quick Shape, Materials) lists the
 ;;  same groups: those of Res\Groups.csv (one group per row, header "Group"; the user's copy
 ;;  under User, see Dyl:UserFile), edited in the Preset Groups window opened by the open
 ;;  button beside each Group popup (Remote>>Dyl:GroupsDialog). A group renamed there is
 ;;  renamed in the files of every preset tool (see Remote>>Dyl:GroupsRename), so the groups of
-;;  the presets and of their hatch presets stay the same. This file loads before
+;;  the presets and of their materials stay the same. This file loads before
 ;;  Dyl-Materials.lsp and Dyl-Paths.lsp (the readers of the presets files use it).
 ;;
 ;;    (Remote>>Dyl:Groups)          -> the groups, in their order
@@ -89,7 +89,7 @@
 )
 
 ;;  Rename the groups of the renames pairs ((old . new) ...) in the files of every preset tool
-;;  (*dyl:presetspecs*: Quick Draw, Quick Shape, the hatch presets...), saved now: each file
+;;  (*dyl:presetspecs*: Quick Draw, Quick Shape, the materials...), saved now: each file
 ;;  as it is on disk (the user's copy, else the default), its other values kept. Returns the
 ;;  tools whose file could not be written:
 (defun Remote>>Dyl:GroupsRename (pairs / key rows new bad)

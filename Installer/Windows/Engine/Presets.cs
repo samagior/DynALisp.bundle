@@ -42,7 +42,7 @@
 //   pst/als     the aliases ((ALIAS COMMAND) ...), pst/taken the names already taken
 //               ((NAME what-has-it) ...), pst/prefix the text of a new alias by the value of a
 //               column ("4|Polyline=PL-|*=QD-")
-//   pst/mat     the column of the hatch preset (material) id, pst/mats the materials
+//   pst/mat     the column of the material id, pst/mats the materials
 //               ((id group name spec pattern) ...), spec drawn by a HatchTile (Hatch.cs)
 //   pst/spec    a column of the presets with a preview of their own (an assembly), used
 //               when pst/specby holds for the preset (a rule, as Win.EnabledBy); else the
@@ -70,7 +70,7 @@
 //   lst  the list (its items: PresetItem, shown by its ItemTemplate: Spec, Group, Name,
 //        Aliases), flt the filter, srt the sort (Name, Group), shg the Show group, shd Set
 //        default, pcn how many are listed, mpv the preview of the preset shown, prm its
-//        status, src its command, mat the hatch preset, new cpy del rst all the buttons,
+//        status, src its command, mat the material, new cpy del rst all the buttons,
 //        als aln aad aren adel ams the aliases panel, error the messages.
 
 using System;
@@ -272,7 +272,7 @@ namespace DynALisp.Windows
         // ---- Values and rules ----
 
         // The value of key for the preset r, as a rule reads it (a checkbox "1" / "0", the
-        // value stored for a list); pst/solid: its hatch preset is a solid fill:
+        // value stored for a list); pst/solid: its material is a solid fill:
         string RowGet(string[] r, string key)
         {
             if (key == "pst/solid") return Solid(r) ? "1" : "0";
@@ -515,7 +515,7 @@ namespace DynALisp.Windows
             _v.Rows?.Load();
         }
 
-        // The hatch preset list of the preset shown: the materials of its group by name, then
+        // The material list of the preset shown: the materials of its group by name, then
         // its material when it is not one of them ("group - name", or marked missing); every
         // material when the group has none (Remote>>Dyl:PresetDlgMatFill):
         void MatFill()
@@ -535,7 +535,7 @@ namespace DynALisp.Windows
             else lst = _mats.OrderBy(m => Cell(m, 1) + "\t" + Cell(m, 2), StringComparer.OrdinalIgnoreCase).ToList();
             var ids = lst.Select(m => Cell(m, 0)).ToList();
             var labels = lst.Select(m => byName && Ic.Equals(Cell(m, 1), grp) ? Cell(m, 2) : Cell(m, 1) + " - " + Cell(m, 2)).ToList();
-            if (cur.Length > 0 && !ids.Contains(cur)) { ids.Add(cur); labels.Add(cur + "   (missing hatch preset)"); }
+            if (cur.Length > 0 && !ids.Contains(cur)) { ids.Add(cur); labels.Add(cur + "   (missing material)"); }
             _matIds = ids;
             _v.Quiet(() => _mat.ItemsSource = labels);
         }
@@ -657,7 +657,7 @@ namespace DynALisp.Windows
                 Show();
                 return;
             }
-            // Another group: the hatch presets of the new group (the first one given to the
+            // Another group: the materials of the new group (the first one given to the
             // presets selected when theirs is not one of them):
             if (f.Key == "grp" && _matCol >= 0 && !Ic.Equals(old, val))
             {
@@ -679,7 +679,7 @@ namespace DynALisp.Windows
                 return null;
             }
             if (f.Key == "grp" && val.Length == 0) return "The group cannot be empty.";
-            if (f.Key == "mat" && !_mats.Any(m => m[0] == val)) return "This hatch preset no longer exists: pick another one.";
+            if (f.Key == "mat" && !_mats.Any(m => m[0] == val)) return "This material no longer exists: pick another one.";
             if (f.El is TextBox && Win.GetCheck(f.El) is string kind && !View.Valid(kind, val))
                 return Win.GetCheckMessage(f.El) ?? "This value is not valid.";
             return null;

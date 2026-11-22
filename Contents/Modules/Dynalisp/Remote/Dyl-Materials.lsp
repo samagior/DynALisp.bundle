@@ -120,7 +120,7 @@
               "Type"
       )
       (default . "MT-*")
-      (title . "Hatch Presets")
+      (title . "Materials")
       ;;  Page of the Documentation button (Docs folder of the Dynalisp module):
       (doc . "Draw\\Dyl-Materials.htm")
      )
@@ -523,7 +523,7 @@
 
 ;;  A new material (the optional settings off, associative), and the material of a preset
 ;;  whose material no longer exists (the border and behaviors of a new preset):
-(setq *mt:new* (append '("" "" "New hatch preset" "ANSI31" "1.0" "1.0" "0" "THIN" "HATCH" "1" "0" "1") *mt:extra*))
+(setq *mt:new* (append '("" "" "New material" "ANSI31" "1.0" "1.0" "0" "THIN" "HATCH" "1" "0" "1") *mt:extra*))
 
 ;;-------------------------=={ Optional settings }==------------------------;;
 
@@ -634,7 +634,7 @@
 )
 
 ;;  The hatch of a Quick Draw preset or of a layer of an assembly (Has a hatch, its Hatch
-;;  Settings window): its layer key ("": the hatch layer key of its hatch preset), then the
+;;  Settings window): its layer key ("": the hatch layer key of its material), then the
 ;;  properties of the key it overrides, in the order of *mt:bordertiles* (color on, color,
 ;;  linetype on, linetype, linetype scale on, scale, lineweight on, lineweight, transparency
 ;;  on, transparency), and the column of the material each one goes to:
@@ -650,7 +650,7 @@
 
 ;;  The material mat with the hatch h of a preset or of a layer (its 11 values, see
 ;;  *mt:hatchtiles*): its layer key in place of the hatch layer key of mat when it has one, each
-;;  property it overrides in place of that of mat (the others: those of the hatch preset):
+;;  property it overrides in place of that of mat (the others: those of the material):
 (defun Remote>>Dyl:MaterialHatchOver (mat h / i)
   (if (and h (/= "" (car h))) (setq mat (Remote>>Dyl:ListSubst mat 8 (car h))))
   (setq i 1)
@@ -1157,7 +1157,7 @@
   (start_list tile)
   (foreach id lst
     (add_list (cond
-                ((not (setq m (assoc id mats))) (strcat id "   (missing hatch preset)"))
+                ((not (setq m (assoc id mats))) (strcat id "   (missing material)"))
                 ((and grp (= (strcase grp) (strcase (nth 1 m)))) (nth 2 m))
                 ((strcat (nth 1 m) " - " (nth 2 m)))
               )
@@ -1833,7 +1833,7 @@
 
 ;;-------------------------=={ Legend }==------------------------;;
 
-;;  Code the Draw legend... button of the Hatch Presets window closes it with (see
+;;  Code the Draw legend... button of the Materials window closes it with (see
 ;;  Remote>>Dyl:MaterialDlgStatus):
 (setq *mt:legendcode* 7)
 
@@ -1903,13 +1903,13 @@
       )
       (setvar "CMDECHO" cmd)
       (vla-EndUndoMark doc)
-      (princ (strcat "\nLegend: " (itoa n) " hatch preset(s) drawn."))
+      (princ (strcat "\nLegend: " (itoa n) " material(s) drawn."))
       n
     )
   )
 )
 
-;;  The materials selected in the Hatch Presets window, in the order of its list (pst:view,
+;;  The materials selected in the Materials window, in the order of its list (pst:view,
 ;;  pst:lst: locals of Remote>>Dyl:PresetDialog), the materials being edited:
 (defun Remote>>Dyl:MaterialDlgSelected (/ sel)
   (setq sel (Remote>>Dyl:PresetDlgSel))
@@ -1922,7 +1922,7 @@
 
 ;;-------------------------=={ Pick hatch }==------------------------;;
 
-;;  Code the Pick hatch... button of the Hatch Presets window closes it with (see
+;;  Code the Pick hatch... button of the Materials window closes it with (see
 ;;  Remote>>Dyl:MaterialDlgStatus; 8 and 9 are the codes of the preset engine):
 (setq *mt:hatchpickcode* 10)
 
@@ -2017,7 +2017,7 @@
 (setq *mt:rebuildpat* "Dynalisp\\Apps\\Utilities\\Dyl-RebuildPat.lsp")
 
 ;;  Pick hatch...: the pattern pat of the hatch e is in no .pat file of the support path, so a
-;;  hatch preset could not draw it. Asked whether to rebuild it from the hatch (see
+;;  material could not draw it. Asked whether to rebuild it from the hatch (see
 ;;  Dyl-RebuildPat); when Dyl-RebuildPat is turned off in the Startup Suite, asked to turn it
 ;;  on (and it is loaded: an App turned on is only autoloaded, see Dyl:SuiteFileLoad). The
 ;;  pattern rebuilt is read again (its units, its preview). Returns T when it was rebuilt:
@@ -2031,7 +2031,7 @@
                    "No"
           )
      )
-     (princ (strcat "\nPattern " pat " not rebuilt: a hatch preset cannot draw it until a .pat file has it (see RPAT)."))
+     (princ (strcat "\nPattern " pat " not rebuilt: a material cannot draw it until a .pat file has it (see RPAT)."))
      nil
     )
     ((not (or (Dyl:SuiteFileOn-p *mt:rebuildpat*)
@@ -2063,7 +2063,7 @@
   )
 )
 
-;;  Pick hatch...: a hatch picked in the drawing gives its hatch settings to the hatch presets
+;;  Pick hatch...: a hatch picked in the drawing gives its hatch settings to the materials
 ;;  selected (see Remote>>Dyl:MaterialFromHatch, Remote>>Dyl:PresetDlgPut). A pattern that no
 ;;  .pat file has can be rebuilt first (see Remote>>Dyl:MaterialPatRebuild), so its scale is
 ;;  read in the units of the file rebuilt. Its pattern is added to the Pattern popup when the
@@ -2099,8 +2099,8 @@
 )
 
 ;;  Code *mt:hatchpickcode* = Pick hatch...: a hatch picked in the drawing gives its settings to
-;;  the hatch presets selected, then the dialog is shown again.
-;;  Code *mt:legendcode* = Draw legend...: the legend of the hatch presets selected (as they are
+;;  the materials selected, then the dialog is shown again.
+;;  Code *mt:legendcode* = Draw legend...: the legend of the materials selected (as they are
 ;;  being edited) is drawn from a point picked, then the dialog is shown again.
 ;;  Code 5 = the open button of the hatch layer key: the Layer Keys dialog is shown on that key
 ;;  (not nested in the materials dialog), then the materials dialog is shown again with the
@@ -2194,7 +2194,7 @@
             "            }"
             "          }"
             "        }"
-            ;;  The legend of the hatch presets selected, drawn in the drawing (see
+            ;;  The legend of the materials selected, drawn in the drawing (see
             ;;  Remote>>Dyl:MaterialLegend):
             ;;  Pick hatch...: the hatch settings of a hatch of the drawing (see
             ;;  Remote>>Dyl:MaterialFromHatch):
@@ -2211,11 +2211,11 @@
           '(init . Remote>>Dyl:MaterialDlgInit)
           '(state . Remote>>Dyl:MaterialDlgState)
           '(status . Remote>>Dyl:MaterialDlgStatus)
-          ;;  A narrow list, group and name only (the status of the hatch preset shown is in the
+          ;;  A narrow list, group and name only (the status of the material shown is in the
           ;;  Parameters heading), as tall as the group of parameters beside it:
           ;;  OK asks first when more than 5 materials were changed:
           '(warn . 5)
-          '(noun . "hatch presets")
+          '(noun . "materials")
           '(height . 17)
     )
   )

@@ -50,8 +50,8 @@
               ;;  of the Band Settings window (off: the defaults, see Dyl:QuickDrawMat):
               "BandOn"
               ;;  The hatch of the preset (Has a hatch, its Hatch Settings window): its layer
-              ;;  key ("": that of its hatch preset), the properties of the key it overrides (in
-              ;;  place of those of its hatch preset), then No hatch (the outline only):
+              ;;  key ("": that of its material), the properties of the key it overrides (in
+              ;;  place of those of its material), then No hatch (the outline only):
               "HatchKey" "HatchColorOn" "HatchColor" "HatchLinetypeOn" "HatchLinetype"
               "HatchLtScaleOn" "HatchLtScale" "HatchLineweightOn" "HatchLineweight"
               "HatchTransparencyOn" "HatchTransparency" "NoHatch"
@@ -62,7 +62,7 @@
       (title . "Quick Draw")
       (path . "Dynalisp\\Apps\\Draw\\Dyl-QuickDraw.lsp")
       (info . 3)
-      (desc . "draws an outline and fills it with its hatch preset.")
+      (desc . "draws an outline and fills it with its material.")
       (get . Dyl:QuickDrawGet)
       (run . Dyl:QuickDrawRun)
      )

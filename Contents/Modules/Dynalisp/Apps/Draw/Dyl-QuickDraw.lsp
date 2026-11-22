@@ -1196,7 +1196,7 @@
 ;;  studs and insulation, sheathing, an air space, brick...), from its left border to its
 ;;  right one looking from the start point: the layers of the assembly preset of the preset
 ;;  (see Remote>>Dyl:MaterialLayers, edited in the Assembly Presets window). A Hatch layer is a
-;;  band of its thickness hatched as its Quick Draw preset says: its hatch preset, its hatch
+;;  band of its thickness hatched as its Quick Draw preset says: its material, its hatch
 ;;  scale = width x factor (the thickness as the width), its hatch origin on the line from its
 ;;  own border or center (its Line on). A Space layer is not hatched; a Line layer is a line
 ;;  on its own layer key. The width of the band is the total of the layers, the line on its
@@ -1721,7 +1721,7 @@
 ;;  both sides: centered on e, the first layer on its left (looking along it). A curve made at
 ;;  every place across it (the offsets of e, see Dyl:QuickDrawOffsetCurve): each Hatch layer
 ;;  is the outline between its two curves (see Dyl:QuickDrawCurveOutline, its ends square),
-;;  hatched with the angle of its hatch preset (from the drawing origin with Drawing origin,
+;;  hatched with the angle of its material (from the drawing origin with Drawing origin,
 ;;  its own or that of the band);
 ;;  the curves are the borders of the band (its edges and the joins of its layers, the Line
 ;;  layers on their layer key), with lines across its ends but Open (qd:borderents). When a
@@ -2195,7 +2195,7 @@
       (setq mat (Dyl:QuickDrawMat mat rec))
       (Dyl:QuickDraw mat (cond ((nth 33 mat)) ("")))
     )
-    (alert (strcat "\nError: the hatch preset of the preset \""
+    (alert (strcat "\nError: the material of the preset \""
                    (nth 2 rec)
                    "\" no longer exists ("
                    (nth 3 rec)
@@ -2270,7 +2270,7 @@
 
 ;;  Custom band settings (Behaviors box): on, the bands of Linear and Offset are drawn with the
 ;;  hatch alignment, ends, corners, hatch scale and origin of the Band Settings
-;;  window; off, with the defaults (Line, Square, Mitered, the scales of the hatch preset, the
+;;  window; off, with the defaults (Line, Square, Mitered, the scales of the material, the
 ;;  drawing origin), the values of the window kept for when it is on again (see
 ;;  Dyl:QuickDrawMat). Ends-on and corners-on (39, 40) follow it. An assembly is drawn with
 ;;  the band settings of each layer: it is greyed out while Assembly is checked. A preset of an
@@ -2284,15 +2284,15 @@
 )
 
 ;;  The hatch of a preset (Has a hatch, its Hatch Settings window): its columns from 42 (the
-;;  layer key, "": the hatch layer key of its hatch preset, then the properties of the key it
+;;  layer key, "": the hatch layer key of its material, then the properties of the key it
 ;;  overrides, see *mt:hatchtiles*), No hatch at 53 ("1": the outline only, kept as the
 ;;  border). An assembly has the hatches of its layers: Has a hatch is greyed out:
 (setq *qd:hatch* 42
       *qd:nohatch* 53
 )
 
-;;  The hatch of a preset of an older file, without it: the key of its hatch preset, the
-;;  properties of the hatch preset, a hatch:
+;;  The hatch of a preset of an older file, without it: the key of its material, the
+;;  properties of the material, a hatch:
 (setq *qd:hatchnew* (append '("") (Remote>>LM:sublst *mt:new* 12 10) '("0")))
 
 ;;  Tiles of the Quick Draw window: the behaviors and the border:
@@ -2308,14 +2308,14 @@
 ;;  The material mat with the behaviors and the border of the preset r in its columns, its
 ;;  band as it is drawn: its own while Custom band settings is on (its ends and corners on, 61
 ;;  and 62), else the defaults (hatch along the line, ends and corners off, see
-;;  Dyl:QuickDrawBandOpts; the scales of the hatch preset and the drawing origin: Scale by
+;;  Dyl:QuickDrawBandOpts; the scales of the material and the drawing origin: Scale by
 ;;  width and Origin on line off). An assembly has the defaults: its layers have their own
 ;;  band settings (see Dyl:QuickDrawLayerPivot). The justification (the line drawn, 35) is
 ;;  the preset's, whatever Custom band settings is, an assembly's included. An assembly has
 ;;  no border of the preset either (No border, 31): its layers have their own (Has a border of
 ;;  the Assembly Presets window), its Line layers their key. The hatch of the preset (its key
 ;;  and the properties it overrides, see Remote>>Dyl:MaterialHatchOver) goes in the hatch
-;;  columns of mat (not for Replace hatches, which gives its hatch preset as it is: Has a hatch
+;;  columns of mat (not for Replace hatches, which gives its material as it is: Has a hatch
 ;;  is greyed out), No hatch in its column *mt:nohatch* (never for Replace hatches, nor for an
 ;;  assembly: its layers have their own hatch, see Dyl:QuickDrawLayersGet):
 (defun Dyl:QuickDrawMat (mat r / asm on)
@@ -2386,7 +2386,7 @@
 ;;  behaviors) gets those of its material (the material as edited), and keeps a method of
 ;;  its own when it had one; Override is then "1". A preset of a file without the border
 ;;  columns (no outline key) gets the border of its material. Its group as in the groups
-;;  (any case; a group not listed there is kept, as in the Hatch Presets window):
+;;  (any case; a group not listed there is kept, as in the Materials window):
 (defun Dyl:QuickDrawFix (row / m)
   (setq row (Dyl:QuickDrawPad row))
   ;;  One gap (13), in drawing units: the metric gap (15) of an older file is its gap when it
@@ -2422,7 +2422,7 @@
 )
 
 ;;  The hatch of the preset row (see *qd:hatch*): a preset of an older file, without it, gets a
-;;  hatch with the key and the properties of its hatch preset; the key in upper case, No hatch
+;;  hatch with the key and the properties of its material; the key in upper case, No hatch
 ;;  "1" or "0":
 (defun Dyl:QuickDrawHatchFix (row / i)
   (if (not (member (nth *qd:nohatch* row) '("0" "1")))
@@ -2530,7 +2530,7 @@
 ;;  The Quick Draw window (Res\Dyl-QuickDraw.xaml, shown by DynALisp.Windows.dll) is a window
 ;;  of the preset engine (Remote>>Dyl:PresetDialog, (window . "Dyl-QuickDraw.xaml"), see
 ;;  Remote\Dyl-Presets.lsp): its list and its buttons are those of every preset window; its
-;;  values are the hatch preset of the preset, its behaviors (the Behaviors box) and its border
+;;  values are the material of the preset, its behaviors (the Behaviors box) and its border
 ;;  (the Border box), tiles *qd:tiles*, edited in the window itself. Its open buttons close it
 ;;  with their code (the Band Settings window, Pick..., the Assembly Presets window, the
 ;;  Layer Keys window, the color of AutoCAD), see Dyl:QuickDrawDlgStatus; then it opens again.
@@ -2539,7 +2539,7 @@
 ;;  border list), qg:all (the presets with their material, for the previews, as in the
 ;;  Gallery, see Dyl:QuickDrawGallerySpec).
 
-;;  Error message of an invalid behavior, nil when it is valid (as in the Hatch Presets
+;;  Error message of an invalid behavior, nil when it is valid (as in the Materials
 ;;  window): the values got back from the window are checked again before they are saved:
 (defun Dyl:QuickDrawDlgCheck (key val)
   (if (assoc key *qd:tiles*) (Remote>>Dyl:MaterialDlgCheck key val))
@@ -2611,10 +2611,10 @@
 )
 
 ;;  The summary of the hatch of the preset r (its hatch columns from *qd:hatch*): its layer
-;;  key (From hatch preset when it has none: the hatch preset can change in the window), then
+;;  key (From material when it has none: the material can change in the window), then
 ;;  each property it overrides:
 (defun Dyl:QuickDrawHatchText (r)
-  (Dyl:QuickDrawPropsText (cond ((/= "" (cond ((nth *qd:hatch* r)) (""))) (nth *qd:hatch* r)) ("From hatch preset"))
+  (Dyl:QuickDrawPropsText (cond ((/= "" (cond ((nth *qd:hatch* r)) (""))) (nth *qd:hatch* r)) ("From material"))
                           (Remote>>LM:sublst r (1+ *qd:hatch*) 10)
   )
 )
@@ -2669,7 +2669,7 @@
   )
 )
 
-;;  The preview of a hatch preset mat, as it plots (see Dyl:QuickDrawGalleryBand):
+;;  The preview of a material mat, as it plots (see Dyl:QuickDrawGalleryBand):
 (defun Dyl:QuickDrawWinMatSpec (mat)
   (Dyl:QuickDrawGalleryBand "P" mat 1.0)
 )
@@ -2755,7 +2755,7 @@
     (list (cons 'defs *qd:defaults*)
           (cons 'fix 'Dyl:QuickDrawFix)
           (cons 'tiles *qd:tiles*)
-          ;;  The Group list of the Hatch Presets window (the other groups used by a preset are
+          ;;  The Group list of the Materials window (the other groups used by a preset are
           ;;  added to it):
           '(groups . T)
           '(material . 3)
@@ -2883,7 +2883,7 @@
 ;;  *qd:border*, in the order of *mt:bordertiles*). The open button of Has a hatch opens the
 ;;  Hatch Settings window (Res\Dyl-QuickDrawHatchSettings.xaml) the same way on the hatch of
 ;;  the preset (from *qd:hatch*, in the order of *mt:hatchtiles*: its layer key, "" for the
-;;  hatch layer key of its hatch preset, From hatch preset in the window). The open buttons of
+;;  hatch layer key of its material, From material in the window). The open buttons of
 ;;  those windows close them (the layer key: the Layer Keys window, *mt:borderkeypick*; the
 ;;  color: the color window of AutoCAD, *mt:colorpick*), and they open again on what was
 ;;  picked. OK gives the values to every preset selected (see Dyl:QuickDrawDlgStatus). The same
@@ -2897,7 +2897,7 @@
 )
 
 ;;  The values of a window of tiles (the border tiles, the hatch tiles) for the columns of the
-;;  preset r, the layer keys keys ("": From hatch preset) and the layer keys defined lks:
+;;  preset r, the layer keys keys ("": From material) and the layer keys defined lks:
 (defun Dyl:QuickDrawPropsVals (r tiles keys lks / res)
   (foreach x tiles
     (setq res (append res
@@ -2905,7 +2905,7 @@
                         ((member (car x) '("out" "hky"))
                          (list (cons (strcat (car x) "/list")
                                      (mapcar '(lambda (k)
-                                                (cond ((= "" k) "From hatch preset") ((assoc k lks) k) ((strcat k "   (not defined)")))
+                                                (cond ((= "" k) "From material") ((assoc k lks) k) ((strcat k "   (not defined)")))
                                               )
                                              keys
                                      )
@@ -2930,7 +2930,7 @@
 ;;  The window file of tiles (their first one the layer key) on the preset r. Returns its
 ;;  values ((column . value) ...) on OK, nil on Cancel (or when the window cannot be shown).
 ;;  An override on is checked again (see Remote>>Dyl:MaterialDlgCheck): one not valid is said,
-;;  nothing given. The layer key of a hatch may be "" (From hatch preset), not that of a
+;;  nothing given. The layer key of a hatch may be "" (From material), not that of a
 ;;  border:
 (defun Dyl:QuickDrawPropsDialog (r file tiles / hatch col lks keys res k v msg)
   (setq hatch (= "hky" (caar tiles))
@@ -3573,7 +3573,7 @@
 )
 
 ;;  The kind of the preset x ((rec . mat), see qg:all), for the kind pills of the gallery:
-;;  Assembly, else the type of its hatch preset (Drafting, Model, see *mt:types*):
+;;  Assembly, else the type of its material (Drafting, Model, see *mt:types*):
 (defun Dyl:QuickDrawGalleryKind (x)
   (cond
     ((Dyl:QuickDrawDlgAssembly-p (car x)) "Assembly")

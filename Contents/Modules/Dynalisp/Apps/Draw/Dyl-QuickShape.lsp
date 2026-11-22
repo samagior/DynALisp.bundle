@@ -347,7 +347,7 @@
 (defun Dyl:QuickShapeRun (rec / mat)
   (if (setq mat (Remote>>Dyl:MaterialGet (nth 3 rec)))
     (Dyl:QuickShape rec (Dyl:QuickShapeMat mat rec))
-    (alert (strcat "\nError: the hatch preset of the preset \""
+    (alert (strcat "\nError: the material of the preset \""
                    (nth 2 rec)
                    "\" no longer exists ("
                    (nth 3 rec)
@@ -519,8 +519,8 @@
     (list (cons 'defs *qs:defaults*)
           (cons 'fix 'Dyl:QuickShapeFix)
           (cons 'tiles *qs:tiles*)
-          ;;  The Group popup of the Hatch Presets window (the other groups used by a preset
-          ;;  are added to it); the Hatch preset popup lists the hatch presets of the group:
+          ;;  The Group popup of the Materials window (the other groups used by a preset
+          ;;  are added to it); the Material popup lists the materials of the group:
           '(groups . T)
           '(material . 3)
           '(upper "out" "blt")

@@ -40,7 +40,7 @@
       (title . "Quick Shape")
       (path . "Dynalisp\\Apps\\Draw\\Dyl-QuickShape.lsp")
       (info . 4)
-      (desc . "inserts its shape and fills it with its hatch preset.")
+      (desc . "inserts its shape and fills it with its material.")
       (get . Dyl:QuickShapeGet)
       (run . Dyl:QuickShapeRun)
      )

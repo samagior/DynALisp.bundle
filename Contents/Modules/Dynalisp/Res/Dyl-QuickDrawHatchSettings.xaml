@@ -23,8 +23,8 @@
   (dyl:Win.Open on the columns of the layers selected), sub "1": the open buttons of the layer
   key and of the color, which close the window for the Lisp, are greyed out there (the color
   is typed). The keys are the hatch tiles of *mt:hatchtiles* (Remote\Dyl-Materials.lsp): hky
-  the layer key (hky/vals the keys, "" first: From hatch preset, the hatch layer key of its
-  hatch preset), then each override of the properties of its layer, a checkbox and its
+  the layer key (hky/vals the keys, "" first: From material, the hatch layer key of its
+  material), then each override of the properties of its layer, a checkbox and its
   value, named as those of the Border Settings window: bco bcv the color ("n" or "r,g,b"; bcp
   the color window of AutoCAD, closes with 11), blo blt the linetype, bso bsc the linetype
   scale, bwo bwt the lineweight (bwt/vals in hundredths of a millimeter), bto btr the
@@ -48,7 +48,7 @@
           <dyl:OpenButton x:Name="okp" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="6" ToolTip="Layer Keys" dyl:Win.EnabledBy="!sub"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Layer key"/>
         </DockPanel>
-        <!-- The properties of the layer of its key the hatch overrides, in place of those its hatch preset overrides: -->
+        <!-- The properties of the layer of its key the hatch overrides, in place of those its material overrides: -->
         <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Layer key overrides"/>
         <DockPanel Style="{StaticResource Row}">
           <TextBox x:Name="bcv" DockPanel.Dock="Right" Width="160" dyl:Win.EnabledBy="bco"

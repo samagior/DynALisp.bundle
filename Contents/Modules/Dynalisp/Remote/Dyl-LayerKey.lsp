@@ -1201,7 +1201,7 @@
             (setq lk:picked (car (nth lk:idx lk:lst)))
             (done_dialog 1)
           )
-          (set_tile "error" "This key is kept for compatibility only: it cannot be given to a hatch preset or a border.")
+          (set_tile "error" "This key is kept for compatibility only: it cannot be given to a material or a border.")
         )
       )
     )

@@ -1,4 +1,4 @@
-;; Sample.pat - stand-ins of the patterns of the default hatch presets, for the pictures of
+;; Sample.pat - stand-ins of the patterns of the default materials, for the pictures of
 ;; the docs only (Installer\Windows\Shots, Dyl-QuickDrawGallery.txt). Not installed.
 ;%UNITS=INCH
 *ANSI31, ansi31 (sample)

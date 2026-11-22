@@ -28,7 +28,7 @@
 //   F?width                                a solid fill
 //   S?width                                a space
 //   L?0                                    a line between two bands
-//   X?width                                a hatch preset missing (crossed out)
+//   X?width                                a material missing (crossed out)
 //   O                                      (first) the bands outlined: the border of the
 //                                          preset, a line around the tile
 //

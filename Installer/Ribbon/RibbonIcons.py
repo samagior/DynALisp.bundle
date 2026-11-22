@@ -431,7 +431,7 @@ def pattern(c, kind, x0, y0, x1, y1, bg, fg=INK, clip=None):
     c.paste(s, s_clip)
 
 
-# The swatch of each hatch preset of Quick Draw (its pattern, background, line colour):
+# The swatch of each material of Quick Draw (its pattern, background, line colour):
 MATERIALS = {
     'DEMOLITION': ('ansi31', PAPER, RED),
     'NOTINCONTRACT': ('ansi31', PAPER, GRAY),
@@ -532,7 +532,7 @@ def i_quickdraw(c):
 
 
 def i_quickdrawgallery(c):
-    # the gallery: four hatch preset tiles
+    # the gallery: four material tiles
     swatch(c, 'CONCRETE', 2, 2, 15, 15)
     swatch(c, 'BRICK', 17, 2, 30, 15)
     swatch(c, 'RIGIDINSULATION', 2, 17, 15, 30)
