@@ -109,7 +109,7 @@
     <!-- The assembly shown: its name and group, then its layers, from the left border of the
          band (Flip: the other way), for one assembly only; the layers as tall as the preview
          and the parameters beside them: -->
-    <GroupBox Grid.Column="2" Padding="16,0,16,14" Margin="0">
+    <GroupBox Grid.Column="2" Grid.ColumnSpan="3" Padding="16,0,16,14" Margin="0">
         <StackPanel>
           <DockPanel Style="{StaticResource Row}">
             <TextBox x:Name="nam" DockPanel.Dock="Right" Width="300" MaxLength="64"/>
