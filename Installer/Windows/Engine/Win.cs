@@ -43,6 +43,9 @@
 //   dyl:Win.Follows="lp/widths"             on a field: takes the item of that list when the
 //                                           field lp changes
 //   dyl:Win.Do="add"                        on a button: add, remove, up, down, flip, reset
+//   dyl:Win.Columns="men:7,mex:8"           on a button with Win.Open: the window it opens
+//                                           edits those columns of the rows selected, as
+//                                           the values of those keys
 //   dyl:Win.Summary="{count} rows"          on a TextBlock or a GroupBox: what the rows hold
 //   dyl:Win.SummaryEmpty="No rows."         in its place while there is no row
 //
@@ -112,6 +115,10 @@ namespace DynALisp.Windows
         public static readonly DependencyProperty DoProperty = Prop("Do");
         public static string GetDo(DependencyObject o) => (string)o.GetValue(DoProperty);
         public static void SetDo(DependencyObject o, string v) => o.SetValue(DoProperty, v);
+
+        public static readonly DependencyProperty ColumnsProperty = Prop("Columns");
+        public static string GetColumns(DependencyObject o) => (string)o.GetValue(ColumnsProperty);
+        public static void SetColumns(DependencyObject o, string v) => o.SetValue(ColumnsProperty, v);
 
         public static readonly DependencyProperty SummaryProperty = Prop("Summary");
         public static string GetSummary(DependencyObject o) => (string)o.GetValue(SummaryProperty);

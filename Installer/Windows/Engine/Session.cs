@@ -328,6 +328,9 @@ namespace DynALisp.Windows
 
         internal FrameworkElement Find(string key) => _all.FirstOrDefault(e => e.Name == key);
 
+        // Opens the window file beside this one over it, on the values (see Session.ShowSub):
+        internal int OpenSub(string file) => _s.ShowSub(Path.Combine(_dir, file), Window);
+
         // Sets controls without their change being taken as the user's:
         internal void Quiet(Action a)
         {

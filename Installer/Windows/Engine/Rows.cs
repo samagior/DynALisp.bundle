@@ -52,6 +52,16 @@
 // for, all without it), {sel|text} the text, # the number of rows selected, when there are two
 // or more; dyl:Win.SummaryEmpty in its place while the list is empty. dyl:Win.Check="rows" on
 // the list: at least one row before OK, its dyl:Win.CheckMessage else.
+//
+// A button with dyl:Win.Open and dyl:Win.Columns="men:7,mex:8" opens that window (beside this
+// one) on the row shown (the first one selected): its columns as the values of those keys (a
+// list with key/vals: the index of the value), so the window edits them as its own controls;
+// its OK gives them to every row selected its rules hold for (as a field), its Cancel keeps
+// them. It is greyed out while no row is selected. The other values the window needs (its
+// lists) are given by the Lisp with the rows.
+//
+// An AssemblyTile (Assembly.cs) whose Rows is the key of the list draws the rows (the layers
+// of an assembly): the editor gives it its Spec each time the rows or the selection change.
 
 using System;
 using System.Collections.Generic;
@@ -121,6 +131,8 @@ namespace DynALisp.Windows
         readonly List<string[]> _defs;
         readonly List<Field> _fields = new List<Field>();
         readonly List<FrameworkElement> _summaries, _buttons;
+        readonly List<Button> _subs;
+        readonly List<AssemblyTile> _tiles;
         readonly ObservableCollection<RowItem> _items = new ObservableCollection<RowItem>();
         readonly int _ncols;
         string _bad;                       // the key of a value not valid (not stored), null else
@@ -151,6 +163,8 @@ namespace DynALisp.Windows
             }
             _summaries = all.Where(e => Win.GetSummary(e) != null).ToList();
             _buttons = all.Where(e => e is Button && Win.GetDo(e) != null).ToList();
+            _subs = all.OfType<Button>().Where(b => Win.GetOpen(b) != null && Win.GetColumns(b) != null).ToList();
+            _tiles = all.OfType<AssemblyTile>().Where(t => t.Rows == _k).ToList();
             _ncols = new[] { _new?.Length ?? 0, _fields.Count > 0 ? _fields.Max(f => f.Col) + 1 : 0 }
                 .Concat(_rows.Select(x => x.Length)).Concat((_defs ?? new List<string[]>()).Select(x => x.Length)).Max();
             for (int i = 0; i < _rows.Count; i++) _rows[i] = Pad(_rows[i]);
@@ -376,6 +390,7 @@ namespace DynALisp.Windows
 
         public bool Click(Button b)
         {
+            if (_subs.Contains(b)) { Sub(b); return true; }
             string act = Win.GetDo(b);
             if (act == null) return false;
             var sel = Selected();
@@ -434,6 +449,55 @@ namespace DynALisp.Windows
             return true;
         }
 
+        // The columns a button opens a window on (Win.Columns): (key, column) ...:
+        static List<KeyValuePair<string, int>> ColumnsOf(Button b)
+        {
+            var res = new List<KeyValuePair<string, int>>();
+            foreach (var x in (Win.GetColumns(b) ?? "").Split(','))
+            {
+                var p = x.Split(':');
+                if (p.Length == 2 && p[0].Trim().Length > 0 && int.TryParse(p[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int c) && c >= 0)
+                    res.Add(new KeyValuePair<string, int>(p[0].Trim(), c));
+            }
+            return res;
+        }
+
+        // The window of the button b on the row shown; its OK gives its values to the rows
+        // selected its rules hold for:
+        void Sub(Button b)
+        {
+            var sel = Selected();
+            var map = ColumnsOf(b);
+            if (sel.Count == 0 || map.Count == 0) return;
+            var shown = _rows[sel[0]];
+            foreach (var m in map)
+            {
+                string cell = Cell(shown, m.Value);
+                if (_s.Lists.TryGetValue(m.Key + "/vals", out var vals))
+                    _s.Values[m.Key] = Math.Max(0, vals.FindIndex(v => Ic.Equals(v, cell))).ToString(CultureInfo.InvariantCulture);
+                else _s.Values[m.Key] = cell;
+            }
+            if (_v.OpenSub(Win.GetOpen(b)) != 1) return;
+            var rules = new List<string>();
+            for (DependencyObject o = b; o != null && !(o is Window); o = LogicalTreeHelper.GetParent(o))
+                if (Win.GetEnabledBy(o) is string rule && rule.Trim().Length > 0) rules.Add(rule);
+            foreach (int i in sel)
+            {
+                var r = _rows[i];
+                if (!rules.All(rule => View.Holds(rule, k => RowGet(r, k)))) continue;
+                foreach (var m in map)
+                {
+                    _s.Values.TryGetValue(m.Key, out string v);
+                    if (_s.Lists.TryGetValue(m.Key + "/vals", out var vals))
+                        v = int.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out int j) && j >= 0 && j < vals.Count ? vals[j] : Cell(r, m.Value);
+                    r = Put(r, m.Value, (v ?? "").Trim());
+                }
+                Set(i, r);
+            }
+            Show(_rows[sel[0]]);
+            Summary();
+        }
+
         // The message of a field not valid, its text selected:
         void Problem(Field f)
         {
@@ -470,6 +534,9 @@ namespace DynALisp.Windows
                 }
                 b.IsEnabled = on && !_s.Off.Contains(b.Name ?? "");
             }
+            // a window on the rows selected: greyed out while none is (and by its rules):
+            foreach (var b in _subs)
+                b.IsEnabled = sel.Count > 0 && _v.Holds(Win.GetEnabledBy(b)) && !_s.Off.Contains(b.Name ?? "");
             // a field unique to each row is for one row only (its own rule, if any, set by the view):
             foreach (var f in _fields.Where(x => x.Unique != null))
             {
@@ -481,11 +548,62 @@ namespace DynALisp.Windows
 
         void Summary()
         {
+            Tiles();
             foreach (var e in _summaries)
             {
                 string text = _rows.Count == 0 && Win.GetSummaryEmpty(e) is string empty ? empty : Summary(Win.GetSummary(e));
                 if (e is TextBlock tb) tb.Text = text;
                 else if (e is HeaderedContentControl h) h.Header = text;
+            }
+        }
+
+        // The Spec of the tiles of the rows (see Assembly.cs):
+        void Tiles()
+        {
+            if (_tiles.Count == 0) return;
+            var sel = new HashSet<int>(Selected());
+            foreach (var t in _tiles)
+            {
+                var c = (t.Columns ?? "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(x => int.TryParse(x, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i) ? i : -1).ToArray();
+                if (c.Length < 8) continue;
+                List<string> specs = null, ends = null, paper = null;
+                if (t.Specs != null) _s.Lists.TryGetValue(t.Specs, out specs);
+                if (t.Ends != null) _s.Lists.TryGetValue(t.Ends, out ends);
+                if (t.Paper != null && _s.Lists.TryGetValue(t.Paper, out paper) && paper.Count >= 2
+                    && double.TryParse(paper[0], NumberStyles.Float, CultureInfo.InvariantCulture, out double u)
+                    && double.TryParse(paper[1], NumberStyles.Float, CultureInfo.InvariantCulture, out double ds))
+                {
+                    t.Unit = u;
+                    t.DrawScale = ds;
+                }
+                string End(int i) => ends != null && i < ends.Count ? ends[i] : "";
+                var pf = _fields.FirstOrDefault(f => f.Col == c[1]);
+                var parts = new List<string>();
+                for (int i = 0; i < _rows.Count; i++)
+                {
+                    var r = _rows[i];
+                    string kind = Cell(r, c[0]).ToUpperInvariant(), w = Cell(r, c[2]), band;
+                    if (kind == "L") band = "L?0";
+                    else if (kind == "S") band = "S?" + w;
+                    else
+                    {
+                        int j = pf != null ? IndexOf(pf, Cell(r, c[1])) : -1;
+                        var f = (specs != null && j >= 0 && j < specs.Count ? specs[j] : "X?1").Split('?');
+                        if (f.Length > 1) f[1] = w;
+                        // a hatch scale from the thickness: "w" and the ppu of a unit of it:
+                        if (f.Length > 4 && f[4].StartsWith("w")
+                            && double.TryParse(f[4].Substring(1), NumberStyles.Float, CultureInfo.InvariantCulture, out double pw)
+                            && double.TryParse(w, NumberStyles.Float, CultureInfo.InvariantCulture, out double th))
+                            f[4] = (pw * th).ToString("R", CultureInfo.InvariantCulture);
+                        band = string.Join("?", f);
+                    }
+                    bool own = kind == "P" && Cell(r, c[3]) == "1";
+                    parts.Add(string.Join("~", band,
+                        own ? Cell(r, c[4]) : End(0), own ? Cell(r, c[5]) : End(1), own ? Cell(r, c[6]) : End(2),
+                        own ? "1" : "0", kind == "P" && Cell(r, c[7]) == "1" ? "1" : "0", sel.Contains(i) ? "1" : "0"));
+                }
+                t.Spec = string.Join("*", parts);
             }
         }
 
