@@ -111,8 +111,16 @@
             <Trigger Property="HasContent" Value="False">
               <Setter TargetName="cp" Property="Margin" Value="0"/>
             </Trigger>
+            <!-- Greyed out: drawn as a switch turned off, whatever its value (kept for when it is
+                 enabled again), so a setting that is not used never looks on: -->
             <Trigger Property="IsEnabled" Value="False">
-              <Setter TargetName="track" Property="Opacity" Value="0.4"/>
+              <Setter TargetName="track" Property="Background" Value="Transparent"/>
+              <Setter TargetName="track" Property="BorderBrush" Value="{DynamicResource Dyl.Disabled}"/>
+              <Setter TargetName="knob" Property="HorizontalAlignment" Value="Left"/>
+              <Setter TargetName="knob" Property="Margin" Value="3,0,0,0"/>
+              <Setter TargetName="knob" Property="Width" Value="10"/>
+              <Setter TargetName="knob" Property="Height" Value="10"/>
+              <Setter TargetName="knob" Property="Fill" Value="{DynamicResource Dyl.Disabled}"/>
               <Setter Property="Foreground" Value="{DynamicResource Dyl.Disabled}"/>
             </Trigger>
           </ControlTemplate.Triggers>
@@ -546,4 +554,58 @@
     </Setter>
   </Style>
 
+  <!-- A sketch of a choice (the ends and corners of Quick Draw), drawn in the window file as the
+       sketches of its docs page: a Dyl.Sketch box, holding a Grid of the size of the drawing in a
+       Viewbox, one Canvas per item shown by a rule (dyl:Win.VisibleBy="men=Round"). Its paths:
+       Dyl.Sketch.Outline the border, Dyl.Sketch.Center the line drawn (dashed, in the accent),
+       Dyl.Sketch.Ghost what is not drawn (dashed), Dyl.Sketch.Dim a dimension, Dyl.Sketch.Point
+       a point picked, Dyl.Sketch.HatchA and HatchB the hatches (Dyl.HatchA, Dyl.HatchB of
+       Theme.Brushes); Dyl.Sketch.Text the text of a dimension. A dash is in widths of its line. -->
+  <Style x:Key="Dyl.Sketch" TargetType="Border">
+    <Setter Property="Background" Value="{DynamicResource Dyl.Input}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource Dyl.Border}"/>
+    <Setter Property="BorderThickness" Value="1"/>
+    <Setter Property="CornerRadius" Value="4"/>
+    <Setter Property="Height" Value="132"/>
+    <Setter Property="Padding" Value="6"/>
+    <Setter Property="Margin" Value="0,6,0,6"/>
+  </Style>
+  <Style x:Key="Dyl.Sketch.Outline" TargetType="Path">
+    <Setter Property="Stroke" Value="{DynamicResource Dyl.Heading}"/>
+    <Setter Property="StrokeThickness" Value="1.6"/>
+    <Setter Property="StrokeLineJoin" Value="Miter"/>
+  </Style>
+  <Style x:Key="Dyl.Sketch.Center" TargetType="Path">
+    <Setter Property="Stroke" Value="{DynamicResource Dyl.Accent}"/>
+    <Setter Property="StrokeThickness" Value="1.2"/>
+    <Setter Property="StrokeDashArray" Value="7.5 3.3 1.7 3.3"/>
+  </Style>
+  <Style x:Key="Dyl.Sketch.Ghost" TargetType="Path">
+    <Setter Property="Stroke" Value="{DynamicResource Dyl.Muted}"/>
+    <Setter Property="StrokeThickness" Value="1"/>
+    <Setter Property="StrokeDashArray" Value="4 3"/>
+  </Style>
+  <Style x:Key="Dyl.Sketch.Dim" TargetType="Path">
+    <Setter Property="Stroke" Value="{DynamicResource Dyl.Muted}"/>
+    <Setter Property="StrokeThickness" Value="0.9"/>
+  </Style>
+  <Style x:Key="Dyl.Sketch.Point" TargetType="Path">
+    <Setter Property="Fill" Value="{DynamicResource Dyl.Accent}"/>
+  </Style>
+  <Style x:Key="Dyl.Sketch.HatchA" TargetType="Path">
+    <Setter Property="Fill" Value="{DynamicResource Dyl.HatchA}"/>
+  </Style>
+  <Style x:Key="Dyl.Sketch.HatchB" TargetType="Path">
+    <Setter Property="Fill" Value="{DynamicResource Dyl.HatchB}"/>
+  </Style>
+  <Style x:Key="Dyl.Sketch.Text" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Dyl.Muted}"/>
+    <Setter Property="FontFamily" Value="Consolas"/>
+    <Setter Property="FontSize" Value="10"/>
+  </Style>
+  <Style x:Key="Dyl.Sketch.Ask" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Dyl.Muted}"/>
+    <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+  </Style>
 </ResourceDictionary>

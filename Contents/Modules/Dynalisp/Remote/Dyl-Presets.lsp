@@ -37,6 +37,8 @@
 ;;     (file . "QuickDraw.csv")                         ; presets file, in the Dynalisp Res folder
 ;;     (header "Id" "Group" "Name" ...)                 ; columns of the presets file
 ;;     (default . "QD-*")                               ; wcmatch of the default ids (upper case)
+;;     (blank3 . T)                                     ; the column 3 may be empty (the pattern
+;;                                                      ; of a material: None, Void)
 ;;     (base . "Pst-QuickDraw")                         ; command prefix of the default presets
 ;;     (cmd . "Pst-QuickDrawCustom")                    ; command prefix of the custom presets
 ;;     (title . "Quick Draw")                           ; name of the tool
@@ -118,8 +120,8 @@
 ;;  Clean the rows read from the presets file of the tool key. defs are the default
 ;;  presets of the App (nil when the App is not loaded: the default ids are then told
 ;;  apart by their prefix). Any other id that is not a custom id (cu-...), or a repeated
-;;  custom id, is cleared; rows without name or column 3 and repeated default ids are
-;;  dropped; then the presets without id get one:
+;;  custom id, is cleared; rows without name or column 3 (unless the tool says it may be
+;;  empty, blank3) and repeated default ids are dropped; then the presets without id get one:
 (defun Remote>>Dyl:PresetClean (key rows defs / lst)
   (foreach row rows
     (cond
@@ -133,7 +135,7 @@
     )
     (if
       (and (/= "" (nth 2 row))
-           (/= "" (nth 3 row))
+           (or (/= "" (nth 3 row)) (Remote>>Dyl:PresetProp key 'blank3))
            (or (= "" (car row)) (not (assoc (car row) lst)))
       )
       (setq lst (cons row lst))
@@ -291,7 +293,7 @@
 ;;  pst:key (tool), pst:dlg (part of the App), pst:lst (presets being edited), pst:lst0 (the
 ;;  presets as read, see Remote>>Dyl:PresetDlgChanged), pst:idx (index of the preset shown),
 ;;  pst:sel (indexes of the presets selected, pst:idx included: several with (multi . T)), pst:dcl (dialog id), pst:grps (groups of the Group popup),
-;;  pst:mats and pst:matids (materials, ids of the Hatch preset popup: the materials of the
+;;  pst:mats and pst:matids (materials, ids of the Material popup: the materials of the
 ;;  group of the preset shown), and the variables of the
 ;;  aliases panel (see Aliases below).
 
@@ -365,13 +367,13 @@
   )
 )
 
-;;  The Hatch preset popup (mat) lists the materials of the group of the preset shown (its
+;;  The Material popup (mat) lists the materials of the group of the preset shown (its
 ;;  Group, the same groups as the materials, see Remote>>Dyl:Groups), by name: pst:matids. The
 ;;  material of the preset shown stays listed when it is in another group, or no longer
 ;;  exists (marked missing), and every material is listed when its group has none.
 
 ;;  Read the materials (each time the dialog is shown: they may have been edited), draw the
-;;  open button of the Hatch Presets window and set its action:
+;;  open button of the Materials window and set its action:
 (defun Remote>>Dyl:PresetDlgMatInit ()
   (setq pst:mats (Remote>>Dyl:MaterialRead))
   (Dyl:MoreTile "edm" T)
@@ -388,7 +390,7 @@
   )
 )
 
-;;  Fill the Hatch preset popup for the preset shown: the materials of its group, then its
+;;  Fill the Material popup for the preset shown: the materials of its group, then its
 ;;  material when it is not one of them (shown "group - name", or marked missing). A group
 ;;  without material: every material, sorted by group and name, shown "group - name":
 (defun Remote>>Dyl:PresetDlgMatFill (/ r cur in m)
@@ -418,7 +420,7 @@
   )
 )
 
-;;  The Group of the presets selected changed (Remote>>Dyl:PresetDlgField): the Hatch preset
+;;  The Group of the presets selected changed (Remote>>Dyl:PresetDlgField): the Material
 ;;  popup lists the materials of the new group. When the material of the preset shown is not
 ;;  one of them, the first one is given to the presets selected (then another one of the group
 ;;  can be picked):
@@ -490,7 +492,7 @@
   (if (Remote>>Dyl:PresetProp pst:key 'cmd) t)
 )
 
-;;  Docs page of the tool (Open Docs button, see Dyl:DocsTile) (nil: none found): (doc . "Draw\\Dyl-HatchPresets.htm") of
+;;  Docs page of the tool (Open Docs button, see Dyl:DocsTile) (nil: none found): (doc . "Draw\\Dyl-Materials.htm") of
 ;;  its spec, relative to the Docs folder of the Dynalisp module, else the page named after
 ;;  its App (path . "Dynalisp\\Apps\\Draw\\Dyl-QuickDraw.lsp" -> Docs\Draw\Dyl-QuickDraw.htm):
 (defun Remote>>Dyl:PresetDlgDocFile (/ doc app)
@@ -585,7 +587,7 @@
             "    : boxed_column { key = \"prm\"; label = \"Parameters (modified)\";"
             "      : edit_box { key = \"nam\"; label = \"Name:\"; edit_width = 28; edit_limit = 64; }"
             (if (assoc 'groups pst:dlg)
-              ;;  Built as the Hatch preset row below (a label, then the popup, fixed, at the
+              ;;  Built as the Material row below (a label, then the popup, fixed, at the
               ;;  right of the row), so both popups have the same width:
               ;;  The open button of the Preset Groups window just left of it (one string: the
               ;;  then branch of the if):
@@ -598,9 +600,9 @@
             "      spacer;"
       )
       (if (Remote>>Dyl:PresetDlgMat)
-        ;;  The open button of the Hatch Presets window just left of the popup it edits (see
+        ;;  The open button of the Materials window just left of the popup it edits (see
         ;;  CONVENTIONS.md, Windows), the popup at the right of the row as the boxes above:
-        (list "      : row { : text { key = \"matl\"; label = \"Hatch preset:\"; }"
+        (list "      : row { : text { key = \"matl\"; label = \"Material:\"; }"
               "              : image_button { key = \"edm\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
               "              : popup_list { key = \"mat\"; edit_width = 28; fixed_width = true; } }"
               "      : text { key = \"mts\"; width = 50; }"
@@ -948,7 +950,7 @@
   (mode_tile "del" (if (vl-some '(lambda (x) (assoc (car x) (Remote>>Dyl:PresetDlgDefs))) sel) 1 0))
   (mode_tile "nam" (if (cdr sel) 1 0))
   (mode_tile "cpy" (if (cdr sel) 1 0))
-  ;;  The summary of the hatch preset under the popup:
+  ;;  The summary of the material under the popup:
   (if (Remote>>Dyl:PresetDlgMat)
     (set_tile "mts"
               (cond
@@ -963,7 +965,7 @@
 ;;  Show the values of the selected preset:
 (defun Remote>>Dyl:PresetDlgShow (/ r items)
   (setq r (nth pst:idx pst:lst))
-  ;;  The materials of its group in the Hatch preset popup:
+  ;;  The materials of its group in the Material popup:
   (if (Remote>>Dyl:PresetDlgMat) (Remote>>Dyl:PresetDlgMatFill))
   (foreach x (Remote>>Dyl:PresetDlgTiles)
     (set_tile (car x)
@@ -993,7 +995,7 @@
               ((and (= "nam" key) (Remote>>Dyl:PresetTaken-p val pst:idx))
                (strcat "Another preset is already named \"" val "\".")
               )
-              ((and (= "mat" key) (not (assoc val pst:mats))) "This hatch preset no longer exists: pick another one.")
+              ((and (= "mat" key) (not (assoc val pst:mats))) "This material no longer exists: pick another one.")
               ((Remote>>Dyl:PresetDlgCall 'check (list key val)))
             )
   )
@@ -1011,8 +1013,8 @@
       )
       (if (not items) (set_tile key val))
       (set_tile "error" "")
-      ;;  Another group: the Hatch preset popup lists its materials (not while committing:
-      ;;  the group was stored by its action, the Hatch preset popup shows the preset's):
+      ;;  Another group: the Material popup lists its materials (not while committing:
+      ;;  the group was stored by its action, the Material popup shows the preset's):
       (if (and (= "grp" key) (Remote>>Dyl:PresetDlgMat) (not pst:one) (/= (strcase old) (strcase val)))
         (Remote>>Dyl:PresetDlgMatGroup)
       )
@@ -1342,7 +1344,7 @@
 )
 
 ;;  A code >= 3 the dialog (or the window) was closed with: the Preset Groups window (8),
-;;  the Hatch Presets window (9), else the status function of the App. Returns the code
+;;  the Materials window (9), else the status function of the App. Returns the code
 ;;  (the dialog is shown again), 2 when the status function asks to save and close:
 (defun Remote>>Dyl:PresetDlgCode (sta / mat)
   (cond
@@ -1384,9 +1386,18 @@
 ;;                                      ; the rule of the window when it is used (else the
 ;;                                      ; preview is the hatch of the material)
 ;;    (mspec . <function: material -> its preview, see Installer\Windows\Engine\Hatch.cs>)
+;;    (outline . "hbr")                 ; the rule of the window when the preview is outlined
+;;                                      ; (the preset has a border)
+;;    (blank . "!hha")                  ; the rule of the window when the preview is a space
+;;                                      ; (the preset has no hatch)
 ;;    (wprefix . "4|Polyline=PL-|*=QD-") ; the text of a new alias, by the value of a column
 ;;    (wprep . <function: called before the window is shown, nil>)
 ;;    (wvals . <function: -> the values of the window the App gives (its lists...)>)
+;;    (wget . <function: preset got back -> the preset, before its columns of the window are
+;;            dropped: the rows of a list of the window held in one of them, see
+;;            Win.RowsIn in Installer\Windows\Engine\Rows.cs, put back in its column of the file>)
+;;    (rowcheck . <function: preset changed -> error message, nil when it is valid: a check of
+;;                the whole preset, after that of its values>)
 ;;
 ;;  The values given are those of Presets.cs (pst/rows...). Before the presets are saved,
 ;;  the values of every preset changed are checked again by the check function of the App,
@@ -1492,6 +1503,8 @@
       )
     )
     (if spec (list (cons "pst/spec" (itoa (cadr spec))) (cons "pst/specby" (cddr spec))))
+    (if (assoc 'outline pst:dlg) (list (cons "pst/outline" (cdr (assoc 'outline pst:dlg)))))
+    (if (assoc 'blank pst:dlg) (list (cons "pst/blank" (cdr (assoc 'blank pst:dlg)))))
     (Remote>>Dyl:PresetDlgCall 'wvals nil)
   )
 )
@@ -1504,8 +1517,13 @@
         n    (Remote>>Dyl:PresetWinCols)
   )
   (if rows
-    (setq pst:lst (mapcar '(lambda (r) (Remote>>Dyl:PresetWinCut r n)) rows)
-          pst:als (mapcar '(lambda (p) (cons (car p) (cadr p))) (cdr (assoc "pst/als" (cdr res))))
+    (setq pst:lst (mapcar '(lambda (r) (Remote>>Dyl:PresetWinCut (cond ((Remote>>Dyl:PresetDlgCall 'wget (list r))) (r)) n)) rows)
+          ;;  (the aliases only from a window that has them: a tool without commands keeps
+          ;;  every alias as it was)
+          pst:als (if (Remote>>Dyl:PresetDlgCmds-p)
+                    (mapcar '(lambda (p) (cons (car p) (cadr p))) (cdr (assoc "pst/als" (cdr res))))
+                    pst:als
+                  )
           pst:idx (max 0 (min (atoi (cond ((Dyl:WinGet res "pst.idx")) ("0"))) (1- (length pst:lst))))
           sel     (vl-remove-if-not '(lambda (i) (and (= 'INT (type i)) (< -1 i (length pst:lst))))
                                     (read (strcat "(" (cond ((Dyl:WinGet res "pst.sel")) ("")) ")"))
@@ -1523,6 +1541,7 @@
 
 ;;  The presets got back checked again: every value of a preset changed (or added) since the
 ;;  window opened, by the check function of the App (as the dialog checks a value typed),
+;;  then the whole preset by its rowcheck function,
 ;;  and the aliases added, by AutoCAD (an alias with the name of an AutoCAD command never
 ;;  runs: it is removed). The message of the first one not valid, its preset shown (nil:
 ;;  all valid):
@@ -1535,7 +1554,11 @@
               (if (not (member r pst:lst0))
                 (vl-some
                   '(lambda (x / m)
-                     (if (setq m (Remote>>Dyl:PresetDlgCall 'check (list (car x) (nth (cdr x) r))))
+                     (if (setq m (if (= 'rowcheck x)
+                                   (Remote>>Dyl:PresetDlgCall 'rowcheck (list r))
+                                   (Remote>>Dyl:PresetDlgCall 'check (list (car x) (nth (cdr x) r)))
+                                 )
+                         )
                        (progn
                          (setq pst:idx i
                                pst:sel (list i)
@@ -1544,7 +1567,7 @@
                        )
                      )
                    )
-                  (cdr (assoc 'tiles pst:dlg))
+                  (append (cdr (assoc 'tiles pst:dlg)) '(rowcheck))
                 )
               )
             )
@@ -1568,7 +1591,7 @@
   (setq sta 3)
   (while (and sta (<= 3 sta))
     ;;  The groups renamed since the window was shown (here or in a window opened from it),
-    ;;  the groups of the Group list, the hatch presets (they may have been edited):
+    ;;  the groups of the Group list, the materials (they may have been edited):
     (Remote>>Dyl:PresetDlgGroupsSync)
     (setq pst:grps (Remote>>Dyl:PresetDlgGrps)
           pst:mats (if (Remote>>Dyl:PresetDlgMat) (Remote>>Dyl:MaterialRead))
@@ -1607,12 +1630,15 @@
   )
   (setq pst:lst  (Remote>>Dyl:PresetRead pst:key (Remote>>Dyl:PresetDlgDefs) (cdr (assoc 'fix pst:dlg)))
         sel      (cdr (assoc 'select pst:dlg))
-        pst:idx  (min (cond
-                        ((if sel (vl-position (assoc sel pst:lst) pst:lst)))
-                        ((cdr (assoc pst:key *dyl:presetlast*)))
-                        (0)
+        ;;  (0 when there is no preset yet: New adds the first one)
+        pst:idx  (max 0
+                      (min (cond
+                             ((if sel (vl-position (assoc sel pst:lst) pst:lst)))
+                             ((cdr (assoc pst:key *dyl:presetlast*)))
+                             (0)
+                           )
+                           (1- (length pst:lst))
                       )
-                      (1- (length pst:lst))
                  )
         pst:sel  (list pst:idx)
         pst:lst0 pst:lst

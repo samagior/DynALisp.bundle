@@ -1,0 +1,63 @@
+# Sample values of the Assembly Presets window of Quick Draw (Dyl:QuickDrawAsmDialog in
+# Dyl-QuickDraw.lsp, through Remote>>Dyl:PresetWinVals of Remote\Dyl-Presets.lsp), as the Lisp
+# gives them, for three assemblies, the Exterior Wall shown (its Border lines on WIDE, its
+# Dividing lines on THIN, an air space of the Void material): its Brick layer selected (its own
+# band settings, Extended and Lapped, its hatch on its edge, and its own border), its Gypsum
+# layer with its own border, its CMU the structural layer, its Rigid Insulation with its own
+# band settings, its hatch scaled by its thickness (Scale by width): key=value, key/list=item|item,
+# key/vals=value|value, +key=field\tfield a row of the table key (pst/rows: id group name
+# layers border-lines dividing-lines, then the layers as rows, then the Border lines and the
+# Dividing lines split (on, key, the 10 overrides); a layer: kind material thickness
+# hatch-key line-key, band on, hatch
+# ends extension angle corners miter lap joints, border on, border key, structural, then
+# what the border overrides (color on, color, linetype on, linetype, linetype scale on,
+# scale, lineweight on, lineweight, transparency on, transparency), Has a hatch and what the
+# hatch overrides (in the same order), scale by width, width factor, origin on line, origin
+# X, origin Y, the group of its material; \T a tab
+# between their columns, \n between the rows); \t is a tab. The preview: lp/specs the
+# preview of each material, ll/ends the ends of the band, ll/paper a millimeter in inches and
+# the drawing scale (a detail at 1:10). lg the groups of the Group list of a layer, lp/by the
+# group of each material (its Material list shows those of its group). sub "1": the Border Settings and Hatch Settings
+# windows opened by the window itself, their open buttons greyed out.
+grp/list=Floor|Wall|Ceiling|Roof|Finish|Structural|Site|Elevation|Section|Detail|Annotation|Phase|Area|Generic
+srt/list=Name|Group
+srt=0
+flt=
+pst/ncols=6
+pst/tiles=nam:2,grp:1,abl:7,adl:19
+pst.idx=0
+pst.sel=0
+pst.shw=
+pst/title=Assembly Presets
+pst/noun=assemblies
++pst/rows=cu-ExteriorWall\tWall\tExterior Wall\tP:mt-Gypsum:16:::1~THIN|P:mt-CMU:190::::1|P:mt-RigidInsulation:50::1~Line~Square~~45~Mitered~4~First~Interrupted~1~1~0~0~0|P:mt-Void:25|P:mt-Brick:90:THIN:1~Edge~Extended~30~45~Lapped~4~First~Interrupted:1~MED\t1~WIDE\t1~THIN\tP\Tmt-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T1\TTHIN\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TSection\nP\Tmt-CMU\T190\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TSection\nP\Tmt-RigidInsulation\T50\T\TMED\T1\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T1\T0\T0\T0\TSection\nP\Tmt-Void\T25\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TSection\nP\Tmt-Brick\T90\TTHIN\TMED\T1\TEdge\TExtended\T30\T45\TLapped\T4\TFirst\TInterrupted\T1\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TSection\t1\tWIDE\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t1\tTHIN\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50
++pst/rows=cu-FoundationWall\tWall\tFoundation Wall\tP:mt-Concrete:250::::1|P:mt-RigidInsulation:50\t1~MED\t1~THIN\tP\Tmt-Concrete\T250\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TSection\nP\Tmt-RigidInsulation\T50\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TSection\t1\tMED\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t1\tTHIN\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50
++pst/rows=cu-InteriorPartition\tWall\tInterior Partition\tP:mt-Gypsum:16|P:mt-Void:92|P:mt-Gypsum:16\t1~MED\t0~MED\tP\Tmt-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TSection\nP\Tmt-Void\T92\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TSection\nP\Tmt-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TSection\t1\tMED\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t0\tMED\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50
++ll/new=P\tmt-Brick\t10\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t0\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t1\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t0\t1\t0\t0\t0\tSection
+ll.sel=4
+lg/list=Section|Phase
+lg/vals=Section|Phase
+lp/list=Brick|CMU|Concrete|Gypsum|Plywood|Rigid Insulation|Void|Wood Plank|Existing
+lp/vals=mt-Brick|mt-CMU|mt-Concrete|mt-Gypsum|mt-Plywood|mt-RigidInsulation|mt-Void|mt-WoodPlank|mt-Existing
+lp/by/list=Section|Section|Section|Section|Section|Section|Section|Section|Phase
+lp/specs/list=P?1?ANSI31?{samples}\Sample.pat?0.5?0?1|P?1?ANSI37?{samples}\Sample.pat?0.5?0?1|P?1?CONCRETE_C?{samples}\Sample.pat?1?0?1|P?1?GENERAL_TEXTURE?{samples}\Sample.pat?0.5?0?1|P?1?WOOD_GLU-LAMBEAM?{samples}\Sample.pat?1?0?1|P?1?THERMAL_INSULATION?{samples}\Sample.pat?0.1?90?10|S?1|P?1?WOOD_2?{samples}\Sample.pat?0.1875?0?1|F?1
+hky/list=From material|HATCH|MED|THIN|WIDE|XTHIN
+hky/vals=|HATCH|MED|THIN|WIDE|XTHIN
+out/list=HATCH|MED|THIN|WIDE|XTHIN
+out/vals=HATCH|MED|THIN|WIDE|XTHIN
+bwt/list=0.00 mm|0.05 mm|0.09 mm|0.13 mm|0.15 mm|0.18 mm|0.20 mm|0.25 mm|0.30 mm|0.35 mm|0.40 mm|0.50 mm|0.53 mm|0.60 mm|0.70 mm|0.80 mm|0.90 mm|1.00 mm|1.06 mm|1.20 mm|1.40 mm|1.58 mm|2.00 mm|2.11 mm
+bwt/vals=0|5|9|13|15|18|20|25|30|35|40|50|53|60|70|80|90|100|106|120|140|158|200|211
+sub=1
+ll/ends/list=Square||45
+ll/paper/list=0.0393701|10
+mth=Layer
+mht/list=Layer center|Layer edge|Drawing origin
+mht/vals=Line|Edge|Origin
+men/list=Square|Open|Extended|Round|Angled
+men/vals=Square|Open|Extended|Round|Angled
+mco/list=Mitered|Beveled|Round|Lapped
+mco/vals=Mitered|Beveled|Round|Lapped
+mlt/list=First segment|Next segment
+mlt/vals=First|Second
+mjo/list=Interrupted|Uninterrupted
+mjo/vals=Interrupted|Uninterrupted

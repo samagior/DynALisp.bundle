@@ -35,7 +35,7 @@ PST-QUICKSHAPEBRICKMODULAR;Forme rapide Brique modulaire;Insère des briques mod
 PST-QUICKSHAPECMU8;Forme rapide Bloc de béton 8 po;Insère des blocs de béton de 8 po en coupe en plan (avec leurs alvéoles), remplis de la hachure de bloc.
 PST-QUICKSHAPEHSS4X4;Forme rapide PCC 4x4;Insère des profilés tubulaires d'acier 4x4x1/4 en coupe, remplis de la hachure d'acier.
 DYL-QUICKDRAW;Gestion du dessin rapide;Ouvre une fenêtre pour modifier, créer et dessiner les préréglages de dessin rapide.
-DYL-HATCHPRESETS;Préréglages de hachures;Ouvre une fenêtre pour créer et modifier les préréglages de hachures (motif, échelle et clé de calque d'une hachure) utilisés par le dessin rapide et la forme rapide.
+DYL-MATERIALS;Matériaux;Ouvre une fenêtre pour créer et modifier les matériaux (motif, échelle et clé de calque d'une hachure) utilisés par le dessin rapide et la forme rapide.
 DYL-SHRINKWRAP;Contour extérieur;Dessine des polylignes fermées autour de l'extérieur des objets sélectionnés (remplace AECLINEWORKSHRINKWRAP).
 DYL-LAYERPHASE;Phase des calques;Liste les phases du dessin pour choisir la phase active et les afficher ou les masquer.
 DYL-OBJECTLAYERKEYS;Clés de calque des objets;Ouvre une fenêtre pour attribuer une clé de calque aux nouvelles cotes, lignes de repère, textes et autres objets courants.

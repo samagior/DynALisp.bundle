@@ -21,7 +21,8 @@
 //           index of the item picked for a list ("0"), the text of a text box or a text
 //   Lists   key -> the items of a list (start_list / add_list)
 //   Off     the keys greyed out by the Lisp (mode_tile 1), whatever their rules
-//   Rows    key -> rows of strings (a table: the presets of a preset window, see Presets.cs);
+//   Rows    key -> rows of strings (a table: the presets of a preset window, see Presets.cs,
+//           the rows of a list edited in the window, see Rows.cs);
 //           those named in OutRows are given back to the Lisp with the values
 //
 // A control takes the value of its key when the window opens, and puts its value back
@@ -172,7 +173,27 @@ namespace DynALisp.Windows
                 b.Freeze();
                 d["Dyl." + kv.Key] = b;
             }
+            // The hatches of the sketches (Dyl.Sketch.* of Theme.xaml): lines of the muted
+            // ink, at 45 and -45 degrees, as the sketches of the docs:
+            var ink = (Color)ColorConverter.ConvertFromString((dark ? DarkColors : LightColors)["Muted"]);
+            d["Dyl.HatchA"] = Hatch(ink, 45);
+            d["Dyl.HatchB"] = Hatch(ink, -45);
             return d;
+        }
+
+        static Brush Hatch(Color ink, double angle)
+        {
+            var pen = new Pen(new SolidColorBrush(ink), 0.8);
+            var tile = new Rect(0, 0, 7, 7);
+            var b = new DrawingBrush(new GeometryDrawing(null, pen, new LineGeometry(new Point(3.5, -1), new Point(3.5, 8))))
+            {
+                TileMode = TileMode.Tile,
+                Viewport = tile, ViewportUnits = BrushMappingMode.Absolute,
+                Viewbox = tile, ViewboxUnits = BrushMappingMode.Absolute,
+                Transform = new RotateTransform(angle),
+            };
+            b.Freeze();
+            return b;
         }
 
         public static void Apply(Window w, bool dark)
@@ -223,6 +244,8 @@ namespace DynALisp.Windows
 
         // The preset editor of a preset window (its list named "lst", the rows pst/rows):
         internal PresetEditor Presets;
+        // The list of rows edited in the window (a ListBox with Win.Rows, Rows.cs):
+        internal RowsEditor Rows;
         internal Session Session => _s;
 
         internal View(Session s, Window w, string dir)
@@ -289,6 +312,7 @@ namespace DynALisp.Windows
             if (_filling) return;
             _s.Values[key] = value;
             Presets?.Changed(key);
+            Rows?.Changed(key);
             // A checkbox turned on turns off the ones it excludes (one answer at most):
             string ex = Win.GetExcludes(from);
             if (value == "1" && !string.IsNullOrEmpty(ex))
@@ -303,6 +327,9 @@ namespace DynALisp.Windows
         }
 
         internal FrameworkElement Find(string key) => _all.FirstOrDefault(e => e.Name == key);
+
+        // Opens the window file beside this one over it, on the values (see Session.ShowSub):
+        internal int OpenSub(string file) => _s.ShowSub(Path.Combine(_dir, file), Window);
 
         // Sets controls without their change being taken as the user's:
         internal void Quiet(Action a)
@@ -322,6 +349,8 @@ namespace DynALisp.Windows
         {
             if (Presets == null && _s.Rows.ContainsKey(PresetEditor.RowsKey) && Find("lst") is ListBox)
                 Presets = new PresetEditor(this);
+            if (Rows == null && _all.FirstOrDefault(RowsEditor.Is) is ListBox rl)
+                Rows = new RowsEditor(this, rl, _all);
             _filling = true;
             try
             {
@@ -329,6 +358,7 @@ namespace DynALisp.Windows
                 {
                     // the controls of the presets, filled by the editor:
                     if (Presets != null && Presets.Owns(fe.Name)) continue;
+                    if (Rows != null && Rows.Owns(fe.Name)) continue;
                     bool has = _s.Values.TryGetValue(fe.Name, out string v);
                     switch (fe)
                     {
@@ -362,6 +392,7 @@ namespace DynALisp.Windows
             }
             finally { _filling = false; }
             Presets?.Fill();
+            Rows?.Fill();
             Refresh();
         }
 
@@ -378,6 +409,7 @@ namespace DynALisp.Windows
                 if (vb != null) fe.Visibility = Holds(vb) ? Visibility.Visible : Visibility.Collapsed;
             }
             Presets?.Refresh();
+            Rows?.Refresh();
         }
 
         // A rule of the values (Win.EnabledBy, Win.VisibleBy):
@@ -439,6 +471,7 @@ namespace DynALisp.Windows
         {
             if (b.Name == "docs") { try { Session.OpenTarget(Docs()); } catch (Exception e) { Error("Unable to open the docs: " + e.Message); } return; }
             if (Presets != null && Presets.Click(b)) { Refresh(); return; }
+            if (Rows != null && Rows.Click(b)) { Refresh(); return; }
             string all = Win.GetSetAll(b);
             if (all != null)
             {
@@ -473,9 +506,11 @@ namespace DynALisp.Windows
         // The text boxes checked (Win.Check) before the window closes:
         bool Checks()
         {
-            if (Presets != null) return Presets.Check();
+            if (Presets != null) return Presets.Check() && (Rows == null || Rows.Check());
+            if (Rows != null && !Rows.Check()) return false;
             foreach (var x in _all.OfType<TextBox>())
             {
+                if (Rows != null && Rows.Owns(x.Name)) continue;
                 string kind = Win.GetCheck(x);
                 if (kind == null || !x.IsEnabled || Valid(kind, x.Text)) continue;
                 Error(Win.GetCheckMessage(x) ?? "This value is not valid.");
@@ -488,9 +523,10 @@ namespace DynALisp.Windows
         }
 
         // A value checked by Win.Check: its kinds divided by ";", all of them true (number,
-        // positive, integer, min=0, max=90, text: not empty, widths: numbers greater than 0
-        // divided by commas, color: an AutoCAD color 1-255 or r,g,b), or empty when one of
-        // them is "empty" ("empty;integer;min=3": nothing, or a whole number of 3 or more):
+        // positive, integer, min=0, max=90, text: not empty, plain: without ; , or ",
+        // widths: numbers greater than 0 divided by commas, color: an AutoCAD color 1-255 or
+        // r,g,b), or empty when one of them is "empty" ("empty;integer;min=3": nothing, or a
+        // whole number of 3 or more):
         internal static bool Valid(string kind, string text)
         {
             text = (text ?? "").Trim();
@@ -504,6 +540,7 @@ namespace DynALisp.Windows
                 {
                     case "empty": break;
                     case "text": if (text.Length == 0) return false; break;
+                    case "plain": if (text.IndexOfAny(new[] { ';', ',', '"' }) >= 0) return false; break;
                     case "integer": if (!int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out _)) return false; break;
                     case "number": if (!num) return false; break;
                     case "positive": if (!num || d <= 0) return false; break;

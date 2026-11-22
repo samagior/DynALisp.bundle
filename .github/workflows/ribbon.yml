@@ -1,0 +1,57 @@
+# Ribbon: builds the DynALisp tab of the ribbon (Installer\Ribbon\BuildRibbon.py: DynALisp.cuix, its
+# translations and the pictures of the Ribbon docs page) on a Windows runner, which has the fonts of its
+# icons and pictures (Segoe UI, Arial), when its sources change. On a work branch, the files that changed
+# are committed to it (pull before pushing again); on main, they are only an artifact of the run (ribbon):
+# they came with the branch merged.
+name: Ribbon
+
+on:
+  push:
+    paths:
+      - 'Installer/Ribbon/*.py'
+      - 'Installer/Ribbon/*.csv'
+      - 'Contents/Resources/StartupSuite.csv'
+      - '.github/workflows/ribbon.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ribbon:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Build the ribbon
+        shell: pwsh
+        run: |
+          python -m pip install --quiet pillow
+          python Installer/Ribbon/BuildRibbon.py
+
+      - name: Commit the ribbon to the branch
+        if: github.ref != 'refs/heads/main'
+        shell: pwsh
+        run: |
+          git add -- 'Contents/Resources/DynALisp.cuix' 'Contents/Resources/DynALisp.Ribbon.*.csv' 'Contents/Modules/Dynalisp/Docs/Plugins/Ribbon/*.png'
+          git diff --cached --quiet
+          if ($LASTEXITCODE -eq 0) { Write-Output 'The ribbon is up to date.'; exit 0 }
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Build the ribbon' -m 'Built by the Ribbon workflow (Installer\Ribbon\BuildRibbon.py).'
+          for ($i = 0; $i -lt 4; $i++) {
+            git push origin HEAD:${{ github.ref_name }}
+            if ($LASTEXITCODE -eq 0) { exit 0 }
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' pull --rebase origin ${{ github.ref_name }}
+          }
+          exit 1
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ribbon
+          path: |
+            Contents/Resources/DynALisp.cuix
+            Contents/Resources/DynALisp.Ribbon.*.csv
+            Contents/Modules/Dynalisp/Docs/Plugins/Ribbon/*.png

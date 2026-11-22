@@ -748,6 +748,7 @@
   (dg:try 'dg:set-values)
   (dg:try 'dg:set-user)
   (dg:try 'dg:set-csv)
+  (dg:try 'dg:set-asm)
 )
 
 ;;  Every Dynalisp* user setting, local ones included: (name ...):
@@ -839,6 +840,29 @@
     )
   )
   (dg:kv "Files" (strcat (itoa (length files)) " read in " (itoa tot) " ms"))
+)
+
+;;  The assembly presets of Quick Draw (QuickDrawAssemblies.csv): how many, and the Quick
+;;  Draw presets whose assembly (column 38: its id) is not one of them (drawn without
+;;  layers). A column with ":" is the layers of a preset of an older file, made an assembly
+;;  preset when the Quick Draw window opens:
+(defun dg:set-asm (/ ids bad v)
+  (if (and Remote>>Dyl:PresetCsv (Remote>>Dyl:PresetProp "QuickDrawAssembly" 'header))
+    (progn
+      (dg:sub "Assembly presets")
+      (setq ids (mapcar '(lambda (a) (strcase (car a))) (Remote>>Dyl:PresetCsv "QuickDrawAssembly")))
+      (foreach r (Remote>>Dyl:PresetCsv "QuickDraw")
+        (setq v (vl-string-trim " " (cond ((nth 38 r)) (""))))
+        (if (and (/= "" v) (not (vl-string-search ":" v)) (not (member (strcase v) ids)))
+          (setq bad (cons (nth 2 r) bad))
+        )
+      )
+      (dg:kv "Assemblies" (itoa (length ids)))
+      (if bad
+        (dg:bad (strcat "Quick Draw presets whose assembly no longer exists: " (Remote>>LM:lst->str (reverse bad) ", ")))
+      )
+    )
+  )
 )
 
 ;;-------------------------=={ Reactors }==------------------------;;

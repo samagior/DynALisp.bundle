@@ -25,7 +25,7 @@ RBN_DYL_CMD_PST_QUICKSHAPEBRICKMODULAR;PST-QUICKSHAPEBRICKMODULAR;Brick Modular;
 RBN_DYL_CMD_PST_QUICKSHAPECMU8;PST-QUICKSHAPECMU8;CMU 8 in;Bloc de béton 8 po;Forme rapide Bloc de béton 8 po;Insère des blocs de béton de 8 po en coupe en plan (avec leurs alvéoles), remplis de la hachure de bloc.
 RBN_DYL_CMD_PST_QUICKSHAPEHSS4X4;PST-QUICKSHAPEHSS4X4;HSS 4x4;PCC 4x4;Forme rapide PCC 4x4;Insère des profilés tubulaires d'acier 4x4x1/4 en coupe, remplis de la hachure d'acier.
 RBN_DYL_CMD_DYL_QUICKDRAW;DYL-QUICKDRAW;Quick Draw Manager;Gestion du dessin rapide;Gestion du dessin rapide;Ouvre une fenêtre pour modifier, créer et dessiner les préréglages de dessin rapide.
-RBN_DYL_CMD_DYL_HATCHPRESETS;DYL-HATCHPRESETS;Hatch Presets;Préréglages de hachures;Préréglages de hachures;Ouvre une fenêtre pour créer et modifier les préréglages de hachures (motif, échelle et clé de calque d'une hachure) utilisés par le dessin rapide et la forme rapide.
+RBN_DYL_CMD_DYL_MATERIALS;DYL-MATERIALS;Materials;Matériaux;Matériaux;Ouvre une fenêtre pour créer et modifier les matériaux (motif, échelle et clé de calque d'une hachure) utilisés par le dessin rapide et la forme rapide.
 RBN_DYL_CMD_DYL_SHRINKWRAP;DYL-SHRINKWRAP;Shrinkwrap;Contour extérieur;Contour extérieur;Dessine des polylignes fermées autour de l'extérieur des objets sélectionnés (remplace AECLINEWORKSHRINKWRAP).
 RBN_DYL_PANEL_DRAWING_BEHAVIORS;;Drawing Behaviors;Comportements du dessin;;
 RBN_DYL_CMD_DYL_LAYERPHASE;DYL-LAYERPHASE;Layer Phase;Phase des calques;Phase des calques;Liste les phases du dessin pour choisir la phase active et les afficher ou les masquer.

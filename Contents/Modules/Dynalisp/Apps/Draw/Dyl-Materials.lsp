@@ -16,16 +16,16 @@
 ;;
 ;;-------------------------=={ End of Licence }==------------------------;;
 
-;;  The hatch presets (called materials in the code: Materials.csv, hatching, dialog) are in
+;;  The materials (Materials.csv, the hatching, the window) are in
 ;;  Modules\Dynalisp\Remote\Dyl-Materials.lsp, loaded at startup for every App. The same
-;;  window opens from the Quick Draw and Quick Shape windows (the open button beside Hatch preset).
+;;  window opens from the Quick Draw and Quick Shape windows (the open button beside Material).
 
 ;;-------------------------=={ Commands }==------------------------;;
 
-;; Hatch Presets
-;; Opens a dialog to create and edit the hatch presets (pattern, scale and layer key of a hatch) used by Quick Draw and Quick Shape.
+;; Materials
+;; Opens a dialog to create and edit the materials (pattern, scale and layer key of a hatch) used by Quick Draw and Quick Shape.
 
-(defun c:Dyl-HatchPresets ()
+(defun c:Dyl-Materials ()
   (Remote>>Dyl:MaterialDialog nil)
   (princ)
 )

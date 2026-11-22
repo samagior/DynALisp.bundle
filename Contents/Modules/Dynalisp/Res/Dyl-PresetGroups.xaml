@@ -1,0 +1,88 @@
+<!--
+  Dyl-PresetGroups.xaml - the Preset Groups window: the groups of every preset window
+  Copyright (C) 2026  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Opened by the open button beside the Group list of a preset window (it closes with 8, the
+  Lisp shows this one: Remote>>Dyl:GroupsDialog of Remote\Dyl-Groups.lsp). A list of rows
+  edited in the window (Installer\Windows\Engine\Rows.cs): gl/rows, a row per group, its
+  columns (name presets original): its name, how many presets use it (shown, never saved),
+  its name in the file ("" for a group added: the Lisp renames the others in the presets).
+  The name typed renames the group selected; Add adds a copy of it after the group selected,
+  Reset puts back the default groups (gl/defs). OK saves them.
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - Preset Groups" dyl:Win.Docs="Draw\Dyl-PresetGroups.htm">
+  <Grid Margin="14">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="300"/>
+      <ColumnDefinition Width="10"/>
+      <ColumnDefinition Width="360"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <!-- The groups, in the order of the Group lists: -->
+    <GroupBox Header="Groups" Margin="0">
+      <DockPanel>
+        <DockPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
+          <Button x:Name="gw" DockPanel.Dock="Right" Content="Move down" dyl:Win.Do="down"/>
+          <Button x:Name="gu" DockPanel.Dock="Right" Content="Move up" dyl:Win.Do="up"/>
+          <Border/>
+        </DockPanel>
+        <ListBox x:Name="gl" Height="380" dyl:Win.Rows="1"
+                 dyl:Win.Check="rows" dyl:Win.CheckMessage="Keep at least one group.">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Foreground="{DynamicResource Dyl.Muted}" Text="{Binding V[1]}"/>
+                <TextBlock Text="{Binding V[0]}" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
+              </DockPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </GroupBox>
+
+    <!-- The group selected: its name (typed: renamed), Add, Remove, Reset: -->
+    <GroupBox Grid.Column="2" Header="Group" Margin="0" VerticalAlignment="Top" dyl:Win.Summary="Group{sel| (# selected)}">
+      <StackPanel>
+        <DockPanel Margin="0,3">
+          <TextBox x:Name="gn" DockPanel.Dock="Right" Width="240" MaxLength="32" dyl:Win.Column="0"
+                   dyl:Win.Unique="There is already a group with this name."
+                   dyl:Win.Check="text;plain" dyl:Win.CheckMessage="Type a group name, without ; , or &quot;."/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Name"/>
+        </DockPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+          <Button x:Name="ga" Margin="0" Content="Add" dyl:Win.Do="add"/>
+          <Button x:Name="gd" Content="Remove" dyl:Win.Do="remove"/>
+          <Button x:Name="gz" Content="Reset" dyl:Win.Do="reset"/>
+        </StackPanel>
+      </StackPanel>
+    </GroupBox>
+
+    <TextBlock x:Name="error" Grid.Row="1" Grid.ColumnSpan="3" Style="{DynamicResource Dyl.Error}" Margin="2,10,0,0" TextWrapping="Wrap" Visibility="Collapsed"/>
+    <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+      <Button Content="OK" IsDefault="True"/>
+      <Button Content="_Cancel" IsCancel="True"/>
+      <Button x:Name="docs" Content="Open Docs"/>
+    </StackPanel>
+  </Grid>
+</Window>

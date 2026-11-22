@@ -42,14 +42,26 @@
 //   pst/als     the aliases ((ALIAS COMMAND) ...), pst/taken the names already taken
 //               ((NAME what-has-it) ...), pst/prefix the text of a new alias by the value of a
 //               column ("4|Polyline=PL-|*=QD-")
-//   pst/mat     the column of the hatch preset (material) id, pst/mats the materials
+//   pst/mat     the column of the material id, pst/mats the materials
 //               ((id group name spec pattern) ...), spec drawn by a HatchTile (Hatch.cs)
 //   pst/spec    a column of the presets with a preview of their own (an assembly), used
 //               when pst/specby holds for the preset (a rule, as Win.EnabledBy); else the
 //               preview is the hatch of its material
+//   pst/blank   a rule (as Win.EnabledBy): the preview of a preset it holds for (and its own
+//               does not) is a space, without hatch (a Quick Draw preset without Has a hatch)
+//   pst/outline a rule (as Win.EnabledBy): the preview of a preset it holds for is outlined
+//               ("O*" before its bands, see Hatch.cs: the preset has a border)
+//   pst/follow  "38:44,45,46": when the value of the column 38 changes (a list of the window,
+//               the assembly preset of a Quick Draw preset), the columns 44, 45 and 46 of the
+//               presets selected take the values of its row in pst/follow/rows ((value v44
+//               v45 v46) ...: its width, its preview, its description), "" when it has none
 //   pst/title   the name of the tool, pst/noun what the presets are called ("presets")
 //   key/list, key/vals  the labels and the stored values of a list of the values
 //   grp/list    the groups
+//
+// A list of rows of the window (Rows.cs) with dyl:Win.RowsIn="n" edits the rows held in the
+// column n of the preset shown (the layers of an assembly preset); pst.many is "1" while
+// several presets are selected (a rule greys it out then: it is for one preset only).
 //
 // It gives back pst/rows and pst/als as edited, pst.idx, pst.sel, pst.shw, pst.shd ("1":
 // Set default was clicked, the group shown is the one the window opens on), and the values
@@ -58,7 +70,7 @@
 //   lst  the list (its items: PresetItem, shown by its ItemTemplate: Spec, Group, Name,
 //        Aliases), flt the filter, srt the sort (Name, Group), shg the Show group, shd Set
 //        default, pcn how many are listed, mpv the preview of the preset shown, prm its
-//        status, src its command, mat the hatch preset, new cpy del rst all the buttons,
+//        status, src its command, mat the material, new cpy del rst all the buttons,
 //        als aln aad aren adel ams the aliases panel, error the messages.
 
 using System;
@@ -118,8 +130,10 @@ namespace DynALisp.Windows
         readonly Dictionary<string, string> _taken = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         readonly ObservableCollection<PresetItem> _items = new ObservableCollection<PresetItem>();
         readonly bool _cmds;
-        readonly string _base, _cmd, _noun, _title, _specBy, _prefix;
-        readonly int _matCol = -1, _specCol = -1;
+        readonly string _base, _cmd, _noun, _title, _specBy, _blankBy, _outlineBy, _prefix;
+        readonly int _matCol = -1, _specCol = -1, _followCol = -1;
+        readonly int[] _followTo = new int[0];
+        readonly List<string[]> _follow;
 
         int _idx;
         List<int> _sel = new List<int>();
@@ -156,9 +170,18 @@ namespace DynALisp.Windows
             _noun = Val("pst/noun") is string n && n.Length > 0 ? n : "presets";
             _title = Val("pst/title") ?? "";
             _specBy = Val("pst/specby");
+            _outlineBy = Val("pst/outline");
+            _blankBy = Val("pst/blank");
             _prefix = Val("pst/prefix");
             _matCol = Int(Val("pst/mat"), -1);
             _specCol = Int(Val("pst/spec"), -1);
+            var fw = (Val("pst/follow") ?? "").Split(':');
+            if (fw.Length == 2)
+            {
+                _followCol = Int(fw[0], -1);
+                _followTo = fw[1].Split(',').Select(x => Int(x, -1)).Where(c => c >= 0).ToArray();
+            }
+            _follow = Table("pst/follow/rows");
 
             _list = (ListBox)v.Find("lst");
             _alsList = v.Find("als") as ListBox;
@@ -231,6 +254,17 @@ namespace DynALisp.Windows
 
         string[] Row => _rows.Count > 0 ? _rows[_idx] : new string[0];
 
+        // The column col of the preset shown, and a value given to it only (the rows of a list
+        // of the window that it holds, Rows.cs: Win.RowsIn):
+        internal string ShownCell(int col) => Cell(Row, col);
+
+        internal void PutShown(int col, string val)
+        {
+            if (_rows.Count == 0 || Cell(Row, col) == val) return;
+            _rows[_idx] = Put(_rows[_idx], col, val);
+            State();
+        }
+
         // The keys the editor fills itself (not the view):
         public bool Owns(string key) =>
             key == "lst" || key == "als" || key == "shg" || key == "mat" || key == "mpv" || _fields.Any(f => f.Key == key);
@@ -238,7 +272,7 @@ namespace DynALisp.Windows
         // ---- Values and rules ----
 
         // The value of key for the preset r, as a rule reads it (a checkbox "1" / "0", the
-        // value stored for a list); pst/solid: its hatch preset is a solid fill:
+        // value stored for a list); pst/solid: its material is a solid fill:
         string RowGet(string[] r, string key)
         {
             if (key == "pst/solid") return Solid(r) ? "1" : "0";
@@ -254,12 +288,17 @@ namespace DynALisp.Windows
 
         bool Solid(string[] r) => string.Equals(Cell(MatOf(r), 4), "SOLID", StringComparison.OrdinalIgnoreCase);
 
-        // The preview of the preset r: its own (an assembly), else the hatch of its material:
+        // The preview of the preset r: its own (an assembly), else a space while pst/blank holds
+        // for it (no hatch), else the hatch of its material; outlined while pst/outline holds
+        // for it (as the gallery shows it):
         string Spec(string[] r)
         {
-            if (_specCol >= 0 && Cell(r, _specCol).Length > 0 && View.Holds(_specBy, k => RowGet(r, k))) return Cell(r, _specCol);
-            var m = MatOf(r);
-            return m != null ? Cell(m, 3) : "X?1";
+            string sp;
+            if (_specCol >= 0 && Cell(r, _specCol).Length > 0 && View.Holds(_specBy, k => RowGet(r, k))) sp = Cell(r, _specCol);
+            else if (!string.IsNullOrWhiteSpace(_blankBy) && View.Holds(_blankBy, k => RowGet(r, k))) sp = "S?1";
+            else sp = MatOf(r) is string[] m ? Cell(m, 3) : "X?1";
+            if (!string.IsNullOrWhiteSpace(_outlineBy) && View.Holds(_outlineBy, k => RowGet(r, k))) sp = "O*" + sp;
+            return sp;
         }
 
         // ---- Commands and aliases ----
@@ -473,9 +512,10 @@ namespace DynALisp.Windows
             _s.Values["error"] = "";
             Aliases();
             State();
+            _v.Rows?.Load();
         }
 
-        // The hatch preset list of the preset shown: the materials of its group by name, then
+        // The material list of the preset shown: the materials of its group by name, then
         // its material when it is not one of them ("group - name", or marked missing); every
         // material when the group has none (Remote>>Dyl:PresetDlgMatFill):
         void MatFill()
@@ -495,7 +535,7 @@ namespace DynALisp.Windows
             else lst = _mats.OrderBy(m => Cell(m, 1) + "\t" + Cell(m, 2), StringComparer.OrdinalIgnoreCase).ToList();
             var ids = lst.Select(m => Cell(m, 0)).ToList();
             var labels = lst.Select(m => byName && Ic.Equals(Cell(m, 1), grp) ? Cell(m, 2) : Cell(m, 1) + " - " + Cell(m, 2)).ToList();
-            if (cur.Length > 0 && !ids.Contains(cur)) { ids.Add(cur); labels.Add(cur + "   (missing hatch preset)"); }
+            if (cur.Length > 0 && !ids.Contains(cur)) { ids.Add(cur); labels.Add(cur + "   (missing material)"); }
             _matIds = ids;
             _v.Quiet(() => _mat.ItemsSource = labels);
         }
@@ -510,9 +550,10 @@ namespace DynALisp.Windows
             var d = _defs.FirstOrDefault(x => x.Length > 0 && x[0] == Cell(r, 0));
             var sel = _sel.Select(j => _rows[j]).ToList();
             _s.Values["pst/solid"] = Solid(r) ? "1" : "0";
+            _s.Values["pst.many"] = sel.Count > 1 ? "1" : "0";
             if (_prm != null)
                 _prm.Text = sel.Count > 1 ? sel.Count + " " + _noun + " selected"
-                          : d == null ? "Custom preset"
+                          : d == null ? (_defs.Count == 0 ? "" : "Custom preset")
                           : Same(r, d) ? "Default preset"
                           : "Default preset, modified";
             if (_src != null)
@@ -608,7 +649,15 @@ namespace DynALisp.Windows
             if (_bad == f.Key) { _bad = null; _v.Error(""); }
             string old = Cell(r, f.Col);
             PutAll(f.Col, val, f.Key == "nam");
-            // Another group: the hatch presets of the new group (the first one given to the
+            // The columns that follow it (pst/follow), shown again:
+            if (f.Col == _followCol && _followCol >= 0)
+            {
+                var fr = _follow.FirstOrDefault(x => x.Length > 0 && Ic.Equals(x[0], val));
+                for (int k = 0; k < _followTo.Length; k++) PutAll(_followTo[k], Cell(fr, k + 1));
+                Show();
+                return;
+            }
+            // Another group: the materials of the new group (the first one given to the
             // presets selected when theirs is not one of them):
             if (f.Key == "grp" && _matCol >= 0 && !Ic.Equals(old, val))
             {
@@ -630,7 +679,7 @@ namespace DynALisp.Windows
                 return null;
             }
             if (f.Key == "grp" && val.Length == 0) return "The group cannot be empty.";
-            if (f.Key == "mat" && !_mats.Any(m => m[0] == val)) return "This hatch preset no longer exists: pick another one.";
+            if (f.Key == "mat" && !_mats.Any(m => m[0] == val)) return "This material no longer exists: pick another one.";
             if (f.El is TextBox && Win.GetCheck(f.El) is string kind && !View.Valid(kind, val))
                 return Win.GetCheckMessage(f.El) ?? "This value is not valid.";
             return null;
@@ -705,8 +754,55 @@ namespace DynALisp.Windows
                 case "aren": AliasRename(); return true;
                 case "adel": AliasRemove(); return true;
             }
+            // a sub-window on columns of the preset shown (not on the rows of a list, Rows.cs):
+            if (Win.GetOpen(b) is string file && Win.GetColumns(b) is string cols && !(_v.Rows?.HasSub(b) ?? false))
+            {
+                if (Check()) Sub(b, file, cols);
+                return true;
+            }
             // a button of the window: the value shown must be valid first (Win.Close checks it)
             return false;
+        }
+
+        // The window file opened on the columns cols of the preset shown ("out:5,bco:6"): their
+        // values as those of its keys (a list with key/vals: the index of the value); its OK
+        // gives them to every preset selected the rules of the button b hold for (as Rows.Sub:
+        // the lines of an assembly that has them off keep theirs), its Cancel keeps them:
+        void Sub(FrameworkElement b, string file, string cols)
+        {
+            if (_rows.Count == 0) return;
+            var map = new List<KeyValuePair<string, int>>();
+            foreach (var x in cols.Split(','))
+            {
+                var p = x.Split(':');
+                if (p.Length == 2 && p[0].Trim().Length > 0 && int.TryParse(p[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int c) && c >= 0)
+                    map.Add(new KeyValuePair<string, int>(p[0].Trim(), c));
+            }
+            foreach (var m in map)
+            {
+                string cell = Cell(Row, m.Value);
+                if (_s.Lists.TryGetValue(m.Key + "/vals", out var vals))
+                    _s.Values[m.Key] = Math.Max(0, vals.FindIndex(v => Ic.Equals(v, cell))).ToString(CultureInfo.InvariantCulture);
+                else _s.Values[m.Key] = cell;
+            }
+            if (_v.OpenSub(file) == 1)
+            {
+                var rules = new List<string>();
+                for (DependencyObject o = b; o != null && !(o is Window); o = LogicalTreeHelper.GetParent(o))
+                    if (Win.GetEnabledBy(o) is string rule && rule.Trim().Length > 0) rules.Add(rule);
+                foreach (var m in map)
+                {
+                    _s.Values.TryGetValue(m.Key, out string v);
+                    if (_s.Lists.TryGetValue(m.Key + "/vals", out var vals))
+                        v = int.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out int j) && j >= 0 && j < vals.Count ? vals[j] : Cell(Row, m.Value);
+                    foreach (int i in _sel)
+                    {
+                        var r = _rows[i];
+                        if (rules.All(rule => View.Holds(rule, k => RowGet(r, k) ?? _v.Stored(k)))) _rows[i] = Put(r, m.Value, (v ?? "").Trim());
+                    }
+                }
+            }
+            Show();
         }
 
         string[] NewRow()

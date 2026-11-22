@@ -28,7 +28,12 @@
 //   F?width                                a solid fill
 //   S?width                                a space
 //   L?0                                    a line between two bands
-//   X?width                                a hatch preset missing (crossed out)
+//   X?width                                a material missing (crossed out)
+//   O                                      (first) the bands outlined: the border of the
+//                                          preset, a line around the tile
+//
+// An AssemblyTile (Assembly.cs) draws the bands of an assembly the other way: one under the
+// other, as a wall drawn in plan.
 
 using System;
 using System.Collections.Generic;
@@ -50,7 +55,7 @@ namespace DynALisp.Windows
     public static class Pat
     {
         static readonly Dictionary<string, Tuple<DateTime, List<PatLine>>> Cache = new Dictionary<string, Tuple<DateTime, List<PatLine>>>(StringComparer.OrdinalIgnoreCase);
-        static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
+        internal static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
 
         // The families of the pattern name in the .pat file, nil when it is not there. Kept
         // while the file is not written again (a pattern rebuilt by Dyl-RebuildPat is read again):
@@ -133,23 +138,23 @@ namespace DynALisp.Windows
         // The scale of a tile zoomed out in its corner (false: a thumbnail too small for it):
         public bool ShowScale { get => (bool)GetValue(ShowScaleProperty); set => SetValue(ShowScaleProperty, value); }
 
-        const double Dpi = 96;       // WPF units an inch
-        const double Repeats = 3;    // repeats of a pattern at least, in the height of the tile
+        internal const double Dpi = 96;       // WPF units an inch
+        internal const double Repeats = 3;    // repeats of a pattern at least, in the height of the tile
         const int MaxLines = 20000;   // segments of a tile at most (a pattern too fine is grey)
-        static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
-        static readonly double[] Steps = { 1, 2, 2.5, 4, 5, 8, 10, 16, 20, 25, 40, 50, 100, 200, 250, 500, 1000, 2000, 5000, 10000 };
+        internal static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
+        internal static readonly double[] Steps = { 1, 2, 2.5, 4, 5, 8, 10, 16, 20, 25, 40, 50, 100, 200, 250, 500, 1000, 2000, 5000, 10000 };
 
-        sealed class Band
+        internal sealed class Band
         {
             public string Kind = "X", Pattern, File;
             public double Width, Ppu = 1, Angle, Scale = 1;
             public List<PatLine> Fams;
         }
 
-        static double Num(string[] f, int i, double def) =>
+        internal static double Num(string[] f, int i, double def) =>
             i < f.Length && double.TryParse(f[i], NumberStyles.Float, Inv, out double d) ? d : def;
 
-        static List<Band> Bands(string spec)
+        internal static List<Band> Bands(string spec)
         {
             var res = new List<Band>();
             foreach (var part in (spec ?? "").Split('*'))
@@ -177,6 +182,7 @@ namespace DynALisp.Windows
             var r = new Rect(0, 0, ActualWidth, ActualHeight);
             if (r.Width < 2 || r.Height < 2) return;
             var bands = Bands(Spec);
+            bool outline = bands.RemoveAll(b => b.Kind == "O") > 0;
             var pen = new Pen(Ink, 1) { StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round };
             pen.Freeze();
             dc.PushClip(new RectangleGeometry(r, Radius, Radius));
@@ -216,11 +222,19 @@ namespace DynALisp.Windows
                 if (x > 0) dc.DrawLine(pen, new Point(x, 0), new Point(x, r.Height));
                 x += w;
             }
+            // The border of the preset: a line around the tile, as thick as a line between
+            // two bands (thinner in a thumbnail):
+            if (outline)
+            {
+                double t = r.Height < 40 ? 1.5 : 2;
+                var o = new Rect(t / 2, t / 2, Math.Max(0, r.Width - t), Math.Max(0, r.Height - t));
+                dc.DrawRoundedRectangle(null, new Pen(Ink, t), o, Math.Max(0, Radius - t / 2), Math.Max(0, Radius - t / 2));
+            }
             if (zoom > 1 && ShowScale) Label(dc, r, "1:" + (scale * zoom).ToString("0.##", Inv));
             dc.Pop();
         }
 
-        void Draw(DrawingContext dc, Rect r, Band b, double zoom, Pen pen)
+        internal void Draw(DrawingContext dc, Rect r, Band b, double zoom, Pen pen)
         {
             switch (b.Kind)
             {
@@ -304,13 +318,29 @@ namespace DynALisp.Windows
         }
 
         // The scale of a tile zoomed out, in its bottom right corner:
-        void Label(DrawingContext dc, Rect r, string text)
+        internal void Label(DrawingContext dc, Rect r, string text)
+        {
+            var ft = LabelText(text);
+            DrawLabel(dc, new Rect(r.Right - ft.Width - 12, r.Bottom - ft.Height - 7, ft.Width + 8, ft.Height + 2), ft);
+        }
+
+        // The label centred on x, its top at y (under the wall of an AssemblyTile):
+        internal void Label(DrawingContext dc, double x, double y, string text)
+        {
+            var ft = LabelText(text);
+            DrawLabel(dc, new Rect(x - ft.Width / 2 - 4, y, ft.Width + 8, ft.Height + 2), ft);
+        }
+
+        FormattedText LabelText(string text)
         {
             double ppd = 1;
             try { ppd = VisualTreeHelper.GetDpi(this).PixelsPerDip; } catch { }
-            var ft = new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
+            return new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
                 new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 10.5, Ink, ppd);
-            var box = new Rect(r.Right - ft.Width - 12, r.Bottom - ft.Height - 7, ft.Width + 8, ft.Height + 2);
+        }
+
+        void DrawLabel(DrawingContext dc, Rect box, FormattedText ft)
+        {
             dc.DrawRoundedRectangle(LabelBack, null, box, 3, 3);
             dc.DrawText(ft, new Point(box.X + 4, box.Y + 1));
         }

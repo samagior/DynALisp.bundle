@@ -23,7 +23,7 @@
 // on the values of its sample file (Samples\, as the Lisp gives them: key=value,
 // key/list=item|item, key/vals=value|value, key/off=1, +key=field\\tfield a row of the table
 // key (the presets of a preset window: +pst/rows=...); {samples} the folder of the samples,
-// \\t a tab), its Open Docs
+// \\t a tab, \\T a tab inside a field of a row, \\n a new line), its Open Docs
 // button enabled. Its content is drawn under a
 // plain title bar, at twice its size (192 dpi), into the PNG its docs page names
 // (<!-- picture: images/<Page>-window.png -->), in the light theme of AutoCAD, and in its dark
@@ -104,14 +104,16 @@ namespace DynALisp.Windows
                 if (eq < 1) continue;
                 string key = line.Substring(0, eq).Trim(), value = line.Substring(eq + 1).Trim();
                 // {samples}: the folder of the sample (its .pat files); \t: a tab:
-                value = value.Replace("{samples}", Path.GetDirectoryName(Path.GetFullPath(sample))).Replace("\\t", "\t");
+                // (\T: a tab inside a field of a row, as the rows of a column that holds rows:
+                // Win.RowsIn)
+                value = value.Replace("\\n", "\n").Replace("{samples}", Path.GetDirectoryName(Path.GetFullPath(sample))).Replace("\\t", "\t");
                 if (key.EndsWith("/list")) s.Lists[key.Substring(0, key.Length - 5)] = value.Split('|').ToList();
                 else if (key.EndsWith("/vals")) s.Lists[key] = value.Split('|').ToList();
                 else if (key.StartsWith("+"))
                 {
                     string table = key.Substring(1);
                     if (!s.Rows.TryGetValue(table, out var rows)) s.Rows[table] = rows = new List<string[]>();
-                    rows.Add(value.Split('\t'));
+                    rows.Add(value.Split('\t').Select(f => f.Replace("\\T", "\t")).ToArray());
                 }
                 else if (key.EndsWith("/off")) { if (value == "1") s.Off.Add(key.Substring(0, key.Length - 4)); }
                 else s.Values[key] = value;
