@@ -1963,7 +1963,8 @@
 ;;  (id group name material method override width justify sides scale-width width-factor
 ;;   origin-on-line origin-offset gap gap-on gap-metric origin-along
 ;;   outline-key border-settings... no-border
-;;   ends extension end-angle corners miter-limit lap joints hatch assembly-on assembly)
+;;   ends extension end-angle corners miter-limit lap joints hatch assembly-on assembly
+;;   ends-on corners-on band-on)
 ;;  id is the id of a default preset (e.g. "qd-Demolition", run by Pst-QuickDrawDemolition), or
 ;;  a custom id (cu-...). material is the id of a material (see Remote\Dyl-Materials.lsp), so
 ;;  several presets can share it (e.g. QD-BRICK and PL-BRICK). The behaviors (method, then
@@ -2000,6 +2001,13 @@
 ;;  The layers of the assembly in a preset (see Remote>>Dyl:MaterialLayers):
 (setq *qd:layerscol* 38)
 
+;;  Custom band settings (Behaviors box): on, the bands of Linear and Offset are drawn with the
+;;  justification, hatch alignment, ends and corners of the Band Settings window; off, with
+;;  the defaults (Center, Line, Square, Mitered), the values of the window kept for when it is
+;;  on again (see Dyl:QuickDrawMat). Ends-on and corners-on (39, 40) follow it. A preset of an
+;;  older file, without it, gets it on when its band was not the defaults (Dyl:QuickDrawFix):
+(setq *qd:bandon* 41)
+
 ;;  The border of a preset: its columns from 17 (the layer key, then its optional settings,
 ;;  see Remote>>Dyl:MaterialBorderTiles), No border at 28:
 (setq *qd:border* 17
@@ -2016,8 +2024,21 @@
 ;;  material no longer exists:
 (setq *qd:matnew* *mt:new*)
 
-;;  The material mat with the behaviors and the border of the preset r in its columns:
-(defun Dyl:QuickDrawMat (mat r)
+;;  The material mat with the behaviors and the border of the preset r in its columns, its
+;;  band as it is drawn: its own while Custom band settings is on (its ends and corners on, 61
+;;  and 62), else the defaults (justification Center, hatch along the line, ends and corners
+;;  off, see Dyl:QuickDrawBandOpts):
+(defun Dyl:QuickDrawMat (mat r / on)
+  (setq on  (= "1" (nth *qd:bandon* r))
+        mat (Dyl:QuickDrawMatRaw mat r)
+        mat (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst mat 61 (if on "1" "0")) 62 (if on "1" "0"))
+  )
+  (if on mat (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst mat 35 "Center") 58 "Line"))
+)
+
+;;  The material mat with the behaviors and the border of the preset r in its columns, as
+;;  they are stored (the values of the Band Settings window even while it is off):
+(defun Dyl:QuickDrawMatRaw (mat r)
   (foreach x *qd:behaviors*
     (setq mat (Remote>>Dyl:ListSubst mat (cdr (assoc (car x) *mt:behaviortiles*)) (nth (cdr x) r)))
   )
@@ -2040,11 +2061,12 @@
   (Remote>>Dyl:ListSubst (Dyl:QuickDrawFrom r (if (and ovr mat) mat *qd:matnew*)) 5 (if ovr "1" "0"))
 )
 
-;;  A row of the presets file with its 41 columns (the band, assembly, ends and corners
-;;  columns of an older file: empty, given their defaults by Dyl:QuickDrawFix; ends and
-;;  corners on when they are not the defaults, see Remote>>Dyl:MaterialFix):
+;;  A row of the presets file with its 42 columns (the band, assembly, ends, corners and
+;;  Custom band settings columns of an older file: empty, given their defaults by
+;;  Dyl:QuickDrawFix; ends and corners on when they are not the defaults, see
+;;  Remote>>Dyl:MaterialFix):
 (defun Dyl:QuickDrawPad (row)
-  (while (< (length row) 41) (setq row (append row (list ""))))
+  (while (< (length row) 42) (setq row (append row (list ""))))
   row
 )
 
@@ -2085,7 +2107,40 @@
               )
     )
   )
-  (Dyl:QuickDrawFrom row (Remote>>Dyl:MaterialFix (Dyl:QuickDrawMat *qd:matnew* row)))
+  (setq row (Dyl:QuickDrawFrom row (Remote>>Dyl:MaterialFix (Dyl:QuickDrawMatRaw *qd:matnew* row))))
+  (Dyl:QuickDrawBandFix row)
+)
+
+;;  Custom band settings of the preset row ("1" or "0"), ends-on and corners-on (39, 40) the
+;;  same. A preset of an older file, without it, gets it on when its band was not drawn as the
+;;  defaults (its own ends or corners, a justification other than Center, the hatch from the
+;;  drawing origin), the ends or corners it did not have of its own set to the defaults, so it
+;;  draws as before:
+(defun Dyl:QuickDrawBandFix (row / on)
+  (if (member (nth *qd:bandon* row) '("0" "1"))
+    (setq on (= "1" (nth *qd:bandon* row)))
+    (progn
+      (setq on (or (= "1" (nth 39 row))
+                   (= "1" (nth 40 row))
+                   (not (member (nth 7 row) '("Center" "")))
+                   (= "Origin" (nth 36 row))
+               )
+      )
+      (if (and on (/= "1" (nth 39 row)))
+        (setq row (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst row 29 "Square") 30 "") 31 "45"))
+      )
+      (if (and on (/= "1" (nth 40 row)))
+        (setq row (Remote>>Dyl:ListSubst
+                    (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst row 32 "Mitered") 33 "4") 34 "First")
+                    35
+                    "Interrupted"
+                  )
+        )
+      )
+    )
+  )
+  (setq on (if on "1" "0"))
+  (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst row *qd:bandon* on) 39 on) 40 on)
 )
 
 ;;  A default preset (id group name material): the behaviors and border of its default material
@@ -2184,13 +2239,13 @@
   )
 )
 
-;;  The columns the window shows after those of a preset r (41 to 44, read only, never saved):
-;;  what its layers are (beside Assembly of layers), its justification, ends and corners
-;;  (beside Band settings), the width of its layers (Width, for an assembly), and the preview
-;;  of its layers side by side (an assembly with layers):
+;;  The columns the window shows after those of a preset r (42 to 45, read only, never saved):
+;;  what its layers are (beside Assembly of layers), its own justification, ends and corners
+;;  (beside Custom band settings, shown while it is on), the width of its layers (Width, for an
+;;  assembly), and the preview of its layers side by side (an assembly with layers):
 (defun Dyl:QuickDrawWinExtra (r)
   (list (Remote>>Dyl:MaterialLayersText (nth *qd:layerscol* r))
-        (Remote>>Dyl:MaterialBandText (Dyl:QuickDrawMat (Dyl:QuickDrawDlgMat r) r))
+        (Remote>>Dyl:MaterialBandText (Dyl:QuickDrawMat (Dyl:QuickDrawDlgMat r) (Remote>>Dyl:ListSubst r *qd:bandon* "1")))
         (Dyl:QuickDrawDlgLayersWidth r)
         ;;  (as an assembly even while Assembly of layers is off: the window shows it once it is on)
         (if (Remote>>Dyl:MaterialLayers (nth *qd:layerscol* r)) (Dyl:QuickDrawGallerySpec (list (Remote>>Dyl:ListSubst r 37 "1"))) "")
@@ -2239,8 +2294,8 @@
   (if (and (= *mt:layerspick* sta) (setq v (Dyl:QuickDrawLayersDialog r)))
     (Remote>>Dyl:PresetDlgPut *qd:layerscol* v)
   )
-  ;;  The open button of Band settings: its window, its values given to every preset selected
-  ;;  on OK:
+  ;;  The open button of Custom band settings: its window, its values given to every preset
+  ;;  selected on OK:
   (if (and (= *mt:bandpick* sta) (setq v (Dyl:QuickDrawBandDialog r)))
     (foreach p v (Remote>>Dyl:PresetDlgPut (cdr (assoc (car p) *qd:behaviors*)) (cdr p)))
   )
@@ -2265,11 +2320,12 @@
           '(material . 3)
           '(upper "out" "blt")
           '(window . "Dyl-QuickDraw.xaml")
-          ;;  Has a border (No border, inverted), and the columns of Dyl:QuickDrawWinExtra:
-          '(wtiles . "hbr:28:inv,mai:41,mei:42,mwl:43,mht:36")
+          ;;  Has a border (No border, inverted), Custom band settings, the columns of
+          ;;  Dyl:QuickDrawWinExtra, and what the hatch is aligned to (hidden, for the rules):
+          '(wtiles . "hbr:28:inv,mbs:41,mai:42,mei:43,mwl:44,mht:36")
           '(extra . Dyl:QuickDrawWinExtra)
           ;;  The preview of an assembly: its layers side by side:
-          '(spec 44 . "mas,mth=Linear|Offset|")
+          '(spec 45 . "mas,mth=Linear|Offset|")
           '(mspec . Dyl:QuickDrawWinMatSpec)
           ;;  The text put in the new alias box: PL- for a preset drawn with a polyline, QD- for
           ;;  the others (see CONVENTIONS.md, Preset aliases):
@@ -2286,13 +2342,13 @@
 
 ;;-------------------------=={ Band Settings window }==------------------------;;
 
-;;  The open button of Band settings (Behaviors box) opens the Band Settings window
+;;  The open button of Custom band settings (Behaviors box) opens the Band Settings window
 ;;  (Res\Dyl-QuickDrawBandSettings.xaml, shown by DynALisp.Windows.dll) on the preset shown:
 ;;  the tiles of *mt:bandwindows*, their values those of the material of the preset with its
-;;  behaviors, its ends and corners those it draws with (the defaults while it has none of its
-;;  own, see Remote>>Dyl:MaterialBandOwn). The window greys out the values what is picked does
-;;  not use, checks the numbers and sketches the ends and the corners; OK gives them to every
-;;  preset selected, with their own ends and corners on (see Dyl:QuickDrawDlgStatus).
+;;  behaviors as stored (Dyl:QuickDrawMatRaw; the button is greyed out while Custom band
+;;  settings is off). The window greys out the values what is picked does not use, checks the
+;;  numbers and sketches the ends and the corners; OK gives them to every preset selected (see
+;;  Dyl:QuickDrawDlgStatus).
 
 ;;  The values of the window for the tiles of a band window, the material m: a popup its
 ;;  labels, the keys of its items and the index of the one picked, an edit box its text:
@@ -2314,13 +2370,12 @@
 )
 
 ;;  The Band Settings window on the preset r. Returns its values ((key . value) ...) on OK,
-;;  with the own ends and corners of the preset on (meo, mcn), nil on Cancel (or when the
-;;  window cannot be shown). The method of the preset (mth, no control: the justification is
+;;  nil on Cancel (or when the window cannot be shown). The method of the preset (mth, no control: the justification is
 ;;  for Linear) is given with them. The values are checked again (see
 ;;  Remote>>Dyl:MaterialDlgCheck): one not valid is said, nothing given:
 (defun Dyl:QuickDrawBandDialog (r / tiles m res vals msg)
   (setq tiles (cddr (assoc "BandSettings" *mt:bandwindows*))
-        m     (Remote>>Dyl:MaterialBandOwn (Dyl:QuickDrawMat (Dyl:QuickDrawDlgMat r) r))
+        m     (Dyl:QuickDrawMatRaw (Dyl:QuickDrawDlgMat r) r)
         res   (Dyl:WinShow "Dyl-QuickDrawBandSettings.xaml"
                            (cons (cons "mth" (cond ((nth 4 r)) (""))) (Dyl:QuickDrawBandVals tiles m))
               )
@@ -2339,7 +2394,7 @@
                  )
       )
       (foreach v vals (if (not msg) (setq msg (Remote>>Dyl:MaterialDlgCheck (car v) (cdr v)))))
-      (if msg (progn (alert msg) nil) (append vals '(("meo" . "1") ("mcn" . "1"))))
+      (if msg (progn (alert msg) nil) vals)
     )
   )
 )

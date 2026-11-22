@@ -21,9 +21,10 @@
   in the window itself by the preset editor (Installer\Windows\Engine\Presets.cs: the list,
   New, Copy, Delete, the resets, the aliases), the Lisp saves them on Draw (1) and Save (2).
   The controls of the values are named as the tiles of the presets (pst/tiles, the column
-  of each one in a preset, see *qd:tiles*); mai, mei and mwl show the columns the Lisp adds
-  for the window (the layers of the assembly, the justification, ends and corners of the
-  bands, the width of the layers), mht (hidden) what the hatch is aligned to. The open
+  of each one in a preset, see *qd:tiles*); mbs is Custom band settings; mai, mei and mwl
+  show the columns the Lisp adds for the window (the layers of the assembly, the own
+  justification, ends and corners of the bands, the width of the layers), mht (hidden) what
+  the hatch is aligned to. The open
   buttons close the window with the code of what they open, as the DCL window did: 3 Band
   Settings, 4 Pick (the hatch origin), 5 Assembly Layers, 6 Layer Keys, 8 Preset Groups,
   9 Hatch Presets, 11 the color of AutoCAD; the Lisp opens the
@@ -207,13 +208,18 @@
               </Grid>
               <TextBlock Style="{DynamicResource Dyl.Label}" Text="Width"/>
             </DockPanel>
-            <!-- The justification, the hatch along the line, the ends and the corners: the Band
-                 Settings window, its summary beside its open button: -->
+            <!-- Custom band settings: on, the justification, the hatch along the line, the ends and
+                 the corners of the Band Settings window, summed up beside its open button; off,
+                 the defaults: -->
             <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|Offset|">
-              <TextBlock x:Name="mei" DockPanel.Dock="Right" Width="150" VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}"
-                         TextTrimming="CharacterEllipsis"/>
-              <dyl:OpenButton x:Name="mbe" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="3" ToolTip="Band Settings"/>
-              <TextBlock Style="{DynamicResource Dyl.Label}" Text="Band settings"/>
+              <Grid DockPanel.Dock="Right" Width="150">
+                <TextBlock x:Name="mei" VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}" TextTrimming="CharacterEllipsis" dyl:Win.VisibleBy="mbs"/>
+                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}" Text="Center, Square, Mitered" dyl:Win.VisibleBy="!mbs,mth!=Offset"/>
+                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}" Text="Square, Mitered" dyl:Win.VisibleBy="!mbs,mth=Offset"/>
+              </Grid>
+              <dyl:OpenButton x:Name="mbe" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="3" ToolTip="Band Settings"
+                              dyl:Win.EnabledBy="mbs"/>
+              <CheckBox x:Name="mbs" Content="Custom band settings"/>
             </DockPanel>
             <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Hatch"/>
             <!-- What the hatch is aligned to, set in the Band Settings window: hidden, for the
