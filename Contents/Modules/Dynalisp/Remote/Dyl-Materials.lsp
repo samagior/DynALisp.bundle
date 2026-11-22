@@ -16,13 +16,17 @@
 ;;
 ;;-------------------------=={ End of Licence }==------------------------;;
 
-;;  Loaded at startup with the other Remote files. A material is the hatch of an outline:
-;;  pattern, scales, angle, annotative, hatch layer key. The materials are
-;;  presets of the preset engine (Remote\Dyl-Presets.lsp) without commands, saved to
-;;  Res\Materials.csv, and are used by the presets of the drawing tools by their id
-;;  (e.g. the Quick Draw presets QD-BRICK and PL-BRICK both use the material mt-Brick).
+;;  Loaded at startup with the other Remote files. A material is what an object is made of:
+;;  its data (thermal conductivity, density, resistance) and its hatch preset, the hatch of an
+;;  outline (pattern, scales, angle, annotative, hatch layer key) that several materials share
+;;  (Extruded Polystyrene and Polyisocyanurate both use the hatch preset Rigid Insulation).
+;;  Both are presets of the preset engine (Remote\Dyl-Presets.lsp) without commands, saved to
+;;  Res\Materials.csv (mt-* ids, see the Material spec below) and Res\HatchPresets.csv (hp-*
+;;  ids). The presets of the drawing tools use a material by its id (e.g. the Quick Draw
+;;  presets QD-BRICK and PL-BRICK both use the material mt-Brick, which uses hp-Brick).
 ;;
-;;  A material is a list of strings:
+;;  A tool reads a material joined to its hatch preset (see Remote>>Dyl:MaterialJoin): the id,
+;;  group and name of the material, then the columns of its hatch preset, a list of strings:
 ;;  (id group name pattern scale unused angle outline-key hatch-key annotative scale-drawing
 ;;   scale-ref)
 ;;  scale: the one scale of the hatch, in the units of the pattern (see
@@ -75,7 +79,12 @@
 ;;  hundredths of mm ("25": 0.25 mm), a transparency 0 to 90.
 ;;
 ;;  For a tool (see Apps\Draw\Dyl-QuickDraw.lsp):
-;;    (Remote>>Dyl:MaterialGet id)              -> material, nil when it no longer exists
+;;    (Remote>>Dyl:MaterialGet id)              -> material joined to its hatch preset, nil
+;;                                                 when it no longer exists
+;;    (Remote>>Dyl:MaterialRead)                -> every material, the same way
+;;    (Remote>>Dyl:HatchPresetRead)             -> the hatch presets
+;;    (Remote>>Dyl:HatchPresetDialog id)        -> Hatch Presets dialog opened on id, returns
+;;                                                 the hatch preset selected on OK
 ;;    (Remote>>Dyl:MaterialDialog id)           -> Materials dialog opened on id, returns the
 ;;                                                 material selected on OK (nil on Cancel)
 ;;    (Remote>>Dyl:MaterialPopup tile mats ids grp) -> fill a material popup of a dialog
@@ -84,9 +93,12 @@
 
 (setq *dyl:presetspecs*
   (cons
-    '("Material"
-      (file . "Materials.csv")
-      ;;  A material without pattern (None: Void) is kept:
+    '("HatchPreset"
+      (file . "HatchPresets.csv")
+      ;;  Read only when its header begins as this one (a HatchPresets.csv of DynALisp 1.0,
+      ;;  Type,Key,Pattname..., is not read, see Remote>>Dyl:PresetFile):
+      (head . 4)
+      ;;  A hatch preset without pattern (None: Void) is kept:
       (blank3 . T)
       (header "Id" "Group" "Name" "Pattern" "Scale" "ScaleMetric" "Angle" "OutlineKey" "HatchKey"
               "Annotative" "ScaleDrawing" "ScaleRef"
@@ -121,6 +133,30 @@
               ;;  size: never annotative nor adaptive), see Remote>>Dyl:MaterialFix:
               "Type"
       )
+      (default . "HP-*")
+      (title . "Hatch Presets")
+      ;;  Page of the Documentation button (Docs folder of the Dynalisp module):
+      (doc . "Draw\\Dyl-HatchPresets.htm")
+     )
+    (vl-remove (assoc "HatchPreset" *dyl:presetspecs*) *dyl:presetspecs*)
+  )
+)
+
+(setq *dyl:presetspecs*
+  (cons
+    '("Material"
+      (file . "Materials.csv")
+      ;;  Read only when its header begins as this one: a file of DynALisp 1.1 and older (a
+      ;;  hatch in each row, Pattern in its column 3) is split first (see
+      ;;  Remote>>Dyl:MaterialMigrate):
+      (head . 4)
+      ;;  A material without a Cut hatch preset (no hatch) is kept:
+      (blank3 . T)
+      ;;  Its id, group and name, its two hatch presets (Cut: in section; Surface: in
+      ;;  elevation, "" the same as Cut), then its data, in SI units: thermal conductivity
+      ;;  (W/m.K), density (kg/m3) and a fixed thermal resistance (RSI, m2.K/W: an air space, a
+      ;;  membrane, whose thickness does not give it), "" when it is not known:
+      (header "Id" "Group" "Name" "Cut" "Surface" "Conductivity" "Density" "Resistance")
       (default . "MT-*")
       (title . "Materials")
       ;;  Page of the Documentation button (Docs folder of the Dynalisp module):
@@ -130,48 +166,175 @@
   )
 )
 
-;;  Default materials, restored by the Reset Selected and Reset All buttons (their outline key
-;;  and border settings: the border given to the presets of their material, see
-;;  Dyl:QuickDrawDefault):
-(setq *mt:defaults*
-  '(("mt-Demolition" "Phase" "Demolition" "ANSI31" "0.5" "0.5" "90.0" "THIN" "HATCH" "1")
-    ("mt-NotInContract" "Phase" "Not In Contract" "ANSI31" "1.5" "1.5" "90.0" "XLINE" "HATCH" "1")
-    ("mt-Existing" "Phase" "Existing" "SOLID" "1.0" "1.0" "0" "XLINE" "HATCH" "0")
-    ("mt-Concrete" "Section" "Concrete" "CONCRETE_C" "1.0" "2.5" "0" "WIDE" "HATCH" "1")
-    ("mt-LightweightConcrete" "Section" "Lightweight Concrete" "CONCRETE" "1.0" "2.5" "0" "THIN" "HATCH" "1")
-    ("mt-Mortar" "Section" "Mortar" "GENERAL_STIPPLE" "1.0" "2.54" "0" "FINE" "HATCH" "1")
-    ("mt-Brick" "Section" "Brick" "ANSI31" "1.0" "1.0" "0" "MED" "HATCH" "1")
-    ("mt-Stone" "Section" "Stone" "ANSI33" "1.0" "1.0" "0" "WIDE" "HATCH" "1")
-    ("mt-CMU" "Section" "CMU" "ANSI37" "1.0" "1.0" "0" "WIDE" "HATCH" "1")
-    ("mt-Firebrick" "Section" "Firebrick" "ANSI35" "0.5" "0.5" "0" "MED" "HATCH" "1")
-    ("mt-Marble" "Section" "Marble" "ANSI36" "0.5" "0.5" "0" "MED" "HATCH" "1")
-    ("mt-Grout" "Section" "Grout" "GENERAL_STIPPLE" "2.0" "50.8" "0" "XLINE" "HATCH" "1")
-    ("mt-Iron" "Section" "Iron" "ANSI31" "0.5" "0.5" "0" "MED" "HATCH" "1")
-    ("mt-Steel" "Section" "Steel" "ANSI32" "0.5" "0.5" "0" "MED" "HATCH" "1")
-    ("mt-Bronze" "Section" "Bronze" "ANSI33" "0.5" "0.5" "0" "MED" "HATCH" "1")
-    ("mt-Lead" "Section" "Lead" "ANSI37" "0.5" "0.5" "0" "MED" "HATCH" "1")
-    ("mt-Aluminium" "Section" "Aluminium" "ANSI38" "0.5" "0.5" "0" "MED" "HATCH" "1")
-    ("mt-Plywood" "Section" "Plywood" "WOOD_GLU-LAMBEAM" "1.0" "1.0" "0" "MED" "HATCH" "1")
-    ("mt-WoodPlank" "Section" "Wood Plank" "WOOD_2" "0.1875" "7.8" "0" "MED" "HATCH" "1")
-    ("mt-WoodFrame" "Section" "Wood Frame" "WOOD_1" "0.75" "7.5" "0" "MED" "HATCH" "1")
-    ("mt-Particleboard" "Section" "Particleboard" "GENERAL_TEXTURE" "3.0" "76.2" "0" "MED" "HATCH" "1")
-    ("mt-Hardboard" "Section" "Hardboard" "ANSI31" "1.0" "1.0" "0" "MED" "HATCH" "1")
-    ("mt-Plastic" "Section" "Plastic" "ANSI34" "0.5" "0.5" "0" "MED" "HATCH" "1")
-    ("mt-LooseInsulation" "Section" "Loose Insulation" "NET3" "1.0" "1.0" "0" "HATCH" "HATCH" "1")
-    ("mt-SprayInsulation" "Section" "Spray Insulation" "HONEY" "0.5" "0.5" "0" "HATCH" "HATCH" "1")
-    ("mt-RigidInsulation" "Section" "Rigid Insulation" "ANSI37" "1.0" "1.0" "45" "HATCH" "HATCH" "1")
-    ("mt-Gypsum" "Section" "Gypsum" "GENERAL_TEXTURE" "0.5" "12.7" "0" "MED" "HATCH" "1")
-    ("mt-Plaster" "Section" "Plaster" "GENERAL_TEXTURE" "3.0" "76.2" "0" "THIN" "HATCH" "1")
-    ("mt-CompactedSoil" "Section" "Compacted Soil" "SITEWORK_EARTH" "1.0" "25.4" "45.0" "XLINE" "HATCH" "1")
-    ("mt-Topsoil" "Section" "Topsoil" "SITEWORK_EARTH" "1.0" "25.4" "0.0" "XLINE" "HATCH" "1")
-    ("mt-UndisturbedSoil" "Section" "Undisturbed Soil" "SITEWORK_EARTH" "1.0" "25.4" "0.0" "XLINE" "HATCH" "1")
-    ("mt-Sand" "Section" "Sand" "GENERAL_STIPPLE" "1.0" "25.4" "0.0" "FINE" "HATCH" "1")
-    ("mt-Asphalt" "Section" "Asphalt" "SITEWORK_ASPHALT" "1" "25.4" "90.0" "MED" "HATCH" "1")
-    ("mt-Gravel" "Section" "Gravel" "SITEWORK_GRAVEL" "3.0" "76.2" "22.5" "FINE" "HATCH" "0")
-    ("mt-CrushedStone" "Section" "Crushed Stone" "SITEWORK_GRAVEL" "3.0" "76.2" "22.5" "FINE" "HATCH" "0")
+;;  Default hatch presets, restored by the Reset Selected and Reset All buttons (their outline
+;;  key and border settings: the border given to the presets of the materials that use them,
+;;  see Dyl:QuickDrawDefault), when the default file cannot be read (see
+;;  Remote>>Dyl:HatchPresetDefs). Two default materials of the same hatch share it (Brick and
+;;  Hardboard, Topsoil and Undisturbed Soil, Gravel and Crushed Stone):
+(setq *hp:defaults*
+  '(("hp-Demolition" "Phase" "Demolition" "ANSI31" "0.5" "0.5" "90.0" "THIN" "HATCH" "1")
+    ("hp-NotInContract" "Phase" "Not In Contract" "ANSI31" "1.5" "1.5" "90.0" "XLINE" "HATCH" "1")
+    ("hp-Existing" "Phase" "Existing" "SOLID" "1.0" "1.0" "0" "XLINE" "HATCH" "0")
+    ("hp-Concrete" "Section" "Concrete" "CONCRETE_C" "1.0" "2.5" "0" "WIDE" "HATCH" "1")
+    ("hp-LightweightConcrete" "Section" "Lightweight Concrete" "CONCRETE" "1.0" "2.5" "0" "THIN" "HATCH" "1")
+    ("hp-Mortar" "Section" "Mortar" "GENERAL_STIPPLE" "1.0" "2.54" "0" "FINE" "HATCH" "1")
+    ("hp-Brick" "Section" "Brick" "ANSI31" "1.0" "1.0" "0" "MED" "HATCH" "1")
+    ("hp-Stone" "Section" "Stone" "ANSI33" "1.0" "1.0" "0" "WIDE" "HATCH" "1")
+    ("hp-CMU" "Section" "CMU" "ANSI37" "1.0" "1.0" "0" "WIDE" "HATCH" "1")
+    ("hp-Firebrick" "Section" "Firebrick" "ANSI35" "0.5" "0.5" "0" "MED" "HATCH" "1")
+    ("hp-Marble" "Section" "Marble" "ANSI36" "0.5" "0.5" "0" "MED" "HATCH" "1")
+    ("hp-Grout" "Section" "Grout" "GENERAL_STIPPLE" "2.0" "50.8" "0" "XLINE" "HATCH" "1")
+    ("hp-Iron" "Section" "Iron" "ANSI31" "0.5" "0.5" "0" "MED" "HATCH" "1")
+    ("hp-Steel" "Section" "Steel" "ANSI32" "0.5" "0.5" "0" "MED" "HATCH" "1")
+    ("hp-Bronze" "Section" "Bronze" "ANSI33" "0.5" "0.5" "0" "MED" "HATCH" "1")
+    ("hp-Lead" "Section" "Lead" "ANSI37" "0.5" "0.5" "0" "MED" "HATCH" "1")
+    ("hp-Aluminium" "Section" "Aluminium" "ANSI38" "0.5" "0.5" "0" "MED" "HATCH" "1")
+    ("hp-Plywood" "Section" "Plywood" "WOOD_GLU-LAMBEAM" "1.0" "1.0" "0" "MED" "HATCH" "1")
+    ("hp-WoodPlank" "Section" "Wood Plank" "WOOD_2" "0.1875" "7.8" "0" "MED" "HATCH" "1")
+    ("hp-WoodFrame" "Section" "Wood Frame" "WOOD_1" "0.75" "7.5" "0" "MED" "HATCH" "1")
+    ("hp-Particleboard" "Section" "Particleboard" "GENERAL_TEXTURE" "3.0" "76.2" "0" "MED" "HATCH" "1")
+    ("hp-Plastic" "Section" "Plastic" "ANSI34" "0.5" "0.5" "0" "MED" "HATCH" "1")
+    ("hp-LooseInsulation" "Section" "Loose Insulation" "NET3" "1.0" "1.0" "0" "HATCH" "HATCH" "1")
+    ("hp-SprayInsulation" "Section" "Spray Insulation" "HONEY" "0.5" "0.5" "0" "HATCH" "HATCH" "1")
+    ("hp-RigidInsulation" "Section" "Rigid Insulation" "ANSI37" "1.0" "1.0" "45" "HATCH" "HATCH" "1")
+    ("hp-Gypsum" "Section" "Gypsum" "GENERAL_TEXTURE" "0.5" "12.7" "0" "MED" "HATCH" "1")
+    ("hp-Plaster" "Section" "Plaster" "GENERAL_TEXTURE" "3.0" "76.2" "0" "THIN" "HATCH" "1")
+    ("hp-CompactedSoil" "Section" "Compacted Soil" "SITEWORK_EARTH" "1.0" "25.4" "45.0" "XLINE" "HATCH" "1")
+    ("hp-Topsoil" "Section" "Topsoil" "SITEWORK_EARTH" "1.0" "25.4" "0.0" "XLINE" "HATCH" "1")
+    ("hp-Sand" "Section" "Sand" "GENERAL_STIPPLE" "1.0" "25.4" "0.0" "FINE" "HATCH" "1")
+    ("hp-Asphalt" "Section" "Asphalt" "SITEWORK_ASPHALT" "1" "25.4" "90.0" "MED" "HATCH" "1")
+    ("hp-Gravel" "Section" "Gravel" "SITEWORK_GRAVEL" "3.0" "76.2" "22.5" "FINE" "HATCH" "0")
     ;;  No pattern: no hatch (see Remote>>Dyl:MaterialHatchAt), the space of a layer of an
     ;;  assembly (an air space, a cavity):
-    ("mt-Void" "Section" "Void" "" "1.0" "1.0" "0" "THIN" "HATCH" "0")
+    ("hp-Void" "Section" "Void" "" "1.0" "1.0" "0" "THIN" "HATCH" "0")
+   )
+)
+
+;;  Default materials, the same way (see Remote>>Dyl:MaterialRowDefs): their Cut hatch preset,
+;;  no Surface yet (the same as Cut), their data only from a source (see below):
+(setq *mt:defaults*
+  '(("mt-Demolition" "Phase" "Demolition" "hp-Demolition" "" "" "" "")
+    ("mt-NotInContract" "Phase" "Not In Contract" "hp-NotInContract" "" "" "" "")
+    ("mt-Existing" "Phase" "Existing" "hp-Existing" "" "" "" "")
+    ("mt-Concrete" "Section" "Concrete" "hp-Concrete" "" "2.5" "2400" "")
+    ("mt-LightweightConcrete" "Section" "Lightweight Concrete" "hp-LightweightConcrete" "" "0.7692" "1600" "")
+    ("mt-Mortar" "Section" "Mortar" "hp-Mortar" "" "1.111" "" "")
+    ("mt-Brick" "Section" "Brick" "hp-Brick" "" "1.286" "2400" "")
+    ("mt-Stone" "Section" "Stone" "hp-Stone" "" "2.5" "2240" "")
+    ("mt-CMU" "Section" "CMU" "hp-CMU" "" "" "" "")
+    ("mt-Firebrick" "Section" "Firebrick" "hp-Firebrick" "" "" "" "")
+    ("mt-Marble" "Section" "Marble" "hp-Marble" "" "2.5" "2240" "")
+    ("mt-Grout" "Section" "Grout" "hp-Grout" "" "" "" "")
+    ("mt-Iron" "Section" "Iron" "hp-Iron" "" "" "" "")
+    ("mt-Steel" "Section" "Steel" "hp-Steel" "" "" "" "")
+    ("mt-Bronze" "Section" "Bronze" "hp-Bronze" "" "" "" "")
+    ("mt-Lead" "Section" "Lead" "hp-Lead" "" "" "" "")
+    ("mt-Aluminium" "Section" "Aluminium" "hp-Aluminium" "" "" "" "")
+    ("mt-Plywood" "Section" "Plywood" "hp-Plywood" "" "0.1149" "" "")
+    ("mt-WoodPlank" "Section" "Wood Plank" "hp-WoodPlank" "" "" "" "")
+    ("mt-WoodFrame" "Section" "Wood Frame" "hp-WoodFrame" "" "0.1176" "" "")
+    ("mt-Particleboard" "Section" "Particleboard" "hp-Particleboard" "" "0.1299" "" "")
+    ("mt-Hardboard" "Section" "Hardboard" "hp-Brick" "" "0.1053" "800" "")
+    ("mt-Plastic" "Section" "Plastic" "hp-Plastic" "" "" "" "")
+    ("mt-LooseInsulation" "Section" "Loose Insulation" "hp-LooseInsulation" "" "" "" "")
+    ("mt-SprayInsulation" "Section" "Spray Insulation" "hp-SprayInsulation" "" "" "" "")
+    ("mt-RigidInsulation" "Section" "Rigid Insulation" "hp-RigidInsulation" "" "" "" "")
+    ;;  Three materials of one hatch preset, each with its own data: their conductivity is 1 /
+    ;;  the RSI per mm of the values recognized by the Quebec code (APCHQ ST-522, 2015, also
+    ;;  in the Novoclimat table): XPS types 2-3-4 0.035, EPS type 2 0.028, polyisocyanurate
+    ;;  0.042 m2.K/W per mm; no density from a source yet:
+    ("mt-ExtrudedPolystyrene" "Section" "Extruded Polystyrene" "hp-RigidInsulation" "" "0.02857" "" "")
+    ("mt-ExpandedPolystyrene" "Section" "Expanded Polystyrene" "hp-RigidInsulation" "" "0.03571" "" "")
+    ("mt-Polyisocyanurate" "Section" "Polyisocyanurate" "hp-RigidInsulation" "" "0.02381" "" "")
+    ("mt-Gypsum" "Section" "Gypsum" "hp-Gypsum" "" "0.1639" "" "")
+    ("mt-Plaster" "Section" "Plaster" "hp-Plaster" "" "" "" "")
+    ("mt-CompactedSoil" "Section" "Compacted Soil" "hp-CompactedSoil" "" "" "" "")
+    ("mt-Topsoil" "Section" "Topsoil" "hp-Topsoil" "" "" "" "")
+    ("mt-UndisturbedSoil" "Section" "Undisturbed Soil" "hp-Topsoil" "" "" "" "")
+    ("mt-Sand" "Section" "Sand" "hp-Sand" "" "" "" "")
+    ("mt-Asphalt" "Section" "Asphalt" "hp-Asphalt" "" "" "" "")
+    ("mt-Gravel" "Section" "Gravel" "hp-Gravel" "" "" "" "")
+    ("mt-CrushedStone" "Section" "Crushed Stone" "hp-Gravel" "" "1.667" "" "")
+    ;;  The materials of the Novoclimat table (Tableau de valeurs pour les calculs de
+    ;;  resistance thermique, 2021-09-01): conductivity 1 / its RSI per mm, or its
+    ;;  thickness / its RSI; a fixed RSI (resistance) for an air space or a product without
+    ;;  a thickness; a density only where the table gives one:
+    ("mt-Birch" "Section" "Birch" "hp-WoodFrame" "" "0.1818" "" "")
+    ("mt-Oak" "Section" "Oak" "hp-WoodFrame" "" "0.1786" "" "")
+    ("mt-MapleAsh" "Section" "Maple And Ash" "hp-WoodFrame" "" "0.1587" "" "")
+    ("mt-WhiteCedar" "Section" "White Cedar" "hp-WoodFrame" "" "0.101" "" "")
+    ("mt-YellowCypress" "Section" "Yellow Cypress" "hp-WoodFrame" "" "0.1299" "" "")
+    ("mt-WhiteSpruce" "Section" "White Spruce" "hp-WoodFrame" "" "0.1031" "" "")
+    ("mt-WhitePine" "Section" "White Pine" "hp-WoodFrame" "" "0.1087" "" "")
+    ("mt-LodgepolePine" "Section" "Lodgepole Pine" "hp-WoodFrame" "" "0.122" "" "")
+    ("mt-RedPine" "Section" "Red Pine" "hp-WoodFrame" "" "0.1299" "" "")
+    ("mt-Hemlock" "Section" "Hemlock" "hp-WoodFrame" "" "0.119" "" "")
+    ("mt-WesternHemlock" "Section" "Western Hemlock" "hp-WoodFrame" "" "0.1351" "" "")
+    ("mt-DouglasFirLarch" "Section" "Douglas Fir Or Larch" "hp-WoodFrame" "" "0.1449" "" "")
+    ("mt-AmabilisFir" "Section" "Amabilis Fir" "hp-WoodFrame" "" "0.125" "" "")
+    ("mt-OSB" "Section" "OSB" "hp-Particleboard" "" "0.102" "" "")
+    ("mt-AsphaltFiberboard" "Section" "Asphalt Fiberboard Sheathing" "hp-Particleboard" "" "0.06061" "" "")
+    ("mt-GypsumSheathing" "Section" "Gypsum Sheathing" "hp-Gypsum" "" "0.1587" "" "")
+    ("mt-FoilFiberboard" "Section" "Foil-Faced Wood Fiberboard" "hp-Particleboard" "" "0.05155" "" "")
+    ("mt-CementBoard" "Section" "Lightweight Concrete Board" "hp-LightweightConcrete" "" "0.1449" "" "")
+    ("mt-ExpandedPolystyrene1" "Section" "Expanded Polystyrene Type 1" "hp-RigidInsulation" "" "0.03891" "" "")
+    ("mt-ExpandedPolystyrene3" "Section" "Expanded Polystyrene Type 3" "hp-RigidInsulation" "" "0.03356" "" "")
+    ("mt-ExpandedPolystyrene4" "Section" "Expanded Polystyrene Type 4" "hp-RigidInsulation" "" "0.02882" "" "")
+    ("mt-MineralWoolBoard" "Section" "Rigid Mineral Wool Roof Board" "hp-RigidInsulation" "" "0.0361" "" "")
+    ("mt-PhenolicFoam" "Section" "Phenolic Foam Board" "hp-RigidInsulation" "" "0.03289" "" "")
+    ("mt-InsulatingFiberboard" "Section" "Insulating Fiberboard" "hp-Particleboard" "" "0.05155" "" "")
+    ("mt-StrawBoard" "Section" "Compressed Straw Board" "hp-LooseInsulation" "" "0.07194" "" "")
+    ("mt-WoodFiberBatt" "Section" "Wood Fiber Batt" "hp-LooseInsulation" "" "0.03891" "" "")
+    ("mt-Perlite" "Section" "Expanded Perlite" "hp-LooseInsulation" "" "0.05348" "" "")
+    ("mt-SprayPolyurethane1" "Section" "Spray Polyurethane Type 1" "hp-SprayInsulation" "" "0.02778" "" "")
+    ("mt-SprayPolyurethane2" "Section" "Spray Polyurethane Type 2" "hp-SprayInsulation" "" "0.025" "" "")
+    ("mt-SprayedAsbestos" "Section" "Sprayed Asbestos" "hp-SprayInsulation" "" "0.04975" "" "")
+    ("mt-CMU90" "Section" "CMU 90 mm Hollow" "hp-CMU" "" "" "" "0.17")
+    ("mt-CMU140" "Section" "CMU 140 mm Hollow" "hp-CMU" "" "" "" "0.19")
+    ("mt-CMU190" "Section" "CMU 190 mm Hollow" "hp-CMU" "" "" "" "0.21")
+    ("mt-CMU240" "Section" "CMU 240 mm Hollow" "hp-CMU" "" "" "" "0.24")
+    ("mt-CMU290" "Section" "CMU 290 mm Hollow" "hp-CMU" "" "" "" "0.26")
+    ("mt-CMU190Perlite" "Section" "CMU 190 mm Perlite Filled" "hp-CMU" "" "" "" "0.53")
+    ("mt-CMU140Vermiculite" "Section" "CMU 140 mm Vermiculite Filled" "hp-CMU" "" "" "" "0.4")
+    ("mt-CMU190Vermiculite" "Section" "CMU 190 mm Vermiculite Filled" "hp-CMU" "" "" "" "0.51")
+    ("mt-CMU240Vermiculite" "Section" "CMU 240 mm Vermiculite Filled" "hp-CMU" "" "" "" "0.61")
+    ("mt-CMU290Vermiculite" "Section" "CMU 290 mm Vermiculite Filled" "hp-CMU" "" "" "" "0.69")
+    ("mt-ConcreteBrick" "Section" "Concrete Brick" "hp-Brick" "" "1.698" "" "")
+    ("mt-Sandstone" "Section" "Quartzite And Sandstone" "hp-Stone" "" "3.333" "2240" "")
+    ("mt-Stucco" "Section" "Stucco" "hp-Plaster" "" "1.111" "" "")
+    ("mt-WoodShingles" "Section" "Wood Shingle Siding" "hp-WoodPlank" "" "" "" "0.15")
+    ("mt-WoodShinglesDouble" "Section" "Wood Shingle Siding - Double" "hp-WoodPlank" "" "" "" "0.21")
+    ("mt-WoodSiding" "Section" "Wood Siding" "hp-WoodPlank" "" "0.1429" "" "")
+    ("mt-HardboardSiding" "Section" "Hardboard Siding" "hp-Brick" "" "0.09167" "" "")
+    ("mt-FiberCementSiding" "Section" "Fiber Cement Siding" "hp-LightweightConcrete" "" "" "" "0.003")
+    ("mt-LapSiding" "Section" "Metal Or Vinyl Siding" "hp-Aluminium" "" "" "" "0.11")
+    ("mt-LapSidingInsulated" "Section" "Metal Or Vinyl Siding - Insulated" "hp-Aluminium" "" "" "" "0.32")
+    ("mt-LapSidingFoil" "Section" "Metal Or Vinyl Siding - Insulated And Foil" "hp-Aluminium" "" "" "" "0.52")
+    ("mt-RollRoofing" "Section" "Roll Roofing" "hp-Asphalt" "" "" "" "0.03")
+    ("mt-Bitumen" "Section" "Bitumen" "hp-Asphalt" "" "0.7143" "" "")
+    ("mt-AsphaltShingles" "Section" "Asphalt Shingles" "hp-Asphalt" "" "" "" "0.078")
+    ("mt-BuiltUpRoof" "Section" "Built-Up Roof" "hp-Asphalt" "" "0.1667" "" "")
+    ("mt-WoodShingleRoof" "Section" "Wood Shingle Roofing" "hp-WoodPlank" "" "" "" "0.17")
+    ("mt-Slate" "Section" "Slate" "hp-Stone" "" "1.3" "" "")
+    ("mt-CementPlaster" "Section" "Cement Plaster" "hp-Plaster" "" "0.7143" "" "")
+    ("mt-LDF" "Section" "Low Density Fiberboard" "hp-Particleboard" "" "0.102" "590" "")
+    ("mt-MDF" "Section" "Medium Density Fiberboard" "hp-Particleboard" "" "0.1351" "800" "")
+    ("mt-HDF" "Section" "High Density Fiberboard" "hp-Particleboard" "" "0.1695" "1000" "")
+    ("mt-Terrazzo" "Section" "Terrazzo" "hp-Concrete" "" "1.667" "" "")
+    ("mt-CarpetFibrous" "Section" "Carpet - Fibrous Underlay" "hp-Plastic" "" "" "" "0.37")
+    ("mt-CarpetRubber" "Section" "Carpet - Rubber Underlay" "hp-Plastic" "" "" "" "0.22")
+    ("mt-CorkTile" "Section" "Cork Tile" "hp-Particleboard" "" "0.06531" "" "")
+    ("mt-HardwoodFloor" "Section" "Hardwood Flooring" "hp-WoodPlank" "" "0.1583" "" "")
+    ("mt-ResilientFlooring" "Section" "Resilient Flooring" "hp-Plastic" "" "" "" "0.009")
+    ("mt-AirWall13" "Section" "Air Space - Wall 13 mm" "hp-Void" "" "" "" "0.16")
+    ("mt-AirWall20" "Section" "Air Space - Wall 20 mm+" "hp-Void" "" "" "" "0.18")
+    ("mt-AirCeiling13" "Section" "Air Space - Ceiling 13 mm+" "hp-Void" "" "" "" "0.15")
+    ("mt-AirCeiling40" "Section" "Air Space - Ceiling 40 mm+" "hp-Void" "" "" "" "0.16")
+    ("mt-AirFloor13" "Section" "Air Space - Floor 13 mm" "hp-Void" "" "" "" "0.16")
+    ("mt-AirFloor20" "Section" "Air Space - Floor 20 mm+" "hp-Void" "" "" "" "0.18")
+    ("mt-AirFloor40" "Section" "Air Space - Floor 40 mm+" "hp-Void" "" "" "" "0.2")
+    ("mt-AirFloor90" "Section" "Air Space - Floor 90 mm+" "hp-Void" "" "" "" "0.22")
+    ("mt-Void" "Section" "Void" "hp-Void" "" "" "" "")
    )
 )
 
@@ -554,14 +717,21 @@
   row
 )
 
-;;  The default materials get the last columns too (not scaled with the drawing, set for
+;;  The default hatch presets get the last columns too (not scaled with the drawing, set for
 ;;  1:1, the optional settings off). Not with Remote>>Dyl:MaterialFix: Dyl-Sub.lsp
 ;;  (Remote>>Dyl:ListSubst) loads after this file:
-(setq *mt:defaults* (mapcar '(lambda (r) (if (< (length r) 12) (append r (list "0" "1") *mt:extra*) r)) *mt:defaults*))
+(setq *hp:defaults* (mapcar '(lambda (r) (if (< (length r) 12) (append r (list "0" "1") *mt:extra*) r)) *hp:defaults*))
 
 ;;  A new material (the optional settings off, associative), and the material of a preset
 ;;  whose material no longer exists (the border and behaviors of a new preset):
 (setq *mt:new* (append '("" "" "New material" "ANSI31" "1.0" "1.0" "0" "THIN" "HATCH" "1" "0" "1") *mt:extra*))
+
+;;  A new hatch preset, the same:
+(setq *hp:new* (cons "" (cons "" (cons "New hatch preset" (cdddr *mt:new*)))))
+
+;;  The hatch of a material without hatch preset, or whose hatch preset no longer exists: no
+;;  pattern, no hatch (see Remote>>Dyl:MaterialJoin):
+(setq *hp:none* (append '("" "" "" "") (cddddr *mt:new*)))
 
 ;;-------------------------=={ Optional settings }==------------------------;;
 
@@ -866,42 +1036,202 @@
   (if (Remote>>Dyl:MaterialScaled-p mat) (* s (Remote>>Dyl:MaterialFactor (nth 11 mat))) s)
 )
 
-;;  The default materials: the rows of the default materials file (Res\Materials.csv under
-;;  Contents, never its user copy), so the status of a material (default / modified), Reset
-;;  Selected and Reset All follow that file. Read again when it changes (*mt:defstamp*).
-;;  *mt:defaults* (above) when the file cannot be read:
-(defun Remote>>Dyl:MaterialDefs (/ fle stm rows)
-  (setq fle (Remote>>Dyl:PresetDefault "Material")
+;;  The default rows of the tool key: the rows of its default file (under Contents, never its
+;;  user copy), each one through fix, so the status of a row (default / modified), Reset
+;;  Selected and Reset All follow that file. Read again when it changes: the symbol cache holds
+;;  (stamp . rows). lst when the file cannot be read:
+(defun Remote>>Dyl:MaterialDefsOf (key fix cache lst / fle stm rows)
+  (setq fle (Remote>>Dyl:PresetDefault key)
         stm (if (findfile fle) (vl-file-systime fle))
   )
   (cond
-    ((and stm *mt:defcache* (equal stm *mt:defstamp*)) *mt:defcache*)
+    ((and stm (equal stm (car (eval cache)))) (cdr (eval cache)))
     ((and stm
           Remote>>Dyl:CsvRead
           (setq rows (vl-remove-if '(lambda (r) (or (= "" (car r)) (= "" (nth 2 r))))
-                                   (mapcar 'Remote>>Dyl:MaterialFix
-                                           (Remote>>Dyl:CsvRead fle (length (Remote>>Dyl:PresetProp "Material" 'header)))
-                                   )
+                                   (mapcar fix (Remote>>Dyl:CsvRead fle (length (Remote>>Dyl:PresetProp key 'header))))
                      )
           )
      )
-     (setq *mt:defstamp* stm
-           *mt:defcache* rows
-     )
+     (set cache (cons stm rows))
+     rows
     )
-    (*mt:defaults*)
+    (lst)
   )
 )
 
-;;  Read the materials file. Default materials missing from the file are added with their
-;;  default values:
-(defun Remote>>Dyl:MaterialRead ()
-  (Remote>>Dyl:PresetRead "Material" (Remote>>Dyl:MaterialDefs) 'Remote>>Dyl:MaterialFix)
+;;  The default hatch presets (Res\HatchPresets.csv; *hp:defaults* when it cannot be read):
+(defun Remote>>Dyl:HatchPresetDefs ()
+  (Remote>>Dyl:MaterialDefsOf "HatchPreset" 'Remote>>Dyl:MaterialFix '*hp:defcache* *hp:defaults*)
 )
 
-;;  Return the material id, with the values edited by the user (nil when it no longer exists):
-(defun Remote>>Dyl:MaterialGet (id)
-  (Remote>>Dyl:PresetGet "Material" (Remote>>Dyl:MaterialDefs) 'Remote>>Dyl:MaterialFix id)
+;;  The default materials, their rows of Res\Materials.csv (*mt:defaults* when it cannot be
+;;  read):
+(defun Remote>>Dyl:MaterialRowDefs ()
+  (Remote>>Dyl:MaterialDefsOf "Material" 'Remote>>Dyl:MaterialRowFix '*mt:defcache* *mt:defaults*)
+)
+
+;;  The default materials joined to the default hatch presets (see Remote>>Dyl:MaterialJoin):
+(defun Remote>>Dyl:MaterialDefs (/ hps)
+  (setq hps (Remote>>Dyl:HatchPresetDefs))
+  (mapcar '(lambda (m) (Remote>>Dyl:MaterialJoin m hps)) (Remote>>Dyl:MaterialRowDefs))
+)
+
+;;  Values of a row of the materials file: 8 columns, the group as in the groups (any case),
+;;  each value of its data a number greater than 0 (a decimal comma read as a point), else ""
+;;  (not known):
+(defun Remote>>Dyl:MaterialRowFix (row / v)
+  (while (< (length row) 8) (setq row (append row (list ""))))
+  (setq row (Remote>>Dyl:ListSubst row 1 (Remote>>Dyl:GroupCase (nth 1 row))))
+  (foreach i '(5 6 7)
+    (setq v (vl-string-translate "," "." (nth i row)))
+    (setq row (Remote>>Dyl:ListSubst row i (if (and (distof v 2) (< 0 (distof v 2))) v "")))
+  )
+  row
+)
+
+;;  The hatch preset of the material row m (its Cut, the hatch of its section) in the hatch
+;;  presets hps, nil when it has none or it no longer exists:
+(defun Remote>>Dyl:MaterialHatchPreset (m hps)
+  (if (/= "" (nth 3 m)) (assoc (nth 3 m) hps))
+)
+
+;;  The material row m joined to its hatch preset in hps: the row of 64 columns every tool draws
+;;  with (its id, group and name, then the columns of its hatch preset, see the header of the
+;;  HatchPreset spec above); without a hatch preset, a material without hatch (*hp:none*):
+(defun Remote>>Dyl:MaterialJoin (m hps)
+  (append (list (car m) (cadr m) (caddr m))
+          (cdddr (cond ((Remote>>Dyl:MaterialHatchPreset m hps)) (*hp:none*)))
+  )
+)
+
+;;  T when the user copy of the materials file is a file of DynALisp 1.1 and older (a hatch in
+;;  each row: Pattern in column 3 of its header). Its header is read again only when the file
+;;  changes (*mt:oldstamp*: ((file . stamp) . T or nil)):
+(defun Remote>>Dyl:MaterialOld-p (/ def fle stm)
+  (setq def (Remote>>Dyl:PresetDefault "Material")
+        fle (Dyl:UserFile def)
+  )
+  (and (/= (strcase fle) (strcase def))
+       (setq stm (vl-file-systime fle))
+       (if (equal (cons fle stm) (car *mt:oldstamp*))
+         (cdr *mt:oldstamp*)
+         (cdr (setq *mt:oldstamp* (cons (cons fle stm)
+                                        (= "PATTERN" (strcase (cond ((nth 3 (Remote>>Dyl:CsvHead fle))) (""))))
+                                  )
+              )
+         )
+       )
+  )
+)
+
+;;  A materials file of DynALisp 1.1 and older (its user copy, read in place of the default) is
+;;  split: each material gets a hatch preset of its hatch (all its columns after its name), the
+;;  hatch preset of its default material when it is one (mt-Brick: hp-Brick, given the hatch of
+;;  the file), else a new one named after it (cu-...); materials of the same hatch share one.
+;;  The material keeps its id, group and name, with no data. Both files are written (the hatch
+;;  presets first); when one cannot be (open in Excel), the split is made again at the next
+;;  read. Returns (hatch-presets materials), nil when the file is not of that kind:
+(defun Remote>>Dyl:MaterialMigrate (/ fle hps defs mats done look d id ok)
+  (if (Remote>>Dyl:MaterialOld-p)
+    (progn
+      (setq fle  (Dyl:UserFile (Remote>>Dyl:PresetDefault "Material"))
+            hps  (Remote>>Dyl:PresetRead "HatchPreset" (Remote>>Dyl:HatchPresetDefs) 'Remote>>Dyl:MaterialFix)
+            defs (Remote>>Dyl:MaterialRowDefs)
+      )
+      (foreach r (Remote>>Dyl:PresetClean "Material"
+                                          (mapcar 'Remote>>Dyl:MaterialFix (Remote>>Dyl:CsvRead fle 64))
+                                          defs
+                 )
+        (setq look (cdddr r))
+        (cond
+          ;;  The hatch preset already given that hatch (done: their ids), or a custom one of
+          ;;  that hatch (made by a split whose materials could not be written):
+          ((setq id (car (vl-some '(lambda (h)
+                                     (if (and (or (member (car h) done) (wcmatch (strcase (car h)) "CU-*"))
+                                              (equal look (cdddr h))
+                                         )
+                                       h
+                                     )
+                                   )
+                                  hps
+                         )
+                    )
+           )
+          )
+          ;;  The hatch preset of its default material, not given a hatch yet:
+          ((and (setq d (assoc (car r) defs))
+                (setq id (nth 3 d))
+                (assoc id hps)
+                (not (member id done))
+           )
+           (setq hps (subst (append (list id (nth 1 (assoc id hps)) (nth 2 (assoc id hps))) look) (assoc id hps) hps)
+                 done (cons id done)
+           )
+          )
+          ;;  A new hatch preset, named after the material (its id made by Remote>>Dyl:PresetIds):
+          (T
+           (setq hps  (Remote>>Dyl:PresetIds (append hps (list (append (list "" (nth 1 r) (nth 2 r)) look))))
+                 id   (car (last hps))
+                 done (cons id done)
+           )
+          )
+        )
+        (setq mats (cons (list (car r) (nth 1 r) (nth 2 r) id "" "" "" "") mats))
+      )
+      (setq mats (reverse mats))
+      ;;  The default materials missing from the file (as Remote>>Dyl:PresetRead):
+      (foreach x defs
+        (if (not (assoc (car x) mats)) (setq mats (append mats (list x))))
+      )
+      (setq ok (and (Remote>>Dyl:PresetWrite "HatchPreset" hps) (Remote>>Dyl:PresetWrite "Material" mats)))
+      (setq *mt:oldstamp* nil)
+      ;;  (the split that failed told once a session: it is made again at each read)
+      (cond
+        (ok (princ "\nMaterials: the hatch of each material is now a hatch preset (Dyl-HatchPresets)."))
+        ((not *mt:splitfail*)
+         (setq *mt:splitfail* T)
+         (princ "\nMaterials: the materials file could not be split into materials and hatch presets (open in another program?).")
+        )
+      )
+      (list hps mats)
+    )
+  )
+)
+
+;;  The hatch presets and the material rows, read (with the defaults missing from the files,
+;;  see Remote>>Dyl:PresetRead), split first from a file of DynALisp 1.1 and older:
+;;  (hatch-presets materials)
+(defun Remote>>Dyl:MaterialBoth ()
+  (cond
+    ((Remote>>Dyl:MaterialMigrate))
+    ((list (Remote>>Dyl:PresetRead "HatchPreset" (Remote>>Dyl:HatchPresetDefs) 'Remote>>Dyl:MaterialFix)
+           (Remote>>Dyl:PresetRead "Material" (Remote>>Dyl:MaterialRowDefs) 'Remote>>Dyl:MaterialRowFix)
+     )
+    )
+  )
+)
+
+;;  Read the hatch presets file:
+(defun Remote>>Dyl:HatchPresetRead ()
+  (car (Remote>>Dyl:MaterialBoth))
+)
+
+;;  Read the materials file, each material joined to its hatch preset (see
+;;  Remote>>Dyl:MaterialJoin). Default materials missing from the file are added with their
+;;  default values:
+(defun Remote>>Dyl:MaterialRead (/ b)
+  (setq b (Remote>>Dyl:MaterialBoth))
+  (mapcar '(lambda (m) (Remote>>Dyl:MaterialJoin m (car b))) (cadr b))
+)
+
+;;  Return the material id joined to its hatch preset, with the values edited by the user (nil
+;;  when it no longer exists):
+(defun Remote>>Dyl:MaterialGet (id / b m)
+  (setq b (Remote>>Dyl:MaterialBoth))
+  (if (setq m (cond ((assoc id (cadr b))) ((assoc id (Remote>>Dyl:MaterialRowDefs)))))
+    (Remote>>Dyl:MaterialJoin m (car b))
+  )
 )
 
 ;;  T when the entity e is a closed curve that can be hatched:
@@ -1381,7 +1711,7 @@
             *mt:patunits* nil
       )
       ;;  The patterns used by the materials stay selectable even when no .pat file defines them:
-      (foreach nam (append '("SOLID" "ANSI31") (mapcar 'cadddr (Remote>>Dyl:MaterialDefs)) (mapcar 'cadddr pst:lst))
+      (foreach nam (append '("SOLID" "ANSI31") (mapcar 'cadddr (Remote>>Dyl:HatchPresetDefs)) (mapcar 'cadddr pst:lst))
         (if (not (member nam mt:pats)) (setq mt:pats (cons nam mt:pats)))
       )
       ;;  None first (""): a material without hatch (Void):
@@ -1393,7 +1723,7 @@
     (add_list (cond ((= "" nam) "None") ((member nam mt:found) nam) ((strcat nam "   (not found on the support path)"))))
   )
   (end_list)
-  (Remote>>Dyl:MaterialDlgKeys '("hat") (mapcar '(lambda (r) (nth 8 r)) (append (Remote>>Dyl:MaterialDefs) pst:lst)))
+  (Remote>>Dyl:MaterialDlgKeys '("hat") (mapcar '(lambda (r) (nth 8 r)) (append (Remote>>Dyl:HatchPresetDefs) pst:lst)))
   (start_list "typ")
   (foreach x *mt:types* (add_list x))
   (end_list)
@@ -1946,7 +2276,7 @@
       )
       (setvar "CMDECHO" cmd)
       (vla-EndUndoMark doc)
-      (princ (strcat "\nLegend: " (itoa n) " material(s) drawn."))
+      (princ (strcat "\nLegend: " (itoa n) " hatch preset(s) drawn."))
       n
     )
   )
@@ -2074,7 +2404,7 @@
                    "No"
           )
      )
-     (princ (strcat "\nPattern " pat " not rebuilt: a material cannot draw it until a .pat file has it (see RPAT)."))
+     (princ (strcat "\nPattern " pat " not rebuilt: a hatch preset cannot draw it until a .pat file has it (see RPAT)."))
      nil
     )
     ((not (or (Dyl:SuiteFileOn-p *mt:rebuildpat*)
@@ -2156,12 +2486,15 @@
   nil
 )
 
-;;  Show the materials dialog, on the material id (nil: the last one). OK writes the
-;;  materials file. Returns the material selected on OK, or nil on Cancel:
-(defun Remote>>Dyl:MaterialDialog (id / mt:pats mt:found mt:keys)
+;;  Show the hatch presets dialog, on the hatch preset id (nil: the last one). OK writes the
+;;  hatch presets file. Returns the hatch preset selected on OK, or nil on Cancel:
+(defun Remote>>Dyl:HatchPresetDialog (id / mt:pats mt:found mt:keys)
+  ;;  A materials file of DynALisp 1.1 and older is split first, so the hatch presets shown
+  ;;  are those of its materials:
+  (Remote>>Dyl:MaterialMigrate)
   (Remote>>Dyl:PresetDialog
-    "Material"
-    (list (cons 'defs (Remote>>Dyl:MaterialDefs))
+    "HatchPreset"
+    (list (cons 'defs (Remote>>Dyl:HatchPresetDefs))
           (cons 'fix 'Remote>>Dyl:MaterialFix)
           (cons 'tiles *mt:tiles*)
           (cons 'select id)
@@ -2247,8 +2580,8 @@
             "        }"
             "      }"
            ))
-          ;;  A new material: the optional settings off, associative:
-          (cons 'new *mt:new*)
+          ;;  A new hatch preset: the optional settings off, associative:
+          (cons 'new *hp:new*)
           '(items . Remote>>Dyl:MaterialDlgItems)
           '(check . Remote>>Dyl:MaterialDlgCheck)
           '(init . Remote>>Dyl:MaterialDlgInit)
@@ -2258,8 +2591,191 @@
           ;;  Parameters heading), as tall as the group of parameters beside it:
           ;;  OK asks first when more than 5 materials were changed:
           '(warn . 5)
-          '(noun . "materials")
+          '(noun . "hatch presets")
           '(height . 17)
+    )
+  )
+)
+
+;;-------------------------=={ Materials window }==------------------------;;
+
+;;  The Materials window (Res\Dyl-Materials.xaml, shown by DynALisp.Windows.dll): a preset
+;;  window (Installer\Windows\Engine\Presets.cs) of the materials, each one its name, its
+;;  group, its Cut hatch preset (the Material list of the engine, mat, on the hatch presets:
+;;  (material . 3), (mats . Remote>>Dyl:HatchPresetRead), every one listed, (matfree . T)),
+;;  previewed (mpv), its open button the Hatch Presets dialog on it (code 9, matdialog), its
+;;  Surface hatch preset (sur, "": Same as Cut; its open button: code 10) and its data, shown
+;;  in the units of the drawing (see *mt:data*). The functions below use the local variable
+;;  mt:shown of Remote>>Dyl:MaterialDialog: ((column shown) si) of each value shown in
+;;  imperial units, so a value got back unchanged keeps its SI value as it was.
+
+;;  A band of the preview of a tile (see Installer\Windows\Engine\Hatch.cs), w wide: kind
+;;  "P" the hatch of the material mat (nil: missing, crossed out), "S" a space, "L" a line.
+;;  A hatch: "P?w?pattern?file?ppu?angle?scale", ppu the inches on paper of one unit of its
+;;  pattern: its scale in inches (a metric pattern: in mm), divided by the drawing scale
+;;  unless it keeps its size on paper (annotative or adaptive scaling: a Drafting hatch
+;;  preset; a Model one never does), as it plots:
+(defun Remote>>Dyl:MaterialBand (kind mat w / pat u s ds)
+  (setq w (Remote>>Dyl:MaterialNumP w 6))
+  (cond
+    ((member kind '("S" "L")) (strcat kind "?" w))
+    ((not mat) (strcat "X?" w))
+    ;;  No hatch (see *mt:nohatch*), or no pattern (Void): a space, outlined when it has a
+    ;;  border:
+    ((or (= "1" (nth *mt:nohatch* mat)) (= "" (nth 3 mat))) (strcat "S?" w))
+    ((= "SOLID" (setq pat (strcase (nth 3 mat)))) (strcat "F?" w))
+    (T
+     (setq u  (Remote>>Dyl:MaterialPatUnits pat)
+           s  (cond ((distof (nth 4 mat) 2)) (1.0))
+           ds (if (or (= "1" (nth 9 mat)) (= "1" (nth 10 mat))) 1.0 (Remote>>Dyl:MaterialDrawScale))
+     )
+     (if (= "Metric" (car u)) (setq s (/ s 25.4)))
+     (strcat "P?" w "?" pat "?" (cond ((cdr u)) ("")) "?" (Remote>>Dyl:MaterialNumP (/ s ds) 8)
+             "?" (Remote>>Dyl:MaterialNumP (cond ((distof (nth 6 mat) 2)) (0.0)) 4)
+             "?" (Remote>>Dyl:MaterialNumP ds 4)
+     )
+    )
+  )
+)
+
+
+;;  The preview of a hatch preset hp, as it plots (see Remote>>Dyl:MaterialBand):
+(defun Remote>>Dyl:MaterialWinSpec (hp)
+  (Remote>>Dyl:MaterialBand "P" hp 1.0)
+)
+
+;;  The data of a material: (column factor) of each value, the value in imperial units its
+;;  SI value x factor: thermal conductivity (W/m.K -> Btu.in/h.ft2.F), density (kg/m3 ->
+;;  lb/ft3), thermal resistance (RSI m2.K/W -> R h.ft2.F/Btu):
+(setq *mt:data* '((5 6.933471) (6 0.06242796) (7 5.678263)))
+
+;;  T when the data are shown in imperial units (an imperial drawing, MEASUREMENT 0):
+(defun Remote>>Dyl:MaterialImperial-p ()
+  (= 0 (getvar "MEASUREMENT"))
+)
+
+;;  The number v as text, 4 significant digits at most (0.23574 -> "0.2357", 1234.5 -> "1235"):
+(defun Remote>>Dyl:MaterialSig (v / e)
+  (if (< 0 v)
+    (progn
+      (setq e (/ (log v) (log 10.0))
+            e (if (< e 0) (1- (fix e)) (fix e))
+      )
+      (Remote>>Dyl:MaterialNumP v (max 0 (min 8 (- 3 e))))
+    )
+    (Remote>>Dyl:MaterialNum v)
+  )
+)
+
+;;  A material as the window shows it: its data in imperial units in an imperial drawing
+;;  (each value shown kept in mt:shown with its SI value):
+(defun Remote>>Dyl:MaterialWinRow (r / v s)
+  (if (Remote>>Dyl:MaterialImperial-p)
+    (foreach d *mt:data*
+      (if (setq v (distof (nth (car d) r) 2))
+        (progn
+          (setq s (Remote>>Dyl:MaterialSig (* v (cadr d))))
+          (if (not (assoc (list (car d) s) mt:shown))
+            (setq mt:shown (cons (list (list (car d) s) (nth (car d) r)) mt:shown))
+          )
+          (setq r (Remote>>Dyl:ListSubst r (car d) s))
+        )
+      )
+    )
+  )
+  r
+)
+
+;;  A material got back from the window: its data in SI units again, a value shown and not
+;;  changed its SI value as it was (no rounding added):
+(defun Remote>>Dyl:MaterialWinGet (r / v m)
+  (if (Remote>>Dyl:MaterialImperial-p)
+    (foreach d *mt:data*
+      (setq v (vl-string-trim " " (cond ((nth (car d) r)) (""))))
+      (setq r (Remote>>Dyl:ListSubst r
+                                     (car d)
+                                     (cond
+                                       ((= "" v) "")
+                                       ((setq m (assoc (list (car d) v) mt:shown)) (cadr m))
+                                       ((distof v 2) (Remote>>Dyl:MaterialSig (/ (distof v 2) (cadr d))))
+                                       (v)
+                                     )
+              )
+      )
+    )
+  )
+  r
+)
+
+;;  The values of the window: the Surface list (Same as Cut, then every hatch preset,
+;;  "group - name"), mt.imp ("1": the units shown are imperial, see the window file):
+(defun Remote>>Dyl:MaterialWinVals (/ hps)
+  (setq hps (vl-sort pst:mats
+                     '(lambda (a b) (< (strcase (strcat (nth 1 a) "\t" (nth 2 a))) (strcase (strcat (nth 1 b) "\t" (nth 2 b)))))
+            )
+  )
+  (list (cons "sur/list" (cons "Same as Cut" (mapcar '(lambda (h) (strcat (nth 1 h) " - " (nth 2 h))) hps)))
+        (cons "sur/vals" (cons "" (mapcar 'car hps)))
+        (cons "mt.imp" (if (Remote>>Dyl:MaterialImperial-p) "1" "0"))
+  )
+)
+
+;;  A value of a material (the window checks them too): a hatch preset that exists ("": none),
+;;  a value of its data empty or greater than 0:
+(defun Remote>>Dyl:MaterialWinCheck (key val)
+  (cond
+    ((and (member key '("mat" "sur")) (/= "" val) (not (assoc val pst:mats)))
+     "This hatch preset no longer exists: pick another one."
+    )
+    ((and (member key '("cnd" "den" "rsi"))
+          (/= "" (vl-string-trim " " val))
+          (not (and (distof val 2) (< 0 (distof val 2))))
+     )
+     "A value of the data must be a number greater than 0 (empty: not known)."
+    )
+  )
+)
+
+;;  Code 10 = the open button of Surface: the Hatch Presets dialog on the Surface hatch
+;;  preset of the material shown (its Cut when it is Same as Cut); the hatch preset selected
+;;  on OK becomes the Surface of the materials selected:
+(defun Remote>>Dyl:MaterialWinStatus (sta r / h)
+  (if (and (= 10 sta) (setq h (Remote>>Dyl:HatchPresetDialog (if (/= "" (nth 4 r)) (nth 4 r) (nth 3 r)))))
+    (Remote>>Dyl:PresetDlgPut 4 (car h))
+  )
+  nil
+)
+
+;;  A new material: no hatch preset yet, no data:
+(setq *mt:newrow* '("" "Section" "New material" "" "" "" "" ""))
+
+;;  Show the Materials window, on the material id (nil: the last one). OK writes the
+;;  materials file. Returns the material selected on OK (its row of the file), or nil on
+;;  Cancel:
+(defun Remote>>Dyl:MaterialDialog (id / mt:shown)
+  ;;  A materials file of DynALisp 1.1 and older is split first:
+  (Remote>>Dyl:MaterialMigrate)
+  (Remote>>Dyl:PresetDialog
+    "Material"
+    (list (cons 'defs (Remote>>Dyl:MaterialRowDefs))
+          '(fix . Remote>>Dyl:MaterialRowFix)
+          '(tiles ("sur" . 4) ("cnd" . 5) ("den" . 6) ("rsi" . 7))
+          (cons 'select id)
+          '(groups . T)
+          '(material . 3)
+          '(mats . Remote>>Dyl:HatchPresetRead)
+          '(matdialog . Remote>>Dyl:HatchPresetDialog)
+          '(matnoun . "hatch preset")
+          '(matfree . T)
+          '(mspec . Remote>>Dyl:MaterialWinSpec)
+          (cons 'new *mt:newrow*)
+          '(noun . "materials")
+          '(window . "Dyl-Materials.xaml")
+          '(wrow . Remote>>Dyl:MaterialWinRow)
+          '(wget . Remote>>Dyl:MaterialWinGet)
+          '(wvals . Remote>>Dyl:MaterialWinVals)
+          '(check . Remote>>Dyl:MaterialWinCheck)
+          '(status . Remote>>Dyl:MaterialWinStatus)
     )
   )
 )

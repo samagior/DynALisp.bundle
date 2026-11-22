@@ -2504,7 +2504,7 @@
 )
 
 ;;  A default preset (id group name material): the behaviors and border of its default material
-;;  (Res\Materials.csv as shipped, see Remote>>Dyl:MaterialDefs):
+;;  (its hatch preset in Res\HatchPresets.csv as shipped, see Remote>>Dyl:MaterialDefs):
 (defun Dyl:QuickDrawDefault (row)
   (Dyl:QuickDrawFix (Dyl:QuickDrawOverride (Dyl:QuickDrawPad row) T (assoc (nth 3 row) (Remote>>Dyl:MaterialDefs))))
 )
@@ -3699,33 +3699,9 @@
   )
 )
 
-;;  A band of the preview of a tile (see Installer\Windows\Engine\Hatch.cs), w wide: kind
-;;  "P" the hatch of the material mat (nil: missing, crossed out), "S" a space, "L" a line.
-;;  A hatch: "P?w?pattern?file?ppu?angle?scale", ppu the inches on paper of one unit of its
-;;  pattern: its scale in inches (a metric pattern: in mm), divided by the drawing scale
-;;  unless it keeps its size on paper (annotative or adaptive scaling: a Drafting hatch
-;;  preset; a Model one never does), as it plots:
-(defun Dyl:QuickDrawGalleryBand (kind mat w / pat u s ds)
-  (setq w (Remote>>Dyl:MaterialNumP w 6))
-  (cond
-    ((member kind '("S" "L")) (strcat kind "?" w))
-    ((not mat) (strcat "X?" w))
-    ;;  No hatch (see *mt:nohatch*), or no pattern (Void): a space, outlined when it has a
-    ;;  border:
-    ((or (= "1" (nth *mt:nohatch* mat)) (= "" (nth 3 mat))) (strcat "S?" w))
-    ((= "SOLID" (setq pat (strcase (nth 3 mat)))) (strcat "F?" w))
-    (T
-     (setq u  (Remote>>Dyl:MaterialPatUnits pat)
-           s  (cond ((distof (nth 4 mat) 2)) (1.0))
-           ds (if (or (= "1" (nth 9 mat)) (= "1" (nth 10 mat))) 1.0 (Remote>>Dyl:MaterialDrawScale))
-     )
-     (if (= "Metric" (car u)) (setq s (/ s 25.4)))
-     (strcat "P?" w "?" pat "?" (cond ((cdr u)) ("")) "?" (Remote>>Dyl:MaterialNumP (/ s ds) 8)
-             "?" (Remote>>Dyl:MaterialNumP (cond ((distof (nth 6 mat) 2)) (0.0)) 4)
-             "?" (Remote>>Dyl:MaterialNumP ds 4)
-     )
-    )
-  )
+;;  A band of the preview of a tile, w wide (see Remote>>Dyl:MaterialBand):
+(defun Dyl:QuickDrawGalleryBand (kind mat w)
+  (Remote>>Dyl:MaterialBand kind mat w)
 )
 
 ;;  The preview of the preset x ((rec . mat), see qg:all), as the gallery and the Quick Draw

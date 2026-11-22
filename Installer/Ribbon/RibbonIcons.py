@@ -695,6 +695,17 @@ def i_materials(c):
     swatch(c, 'BRICK', 14, 14, 30, 30)
 
 
+def i_hatchpresets(c):
+    # one hatch (Rigid Insulation) shared by three materials
+    kind, bg, fg = MATERIALS['RIGIDINSULATION']
+    pattern(c, kind, 2, 3, 18, 29, bg, fg)
+    c.rect(2, 3, 18, 29, None, INK)
+    lw = 1 if c.small else 1.3
+    for y0 in (3, 12.5, 22):
+        c.line([(18, y0 + 3.5), (22, y0 + 3.5)], TEAL, lw)
+        c.rect(22, y0, 30, y0 + 7, TEAL_L, INK)
+
+
 # ---------------------------------------------------------------- layers
 
 def i_layerkeys(c):
@@ -1145,6 +1156,7 @@ ICONS = {
     'DYL-QUICKSHAPE': i_quickshape,
     'DYL-SHRINKWRAP': i_shrinkwrap,
     'DYL-MATERIALS': i_materials,
+    'DYL-HATCHPRESETS': i_hatchpresets,
     # layers
     'DYL-LAYERKEYS': i_layerkeys,
     'DYL-OBJECTLAYERKEYS': i_objectlayerkeys,

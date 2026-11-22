@@ -38,7 +38,10 @@
 ;;     (header "Id" "Group" "Name" ...)                 ; columns of the presets file
 ;;     (default . "QD-*")                               ; wcmatch of the default ids (upper case)
 ;;     (blank3 . T)                                     ; the column 3 may be empty (the pattern
-;;                                                      ; of a material: None, Void)
+;;                                                      ; of a hatch preset: None, Void)
+;;     (head . 4)                                       ; a user copy is read only when its header
+;;                                                      ; begins with these 4 names (see
+;;                                                      ; Remote>>Dyl:PresetFile)
 ;;     (base . "Pst-QuickDraw")                         ; command prefix of the default presets
 ;;     (cmd . "Pst-QuickDrawCustom")                    ; command prefix of the custom presets
 ;;     (title . "Quick Draw")                           ; name of the tool
@@ -63,9 +66,23 @@
 )
 
 ;;  Presets file of the tool key to read: the user copy when there is one, else the default
-;;  (see Dyl:UserFile in dynalisp.mnl):
-(defun Remote>>Dyl:PresetFile (key)
-  (Dyl:UserFile (Remote>>Dyl:PresetDefault key))
+;;  (see Dyl:UserFile in dynalisp.mnl). With (head . n) in its spec, a user copy whose header
+;;  does not begin with the first n names of the header of the tool (any case) is another file
+;;  of the same name (of an older version): the default is read in its place:
+(defun Remote>>Dyl:PresetFile (key / def fle n)
+  (setq def (Remote>>Dyl:PresetDefault key)
+        fle (Dyl:UserFile def)
+  )
+  (if (and (/= (strcase fle) (strcase def))
+           (setq n (Remote>>Dyl:PresetProp key 'head))
+           (not (equal (mapcar 'strcase (Remote>>LM:sublst (Remote>>Dyl:CsvHead fle) 0 n))
+                       (mapcar 'strcase (Remote>>LM:sublst (Remote>>Dyl:PresetProp key 'header) 0 n))
+                )
+           )
+      )
+    def
+    fle
+  )
 )
 
 ;;  Presets file of the tool key to write: the user copy:
@@ -267,6 +284,13 @@
 ;;                                  ; its open button to the Preset Groups window (no groups:
 ;;                                  ; Group is an edit box)
 ;;    (material . 3)                ; index of a material id in a preset (see Materials below)
+;;    (mats . <function: -> the rows the Material popup lists, the materials by default
+;;            (Remote>>Dyl:MaterialRead); the hatch presets of the Materials window>)
+;;    (matdialog . <function: id -> the dialog of those rows opened on id, the row selected on
+;;                 OK; the Materials dialog by default (Remote>>Dyl:MaterialDialog)>)
+;;    (matnoun . "hatch preset")    ; what those rows are called in the messages of the window
+;;    (matfree . T)                 ; the window lists every one of them, never only those of
+;;                                  ; the group of the preset (see pst/matfree in Presets.cs)
 ;;    (window . "Dyl-QuickDraw.xaml") ; shown in this WPF window (a .xaml of the Res folder of
 ;;                                  ; the Dynalisp module), not in a DCL dialog: see Window below
 ;;
@@ -372,10 +396,16 @@
 ;;  material of the preset shown stays listed when it is in another group, or no longer
 ;;  exists (marked missing), and every material is listed when its group has none.
 
+;;  The rows of the Material popup: those of the App ((mats . fn): the hatch presets of the
+;;  Materials window), else the materials:
+(defun Remote>>Dyl:PresetDlgMats ()
+  (if (assoc 'mats pst:dlg) (Remote>>Dyl:PresetDlgCall 'mats nil) (Remote>>Dyl:MaterialRead))
+)
+
 ;;  Read the materials (each time the dialog is shown: they may have been edited), draw the
 ;;  open button of the Materials window and set its action:
 (defun Remote>>Dyl:PresetDlgMatInit ()
-  (setq pst:mats (Remote>>Dyl:MaterialRead))
+  (setq pst:mats (Remote>>Dyl:PresetDlgMats))
   (Dyl:MoreTile "edm" T)
   (action_tile
     "edm"
@@ -1354,7 +1384,11 @@
     ;;  Edit materials: the material selected on OK is given to the presets selected (see
     ;;  Remote>>Dyl:PresetDlgPut):
     ((= 9 sta)
-     (if (setq mat (Remote>>Dyl:MaterialDialog (nth (Remote>>Dyl:PresetDlgMat) (nth pst:idx pst:lst))))
+     (if (setq mat (if (assoc 'matdialog pst:dlg)
+                     (Remote>>Dyl:PresetDlgCall 'matdialog (list (nth (Remote>>Dyl:PresetDlgMat) (nth pst:idx pst:lst))))
+                     (Remote>>Dyl:MaterialDialog (nth (Remote>>Dyl:PresetDlgMat) (nth pst:idx pst:lst)))
+                   )
+         )
        (Remote>>Dyl:PresetDlgPut (Remote>>Dyl:PresetDlgMat) (car mat))
      )
      sta
@@ -1393,6 +1427,8 @@
 ;;    (wprefix . "4|Polyline=PL-|*=QD-") ; the text of a new alias, by the value of a column
 ;;    (wprep . <function: called before the window is shown, nil>)
 ;;    (wvals . <function: -> the values of the window the App gives (its lists...)>)
+;;    (wrow . <function: preset -> the preset as the window shows it (its data in the units of
+;;            the drawing), for its rows, its defaults and a new one; wget turns it back>)
 ;;    (wget . <function: preset got back -> the preset, before its columns of the window are
 ;;            dropped: the rows of a list of the window held in one of them, see
 ;;            Win.RowsIn in Installer\Windows\Engine\Rows.cs, put back in its column of the file>)
@@ -1411,7 +1447,9 @@
 
 ;;  A preset for the window: its columns, then those of the App (extra):
 (defun Remote>>Dyl:PresetWinRow (r)
-  (append r (Remote>>Dyl:PresetDlgCall 'extra (list r)))
+  (append (if (assoc 'wrow pst:dlg) (Remote>>Dyl:PresetDlgCall 'wrow (list r)) r)
+          (Remote>>Dyl:PresetDlgCall 'extra (list r))
+  )
 )
 
 ;;  A preset got back: its first n columns (the columns of the file):
@@ -1490,6 +1528,8 @@
     )
     (if (Remote>>Dyl:PresetDlgMat)
       (list (cons "pst/mat" (itoa (Remote>>Dyl:PresetDlgMat)))
+            (cons "pst/matnoun" (cond ((cdr (assoc 'matnoun pst:dlg))) ("material")))
+            (cons "pst/matfree" (if (cdr (assoc 'matfree pst:dlg)) "1" "0"))
             (cons "pst/mats"
                   (mapcar '(lambda (m)
                              (list (car m) (nth 1 m) (nth 2 m)
@@ -1595,7 +1635,7 @@
     ;;  the groups of the Group list, the materials (they may have been edited):
     (Remote>>Dyl:PresetDlgGroupsSync)
     (setq pst:grps (Remote>>Dyl:PresetDlgGrps)
-          pst:mats (if (Remote>>Dyl:PresetDlgMat) (Remote>>Dyl:MaterialRead))
+          pst:mats (if (Remote>>Dyl:PresetDlgMat) (Remote>>Dyl:PresetDlgMats))
     )
     (Remote>>Dyl:PresetDlgCall 'wprep nil)
     (setq res (Dyl:WinShow (cdr (assoc 'window pst:dlg)) (Remote>>Dyl:PresetWinVals err))
