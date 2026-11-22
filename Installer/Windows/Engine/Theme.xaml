@@ -111,8 +111,16 @@
             <Trigger Property="HasContent" Value="False">
               <Setter TargetName="cp" Property="Margin" Value="0"/>
             </Trigger>
+            <!-- Greyed out: drawn as a switch turned off, whatever its value (kept for when it is
+                 enabled again), so a setting that is not used never looks on: -->
             <Trigger Property="IsEnabled" Value="False">
-              <Setter TargetName="track" Property="Opacity" Value="0.4"/>
+              <Setter TargetName="track" Property="Background" Value="Transparent"/>
+              <Setter TargetName="track" Property="BorderBrush" Value="{DynamicResource Dyl.Disabled}"/>
+              <Setter TargetName="knob" Property="HorizontalAlignment" Value="Left"/>
+              <Setter TargetName="knob" Property="Margin" Value="3,0,0,0"/>
+              <Setter TargetName="knob" Property="Width" Value="10"/>
+              <Setter TargetName="knob" Property="Height" Value="10"/>
+              <Setter TargetName="knob" Property="Fill" Value="{DynamicResource Dyl.Disabled}"/>
               <Setter Property="Foreground" Value="{DynamicResource Dyl.Disabled}"/>
             </Trigger>
           </ControlTemplate.Triggers>
