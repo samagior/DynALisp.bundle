@@ -3335,28 +3335,37 @@
 )
 
 ;;  The presets of an older file with the layers of their assembly in their column 38 get an
-;;  assembly preset of their own (named after the preset, in its group; one with the same
-;;  layers is used again), its id in their column 38. Both files saved now (when the Quick
-;;  Draw window opens): a file that cannot be written leaves them as they were (their layers
-;;  still drawn, see Dyl:QuickDrawAsmLayers):
-(defun Dyl:QuickDrawAsmMigrate (/ rows asms new l a n i nam)
+;;  assembly preset of their own (named after the preset, in its group, its layers read as
+;;  materials, see Dyl:QuickDrawAsmOld; one with the same layers is used again), its id in
+;;  their column 38. Both files saved now (when the Quick Draw window opens): a file that
+;;  cannot be written leaves them as they were (their layers still drawn, see
+;;  Dyl:QuickDrawAsmLayers), and the assembly saved is found again the next time:
+(defun Dyl:QuickDrawAsmMigrate (/ rows asms new olds l a n i nam)
   (setq rows (Dyl:QuickDrawRead))
   (if (vl-some '(lambda (r) (vl-string-search ":" (nth *qd:layerscol* r))) rows)
     (progn
       (setq asms (Dyl:QuickDrawAsmRead))
       (foreach r rows
         (setq l (nth *qd:layerscol* r))
-        (if (and (vl-string-search ":" l) (not (vl-some '(lambda (x) (if (= l (nth 3 x)) x)) asms)))
+        (if (vl-string-search ":" l)
           (progn
-            (setq n   (nth 2 r)
-                  nam n
-                  i   1
+            ;;  (the layers as an assembly reads them, to find the one that has them:)
+            (setq a    (Dyl:QuickDrawAsmOld r)
+                  olds (cons (cons l (nth 3 a)) olds)
             )
-            (while (vl-some '(lambda (x) (= (strcase nam) (strcase (nth 2 x)))) asms)
-              (setq nam (strcat n " (" (itoa (setq i (1+ i))) ")"))
-            )
-            (setq asms (append asms (list (list "" (nth 1 r) nam l)))
-                  new  T
+            (if (not (vl-some '(lambda (x) (= (nth 3 a) (nth 3 x))) asms))
+              (progn
+                (setq n   (nth 2 r)
+                      nam n
+                      i   1
+                )
+                (while (vl-some '(lambda (x) (= (strcase nam) (strcase (nth 2 x)))) asms)
+                  (setq nam (strcat n " (" (itoa (setq i (1+ i))) ")"))
+                )
+                (setq asms (append asms (list (Remote>>Dyl:ListSubst a 2 nam)))
+                      new  T
+                )
+              )
             )
           )
         )
@@ -3367,7 +3376,9 @@
           (setq *qd:asmcache* nil
                 rows          (mapcar '(lambda (r / x)
                                          (setq l (nth *qd:layerscol* r))
-                                         (if (and (vl-string-search ":" l) (setq x (vl-some '(lambda (y) (if (= l (nth 3 y)) y)) asms)))
+                                         (if (and (vl-string-search ":" l)
+                                                  (setq x (vl-some '(lambda (y) (if (= (cdr (assoc l olds)) (nth 3 y)) y)) asms))
+                                             )
                                            (Remote>>Dyl:ListSubst r *qd:layerscol* (car x))
                                            r
                                          )
@@ -3382,6 +3393,25 @@
       )
     )
   )
+)
+
+;;  The assembly of the preset r of an older file (the layers in its column 38) as a row of
+;;  the assemblies file (see Dyl:QuickDrawAsmFix: its layers with the ids of their materials),
+;;  in the group of the preset, named after it. Its lines that no Line layer gave a key to
+;;  are the border of the preset (its layer key and overrides; off with No border), as the
+;;  assembly was outlined and its layers divided:
+(defun Dyl:QuickDrawAsmOld (r / a b)
+  (setq a (Dyl:QuickDrawAsmFix (list "" (nth 1 r) (nth 2 r) (nth *qd:layerscol* r) "" ""))
+        b (cons (if (= "1" (nth *qd:noborder* r)) "0" "1")
+                (mapcar '(lambda (i) (nth i r)) '(17 18 19 20 21 22 23 24 25 26 27))
+          )
+  )
+  (foreach c '(4 5)
+    (if (= "" (cadr (Remote>>Dyl:MaterialLines (nth c a))))
+      (setq a (Remote>>Dyl:ListSubst a c (Remote>>Dyl:MaterialLinesStr b)))
+    )
+  )
+  a
 )
 
 ;;  What the Quick Draw window shows of the assembly a (an assembly preset, see

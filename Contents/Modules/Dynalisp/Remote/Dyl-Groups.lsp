@@ -132,17 +132,39 @@
   (list g (cond ((not n) "") ((= 1 n) "1 preset") ((strcat (itoa n) " presets"))) org)
 )
 
+;;  The problem of the names of groups lst (nil: none): a name with ; , or " (the
+;;  separators of the CSV files), or given twice (any case):
+(defun Remote>>Dyl:GroupsCheck (lst / bad seen)
+  (foreach g lst
+    (cond
+      (bad)
+      ((vl-some '(lambda (c) (vl-string-search c g)) '(";" "," "\""))
+       (setq bad (strcat "The group " g " cannot hold ; , or \"."))
+      )
+      ((member (strcase g) seen) (setq bad (strcat "The group " g " is given twice.")))
+      ((setq seen (cons (strcase g) seen)))
+    )
+  )
+  bad
+)
+
 ;;  The Preset Groups window: add, rename, remove and order the groups. used: the number of
 ;;  presets in each group (((group . n) ...), any case, shown beside each group). OK saves the
 ;;  groups (Groups.csv) and renames the groups renamed in the files of every preset tool (see
 ;;  Remote>>Dyl:GroupsRename). Returns the renames ((old . new) ...) on OK (nil: none, or T),
 ;;  nil on Cancel; the caller renames them in the presets it is editing:
-(defun Remote>>Dyl:GroupsDialog (used / org res rows lst pairs bad)
+(defun Remote>>Dyl:GroupsDialog (used / org res rows lst pairs bad msg)
   (setq used (mapcar '(lambda (x) (cons (strcase (car x)) (cdr x))) used)
         org  (Remote>>Dyl:Groups)
-        res  (Dyl:WinShow
+        rows (mapcar '(lambda (g) (Remote>>Dyl:GroupsRow g g used)) org)
+  )
+  ;;  Shown again on the rows edited while a name is not valid (checked here too, the window
+  ;;  checks them first):
+  (while
+    (progn
+      (setq res  (Dyl:WinShow
                "Dyl-PresetGroups.xaml"
-               (list (cons "gl/rows" (mapcar '(lambda (g) (Remote>>Dyl:GroupsRow g g used)) org))
+               (list (cons "gl/rows" rows)
                      ;;  Reset: the default groups, those of the file keep their presets:
                      (cons "gl/defs"
                            (mapcar '(lambda (g) (Remote>>Dyl:GroupsRow g (if (member g org) g "") used))
@@ -152,12 +174,20 @@
                      (list "gl/new" (list "New group" "" ""))
                )
              )
+      )
+      (if (= 1 (car res))
+        (progn
+          (setq rows (vl-remove-if '(lambda (x) (= "" (vl-string-trim " " (car x)))) (cdr (assoc "gl/rows" (cdr res))))
+                lst  (mapcar '(lambda (x) (vl-string-trim " " (car x))) rows)
+                msg  (Remote>>Dyl:GroupsCheck lst)
+          )
+          (if msg (progn (alert msg) T))
+        )
+      )
+    )
   )
   (if (= 1 (car res))
     (progn
-      (setq rows (vl-remove-if '(lambda (x) (= "" (vl-string-trim " " (car x)))) (cdr (assoc "gl/rows" (cdr res))))
-            lst  (mapcar '(lambda (x) (vl-string-trim " " (car x))) rows)
-      )
       (cond
         ((not lst) (alert "Keep at least one group.") nil)
         ((Remote>>Dyl:GroupsWrite lst)

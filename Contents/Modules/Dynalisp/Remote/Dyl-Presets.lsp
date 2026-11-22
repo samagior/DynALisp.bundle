@@ -1518,7 +1518,12 @@
   )
   (if rows
     (setq pst:lst (mapcar '(lambda (r) (Remote>>Dyl:PresetWinCut (cond ((Remote>>Dyl:PresetDlgCall 'wget (list r))) (r)) n)) rows)
-          pst:als (mapcar '(lambda (p) (cons (car p) (cadr p))) (cdr (assoc "pst/als" (cdr res))))
+          ;;  (the aliases only from a window that has them: a tool without commands keeps
+          ;;  every alias as it was)
+          pst:als (if (Remote>>Dyl:PresetDlgCmds-p)
+                    (mapcar '(lambda (p) (cons (car p) (cadr p))) (cdr (assoc "pst/als" (cdr res))))
+                    pst:als
+                  )
           pst:idx (max 0 (min (atoi (cond ((Dyl:WinGet res "pst.idx")) ("0"))) (1- (length pst:lst))))
           sel     (vl-remove-if-not '(lambda (i) (and (= 'INT (type i)) (< -1 i (length pst:lst))))
                                     (read (strcat "(" (cond ((Dyl:WinGet res "pst.sel")) ("")) ")"))

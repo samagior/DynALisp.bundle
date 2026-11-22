@@ -15,13 +15,13 @@ Each module is a folder of `Contents\Modules\<Module>` (Dynalisp, LeeMac...), wi
 - **DevDocs** - the **Developer docs** of the module: the same group folders and page names (`DevDocs\Draw\Dyl-QuickDraw.htm`), plus `index.htm`.
   - Both are published on the docs website (see [Windows](#windows)) and neither is installed by the setup: only a git clone has them.
   - The index of the Dynalisp module has two sections. **DynALisp** holds what every module shares, which is not an App: `Core` (the windows of the core), `Plugins` (the ribbon, the .NET plugins) and `Conventions` (the standards the programs follow, `LayerNaming.htm`). **Apps** holds the programs, one sub-heading per group folder.
-  - A page that is not an App goes in the folder named after its sub-heading of the DynALisp section, never in a group folder of Apps. A new part of the core (a plugin, a standard) gets its page there and its row in that sub-heading.
+  - A page that is not an App goes in the folder named after its sub-heading of the DynALisp section, never in a group folder of Apps. A new part of the core (a plugin, a standard) gets its page there and its row in that sub-heading. A sub-window of an App (the Band Settings of Quick Draw) is part of that program: its page goes beside the page of the App, in its group folder, named after its window file (`Docs\Draw\Dyl-QuickDrawBandSettings.htm` for `Res\Dyl-QuickDrawBandSettings.xaml`), and the page of the App links to it.
 
 `Contents\Resources` is kept for the core of DynALisp itself: `dynalisp.mnl`, the Startup Suite (`StartupSuite.csv`, `Aliases.csv`), the ribbon (`DynALisp.cuix`, `DynALisp.Ribbon.dll`), the core dialogs and `docs.css`. A file that belongs to a module never goes there.
 
 The **LeeMac** module is the **sample module**: in its docs index, its pages, the README and the core windows it is described as a sample that showcases what DynALisp does with existing AutoLISP programs (indexed in the Startup Suite, main and child commands, aliases, shared subfunctions, a docs page per program), and the model for a module of one's own. Its programs keep their author and licence.
 
-*Why: a module stays self-contained, and the core holds only what runs every module. The user decides which Apps are turned on, and an App turned on is only autoloaded: its functions are defined once one of its commands has run. The LeeMac module shows, with real programs, how any collection of AutoLISP code becomes a DynALisp module. In the docs, what runs every module is kept apart from the Apps, so a page found in a group folder is always the page of a program.*
+*Why: a module stays self-contained, and the core holds only what runs every module. The user decides which Apps are turned on, and an App turned on is only autoloaded: its functions are defined once one of its commands has run. The LeeMac module shows, with real programs, how any collection of AutoLISP code becomes a DynALisp module. In the docs, what runs every module is kept apart from the Apps, so a page found in a group folder is always the page of a program or of one of its windows.*
 
 ## Commands
 
