@@ -352,7 +352,8 @@ namespace DynALisp.Windows
                         c.ItemsSource = f.Shown.Select(j => f.All[j]).ToList();
                         int at = f.Shown.IndexOf(i);
                         c.SelectedIndex = at;
-                        _s.Values[f.Key] = at.ToString(CultureInfo.InvariantCulture);
+                        // (its value: the index in its whole list, as key/vals and the rules read it)
+                        _s.Values[f.Key] = (at >= 0 ? i : -1).ToString(CultureInfo.InvariantCulture);
                         break;
                     }
                     c.SelectedIndex = i >= 0 && i < c.Items.Count ? i : -1;
@@ -407,6 +408,8 @@ namespace DynALisp.Windows
             var f = _fields.FirstOrDefault(x => x.Key == key);
             if (f == null) { if (_tiles.Any(t => t.Line == key || t.BorderLines == key || t.DividingLines == key)) Tiles(); return; }
             string val = Read(f);
+            // a list by group: its value the index in its whole list, not in the items listed:
+            if (f.Shown != null) _s.Values[f.Key] = IndexOf(f, val).ToString(CultureInfo.InvariantCulture);
             var sel = Selected();
             string msg = Problem(f, val, sel.Count == 1 ? sel[0] : -1);
             if (msg != null)
@@ -424,6 +427,9 @@ namespace DynALisp.Windows
                 // on in one row at most: the first one selected it applies to:
                 if (f.Exclusive && val == "1") { if (kept >= 0) continue; kept = i; }
                 var nr = Put(r, f.Col, val);
+                // a list by group: the row takes the group of its new item (the other rows
+                // selected may be of another group):
+                if (f.ListBy != null) nr = GroupTo(f, val, nr);
                 foreach (var g in _fields.Where(g => g.Follows != null && g.Follows.Split('/')[0] == f.Key))
                     nr = Follow(g, f, Cell(r, f.Col), val, nr);
                 // the lists by this field (ListBy): their first item when theirs is no longer listed:
@@ -456,6 +462,18 @@ namespace DynALisp.Windows
             if (sel.Count > 0)
                 _v.Quiet(() => { foreach (var g in _fields.Where(g => (g.Follows != null && g.Follows.Split('/')[0] == f.Key) || g.ListBy == f.Key)) ShowField(g, _rows[sel[0]]); });
             Summary();
+        }
+
+        // The row r with the group field of the list by group f set to the group of its item val:
+        string[] GroupTo(Field f, string val, string[] r)
+        {
+            int i = IndexOf(f, val);
+            var g = _fields.FirstOrDefault(x => x.Key == f.ListBy);
+            if (g == null || i < 0 || i >= f.By.Count || Ic.Equals(Cell(r, g.Col), f.By[i])) return r;
+            // as the group list keeps it (its value, else its label):
+            var list = g.Vals ?? Labels(g);
+            string grp = list?.FirstOrDefault(v => Ic.Equals(v, f.By[i])) ?? f.By[i];
+            return Put(r, g.Col, grp);
         }
 
         // The field g takes the item of its list (Follows) for the new value of f, when it was

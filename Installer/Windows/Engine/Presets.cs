@@ -757,7 +757,7 @@ namespace DynALisp.Windows
             // a sub-window on columns of the preset shown (not on the rows of a list, Rows.cs):
             if (Win.GetOpen(b) is string file && Win.GetColumns(b) is string cols && !(_v.Rows?.HasSub(b) ?? false))
             {
-                if (Check()) Sub(file, cols);
+                if (Check()) Sub(b, file, cols);
                 return true;
             }
             // a button of the window: the value shown must be valid first (Win.Close checks it)
@@ -766,8 +766,9 @@ namespace DynALisp.Windows
 
         // The window file opened on the columns cols of the preset shown ("out:5,bco:6"): their
         // values as those of its keys (a list with key/vals: the index of the value); its OK
-        // gives them to every preset selected, its Cancel keeps them:
-        void Sub(string file, string cols)
+        // gives them to every preset selected the rules of the button b hold for (as Rows.Sub:
+        // the lines of an assembly that has them off keep theirs), its Cancel keeps them:
+        void Sub(FrameworkElement b, string file, string cols)
         {
             if (_rows.Count == 0) return;
             var map = new List<KeyValuePair<string, int>>();
@@ -785,13 +786,22 @@ namespace DynALisp.Windows
                 else _s.Values[m.Key] = cell;
             }
             if (_v.OpenSub(file) == 1)
+            {
+                var rules = new List<string>();
+                for (DependencyObject o = b; o != null && !(o is Window); o = LogicalTreeHelper.GetParent(o))
+                    if (Win.GetEnabledBy(o) is string rule && rule.Trim().Length > 0) rules.Add(rule);
                 foreach (var m in map)
                 {
                     _s.Values.TryGetValue(m.Key, out string v);
                     if (_s.Lists.TryGetValue(m.Key + "/vals", out var vals))
                         v = int.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out int j) && j >= 0 && j < vals.Count ? vals[j] : Cell(Row, m.Value);
-                    PutAll(m.Value, (v ?? "").Trim());
+                    foreach (int i in _sel)
+                    {
+                        var r = _rows[i];
+                        if (rules.All(rule => View.Holds(rule, k => RowGet(r, k) ?? _v.Stored(k)))) _rows[i] = Put(r, m.Value, (v ?? "").Trim());
+                    }
                 }
+            }
             Show();
         }
 

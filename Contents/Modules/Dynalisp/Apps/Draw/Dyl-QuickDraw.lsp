@@ -1744,7 +1744,7 @@
 ;;  of a layer with its own border is on that border's layer key, as Dyl:QdLayersBorders.
 ;;  Returns ((outlines angle origin T fixed mat scale) ...) as Dyl:QuickDrawLayerHatch, nil
 ;;  with a message when the curves cannot be made:
-(defun Dyl:QuickDrawCurveLayers (e p / w k smp org pl we cums crvs ok res c a b q lst ends m sc own bk)
+(defun Dyl:QuickDrawCurveLayers (e p / w k smp org pl we cums crvs ok res c a b q lst ends m sc own bk del)
   (setq w   (Dyl:QuickDrawLayersWidth qd:layers)
         own (vl-some '(lambda (l) (or (nth 5 l) (nth 6 l))) qd:layers)
         pl  (Dyl:QuickDrawLayersPlaces)
@@ -1803,7 +1803,8 @@
         )
       )
       ;;  The curves, borders of the band: its edges (its Border lines) and the joins of its
-      ;;  layers (its Dividing lines, qd:inner; erased when they are off):
+      ;;  layers (its Dividing lines, qd:inner; erased when they are off, once the lines
+      ;;  across the ends of the layers are made from them):
       (foreach x crvs
         (setq ;;  The key of the own border of a layer on that side (the one before it first):
               bk (if own
@@ -1820,7 +1821,7 @@
           ;;  On the side of a layer with its own border:
           (bk (setq lst (cons (cons (cdr x) bk) lst)))
           (qd:inner (setq lst (cons (cons (cdr x) qd:inner) lst)))
-          ((entdel (cdr x)))
+          ((setq del (cons (cdr x) del)))
         )
       )
       ;;  The lines across the ends of an open object, but Open: across the whole band, or
@@ -1849,6 +1850,7 @@
          )
         )
       )
+      (foreach x del (if (entget x) (entdel x)))
       (setq qd:borderents (append qd:borderents lst))
       (reverse res)
     )
@@ -1915,7 +1917,7 @@
         (Dyl:QuickDrawGrLine far)
         ;;  The joins of the layers of an assembly:
         (if qd:layers
-          (foreach bd (cdr (car (Dyl:QuickDrawLayersPlaces)))
+          (foreach bd (cdr (Dyl:QuickDrawLayersPlaces))
             (Dyl:QuickDrawGrLine (mapcar '(lambda (x) (mapcar '+ (car x) (mapcar '(lambda (c) (* k (car bd) c)) (cadr x)))) smp))
           )
         )
@@ -3427,9 +3429,15 @@
   )
 )
 
+;;  The lines str split for the window, their layer key qa:bk when they have none; off when
+;;  there is no layer key at all (a new assembly would be refused for lines never set):
 (defun Dyl:QuickDrawAsmLinesOf (str / b)
   (setq b (Remote>>Dyl:MaterialLines str))
-  (if (= "" (cadr b)) (cons (car b) (cons qa:bk (cddr b))) b)
+  (cond
+    ((/= "" (cadr b)) b)
+    ((= "" qa:bk) (cons "0" (cdr b)))
+    ((cons (car b) (cons qa:bk (cddr b))))
+  )
 )
 
 ;;  An assembly got back from the window: its layers from its rows (column 6, see

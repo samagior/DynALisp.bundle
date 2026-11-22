@@ -217,13 +217,18 @@ namespace DynALisp.Windows
             // layers, each one when it is on), then the borders of their own over them:
             if (BorderOn)
             {
-                // without the dividing lines: thin strips along the joins left out
+                // without the dividing lines: thin strips along the joins left out, to the end
+                // of the shorter of the two layers (the rest is the border of the longer one)
                 if (!DividingOn)
                 {
                     var keep = new GeometryGroup { FillRule = FillRule.EvenOdd };
                     keep.Children.Add(new RectangleGeometry(r));
                     for (int i = 0; i + 1 < wide.Count; i++)
-                        keep.Children.Add(new RectangleGeometry(new Rect(0, wide[i].Bottom - 1.5, x0 - 0.5, 3)));
+                    {
+                        double jy = wide[i].Bottom;
+                        double end = x0 + Math.Min(EndAt(wide[i], whole, jy, yc, k), EndAt(wide[i + 1], whole, jy, yc, k));
+                        keep.Children.Add(new RectangleGeometry(new Rect(0, jy - 1.5, Math.Max(0, end - 0.5), 3)));
+                    }
                     dc.PushClip(keep);
                 }
                 foreach (var l in wide) dc.DrawGeometry(null, pen, Outline(l, whole, x0, yc, k, false));
