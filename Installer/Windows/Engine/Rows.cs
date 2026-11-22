@@ -158,6 +158,8 @@ namespace DynALisp.Windows
             _v = v;
             _s = v.Session;
             _list = list;
+            // (set at once: the preset window may load its rows before Fill)
+            _list.SelectionMode = SelectionMode.Extended;
             _k = list.Name;
             _rows = _s.Rows.TryGetValue(_k + "/rows", out var r) ? r.Select(x => x.ToArray()).ToList() : new List<string[]>();
             _new = _s.Rows.TryGetValue(_k + "/new", out var n) && n.Count > 0 ? n[0] : null;
@@ -235,7 +237,6 @@ namespace DynALisp.Windows
         {
             foreach (var f in _fields)
                 if (f.El is ComboBox c && _s.Lists.TryGetValue(f.Key, out var items)) c.ItemsSource = items;
-            _list.SelectionMode = SelectionMode.Extended;
             _list.ItemsSource = _items;
             // (the rows of the preset shown: k.sel the ones selected when the window opens)
             if (_in >= 0) Load(); else Rebuild();
