@@ -29,6 +29,8 @@
 //   S?width                                a space
 //   L?0                                    a line between two bands
 //   X?width                                a hatch preset missing (crossed out)
+//   O                                      (first) the bands outlined: the border of the
+//                                          preset, a line around the tile
 //
 // An AssemblyTile (Assembly.cs) draws the bands of an assembly the other way: one under the
 // other, as a wall drawn in plan.
@@ -180,6 +182,7 @@ namespace DynALisp.Windows
             var r = new Rect(0, 0, ActualWidth, ActualHeight);
             if (r.Width < 2 || r.Height < 2) return;
             var bands = Bands(Spec);
+            bool outline = bands.RemoveAll(b => b.Kind == "O") > 0;
             var pen = new Pen(Ink, 1) { StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round };
             pen.Freeze();
             dc.PushClip(new RectangleGeometry(r, Radius, Radius));
@@ -218,6 +221,14 @@ namespace DynALisp.Windows
                 dc.Pop();
                 if (x > 0) dc.DrawLine(pen, new Point(x, 0), new Point(x, r.Height));
                 x += w;
+            }
+            // The border of the preset: a line around the tile, as thick as a line between
+            // two bands (thinner in a thumbnail):
+            if (outline)
+            {
+                double t = r.Height < 40 ? 1.5 : 2;
+                var o = new Rect(t / 2, t / 2, Math.Max(0, r.Width - t), Math.Max(0, r.Height - t));
+                dc.DrawRoundedRectangle(null, new Pen(Ink, t), o, Math.Max(0, Radius - t / 2), Math.Max(0, Radius - t / 2));
             }
             if (zoom > 1 && ShowScale) Label(dc, r, "1:" + (scale * zoom).ToString("0.##", Inv));
             dc.Pop();

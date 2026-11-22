@@ -23,7 +23,7 @@
 // on the values of its sample file (Samples\, as the Lisp gives them: key=value,
 // key/list=item|item, key/vals=value|value, key/off=1, +key=field\\tfield a row of the table
 // key (the presets of a preset window: +pst/rows=...); {samples} the folder of the samples,
-// \\t a tab), its Open Docs
+// \\t a tab, \\n a new line), its Open Docs
 // button enabled. Its content is drawn under a
 // plain title bar, at twice its size (192 dpi), into the PNG its docs page names
 // (<!-- picture: images/<Page>-window.png -->), in the light theme of AutoCAD, and in its dark
@@ -104,7 +104,7 @@ namespace DynALisp.Windows
                 if (eq < 1) continue;
                 string key = line.Substring(0, eq).Trim(), value = line.Substring(eq + 1).Trim();
                 // {samples}: the folder of the sample (its .pat files); \t: a tab:
-                value = value.Replace("{samples}", Path.GetDirectoryName(Path.GetFullPath(sample))).Replace("\\t", "\t");
+                value = value.Replace("\\n", "\n").Replace("{samples}", Path.GetDirectoryName(Path.GetFullPath(sample))).Replace("\\t", "\t");
                 if (key.EndsWith("/list")) s.Lists[key.Substring(0, key.Length - 5)] = value.Split('|').ToList();
                 else if (key.EndsWith("/vals")) s.Lists[key] = value.Split('|').ToList();
                 else if (key.StartsWith("+"))

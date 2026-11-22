@@ -601,7 +601,8 @@ namespace DynALisp.Windows
                     bool own = kind == "P" && Cell(r, c[3]) == "1";
                     parts.Add(string.Join("~", band,
                         own ? Cell(r, c[4]) : End(0), own ? Cell(r, c[5]) : End(1), own ? Cell(r, c[6]) : End(2),
-                        own ? "1" : "0", kind == "P" && Cell(r, c[7]) == "1" ? "1" : "0", sel.Contains(i) ? "1" : "0"));
+                        own ? "1" : "0", kind == "P" && Cell(r, c[7]) == "1" ? "1" : "0", sel.Contains(i) ? "1" : "0",
+                        own && c.Length > 8 ? Cell(r, c[8]) : ""));
                 }
                 t.Spec = string.Join("*", parts);
             }

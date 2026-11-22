@@ -47,6 +47,8 @@
 //   pst/spec    a column of the presets with a preview of their own (an assembly), used
 //               when pst/specby holds for the preset (a rule, as Win.EnabledBy); else the
 //               preview is the hatch of its material
+//   pst/outline a rule (as Win.EnabledBy): the preview of a preset it holds for is outlined
+//               ("O*" before its bands, see Hatch.cs: the preset has a border)
 //   pst/title   the name of the tool, pst/noun what the presets are called ("presets")
 //   key/list, key/vals  the labels and the stored values of a list of the values
 //   grp/list    the groups
@@ -118,7 +120,7 @@ namespace DynALisp.Windows
         readonly Dictionary<string, string> _taken = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         readonly ObservableCollection<PresetItem> _items = new ObservableCollection<PresetItem>();
         readonly bool _cmds;
-        readonly string _base, _cmd, _noun, _title, _specBy, _prefix;
+        readonly string _base, _cmd, _noun, _title, _specBy, _outlineBy, _prefix;
         readonly int _matCol = -1, _specCol = -1;
 
         int _idx;
@@ -156,6 +158,7 @@ namespace DynALisp.Windows
             _noun = Val("pst/noun") is string n && n.Length > 0 ? n : "presets";
             _title = Val("pst/title") ?? "";
             _specBy = Val("pst/specby");
+            _outlineBy = Val("pst/outline");
             _prefix = Val("pst/prefix");
             _matCol = Int(Val("pst/mat"), -1);
             _specCol = Int(Val("pst/spec"), -1);
@@ -254,12 +257,15 @@ namespace DynALisp.Windows
 
         bool Solid(string[] r) => string.Equals(Cell(MatOf(r), 4), "SOLID", StringComparison.OrdinalIgnoreCase);
 
-        // The preview of the preset r: its own (an assembly), else the hatch of its material:
+        // The preview of the preset r: its own (an assembly), else the hatch of its material;
+        // outlined while pst/outline holds for it (as the gallery shows it):
         string Spec(string[] r)
         {
-            if (_specCol >= 0 && Cell(r, _specCol).Length > 0 && View.Holds(_specBy, k => RowGet(r, k))) return Cell(r, _specCol);
-            var m = MatOf(r);
-            return m != null ? Cell(m, 3) : "X?1";
+            string sp;
+            if (_specCol >= 0 && Cell(r, _specCol).Length > 0 && View.Holds(_specBy, k => RowGet(r, k))) sp = Cell(r, _specCol);
+            else sp = MatOf(r) is string[] m ? Cell(m, 3) : "X?1";
+            if (!string.IsNullOrWhiteSpace(_outlineBy) && View.Holds(_outlineBy, k => RowGet(r, k))) sp = "O*" + sp;
+            return sp;
         }
 
         // ---- Commands and aliases ----

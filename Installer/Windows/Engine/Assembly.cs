@@ -28,7 +28,7 @@
 //
 //   Rows      the key of the list (ll)
 //   Columns   the columns of a row: kind, preset, thickness, band settings on, ends,
-//             extension, end angle, border on ("0 1 2 5 7 8 9 14")
+//             extension, end angle, border on, justification ("0 1 2 5 7 8 9 14 16")
 //   Specs     a list of the Lisp: the preview of each preset (as HatchTile draws it), one
 //             for each item of the field of the preset column (its width replaced by the
 //             thickness of the row; its ppu "w0.0005": the ppu of a unit of thickness, a
@@ -40,7 +40,9 @@
 //
 // Spec: the bands divided by "*", each a band of HatchTile (P, F, S, L, X) then, divided by
 // "~": its ends, extension ("": half its width), end angle (degrees), own ("1": across its
-// own thickness), border ("1": its own border), selected ("1").
+// own thickness), border ("1": its own border), selected ("1"), justification (Edge: its own
+// line on its border nearer to the line of the band, else in its middle: what its Angled
+// ends turn around).
 
 using System;
 using System.Collections.Generic;
@@ -57,7 +59,7 @@ namespace DynALisp.Windows
 
         public Brush Accent { get => (Brush)GetValue(AccentProperty); set => SetValue(AccentProperty, value); }
         public string Rows { get; set; }
-        public string Columns { get; set; } = "0 1 2 5 7 8 9 14";
+        public string Columns { get; set; } = "0 1 2 5 7 8 9 14 16";
         public string Specs { get; set; }
         public string Ends { get; set; }
         public string Paper { get; set; }
@@ -71,7 +73,7 @@ namespace DynALisp.Windows
             public string End = "Square";
             public double? Ext;
             public double Angle = 45;
-            public bool Own, Border, Sel;
+            public bool Own, Border, Sel, Edge;
             public double Top, Bottom;     // on the screen
             public double Reach;           // how far its end goes past the end of the line
         }
@@ -91,6 +93,7 @@ namespace DynALisp.Windows
                 l.Own = f.Length > 4 && f[4] == "1";
                 l.Border = f.Length > 5 && f[5] == "1";
                 l.Sel = f.Length > 6 && f[6] == "1";
+                l.Edge = f.Length > 7 && f[7] == "Edge";
                 res.Add(l);
             }
             return res;
@@ -209,10 +212,20 @@ namespace DynALisp.Windows
                     double near = Math.Max(l.Top, Math.Min(l.Bottom, c));
                     return Math.Sqrt(Math.Max(0, rr * rr - (near - c) * (near - c)));
                 case "Angled":
-                    double t = Math.Tan(l.Angle * Math.PI / 180);
-                    return Math.Max(0, Math.Max((yc - l.Top) * t, (yc - l.Bottom) * t));
+                    double t = Math.Tan(l.Angle * Math.PI / 180), yl = Pivot(l, yc);
+                    return Math.Max(0, Math.Max((yl - l.Top) * t, (yl - l.Bottom) * t));
                 default: return 0;
             }
+        }
+
+        // The line an Angled end turns around: that of the band (yc), or the own line of a
+        // layer with its own band settings: its middle, or its border nearer to yc (Edge):
+        static double Pivot(Layer l, double yc)
+        {
+            if (!l.Own) return yc;
+            double mid = (l.Top + l.Bottom) / 2;
+            if (!l.Edge) return mid;
+            return Math.Abs(l.Top - yc) < Math.Abs(l.Bottom - yc) ? l.Top : l.Bottom;
         }
 
         // The extension of Extended (half the width across which it ends when it has none):
@@ -226,7 +239,7 @@ namespace DynALisp.Windows
             switch (l.End)
             {
                 case "Extended": return Ext(l, a, k);
-                case "Angled": return (yc - y) * Math.Tan(l.Angle * Math.PI / 180);
+                case "Angled": return (Pivot(l, yc) - y) * Math.Tan(l.Angle * Math.PI / 180);
                 case "Round":
                     double c = (a.Top + a.Bottom) / 2, rr = (a.Bottom - a.Top) / 2;
                     return Math.Sqrt(Math.Max(0, rr * rr - (y - c) * (y - c)));
