@@ -209,18 +209,18 @@
               <TextBlock Style="{DynamicResource Dyl.Label}" Text="Width"/>
             </DockPanel>
             <!-- Custom band settings: on, the justification, the hatch along the line, the ends and
-                 the corners of the Band Settings window, summed up beside its open button; off,
-                 the defaults: -->
+                 the corners of the Band Settings window (its open button); off, the defaults. What
+                 the bands are drawn with is summed up under it: -->
             <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|Offset|">
-              <Grid DockPanel.Dock="Right" Width="150">
-                <TextBlock x:Name="mei" VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}" TextTrimming="CharacterEllipsis" dyl:Win.VisibleBy="mbs"/>
-                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}" Text="Center, Square, Mitered" dyl:Win.VisibleBy="!mbs,mth!=Offset"/>
-                <TextBlock VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}" Text="Square, Mitered" dyl:Win.VisibleBy="!mbs,mth=Offset"/>
-              </Grid>
-              <dyl:OpenButton x:Name="mbe" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="3" ToolTip="Band Settings"
+              <dyl:OpenButton x:Name="mbe" DockPanel.Dock="Right" dyl:Win.Close="3" ToolTip="Band Settings"
                               dyl:Win.EnabledBy="mbs"/>
               <CheckBox x:Name="mbs" Content="Custom band settings"/>
             </DockPanel>
+            <Grid Margin="46,0,0,4" dyl:Win.EnabledBy="mth=Linear|Offset|">
+              <TextBlock x:Name="mei" Style="{DynamicResource Dyl.Desc}" Margin="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" dyl:Win.VisibleBy="mbs"/>
+              <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="0" Text="Center, Square, Mitered" dyl:Win.VisibleBy="!mbs,mth!=Offset"/>
+              <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="0" Text="Square, Mitered" dyl:Win.VisibleBy="!mbs,mth=Offset"/>
+            </Grid>
             <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Hatch"/>
             <!-- What the hatch is aligned to, set in the Band Settings window: hidden, for the
                  rules of the origin (mht!=Origin): -->

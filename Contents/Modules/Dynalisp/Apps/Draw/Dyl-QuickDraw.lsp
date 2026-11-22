@@ -2241,7 +2241,7 @@
 
 ;;  The columns the window shows after those of a preset r (42 to 45, read only, never saved):
 ;;  what its layers are (beside Assembly of layers), its own justification, ends and corners
-;;  (beside Custom band settings, shown while it is on), the width of its layers (Width, for an
+;;  (under Custom band settings, shown while it is on), the width of its layers (Width, for an
 ;;  assembly), and the preview of its layers side by side (an assembly with layers):
 (defun Dyl:QuickDrawWinExtra (r)
   (list (Remote>>Dyl:MaterialLayersText (nth *qd:layerscol* r))

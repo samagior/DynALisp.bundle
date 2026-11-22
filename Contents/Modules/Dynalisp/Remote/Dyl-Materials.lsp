@@ -1450,7 +1450,7 @@
   r
 )
 
-;;  A summary of the bands of the material r, beside Band settings: its justification (not
+;;  A summary of the bands of the material r, under Custom band settings: its justification (not
 ;;  with Offset, whose line is always a border), its ends and its corners, by their keys
 ;;  (Center, Extended, Lapped):
 (defun Remote>>Dyl:MaterialBandText (r)
