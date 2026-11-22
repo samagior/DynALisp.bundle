@@ -68,8 +68,9 @@
 // share in percent in column fp, from its list flist, in parallel ("p": 100 / (share /
 // framing + rest / cavity), the isothermal planes of the building code, for a thermal
 // resistance) or by their areas ("a": a mass); {miss:m:list:fm:fp:flist|one|many} counts the
-// rows either one has no data for. {over:...@rule|text|unknown} adds up only the rows a rule
-// holds for (the continuous insulation), {ratio:first|last:...@rule|text|unknown} divides the
+// rows either one has no data for. {over:...@rule[@when]|text|unknown} adds up only the rows a
+// rule holds for, shown while another rule holds for a row (the continuous layers, once a layer
+// has a framing), {ratio:first|last:...@rule|text|unknown} divides the
 // rows from one end to the first row the rule holds for by the others (the low permeance
 // ratio); see Over. The same value for one row is
 // {Binding P[m:w:list[:fm:fp:flist:p]|text]} in the list (4 significant digits), text (else
@@ -863,9 +864,10 @@ namespace DynALisp.Windows
             });
         }
 
-        // {over:spec@rule|text|unknown}: the total by spec ("m:w:list[...]", as {per}) of the
-        // rows the rule holds for, # in text; unknown when one of them has no data; "" when the
-        // rule holds for none. {ratio:first|last:spec@rule|text|unknown}: the first row the rule
+        // {over:spec@rule[@when]|text|unknown}: the total by spec ("m:w:list[...]", as {per}) of
+        // the rows the rule holds for, # in text; unknown when one of them has no data; "" when
+        // the rule holds for none, or the rule when for no row (the continuous layers, those
+        // without a framing, shown once a layer has one: @lfm=@lfm!=). {ratio:first|last:spec@rule|text|unknown}: the first row the rule
         // holds for parts the rows in two, from the end named (first or last) to that row
         // included, and the rest: the total of the first part divided by that of the rest (2
         // decimals, # in text; the low permeance ratio of the building code: the thermal
@@ -884,10 +886,11 @@ namespace DynALisp.Windows
                 last = d[0] == "last";
                 spec = d[1];
             }
-            int at = spec.IndexOf('@');
-            if (at < 0) return "";
-            string rule = spec.Substring(at + 1);
-            var sp = PerSpec(spec.Substring(0, at), true);
+            var parts = spec.Split('@');
+            if (parts.Length < 2) return "";
+            string rule = parts[1];
+            if (!ratio && parts.Length > 2 && !_rows.Any(x => View.Holds(parts[2], k => RowGet(x, k)))) return "";
+            var sp = PerSpec(parts[0], true);
             if (sp == null) return "";
             string text = a.Length > 1 ? a[1] : "#", unknown = a.Length > 2 ? a[2] : "";
             var rows = last ? Enumerable.Reverse(_rows).ToList() : _rows.ToList();

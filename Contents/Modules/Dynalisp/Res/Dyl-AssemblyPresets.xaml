@@ -47,8 +47,7 @@
   origin X, origin Y), 43 the group of its material (read, never saved), 44 the material of
   its framing ("" None, lfm: a discontinuous layer, the studs and the insulation between
   them, the material of the layer), 45 the share of its area in percent (lfp), 46 Variable
-  thickness (lvt), 47 Continuous insulation (lci: it covers the structure and its thermal
-  bridges) and 48 Low permeance (llp, one at most: dyl:Win.Exclusive), the four checkboxes
+  thickness (lvt) and 47 Low permeance (llp, one at most: dyl:Win.Exclusive), the three checkboxes
   also checked in the list (Win.Toggle).
   Each row shows the thermal resistance and the mass of its layer (P[1:2:lp/rsi:44:45:lfm/rsi:p],
   P[1:2:lp/mass:44:45:lfm/mass:a], Rows.cs), from the data of its material, of its framing
@@ -189,7 +188,6 @@
             <ColumnDefinition Width="70"/>
             <ColumnDefinition Width="70"/>
             <ColumnDefinition Width="70"/>
-            <ColumnDefinition Width="70"/>
           </Grid.ColumnDefinitions>
           <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" Text="Group"/>
           <TextBlock Grid.Column="1" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" Text="Material"/>
@@ -199,12 +197,11 @@
           <TextBlock Grid.Column="3" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" HorizontalAlignment="Right" Text="RSI" dyl:Win.VisibleBy="!mt.imp"/>
           <TextBlock Grid.Column="3" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" HorizontalAlignment="Right" Text="R" dyl:Win.VisibleBy="mt.imp"/>
           <TextBlock Grid.Column="4" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" HorizontalAlignment="Right" Text="Mass"/>
-          <!-- Load-bearing (16), Variable thickness (46), Continuous insulation (47) and Low
-               permeance (48), checked in the list itself: -->
+          <!-- Load-bearing (16), Variable thickness (46) and Low permeance (47), checked in the
+               list itself: -->
           <TextBlock Grid.Column="5" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" TextAlignment="Center">Load-<LineBreak/>bearing</TextBlock>
           <TextBlock Grid.Column="6" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" TextAlignment="Center" TextWrapping="Wrap" Text="Variable thickness"/>
-          <TextBlock Grid.Column="7" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" TextAlignment="Center" TextWrapping="Wrap" Text="Continuous insulation"/>
-          <TextBlock Grid.Column="8" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" TextAlignment="Center" TextWrapping="Wrap" Text="Low permeance"/>
+          <TextBlock Grid.Column="7" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" TextAlignment="Center" TextWrapping="Wrap" Text="Low permeance"/>
         </Grid>
         <DockPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
           <Button x:Name="la" DockPanel.Dock="Left" Margin="0" Content="Add" dyl:Win.Do="add"/>
@@ -214,17 +211,18 @@
           <Button x:Name="lu" DockPanel.Dock="Right" Content="Move up" dyl:Win.Do="up"/>
           <Border/>
         </DockPanel>
-        <!-- The thermal resistance of the layers checked Continuous insulation (over the
-             thermal bridges of the structure), and the low permeance ratio: the layers from
+        <!-- The thermal resistance of the continuous layers, those without a framing (over
+             the thermal bridges of the framing), once a layer has one, and the low permeance
+             ratio: the layers from
              the exterior (aex) to the one checked Low permeance, over the others: -->
         <TextBlock x:Name="lrf" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="aex!=Last"
                    dyl:Win.Summary="{}{ratio:first:1:2:lp/rsi:44:45:lfm/rsi:p@llp|Low permeance ratio #|Low permeance ratio unknown}" dyl:Win.SummaryEmpty=""/>
         <TextBlock x:Name="lrl" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="aex=Last"
                    dyl:Win.Summary="{}{ratio:last:1:2:lp/rsi:44:45:lfm/rsi:p@llp|Low permeance ratio #|Low permeance ratio unknown}" dyl:Win.SummaryEmpty=""/>
         <TextBlock x:Name="lcm" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="!mt.imp"
-                   dyl:Win.Summary="{}{over:1:2:lp/rsi:44:45:lfm/rsi:p@lci|Continuous insulation # m²·K/W|Continuous insulation unknown}" dyl:Win.SummaryEmpty=""/>
+                   dyl:Win.Summary="{}{over:1:2:lp/rsi:44:45:lfm/rsi:p@lfm=@lfm!=|Continuous layers # m²·K/W|Continuous layers unknown}" dyl:Win.SummaryEmpty=""/>
         <TextBlock x:Name="lcu" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="mt.imp"
-                   dyl:Win.Summary="{}{over:1:2:lp/rsi:44:45:lfm/rsi:p@lci|Continuous insulation R #|Continuous insulation unknown}" dyl:Win.SummaryEmpty=""/>
+                   dyl:Win.Summary="{}{over:1:2:lp/rsi:44:45:lfm/rsi:p@lfm=@lfm!=|Continuous layers R #|Continuous layers unknown}" dyl:Win.SummaryEmpty=""/>
         <!-- Under the layers: their thermal resistance and their mass per area, added up from
              the data of their materials (lp/rsi, lp/mass), in the units of the drawing, the
              layers whose material has no such data counted apart: -->
@@ -251,7 +249,6 @@
                   <ColumnDefinition Width="70"/>
                   <ColumnDefinition Width="70"/>
                   <ColumnDefinition Width="70"/>
-                  <ColumnDefinition Width="70"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Foreground="{DynamicResource Dyl.Muted}" Text="{Binding [43]}" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
                 <StackPanel Grid.Column="1" Margin="0,0,8,0">
@@ -272,10 +269,8 @@
                           IsChecked="{Binding V[16], Mode=OneWay, Converter={x:Static dyl:On.Converter}}"/>
                 <CheckBox Grid.Column="6" Margin="0" HorizontalAlignment="Center" ToolTip="Variable thickness" dyl:Win.Toggle="46"
                           IsChecked="{Binding V[46], Mode=OneWay, Converter={x:Static dyl:On.Converter}}"/>
-                <CheckBox Grid.Column="7" Margin="0" HorizontalAlignment="Center" ToolTip="Continuous insulation" dyl:Win.Toggle="47"
+                <CheckBox Grid.Column="7" Margin="0" HorizontalAlignment="Center" ToolTip="Low permeance" dyl:Win.Toggle="47"
                           IsChecked="{Binding V[47], Mode=OneWay, Converter={x:Static dyl:On.Converter}}"/>
-                <CheckBox Grid.Column="8" Margin="0" HorizontalAlignment="Center" ToolTip="Low permeance" dyl:Win.Toggle="48"
-                          IsChecked="{Binding V[48], Mode=OneWay, Converter={x:Static dyl:On.Converter}}"/>
               </Grid>
               <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding V[5]}" Value="0">
@@ -351,10 +346,7 @@
           <CheckBox x:Name="lvt" Content="Variable thickness" dyl:Win.Column="46"/>
         </DockPanel>
         <DockPanel Style="{StaticResource Row}">
-          <CheckBox x:Name="lci" Content="Continuous insulation" dyl:Win.Column="47"/>
-        </DockPanel>
-        <DockPanel Style="{StaticResource Row}">
-          <CheckBox x:Name="llp" Content="Low permeance" dyl:Win.Column="48" dyl:Win.Exclusive="1"/>
+          <CheckBox x:Name="llp" Content="Low permeance" dyl:Win.Column="47" dyl:Win.Exclusive="1"/>
         </DockPanel>
         <!-- Its own band settings (the Band Settings window on the layers selected), its
              hatch and its own border, in place of the lines of the assembly (the Hatch

@@ -2730,8 +2730,7 @@
                                                 "  " (rtos (distof (caddr l) 2))
                                                 (if (= "1" (nth 6 l)) "  (load-bearing)" "")
                                                 (if (= "1" (nth 9 l)) "  (variable)" "")
-                                                (if (= "1" (nth 10 l)) "  (continuous insulation)" "")
-                                                (if (= "1" (nth 11 l)) "  (low permeance)" "")
+                                                (if (= "1" (nth 10 l)) "  (low permeance)" "")
                                         )
                                       )
                               )
@@ -3103,7 +3102,7 @@
 ;;  group of its material in 43 (its Group list, which filters its Material list; read, never
 ;;  saved), its framing in 44 and 45 (the id of its material, "" none, and its share of the
 ;;  area in percent: a discontinuous layer, see Remote>>Dyl:MaterialLayerValues), Variable
-;;  thickness in 46, Continuous insulation in 47 and Low permeance in 48 ("1" or "0"; one
+;;  thickness in 46 and Low permeance in 47 ("1" or "0"; one
 ;;  layer of low permeance at most). The column 4 is no longer used (the layer key of a Line layer of an older file),
 ;;  taken from the new layer def (a row of the same columns):
 (defun Dyl:QuickDrawLayersRows (lst def)
@@ -3117,7 +3116,7 @@
                      (if (nth 4 l) (Remote>>LM:sublst (nth 4 l) 9 5) (Remote>>LM:sublst def 38 5))
                      (list (Dyl:QuickDrawAsmMatGroup (cadr l)))
                      (if (nth 8 l) (nth 8 l) (list "" ""))
-                     (mapcar '(lambda (i) (if (= "1" (nth i l)) "1" "0")) '(9 10 11))
+                     (mapcar '(lambda (i) (if (= "1" (nth i l)) "1" "0")) '(9 10))
              )
            )
           (vl-remove-if-not '(lambda (l) (= "P" (car l))) lst)
@@ -3213,7 +3212,6 @@
                              (if (/= "" (nth 44 r)) (list (nth 44 r) (vl-string-translate "," "." (vl-string-trim " " (nth 45 r)))))
                              (if (= "1" (nth 46 r)) "1")
                              (if (= "1" (nth 47 r)) "1")
-                             (if (= "1" (nth 48 r)) "1")
                        )
                        res
                  )
@@ -3643,9 +3641,9 @@
                        (Remote>>LM:sublst *mt:new* 12 10)
                        *mt:layerscale*
                        (list (cond ((cadddr (car qa:mats))) ("")))
-                       ;;  no framing, its thickness the same everywhere, not a continuous
-                       ;;  insulation nor of low permeance:
-                       (list "" "" "0" "0" "0")
+                       ;;  no framing, its thickness the same everywhere, not of low
+                       ;;  permeance:
+                       (list "" "" "0" "0")
                )
   )
 )
