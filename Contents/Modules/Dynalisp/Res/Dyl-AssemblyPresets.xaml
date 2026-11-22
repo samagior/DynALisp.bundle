@@ -50,9 +50,9 @@
   </Window.Resources>
   <Grid Margin="14">
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="300"/>
+      <ColumnDefinition Width="370"/>
       <ColumnDefinition Width="10"/>
-      <ColumnDefinition Width="520"/>
+      <ColumnDefinition Width="480"/>
       <ColumnDefinition Width="10"/>
       <ColumnDefinition Width="360"/>
     </Grid.ColumnDefinitions>
@@ -112,11 +112,11 @@
       <GroupBox DockPanel.Dock="Top" Padding="16,0,16,14" Margin="0">
         <StackPanel>
           <DockPanel Style="{StaticResource Row}">
-            <TextBox x:Name="nam" DockPanel.Dock="Right" Width="320" MaxLength="64"/>
+            <TextBox x:Name="nam" DockPanel.Dock="Right" Width="300" MaxLength="64"/>
             <TextBlock Style="{DynamicResource Dyl.Label}" Text="Name"/>
           </DockPanel>
           <DockPanel Style="{StaticResource Row}">
-            <ComboBox x:Name="grp" DockPanel.Dock="Right" Width="320"/>
+            <ComboBox x:Name="grp" DockPanel.Dock="Right" Width="300"/>
             <dyl:OpenButton x:Name="gre" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="8" ToolTip="Preset Groups"/>
             <TextBlock Style="{DynamicResource Dyl.Label}" Text="Group"/>
           </DockPanel>
