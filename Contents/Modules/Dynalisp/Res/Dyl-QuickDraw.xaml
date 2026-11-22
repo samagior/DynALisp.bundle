@@ -31,8 +31,8 @@
   border and of the hatch); mpv is the
   preview of the preset shown (pst/spec, pst/outline). The open
   buttons close the window with the code of what they open, as the DCL window did: 3 Band
-  Settings, 5 Assembly Presets, 8 Preset Groups, 9 Materials, 12 Border Settings, 13 Hatch
-  Settings; the
+  Settings, 5 Assembly Presets, 8 Preset Groups, 12 Border Settings, 13 Hatch Settings (its
+  own open button, the Materials window, closes it with 9); the
   Lisp opens the
   window again once it is done. What each control greys out, as Remote>>Dyl:MaterialDlgBehaviors
   did: its dyl:Win.EnabledBy (the method, an assembly, a solid hatch: pst/solid).
@@ -153,8 +153,7 @@
         </Grid>
       </GroupBox>
 
-      <!-- How the preset is drawn, in two columns: its material, its method and their
-           values; its bands (Linear, Offset): their width, an assembly of layers, their band
+      <!-- How the preset is drawn, in two columns: its method and their values; its bands (Linear, Offset): their width, an assembly of layers, their band
            settings; under them its hatch and its border, then the aliases of the preset: -->
       <GroupBox Header="Parameters">
         <StackPanel>
@@ -166,12 +165,6 @@
             </Grid.ColumnDefinitions>
             <StackPanel>
               <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0,0,0,4" Text="Drawing"/>
-              <!-- An assembly: each layer is hatched as its own preset says: -->
-              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas;mth!=Linear|Offset|">
-                <ComboBox x:Name="mat" DockPanel.Dock="Right" Width="150"/>
-                <dyl:OpenButton x:Name="edm" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="9" ToolTip="Materials"/>
-                <TextBlock x:Name="matl" Style="{DynamicResource Dyl.Label}" Text="Material"/>
-              </DockPanel>
               <DockPanel Style="{StaticResource Row}">
                 <ComboBox x:Name="mth" DockPanel.Dock="Right" Width="150"/>
                 <TextBlock Style="{DynamicResource Dyl.Label}" Text="Default method"/>
@@ -236,8 +229,10 @@
           <!-- What is drawn of the preset, in the same two columns: its hatch and its border,
                each on the layer key of its settings window (its open button), with the
                properties it overrides, summed up under it. Both are greyed out for an
-               assembly (each layer has its own, in the Assembly Presets window); Has a hatch
-               for Replace too (it changes hatches that are there): -->
+               assembly (each layer has its own, in the Assembly Presets window). The material
+               of the hatch is picked in the Hatch Settings window; Has a hatch is greyed out
+               for Replace (it changes hatches that are there), its open button kept there for
+               the material: -->
           <Grid Margin="0,8,0,0">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="*"/>
@@ -246,13 +241,13 @@
             </Grid.ColumnDefinitions>
             <StackPanel>
               <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0,0,0,4" Text="Hatch"/>
-              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas,mth!=Replace;mth!=Linear|Offset|Replace|">
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas;mth!=Linear|Offset|">
                 <dyl:OpenButton x:Name="hhe" DockPanel.Dock="Right" dyl:Win.Close="13" ToolTip="Hatch Settings"
-                                dyl:Win.EnabledBy="hha"/>
-                <CheckBox x:Name="hha" Content="Has a hatch"/>
+                                dyl:Win.EnabledBy="hha;mth=Replace"/>
+                <CheckBox x:Name="hha" Content="Has a hatch" dyl:Win.EnabledBy="mth!=Replace"/>
               </DockPanel>
-              <Grid Margin="46,0,0,4" dyl:Win.EnabledBy="!mas,mth!=Replace;mth!=Linear|Offset|Replace|">
-                <TextBlock x:Name="hhi" Style="{DynamicResource Dyl.Desc}" Margin="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" dyl:Win.VisibleBy="hha"/>
+              <Grid Margin="46,0,0,4" dyl:Win.EnabledBy="!mas;mth!=Linear|Offset|">
+                <TextBlock x:Name="hhi" Style="{DynamicResource Dyl.Desc}" Margin="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" dyl:Win.VisibleBy="hha;mth=Replace"/>
               </Grid>
             </StackPanel>
             <Border Grid.Column="1" Width="1" HorizontalAlignment="Center" Background="{DynamicResource Dyl.Border}"/>

@@ -18,7 +18,8 @@
 
 ;;  The materials (Materials.csv, the hatching, the window) are in
 ;;  Modules\Dynalisp\Remote\Dyl-Materials.lsp, loaded at startup for every App. The same
-;;  window opens from the Quick Draw and Quick Shape windows (the open button beside Material).
+;;  window opens from the Quick Draw and Quick Shape windows (the open button beside Material:
+;;  in the Hatch Settings window of Quick Draw).
 
 ;;-------------------------=={ Commands }==------------------------;;
 

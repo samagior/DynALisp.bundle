@@ -1,6 +1,6 @@
 <!--
-  Dyl-QuickDrawHatchSettings.xaml - the Hatch Settings window of Quick Draw: the layer key
-  of a hatch and the properties of its layer it overrides
+  Dyl-QuickDrawHatchSettings.xaml - the Hatch Settings window of Quick Draw: the material
+  of a hatch, its layer key and the properties of its layer it overrides
   Copyright (C) 2026  Samuel Martineau
 
   This program is free software: you can redistribute it and/or modify
@@ -22,7 +22,11 @@
   Has a hatch of a Hatch layer in the Assembly Presets window, by the window itself
   (dyl:Win.Open on the columns of the layers selected), sub "1": the open buttons of the layer
   key and of the color, which close the window for the Lisp, are greyed out there (the color
-  is typed). The keys are the hatch tiles of *mt:hatchtiles* (Remote\Dyl-Materials.lsp): hky
+  is typed), and the material is hidden (the hatch of a layer is the material of its preset).
+  mat is the material of the preset (mat/vals the ids of mat/list: the materials of its
+  group, then its own when it is not one of them), its open button edm the Materials window
+  (closes with 9); rep "1" for Replace hatches, which gives the material as it is: the rest
+  is greyed out. The other keys are the hatch tiles of *mt:hatchtiles* (Remote\Dyl-Materials.lsp): hky
   the layer key (hky/vals the keys, "" first: From material, the hatch layer key of its
   material), then each override of the properties of its layer, a checkbox and its
   value, named as those of the Border Settings window: bco bcv the color ("n" or "r,g,b"; bcp
@@ -43,35 +47,40 @@
   <StackPanel Margin="14" Width="420">
     <GroupBox Header="Hatch" Margin="0">
       <StackPanel>
-        <DockPanel Style="{StaticResource Row}">
+        <DockPanel Style="{StaticResource Row}" dyl:Win.VisibleBy="!sub">
+          <ComboBox x:Name="mat" DockPanel.Dock="Right" Width="160"/>
+          <dyl:OpenButton x:Name="edm" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="9" ToolTip="Materials"/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Material"/>
+        </DockPanel>
+        <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!rep">
           <ComboBox x:Name="hky" DockPanel.Dock="Right" Width="160"/>
           <dyl:OpenButton x:Name="okp" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="6" ToolTip="Layer Keys" dyl:Win.EnabledBy="!sub"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Layer key"/>
         </DockPanel>
         <!-- The properties of the layer of its key the hatch overrides, in place of those its material overrides: -->
-        <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Layer key overrides"/>
-        <DockPanel Style="{StaticResource Row}">
+        <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Layer key overrides" dyl:Win.EnabledBy="!rep"/>
+        <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!rep">
           <TextBox x:Name="bcv" DockPanel.Dock="Right" Width="160" dyl:Win.EnabledBy="bco"
                    dyl:Win.Check="color" dyl:Win.CheckMessage="A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it."/>
           <dyl:OpenButton x:Name="bcp" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="11" ToolTip="Select Color" dyl:Win.EnabledBy="bco,!sub"/>
           <CheckBox x:Name="bco" Content="Color"/>
         </DockPanel>
-        <DockPanel Style="{StaticResource Row}">
+        <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!rep">
           <TextBox x:Name="blt" DockPanel.Dock="Right" Width="160" CharacterCasing="Upper" dyl:Win.EnabledBy="blo"
                    dyl:Win.Check="text" dyl:Win.CheckMessage="The linetype cannot be empty."/>
           <CheckBox x:Name="blo" Content="Linetype"/>
         </DockPanel>
-        <DockPanel Style="{StaticResource Row}">
+        <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!rep">
           <TextBox x:Name="bsc" DockPanel.Dock="Right" Width="160" dyl:Win.EnabledBy="bso"
                    dyl:Win.Check="positive" dyl:Win.CheckMessage="The linetype scale must be a number greater than 0."/>
           <CheckBox x:Name="bso" Content="Linetype scale"/>
         </DockPanel>
-        <DockPanel Style="{StaticResource Row}">
+        <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!rep">
           <ComboBox x:Name="bwt" DockPanel.Dock="Right" Width="160" dyl:Win.EnabledBy="bwo"/>
           <CheckBox x:Name="bwo" Content="Lineweight"/>
         </DockPanel>
-        <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Optional settings"/>
-        <DockPanel Style="{StaticResource Row}">
+        <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Optional settings" dyl:Win.EnabledBy="!rep"/>
+        <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!rep">
           <TextBox x:Name="btr" DockPanel.Dock="Right" Width="160" dyl:Win.EnabledBy="bto"
                    dyl:Win.Check="integer;min=0;max=90" dyl:Win.CheckMessage="The transparency must be a whole number from 0 to 90."/>
           <CheckBox x:Name="bto" Content="Transparency"/>

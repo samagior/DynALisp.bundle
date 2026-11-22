@@ -658,8 +658,9 @@ namespace DynALisp.Windows
                 return;
             }
             // Another group: the materials of the new group (the first one given to the
-            // presets selected when theirs is not one of them):
-            if (f.Key == "grp" && _matCol >= 0 && !Ic.Equals(old, val))
+            // presets selected when theirs is not one of them), when the window has the list
+            // (Quick Draw picks it in its Hatch Settings window: a material not seen is kept):
+            if (f.Key == "grp" && _mat != null && _matCol >= 0 && !Ic.Equals(old, val))
             {
                 var inGrp = MatsOf(val);
                 if (inGrp.Count > 0 && !inGrp.Any(m => m[0] == Cell(Row, _matCol))) PutAll(_matCol, inGrp[0][0]);

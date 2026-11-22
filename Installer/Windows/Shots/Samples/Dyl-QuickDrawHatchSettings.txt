@@ -2,8 +2,13 @@
 # Dyl-QuickDraw.lsp, Dyl:QuickDrawPropsVals), as the Lisp gives them, for a preset whose
 # hatch is on the layer key of its material, its color and its transparency overridden:
 # key=value, key/list=item|item, key/vals=value|value. sub "0": opened by the Lisp from the
-# Quick Draw window (the open buttons of the layer key and of the color work).
+# Quick Draw window (the open buttons of the layer key and of the color work), its material
+# Brick picked among the materials of its group (Section).
 sub=0
+rep=0
+mat/list=Aluminium|Asphalt|Brick|Bronze|CMU|Compacted Soil|Concrete|Crushed Stone|Firebrick|Gravel|Grout|Gypsum|Hardboard|Iron|Lead|Lightweight Concrete|Loose Insulation|Marble|Mortar|Particleboard|Plaster|Plastic|Plywood|Rigid Insulation|Sand|Spray Insulation|Steel|Stone|Topsoil|Undisturbed Soil|Wood Frame|Wood Plank
+mat/vals=mt-Aluminium|mt-Asphalt|mt-Brick|mt-Bronze|mt-CMU|mt-CompactedSoil|mt-Concrete|mt-CrushedStone|mt-Firebrick|mt-Gravel|mt-Grout|mt-Gypsum|mt-Hardboard|mt-Iron|mt-Lead|mt-LightweightConcrete|mt-LooseInsulation|mt-Marble|mt-Mortar|mt-Particleboard|mt-Plaster|mt-Plastic|mt-Plywood|mt-RigidInsulation|mt-Sand|mt-SprayInsulation|mt-Steel|mt-Stone|mt-Topsoil|mt-UndisturbedSoil|mt-WoodFrame|mt-WoodPlank
+mat=2
 hky/list=From material|HATCH|MED|THIN|WIDE|XTHIN
 hky/vals=|HATCH|MED|THIN|WIDE|XTHIN
 hky=0
