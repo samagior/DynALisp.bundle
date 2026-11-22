@@ -345,6 +345,18 @@
     ("mt-AirFloor20" "Air" "Air Space - Floor 20 mm+" "hp-Void" "" "" "" "0.18")
     ("mt-AirFloor40" "Air" "Air Space - Floor 40 mm+" "hp-Void" "" "" "" "0.2")
     ("mt-AirFloor90" "Air" "Air Space - Floor 90 mm+" "hp-Void" "" "" "" "0.22")
+    ;;  The materials of the typical assemblies of the building code (NBC Tables 9.10.3.1.-A
+    ;;  and -B, the default assemblies of Quick Draw): Type X gypsum board, its conductivity
+    ;;  that of the gypsum board above (the table of the data does not tell the types apart);
+    ;;  the absorptive material of the code (glass, rock or slag fibre), the resilient and
+    ;;  furring channels (a space of metal channels) and the hollow core slab without data
+    ;;  from a source yet:
+    ("mt-GypsumTypeX" "Board" "Gypsum Board Type X" "hp-Gypsum" "" "0.1639" "" "")
+    ("mt-GypsumSandPlaster" "Finish" "Gypsum-Sand Plaster" "hp-Plaster" "" "" "" "")
+    ("mt-AbsorptiveMaterial" "Insulation" "Absorptive Material" "hp-LooseInsulation" "" "" "" "")
+    ("mt-ResilientChannel" "Metal" "Resilient Metal Channel" "hp-Void" "" "" "" "")
+    ("mt-SteelFurring" "Metal" "Steel Furring Channel" "hp-Void" "" "" "" "")
+    ("mt-HollowCoreSlab" "Concrete" "Hollow Core Slab" "hp-Concrete" "" "" "" "")
     ("mt-Void" "Air" "Void" "hp-Void" "" "" "" "")
    )
 )
