@@ -377,7 +377,8 @@
     </Setter>
   </Style>
 
-  <!-- A tile of a gallery (Gallery.cs): a card, its border blue under the mouse: -->
+  <!-- A tile of a gallery (Gallery.cs): a card, its border blue under the mouse, and blue and
+       its card tinted while it is selected (its Tag "sel"): -->
   <Style x:Key="Dyl.Tile" TargetType="Button">
     <Setter Property="Foreground" Value="{DynamicResource Dyl.Text}"/>
     <Setter Property="Background" Value="{DynamicResource Dyl.Surface}"/>
@@ -400,6 +401,11 @@
               <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Dyl.Accent}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Dyl.Hover}"/>
+            </Trigger>
+            <Trigger Property="Tag" Value="sel">
+              <Setter TargetName="bd" Property="BorderBrush" Value="{DynamicResource Dyl.Accent}"/>
+              <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
               <Setter TargetName="bd" Property="Background" Value="{DynamicResource Dyl.Hover}"/>
             </Trigger>
           </ControlTemplate.Triggers>

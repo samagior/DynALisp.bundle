@@ -266,13 +266,14 @@ namespace DynALisp.Windows
                     b.Click += (a, e) => Click(b);
                     break;
                 case Gallery g when Named(g):
-                    g.Picked += i => Pick(g, i);
+                    g.Selected += (i, m) => { _s.Values[g.Name + ".method"] = m; Changed(g.Name, i.ToString(CultureInfo.InvariantCulture), g); };
+                    g.Picked += (i, m) => { _s.Values[g.Name + ".method"] = m; Pick(g, i); };
                     break;
             }
         }
 
-        // A tile of a gallery clicked: its index, then the window closes (status 1, or the
-        // Win.Close of the gallery):
+        // A tile of a gallery double-clicked: its index, then the window closes (status 1, or
+        // the Win.Close of the gallery):
         void Pick(Gallery g, int index)
         {
             _s.Values[g.Name] = index.ToString(CultureInfo.InvariantCulture);
@@ -349,9 +350,12 @@ namespace DynALisp.Windows
                             if (has) tb.Text = v ?? "";
                             break;
                         case Gallery g:
-                            _s.Lists.TryGetValue(g.Name, out var tiles);
-                            g.Attach(tiles, Find(g.Group ?? "") as ComboBox, Find(g.Pills ?? "") as Panel, Find(g.Search ?? "") as TextBox, Find(g.Count ?? "") as TextBlock);
-                            if (!has) _s.Values[g.Name] = "-1";
+                            g.Attach(Find, k => _s.Lists.TryGetValue(k, out var l) ? l : null);
+                            // A tile selected when it opens (a sample), else none:
+                            int.TryParse(has ? v : "-1", NumberStyles.Integer, CultureInfo.InvariantCulture, out int gi);
+                            _s.Values[g.Name] = "-1";
+                            _s.Values[g.Name + ".method"] = "";
+                            if (gi >= 0) { g.SelectIndex(gi); _s.Values[g.Name] = gi.ToString(CultureInfo.InvariantCulture); }
                             break;
                     }
                 }

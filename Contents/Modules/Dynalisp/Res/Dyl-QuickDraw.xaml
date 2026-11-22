@@ -171,7 +171,7 @@
             </DockPanel>
             <DockPanel Style="{StaticResource Row}">
               <ComboBox x:Name="mth" DockPanel.Dock="Right" Width="150"/>
-              <TextBlock Style="{DynamicResource Dyl.Label}" Text="Draw with"/>
+              <TextBlock Style="{DynamicResource Dyl.Label}" Text="Default method"/>
             </DockPanel>
             <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Polygon|">
               <TextBox x:Name="msd" DockPanel.Dock="Right" Width="150"
