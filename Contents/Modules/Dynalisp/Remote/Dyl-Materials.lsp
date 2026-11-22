@@ -191,31 +191,39 @@
 ;;  The layers of an assembly (Assembly column, Linear): a band made of several layers side by
 ;;  side, from its left border to its right one (looking from the start of the line). Each
 ;;  layer is kind:ref:thickness, the layers divided by | (never ; or , : the separators of
-;;  the CSV files). Its kind: P, a band hatched as a Quick Draw preset (ref: its id) draws
-;;  it; S, a space (no hatch); L, a line (ref: its layer key, no thickness). The thickness of
+;;  the CSV files). Its kind: P, a band hatched with a material (ref: its id); S, a space (no
+;;  hatch); L, a line (ref: its layer key, no thickness). The thickness of
 ;;  P and S in drawing units. A P layer can have four more fields: its hatch, its own band
 ;;  settings, its own border, the values of each divided by ~, and "1" when it is the
 ;;  structural layer (the line of the band on its middle, justification Structural layer, see
 ;;  *mt:justify*):
-;;    hatch   the layer key of its hatch in place of the hatch layer key of its preset
-;;            (P:qd-Brick:90:HATCH, "": the key of its preset); then, when it has no hatch or
+;;    hatch   the layer key of its hatch in place of the hatch layer key of its material
+;;            (P:mt-Brick:90:HATCH, "": the key of its material); then, when it has no hatch or
 ;;            overrides a property of its hatch, ~on (Has a hatch: "1", "0" no hatch, the
 ;;            outline only) and the properties it overrides, as the border below (color
 ;;            on~color~linetype on~linetype~...~transparency; the key alone otherwise)
-;;    band    on~hatch~ends~extension~angle~corners~miter~lap~joints (on "1"; off "0", the
-;;            values kept for when it is on again; see *mt:bandwindows*; hatch: Line, the
-;;            middle of the layer, Edge, its border nearer to the line of the band, or Origin;
-;;            a 10th value Edge of an older file is the hatch on Edge)
+;;    band    on~hatch~ends~extension~angle~corners~miter~lap~joints~scale by width~width
+;;            factor~origin on line~origin X~origin Y (on "1"; off "0", the values kept for
+;;            when it is on again; see *mt:bandwindows*; hatch: Line, the middle of the layer,
+;;            Edge, its border nearer to the line of the band, or Origin; an older file has
+;;            the first 9 only, the scale and the origin then off, or a 10th value Edge, the
+;;            hatch on Edge)
 ;;    border  on~key, then the properties of the key it overrides, as the border of a preset
 ;;            (see *mt:bordertiles*): color on~color~linetype on~linetype~linetype scale
 ;;            on~scale~lineweight on~lineweight~transparency on~transparency (the commas of
 ;;            an r,g,b color written as dots); on~key alone when it overrides none
-;;  (P:qd-Brick:90::1~Line~Extended~~45~Lapped~4~First~Interrupted:1~A-WALL:1). Returns
+;;  (P:mt-Brick:90::1~Line~Extended~~45~Lapped~4~First~Interrupted~0~1~0~0~0:1~A-WALL:1).
+;;  A file of an older version gave a P layer the id of a Quick Draw preset: Quick Draw reads
+;;  it as the material of that preset (Dyl:QuickDrawAsmFix). Returns
 ;;  ((kind ref thickness [hatch-key band border structural hatch]) ...), the layers that are
 ;;  valid only (ref and layer key in upper case for L; the hatch key in upper case, "" for the
-;;  key of the preset; band and border as lists of their values, nil when there are none, the
+;;  key of the material; band (its 14 values) and border as lists of their values, nil when there are none, the
 ;;  border with its 12 values, the overrides off when it has only 2; structural "1", else nil;
 ;;  hatch: on and the 10 overrides of the hatch, on and the overrides off when it has none):
+;;  The scale and the origin of the hatch of a layer in its band settings (scale by width,
+;;  width factor, origin on line, origin X, origin Y) when it has none (an older file): off:
+(setq *mt:layerscale* '("0" "1" "0" "0" "0"))
+
 (defun Remote>>Dyl:MaterialLayers (str / res k r w b d h)
   (if (= 'STR (type str))
     (foreach x (Remote>>LM:str->lst str "|")
@@ -232,11 +240,14 @@
           (cond
             ((and (= "P" k) (/= "" r) (Remote>>Dyl:MaterialScale-p w))
              (setq res (cons (list "P" r w (strcase (car h))
-                                   (cond ((= 9 (length b)) b)
+                                   (cond ((= 14 (length b)) b)
+                                         ((= 9 (length b)) (append b *mt:layerscale*))
                                          ((= 10 (length b))
-                                          (if (and (= "Edge" (last b)) (= "Line" (cadr b)))
-                                            (Remote>>Dyl:ListSubst (Remote>>LM:sublst b 0 9) 1 "Edge")
-                                            (Remote>>LM:sublst b 0 9)
+                                          (append (if (and (= "Edge" (last b)) (= "Line" (cadr b)))
+                                                    (Remote>>Dyl:ListSubst (Remote>>LM:sublst b 0 9) 1 "Edge")
+                                                    (Remote>>LM:sublst b 0 9)
+                                                  )
+                                                  *mt:layerscale*
                                           )
                                          )
                                    )

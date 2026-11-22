@@ -655,6 +655,16 @@ namespace DynALisp.Windows
                             && double.TryParse(f[4].Substring(1), NumberStyles.Float, CultureInfo.InvariantCulture, out double pw)
                             && double.TryParse(w, NumberStyles.Float, CultureInfo.InvariantCulture, out double th))
                             f[4] = (pw * th).ToString("R", CultureInfo.InvariantCulture);
+                        // or by the band settings of the row (Scale by width, its width factor:
+                        // the thickness x the factor drawing units, at the drawing scale):
+                        else if (f.Length == 7 && f[0] == "P" && c.Length > 12 && Cell(r, c[3]) == "1" && Cell(r, c[11]) == "1" && t.Unit > 0
+                            && double.TryParse(w, NumberStyles.Float, CultureInfo.InvariantCulture, out double tw) && tw > 0)
+                        {
+                            if (!double.TryParse(Cell(r, c[12]), NumberStyles.Float, CultureInfo.InvariantCulture, out double fc) || fc <= 0) fc = 1;
+                            double dsc = t.DrawScale > 0 ? t.DrawScale : 1;
+                            f[4] = (fc * t.Unit * tw / dsc).ToString("R", CultureInfo.InvariantCulture);
+                            f[6] = dsc.ToString("R", CultureInfo.InvariantCulture);
+                        }
                         band = string.Join("?", f);
                     }
                     bool own = kind == "P" && Cell(r, c[3]) == "1";

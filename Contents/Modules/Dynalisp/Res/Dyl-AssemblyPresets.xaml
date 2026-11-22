@@ -24,9 +24,9 @@
   The layers of the assembly shown are a list of rows edited in the window (Rows.cs), held in
   the column 4 of the assembly (dyl:Win.RowsIn), greyed out while several assemblies are
   selected (pst.many): a row per layer, its columns: 0 the kind (P Hatch, S Space, L Line), 1
-  the Quick Draw preset of a Hatch layer (its id), 2 the thickness of a Hatch or a Space, 3
-  the layer key of the hatch of a Hatch layer ("": the key of its preset), 4 the layer key
-  of a Line;
+  the material of a Hatch layer (its id), 2 the thickness of a Hatch or a Space, 3
+  the layer key of the hatch of a Hatch layer ("": the hatch layer key of its material), 4 the
+  layer key of a Line;
   a Hatch layer: 5 its own band settings on ("1"), 6 to 13 those settings (hatch aligned to,
   ends, extension, angle, corners, miter limit, lap, joints: edited in the Band Settings
   window, opened by lbe on the layers selected), 14 its own border on, 15 the layer key of
@@ -37,11 +37,13 @@
   the others, dyl:Win.Exclusive; the Justification Structural layer of a Quick Draw preset puts
   the line drawn in its middle), 27 Has a hatch ("0": no hatch, the outline only), 28 to 37
   the properties its hatch overrides (as its border; edited with its layer key, column 3, in
-  the Hatch Settings window, opened by lho on the layers selected). Every column is kept in every row, so a layer turned into
+  the Hatch Settings window, opened by lho on the layers selected), 38 to 42 the scale and the
+  origin of its hatch, with its band settings (scale by width, width factor, origin on line,
+  origin X, origin Y). Every column is kept in every row, so a layer turned into
   another kind and back gets its values again; the Lisp keeps those of its kind. Add, Remove,
   Move up, Move down and Flip run in the window. The preview (an AssemblyTile,
   Installer\Windows\Engine\Assembly.cs) draws the rows as they are edited: lp/specs the
-  preview of each preset, ll/ends the ends of the whole band, ll/paper the inches of a drawing
+  preview of each material (scaled by the thickness of a layer whose band settings say so), ll/ends the ends of the whole band, ll/paper the inches of a drawing
   unit and the drawing scale.
 -->
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -138,7 +140,7 @@
             <ColumnDefinition Width="80"/>
           </Grid.ColumnDefinitions>
           <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Kind"/>
-          <TextBlock Grid.Column="1" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Preset"/>
+          <TextBlock Grid.Column="1" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Material"/>
           <TextBlock Grid.Column="2" Style="{DynamicResource Dyl.Sub}" Margin="0" HorizontalAlignment="Right" Text="Thickness"/>
         </Grid>
         <DockPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
@@ -227,10 +229,10 @@
         </DockPanel>
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
           <ComboBox x:Name="lp" DockPanel.Dock="Right" Width="220" dyl:Win.Column="1"/>
-          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Preset"/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Material"/>
         </DockPanel>
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk!=L">
-          <TextBox x:Name="lw" DockPanel.Dock="Right" Width="220" dyl:Win.Column="2" dyl:Win.Follows="lp/widths"
+          <TextBox x:Name="lw" DockPanel.Dock="Right" Width="220" dyl:Win.Column="2"
                    dyl:Win.Check="positive" dyl:Win.CheckMessage="The thickness must be a number greater than 0."/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Thickness"/>
         </DockPanel>
@@ -249,7 +251,7 @@
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
           <dyl:OpenButton x:Name="lbe" DockPanel.Dock="Right" ToolTip="Band Settings" dyl:Win.EnabledBy="lbs"
                           dyl:Win.Open="Dyl-QuickDrawBandSettings.xaml"
-                          dyl:Win.Columns="mht:6,men:7,mex:8,mea:9,mco:10,mml:11,mlt:12,mjo:13"/>
+                          dyl:Win.Columns="mht:6,men:7,mex:8,mea:9,mco:10,mml:11,mlt:12,mjo:13,msw:38,mfc:39,mor:40,moa:41,mof:42"/>
           <CheckBox x:Name="lbs" Content="Custom band settings" dyl:Win.Column="5"/>
         </DockPanel>
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
@@ -268,7 +270,7 @@
     </GroupBox>
     <!-- The assembly as it is drawn, a wall in plan, built as the layers are edited: -->
     <GroupBox Header="Preview" Margin="0,10,0,0">
-      <dyl:AssemblyTile MinHeight="120" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14 6 16 27" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
+      <dyl:AssemblyTile MinHeight="120" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14 6 16 27 38 39" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
                         Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"
                         Accent="{DynamicResource Dyl.Accent}"/>
     </GroupBox>

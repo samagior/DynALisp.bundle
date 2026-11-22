@@ -28,16 +28,17 @@
 // Spec each time the rows or the selection change, from these properties:
 //
 //   Rows      the key of the list (ll)
-//   Columns   the columns of a row: kind, preset, thickness, band settings on, ends,
+//   Columns   the columns of a row: kind, material, thickness, band settings on, ends,
 //             extension, end angle, border on, hatch aligned to (Edge: the line of the layer
 //             on its edge), structural, has a hatch ("0": drawn as a space, its border
-//             kept) ("0 1 2 5 7 8 9 14 6 16 27")
+//             kept), scale by width and width factor of its band settings (the hatch scaled
+//             by the thickness: with Paper only) ("0 1 2 5 7 8 9 14 6 16 27 38 39")
 //   Line      the key of the justification of the assembly (Center, Edge, Structural): the
 //             line drawn, in the accent colour, in the middle of the band, on the border of
 //             its first layer, or in the middle of its structural layer; what the Angled ends
 //             of the band turn around
-//   Specs     a list of the Lisp: the preview of each preset (as HatchTile draws it), one
-//             for each item of the field of the preset column (its width replaced by the
+//   Specs     a list of the Lisp: the preview of each material (as HatchTile draws it), one
+//             for each item of the field of the material column (its width replaced by the
 //             thickness of the row; its ppu "w0.0005": the ppu of a unit of thickness, a
 //             hatch scale from the thickness)
 //   Ends      a list of the Lisp: the ends of the whole band (ends extension angle)
