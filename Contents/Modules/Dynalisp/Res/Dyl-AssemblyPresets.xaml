@@ -209,19 +209,19 @@
     </GroupBox>
 
     <DockPanel Grid.Row="1" Grid.Column="4" Margin="0,10,0,0">
-    <!-- The assembly as it is drawn, a wall in plan, built as the layers are edited: -->
-    <GroupBox DockPanel.Dock="Top" Header="Preview" Margin="0">
-      <dyl:AssemblyTile Height="120" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14 6 16" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
-                        Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"
-                        Accent="{DynamicResource Dyl.Accent}"/>
-    </GroupBox>
     <!-- The layer shown (the first one selected); with none selected, the layer Add adds: -->
-    <GroupBox Header="Parameters" Margin="0,10,0,0" dyl:Win.EnabledBy="!pst.many" dyl:Win.Summary="Parameters{sel| (# selected)}">
+    <GroupBox DockPanel.Dock="Top" Header="Parameters" Margin="0" dyl:Win.EnabledBy="!pst.many" dyl:Win.Summary="Parameters{sel| (# selected)}">
       <StackPanel>
         <DockPanel Style="{StaticResource Row}">
           <ComboBox x:Name="lk" DockPanel.Dock="Right" Width="220" dyl:Win.Column="0"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Kind"/>
-        </DockPanel>
+        <!-- The assembly as it is drawn, a wall in plan, built as the layers are edited: -->
+    <GroupBox Header="Preview" Margin="0,10,0,0">
+      <dyl:AssemblyTile MinHeight="120" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14 6 16" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
+                        Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"
+                        Accent="{DynamicResource Dyl.Accent}"/>
+    </GroupBox>
+    </DockPanel>
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
           <ComboBox x:Name="lp" DockPanel.Dock="Right" Width="220" dyl:Win.Column="1"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Preset"/>

@@ -320,11 +320,27 @@ namespace DynALisp.Windows
         // The scale of a tile zoomed out, in its bottom right corner:
         internal void Label(DrawingContext dc, Rect r, string text)
         {
+            var ft = LabelText(text);
+            DrawLabel(dc, new Rect(r.Right - ft.Width - 12, r.Bottom - ft.Height - 7, ft.Width + 8, ft.Height + 2), ft);
+        }
+
+        // The label centred on x, its top at y (under the wall of an AssemblyTile):
+        internal void Label(DrawingContext dc, double x, double y, string text)
+        {
+            var ft = LabelText(text);
+            DrawLabel(dc, new Rect(x - ft.Width / 2 - 4, y, ft.Width + 8, ft.Height + 2), ft);
+        }
+
+        FormattedText LabelText(string text)
+        {
             double ppd = 1;
             try { ppd = VisualTreeHelper.GetDpi(this).PixelsPerDip; } catch { }
-            var ft = new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
+            return new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
                 new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.SemiBold, FontStretches.Normal), 10.5, Ink, ppd);
-            var box = new Rect(r.Right - ft.Width - 12, r.Bottom - ft.Height - 7, ft.Width + 8, ft.Height + 2);
+        }
+
+        void DrawLabel(DrawingContext dc, Rect box, FormattedText ft)
+        {
             dc.DrawRoundedRectangle(LabelBack, null, box, 3, 3);
             dc.DrawText(ft, new Point(box.X + 4, box.Y + 1));
         }

@@ -21,7 +21,8 @@
 // together, across the whole band. A layer with its own border is outlined in the accent
 // colour; the layers selected in the list are tinted. It is drawn at a scale (1:20) that
 // fits the wall in the tile, its hatches at the same scale, so their size against the
-// thickness of the layers is as drawn.
+// thickness of the layers is as drawn. The wall is in the middle of the tile, its left
+// side open (it goes on), the scale centred under it.
 //
 // It follows a list of rows (Rows.cs): the editor of the list named by Rows gives it its
 // Spec each time the rows or the selection change, from these properties:
@@ -76,6 +77,9 @@ namespace DynALisp.Windows
         // The inches of a drawing unit and the drawing scale (0: not given), set by the editor:
         internal double Unit, DrawScale;
 
+        // Where the wall starts on the left (its open side), on the screen:
+        double _xs;
+
         sealed class Layer
         {
             public HatchTile.Band B;
@@ -119,8 +123,10 @@ namespace DynALisp.Windows
             var wide = all.Where(l => l.B.Kind != "L").ToList();
             if (wide.Count == 0 || wide.Sum(l => l.B.Width) <= 0) { dc.Pop(); return; }
 
-            const double padY = 16, padR = 60;
-            double avail = r.Height - 2 * padY;
+            // The wall in the middle of the tile, as far from its left and its right sides, its
+            // scale under it (the room of the label kept, so the wall does not move with it):
+            const double padY = 12, padX = 28, labelH = 20;
+            double avail = r.Height - 2 * padY - (ShowScale ? labelH : 0);
             double tot = wide.Sum(l => l.B.Width);
             double zoom, label;
             bool real = Unit > 0 && DrawScale > 0;
@@ -147,6 +153,7 @@ namespace DynALisp.Windows
             double h = hs.Sum();
             if (!real && h > avail) { hs = hs.Select(x => x * avail / h).ToList(); h = avail; }
             double y = padY + (avail - h) / 2, yc = y + h / 2;
+            double yLabel = y + h + 6;
             for (int i = 0; i < wide.Count; i++) { wide[i].Top = y; y += hs[i]; wide[i].Bottom = y; }
             // The line drawn (Line): what the ends of the band turn around:
             var core = wide.FirstOrDefault(l => l.Core && l.B.Kind == "P");
@@ -161,7 +168,8 @@ namespace DynALisp.Windows
             if (common != null) { whole.End = common.End; whole.Ext = common.Ext; whole.Angle = common.Angle; }
             foreach (var l in wide) l.Reach = Reach(l, whole, yc, k);
             double reach = Math.Min(r.Width * 0.3, wide.Max(l => l.Reach));
-            double x0 = r.Width - padR - reach;
+            _xs = padX;
+            double x0 = r.Width - padX - reach;
 
             var pen = new Pen(Ink, 1) { StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round, LineJoin = PenLineJoin.Round };
             var accent = new Pen(Accent, 2) { StartLineCap = PenLineCap.Round, EndLineCap = PenLineCap.Round, LineJoin = PenLineJoin.Round };
@@ -177,7 +185,7 @@ namespace DynALisp.Windows
                 // (HatchTile.Draw covers the circle around its box):
                 dc.PushClip(shapes[i]);
                 double lh = Math.Max(1, l.Bottom - l.Top), cw = Math.Max(120, 2 * lh);
-                for (double cx = 0; cx < r.Width; cx += cw)
+                for (double cx = _xs; cx < r.Width; cx += cw)
                 {
                     var box = new Rect(cx, l.Top, Math.Min(cw, r.Width - cx), lh);
                     dc.PushClip(new RectangleGeometry(box));
@@ -203,17 +211,17 @@ namespace DynALisp.Windows
             {
                 if (l.B.Kind != "L") { at++; continue; }
                 double ly = at == 0 ? wide[0].Top : wide[Math.Min(at, wide.Count) - 1].Bottom;
-                dc.DrawLine(dash, new Point(0, ly), new Point(x0 + EndAt(whole, whole, ly, yc, k), ly));
+                dc.DrawLine(dash, new Point(_xs, ly), new Point(x0 + EndAt(whole, whole, ly, yc, k), ly));
             }
             // The line drawn, to its end (Line given):
             if (Line != null)
             {
                 var lp = new Pen(Accent, 1.5) { DashStyle = new DashStyle(new double[] { 8, 3, 1.5, 3 }, 0) };
                 lp.Freeze();
-                dc.DrawLine(lp, new Point(0, yc), new Point(x0, yc));
+                dc.DrawLine(lp, new Point(_xs, yc), new Point(x0, yc));
                 dc.DrawEllipse(Accent, null, new Point(x0, yc), 3, 3);
             }
-            if (Math.Abs(zoom - 1) > 1e-9 && ShowScale) Label(dc, r, "1:" + label.ToString("0.##", Inv));
+            if (Math.Abs(zoom - 1) > 1e-9 && ShowScale) Label(dc, (_xs + x0 + reach) / 2, yLabel, "1:" + label.ToString("0.##", Inv));
             dc.Pop();
         }
 
@@ -268,7 +276,7 @@ namespace DynALisp.Windows
             }
         }
 
-        // The outline of the layer l, from the left of the tile to its end at x0 (closed: the
+        // The outline of the layer l, from the left of the wall (_xs) to its end at x0 (closed: the
         // shape to hatch; else its border: its two sides and its end, but Open):
         Geometry Outline(Layer l, Layer w, double x0, double yc, double k, bool closed)
         {
@@ -277,7 +285,7 @@ namespace DynALisp.Windows
             using (var ctx = g.Open())
             {
                 bool end = closed || l.End != "Open";
-                ctx.BeginFigure(new Point(-2, l.Top), closed, closed);
+                ctx.BeginFigure(new Point(_xs, l.Top), closed, closed);
                 ctx.LineTo(new Point(xt, l.Top), true, true);
                 if (l.End == "Round")
                 {
@@ -286,7 +294,7 @@ namespace DynALisp.Windows
                     ctx.ArcTo(new Point(xb, l.Bottom), new Size(rr, rr), 0, false, SweepDirection.Clockwise, end, true);
                 }
                 else ctx.LineTo(new Point(xb, l.Bottom), end, true);
-                ctx.LineTo(new Point(-2, l.Bottom), true, true);
+                ctx.LineTo(new Point(_xs, l.Bottom), true, true);
             }
             g.Freeze();
             return g;
