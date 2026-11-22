@@ -357,6 +357,8 @@
     ("mt-ResilientChannel" "Metal" "Resilient Metal Channel" "hp-Void" "" "" "" "")
     ("mt-SteelFurring" "Metal" "Steel Furring Channel" "hp-Void" "" "" "" "")
     ("mt-HollowCoreSlab" "Concrete" "Hollow Core Slab" "hp-Concrete" "" "" "" "")
+    ("mt-GypsumConcrete" "Concrete" "Gypsum Concrete" "hp-LightweightConcrete" "" "" "" "")
+    ("mt-SteelDeck" "Metal" "Steel Deck" "hp-Steel" "" "" "" "")
     ("mt-Void" "Air" "Void" "hp-Void" "" "" "" "")
    )
 )
