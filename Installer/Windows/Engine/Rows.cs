@@ -214,7 +214,8 @@ namespace DynALisp.Windows
                 foreach (var x in s.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
                     if (int.TryParse(x, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i) && i >= 0 && i < _rows.Count) sel.Add(i);
             Select(sel);
-            if (sel.Count == 0) Show(_rows.Count > 0 ? _rows[0] : _new ?? new string[_ncols]);
+            // none selected: the fields show the new row (what Add adds):
+            if (sel.Count == 0) Show(_new ?? (_rows.Count > 0 ? _rows[0] : new string[_ncols]));
         }
 
         void Rebuild()
@@ -469,7 +470,12 @@ namespace DynALisp.Windows
                 }
                 b.IsEnabled = on && !_s.Off.Contains(b.Name ?? "");
             }
-            foreach (var f in _fields.Where(x => x.Unique != null && sel.Count > 1)) f.El.IsEnabled = false;
+            // a field unique to each row is for one row only (its own rule, if any, set by the view):
+            foreach (var f in _fields.Where(x => x.Unique != null))
+            {
+                if (sel.Count > 1) f.El.IsEnabled = false;
+                else if (Win.GetEnabledBy(f.El) == null && !_s.Off.Contains(f.Key)) f.El.IsEnabled = true;
+            }
             Summary();
         }
 
