@@ -18,15 +18,17 @@
   Opened by the open button of Assembly in the Quick Draw window (it closes with 5, the Lisp
   shows this one: Dyl:QuickDrawAsmDialog of Apps\Draw\Dyl-QuickDraw.lsp), on the assembly of
   the preset shown. A preset window (Installer\Windows\Engine\Presets.cs): its list "lst" is
-  the assembly presets (pst/rows: id group name layers border-lines dividing-lines, then the
-  columns the Lisp adds: 6 the layers as rows, 7 to 18 the Border lines, 19 to 30 the
+  the assembly presets (pst/rows: id group name layers border-lines dividing-lines exterior,
+  then the columns the Lisp adds: 7 the layers as rows, 8 to 19 the Border lines, 20 to 31 the
   Dividing lines: on, layer key, the properties they override), New, Copy and Delete run in
   the window; OK saves them and gives the assembly selected to the Quick Draw presets
   selected. Border lines (abl, its two faces and its ends) and Dividing lines (adl, between
   its layers) are checkboxes of the preset (Lisp: wtiles), their open buttons the Border
   Settings window on their columns of the assemblies selected (Presets.cs: Win.Columns).
+  Exterior (aex, column 6: "First" or "Last") says which end of the list of layers is the
+  outside of the wall, for the low permeance ratio.
   The layers of the assembly shown are a list of rows edited in the window (Rows.cs), held in
-  the column 6 of the assembly (dyl:Win.RowsIn), greyed out while several assemblies are
+  the column 7 of the assembly (dyl:Win.RowsIn), greyed out while several assemblies are
   selected (pst.many): a row per layer, its columns: 0 the kind ("P"), 1 its material (its
   id; the Material list shows the materials of the group of its Group list, 43:
   dyl:Win.ListBy, lp/by the group of each material), 2 its thickness, 3 the layer key of its
@@ -37,15 +39,22 @@
   that border (edited in the Border Settings window, opened by lbo on the layers selected,
   with the properties it overrides in 17 to 26: color on, color, linetype on, linetype,
   linetype scale on, scale, lineweight on, lineweight, transparency on, transparency), 16
-  Structural ("1": the structural layer, one at most: the window clears it in
-  the others, dyl:Win.Exclusive; the Justification Structural layer of a Quick Draw preset puts
-  the line drawn in its middle), 27 Has a hatch ("0": no hatch, the outline only), 28 to 37
+  Load-bearing ("1", lsr: any number of layers; the Justification Load-bearing layers of a
+  Quick Draw preset puts the line drawn in the middle of all of them together), 27 Has a hatch ("0": no hatch, the outline only), 28 to 37
   the properties its hatch overrides (as its border; edited with its layer key, column 3, in
   the Hatch Settings window, opened by lho on the layers selected), 38 to 42 the scale and the
   origin of its hatch, with its band settings (scale by width, width factor, origin on line,
-  origin X, origin Y), 43 the group of its material (read, never saved). Each row shows the
-  thermal resistance and the mass of its layer (P[1:2:lp/rsi], P[1:2:lp/mass], Rows.cs), from
-  the data of its material and its thickness, a dash when it has none. Under the list, ltm
+  origin X, origin Y), 43 the group of its material (read, never saved), 44 the material of
+  its framing ("" None, lfm: a discontinuous layer, the studs and the insulation between
+  them, the material of the layer), 45 the share of its area in percent (lfp), 46 Variable
+  thickness (lvt), 47 Continuous insulation (lci: it covers the structure and its thermal
+  bridges) and 48 Low permeance (llp, one at most: dyl:Win.Exclusive), the four checkboxes
+  also checked in the list (Win.Toggle).
+  Each row shows the thermal resistance and the mass of its layer (P[1:2:lp/rsi:44:45:lfm/rsi:p],
+  P[1:2:lp/mass:44:45:lfm/mass:a], Rows.cs), from the data of its material, of its framing
+  and its thickness, a dash when it has none: the framing and the insulation in parallel for
+  the resistance (the isothermal planes method of the building code), by their areas for the
+  mass. Under the list, ltm
   (metric) and lti (imperial, mt.imp) add up the thermal resistance and the mass of the layers
   from lp/rsi and lp/mass, the data of each material (Remote>>Dyl:MaterialDataLists). Add, Remove,
   Move up, Move down and Flip run in the window. The preview (an AssemblyTile,
@@ -67,7 +76,7 @@
     <Grid.ColumnDefinitions>
       <ColumnDefinition Width="370"/>
       <ColumnDefinition Width="10"/>
-      <ColumnDefinition Width="520"/>
+      <ColumnDefinition Width="800"/>
       <ColumnDefinition Width="10"/>
       <ColumnDefinition Width="360"/>
     </Grid.ColumnDefinitions>
@@ -152,14 +161,19 @@
           <DockPanel Grid.Column="2" Style="{StaticResource Row}">
             <dyl:OpenButton x:Name="abo" DockPanel.Dock="Right" ToolTip="Border Settings" dyl:Win.EnabledBy="abl"
                             dyl:Win.Open="Dyl-QuickDrawBorderSettings.xaml"
-                            dyl:Win.Columns="out:8,bco:9,bcv:10,blo:11,blt:12,bso:13,bsc:14,bwo:15,bwt:16,bto:17,btr:18"/>
+                            dyl:Win.Columns="out:9,bco:10,bcv:11,blo:12,blt:13,bso:14,bsc:15,bwo:16,bwt:17,bto:18,btr:19"/>
             <CheckBox x:Name="abl" Content="Border lines"/>
           </DockPanel>
           <DockPanel Grid.Row="1" Grid.Column="2" Style="{StaticResource Row}">
             <dyl:OpenButton x:Name="ado" DockPanel.Dock="Right" ToolTip="Border Settings" dyl:Win.EnabledBy="adl"
                             dyl:Win.Open="Dyl-QuickDrawBorderSettings.xaml"
-                            dyl:Win.Columns="out:20,bco:21,bcv:22,blo:23,blt:24,bso:25,bsc:26,bwo:27,bwt:28,bto:29,btr:30"/>
+                            dyl:Win.Columns="out:21,bco:22,bcv:23,blo:24,blt:25,bso:26,bsc:27,bwo:28,bwt:29,bto:30,btr:31"/>
             <CheckBox x:Name="adl" Content="Dividing lines"/>
+          </DockPanel>
+          <!-- Which end of the layers is the outside (the low permeance ratio): -->
+          <DockPanel Grid.Row="2" Grid.Column="2" Style="{StaticResource Row}">
+            <ComboBox x:Name="aex" DockPanel.Dock="Right" Width="150"/>
+            <TextBlock Style="{DynamicResource Dyl.Label}" Text="Exterior"/>
           </DockPanel>
         </Grid>
     </GroupBox>
@@ -172,6 +186,10 @@
             <ColumnDefinition Width="70"/>
             <ColumnDefinition Width="56"/>
             <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition Width="70"/>
+            <ColumnDefinition Width="70"/>
           </Grid.ColumnDefinitions>
           <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Group"/>
           <TextBlock Grid.Column="1" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Material"/>
@@ -181,6 +199,12 @@
           <TextBlock Grid.Column="3" Style="{DynamicResource Dyl.Sub}" Margin="0" HorizontalAlignment="Right" Text="RSI" dyl:Win.VisibleBy="!mt.imp"/>
           <TextBlock Grid.Column="3" Style="{DynamicResource Dyl.Sub}" Margin="0" HorizontalAlignment="Right" Text="R" dyl:Win.VisibleBy="mt.imp"/>
           <TextBlock Grid.Column="4" Style="{DynamicResource Dyl.Sub}" Margin="0" HorizontalAlignment="Right" Text="Mass"/>
+          <!-- Load-bearing (16), Variable thickness (46), Continuous insulation (47) and Low
+               permeance (48), checked in the list itself: -->
+          <TextBlock Grid.Column="5" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" TextAlignment="Center" TextWrapping="Wrap" Text="Load-bearing"/>
+          <TextBlock Grid.Column="6" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" TextAlignment="Center" TextWrapping="Wrap" Text="Variable thickness"/>
+          <TextBlock Grid.Column="7" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" TextAlignment="Center" TextWrapping="Wrap" Text="Continuous insulation"/>
+          <TextBlock Grid.Column="8" Style="{DynamicResource Dyl.Sub}" Margin="0" VerticalAlignment="Bottom" TextAlignment="Center" TextWrapping="Wrap" Text="Low permeance"/>
         </Grid>
         <DockPanel DockPanel.Dock="Bottom" Margin="0,10,0,0">
           <Button x:Name="la" DockPanel.Dock="Left" Margin="0" Content="Add" dyl:Win.Do="add"/>
@@ -194,16 +218,27 @@
              the data of their materials (lp/rsi, lp/mass), in the units of the drawing, the
              layers whose material has no such data counted apart: -->
         <TextBlock x:Name="ltm" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="!mt.imp"
-                   dyl:Win.Summary="Thermal resistance {per:1:2:lp/rsi} m²·K/W{miss:1:lp/rsi|, 1 layer unknown|, # layers unknown}  ·  Mass {per:1:2:lp/mass} kg/m²{miss:1:lp/mass|, 1 layer unknown|, # layers unknown}"
+                   dyl:Win.Summary="Thermal resistance {per:1:2:lp/rsi:44:45:lfm/rsi:p} m²·K/W{miss:1:lp/rsi:44:45:lfm/rsi|, 1 layer unknown|, # layers unknown}  ·  Mass {per:1:2:lp/mass:44:45:lfm/mass:a} kg/m²{miss:1:lp/mass:44:45:lfm/mass|, 1 layer unknown|, # layers unknown}"
                    dyl:Win.SummaryEmpty=""/>
         <TextBlock x:Name="lti" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="mt.imp"
-                   dyl:Win.Summary="Thermal resistance R {per:1:2:lp/rsi}{miss:1:lp/rsi|, 1 layer unknown|, # layers unknown}  ·  Mass {per:1:2:lp/mass} lb/ft²{miss:1:lp/mass|, 1 layer unknown|, # layers unknown}"
+                   dyl:Win.Summary="Thermal resistance R {per:1:2:lp/rsi:44:45:lfm/rsi:p}{miss:1:lp/rsi:44:45:lfm/rsi|, 1 layer unknown|, # layers unknown}  ·  Mass {per:1:2:lp/mass:44:45:lfm/mass:a} lb/ft²{miss:1:lp/mass:44:45:lfm/mass|, 1 layer unknown|, # layers unknown}"
                    dyl:Win.SummaryEmpty=""/>
+        <!-- The thermal resistance of the layers checked Continuous insulation (over the
+             thermal bridges of the structure), and the low permeance ratio: the layers from
+             the exterior (aex) to the one checked Low permeance, over the others: -->
+        <TextBlock x:Name="lcm" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="!mt.imp"
+                   dyl:Win.Summary="{over:1:2:lp/rsi:44:45:lfm/rsi:p@lci|Continuous insulation # m²·K/W|Continuous insulation unknown}" dyl:Win.SummaryEmpty=""/>
+        <TextBlock x:Name="lcu" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="mt.imp"
+                   dyl:Win.Summary="{over:1:2:lp/rsi:44:45:lfm/rsi:p@lci|Continuous insulation R #|Continuous insulation unknown}" dyl:Win.SummaryEmpty=""/>
+        <TextBlock x:Name="lrf" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="aex!=Last"
+                   dyl:Win.Summary="{ratio:first:1:2:lp/rsi:44:45:lfm/rsi:p@llp|Low permeance ratio #|Low permeance ratio unknown}" dyl:Win.SummaryEmpty=""/>
+        <TextBlock x:Name="lrl" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,2,0,0" dyl:Win.VisibleBy="aex=Last"
+                   dyl:Win.Summary="{ratio:last:1:2:lp/rsi:44:45:lfm/rsi:p@llp|Low permeance ratio #|Low permeance ratio unknown}" dyl:Win.SummaryEmpty=""/>
         <TextBlock x:Name="lt" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Desc}" Margin="6,8,0,0"
                    dyl:Win.Summary="{}{count:|layer|layers}, width {sum:2}"
                    dyl:Win.SummaryEmpty="No layers."/>
         <!-- Ctrl / Shift click: several layers edited at once: -->
-        <ListBox x:Name="ll" MinHeight="200" dyl:Win.Rows="1" dyl:Win.RowsIn="6">
+        <ListBox x:Name="ll" MinHeight="200" dyl:Win.Rows="1" dyl:Win.RowsIn="7">
           <ListBox.ItemTemplate>
             <DataTemplate>
               <Grid>
@@ -213,11 +248,15 @@
                   <ColumnDefinition Width="70"/>
                   <ColumnDefinition Width="56"/>
                   <ColumnDefinition Width="56"/>
+                  <ColumnDefinition Width="70"/>
+                  <ColumnDefinition Width="70"/>
+                  <ColumnDefinition Width="70"/>
+                  <ColumnDefinition Width="70"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock Foreground="{DynamicResource Dyl.Muted}" Text="{Binding [43]}" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
                 <StackPanel Grid.Column="1" Margin="0,0,8,0">
                   <TextBlock x:Name="pre" TextTrimming="CharacterEllipsis">
-                    <Run Text="{Binding [1], Mode=OneWay}"/><Run x:Name="hk" Foreground="{DynamicResource Dyl.Muted}" Text="{Binding V[3], Mode=OneWay, StringFormat='{}  [{0}]'}"/><Run x:Name="sr" Foreground="{DynamicResource Dyl.Accent}" Text=""/>
+                    <Run Text="{Binding [1], Mode=OneWay}"/><Run x:Name="hk" Foreground="{DynamicResource Dyl.Muted}" Text="{Binding V[3], Mode=OneWay, StringFormat='{}  [{0}]'}"/><Run x:Name="fr" Text="{Binding [44], Mode=OneWay, StringFormat='{}  + {0}'}"/><Run x:Name="fp" Text="{Binding V[45], Mode=OneWay, StringFormat='{} {0}%'}"/>
                   </TextBlock>
                   <!-- Its own band settings (its ends, its corners) and its own border: -->
                   <TextBlock x:Name="own" Foreground="{DynamicResource Dyl.Muted}" FontSize="11" TextTrimming="CharacterEllipsis">
@@ -227,8 +266,16 @@
                 <TextBlock x:Name="thk" Grid.Column="2" HorizontalAlignment="Right" Text="{Binding V[2]}"/>
                 <!-- From the data of its material and its thickness (lp/rsi, lp/mass, as the
                      total under the list), a dash when its material has none: -->
-                <TextBlock Grid.Column="3" HorizontalAlignment="Right" Text="{Binding P[1:2:lp/rsi|–]}"/>
-                <TextBlock Grid.Column="4" HorizontalAlignment="Right" Text="{Binding P[1:2:lp/mass|–]}"/>
+                <TextBlock Grid.Column="3" HorizontalAlignment="Right" Text="{Binding P[1:2:lp/rsi:44:45:lfm/rsi:p|–]}"/>
+                <TextBlock Grid.Column="4" HorizontalAlignment="Right" Text="{Binding P[1:2:lp/mass:44:45:lfm/mass:a|–]}"/>
+                <CheckBox Grid.Column="5" Margin="0" HorizontalAlignment="Center" ToolTip="Load-bearing" dyl:Win.Toggle="16"
+                          IsChecked="{Binding V[16], Mode=OneWay, Converter={x:Static dyl:On.Converter}}"/>
+                <CheckBox Grid.Column="6" Margin="0" HorizontalAlignment="Center" ToolTip="Variable thickness" dyl:Win.Toggle="46"
+                          IsChecked="{Binding V[46], Mode=OneWay, Converter={x:Static dyl:On.Converter}}"/>
+                <CheckBox Grid.Column="7" Margin="0" HorizontalAlignment="Center" ToolTip="Continuous insulation" dyl:Win.Toggle="47"
+                          IsChecked="{Binding V[47], Mode=OneWay, Converter={x:Static dyl:On.Converter}}"/>
+                <CheckBox Grid.Column="8" Margin="0" HorizontalAlignment="Center" ToolTip="Low permeance" dyl:Win.Toggle="48"
+                          IsChecked="{Binding V[48], Mode=OneWay, Converter={x:Static dyl:On.Converter}}"/>
               </Grid>
               <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding V[5]}" Value="0">
@@ -252,8 +299,10 @@
                 <DataTrigger Binding="{Binding V[27]}" Value="0">
                   <Setter TargetName="hk" Property="Text" Value="  No hatch"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding V[16]}" Value="1">
-                  <Setter TargetName="sr" Property="Text" Value="  Structural"/>
+                <!-- Its framing (a discontinuous layer) and the share of its area: -->
+                <DataTrigger Binding="{Binding V[44]}" Value="">
+                  <Setter TargetName="fr" Property="Text" Value=""/>
+                  <Setter TargetName="fp" Property="Text" Value=""/>
                 </DataTrigger>
               </DataTemplate.Triggers>
             </DataTemplate>
@@ -282,7 +331,30 @@
         </DockPanel>
         <!-- The structural layer, the line of the band on its middle (Structural layer): -->
         <DockPanel Style="{StaticResource Row}">
-          <CheckBox x:Name="lsr" Content="Structural" dyl:Win.Column="16" dyl:Win.Exclusive="1"/>
+          <CheckBox x:Name="lsr" Content="Load-bearing" dyl:Win.Column="16"/>
+        </DockPanel>
+        <!-- A discontinuous layer: the material of its framing (the studs, "" None; the
+             material of the layer is the insulation between them) and its share of the area: -->
+        <DockPanel Style="{StaticResource Row}">
+          <ComboBox x:Name="lfm" DockPanel.Dock="Right" Width="220" dyl:Win.Column="44"/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Framing"/>
+        </DockPanel>
+        <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lfm!=">
+          <TextBox x:Name="lfp" DockPanel.Dock="Right" Width="220" dyl:Win.Column="45"
+                   dyl:Win.Check="positive;max=99.9" dyl:Win.CheckMessage="The framing must be a percentage greater than 0 and less than 100."/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Framing %"/>
+        </DockPanel>
+        <!-- What the layer is (also checked in the list): its thickness varies (a tapered
+             insulation), a continuous insulation over the framing, the layer of low
+             permeance (one at most): -->
+        <DockPanel Style="{StaticResource Row}">
+          <CheckBox x:Name="lvt" Content="Variable thickness" dyl:Win.Column="46"/>
+        </DockPanel>
+        <DockPanel Style="{StaticResource Row}">
+          <CheckBox x:Name="lci" Content="Continuous insulation" dyl:Win.Column="47"/>
+        </DockPanel>
+        <DockPanel Style="{StaticResource Row}">
+          <CheckBox x:Name="llp" Content="Low permeance" dyl:Win.Column="48" dyl:Win.Exclusive="1"/>
         </DockPanel>
         <!-- Its own band settings (the Band Settings window on the layers selected), its
              hatch and its own border, in place of the lines of the assembly (the Hatch

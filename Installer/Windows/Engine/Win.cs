@@ -43,6 +43,10 @@
 //   dyl:Win.Column="2"                      on a field: the column of the row shown it edits
 //   dyl:Win.Unique="message"                on a field: its column unique (any case)
 //   dyl:Win.Exclusive="1"                   on a checkbox field: on in one row at most
+//   dyl:Win.Toggle="46"                     on a checkbox in the template of the rows: checking
+//                                           it sets the column 46 of its row ("1" / "0"), its
+//                                           IsChecked bound to {Binding V[46], Converter=
+//                                           {x:Static dyl:On.Converter}}
 //   dyl:Win.Follows="lp/widths"             on a field: takes the item of that list when the
 //                                           field lp changes
 //   dyl:Win.ListBy="lg"                     on a list field: lists only its items whose
@@ -118,6 +122,10 @@ namespace DynALisp.Windows
         public static string GetUnique(DependencyObject o) => (string)o.GetValue(UniqueProperty);
         public static void SetUnique(DependencyObject o, string v) => o.SetValue(UniqueProperty, v);
 
+        public static readonly DependencyProperty ToggleProperty = Prop("Toggle");
+        public static string GetToggle(DependencyObject o) => (string)o.GetValue(ToggleProperty);
+        public static void SetToggle(DependencyObject o, string v) => o.SetValue(ToggleProperty, v);
+
         public static readonly DependencyProperty ExclusiveProperty = Prop("Exclusive");
         public static string GetExclusive(DependencyObject o) => (string)o.GetValue(ExclusiveProperty);
         public static void SetExclusive(DependencyObject o, string v) => o.SetValue(ExclusiveProperty, v);
@@ -145,5 +153,14 @@ namespace DynALisp.Windows
         public static readonly DependencyProperty SummaryEmptyProperty = Prop("SummaryEmpty");
         public static string GetSummaryEmpty(DependencyObject o) => (string)o.GetValue(SummaryEmptyProperty);
         public static void SetSummaryEmpty(DependencyObject o, string v) => o.SetValue(SummaryEmptyProperty, v);
+    }
+
+    // "1" as true, anything else as false, for a checkbox bound to a column of a row (see
+    // Win.Toggle): {Binding V[46], Converter={x:Static dyl:On.Converter}}:
+    public sealed class On : System.Windows.Data.IValueConverter
+    {
+        public static readonly On Converter = new On();
+        public object Convert(object value, System.Type t, object p, System.Globalization.CultureInfo c) => (value as string) == "1";
+        public object ConvertBack(object value, System.Type t, object p, System.Globalization.CultureInfo c) => value is bool b && b ? "1" : "0";
     }
 }

@@ -30,12 +30,13 @@
 //   Rows      the key of the list (ll)
 //   Columns   the columns of a row: kind, material, thickness, band settings on, ends,
 //             extension, end angle, border on, hatch aligned to (Edge: the line of the layer
-//             on its edge), structural, has a hatch ("0": drawn as a space, its border
+//             on its edge), load-bearing, has a hatch ("0": drawn as a space, its border
 //             kept), scale by width and width factor of its band settings (the hatch scaled
 //             by the thickness: with Paper only) ("0 1 2 5 7 8 9 14 6 16 27 38 39")
 //   Line      the key of the justification of the assembly (Center, Edge, Structural): the
 //             line drawn, in the accent colour, in the middle of the band, on the border of
-//             its first layer, or in the middle of its structural layer; what the Angled ends
+//             its first layer, or in the middle of its load-bearing layers together (Load-bearing
+//             layers: from the border of the first one to the far border of the last); what the Angled ends
 //             of the band turn around
 //   Specs     a list of the Lisp: the preview of each material (as HatchTile draws it), one
 //             for each item of the field of the material column (its width replaced by the
@@ -55,7 +56,7 @@
 // "~": its ends, extension ("": half its width), end angle (degrees), own ("1": across its
 // own thickness), border ("1": its own border), selected ("1"), its own line (Edge: on its
 // border nearer to the line of the band, else in its middle: what its Angled ends turn
-// around), structural ("1": the structural layer).
+// around), load-bearing ("1": a load-bearing layer).
 
 using System;
 using System.Collections.Generic;
@@ -169,9 +170,11 @@ namespace DynALisp.Windows
             double yLabel = y + h + 6;
             for (int i = 0; i < wide.Count; i++) { wide[i].Top = y; y += hs[i]; wide[i].Bottom = y; }
             // The line drawn (Line): what the ends of the band turn around:
-            var core = wide.FirstOrDefault(l => l.Core && l.B.Kind == "P");
+            // (Load-bearing layers: the middle of the load-bearing layers together, from the
+            // border of the first one to the far border of the last one)
+            var core = wide.Where(l => l.Core && l.B.Kind == "P").ToList();
             if (Justify == "Edge") yc = wide[0].Top;
-            else if (Justify == "Structural" && core != null) yc = (core.Top + core.Bottom) / 2;
+            else if (Justify == "Structural" && core.Count > 0) yc = (core.Min(l => l.Top) + core.Max(l => l.Bottom)) / 2;
 
             // How far each end goes past the end of the line, so the longest one fits:
             // The whole band, ending as the layers without their own band settings (its Line
