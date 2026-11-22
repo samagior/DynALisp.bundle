@@ -27,7 +27,7 @@
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dyl="clr-namespace:DynALisp.Windows"
-        Title="DynALisp - Output Prep" dyl:Win.Docs="Output\Dyl-PrepDrawing.htm">
+        Title="DynALisp - Output Prep" dyl:Win.Docs="Output\Dyl-CmdOptimizer.htm">
   <StackPanel Margin="16,16,16,14">
     <GroupBox Header="Steps run before each command" Margin="0">
       <StackPanel>
