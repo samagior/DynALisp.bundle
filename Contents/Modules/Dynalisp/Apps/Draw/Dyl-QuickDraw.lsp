@@ -2715,7 +2715,7 @@
 ;;-------------------------=={ Assembly Layers window }==------------------------;;
 
 ;;  The open button of Assembly (Behaviors box) opens the Assembly Layers window
-;;  (Res\Dyl-AssemblyLayers.xaml, shown by DynALisp.Windows.dll) on the layers of the preset
+;;  (Res\Dyl-AssemblyPresets.xaml, shown by DynALisp.Windows.dll) on the layers of the preset
 ;;  shown (see Remote>>Dyl:MaterialLayers): add, edit, remove, order and flip them, in the
 ;;  window itself (a list of rows, Installer\Windows\Engine\Rows.cs); OK gives them to every
 ;;  preset selected. A Hatch layer uses a Quick Draw preset saved (a new preset gets its id
@@ -2917,7 +2917,7 @@
   )
   (while
     (and
-      (= 1 (car (setq res (Dyl:WinShow "Dyl-AssemblyLayers.xaml"
+      (= 1 (car (setq res (Dyl:WinShow "Dyl-AssemblyPresets.xaml"
                                        (append (list (cons "ll/rows" rows)
                                                      (list "ll/new" def)
                                                      (cons "ll.sel" (cond (sel) ("")))
