@@ -377,9 +377,10 @@
 ;;  the CSV files). Its kind: P, a band hatched with a material (ref: its id); S, a space (no
 ;;  hatch); L, a line (ref: its layer key, no thickness). The thickness of
 ;;  P and S in drawing units. A P layer can have four more fields: its hatch, its own band
-;;  settings, its own border, the values of each divided by ~, and "1" when it is the
-;;  structural layer (the line of the band on its middle, justification Structural layer, see
-;;  *mt:justify*):
+;;  settings, its own border, the values of each divided by ~, and "1" when it is a
+;;  load-bearing layer (the line of the band in the middle of them all, justification
+;;  Load-bearing layers, see *mt:justify*; one layer at most, the structural layer, up to
+;;  DynALisp 1.1):
 ;;    hatch   the layer key of its hatch in place of the hatch layer key of its material
 ;;            (P:mt-Brick:90:HATCH, "": the key of its material); then, when it has no hatch or
 ;;            overrides a property of its hatch, ~on (Has a hatch: "1", "0" no hatch, the
@@ -396,22 +397,37 @@
 ;;            on~scale~lineweight on~lineweight~transparency on~transparency (the commas of
 ;;            an r,g,b color written as dots); on~key alone when it overrides none
 ;;  (P:mt-Brick:90::1~Line~Extended~~45~Lapped~4~First~Interrupted~0~1~0~0~0:1~A-WALL:1).
+;;  Then three more fields of what the layer is, not how it is drawn:
+;;    framing   a discontinuous layer (the studs and the insulation between them, the
+;;              material of the layer): the id of the material of its framing and its share
+;;              of the area in percent, more than 0 and less than 100 (mt-WoodFrame~23); its
+;;              thermal resistance and its mass are those of both (see
+;;              Remote>>Dyl:MaterialLayerValues); every other layer is continuous: the
+;;              thermal resistance of the continuous layers, over the thermal bridges of the
+;;              framing, is added up apart (see Remote>>Dyl:MaterialAssemblyData)
+;;    variable  "1" when its thickness varies (a tapered insulation): its values are those of
+;;              the thickness given
+;;    low perm  "1" for the layer of low air and vapour permeance (one at most): the ratio of
+;;              the thermal resistance outboard of its inner surface to that inboard of it
+;;              (NBC 9.25.5.2, see Remote>>Dyl:MaterialPermRatio)
+;;  (P:mt-MineralWool:140::::1:mt-WoodFrame~23, load-bearing).
 ;;  A file of an older version gave a P layer the id of a Quick Draw preset: Quick Draw reads
 ;;  it as the material of that preset (Dyl:QuickDrawAsmFix). Returns
-;;  ((kind ref thickness [hatch-key band border structural hatch]) ...), the layers that are
+;;  ((kind ref thickness [hatch-key band border bearing hatch framing variable low-perm]) ...), the layers that are
 ;;  valid only (ref and layer key in upper case for L; the hatch key in upper case, "" for the
 ;;  key of the material; band (its 14 values) and border as lists of their values, nil when there are none, the
-;;  border with its 12 values, the overrides off when it has only 2; structural "1", else nil;
-;;  hatch: on and the 10 overrides of the hatch, on and the overrides off when it has none):
+;;  border with its 12 values, the overrides off when it has only 2; bearing "1", else nil;
+;;  hatch: on and the 10 overrides of the hatch, on and the overrides off when it has none;
+;;  framing (id percent), nil without; variable and low perm "1", else nil):
 ;;  The scale and the origin of the hatch of a layer in its band settings (scale by width,
 ;;  width factor, origin on line, origin X, origin Y) when it has none (an older file): off:
 (setq *mt:layerscale* '("0" "1" "0" "0" "0"))
 
-(defun Remote>>Dyl:MaterialLayers (str / res k r w b d h)
+(defun Remote>>Dyl:MaterialLayers (str / res k r w b d h f)
   (if (= 'STR (type str))
     (foreach x (Remote>>LM:str->lst str "|")
       (setq x (mapcar '(lambda (y) (vl-string-trim " " y)) (Remote>>LM:str->lst x ":")))
-      (if (member (length x) '(3 4 5 6 7))
+      (if (member (length x) '(3 4 5 6 7 8 9 10))
         (progn
           (setq k (strcase (car x))
                 r (cadr x)
@@ -419,6 +435,7 @@
                 b (Remote>>LM:str->lst (cond ((nth 4 x)) ("")) "~")
                 d (Remote>>LM:str->lst (cond ((nth 5 x)) ("")) "~")
                 h (Remote>>LM:str->lst (cond ((nth 3 x)) ("")) "~")
+                f (Remote>>LM:str->lst (cond ((nth 7 x)) ("")) "~")
           )
           (cond
             ((and (= "P" k) (/= "" r) (Remote>>Dyl:MaterialScale-p w))
@@ -448,6 +465,9 @@
                                      )
                                      (cons "1" (Remote>>LM:sublst *mt:new* 12 10))
                                    )
+                                   (if (and (= 2 (length f)) (/= "" (car f)) (Remote>>Dyl:MaterialShare-p (cadr f))) f)
+                                   (if (= "1" (nth 8 x)) "1")
+                                   (if (= "1" (nth 9 x)) "1")
                              )
                              res
                        )
@@ -518,6 +538,9 @@
                                   (cond ((Remote>>LM:lst->str (nth 4 l) "~")) (""))
                                   (cond ((Remote>>LM:lst->str (Remote>>Dyl:MaterialLayerBorderStr (nth 5 l)) "~")) (""))
                                   (if (= "1" (nth 6 l)) "1" "")
+                                  (if (nth 8 l) (Remote>>LM:lst->str (nth 8 l) "~") "")
+                                  (if (= "1" (nth 9 l)) "1" "")
+                                  (if (= "1" (nth 10 l)) "1" "")
                             )
                           )
                   )
@@ -534,6 +557,12 @@
     )
     ("")
   )
+)
+
+;;  A share of the area of a framing in percent (see Remote>>Dyl:MaterialLayers): a number
+;;  greater than 0 and less than 100 (a decimal comma read as a point):
+(defun Remote>>Dyl:MaterialShare-p (v / n)
+  (and (= 'STR (type v)) (setq n (distof (vl-string-translate "," "." v) 2)) (< 0 n 100))
 )
 
 ;;  What the layers of the text str are, for the Behaviors box: "3 layers", "No layers":
@@ -597,8 +626,10 @@
 (setq *mt:justify* '(("Ask" "Ask when drawn")
                      ("Center" "Center")
                      ("Edge" "Edge")
-                     ;;  An assembly: the middle of its structural layer (Center without one):
-                     ("Structural" "Structural layer")
+                     ;;  An assembly: the middle of its load-bearing layers together, from the
+                     ;;  border of the first one to the far border of the last one (Center
+                     ;;  without one; the key Structural of DynALisp 1.1 kept):
+                     ("Structural" "Load-bearing layers")
                     )
 )
 
@@ -2913,33 +2944,114 @@
   )
 )
 
-;;  The data of the layers ls of an assembly (see Remote>>Dyl:MaterialLayers: their material
-;;  and their thickness, in drawing units), their materials among the material rows mats (nil:
-;;  read): (resistance mass n-resistance n-mass), in the units of the drawing, the totals of
-;;  the layers whose value is known, then how many layers it is not known for:
-(defun Remote>>Dyl:MaterialAssemblyData (ls mats / rs ms nr nm m th d)
-  (if (not mats) (setq mats (cadr (Remote>>Dyl:MaterialBoth))))
-  (setq rs 0.0 ms 0.0 nr 0 nm 0)
-  (foreach l ls
-    (setq m  (vl-some '(lambda (x) (if (= (strcase (cadr l)) (strcase (car x))) x)) mats)
-          th (cond ((distof (cond ((caddr l)) ("")) 2)) (0.0))
-          d  (if m (Remote>>Dyl:MaterialLayerData m) '(nil nil nil))
-    )
-    (if (car d) (setq rs (+ rs (* th (car d)) (cadr d))) (setq nr (1+ nr)))
-    (if (caddr d) (setq ms (+ ms (* th (caddr d)))) (setq nm (1+ nm)))
+;;  The thermal resistance and the mass per area of the layer l (see
+;;  Remote>>Dyl:MaterialLayers), its materials among the material rows mats, in the units of
+;;  the drawing: (resistance mass), each nil when it is not known. A discontinuous layer (its
+;;  framing, a share f of its area) is the parallel path of the isothermal planes method of the
+;;  building code (NBC 9.36.2.4): its resistance 1 / (f / framing + (1 - f) / cavity), its mass
+;;  f x framing + (1 - f) x cavity, nil when either material has no such value:
+(defun Remote>>Dyl:MaterialLayerValues (l mats / th c fr f r m)
+  (setq th (cond ((distof (cond ((caddr l)) ("")) 2)) (0.0))
+        c  (Remote>>Dyl:MaterialLayerOf (cadr l) th mats)
   )
-  (list rs ms nr nm)
+  (if (nth 8 l)
+    (progn
+      (setq fr (Remote>>Dyl:MaterialLayerOf (car (nth 8 l)) th mats)
+            f  (/ (distof (vl-string-translate "," "." (cadr (nth 8 l))) 2) 100.0)
+            r  (if (and (car c) (car fr))
+                 (if (and (< 0 (car c)) (< 0 (car fr))) (/ 1.0 (+ (/ f (car fr)) (/ (- 1.0 f) (car c)))) 0.0)
+               )
+            m  (if (and (cadr c) (cadr fr)) (+ (* f (cadr fr)) (* (- 1.0 f) (cadr c))))
+      )
+      (list r m)
+    )
+    c
+  )
 )
 
-;;  The data d of an assembly (see Remote>>Dyl:MaterialAssemblyData) as two lines of text, in
-;;  the units of the drawing: "Thermal resistance RSI 3.52" (R in an imperial drawing) and
-;;  "Mass 182 kg/m2", each with the number of layers it does not count:
+;;  The resistance and the mass per area of a thickness th of the material id among the
+;;  material rows mats (see Remote>>Dyl:MaterialLayerData): (resistance mass), each nil when
+;;  it is not known:
+(defun Remote>>Dyl:MaterialLayerOf (id th mats / m d)
+  (setq m (vl-some '(lambda (x) (if (= (strcase id) (strcase (car x))) x)) mats)
+        d (if m (Remote>>Dyl:MaterialLayerData m) '(nil nil nil))
+  )
+  (list (if (car d) (+ (* th (car d)) (cadr d))) (if (caddr d) (* th (caddr d))))
+)
+
+;;  The data of the layers ls of an assembly (see Remote>>Dyl:MaterialLayers: their material
+;;  and their thickness, in drawing units; a discontinuous layer with its framing, see
+;;  Remote>>Dyl:MaterialLayerValues), their materials among the material rows mats (nil:
+;;  read), its exterior side ext (its Exterior column: "Last", the last layer; else the first
+;;  one): (resistance mass n-resistance n-mass continuous n-continuous ratio), in the units of
+;;  the drawing, the totals of the layers whose value is known, then how many layers it is not
+;;  known for; the thermal resistance of its continuous layers (those without a framing, over
+;;  the thermal bridges of the framing; nil when no layer has a framing) and how many of them
+;;  it is not known for; the low permeance ratio (see Remote>>Dyl:MaterialPermRatio: nil without
+;;  a layer of low permeance, -1 when a layer has no thermal resistance):
+(defun Remote>>Dyl:MaterialAssemblyData (ls mats ext / rs ms nr nm cs cn d)
+  (if (not mats) (setq mats (cadr (Remote>>Dyl:MaterialBoth))))
+  (setq rs 0.0 ms 0.0 nr 0 nm 0 cn 0)
+  (foreach l ls
+    (setq d (Remote>>Dyl:MaterialLayerValues l mats))
+    (if (car d) (setq rs (+ rs (car d))) (setq nr (1+ nr)))
+    (if (cadr d) (setq ms (+ ms (cadr d))) (setq nm (1+ nm)))
+    (if (not (nth 8 l))
+      (if (car d) (setq cs (+ (cond (cs) (0.0)) (car d))) (setq cs (cond (cs) (0.0)) cn (1+ cn)))
+    )
+  )
+  ;;  (the continuous layers only over a framing:)
+  (if (not (vl-some '(lambda (l) (nth 8 l)) ls)) (setq cs nil cn 0))
+  (list rs ms nr nm cs cn (Remote>>Dyl:MaterialPermRatio ls mats ext))
+)
+
+;;  The low permeance ratio of the layers ls (NBC 9.25.5.2, Position of Low Permeance
+;;  Materials): the thermal resistance of the layers outboard of the inner surface of the layer
+;;  checked Low permeance (that layer and those on the exterior side ext of it, see
+;;  Remote>>Dyl:MaterialAssemblyData) divided by that of the layers inboard of it (the air films
+;;  not counted, as everywhere); nil without such a layer, -1 when a layer has no thermal
+;;  resistance or nothing is inboard:
+(defun Remote>>Dyl:MaterialPermRatio (ls mats ext / out in d past bad)
+  (if (= "LAST" (strcase (cond (ext) ("")))) (setq ls (reverse ls)))
+  (if (vl-some '(lambda (l) (= "1" (nth 10 l))) ls)
+    (progn
+      (setq out 0.0 in 0.0)
+      (foreach l ls
+        (setq d (car (Remote>>Dyl:MaterialLayerValues l mats)))
+        (cond
+          ((not d) (setq bad T))
+          (past (setq in (+ in d)))
+          ((setq out (+ out d)))
+        )
+        ;;  (past the low permeance layer, the others are inboard:)
+        (if (= "1" (nth 10 l)) (setq past T))
+      )
+      (cond (bad -1) ((< 0.0 in) (/ out in)) (-1))
+    )
+  )
+)
+
+;;  The data d of an assembly (see Remote>>Dyl:MaterialAssemblyData) as lines of text, in the
+;;  units of the drawing: "Thermal resistance RSI 3.52" (R in an imperial drawing) and "Mass
+;;  182 kg/m2", each with the number of layers it does not count; then, when it has them, the
+;;  thermal resistance of its continuous layers and its low permeance ratio:
 (defun Remote>>Dyl:MaterialAssemblyText (d / imp)
   (setq imp (Remote>>Dyl:MaterialImperial-p))
   (strcat "Thermal resistance  " (if imp "R " "RSI ") (Remote>>Dyl:MaterialSig (car d))
           (Remote>>Dyl:MaterialAssemblyMiss (caddr d))
           "\nMass  " (Remote>>Dyl:MaterialSig (cadr d)) (if imp " lb/ft2" " kg/m2")
           (Remote>>Dyl:MaterialAssemblyMiss (cadddr d))
+          (if (nth 4 d)
+            (strcat "\nContinuous layers  " (if imp "R " "RSI ") (Remote>>Dyl:MaterialSig (nth 4 d))
+                    (Remote>>Dyl:MaterialAssemblyMiss (nth 5 d))
+            )
+            ""
+          )
+          (cond
+            ((not (nth 6 d)) "")
+            ((minusp (nth 6 d)) "\nLow permeance ratio  unknown")
+            ((strcat "\nLow permeance ratio  " (rtos (nth 6 d) 2 2)))
+          )
   )
 )
 

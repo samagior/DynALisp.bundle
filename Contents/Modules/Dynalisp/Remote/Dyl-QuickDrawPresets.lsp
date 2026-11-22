@@ -85,7 +85,7 @@
   (cons
     '("QuickDrawAssembly"
       (file . "QuickDrawAssemblies.csv")
-      (header "Id" "Group" "Name" "Layers" "BorderLines" "DividingLines")
+      (header "Id" "Group" "Name" "Layers" "BorderLines" "DividingLines" "Exterior")
       (default . "AS-*")
       (title . "Assembly Presets")
       (doc . "Draw\\Dyl-AssemblyPresets.htm")

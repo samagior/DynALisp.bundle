@@ -322,29 +322,39 @@
 )
 
 ;;  The justifications the line of the band can be given when it is drawn: Center, Edge, and
-;;  Structural for an assembly with a structural layer (qd:layers, see Dyl:QuickDrawLayersCore):
+;;  Structural (the keyword Bearing: Load-bearing layers) for an assembly with a load-bearing
+;;  layer (qd:layers, see Dyl:QuickDrawLayersCore):
 (defun Dyl:QuickDrawJusKeys ()
   (append '("Center" "Edge") (if (Dyl:QuickDrawLayersCore qd:layers) '("Structural")))
 )
 
-;;  Ask the justification of the band, jus by default (see Dyl:QuickDrawJusKeys):
-(defun Dyl:QuickDrawAskJus (jus / ks q)
+;;  Ask the justification of the band, jus by default (see Dyl:QuickDrawJusKeys; Structural
+;;  asked as Bearing):
+(defun Dyl:QuickDrawAskJus (jus / ks kw q)
   (setq ks (Dyl:QuickDrawJusKeys))
   (if (not (member jus ks)) (setq jus "Center"))
-  (initget (Remote>>LM:lst->str ks " "))
-  (if (setq q (getkword (strcat "\nLine on the [" (Remote>>LM:lst->str ks "/") "] <" jus ">: "))) q jus)
+  (setq kw (subst "Bearing" "Structural" ks))
+  (initget (Remote>>LM:lst->str kw " "))
+  (setq q (getkword (strcat "\nLine on the [" (Remote>>LM:lst->str kw "/") "] <" (if (= "Structural" jus) "Bearing" jus) ">: ")))
+  (cond ((= "Bearing" q) "Structural") (q) (jus))
 )
 
-;;  The line of an assembly on its structural layer (Structural layer, see *mt:justify*): the
-;;  distance from the line to the left border of the band of the layers lay (see
-;;  Dyl:QuickDrawLayersGet), the line in the middle of the structural layer; nil without one:
-(defun Dyl:QuickDrawLayersCore (lay / d res)
+;;  The line of an assembly on its load-bearing layers (Load-bearing layers, the key
+;;  Structural of *mt:justify*): the distance from the line to the left border of the band of
+;;  the layers lay (see Dyl:QuickDrawLayersGet), the line in the middle of the load-bearing
+;;  layers together, from the border of the first one to the far border of the last one; nil
+;;  without one:
+(defun Dyl:QuickDrawLayersCore (lay / d a b)
   (setq d 0.0)
   (foreach l lay
-    (if (and (not res) (= "P" (car l)) (nth 8 l)) (setq res (+ d (/ (cadr l) 2.0))))
+    (if (and (= "P" (car l)) (nth 8 l))
+      (setq a (cond (a) (d))
+            b (+ d (cadr l))
+      )
+    )
     (setq d (+ d (cadr l)))
   )
-  res
+  (if a (/ (+ a b) 2.0))
 )
 
 ;;  The width and the justification of a band (Linear, Offset): the width wid and the
@@ -363,9 +373,9 @@
   (if (cdr ws) (setenv "DynalispQuickDrawWidth" (rtos w 2 8)))
   (if (member jus '("Left" "Right")) (setq jus "Edge"))
   (if (not (assoc jus *qd:justify*)) (setq jus "Center"))
-  ;;  Structural layer: an assembly with one only (else Center, said):
+  ;;  Load-bearing layers: an assembly with one at least (else Center, said):
   (if (and (= "Structural" jus) (not (Dyl:QuickDrawLayersCore qd:layers)))
-    (progn (princ "\n--> No structural layer in this assembly: the line is on its center.") (setq jus "Center"))
+    (progn (princ "\n--> No load-bearing layer in this assembly: the line is on its center.") (setq jus "Center"))
   )
   ;;  Ask when drawn: the last justification given by default (saved with setenv):
   (if (= "Ask" jus)
@@ -1227,7 +1237,7 @@
 ;;  see Dyl:QuickDrawLayerBorder), the line of the layer its own band settings align its hatch to
 ;;  (Center: its middle, Edge: its border nearer to the line of the band, Hatch aligned to
 ;;  Layer center or Layer edge, see Dyl:QuickDrawLayerPivot and Dyl:QuickDrawLayerHatch; nil:
-;;  none, its middle) and T when it is the structural layer (see Dyl:QuickDrawLayersCore).
+;;  none, its middle) and T when it is a load-bearing layer (see Dyl:QuickDrawLayersCore).
 ;;  A layer whose material no longer exists is drawn as a space (S), with a message. The
 ;;  lines between the layers of the assembly, its Dividing lines: qd:inner (see
 ;;  Dyl:QuickDrawInner):
@@ -1344,7 +1354,7 @@
 
 ;;  The layers qd:layers across the band of the line pp (closed: the last point joins the
 ;;  first), justification jus, options opt: from the left border of the band to its right one
-;;  (Center, Structural: the line on the middle of the structural layer), from the line toward
+;;  (Center, Structural: the line on the middle of the load-bearing layers), from the line toward
 ;;  the band when the line is a border ("Right": the band on its left, the layers then the
 ;;  other way). Returns (g bands sides keys): g, the geometry of
 ;;  the bands of the layers (see Dyl:QdBandLayers), with their lines: the joins of two of
@@ -2597,8 +2607,8 @@
 )
 
 ;;  Why the preset r is not valid (nil: it is): a preset draws a hatch or a border (but an
-;;  assembly, its layers have their own); Structural layer is the line of an assembly that has
-;;  a structural layer (Linear, see Dyl:QuickDrawLayersCore):
+;;  assembly, its layers have their own); Load-bearing layers is the line of an assembly that
+;;  has a load-bearing layer (Linear, see Dyl:QuickDrawLayersCore):
 (defun Dyl:QuickDrawDlgRowCheck (r)
   (if (and (Dyl:QuickDrawNoHatch-p r) (= "1" (nth *qd:noborder* r)) (not (Dyl:QuickDrawDlgAssembly-p r)))
     "it has neither a hatch nor a border: check Has a hatch or Has a border."
@@ -2616,8 +2626,8 @@
            )
       )
     (if (Dyl:QuickDrawDlgAssembly-p r)
-      "its assembly has no structural layer: check Structural on one of its layers in the Assembly Presets window, or pick another Justification."
-      "Structural layer is the line of an assembly: check Assembly, or pick another Justification."
+      "its assembly has no load-bearing layer: check Load-bearing on its layers in the Assembly Presets window, or pick another Justification."
+      "Load-bearing layers is the line of an assembly: check Assembly, or pick another Justification."
     )
   )
 )
@@ -2694,11 +2704,11 @@
 
 ;;  The description of the assembly of the layers ls (see Remote>>Dyl:MaterialLayers) under
 ;;  its preview: its total thickness, then each layer on a line of its own, from its left
-;;  border, with its thickness (the structural layer marked), in the
+;;  border, with its thickness (the load-bearing layers marked, and what else they are), in the
 ;;  units of the drawing, then its thermal resistance and its mass per area (from the data of
 ;;  its materials, qd:mrows: the material rows read by the window, see
 ;;  Remote>>Dyl:MaterialAssemblyData); "" without layers:
-(defun Dyl:QuickDrawLayersDesc (ls / rec)
+(defun Dyl:QuickDrawLayersDesc (ls ext / rec)
   (if ls
     (apply 'strcat
            (cons (strcat "Total thickness  "
@@ -2709,13 +2719,25 @@
                               (strcat "\n"
                                       (progn
                                         (setq rec (Dyl:QuickDrawGalleryMat (cadr l)))
-                                        (strcat (if rec (nth 2 rec) (cadr l)) "  " (rtos (distof (caddr l) 2)) (if (= "1" (nth 6 l)) "  (structural)" ""))
+                                        (strcat (if rec (nth 2 rec) (cadr l))
+                                                (if (nth 8 l)
+                                                  (strcat " + "
+                                                          (if (setq rec (Dyl:QuickDrawGalleryMat (car (nth 8 l)))) (nth 2 rec) (car (nth 8 l)))
+                                                          " " (cadr (nth 8 l)) "%"
+                                                  )
+                                                  ""
+                                                )
+                                                "  " (rtos (distof (caddr l) 2))
+                                                (if (= "1" (nth 6 l)) "  (load-bearing)" "")
+                                                (if (= "1" (nth 9 l)) "  (variable)" "")
+                                                (if (= "1" (nth 10 l)) "  (low permeance)" "")
+                                        )
                                       )
                               )
                             )
                            ls
                    )
-                   (list "\n\n" (Remote>>Dyl:MaterialAssemblyText (Remote>>Dyl:MaterialAssemblyData ls qd:mrows)))
+                   (list "\n\n" (Remote>>Dyl:MaterialAssemblyText (Remote>>Dyl:MaterialAssemblyData ls qd:mrows ext)))
                  )
            )
     )
@@ -3066,19 +3088,22 @@
 ;;  any longer: its lines are its Border lines and Dividing lines (see Dyl:QuickDrawAsmFix).
 
 ;;  The rows of the window for the layers lst ((kind ref thickness [hatch-key [band
-;;  [border [structural]]]]) ...): (kind material thickness hatch-key line-key band... border...
-;;  structural group): the kind "P" (a layer hatched with its material), the band settings in
+;;  [border [bearing]]]]) ...): (kind material thickness hatch-key line-key band... border...
+;;  bearing group framing...): the kind "P" (a layer hatched with its material), the band settings in
 ;;  the columns 5 to 13 (on hatch ends extension angle corners miter lap joints; hatch: see
 ;;  *qd:layerhatch*) and 38 to 42 (the scale and the origin of its hatch: scale by width,
 ;;  width factor, origin on line, origin X, origin Y), its border in 14 and 15 (on key),
-;;  Structural in 16 ("1": the structural layer, see Dyl:QuickDrawLayersCore), the properties
+;;  Load-bearing in 16 ("1": a load-bearing layer, see Dyl:QuickDrawLayersCore), the properties
 ;;  its border overrides in 17 to 26 (as the border of a preset, see *mt:bordertiles*: color
 ;;  on, color, linetype on, linetype, linetype scale on, scale, lineweight on, lineweight,
 ;;  transparency on, transparency; edited in the Border Settings window), Has a hatch in 27
 ;;  ("0": no hatch, the outline only), the properties its hatch overrides in 28 to 37 (in the
 ;;  same order; edited with its layer key, column 3, in the Hatch Settings window) and the
 ;;  group of its material in 43 (its Group list, which filters its Material list; read, never
-;;  saved). The column 4 is no longer used (the layer key of a Line layer of an older file),
+;;  saved), its framing in 44 and 45 (the id of its material, "" none, and its share of the
+;;  area in percent: a discontinuous layer, see Remote>>Dyl:MaterialLayerValues), Variable
+;;  thickness in 46 and Low permeance in 47 ("1" or "0"; one
+;;  layer of low permeance at most). The column 4 is no longer used (the layer key of a Line layer of an older file),
 ;;  taken from the new layer def (a row of the same columns):
 (defun Dyl:QuickDrawLayersRows (lst def)
   (mapcar '(lambda (l)
@@ -3090,6 +3115,8 @@
                      (Remote>>LM:sublst (cond ((nth 7 l)) ((Remote>>LM:sublst def 27 11))) 0 11)
                      (if (nth 4 l) (Remote>>LM:sublst (nth 4 l) 9 5) (Remote>>LM:sublst def 38 5))
                      (list (Dyl:QuickDrawAsmMatGroup (cadr l)))
+                     (if (nth 8 l) (nth 8 l) (list "" ""))
+                     (mapcar '(lambda (i) (if (= "1" (nth i l)) "1" "0")) '(9 10))
              )
            )
           (vl-remove-if-not '(lambda (l) (= "P" (car l))) lst)
@@ -3118,7 +3145,7 @@
 ;;  border of its own when it is a space between the lines of the assembly. The band settings
 ;;  of a layer when they are on, or off but not the defaults (kept for
 ;;  when they are on again); its border when it is on, or off on another key than the new
-;;  layer def or overriding a property; "1" when it is the structural layer; its hatch (Has a
+;;  layer def or overriding a property; "1" when it is a load-bearing layer; its hatch (Has a
 ;;  hatch and the properties it overrides, see Remote>>Dyl:MaterialLayerHatchStr):
 (defun Dyl:QuickDrawLayersOf (rows def / res msg b d h)
   (foreach r rows
@@ -3135,6 +3162,9 @@
       )
       ((= "" (cadr r))
        (setq msg "No material: add one in the Materials window.")
+      )
+      ((and (/= "" (nth 44 r)) (not (Remote>>Dyl:MaterialShare-p (nth 45 r))))
+       (setq msg "The framing must be a percentage greater than 0 and less than 100.")
       )
       ((and (= "1" (car b))
             (setq msg (vl-some '(lambda (k v) (Remote>>Dyl:MaterialDlgCheck k v)) '("mex" "mea" "mml") (list (nth 3 b) (nth 4 b) (nth 6 b))))
@@ -3179,6 +3209,9 @@
                              )
                              (if (= "1" (nth 16 r)) "1")
                              (Remote>>Dyl:ListSubst h 4 (strcase (nth 4 h)))
+                             (if (/= "" (nth 44 r)) (list (nth 44 r) (vl-string-translate "," "." (vl-string-trim " " (nth 45 r)))))
+                             (if (= "1" (nth 46 r)) "1")
+                             (if (= "1" (nth 47 r)) "1")
                        )
                        res
                  )
@@ -3270,8 +3303,9 @@
   (vl-some '(lambda (a) (if (= (strcase id) (strcase (car a))) a)) (Dyl:QuickDrawAsmRead))
 )
 
-;;  A row of the assemblies file (id group name layers border-lines dividing-lines): its
-;;  group as in the groups, its layers those that are valid, its lines (see
+;;  A row of the assemblies file (id group name layers border-lines dividing-lines exterior):
+;;  its group as in the groups, its exterior side First (its first layer, the default) or
+;;  Last (for the low permeance ratio, see Remote>>Dyl:MaterialPermRatio), its layers those that are valid, its lines (see
 ;;  Remote>>Dyl:MaterialLines) as they are written. A row of an older file: a Hatch layer
 ;;  hatched as a Quick Draw preset (its id in place of that of a material) gets the material
 ;;  of that preset, and the scale and origin of its hatch when both have their own band
@@ -3281,7 +3315,9 @@
 ;;  with a thickness before it, or none after it) gives its layer key to the Border lines,
 ;;  the first one between two layers its key to the Dividing lines:
 (defun Dyl:QuickDrawAsmFix (row / mats ls bl dl bk dk i new)
-  (while (< (length row) 6) (setq row (append row (list ""))))
+  (while (< (length row) 7) (setq row (append row (list ""))))
+  ;;  Its exterior side: its first layer (an older file), or its last one:
+  (setq row (Remote>>Dyl:ListSubst row 6 (if (= "LAST" (strcase (nth 6 row))) "Last" "First")))
   (setq row  (Remote>>Dyl:ListSubst row 1 (Remote>>Dyl:GroupCase (nth 1 row)))
         mats (mapcar '(lambda (m) (strcase (car m))) (Remote>>Dyl:MaterialRead))
         ls   (mapcar '(lambda (l) (Dyl:QuickDrawAsmFixLayer l mats)) (Remote>>Dyl:MaterialLayers (nth 3 row)))
@@ -3456,7 +3492,7 @@
   (list (Remote>>Dyl:MaterialLayersText ls)
         (Remote>>Dyl:MaterialNum (apply '+ (cons 0.0 (mapcar '(lambda (l) (cond ((distof (caddr l) 2)) (0.0))) lst))))
         (if lst (Dyl:QuickDrawGalleryLayers lst (list (Remote>>Dyl:MaterialLines (nth 4 a)) (Remote>>Dyl:MaterialLines (nth 5 a)))) "")
-        (Dyl:QuickDrawLayersDesc lst)
+        (Dyl:QuickDrawLayersDesc lst (nth 6 a))
   )
 )
 
@@ -3472,9 +3508,10 @@
   )
 )
 
-;;  The columns the window adds to an assembly r: its layers as rows (6), its Border lines (7
-;;  to 18: on, layer key, the properties they override, see Remote>>Dyl:MaterialLines; edited
-;;  in the Border Settings window) and its Dividing lines (19 to 30, the same), on the layer
+;;  The columns the window adds to an assembly r (after its 7 columns): its layers as rows (7),
+;;  its Border lines (8 to 19: on, layer key, the properties they override, see
+;;  Remote>>Dyl:MaterialLines; edited in the Border Settings window) and its Dividing lines (20
+;;  to 31, the same), on the layer
 ;;  key of the border of the Quick Draw preset when they have none (qa:bk). Rows got back
 ;;  that were not valid are kept as they were edited (its column 3 holds them, see
 ;;  Dyl:QuickDrawAsmWinGet):
@@ -3505,11 +3542,11 @@
 ;;  by Dyl:QuickDrawAsmCheck, the window shown again on them); its lines from their columns
 ;;  (their layer key and linetype in upper case):
 (defun Dyl:QuickDrawAsmWinGet (r / out)
-  (setq out (Dyl:QuickDrawLayersOf (Dyl:QuickDrawAsmDecode (cond ((nth 6 r)) (""))) qa:def)
-        r   (Remote>>Dyl:ListSubst r 3 (if (cadr out) (nth 6 r) (Remote>>Dyl:MaterialLayersStr (car out))))
+  (setq out (Dyl:QuickDrawLayersOf (Dyl:QuickDrawAsmDecode (cond ((nth 7 r)) (""))) qa:def)
+        r   (Remote>>Dyl:ListSubst r 3 (if (cadr out) (nth 7 r) (Remote>>Dyl:MaterialLayersStr (car out))))
   )
-  (if (nth 30 r)
-    (foreach x '((4 7) (5 19))
+  (if (nth 31 r)
+    (foreach x '((4 8) (5 20))
       (setq r (Remote>>Dyl:ListSubst r
                                      (car x)
                                      (Remote>>Dyl:MaterialLinesStr
@@ -3577,9 +3614,12 @@
     )
   )
   (setq ls (apply 'append (mapcar '(lambda (a) (Remote>>Dyl:MaterialLayers (nth 3 a))) pst:lst)))
-  (foreach l ls
-    (if (and (= "P" (car l)) (not (vl-some '(lambda (m) (= (strcase (cadr l)) (strcase (car m)))) qa:mats)))
-      (setq qa:mats (append qa:mats (list (list (cadr l) (strcat (cadr l) "   (missing material)") nil ""))))
+  ;;  (the materials of the layers and of their framing:)
+  (foreach id (append (mapcar 'cadr (vl-remove-if-not '(lambda (l) (= "P" (car l))) ls))
+                      (vl-remove 'nil (mapcar '(lambda (l) (car (nth 8 l))) ls))
+              )
+    (if (not (vl-some '(lambda (m) (= (strcase id) (strcase (car m)))) qa:mats))
+      (setq qa:mats (append qa:mats (list (list id (strcat id "   (missing material)") nil ""))))
     )
   )
   (Remote>>Dyl:MaterialDlgKeys nil
@@ -3601,6 +3641,9 @@
                        (Remote>>LM:sublst *mt:new* 12 10)
                        *mt:layerscale*
                        (list (cond ((cadddr (car qa:mats))) ("")))
+                       ;;  no framing, its thickness the same everywhere, not of low
+                       ;;  permeance:
+                       (list "" "" "0" "0")
                )
   )
 )
@@ -3641,7 +3684,15 @@
                 ;;  Remote>>Dyl:MaterialDataLists), in the units of the drawing (mt.imp):
                 (cons "lp/rsi/list" (car data))
                 (cons "lp/mass/list" (cadr data))
+                ;;  The framing of a discontinuous layer: None or a material, with its data:
+                (cons "lfm/list" (cons "None" (mapcar 'cadr qa:mats)))
+                (cons "lfm/vals" (cons "" (mapcar 'car qa:mats)))
+                (cons "lfm/rsi/list" (cons "" (car data)))
+                (cons "lfm/mass/list" (cons "" (cadr data)))
                 (cons "mt.imp" (if (Remote>>Dyl:MaterialImperial-p) "1" "0"))
+                ;;  Which end of the layers is the outside (the low permeance ratio):
+                (list "aex/list" "First layer" "Last layer")
+                (list "aex/vals" "First" "Last")
           )
           (Dyl:QuickDrawLayersBandLists)
           (Dyl:WinOff "lp" (not qa:mats))
@@ -3664,9 +3715,9 @@
                       '(groups . T)
                       '(noun . "assemblies")
                       '(window . "Dyl-AssemblyPresets.xaml")
-                      '(wtiles . "abl:7,adl:19")
+                      '(wtiles . "aex:6,abl:8,adl:20")
                       (cons 'select (if (not (or (= "" (nth *qd:layerscol* r)) (vl-string-search ":" (nth *qd:layerscol* r)))) (nth *qd:layerscol* r)))
-                      '(new "" "Wall" "New assembly" "" "1~" "1~")
+                      '(new "" "Wall" "New assembly" "" "1~" "1~" "First")
                       '(extra . Dyl:QuickDrawAsmExtra)
                       '(wget . Dyl:QuickDrawAsmWinGet)
                       '(rowcheck . Dyl:QuickDrawAsmCheck)

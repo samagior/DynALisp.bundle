@@ -129,6 +129,40 @@
     </Setter>
   </Style>
 
+  <!-- A small square box, for a checkbox in the rows of a list (the Load-bearing, Variable
+       thickness and Low permeance columns of the layers of an assembly), where a switch on
+       every row would be too heavy; greyed out, its border and its mark fade: -->
+  <Style x:Key="Dyl.Check" TargetType="CheckBox">
+    <Setter Property="Margin" Value="0"/>
+    <Setter Property="VerticalAlignment" Value="Center"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="CheckBox">
+          <Border x:Name="box" Width="14" Height="14" CornerRadius="3" BorderThickness="1" Background="Transparent"
+                  BorderBrush="{DynamicResource Dyl.Muted}" SnapsToDevicePixels="True">
+            <Path x:Name="mark" Data="M 2.5,6.5 L 5.5,9.5 L 10.5,3.5" Stroke="{DynamicResource Dyl.AccentText}" StrokeThickness="1.6"
+                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" Visibility="Collapsed"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="box" Property="BorderBrush" Value="{DynamicResource Dyl.Text}"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="box" Property="Background" Value="{DynamicResource Dyl.Accent}"/>
+              <Setter TargetName="box" Property="BorderBrush" Value="{DynamicResource Dyl.Accent}"/>
+              <Setter TargetName="mark" Property="Visibility" Value="Visible"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="box" Property="Background" Value="Transparent"/>
+              <Setter TargetName="box" Property="BorderBrush" Value="{DynamicResource Dyl.Disabled}"/>
+              <Setter TargetName="mark" Property="Stroke" Value="{DynamicResource Dyl.Disabled}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <!-- A list: a box as the text boxes, its items in a card under it: -->
   <Style TargetType="ComboBox">
     <Setter Property="Foreground" Value="{DynamicResource Dyl.Text}"/>

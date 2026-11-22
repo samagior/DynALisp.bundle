@@ -39,6 +39,9 @@
 //                              one row only: greyed out while several are selected.
 //   dyl:Win.Exclusive="1"      a checkbox on in one row at most: checked, it is cleared in
 //                              the other rows (several selected: the first one keeps it).
+//                              "lock": while one row has it, it is greyed out in the others
+//                              (the field, and in the list {Binding Free[n]} of the row,
+//                              true while no other row has column n on).
 //   dyl:Win.Follows="lp/widths"  this field takes the item of lp/widths (a list of the Lisp,
 //                              one item for each item of the field lp) when lp changes, if
 //                              it was empty or the item of its former value.
@@ -62,7 +65,19 @@
 // column w, plus b; the data of the materials of an assembly, Remote>>Dyl:MaterialDataLists),
 // 4 significant digits, the rows whose item has none ("") left out; {miss:m:list|one|many} the
 // text one (1) or many (more) with # their number, for the rows left out, "" when there are
-// none; dyl:Win.SummaryEmpty in its place while the list is empty. dyl:Win.Check="rows" on
+// none; dyl:Win.SummaryEmpty in its place while the list is empty. A row can be made of two
+// items, a framing and its cavity (a discontinuous layer: the studs and the insulation
+// between them): {per:m:w:list:fm:fp:flist:p} adds the item of column fm (none: "") with its
+// share in percent in column fp, from its list flist, in parallel ("p": 100 / (share /
+// framing + rest / cavity), the isothermal planes of the building code, for a thermal
+// resistance) or by their areas ("a": a mass); {miss:m:list:fm:fp:flist|one|many} counts the
+// rows either one has no data for. {over:...@rule[@when]|text|unknown} adds up only the rows a
+// rule holds for, shown while another rule holds for a row (the continuous layers, once a layer
+// has a framing), {ratio:first|last:...@rule|text|unknown} divides the
+// rows from one end to the first row the rule holds for by the others (the low permeance
+// ratio); see Over. The same value for one row is
+// {Binding P[m:w:list[:fm:fp:flist:p]|text]} in the list (4 significant digits), text (else
+// "") when its item has none. dyl:Win.Check="rows" on
 // the list: at least one row before OK, its dyl:Win.CheckMessage else.
 //
 // A button with dyl:Win.Open and dyl:Win.Columns="men:7,mex:8" opens that window (beside this
@@ -120,13 +135,44 @@ namespace DynALisp.Windows
                 _v = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("V"));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(Binding.IndexerName));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("P"));
             }
         }
+
+        // The value of the item each row picks, for this row ({Binding P[m:w:list|text]}, see
+        // the {per} of dyl:Win.Summary):
+        public PerOfRow P => new PerOfRow(this);
+
+        internal string Per(string spec) => _ed.PerText(_v, spec);
 
         // The text of column col, as the list shows it:
         public string this[int col] => _ed.Text(_v, col);
 
+        // Whether column n can be checked in this row ({Binding Free[n]}): it is on in this row,
+        // or in no other (Win.Exclusive="lock"):
+        public FreeOfRow Free => new FreeOfRow(this);
+
+        internal bool FreeAt(int col) => _ed.Free(_v, col);
+
+        internal void FreeChanged() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Free"));
+
         public event PropertyChangedEventHandler PropertyChanged;
+    }
+
+    // Whether a column of one row can be checked (see RowItem.Free):
+    public sealed class FreeOfRow
+    {
+        readonly RowItem _r;
+        internal FreeOfRow(RowItem r) { _r = r; }
+        public bool this[int col] => _r.FreeAt(col);
+    }
+
+    // The values of one row by their spec (see RowItem.P):
+    public sealed class PerOfRow
+    {
+        readonly RowItem _r;
+        internal PerOfRow(RowItem r) { _r = r; }
+        public string this[string spec] => _r.Per(spec);
     }
 
     sealed class RowsEditor
@@ -134,7 +180,7 @@ namespace DynALisp.Windows
         sealed class Field
         {
             public string Key, Unique, Follows, ListBy;
-            public bool Exclusive;
+            public bool Exclusive, Lock;
             public int Col;
             public FrameworkElement El;
             public List<string> Vals, All, By;   // All: its labels, By: the group of each (ListBy)
@@ -143,7 +189,7 @@ namespace DynALisp.Windows
         }
 
         static readonly StringComparer Ic = StringComparer.OrdinalIgnoreCase;
-        static readonly Regex Token = new Regex(@"\{(count|sum|sel|per|miss)([^}]*)\}");
+        static readonly Regex Token = new Regex(@"\{(count|sum|sel|per|miss|over|ratio)([^}]*)\}");
 
         readonly View _v;
         readonly Session _s;
@@ -181,7 +227,8 @@ namespace DynALisp.Windows
                 if (c == null || string.IsNullOrEmpty(fe.Name)) continue;
                 if (!int.TryParse(c, NumberStyles.Integer, CultureInfo.InvariantCulture, out int col) || col < 0) continue;
                 var f = new Field { Key = fe.Name, Col = col, El = fe, Unique = Win.GetUnique(fe), Follows = Win.GetFollows(fe),
-                                    Exclusive = fe is ToggleButton && Win.GetExclusive(fe) == "1", ListBy = Win.GetListBy(fe) };
+                                    Exclusive = fe is ToggleButton && (Win.GetExclusive(fe) == "1" || Win.GetExclusive(fe) == "lock"),
+                                    Lock = fe is ToggleButton && Win.GetExclusive(fe) == "lock", ListBy = Win.GetListBy(fe) };
                 f.Vals = _s.Lists.TryGetValue(fe.Name + "/vals", out var vals) ? vals : null;
                 if (f.ListBy != null && !_s.Lists.TryGetValue(fe.Name + "/by", out f.By)) f.ListBy = null;
                 // Its rules and those of the panels holding it, up to the window:
@@ -198,6 +245,8 @@ namespace DynALisp.Windows
                 .Concat(_rows.Select(x => x.Length)).Concat((_defs ?? new List<string[]>()).Select(x => x.Length)).Max();
             for (int i = 0; i < _rows.Count; i++) _rows[i] = Pad(_rows[i]);
             if (_defs != null) for (int i = 0; i < _defs.Count; i++) _defs[i] = Pad(_defs[i]);
+            // a checkbox of the template of the rows (Win.Toggle) sets its column in its row:
+            _list.AddHandler(ButtonBase.ClickEvent, new RoutedEventHandler(Toggled));
             // given back to the Lisp as they are edited:
             _s.Rows[_k + "/rows"] = _rows;
             _s.OutRows.Add(_k + "/rows");
@@ -493,6 +542,29 @@ namespace DynALisp.Windows
             return Put(r, g.Col, after);
         }
 
+        // A checkbox of a row clicked (Win.Toggle="col"): its column set in its row only, the
+        // fields of the row shown following it:
+        void Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!(e.OriginalSource is CheckBox cb) || !(cb.DataContext is RowItem item)) return;
+            if (!int.TryParse(Win.GetToggle(cb) ?? "", NumberStyles.Integer, CultureInfo.InvariantCulture, out int col) || col < 0) return;
+            int i = _items.IndexOf(item);
+            if (i < 0) return;
+            e.Handled = true;
+            string val = cb.IsChecked == true ? "1" : "0";
+            Set(i, Put(_rows[i], col, val));
+            // on in one row at most when its field is (Win.Exclusive): cleared in the others:
+            if (val == "1" && _fields.Any(f => f.Col == col && f.Exclusive))
+                for (int j = 0; j < _rows.Count; j++)
+                    if (j != i && Cell(_rows[j], col) == "1") Set(j, Put(_rows[j], col, "0"));
+            Store();
+            var sel = Selected();
+            if (sel.Count > 0)
+                _v.Quiet(() => { foreach (var f in _fields.Where(f => f.Col == col)) ShowField(f, _rows[sel[0]]); });
+            _v.Refresh();
+            Summary();
+        }
+
         void Set(int i, string[] r)
         {
             _rows[i] = r;
@@ -679,16 +751,29 @@ namespace DynALisp.Windows
                 if (sel.Count > 1) f.El.IsEnabled = false;
                 else if (Win.GetEnabledBy(f.El) == null && !_s.Off.Contains(f.Key)) f.El.IsEnabled = true;
             }
+            // a checkbox on in one row at most, locked: greyed out while another row has it (the
+            // row shown, or the row Add adds while none is selected):
+            foreach (var f in _fields.Where(x => x.Lock && Win.GetEnabledBy(x.El) == null && !_s.Off.Contains(x.Key)))
+                f.El.IsEnabled = sel.Count > 0 ? Free(_rows[sel[0]], f.Col) : !_rows.Any(r => Cell(r, f.Col) == "1");
             Summary();
         }
+
+        // Column col can be checked in the row v: on in it, or in no other row:
+        internal bool Free(string[] v, int col) => Cell(v, col) == "1" || !_rows.Any(r => !ReferenceEquals(r, v) && Cell(r, col) == "1");
 
         void Summary()
         {
             Tiles();
+            foreach (var it in _items) it.FreeChanged();
             foreach (var e in _summaries)
             {
                 string text = _rows.Count == 0 && Win.GetSummaryEmpty(e) is string empty ? empty : Summary(Win.GetSummary(e));
-                if (e is TextBlock tb) tb.Text = text;
+                if (e is TextBlock tb)
+                {
+                    // (an empty summary takes no room: the line of a total the rows do not have)
+                    tb.Text = text;
+                    if (text == "") tb.Height = 0; else tb.ClearValue(FrameworkElement.HeightProperty);
+                }
                 else if (e is HeaderedContentControl h) h.Header = text;
             }
         }
@@ -773,29 +858,22 @@ namespace DynALisp.Windows
                     case "per":
                     case "miss":
                         var a = rest.TrimStart(':').Split('|');
-                        var ps = a[0].Split(':');
                         bool per = m.Groups[1].Value == "per";
-                        if (ps.Length < (per ? 3 : 2) || !int.TryParse(ps[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int mc)) return "";
-                        int wc = -1;
-                        if (per && !int.TryParse(ps[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out wc)) return "";
-                        var mf = _fields.FirstOrDefault(f => f.Col == mc);
-                        _s.Lists.TryGetValue(ps[per ? 2 : 1], out List<string> data);
+                        var sp = PerSpec(a[0], per);
+                        if (sp == null) return "";
                         double tot = 0;
                         int nmiss = 0;
                         foreach (var r in _rows)
                         {
-                            int j = mf != null ? IndexOf(mf, Cell(r, mc)) : -1;
-                            var d = (data != null && j >= 0 && j < data.Count ? data[j] : "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                            if (d.Length == 0 || !double.TryParse(d[0], NumberStyles.Float, CultureInfo.InvariantCulture, out double pu)) { nmiss++; continue; }
-                            if (!per) continue;
-                            double.TryParse(Cell(r, wc), NumberStyles.Float, CultureInfo.InvariantCulture, out double w);
-                            double fx = 0;
-                            if (d.Length > 1) double.TryParse(d[1], NumberStyles.Float, CultureInfo.InvariantCulture, out fx);
-                            tot += pu * w + fx;
+                            if (!PerOf(r, sp, out double x)) nmiss++;
+                            else tot += x;
                         }
                         if (per) return Sig(tot);
                         if (nmiss == 0) return "";
                         return (nmiss == 1 || a.Length < 3 ? (a.Length > 1 ? a[1] : "") : a[2]).Replace("#", nmiss.ToString(CultureInfo.InvariantCulture));
+                    case "over":
+                    case "ratio":
+                        return Over(rest.TrimStart(':'), m.Groups[1].Value == "ratio");
                     case "sum":
                         var p = rest.TrimStart(':').Split(new[] { ':' }, 2);
                         if (!int.TryParse(p[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int col)) return "";
@@ -812,6 +890,127 @@ namespace DynALisp.Windows
                         return q.Length >= 3 ? ns + " " + (n == 1 ? q[1] : q[2]) : ns;
                 }
             });
+        }
+
+        // {over:spec@rule[@when]|text|unknown}: the total by spec ("m:w:list[...]", as {per}) of
+        // the rows the rule holds for, # in text; unknown when one of them has no data; "" when
+        // the rule holds for none, or the rule when for no row (the continuous layers, those
+        // without a framing, shown once a layer has one: @lfm=@lfm!=). {ratio:first|last:spec@rule|text|unknown}: the first row the rule
+        // holds for parts the rows in two, from the end named (first or last) to that row
+        // included, and the rest: the total of the first part divided by that of the rest (2
+        // decimals, # in text; the low permeance ratio of the building code: the thermal
+        // resistance outboard of the inner surface of the low permeance layer over the one
+        // inboard), unknown when a row has no data or the rest none; "" when the rule holds for
+        // no row:
+        string Over(string rest, bool ratio)
+        {
+            var a = rest.Split('|');
+            string spec = a[0];
+            bool last = false;
+            if (ratio)
+            {
+                var d = spec.Split(new[] { ':' }, 2);
+                if (d.Length < 2) return "";
+                last = d[0] == "last";
+                spec = d[1];
+            }
+            var parts = spec.Split('@');
+            if (parts.Length < 2) return "";
+            string rule = parts[1];
+            if (!ratio && parts.Length > 2 && !_rows.Any(x => View.Holds(parts[2], k => RowGet(x, k)))) return "";
+            var sp = PerSpec(parts[0], true);
+            if (sp == null) return "";
+            string text = a.Length > 1 ? a[1] : "#", unknown = a.Length > 2 ? a[2] : "";
+            var rows = last ? Enumerable.Reverse(_rows).ToList() : _rows.ToList();
+            var on = rows.Select(r => View.Holds(rule, k => RowGet(r, k))).ToList();
+            int first = on.IndexOf(true);
+            if (first < 0) return "";
+            double tot = 0, inb = 0;
+            for (int i = 0; i < rows.Count; i++)
+            {
+                if (!ratio && !on[i]) continue;
+                if (!PerOf(rows[i], sp, out double x)) return unknown;
+                if (ratio && i > first) inb += x; else tot += x;
+            }
+            if (!ratio) return text.Replace("#", Sig(tot));
+            if (inb <= 0) return unknown;
+            return text.Replace("#", (tot / inb).ToString("0.00", CultureInfo.InvariantCulture));
+        }
+
+        // What a {per} or {miss} adds up: the field of column M (its items' data in the list
+        // Data, "a b": a per unit of column W, plus b), and, for a part of the row made of
+        // another item (a framing with its cavity), the field of column FM, its share in
+        // percent in column FP and the data of its items FData, put together in parallel
+        // (Parallel: 100 / (share / framing + rest / cavity), a thermal resistance) or by
+        // their areas (share x framing + rest x cavity, a mass):
+        sealed class Per
+        {
+            public int M, W = -1, FM = -1, FP = -1;
+            public bool Parallel;
+            public Field MF, FF;
+            public List<string> Data, FData;
+        }
+
+        // The spec "m:w:list[:fm:fp:flist:p|a]" ({per}; "m:list[...]" for {miss}, no w):
+        Per PerSpec(string spec, bool withWidth)
+        {
+            var ps = (spec ?? "").Split(':');
+            int n = withWidth ? 3 : 2;
+            if (ps.Length < n || !int.TryParse(ps[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out int mc)) return null;
+            var sp = new Per { M = mc, MF = _fields.FirstOrDefault(f => f.Col == mc) };
+            if (withWidth && !int.TryParse(ps[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out sp.W)) return null;
+            _s.Lists.TryGetValue(ps[n - 1], out sp.Data);
+            if (ps.Length >= n + 3
+                && int.TryParse(ps[n], NumberStyles.Integer, CultureInfo.InvariantCulture, out sp.FM)
+                && int.TryParse(ps[n + 1], NumberStyles.Integer, CultureInfo.InvariantCulture, out sp.FP))
+            {
+                sp.FF = _fields.FirstOrDefault(f => f.Col == sp.FM);
+                _s.Lists.TryGetValue(ps[n + 2], out sp.FData);
+                sp.Parallel = ps.Length > n + 3 && ps[n + 3] == "p";
+            }
+            else sp.FM = -1;
+            return sp;
+        }
+
+        // The value of the item the row r picks in the field f (of column col), from the list
+        // data ("a b": a per unit of column wc, plus b): a x the value of column wc + b (b alone
+        // without wc, -1); false when the item has none:
+        bool ItemOf(string[] r, Field f, int col, int wc, List<string> data, out double v)
+        {
+            v = 0;
+            int j = f != null ? IndexOf(f, Cell(r, col)) : -1;
+            var d = (data != null && j >= 0 && j < data.Count ? data[j] : "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (d.Length == 0 || !double.TryParse(d[0], NumberStyles.Float, CultureInfo.InvariantCulture, out double pu)) return false;
+            double w = 0, fx = 0;
+            if (wc >= 0) double.TryParse(Cell(r, wc), NumberStyles.Float, CultureInfo.InvariantCulture, out w);
+            if (d.Length > 1) double.TryParse(d[1], NumberStyles.Float, CultureInfo.InvariantCulture, out fx);
+            v = pu * w + fx;
+            return true;
+        }
+
+        // The value of the row r by the spec sp: its item, or, when it has a framing (its
+        // column FM not "", a share in FP between 0 and 100), its framing and its item put
+        // together (see Per); false when one of them has none:
+        bool PerOf(string[] r, Per sp, out double v)
+        {
+            if (!ItemOf(r, sp.MF, sp.M, sp.W, sp.Data, out v)) return false;
+            if (sp.FM < 0 || Cell(r, sp.FM) == "") return true;
+            if (!double.TryParse(Cell(r, sp.FP), NumberStyles.Float, CultureInfo.InvariantCulture, out double pc) || pc <= 0 || pc >= 100
+                || !ItemOf(r, sp.FF, sp.FM, sp.W, sp.FData, out double vf)) return false;
+            double f = pc / 100, c = v;
+            if (!sp.Parallel) v = f * vf + (1 - f) * c;
+            else v = vf > 0 && c > 0 ? 1 / (f / vf + (1 - f) / c) : 0;
+            return true;
+        }
+
+        // The value of one row r by its spec "m:w:list[:fm:fp:flist:p|a]|text" (see {per}): 4
+        // significant digits, text (else "") when its item has none:
+        internal string PerText(string[] r, string spec)
+        {
+            var a = (spec ?? "").Split(new[] { '|' }, 2);
+            string none = a.Length > 1 ? a[1] : "";
+            var sp = PerSpec(a[0], true);
+            return sp != null && PerOf(r, sp, out double x) ? Sig(x) : none;
         }
 
         // The number v with 4 significant digits at most (as Remote>>Dyl:MaterialSig):

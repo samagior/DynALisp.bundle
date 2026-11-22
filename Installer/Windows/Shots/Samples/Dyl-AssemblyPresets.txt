@@ -1,49 +1,58 @@
 # Sample values of the Assembly Presets window of Quick Draw (Dyl:QuickDrawAsmDialog in
 # Dyl-QuickDraw.lsp, through Remote>>Dyl:PresetWinVals of Remote\Dyl-Presets.lsp), as the Lisp
 # gives them, for three assemblies, the Exterior Wall shown (its Border lines on WIDE, its
-# Dividing lines on THIN, an air space of the Void material): its Brick layer selected (its own
-# band settings, Extended and Lapped, its hatch on its edge, and its own border), its Gypsum
-# layer with its own border, its CMU the structural layer, its Rigid Insulation with its own
-# band settings, its hatch scaled by its thickness (Scale by width): key=value, key/list=item|item,
-# key/vals=value|value, +key=field\tfield a row of the table key (pst/rows: id group name
-# layers border-lines dividing-lines, then the layers as rows, then the Border lines and the
-# Dividing lines split (on, key, the 10 overrides); a layer: kind material thickness
-# hatch-key line-key, band on, hatch
-# ends extension angle corners miter lap joints, border on, border key, structural, then
-# what the border overrides (color on, color, linetype on, linetype, linetype scale on,
-# scale, lineweight on, lineweight, transparency on, transparency), Has a hatch and what the
-# hatch overrides (in the same order), scale by width, width factor, origin on line, origin
-# X, origin Y, the group of its material; \T a tab
+# Dividing lines on THIN, its exterior its last layer): its Brick layer selected (its own band
+# settings, Extended and Lapped, its hatch on its edge, and its own border), its Gypsum layer
+# with its own border, its Wood Fiber Batt load-bearing, with a framing of Wood Frame on 23 %
+# of its area, its Extruded Polystyrene the low permeance layer,
+# with its own band settings, its hatch scaled by its thickness (Scale by width): key=value,
+# key/list=item|item, key/vals=value|value, +key=field\tfield a row of the table key (pst/rows:
+# id group name layers border-lines dividing-lines exterior, then the layers as rows, then the
+# Border lines and the Dividing lines split (on, key, the 10 overrides); a layer: kind material
+# thickness hatch-key line-key, band on, hatch ends extension angle corners miter lap joints,
+# border on, border key, load-bearing, then what the border overrides (color on, color,
+# linetype on, linetype, linetype scale on, scale, lineweight on, lineweight, transparency on,
+# transparency), Has a hatch and what the hatch overrides (in the same order), scale by width,
+# width factor, origin on line, origin X, origin Y, the group of its material, its framing
+# (material, percent), variable thickness, low permeance; \T a tab
 # between their columns, \n between the rows); \t is a tab. The preview: lp/specs the
 # preview of each material, ll/ends the ends of the band, ll/paper a millimeter in inches and
 # the drawing scale (a detail at 1:10). lg the groups of the Group list of a layer, lp/by the
-# group of each material (its Material list shows those of its group). sub "1": the Border Settings and Hatch Settings
-# windows opened by the window itself, their open buttons greyed out.
+# group of each material (its Material list shows those of its group); lp/rsi, lp/mass (and
+# lfm/rsi, lfm/mass for a framing) the data of each material per millimeter, from
+# Materials.csv. sub "1": the Border Settings and Hatch Settings windows opened by the window
+# itself, their open buttons greyed out.
 grp/list=Floor|Wall|Ceiling|Roof|Finish|Structural|Site|Elevation|Section|Detail|Annotation|Phase|Area|Generic
 srt/list=Name|Group
 srt=0
 flt=
-pst/ncols=6
-pst/tiles=nam:2,grp:1,abl:7,adl:19
+pst/ncols=7
+pst/tiles=nam:2,grp:1,aex:6,abl:8,adl:20
 pst.idx=0
 pst.sel=0
 pst.shw=
 pst/title=Assembly Presets
 pst/noun=assemblies
-+pst/rows=cu-ExteriorWall\tWall\tExterior Wall\tP:mt-Gypsum:16:::1~THIN|P:mt-CMU:190::::1|P:mt-RigidInsulation:50::1~Line~Square~~45~Mitered~4~First~Interrupted~1~1~0~0~0|P:mt-Void:25|P:mt-Brick:90:THIN:1~Edge~Extended~30~45~Lapped~4~First~Interrupted:1~MED\t1~WIDE\t1~THIN\tP\Tmt-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T1\TTHIN\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TBoard\nP\Tmt-CMU\T190\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TMasonry\nP\Tmt-RigidInsulation\T50\T\TMED\T1\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T1\T0\T0\T0\TInsulation\nP\Tmt-Void\T25\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TAir\nP\Tmt-Brick\T90\TTHIN\TMED\T1\TEdge\TExtended\T30\T45\TLapped\T4\TFirst\TInterrupted\T1\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TMasonry\t1\tWIDE\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t1\tTHIN\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50
-+pst/rows=cu-FoundationWall\tWall\tFoundation Wall\tP:mt-Concrete:250::::1|P:mt-RigidInsulation:50\t1~MED\t1~THIN\tP\Tmt-Concrete\T250\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TConcrete\nP\Tmt-RigidInsulation\T50\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TInsulation\t1\tMED\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t1\tTHIN\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50
-+pst/rows=cu-InteriorPartition\tWall\tInterior Partition\tP:mt-Gypsum:16|P:mt-Void:92|P:mt-Gypsum:16\t1~MED\t0~MED\tP\Tmt-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TBoard\nP\Tmt-Void\T92\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TAir\nP\Tmt-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TBoard\t1\tMED\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t0\tMED\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50
-+ll/new=P\tmt-Brick\t10\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t0\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t1\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t0\t1\t0\t0\t0\tMasonry
++pst/rows=cu-ExteriorWall\tWall\tExterior Wall\tP:mt-Gypsum:13:::1~THIN|P:mt-WoodFiberBatt:140::::1:mt-WoodFrame~23|P:mt-OSB:11|P:mt-ExtrudedPolystyrene:50::1~Line~Square~~45~Mitered~4~First~Interrupted~1~1~0~0~0:::::1|P:mt-Brick:90:THIN:1~Edge~Extended~30~45~Lapped~4~First~Interrupted:1~MED\t1~WIDE\t1~THIN\tLast\tP\Tmt-Gypsum\T13\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T1\TTHIN\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TBoard\T\T\T0\T0\nP\Tmt-WoodFiberBatt\T140\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TInsulation\Tmt-WoodFrame\T23\T0\T0\nP\Tmt-OSB\T11\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TWood\T\T\T0\T0\nP\Tmt-ExtrudedPolystyrene\T50\T\TMED\T1\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T1\T0\T0\T0\TInsulation\T\T\T0\T1\nP\Tmt-Brick\T90\TTHIN\TMED\T1\TEdge\TExtended\T30\T45\TLapped\T4\TFirst\TInterrupted\T1\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TMasonry\T\T\T0\T0\t1\tWIDE\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t1\tTHIN\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50
++pst/rows=cu-FoundationWall\tWall\tFoundation Wall\tP:mt-Concrete:250::::1|P:mt-RigidInsulation:50\t1~MED\t1~THIN\tLast\tP\Tmt-Concrete\T250\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TConcrete\T\T\T0\T0\nP\Tmt-RigidInsulation\T50\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TInsulation\T\T\T0\T0\t1\tMED\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t1\tTHIN\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50
++pst/rows=cu-InteriorPartition\tWall\tInterior Partition\tP:mt-Gypsum:16|P:mt-Void:92|P:mt-Gypsum:16\t1~MED\t0~MED\tFirst\tP\Tmt-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TBoard\T\T\T0\T0\nP\Tmt-Void\T92\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TAir\T\T\T0\T0\nP\Tmt-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T0\T1\T0\T0\T0\TBoard\T\T\T0\T0\t1\tMED\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t0\tMED\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50
++ll/new=P\tmt-Brick\t10\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t0\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t1\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t0\t1\t0\t0\t0\tMasonry\t\t\t0\t0
 ll.sel=4
 lg/list=Concrete|Masonry|Wood|Board|Insulation|Air|Phase
 lg/vals=Concrete|Masonry|Wood|Board|Insulation|Air|Phase
-lp/list=Brick|CMU|Concrete|Gypsum|Plywood|Rigid Insulation|Void|Wood Plank|Existing
-lp/vals=mt-Brick|mt-CMU|mt-Concrete|mt-Gypsum|mt-Plywood|mt-RigidInsulation|mt-Void|mt-WoodPlank|mt-Existing
-lp/by/list=Masonry|Masonry|Concrete|Board|Wood|Insulation|Air|Wood|Phase
-lp/specs/list=P?1?ANSI31?{samples}\Sample.pat?0.5?0?1|P?1?ANSI37?{samples}\Sample.pat?0.5?0?1|P?1?CONCRETE_C?{samples}\Sample.pat?1?0?1|P?1?GENERAL_TEXTURE?{samples}\Sample.pat?0.5?0?1|P?1?WOOD_GLU-LAMBEAM?{samples}\Sample.pat?1?0?1|P?1?THERMAL_INSULATION?{samples}\Sample.pat?0.1?90?10|S?1|P?1?WOOD_2?{samples}\Sample.pat?0.1875?0?1|F?1
-lp/rsi/list=0.000777605 0||0.0004 0|0.0061012813 0|0.0087032202 0||||
-lp/mass/list=2.4||2.4||||||
+lp/list=Brick|CMU|Concrete|Extruded Polystyrene|Gypsum|OSB|Plywood|Rigid Insulation|Void|Wood Fiber Batt|Wood Frame|Wood Plank|Existing
+lp/vals=mt-Brick|mt-CMU|mt-Concrete|mt-ExtrudedPolystyrene|mt-Gypsum|mt-OSB|mt-Plywood|mt-RigidInsulation|mt-Void|mt-WoodFiberBatt|mt-WoodFrame|mt-WoodPlank|mt-Existing
+lp/by/list=Masonry|Masonry|Concrete|Insulation|Board|Wood|Wood|Insulation|Air|Insulation|Wood|Wood|Phase
+lp/specs/list=P?1?ANSI31?{samples}\Sample.pat?0.5?0?1|P?1?ANSI37?{samples}\Sample.pat?0.5?0?1|P?1?CONCRETE_C?{samples}\Sample.pat?1?0?1|P?1?THERMAL_INSULATION?{samples}\Sample.pat?0.1?90?10|P?1?GENERAL_TEXTURE?{samples}\Sample.pat?0.5?0?1|P?1?WOOD_GLU-LAMBEAM?{samples}\Sample.pat?1?0?1|P?1?WOOD_GLU-LAMBEAM?{samples}\Sample.pat?1?0?1|P?1?THERMAL_INSULATION?{samples}\Sample.pat?0.1?90?10|S?1|P?1?THERMAL_INSULATION?{samples}\Sample.pat?0.1?90?10|P?1?WOOD_2?{samples}\Sample.pat?0.1875?0?1|P?1?WOOD_2?{samples}\Sample.pat?0.1875?0?1|F?1
+lp/rsi/list=0.000777605 0||0.0004 0|0.0350017501 0|0.0061012813 0|0.0098039216 0|0.0087032202 0|||0.0257003341 0|0.0085034014 0||
+lp/mass/list=2.4||2.4||||||||||
+lfm/list=None|Brick|CMU|Concrete|Extruded Polystyrene|Gypsum|OSB|Plywood|Rigid Insulation|Void|Wood Fiber Batt|Wood Frame|Wood Plank|Existing
+lfm/vals=|mt-Brick|mt-CMU|mt-Concrete|mt-ExtrudedPolystyrene|mt-Gypsum|mt-OSB|mt-Plywood|mt-RigidInsulation|mt-Void|mt-WoodFiberBatt|mt-WoodFrame|mt-WoodPlank|mt-Existing
+lfm/rsi/list=|0.000777605 0||0.0004 0|0.0350017501 0|0.0061012813 0|0.0098039216 0|0.0087032202 0|||0.0257003341 0|0.0085034014 0||
+lfm/mass/list=|2.4||2.4||||||||||
 mt.imp=0
+aex/list=First layer|Last layer
+aex/vals=First|Last
 hky/list=From material|HATCH|MED|THIN|WIDE|XTHIN
 hky/vals=|HATCH|MED|THIN|WIDE|XTHIN
 out/list=HATCH|MED|THIN|WIDE|XTHIN
