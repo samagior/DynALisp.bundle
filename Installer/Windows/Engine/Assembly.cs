@@ -30,7 +30,8 @@
 //   Rows      the key of the list (ll)
 //   Columns   the columns of a row: kind, preset, thickness, band settings on, ends,
 //             extension, end angle, border on, hatch aligned to (Edge: the line of the layer
-//             on its edge), structural ("0 1 2 5 7 8 9 14 6 16")
+//             on its edge), structural, has a hatch ("0": drawn as a space, its border
+//             kept) ("0 1 2 5 7 8 9 14 6 16 27")
 //   Line      the key of the justification of the assembly (Center, Edge, Structural): the
 //             line drawn, in the accent colour, in the middle of the band, on the border of
 //             its first layer, or in the middle of its structural layer; what the Angled ends

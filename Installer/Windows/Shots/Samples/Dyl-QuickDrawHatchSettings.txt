@@ -1,0 +1,21 @@
+# Sample values of the Hatch Settings window of Quick Draw (Dyl:QuickDrawHatchDialog in
+# Dyl-QuickDraw.lsp, Dyl:QuickDrawPropsVals), as the Lisp gives them, for a preset whose
+# hatch is on the layer key of its hatch preset, its color and its transparency overridden:
+# key=value, key/list=item|item, key/vals=value|value. sub "0": opened by the Lisp from the
+# Quick Draw window (the open buttons of the layer key and of the color work).
+sub=0
+hky/list=From hatch preset|HATCH|MED|THIN|WIDE|XTHIN
+hky/vals=|HATCH|MED|THIN|WIDE|XTHIN
+hky=0
+bco=1
+bcv=8
+blo=0
+blt=CONTINUOUS
+bso=0
+bsc=1
+bwt/list=0.00 mm|0.05 mm|0.09 mm|0.13 mm|0.15 mm|0.18 mm|0.20 mm|0.25 mm|0.30 mm|0.35 mm|0.40 mm|0.50 mm|0.53 mm|0.60 mm|0.70 mm|0.80 mm|0.90 mm|1.00 mm|1.06 mm|1.20 mm|1.40 mm|1.58 mm|2.00 mm|2.11 mm
+bwt/vals=0|5|9|13|15|18|20|25|30|35|40|50|53|60|70|80|90|100|106|120|140|158|200|211
+bwo=0
+bwt=7
+bto=1
+btr=30

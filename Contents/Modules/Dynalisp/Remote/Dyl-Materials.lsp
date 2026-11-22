@@ -193,11 +193,15 @@
 ;;  layer is kind:ref:thickness, the layers divided by | (never ; or , : the separators of
 ;;  the CSV files). Its kind: P, a band hatched as a Quick Draw preset (ref: its id) draws
 ;;  it; S, a space (no hatch); L, a line (ref: its layer key, no thickness). The thickness of
-;;  P and S in drawing units. A P layer can have four more fields: the layer key of its
-;;  hatch in place of the hatch layer key of its preset (P:qd-Brick:90:HATCH, "": the key of
-;;  its preset), its own band settings, its own border, the values of each divided by ~, and
-;;  "1" when it is the structural layer (the line of the band on its middle, justification
-;;  Structural layer, see *mt:justify*):
+;;  P and S in drawing units. A P layer can have four more fields: its hatch, its own band
+;;  settings, its own border, the values of each divided by ~, and "1" when it is the
+;;  structural layer (the line of the band on its middle, justification Structural layer, see
+;;  *mt:justify*):
+;;    hatch   the layer key of its hatch in place of the hatch layer key of its preset
+;;            (P:qd-Brick:90:HATCH, "": the key of its preset); then, when it has no hatch or
+;;            overrides a property of its hatch, ~on (Has a hatch: "1", "0" no hatch, the
+;;            outline only) and the properties it overrides, as the border below (color
+;;            on~color~linetype on~linetype~...~transparency; the key alone otherwise)
 ;;    band    on~hatch~ends~extension~angle~corners~miter~lap~joints (on "1"; off "0", the
 ;;            values kept for when it is on again; see *mt:bandwindows*; hatch: Line, the
 ;;            middle of the layer, Edge, its border nearer to the line of the band, or Origin;
@@ -207,11 +211,12 @@
 ;;            on~scale~lineweight on~lineweight~transparency on~transparency (the commas of
 ;;            an r,g,b color written as dots); on~key alone when it overrides none
 ;;  (P:qd-Brick:90::1~Line~Extended~~45~Lapped~4~First~Interrupted:1~A-WALL:1). Returns
-;;  ((kind ref thickness [hatch-key [band [border [structural]]]]) ...), the layers that are
+;;  ((kind ref thickness [hatch-key band border structural hatch]) ...), the layers that are
 ;;  valid only (ref and layer key in upper case for L; the hatch key in upper case, "" for the
 ;;  key of the preset; band and border as lists of their values, nil when there are none, the
-;;  border with its 12 values, the overrides off when it has only 2; structural "1", else nil):
-(defun Remote>>Dyl:MaterialLayers (str / res k r w b d)
+;;  border with its 12 values, the overrides off when it has only 2; structural "1", else nil;
+;;  hatch: on and the 10 overrides of the hatch, on and the overrides off when it has none):
+(defun Remote>>Dyl:MaterialLayers (str / res k r w b d h)
   (if (= 'STR (type str))
     (foreach x (Remote>>LM:str->lst str "|")
       (setq x (mapcar '(lambda (y) (vl-string-trim " " y)) (Remote>>LM:str->lst x ":")))
@@ -222,10 +227,11 @@
                 w (caddr x)
                 b (Remote>>LM:str->lst (cond ((nth 4 x)) ("")) "~")
                 d (Remote>>LM:str->lst (cond ((nth 5 x)) ("")) "~")
+                h (Remote>>LM:str->lst (cond ((nth 3 x)) ("")) "~")
           )
           (cond
             ((and (= "P" k) (/= "" r) (Remote>>Dyl:MaterialScale-p w))
-             (setq res (cons (list "P" r w (strcase (cond ((cadddr x)) ("")))
+             (setq res (cons (list "P" r w (strcase (car h))
                                    (cond ((= 9 (length b)) b)
                                          ((= 10 (length b))
                                           (if (and (= "Edge" (last b)) (= "Line" (cadr b)))
@@ -242,6 +248,12 @@
                                          )
                                    )
                                    (if (= "1" (nth 6 x)) "1")
+                                   (if (= 12 (length h))
+                                     (append (list (if (= "0" (nth 1 h)) "0" "1") (nth 2 h) (vl-string-translate "." "," (nth 3 h)) (nth 4 h) (strcase (nth 5 h)))
+                                             (Remote>>LM:sublst h 6 6)
+                                     )
+                                     (cons "1" (Remote>>LM:sublst *mt:new* 12 10))
+                                   )
                              )
                              res
                        )
@@ -267,6 +279,18 @@
   )
 )
 
+;;  The hatch field of a layer as it is written (see Remote>>Dyl:MaterialLayers): its key k,
+;;  then, when it has no hatch or overrides a property of it, the values of its hatch h (on,
+;;  then the overrides, the commas of its color as dots):
+(defun Remote>>Dyl:MaterialLayerHatchStr (k h)
+  (if (and h (or (= "0" (car h)) (vl-some '(lambda (i) (= "1" (nth i h))) '(1 3 5 7 9))))
+    (Remote>>LM:lst->str (cons (cond (k) ("")) (Remote>>Dyl:ListSubst h 2 (vl-string-translate "," "." (cond ((nth 2 h)) ("")))))
+                         "~"
+    )
+    (cond (k) (""))
+  )
+)
+
 ;;  The text of the layers lst (see Remote>>Dyl:MaterialLayers) for the Assembly column (the
 ;;  fields of a P layer after its thickness only when it has them):
 (defun Remote>>Dyl:MaterialLayersStr (lst)
@@ -274,7 +298,7 @@
     ((Remote>>LM:lst->str
        (mapcar '(lambda (l / x)
                   (setq x (if (= "P" (car l))
-                            (list (cond ((cadddr l)) (""))
+                            (list (Remote>>Dyl:MaterialLayerHatchStr (cadddr l) (nth 7 l))
                                   (cond ((Remote>>LM:lst->str (nth 4 l) "~")) (""))
                                   (cond ((Remote>>LM:lst->str (Remote>>Dyl:MaterialLayerBorderStr (nth 5 l)) "~")) (""))
                                   (if (= "1" (nth 6 l)) "1" "")
@@ -609,6 +633,46 @@
   )
 )
 
+;;  The hatch of a Quick Draw preset or of a layer of an assembly (Has a hatch, its Hatch
+;;  Settings window): its layer key ("": the hatch layer key of its hatch preset), then the
+;;  properties of the key it overrides, in the order of *mt:bordertiles* (color on, color,
+;;  linetype on, linetype, linetype scale on, scale, lineweight on, lineweight, transparency
+;;  on, transparency), and the column of the material each one goes to:
+(setq *mt:hatchtiles* '(("hky" . 8) ("bco" . 22) ("bcv" . 23) ("blo" . 47) ("blt" . 48) ("bso" . 49)
+                        ("bsc" . 50) ("bwo" . 26) ("bwt" . 27) ("bto" . 28) ("btr" . 29)
+                       )
+)
+
+;;  No hatch: a column of a material as it is drawn only, never saved (the columns of the file
+;;  end at 63): "1", the outlines are kept as the border, no hatch is made (see
+;;  Remote>>Dyl:MaterialHatchAt):
+(setq *mt:nohatch* 64)
+
+;;  The material mat with the hatch h of a preset or of a layer (its 11 values, see
+;;  *mt:hatchtiles*): its layer key in place of the hatch layer key of mat when it has one, each
+;;  property it overrides in place of that of mat (the others: those of the hatch preset):
+(defun Remote>>Dyl:MaterialHatchOver (mat h / i)
+  (if (and h (/= "" (car h))) (setq mat (Remote>>Dyl:ListSubst mat 8 (car h))))
+  (setq i 1)
+  (while (< i 11)
+    (if (= "1" (nth i h))
+      (setq mat (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst mat (cdr (nth i *mt:hatchtiles*)) "1")
+                                       (cdr (nth (1+ i) *mt:hatchtiles*))
+                                       (nth (1+ i) h)
+                )
+      )
+    )
+    (setq i (+ i 2))
+  )
+  mat
+)
+
+;;  The material mat with No hatch (on T) or with its hatch (see *mt:nohatch*):
+(defun Remote>>Dyl:MaterialNoHatch (mat on)
+  (while (< (length mat) *mt:nohatch*) (setq mat (append mat (list ""))))
+  (append (Remote>>LM:sublst mat 0 *mt:nohatch*) (list (if on "1" "0")))
+)
+
 ;;  The drawing scale of the current drawing: the annotation scale (CANNOSCALE, set by
 ;;  Dyl-SwitchDrawingScale) as a number, 1:50 -> 50.0. 1.0 when it cannot be read:
 (defun Remote>>Dyl:MaterialDrawScale (/ v)
@@ -882,12 +946,14 @@
 ;;  hatch is not associative and the outlines are erased once it is made, but those the user
 ;;  selected (mt:keepouts T, set by the caller, e.g. Quick Draw Select closed objects). The
 ;;  boxes of a legend (mt:legend T, see Remote>>Dyl:MaterialLegend) are kept as drawn: no
-;;  layer key, no border settings:
+;;  layer key, no border settings. With No hatch (see *mt:nohatch*), the outlines are only
+;;  put on their layer key with their border settings, and no hatch is made:
 (defun Remote>>Dyl:MaterialHatchAt (mat outs ang / ss mark nob asc vars c org)
   (setq ss  (ssadd)
         nob (= "1" (nth 31 mat))
         asc (and (= "1" (nth 30 mat)) (not nob))
   )
+  (if (= "1" (nth *mt:nohatch* mat)) (setq ss nil))
   (foreach e outs
     (if (not mt:legend)
       (progn
@@ -895,9 +961,13 @@
         (if (not nob) (Remote>>Dyl:MaterialProps e mat 'border))
       )
     )
-    (if (Remote>>Dyl:MaterialClosed-p e) (ssadd e ss))
+    (if (and ss (Remote>>Dyl:MaterialClosed-p e)) (ssadd e ss))
   )
-  (if (< 0 (sslength ss))
+  ;;  No hatch: an outline made to be hatched only (No border) is erased:
+  (if (and (not ss) nob (not mt:keepouts))
+    (foreach e outs (if (and (entget e) (Remote>>Dyl:MaterialClosed-p e)) (entdel e)))
+  )
+  (if (and ss (< 0 (sslength ss)))
     (progn
       ;;  Draw order of the new hatch (its background color is set once it is made, see below):
       ;;  A SOLID hatch has no background color (see *mt:solidoff*):
@@ -1477,6 +1547,9 @@
       ;;  The open button of Has a border: the Border Settings window (see
       ;;  Dyl:QuickDrawBorderDialog):
       *mt:borderpick* 12
+      ;;  The open button of Has a hatch: the Hatch Settings window (see
+      ;;  Dyl:QuickDrawHatchDialog):
+      *mt:hatchsetpick* 13
 )
 
 ;;  The tiles of the Band Settings window (Dyl:QuickDrawBandDialog), not tiles of the

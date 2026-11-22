@@ -7,11 +7,12 @@
 # layers, then the layers as rows: kind preset thickness hatch-key line-key, band on, hatch
 # ends extension angle corners miter lap joints, border on, border key, structural, then
 # what the border overrides (color on, color, linetype on, linetype, linetype scale on,
-# scale, lineweight on, lineweight, transparency on, transparency); \T a tab
+# scale, lineweight on, lineweight, transparency on, transparency), Has a hatch and what the
+# hatch overrides (in the same order); \T a tab
 # between their columns, \n between the rows); \t is a tab. The preview: lp/specs the
 # preview of each preset, ll/ends the ends of the band, ll/paper a millimeter in inches and
-# the drawing scale (a detail at 1:10). sub "1": the Border Settings window opened by the
-# window itself, its open buttons greyed out.
+# the drawing scale (a detail at 1:10). sub "1": the Border Settings and Hatch Settings
+# windows opened by the window itself, their open buttons greyed out.
 grp/list=Floor|Wall|Ceiling|Roof|Finish|Structural|Site|Elevation|Section|Detail|Annotation|Phase|Area|Generic
 srt/list=Name|Group
 srt=0
@@ -23,10 +24,10 @@ pst.sel=0
 pst.shw=
 pst/title=Assembly Presets
 pst/noun=assemblies
-+pst/rows=cu-ExteriorWall\tWall\tExterior Wall\tP:qd-Gypsum:16:::1~THIN|P:qd-CMU:190::::1|P:qd-RigidInsulation:50|S::25|P:qd-Brick:90:THIN:1~Edge~Extended~30~45~Lapped~4~First~Interrupted:1~MED|L:WIDE:\tP\Tqd-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T1\TTHIN\T0\nP\Tqd-CMU\T190\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T1\nP\Tqd-RigidInsulation\T50\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\nS\Tqd-Brick\T25\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\nP\Tqd-Brick\T90\TTHIN\TMED\T1\TEdge\TExtended\T30\T45\TLapped\T4\TFirst\TInterrupted\T1\TMED\T0\nL\Tqd-Brick\T90\T\TWIDE\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0
-+pst/rows=cu-FoundationWall\tWall\tFoundation Wall\tP:qd-Concrete:250::::1|P:qd-RigidInsulation:50\tP\Tqd-Concrete\T250\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T1\nP\Tqd-RigidInsulation\T50\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0
-+pst/rows=cu-InteriorPartition\tWall\tInterior Partition\tP:qd-Gypsum:16|S::92|P:qd-Gypsum:16\tP\Tqd-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\nS\Tqd-Brick\T92\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\nP\Tqd-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0
-+ll/new=P\tqd-Existing\t10\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t0\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50
++pst/rows=cu-ExteriorWall\tWall\tExterior Wall\tP:qd-Gypsum:16:::1~THIN|P:qd-CMU:190::::1|P:qd-RigidInsulation:50|S::25|P:qd-Brick:90:THIN:1~Edge~Extended~30~45~Lapped~4~First~Interrupted:1~MED|L:WIDE:\tP\Tqd-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T1\TTHIN\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\nP\Tqd-CMU\T190\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\nP\Tqd-RigidInsulation\T50\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\nS\Tqd-Brick\T25\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\nP\Tqd-Brick\T90\TTHIN\TMED\T1\TEdge\TExtended\T30\T45\TLapped\T4\TFirst\TInterrupted\T1\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\nL\Tqd-Brick\T90\T\TWIDE\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50
++pst/rows=cu-FoundationWall\tWall\tFoundation Wall\tP:qd-Concrete:250::::1|P:qd-RigidInsulation:50\tP\Tqd-Concrete\T250\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\nP\Tqd-RigidInsulation\T50\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50
++pst/rows=cu-InteriorPartition\tWall\tInterior Partition\tP:qd-Gypsum:16|S::92|P:qd-Gypsum:16\tP\Tqd-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\nS\Tqd-Brick\T92\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\nP\Tqd-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50\T1\T0\T7\T0\TCONTINUOUS\T0\T1\T0\T25\T0\T50
++ll/new=P\tqd-Existing\t10\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t0\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50\t1\t0\t7\t0\tCONTINUOUS\t0\t1\t0\t25\t0\t50
 ll.sel=4
 lk/list=Hatch|Space|Line
 lk/vals=P|S|L
@@ -34,8 +35,8 @@ lp/list=Phase - Existing|Section - Brick|Section - CMU|Section - Concrete|Sectio
 lp/vals=qd-Existing|qd-Brick|qd-CMU|qd-Concrete|qd-Gypsum|qd-Plywood|qd-RigidInsulation|qd-WoodPlank
 lp/widths/list=||||||25|
 lp/specs/list=F?1|P?1?ANSI31?{samples}\Sample.pat?0.5?0?1|P?1?ANSI37?{samples}\Sample.pat?0.5?0?1|P?1?CONCRETE_C?{samples}\Sample.pat?1?0?1|P?1?GENERAL_TEXTURE?{samples}\Sample.pat?0.5?0?1|P?1?WOOD_GLU-LAMBEAM?{samples}\Sample.pat?1?0?1|P?1?THERMAL_INSULATION?{samples}\Sample.pat?w0.003937?90?10|P?1?WOOD_2?{samples}\Sample.pat?0.1875?0?1
-lh/list=From preset|HATCH|MED|THIN|WIDE|XTHIN
-lh/vals=|HATCH|MED|THIN|WIDE|XTHIN
+hky/list=From preset|HATCH|MED|THIN|WIDE|XTHIN
+hky/vals=|HATCH|MED|THIN|WIDE|XTHIN
 ly/list=HATCH|MED|THIN|WIDE|XTHIN
 ly/vals=HATCH|MED|THIN|WIDE|XTHIN
 out/list=HATCH|MED|THIN|WIDE|XTHIN

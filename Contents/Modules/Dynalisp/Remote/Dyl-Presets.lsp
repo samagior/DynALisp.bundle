@@ -1386,6 +1386,8 @@
 ;;    (mspec . <function: material -> its preview, see Installer\Windows\Engine\Hatch.cs>)
 ;;    (outline . "hbr")                 ; the rule of the window when the preview is outlined
 ;;                                      ; (the preset has a border)
+;;    (blank . "!hha")                  ; the rule of the window when the preview is a space
+;;                                      ; (the preset has no hatch)
 ;;    (wprefix . "4|Polyline=PL-|*=QD-") ; the text of a new alias, by the value of a column
 ;;    (wprep . <function: called before the window is shown, nil>)
 ;;    (wvals . <function: -> the values of the window the App gives (its lists...)>)
@@ -1500,6 +1502,7 @@
     )
     (if spec (list (cons "pst/spec" (itoa (cadr spec))) (cons "pst/specby" (cddr spec))))
     (if (assoc 'outline pst:dlg) (list (cons "pst/outline" (cdr (assoc 'outline pst:dlg)))))
+    (if (assoc 'blank pst:dlg) (list (cons "pst/blank" (cdr (assoc 'blank pst:dlg)))))
     (Remote>>Dyl:PresetDlgCall 'wvals nil)
   )
 )

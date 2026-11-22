@@ -49,6 +49,12 @@
               ;;  Custom band settings: the justification, hatch alignment, ends and corners
               ;;  of the Band Settings window (off: the defaults, see Dyl:QuickDrawMat):
               "BandOn"
+              ;;  The hatch of the preset (Has a hatch, its Hatch Settings window): its layer
+              ;;  key ("": that of its hatch preset), the properties of the key it overrides (in
+              ;;  place of those of its hatch preset), then No hatch (the outline only):
+              "HatchKey" "HatchColorOn" "HatchColor" "HatchLinetypeOn" "HatchLinetype"
+              "HatchLtScaleOn" "HatchLtScale" "HatchLineweightOn" "HatchLineweight"
+              "HatchTransparencyOn" "HatchTransparency" "NoHatch"
       )
       (default . "QD-*")
       (base . "Pst-QuickDraw")

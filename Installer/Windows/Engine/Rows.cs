@@ -643,6 +643,8 @@ namespace DynALisp.Windows
                     string kind = Cell(r, c[0]).ToUpperInvariant(), w = Cell(r, c[2]), band;
                     if (kind == "L") band = "L?0";
                     else if (kind == "S") band = "S?" + w;
+                    // a Hatch layer without hatch (Has a hatch off): a space, its border kept:
+                    else if (c.Length > 10 && Cell(r, c[10]) == "0") band = "S?" + w;
                     else
                     {
                         int j = pf != null ? IndexOf(pf, Cell(r, c[1])) : -1;

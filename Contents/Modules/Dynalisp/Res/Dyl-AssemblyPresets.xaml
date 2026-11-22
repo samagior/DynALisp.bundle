@@ -25,7 +25,8 @@
   the column 4 of the assembly (dyl:Win.RowsIn), greyed out while several assemblies are
   selected (pst.many): a row per layer, its columns: 0 the kind (P Hatch, S Space, L Line), 1
   the Quick Draw preset of a Hatch layer (its id), 2 the thickness of a Hatch or a Space, 3
-  the hatch layer key of a Hatch layer ("": the key of its preset), 4 the layer key of a Line;
+  the layer key of the hatch of a Hatch layer ("": the key of its preset), 4 the layer key
+  of a Line;
   a Hatch layer: 5 its own band settings on ("1"), 6 to 13 those settings (hatch aligned to,
   ends, extension, angle, corners, miter limit, lap, joints: edited in the Band Settings
   window, opened by lbe on the layers selected), 14 its own border on, 15 the layer key of
@@ -34,7 +35,9 @@
   linetype scale on, scale, lineweight on, lineweight, transparency on, transparency), 16
   Structural ("1": the structural layer, one at most: the window clears it in
   the others, dyl:Win.Exclusive; the Justification Structural layer of a Quick Draw preset puts
-  the line drawn in its middle). Every column is kept in every row, so a layer turned into
+  the line drawn in its middle), 27 Has a hatch ("0": no hatch, the outline only), 28 to 37
+  the properties its hatch overrides (as its border; edited with its layer key, column 3, in
+  the Hatch Settings window, opened by lho on the layers selected). Every column is kept in every row, so a layer turned into
   another kind and back gets its values again; the Lisp keeps those of its kind. Add, Remove,
   Move up, Move down and Flip run in the window. The preview (an AssemblyTile,
   Installer\Windows\Engine\Assembly.cs) draws the rows as they are edited: lp/specs the
@@ -191,6 +194,9 @@
                 <DataTrigger Binding="{Binding V[3]}" Value="">
                   <Setter TargetName="hk" Property="Text" Value=""/>
                 </DataTrigger>
+                <DataTrigger Binding="{Binding V[27]}" Value="0">
+                  <Setter TargetName="hk" Property="Text" Value="  No hatch"/>
+                </DataTrigger>
                 <DataTrigger Binding="{Binding V[16]}" Value="1">
                   <Setter TargetName="sr" Property="Text" Value="  Structural"/>
                 </DataTrigger>
@@ -223,10 +229,6 @@
           <ComboBox x:Name="lp" DockPanel.Dock="Right" Width="220" dyl:Win.Column="1"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Preset"/>
         </DockPanel>
-        <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
-          <ComboBox x:Name="lh" DockPanel.Dock="Right" Width="220" dyl:Win.Column="3"/>
-          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Hatch layer key"/>
-        </DockPanel>
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk!=L">
           <TextBox x:Name="lw" DockPanel.Dock="Right" Width="220" dyl:Win.Column="2" dyl:Win.Follows="lp/widths"
                    dyl:Win.Check="positive" dyl:Win.CheckMessage="The thickness must be a number greater than 0."/>
@@ -241,13 +243,20 @@
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Line layer key"/>
         </DockPanel>
         <!-- A Hatch layer: its own band settings (the Band Settings window on the layers
-             selected), its own border (the Border Settings window on the layers selected: its
-             layer key and the properties it overrides): -->
+             selected), its hatch and its own border (the Hatch Settings and Border Settings
+             windows on the layers selected: their layer key and the properties they
+             override): -->
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
           <dyl:OpenButton x:Name="lbe" DockPanel.Dock="Right" ToolTip="Band Settings" dyl:Win.EnabledBy="lbs"
                           dyl:Win.Open="Dyl-QuickDrawBandSettings.xaml"
                           dyl:Win.Columns="mht:6,men:7,mex:8,mea:9,mco:10,mml:11,mlt:12,mjo:13"/>
           <CheckBox x:Name="lbs" Content="Custom band settings" dyl:Win.Column="5"/>
+        </DockPanel>
+        <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
+          <dyl:OpenButton x:Name="lho" DockPanel.Dock="Right" ToolTip="Hatch Settings" dyl:Win.EnabledBy="lha"
+                          dyl:Win.Open="Dyl-QuickDrawHatchSettings.xaml"
+                          dyl:Win.Columns="hky:3,bco:28,bcv:29,blo:30,blt:31,bso:32,bsc:33,bwo:34,bwt:35,bto:36,btr:37"/>
+          <CheckBox x:Name="lha" Content="Has a hatch" dyl:Win.Column="27"/>
         </DockPanel>
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
           <dyl:OpenButton x:Name="lbo" DockPanel.Dock="Right" ToolTip="Border Settings" dyl:Win.EnabledBy="lbr"
@@ -259,7 +268,7 @@
     </GroupBox>
     <!-- The assembly as it is drawn, a wall in plan, built as the layers are edited: -->
     <GroupBox Header="Preview" Margin="0,10,0,0">
-      <dyl:AssemblyTile MinHeight="120" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14 6 16" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
+      <dyl:AssemblyTile MinHeight="120" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14 6 16 27" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
                         Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"
                         Accent="{DynamicResource Dyl.Accent}"/>
     </GroupBox>
