@@ -239,10 +239,13 @@
     ("mt-LooseInsulation" "Section" "Loose Insulation" "hp-LooseInsulation" "" "" "" "")
     ("mt-SprayInsulation" "Section" "Spray Insulation" "hp-SprayInsulation" "" "" "" "")
     ("mt-RigidInsulation" "Section" "Rigid Insulation" "hp-RigidInsulation" "" "" "" "")
-    ;;  Three materials of one hatch preset, each with its own data (to fill in from a source):
-    ("mt-ExtrudedPolystyrene" "Section" "Extruded Polystyrene" "hp-RigidInsulation" "" "" "" "")
-    ("mt-ExpandedPolystyrene" "Section" "Expanded Polystyrene" "hp-RigidInsulation" "" "" "" "")
-    ("mt-Polyisocyanurate" "Section" "Polyisocyanurate" "hp-RigidInsulation" "" "" "" "")
+    ;;  Three materials of one hatch preset, each with its own data: their conductivity is 1 /
+    ;;  the RSI per mm of the values recognized by the Quebec code (APCHQ ST-522, 2015, also
+    ;;  in the Novoclimat table): XPS types 2-3-4 0.035, EPS type 2 0.028, polyisocyanurate
+    ;;  0.042 m2.K/W per mm; no density from a source yet:
+    ("mt-ExtrudedPolystyrene" "Section" "Extruded Polystyrene" "hp-RigidInsulation" "" "0.02857" "" "")
+    ("mt-ExpandedPolystyrene" "Section" "Expanded Polystyrene" "hp-RigidInsulation" "" "0.03571" "" "")
+    ("mt-Polyisocyanurate" "Section" "Polyisocyanurate" "hp-RigidInsulation" "" "0.02381" "" "")
     ("mt-Gypsum" "Section" "Gypsum" "hp-Gypsum" "" "" "" "")
     ("mt-Plaster" "Section" "Plaster" "hp-Plaster" "" "" "" "")
     ("mt-CompactedSoil" "Section" "Compacted Soil" "hp-CompactedSoil" "" "" "" "")
