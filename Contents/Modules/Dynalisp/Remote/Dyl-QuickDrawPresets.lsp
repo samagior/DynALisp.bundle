@@ -79,13 +79,21 @@
 ;;  its Dividing lines (between its layers; see Remote>>Dyl:MaterialLines), each replaced by
 ;;  the own border of a layer, edited in the Assembly Presets window (opened from
 ;;  the Quick Draw window, see Dyl:QuickDrawAsmDialog). No commands of their own: OK gives the
-;;  assembly selected to the Quick Draw presets selected. No default assembly: the user makes
-;;  them (their thicknesses are in the units of the drawings):
+;;  assembly selected to the Quick Draw presets selected. Then the units of their thicknesses
+;;  (Units: "" the units of the drawing, those the user makes; "mm" millimetres, converted to
+;;  the units of the drawing when they are read, see Dyl:QuickDrawAsmToDwg), and what the
+;;  assembly is worth by the building code: its description, its fire-resistance ratings in
+;;  minutes (load-bearing, non-load-bearing), its sound transmission class (STC) and its
+;;  impact insulation class (IIC). The default assemblies (as-*) are the typical assemblies of
+;;  the building code (NBC Tables 9.10.3.1.-A and -B), named by their number (W1a, F4c...),
+;;  their thicknesses in millimetres:
 (setq *dyl:presetspecs*
   (cons
     '("QuickDrawAssembly"
       (file . "QuickDrawAssemblies.csv")
-      (header "Id" "Group" "Name" "Layers" "BorderLines" "DividingLines" "Exterior")
+      (header "Id" "Group" "Name" "Layers" "BorderLines" "DividingLines" "Exterior" "Units" "Description" "FireRating"
+              "FireRatingNLB" "STC" "IIC"
+      )
       (default . "AS-*")
       (title . "Assembly Presets")
       (doc . "Draw\\Dyl-AssemblyPresets.htm")
