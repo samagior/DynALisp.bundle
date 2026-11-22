@@ -91,7 +91,7 @@
             <Button x:Name="del" Content="Delete"/>
           </StackPanel>
           <!-- Double-click: draws the preset. Ctrl / Shift click: several presets edited at once: -->
-          <ListBox x:Name="lst" Height="600">
+          <ListBox x:Name="lst" Height="542">
             <ListBox.ItemTemplate>
               <DataTemplate>
                 <Grid>
