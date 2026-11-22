@@ -25,7 +25,7 @@
 ;; Hatch Presets
 ;; Opens a dialog to create and edit the hatch presets (pattern, scale and layer key of a hatch) used by Quick Draw and Quick Shape.
 
-(defun c:Dyl-HatchPresets ()
+(defun c:Dyl-Materials ()
   (Remote>>Dyl:MaterialDialog nil)
   (princ)
 )

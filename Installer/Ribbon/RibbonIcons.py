@@ -689,7 +689,7 @@ def i_shrinkwrap(c):
            1.6 if c.small else 2.2)
 
 
-def i_hatchpresets(c):
+def i_materials(c):
     swatch(c, 'CONCRETE', 2, 2, 18, 18)
     swatch(c, 'STEEL', 8, 8, 24, 24)
     swatch(c, 'BRICK', 14, 14, 30, 30)
@@ -1144,7 +1144,7 @@ ICONS = {
     'PST-QUICKDRAWGALLERY': i_quickdrawgallery,
     'DYL-QUICKSHAPE': i_quickshape,
     'DYL-SHRINKWRAP': i_shrinkwrap,
-    'DYL-HATCHPRESETS': i_hatchpresets,
+    'DYL-MATERIALS': i_materials,
     # layers
     'DYL-LAYERKEYS': i_layerkeys,
     'DYL-OBJECTLAYERKEYS': i_objectlayerkeys,

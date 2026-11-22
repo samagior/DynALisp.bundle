@@ -122,7 +122,7 @@
       (default . "MT-*")
       (title . "Hatch Presets")
       ;;  Page of the Documentation button (Docs folder of the Dynalisp module):
-      (doc . "Draw\\Dyl-HatchPresets.htm")
+      (doc . "Draw\\Dyl-Materials.htm")
      )
     (vl-remove (assoc "Material" *dyl:presetspecs*) *dyl:presetspecs*)
   )

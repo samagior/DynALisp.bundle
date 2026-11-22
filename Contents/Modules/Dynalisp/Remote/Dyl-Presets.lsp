@@ -490,7 +490,7 @@
   (if (Remote>>Dyl:PresetProp pst:key 'cmd) t)
 )
 
-;;  Docs page of the tool (Open Docs button, see Dyl:DocsTile) (nil: none found): (doc . "Draw\\Dyl-HatchPresets.htm") of
+;;  Docs page of the tool (Open Docs button, see Dyl:DocsTile) (nil: none found): (doc . "Draw\\Dyl-Materials.htm") of
 ;;  its spec, relative to the Docs folder of the Dynalisp module, else the page named after
 ;;  its App (path . "Dynalisp\\Apps\\Draw\\Dyl-QuickDraw.lsp" -> Docs\Draw\Dyl-QuickDraw.htm):
 (defun Remote>>Dyl:PresetDlgDocFile (/ doc app)
