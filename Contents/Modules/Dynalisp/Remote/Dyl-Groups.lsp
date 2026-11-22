@@ -93,6 +93,9 @@
 ;;  as it is on disk (the user's copy, else the default), its other values kept. Returns the
 ;;  tools whose file could not be written:
 (defun Remote>>Dyl:GroupsRename (pairs / key rows new bad)
+  ;;  A materials file of DynALisp 1.1 and older is split first (its user copy is not read as
+  ;;  it is, see Remote>>Dyl:PresetFile, and would be written over):
+  (if Remote>>Dyl:MaterialMigrate (Remote>>Dyl:MaterialMigrate))
   (foreach spec *dyl:presetspecs*
     (setq key  (car spec)
           rows (Remote>>Dyl:PresetCsv key)

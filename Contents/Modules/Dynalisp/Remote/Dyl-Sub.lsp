@@ -164,6 +164,26 @@
 )
 
 
+;;  The names of the header (the first line) of the CSV file fle, divided by its separator as
+;;  in Remote>>Dyl:CsvRead, nil when it cannot be read:
+(defun Remote>>Dyl:CsvHead (fle / des str)
+  (if (and fle (setq des (open fle "r")))
+    (progn
+      (setq str (read-line des))
+      (close des)
+      (if str
+        (mapcar '(lambda (x) (vl-string-trim " " x))
+                (Remote>>LM:csv->lst (vl-string-left-trim (strcat (chr 239) (chr 187) (chr 191)) str)
+                                     (cond ((vl-string-search ";" str) ";") ((vl-string-search "\t" str) "\t") (","))
+                                     0
+                )
+        )
+      )
+    )
+  )
+)
+
+
 ;;  Read the rows of a CSV file, header row excluded. Each row is cut or padded to
 ;;  n cells trimmed of spaces. The separator (";", tab or ",") is detected from the
 ;;  header row, so the files written by Remote>>LM:writecsv are read back on any

@@ -749,6 +749,7 @@
   (dg:try 'dg:set-user)
   (dg:try 'dg:set-csv)
   (dg:try 'dg:set-asm)
+  (dg:try 'dg:set-mat)
 )
 
 ;;  Every Dynalisp* user setting, local ones included: (name ...):
@@ -860,6 +861,44 @@
       (dg:kv "Assemblies" (itoa (length ids)))
       (if bad
         (dg:bad (strcat "Quick Draw presets whose assembly no longer exists: " (Remote>>LM:lst->str (reverse bad) ", ")))
+      )
+    )
+  )
+)
+
+;;  The materials and their hatch presets: a materials file of DynALisp 1.1 and older not split
+;;  yet (each material its own hatch), a material whose hatch preset no longer exists (drawn
+;;  without hatch), a User copy of the HatchPresets.csv of DynALisp 1.0 (not read):
+(defun dg:set-mat (/ b ids bad f)
+  (if Remote>>Dyl:MaterialBoth
+    (progn
+      (dg:sub "Materials")
+      ;;  (never split here: the report changes no file)
+      (if (Remote>>Dyl:MaterialOld-p)
+        (dg:note "The materials file is of DynALisp 1.1 or older: it is split into materials and hatch presets when it is read")
+        (progn
+          (setq b   (Remote>>Dyl:MaterialBoth)
+                ids (mapcar 'car (car b))
+          )
+          (dg:kv "Materials" (itoa (length (cadr b))))
+          (dg:kv "Hatch presets" (itoa (length ids)))
+          (foreach m (cadr b)
+            (foreach i '(3 4)
+              (if (and (/= "" (nth i m)) (not (member (nth i m) ids)))
+                (setq bad (cons (strcat (nth 2 m) " (" (nth i m) ")") bad))
+              )
+            )
+          )
+          (if bad
+            (dg:bad (strcat "Materials whose hatch preset no longer exists: " (Remote>>LM:lst->str (reverse bad) ", ")))
+          )
+        )
+      )
+      (setq f (Dyl:UserFile (Remote>>Dyl:PresetDefault "HatchPreset")))
+      (if (and (/= (strcase f) (strcase (Remote>>Dyl:PresetDefault "HatchPreset")))
+               (/= (Remote>>Dyl:PresetFile "HatchPreset") f)
+          )
+        (dg:note "The User copy of HatchPresets.csv is the file of DynALisp 1.0: not read (saving the hatch presets replaces it)")
       )
     )
   )

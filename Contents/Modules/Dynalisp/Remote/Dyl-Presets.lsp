@@ -38,7 +38,10 @@
 ;;     (header "Id" "Group" "Name" ...)                 ; columns of the presets file
 ;;     (default . "QD-*")                               ; wcmatch of the default ids (upper case)
 ;;     (blank3 . T)                                     ; the column 3 may be empty (the pattern
-;;                                                      ; of a material: None, Void)
+;;                                                      ; of a hatch preset: None, Void)
+;;     (head . 4)                                       ; a user copy is read only when its header
+;;                                                      ; begins with these 4 names (see
+;;                                                      ; Remote>>Dyl:PresetFile)
 ;;     (base . "Pst-QuickDraw")                         ; command prefix of the default presets
 ;;     (cmd . "Pst-QuickDrawCustom")                    ; command prefix of the custom presets
 ;;     (title . "Quick Draw")                           ; name of the tool
@@ -63,9 +66,23 @@
 )
 
 ;;  Presets file of the tool key to read: the user copy when there is one, else the default
-;;  (see Dyl:UserFile in dynalisp.mnl):
-(defun Remote>>Dyl:PresetFile (key)
-  (Dyl:UserFile (Remote>>Dyl:PresetDefault key))
+;;  (see Dyl:UserFile in dynalisp.mnl). With (head . n) in its spec, a user copy whose header
+;;  does not begin with the first n names of the header of the tool (any case) is another file
+;;  of the same name (of an older version): the default is read in its place:
+(defun Remote>>Dyl:PresetFile (key / def fle n)
+  (setq def (Remote>>Dyl:PresetDefault key)
+        fle (Dyl:UserFile def)
+  )
+  (if (and (/= (strcase fle) (strcase def))
+           (setq n (Remote>>Dyl:PresetProp key 'head))
+           (not (equal (mapcar 'strcase (Remote>>LM:sublst (Remote>>Dyl:CsvHead fle) 0 n))
+                       (mapcar 'strcase (Remote>>LM:sublst (Remote>>Dyl:PresetProp key 'header) 0 n))
+                )
+           )
+      )
+    def
+    fle
+  )
 )
 
 ;;  Presets file of the tool key to write: the user copy:

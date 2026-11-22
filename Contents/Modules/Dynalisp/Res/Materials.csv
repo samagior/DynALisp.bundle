@@ -1,38 +1,38 @@
-Id;Group;Name;Pattern;Scale;ScaleMetric;Angle;OutlineKey;HatchKey;Annotative;ScaleDrawing;ScaleRef;BorderColorOn;BorderColor;BorderLinetypeOn;BorderLinetype;BorderLtScaleOn;BorderLtScale;BorderLineweightOn;BorderLineweight;BorderTransparencyOn;BorderTransparency;HatchColorOn;HatchColor;BackgroundOn;Background;HatchLineweightOn;HatchLineweight;HatchTransparencyOn;HatchTransparency;Associative;NoBorder;BehindBorder;Method;Width;Justify;Sides;ScaleWidth;WidthFactor;OriginOnLine;OriginOffset;ExistingBackgroundOn;ExistingBackground;ShrinkGap;ShrinkGapOn;ShrinkGapMetric;OriginAlong;HatchLinetypeOn;HatchLinetype;HatchLtScaleOn;HatchLtScale;Ends;EndExtension;EndAngle;Corners;MiterLimit;LapThrough;Joints;HatchFollows;AssemblyOn;Assembly;EndsOn;CornersOn;Type
-mt-Demolition;Phase;Demolition;ANSI31;0.5;;90.0;THIN;HATCH;1;1;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-NotInContract;Phase;Not In Contract;ANSI31;1.5;;90.0;XLINE;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Existing;Phase;Existing;SOLID;1.0;;0;XLINE;HATCH;0;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Concrete;Section;Concrete;CONCRETE_C;1.0;;0;WIDE;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-LightweightConcrete;Section;Lightweight Concrete;CONCRETE;1.0;;0;THIN;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Mortar;Section;Mortar;GENERAL_STIPPLE;1.0;;0;FINE;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Brick;Section;Brick;ANSI31;1.0;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Stone;Section;Stone;ANSI33;1.0;;0;WIDE;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-CMU;Section;CMU;ANSI37;1.0;;0;WIDE;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Firebrick;Section;Firebrick;ANSI35;0.5;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Marble;Section;Marble;ANSI36;0.5;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Grout;Section;Grout;GENERAL_STIPPLE;2.0;;0;XLINE;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Iron;Section;Iron;ANSI31;0.5;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Steel;Section;Steel;ANSI32;0.5;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Bronze;Section;Bronze;ANSI33;0.5;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-cu-ModularBrick;Elevation;Modular Brick;BRICK;10.6667;;0;THIN;HATCH;0;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1;Square;;45;Mitered;4;First;Interrupted;Line;0;;;;Model
-mt-Lead;Section;Lead;ANSI37;0.5;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Aluminium;Section;Aluminium;ANSI38;0.5;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Plywood;Section;Plywood;WOOD_GLU-LAMBEAM;1.0;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-WoodPlank;Section;Wood Plank;WOOD_2;0.1875;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-WoodFrame;Section;Wood Frame;WOOD_1;0.75;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Particleboard;Section;Particleboard;GENERAL_TEXTURE;3.0;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Hardboard;Section;Hardboard;ANSI31;1.0;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Plastic;Section;Plastic;ANSI34;0.5;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-LooseInsulation;Section;Loose Insulation;NET3;1.0;;0;HATCH;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-SprayInsulation;Section;Spray Insulation;HONEY;0.5;;0;HATCH;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-RigidInsulation;Section;Rigid Insulation;THERMAL_INSULATION;0.5;;90;THIN;HATCH;0;1;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;1;0;1;Linear;25,50,75,100;Ask;;1;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Gypsum;Section;Gypsum;GENERAL_TEXTURE;0.5;;0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Plaster;Section;Plaster;GENERAL_TEXTURE;3.0;;0;THIN;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-CompactedSoil;Section;Compacted Soil;SITEWORK_EARTH;1.0;;45.0;XLINE;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Topsoil;Section;Topsoil;SITEWORK_EARTH;1.0;;0.0;XLINE;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-UndisturbedSoil;Section;Undisturbed Soil;SITEWORK_EARTH;1.0;;0.0;XLINE;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Sand;Section;Sand;GENERAL_STIPPLE;1.0;;0.0;FINE;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Asphalt;Section;Asphalt;SITEWORK_ASPHALT;1;;90.0;MED;HATCH;1;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Gravel;Section;Gravel;SITEWORK_GRAVEL;3.0;;22.5;FINE;HATCH;0;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-CrushedStone;Section;Crushed Stone;SITEWORK_GRAVEL;3.0;;22.5;FINE;HATCH;0;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
-mt-Void;Section;Void;;1.0;;0;THIN;HATCH;0;0;1;0;7;0;CONTINUOUS;0;1;0;25;0;50;0;7;0;254;0;13;0;50;0;0;0;;;Center;;0;1;0;0;0;253;;0;;0;0;CONTINUOUS;0;1
+Id;Group;Name;Cut;Surface;Conductivity;Density;Resistance
+mt-Demolition;Phase;Demolition;hp-Demolition;;;;
+mt-NotInContract;Phase;Not In Contract;hp-NotInContract;;;;
+mt-Existing;Phase;Existing;hp-Existing;;;;
+mt-Concrete;Section;Concrete;hp-Concrete;;;;
+mt-LightweightConcrete;Section;Lightweight Concrete;hp-LightweightConcrete;;;;
+mt-Mortar;Section;Mortar;hp-Mortar;;;;
+mt-Brick;Section;Brick;hp-Brick;;;;
+mt-Stone;Section;Stone;hp-Stone;;;;
+mt-CMU;Section;CMU;hp-CMU;;;;
+mt-Firebrick;Section;Firebrick;hp-Firebrick;;;;
+mt-Marble;Section;Marble;hp-Marble;;;;
+mt-Grout;Section;Grout;hp-Grout;;;;
+mt-Iron;Section;Iron;hp-Iron;;;;
+mt-Steel;Section;Steel;hp-Steel;;;;
+mt-Bronze;Section;Bronze;hp-Bronze;;;;
+cu-ModularBrick;Elevation;Modular Brick;hp-ModularBrick;;;;
+mt-Lead;Section;Lead;hp-Lead;;;;
+mt-Aluminium;Section;Aluminium;hp-Aluminium;;;;
+mt-Plywood;Section;Plywood;hp-Plywood;;;;
+mt-WoodPlank;Section;Wood Plank;hp-WoodPlank;;;;
+mt-WoodFrame;Section;Wood Frame;hp-WoodFrame;;;;
+mt-Particleboard;Section;Particleboard;hp-Particleboard;;;;
+mt-Hardboard;Section;Hardboard;hp-Brick;;;;
+mt-Plastic;Section;Plastic;hp-Plastic;;;;
+mt-LooseInsulation;Section;Loose Insulation;hp-LooseInsulation;;;;
+mt-SprayInsulation;Section;Spray Insulation;hp-SprayInsulation;;;;
+mt-RigidInsulation;Section;Rigid Insulation;hp-RigidInsulation;;;;
+mt-Gypsum;Section;Gypsum;hp-Gypsum;;;;
+mt-Plaster;Section;Plaster;hp-Plaster;;;;
+mt-CompactedSoil;Section;Compacted Soil;hp-CompactedSoil;;;;
+mt-Topsoil;Section;Topsoil;hp-Topsoil;;;;
+mt-UndisturbedSoil;Section;Undisturbed Soil;hp-Topsoil;;;;
+mt-Sand;Section;Sand;hp-Sand;;;;
+mt-Asphalt;Section;Asphalt;hp-Asphalt;;;;
+mt-Gravel;Section;Gravel;hp-Gravel;;;;
+mt-CrushedStone;Section;Crushed Stone;hp-Gravel;;;;
+mt-Void;Section;Void;hp-Void;;;;
