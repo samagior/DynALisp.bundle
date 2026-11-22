@@ -857,7 +857,8 @@ namespace DynALisp.Windows
                 if (c != null) _als.RemoveAll(a => a.Length > 1 && Ic.Equals(a[1], c));
             }
             foreach (int j in sel.OrderByDescending(j => j)) _rows.RemoveAt(j);
-            if (_rows.Count == 0) { _items.Clear(); Out(); return; }
+            // the last one deleted: the fields show no preset (nor its rows), none selected
+            if (_rows.Count == 0) { _items.Clear(); _idx = 0; _sel = new List<int>(); Show(); Out(); return; }
             _idx = Math.Min(sel.Min(), _rows.Count - 1);
             _sel = new List<int> { _idx };
             Show();
