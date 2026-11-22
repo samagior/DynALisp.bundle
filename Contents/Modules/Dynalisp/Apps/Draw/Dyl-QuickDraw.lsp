@@ -284,6 +284,8 @@
       ((= "Justification" p)
        (initget "Center Edge")
        (if (setq q (getkword (strcat "\nLine on the [Center/Edge] <" jus ">: "))) (setq jus q))
+       ;;  An assembly opens on it the next time:
+       (if qd:layers (setenv "DynalispQuickDrawJustify" jus))
        (setq p nil)
       )
       ((null p) (setq w nil))
@@ -732,14 +734,15 @@
 ;;  of its line, its segment of direction u, the borders of the whole band at (dl dr) bd,
 ;;  width w, options opt. start T: the start of the band, else its end. Square and Open:
 ;;  across at a; Extended: moved out along the line (by half the width when the extension
-;;  is empty); Angled: turned around a; Round: on the half circle across the whole band:
+;;  is empty); Angled: turned around a (a layer: around its own line); Round: on the half circle across the whole band:
 (defun Dyl:QdEndPt (a u d bd w opt start / k e dc)
   (setq k (car opt)
         e 0.0
   )
   (cond
     ((= "Extended" k) (setq e (cond ((cadr opt)) ((/ w 2.0)))))
-    ((= "Angled" k) (setq e (* d (/ (sin (caddr opt)) (cos (caddr opt))))))
+    ;;  Around the line (a layer of an assembly: its own line, nth 8 of opt):
+    ((= "Angled" k) (setq e (* (- d (cond ((nth 8 opt)) (0.0))) (/ (sin (caddr opt)) (cos (caddr opt))))))
     ((= "Round" k)
      (setq dc (/ (+ (car bd) (cadr bd)) 2.0)
            e  (sqrt (max 0.0 (- (* w w 0.25) (* (- d dc) (- d dc)))))
@@ -1173,11 +1176,13 @@
 )
 
 ;;  The layers of the assembly of the material mat (its behaviors, see Dyl:QuickDrawMat), nil
-;;  when its assembly is off or has no thickness: ((kind thickness mat key name lopt bkey)
-;;  ...). A Hatch layer (P) has the material of its preset with the behaviors of that preset,
-;;  its name, the options of its own band settings when they are on (see
-;;  Dyl:QuickDrawLayerOpts, nil: those of the band) and the layer key of its own border when
-;;  it has one (nil: none); a Line layer (L) its layer key and no thickness. A Hatch layer
+;;  when its assembly is off or has no thickness: ((kind thickness mat key name lopt bkey
+;;  ljus) ...). A Hatch layer (P) has the material of its preset with the behaviors of that
+;;  preset, its name, the options of its own band settings when they are on (see
+;;  Dyl:QuickDrawLayerOpts, nil: those of the band), the layer key of its own border when it
+;;  has one (nil: none) and the justification of its own band settings (Center, Edge: the
+;;  line of the layer, see Dyl:QuickDrawLayerPivot and Dyl:QuickDrawLayerHatch; nil: none);
+;;  a Line layer (L) its layer key and no thickness. A Hatch layer
 ;;  whose preset no longer exists is drawn as a space (S), with a message:
 (defun Dyl:QuickDrawLayersGet (mat / res rec m w)
   (if (= "1" (nth 59 mat))
@@ -1194,6 +1199,7 @@
            (setq res (cons (list "P" w m nil (nth 2 rec)
                                  (if (= "1" (car (nth 4 l))) (Dyl:QuickDrawLayerOpts (nth 4 l)))
                                  (if (and (= "1" (car (nth 5 l))) (/= "" (cadr (nth 5 l)))) (cadr (nth 5 l)))
+                                 (if (and (= "1" (car (nth 4 l))) (member (nth 9 (nth 4 l)) '("Center" "Edge"))) (nth 9 (nth 4 l)))
                            )
                            res
                      )
@@ -1241,6 +1247,19 @@
   )
 )
 
+;;  The options lopt of the layer l of an assembly (see Dyl:QuickDrawLayersGet) between dl
+;;  and dr from the line, with the line of the layer after them (nth 8: the distance its
+;;  Angled ends turn around, see Dyl:QdEndPt): its middle (its justification Center), or its
+;;  border nearer to the line of the band (Edge); nil without its own band settings:
+(defun Dyl:QuickDrawLayerPivot (l dl dr / mid)
+  (setq mid (/ (+ dl dr) 2.0))
+  (if (nth 5 l)
+    (append (Remote>>LM:sublst (nth 5 l) 0 8)
+            (list (cond ((/= "Edge" (nth 7 l)) mid) ((<= 0.0 mid) dr) (dl)))
+    )
+  )
+)
+
 ;;  The layers qd:layers across the band of the line pp (closed: the last point joins the
 ;;  first), justification jus, options opt: from the left border of the band to its right one
 ;;  (Center), from the line toward the band when the line is a border ("Right": the band on
@@ -1262,7 +1281,7 @@
       )
       (progn
         (if (and bands (not own) (not (vl-some '(lambda (x) (equal x cur 1e-9)) lnat))) (setq joins (cons cur joins)))
-        (setq lays  (cons (list cur (- cur (cadr l)) (nth 5 l) (nth 6 l)) lays)
+        (setq lays  (cons (list cur (- cur (cadr l)) (Dyl:QuickDrawLayerPivot l cur (- cur (cadr l))) (nth 6 l)) lays)
               bands (cons l bands)
               cur   (- cur (cadr l))
         )
@@ -1287,9 +1306,9 @@
 ;;  line: the hatch following the line, z the elevation. As Dyl:QuickDrawSegs, each with the
 ;;  material of the layer and its hatch scale (the thickness x the width factor of its preset,
 ;;  nil: the scale of its material): ((outlines angle origin T fixed mat scale) ...), hatched
-;;  without border (the borders are drawn apart). The hatch origin of the layer: on its
-;;  center (its preset on Center), or on its border nearer to the line of the band (Edge),
-;;  moved into the layer by its offset:
+;;  without border (the borders are drawn apart). The hatch origin of the layer: on its line,
+;;  its center (Center) or its border nearer to the line of the band (Edge), as its own band
+;;  settings say (else its preset), moved into the layer by its offset:
 (defun Dyl:QuickDrawLayerHatch (pp geo ly sd sep line z / m sc mid d aln)
   (setq m   (caddr ly)
         sc  (if (= "1" (nth 37 m)) (* (cadr ly) (cond ((distof (nth 38 m) 2)) (1.0))))
@@ -1298,7 +1317,7 @@
         ;;  Across: from the center or the border of the layer, then into it (positive: to
         ;;  the left of the line from the center):
         d   (cond
-              ((not (member (nth 35 m) '("Edge" "Left" "Right"))) (+ mid d))
+              ((not (member (cond ((nth 7 ly)) ((nth 35 m))) '("Edge" "Left" "Right"))) (+ mid d))
               ((<= 0.0 mid) (+ (cadr sd) d))
               ((- (car sd) d))
             )
@@ -2042,7 +2061,11 @@
               qd:layers (Dyl:QuickDrawLayersGet mat)
               segs      ((if (= "Linear" mode) Dyl:QuickDrawLinear Dyl:QuickDrawOffsetBands)
                      (cond ((nth 34 mat)) (""))
-                     (cond ((nth 35 mat)) ("Center"))
+                     ;;  An assembly: the justification given last (changed at its first prompt):
+                     (cond (qd:layers (if (= "Edge" (getenv "DynalispQuickDrawJustify")) "Edge" "Center"))
+                           ((nth 35 mat))
+                           ("Center")
+                     )
                      (cond ((distof (cond ((nth 40 mat)) ("")) 2)) (0.0))
                      (cond ((distof (cond ((nth 46 mat)) ("")) 2)) (0.0))
                      (if (= "1" (nth 37 mat)) (cond ((distof (cond ((nth 38 mat)) ("")) 2)) (1.0)))
@@ -2181,17 +2204,20 @@
 )
 
 ;;  The behaviors set in the Band Settings window (see Dyl:QuickDrawBandDialog), not tiles
-;;  of the Quick Draw window (what the hatch is aligned to is shown there all the same, hidden,
-;;  for the rules of the hatch origin: mht in wtiles of Dyl:QuickDrawDialog):
-(setq *qd:subtiles* '("mjs" "mht" "men" "mex" "mea" "mco" "mml" "mlt" "mjo" "meo" "mcn"))
+;;  of the Quick Draw window: the band, its ends and corners, the scale and the origin of its
+;;  hatch:
+(setq *qd:subtiles* '("mjs" "mht" "men" "mex" "mea" "mco" "mml" "mlt" "mjo" "meo" "mcn" "msw" "mfc" "mor" "moa" "mof"))
 
 ;;  The layers of the assembly in a preset (see Remote>>Dyl:MaterialLayers):
 (setq *qd:layerscol* 38)
 
 ;;  Custom band settings (Behaviors box): on, the bands of Linear and Offset are drawn with the
-;;  justification, hatch alignment, ends and corners of the Band Settings window; off, with
-;;  the defaults (Center, Line, Square, Mitered), the values of the window kept for when it is
-;;  on again (see Dyl:QuickDrawMat). Ends-on and corners-on (39, 40) follow it. A preset of an
+;;  justification, hatch alignment, ends, corners, hatch scale and origin of the Band Settings
+;;  window; off, with the defaults (Center, Line, Square, Mitered, the scales of the hatch
+;;  preset, the drawing origin), the values of the window kept for when it is on again (see
+;;  Dyl:QuickDrawMat). Ends-on and corners-on (39, 40) follow it. An assembly is drawn with
+;;  the band settings of each layer (the justification included): it is greyed out while
+;;  Assembly is checked. A preset of an
 ;;  older file, without it, gets it on when its band was not the defaults (Dyl:QuickDrawFix):
 (setq *qd:bandon* 41)
 
@@ -2214,13 +2240,22 @@
 ;;  The material mat with the behaviors and the border of the preset r in its columns, its
 ;;  band as it is drawn: its own while Custom band settings is on (its ends and corners on, 61
 ;;  and 62), else the defaults (justification Center, hatch along the line, ends and corners
-;;  off, see Dyl:QuickDrawBandOpts):
-(defun Dyl:QuickDrawMat (mat r / on)
-  (setq on  (= "1" (nth *qd:bandon* r))
+;;  off, see Dyl:QuickDrawBandOpts; the scales of the hatch preset and the drawing origin:
+;;  Scale by width and Origin on line off). An assembly has the defaults: its layers have
+;;  their own band settings, with their own justification (see Dyl:QuickDrawLayerPivot), and
+;;  the assembly is drawn on the justification given last (see Dyl:QuickDraw):
+(defun Dyl:QuickDrawMat (mat r / asm on)
+  (setq asm (and (member (nth 4 r) '("Linear" "Offset" "")) (= "1" (nth 37 r)))
+        on  (and (not asm) (= "1" (nth *qd:bandon* r)))
         mat (Dyl:QuickDrawMatRaw mat r)
         mat (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst mat 61 (if on "1" "0")) 62 (if on "1" "0"))
   )
-  (if on mat (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst mat 35 "Center") 58 "Line"))
+  (if on
+    mat
+    (progn
+      (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst mat 58 "Line") 37 "0") 39 "0") 35 "Center")
+    )
+  )
 )
 
 ;;  The material mat with the behaviors and the border of the preset r in its columns, as
@@ -2301,8 +2336,8 @@
 ;;  Custom band settings of the preset row ("1" or "0"), ends-on and corners-on (39, 40) the
 ;;  same. A preset of an older file, without it, gets it on when its band was not drawn as the
 ;;  defaults (its own ends or corners, a justification other than Center, the hatch from the
-;;  drawing origin), the ends or corners it did not have of its own set to the defaults, so it
-;;  draws as before:
+;;  drawing origin, scaled by the width or from an origin on the line), the ends or corners it
+;;  did not have of its own set to the defaults, so it draws as before:
 (defun Dyl:QuickDrawBandFix (row / on)
   (if (member (nth *qd:bandon* row) '("0" "1"))
     (setq on (= "1" (nth *qd:bandon* row)))
@@ -2311,6 +2346,8 @@
                    (= "1" (nth 40 row))
                    (not (member (nth 7 row) '("Center" "")))
                    (= "Origin" (nth 36 row))
+                   (= "1" (nth 9 row))
+                   (= "1" (nth 11 row))
                )
       )
       (if (and on (/= "1" (nth 39 row)))
@@ -2426,16 +2463,47 @@
   )
 )
 
-;;  The columns the window shows after those of a preset r (42 to 45, read only, never saved):
-;;  what its layers are (beside Assembly of layers), its own justification, ends and corners
-;;  (under Custom band settings, shown while it is on), the width of its layers (Width, for an
-;;  assembly), and the preview of its layers side by side (an assembly with layers):
+;;  The columns the window shows after those of a preset r (42 to 46, read only, never saved):
+;;  what its layers are (beside Assembly), its own justification, ends and corners (under
+;;  Custom band settings, shown while it is on), the width of its layers (Width, for an
+;;  assembly), the preview of its layers side by side (an assembly with layers), and the
+;;  description of the assembly under the preview (Dyl:QuickDrawLayersDesc):
 (defun Dyl:QuickDrawWinExtra (r)
   (list (Remote>>Dyl:MaterialLayersText (nth *qd:layerscol* r))
         (Remote>>Dyl:MaterialBandText (Dyl:QuickDrawMat (Dyl:QuickDrawDlgMat r) (Remote>>Dyl:ListSubst r *qd:bandon* "1")))
         (Dyl:QuickDrawDlgLayersWidth r)
-        ;;  (as an assembly even while Assembly of layers is off: the window shows it once it is on)
-        (if (Remote>>Dyl:MaterialLayers (nth *qd:layerscol* r)) (Dyl:QuickDrawGallerySpec (list (Remote>>Dyl:ListSubst r 37 "1"))) "")
+        ;;  (as an assembly even while Assembly is off: the window shows it once it is on; its
+        ;;  outline added by the window, Has a border as it is: pst/outline)
+        (if (Remote>>Dyl:MaterialLayers (nth *qd:layerscol* r)) (Dyl:QuickDrawGalleryBands (list (Remote>>Dyl:ListSubst r 37 "1"))) "")
+        (Dyl:QuickDrawLayersDesc r)
+  )
+)
+
+;;  The description of the assembly of the preset r under its preview: its total thickness,
+;;  then each layer on a line of its own, from its left border, with its thickness (a line:
+;;  its layer key), in the units of the drawing; "" without layers:
+(defun Dyl:QuickDrawLayersDesc (r / ls rec)
+  (if (setq ls (Remote>>Dyl:MaterialLayers (nth *qd:layerscol* r)))
+    (apply 'strcat
+           (cons (strcat "Total thickness  "
+                         (rtos (apply '+ (cons 0.0 (mapcar '(lambda (l) (cond ((distof (caddr l) 2)) (0.0))) ls))))
+                 )
+                 (mapcar '(lambda (l)
+                            (strcat "\n"
+                                    (cond ((= "L" (car l)) (strcat "Line  " (cadr l)))
+                                          ((= "S" (car l)) (strcat "Space  " (rtos (distof (caddr l) 2))))
+                                          (T
+                                           (setq rec (vl-some '(lambda (x) (if (= (strcase (cadr l)) (strcase (car (car x)))) (car x))) qg:all))
+                                           (strcat (if rec (nth 2 rec) (cadr l)) "  " (rtos (distof (caddr l) 2)))
+                                          )
+                                    )
+                            )
+                          )
+                         ls
+                 )
+           )
+    )
+    ""
   )
 )
 
@@ -2469,15 +2537,13 @@
   )
 )
 
-;;  The open buttons of the window (code sta, the preset shown r). Pick...: the hatch origin
-;;  picked on a sample band of its material with its behaviors, put in the presets selected
-;;  (see Remote>>Dyl:MaterialOriginPick). The open button of the assembly: the Assembly Layers
+;;  The open buttons of the window (code sta, the preset shown r). The open button of the
+;;  assembly: the Assembly Layers
 ;;  window, its layers given to every preset selected on OK (see Remote>>Dyl:PresetDlgPut).
 ;;  The open button of the border layer key: the Layer Keys window (see
 ;;  Remote>>Dyl:MaterialDlgBorderStatus). The open button of the border color: the color
 ;;  window of AutoCAD:
 (defun Dyl:QuickDrawDlgStatus (sta r / v i)
-  (if (= *mt:originpick* sta) (Remote>>Dyl:MaterialOriginPick (Dyl:QuickDrawMat (Dyl:QuickDrawDlgMat r) r) *qd:tiles*))
   (if (and (= *mt:layerspick* sta) (setq v (Dyl:QuickDrawLayersDialog r)))
     (Remote>>Dyl:PresetDlgPut *qd:layerscol* v)
   )
@@ -2508,11 +2574,13 @@
           '(upper "out" "blt")
           '(window . "Dyl-QuickDraw.xaml")
           ;;  Has a border (No border, inverted), Custom band settings, the columns of
-          ;;  Dyl:QuickDrawWinExtra, and what the hatch is aligned to (hidden, for the rules):
-          '(wtiles . "hbr:28:inv,mbs:41,mai:42,mei:43,mwl:44,mht:36")
+          ;;  Dyl:QuickDrawWinExtra:
+          '(wtiles . "hbr:28:inv,mbs:41,mai:42,mei:43,mwl:44,mld:46")
           '(extra . Dyl:QuickDrawWinExtra)
           ;;  The preview of an assembly: its layers side by side:
           '(spec 45 . "mas,mth=Linear|Offset|")
+          ;;  The preview outlined while Has a border is checked, as in the gallery:
+          '(outline . "hbr")
           '(mspec . Dyl:QuickDrawWinMatSpec)
           ;;  The text put in the new alias box: PL- for a preset drawn with a polyline, QD- for
           ;;  the others (see CONVENTIONS.md, Preset aliases):
@@ -2557,30 +2625,57 @@
 )
 
 ;;  The Band Settings window on the preset r. Returns its values ((key . value) ...) on OK,
-;;  nil on Cancel (or when the window cannot be shown). The method of the preset (mth, no control: the justification is
-;;  for Linear) is given with them. The values are checked again (see
-;;  Remote>>Dyl:MaterialDlgCheck): one not valid is said, nothing given:
-(defun Dyl:QuickDrawBandDialog (r / tiles m res vals msg)
+;;  nil on Cancel (or when the window cannot be shown). The method of the preset (mth, no
+;;  control: the justification is for Linear) and solid ("1": a SOLID hatch, without scale or
+;;  origin) are given with them. Pick... closes it with *mt:originpick*: the hatch origin is
+;;  picked on a sample band of the material with the values of the window (see
+;;  Remote>>Dyl:MaterialOriginPick), and the window opens again on it. The values are checked
+;;  again (see Remote>>Dyl:MaterialDlgCheck; the factor and the offsets only while their
+;;  checkbox is on): one not valid is said, nothing given:
+(defun Dyl:QuickDrawBandDialog (r / tiles m res vals msg p)
   (setq tiles (cddr (assoc "BandSettings" *mt:bandwindows*))
         m     (Dyl:QuickDrawMatRaw (Dyl:QuickDrawDlgMat r) r)
-        res   (Dyl:WinShow "Dyl-QuickDrawBandSettings.xaml"
-                           (cons (cons "mth" (cond ((nth 4 r)) (""))) (Dyl:QuickDrawBandVals tiles m))
-              )
+  )
+  (while
+    (progn
+      (setq res  (Dyl:WinShow "Dyl-QuickDrawBandSettings.xaml"
+                              (append (list (cons "mth" (cond ((nth 4 r)) ("")))
+                                            (Dyl:WinTog "solid" (= "SOLID" (strcase (cond ((nth 3 m)) ("")))))
+                                      )
+                                      (Dyl:QuickDrawBandVals tiles m)
+                              )
+                 )
+            vals (if (member (car res) (list 1 *mt:originpick*))
+                   (mapcar '(lambda (x)
+                              (cons (car x)
+                                    (if (= 'edit (caddr x))
+                                      (vl-string-trim " " (cond ((Dyl:WinGet res (car x))) ("")))
+                                      (car (nth (Dyl:WinIdx res (car x)) (caddr x)))
+                                    )
+                              )
+                            )
+                           tiles
+                   )
+                 )
+      )
+      (= *mt:originpick* (car res))
+    )
+    ;;  Pick...: the values of the window in the material, then the origin picked:
+    (foreach v vals (setq m (Remote>>Dyl:ListSubst m (cdr (assoc (car v) *mt:behaviortiles*)) (cdr v))))
+    (if (setq p (Remote>>Dyl:MaterialOriginPick m))
+      (foreach v p (setq m (Remote>>Dyl:ListSubst m (cdr (assoc (car v) *mt:behaviortiles*)) (cdr v))))
+    )
   )
   (if (= 1 (car res))
     (progn
-      (setq vals (mapcar '(lambda (x)
-                            (cons (car x)
-                                  (if (= 'edit (caddr x))
-                                    (vl-string-trim " " (cond ((Dyl:WinGet res (car x))) ("")))
-                                    (car (nth (Dyl:WinIdx res (car x)) (caddr x)))
-                                  )
-                            )
-                          )
-                         tiles
-                 )
+      (foreach v vals
+        (if (and (not msg)
+                 (not (and (= "mfc" (car v)) (/= "1" (cdr (assoc "msw" vals)))))
+                 (not (and (member (car v) '("moa" "mof")) (/= "1" (cdr (assoc "mor" vals)))))
+            )
+          (setq msg (Remote>>Dyl:MaterialDlgCheck (car v) (cdr v)))
+        )
       )
-      (foreach v vals (if (not msg) (setq msg (Remote>>Dyl:MaterialDlgCheck (car v) (cdr v)))))
       (if msg (progn (alert msg) nil) vals)
     )
   )
@@ -2588,7 +2683,7 @@
 
 ;;-------------------------=={ Assembly Layers window }==------------------------;;
 
-;;  The open button of Assembly of layers (Behaviors box) opens the Assembly Layers window
+;;  The open button of Assembly (Behaviors box) opens the Assembly Layers window
 ;;  (Res\Dyl-AssemblyLayers.xaml, shown by DynALisp.Windows.dll) on the layers of the preset
 ;;  shown (see Remote>>Dyl:MaterialLayers): add, edit, remove, order and flip them, in the
 ;;  window itself (a list of rows, Installer\Windows\Engine\Rows.cs); OK gives them to every
@@ -2599,9 +2694,10 @@
 (setq *qd:layerkinds* '(("P" "Hatch") ("S" "Space") ("L" "Line")))
 
 ;;  The rows of the window for the layers lst ((kind ref thickness [hatch-key [band
-;;  [border]]]) ...): (kind preset thickness hatch-key line-key band... border...): the band
-;;  settings of a Hatch layer in the columns 5 to 13 (on hatch ends extension angle corners
-;;  miter lap joints), its border in 14 and 15 (on key). The columns a layer of its kind does
+;;  [border]]]) ...): (kind preset thickness hatch-key line-key band... border... justify): the
+;;  band settings of a Hatch layer in the columns 5 to 13 (on hatch ends extension angle
+;;  corners miter lap joints), its border in 14 and 15 (on key), the justification of its band
+;;  settings in 16 (see *qd:layerjustify*). The columns a layer of its kind does
 ;;  not use taken from the new layer def (a row of the same columns), so that it can become
 ;;  another kind:
 (defun Dyl:QuickDrawLayersRows (lst def)
@@ -2609,12 +2705,13 @@
              (cond
                ((= "P" (car l))
                 (append (list "P" (cadr l) (caddr l) (cond ((cadddr l)) ("")) (nth 4 def))
-                        (cond ((nth 4 l)) ((Remote>>LM:sublst def 5 9)))
+                        (if (nth 4 l) (Remote>>LM:sublst (nth 4 l) 0 9) (Remote>>LM:sublst def 5 9))
                         (cond ((nth 5 l)) ((Remote>>LM:sublst def 14 2)))
+                        (list (if (nth 4 l) (cond ((nth 9 (nth 4 l))) ("Center")) (nth 16 def)))
                 )
                )
-               ((= "S" (car l)) (append (list "S" (nth 1 def) (caddr l) "" (nth 4 def)) (Remote>>LM:sublst def 5 11)))
-               ((append (list "L" (nth 1 def) (nth 2 def) "" (cadr l)) (Remote>>LM:sublst def 5 11)))
+               ((= "S" (car l)) (append (list "S" (nth 1 def) (caddr l) "" (nth 4 def)) (Remote>>LM:sublst def 5 12)))
+               ((append (list "L" (nth 1 def) (nth 2 def) "" (cadr l)) (Remote>>LM:sublst def 5 12)))
              )
            )
           lst
@@ -2628,12 +2725,13 @@
 ;;  The layers of the rows of the window, each one as its kind keeps it (see
 ;;  Remote>>Dyl:MaterialLayers): (layers), or (nil message) for the first one not valid. The
 ;;  band settings of a Hatch layer when they are on, or off but not the defaults (kept for
-;;  when they are on again); its border when it is on, or off on another key than the new
-;;  layer def:
-(defun Dyl:QuickDrawLayersOf (rows def / res msg b d)
+;;  when they are on again), its justification after them when it has one; its border when
+;;  it is on, or off on another key than the new layer def:
+(defun Dyl:QuickDrawLayersOf (rows def / res msg b d j)
   (foreach r rows
     (setq b (Remote>>LM:sublst r 5 9)
           d (Remote>>LM:sublst r 14 2)
+          j (cond ((car (assoc (nth 16 r) *qd:layerjustify*))) ("Center"))
     )
     (cond
       (msg)
@@ -2656,7 +2754,9 @@
                              (cadr r)
                              (caddr r)
                              (cadddr r)
-                             (if (or (= "1" (car b)) (not (equal (cdr b) *qd:layerband*))) b)
+                             (if (or (= "1" (car b)) (/= "Center" j) (not (equal (cdr b) *qd:layerband*)))
+                               (append b (list j))
+                             )
                              (if (or (= "1" (car d)) (/= (cadr d) (nth 15 def))) d)
                        )
                        res
@@ -2730,10 +2830,10 @@
 ;;  the presets of the Quick Draw window (pst:lst, local of Remote>>Dyl:PresetDialog) for its
 ;;  Preset list: those saved (with an id) but r, not assemblies, sorted by group and name, then
 ;;  the presets of its layers that no longer exist (marked). The Band Settings window of
-;;  a layer (its open button) is opened by the window itself, on the lists given here: the
-;;  justification of the preset shown greyed out (the method "Layer": the line is the one of
-;;  the band), never Ask. The preview of the assembly: the preview of each preset (lp/specs),
-;;  the ends of the band (ll/ends), the drawing units and scale (ll/paper). Shown again on the
+;;  a layer (its open button) is opened by the window itself, on the lists given here (the
+;;  method "Layer"): the justification of the layer (its own line, see
+;;  Dyl:QuickDrawLayerPivot), never Ask. The preview of the assembly: the preview of each preset (lp/specs),
+;;  the ends of the whole band (ll/ends: the defaults, see Dyl:QuickDrawMat), the drawing units and scale (ll/paper). Shown again on the
 ;;  layers edited while one is not valid. Returns the text of the layers on OK (see
 ;;  Remote>>Dyl:MaterialLayersStr), nil on Cancel:
 (defun Dyl:QuickDrawLayersDialog (r / lst pre lks mark def rows sel res out w bnd bk)
@@ -2777,7 +2877,7 @@
                            "0"
                      )
                      bnd
-                     (list "0" bk)
+                     (list "0" bk "Center")
              )
         rows (Dyl:QuickDrawLayersRows lst def)
   )
@@ -2800,7 +2900,8 @@
                                                      (cons "lbk/vals" mt:keys)
                                                      ;;  The preview of the assembly:
                                                      (cons "lp/specs" (mapcar '(lambda (p) (cond ((assoc (car p) pst:lst) (Dyl:QuickDrawLayersSpec (assoc (car p) pst:lst))) ("X?1"))) pre))
-                                                     (cons "ll/ends" (list (nth 1 bnd) (nth 2 bnd) (nth 3 bnd)))
+                                                     ;;  (the whole assembly ends as the defaults: its layers have their own)
+                                                     (cons "ll/ends" (list (nth 1 *qd:layerband*) (nth 2 *qd:layerband*) (nth 3 *qd:layerband*)))
                                                      (cons "ll/paper" (list (Remote>>Dyl:MaterialNumP (Dyl:QuickDrawUnitInches) 10) (Remote>>Dyl:MaterialNumP (Remote>>Dyl:MaterialDrawScale) 4)))
                                                      ;;  The Band Settings window of a layer:
                                                      (cons "mth" "Layer")
@@ -2825,11 +2926,17 @@
   (if (= 1 (car res)) (Remote>>Dyl:MaterialLayersStr (car out)))
 )
 
-;;  The lists of the Band Settings window of a layer (see Dyl:QuickDrawBandVals): never Ask;
-;;  the justification of the preset r, greyed out:
+;;  The justification of a layer of an assembly: where its line is, the line its hatch is
+;;  aligned to and its Angled ends turn around (its middle, or its border nearer to the line
+;;  of the band; see Dyl:QuickDrawLayerPivot):
+(setq *qd:layerjustify* '(("Center" "Center") ("Edge" "Edge")))
+
+;;  The lists of the Band Settings window of a layer (see Dyl:QuickDrawBandVals): never Ask,
+;;  the justification that of a layer (*qd:layerjustify*):
 (defun Dyl:QuickDrawLayersBandLists (r / res)
+  (setq res (list (cons "mjs/list" (mapcar 'cadr *qd:layerjustify*)) (cons "mjs/vals" (mapcar 'car *qd:layerjustify*))))
   (foreach x (cddr (assoc "BandSettings" *mt:bandwindows*))
-    (if (/= 'edit (caddr x))
+    (if (and (/= 'edit (caddr x)) (/= "mjs" (car x)))
       (setq res (append res
                         (list (cons (strcat (car x) "/list") (mapcar 'cadr (Dyl:QuickDrawNoAsk (car x) (caddr x))))
                               (cons (strcat (car x) "/vals") (mapcar 'car (Dyl:QuickDrawNoAsk (car x) (caddr x))))
@@ -2838,13 +2945,12 @@
       )
     )
   )
-  (cons (cons "mjs" (itoa (cond ((vl-position (nth 7 r) (mapcar 'car *mt:justify*))) (1)))) res)
+  res
 )
 
-;;  The items lst of the list key of the Band Settings window, without Ask but for the
-;;  justification (shown greyed out):
+;;  The items lst of the list key of the Band Settings window of a layer, without Ask:
 (defun Dyl:QuickDrawNoAsk (key lst)
-  (if (and (/= "mjs" key) (= "Ask" (car (car lst)))) (cdr lst) lst)
+  (if (= "Ask" (car (car lst))) (cdr lst) lst)
 )
 
 ;;-------------------------=={ Gallery }==------------------------;;
@@ -2927,21 +3033,27 @@
   )
 )
 
-;;  The preview of the preset x ((rec . mat), see qg:all): an assembly (Linear, its Assembly
-;;  of layers checked) as its layers side by side, each band the hatch of its own preset;
-;;  any other preset as its hatch. The bands divided by "*":
-(defun Dyl:QuickDrawGallerySpec (x / rec ls res)
+;;  The preview of the preset x ((rec . mat), see qg:all), as the gallery and the Quick Draw
+;;  window show it: its bands (Dyl:QuickDrawGalleryBands), outlined ("O*" first, see
+;;  Installer\Windows\Engine\Hatch.cs) when it has a border:
+(defun Dyl:QuickDrawGallerySpec (x)
+  (strcat (if (/= "1" (nth *qd:noborder* (car x))) "O*" "") (Dyl:QuickDrawGalleryBands x))
+)
+
+;;  The bands of the preview of the preset x: an assembly (Linear, its Assembly checked) as
+;;  its layers side by side, each band the hatch of its own preset, a layer with a border of
+;;  its own between two lines; any other preset as its hatch. The bands divided by "*":
+(defun Dyl:QuickDrawGalleryBands (x / rec ls res b)
   (setq rec (car x))
   (if (and (= "1" (nth 37 rec)) (setq ls (Remote>>Dyl:MaterialLayers (nth *qd:layerscol* rec))))
     (progn
       (foreach l ls
-        (setq res (cons (Dyl:QuickDrawGalleryBand
-                          (car l)
-                          (if (= "P" (car l)) (Dyl:QuickDrawGalleryMat (cadr l)))
-                          (if (= "L" (car l)) 0.0 (cond ((distof (caddr l) 2)) (0.0)))
-                        )
-                        res
+        (setq b   (Dyl:QuickDrawGalleryBand
+                    (car l)
+                    (if (= "P" (car l)) (Dyl:QuickDrawGalleryMat (cadr l)))
+                    (if (= "L" (car l)) 0.0 (cond ((distof (caddr l) 2)) (0.0)))
                   )
+              res (if (= "1" (car (nth 5 l))) (append (list "L?0" b "L?0") res) (cons b res))
         )
       )
       (setq res (reverse res))

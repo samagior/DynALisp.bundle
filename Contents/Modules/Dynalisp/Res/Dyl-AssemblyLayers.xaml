@@ -15,7 +15,7 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-  Opened by the open button of Assembly of layers in the Quick Draw window (it closes with 5,
+  Opened by the open button of Assembly in the Quick Draw window (it closes with 5,
   the Lisp shows this one: Dyl:QuickDrawLayersDialog of Apps\Draw\Dyl-QuickDraw.lsp), on the
   layers of the preset shown. A list of rows edited in the window (Installer\Windows\Engine  Rows.cs): ll/rows, a row per layer, its columns: 0 the kind (P Hatch, S Space, L Line), 1
   the Quick Draw preset of a Hatch layer (its id), 2 the thickness of a Hatch or a Space, 3
@@ -23,7 +23,8 @@
   a Hatch layer: 5 its own band settings on ("1"), 6 to 13 those settings (hatch aligned to,
   ends, extension, angle, corners, miter limit, lap, joints: edited in the Band Settings
   window, opened by lbe on the layers selected), 14 its own border on, 15 the layer key of
-  that border. Every column is kept in every row, so a layer turned into another kind and
+  that border, 16 the justification of its band settings (Center, Edge: the line of the
+  layer, its middle or its border nearer to the line of the band). Every column is kept in every row, so a layer turned into another kind and
   back gets its values again; the Lisp keeps those of its kind. Add, Remove, Move up, Move
   down and Flip run in the window; OK gives the layers to every preset selected. The preview
   (an AssemblyTile, Installer\Windows\Engine\Assembly.cs) draws the rows as they are edited:
@@ -165,7 +166,7 @@
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
           <dyl:OpenButton x:Name="lbe" DockPanel.Dock="Right" ToolTip="Band Settings" dyl:Win.EnabledBy="lbs"
                           dyl:Win.Open="Dyl-QuickDrawBandSettings.xaml"
-                          dyl:Win.Columns="mht:6,men:7,mex:8,mea:9,mco:10,mml:11,mlt:12,mjo:13"/>
+                          dyl:Win.Columns="mjs:16,mht:6,men:7,mex:8,mea:9,mco:10,mml:11,mlt:12,mjo:13"/>
           <CheckBox x:Name="lbs" Content="Custom band settings" dyl:Win.Column="5"/>
         </DockPanel>
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
@@ -177,7 +178,7 @@
 
     <!-- The assembly as it is drawn, a wall in plan, built as the layers are edited: -->
     <GroupBox Grid.Row="1" Grid.ColumnSpan="3" Header="Preview" Margin="0,10,0,0">
-      <dyl:AssemblyTile Height="150" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
+      <dyl:AssemblyTile Height="150" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14 16" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
                         Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"
                         Accent="{DynamicResource Dyl.Accent}"/>
     </GroupBox>

@@ -22,10 +22,15 @@
   tiles of *mt:bandwindows* (Remote\Dyl-Materials.lsp): mjs the justification (Linear), mht
   what the hatch is aligned to, men the ends, mex the extension (Extended), mea the end angle
   (Angled), mco the corners, mml the miter limit (Mitered), mlt the segment through a lap
-  (Lapped), mjo the joints; a list gets the keys of its items (key/vals). mth, with no
-  control, is the method of the preset (Linear, Offset, "": asked when drawn): the
-  justification is for Linear only. A value is greyed out unless what is picked uses it, or
-  Ask when drawn.
+  (Lapped), mjo the joints, msw and mfc the hatch scale from the width, mor, moa and mof the
+  hatch origin on the line (Pick... closes the window with 4: the Lisp picks the origin on a
+  sample band and opens it again); a list gets the keys of its items (key/vals). mth, with
+  no control, is the method of the preset (Linear, Offset, "": asked when drawn; Layer: a
+  layer of an assembly, opened by the Assembly Layers window), solid "1" for a SOLID hatch:
+  the justification is for Linear and a layer (where the line of the layer is, its middle
+  or its border: Center, Edge), the scale and the origin of the hatch for a preset that is
+  not SOLID (a layer has those of its own preset). A value is greyed out unless what
+  is picked uses it, or Ask when drawn.
   Under the ends and the corners, the sketch of the item picked, drawn as in
   Docs\Draw\Dyl-QuickDraw.htm#endscorners: one Canvas each, shown by its rule; inside, the
   line drawn and its points in the middle of the band or on its border (Edge, or Offset),
@@ -50,14 +55,40 @@
           <ColumnDefinition Width="28"/>
           <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|">
-          <ComboBox x:Name="mjs" DockPanel.Dock="Right" Width="180"/>
-          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Justification"/>
-        </DockPanel>
-        <DockPanel Grid.Column="2" Style="{StaticResource Row}">
-          <ComboBox x:Name="mht" DockPanel.Dock="Right" Width="180"/>
-          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Hatch aligned to"/>
-        </DockPanel>
+        <StackPanel>
+          <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|Layer|">
+            <ComboBox x:Name="mjs" DockPanel.Dock="Right" Width="180"/>
+            <TextBlock Style="{DynamicResource Dyl.Label}" Text="Justification"/>
+          </DockPanel>
+          <DockPanel Style="{StaticResource Row}">
+            <ComboBox x:Name="mht" DockPanel.Dock="Right" Width="180"/>
+            <TextBlock Style="{DynamicResource Dyl.Label}" Text="Hatch aligned to"/>
+          </DockPanel>
+          <!-- The hatch scale from the width of the band (not for a layer: its own preset says): -->
+          <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!solid,mth!=Layer">
+            <TextBox x:Name="mfc" DockPanel.Dock="Right" Width="180" dyl:Win.EnabledBy="msw"
+                     dyl:Win.Check="positive" dyl:Win.CheckMessage="The width factor must be a number greater than 0."/>
+            <CheckBox x:Name="msw" Content="Scale by width"/>
+          </DockPanel>
+        </StackPanel>
+        <!-- The hatch origin on the line, X along it and Y across it (Pick...: on a sample band,
+             the window closes with 4 and opens again on the origin picked): -->
+        <StackPanel Grid.Column="2">
+          <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!solid,mht!=Origin,mth!=Layer">
+            <Button x:Name="mop" DockPanel.Dock="Right" Width="180" MinWidth="0" Margin="0" Content="Pick..." dyl:Win.Close="4"/>
+            <CheckBox x:Name="mor" Content="Origin on line"/>
+          </DockPanel>
+          <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mor,!solid,mht!=Origin,mth!=Layer">
+            <TextBox x:Name="moa" DockPanel.Dock="Right" Width="180"
+                     dyl:Win.Check="number" dyl:Win.CheckMessage="The origin X offset must be a number (0: at the start of the segment)."/>
+            <TextBlock Style="{DynamicResource Dyl.Label}" Text="Offset X"/>
+          </DockPanel>
+          <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mor,!solid,mht!=Origin,mth!=Layer">
+            <TextBox x:Name="mof" DockPanel.Dock="Right" Width="180"
+                     dyl:Win.Check="number" dyl:Win.CheckMessage="The origin Y offset must be a number (0: on the line)."/>
+            <TextBlock Style="{DynamicResource Dyl.Label}" Text="Offset Y"/>
+          </DockPanel>
+        </StackPanel>
       </Grid>
     </GroupBox>
     <Grid>

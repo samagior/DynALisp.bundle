@@ -196,8 +196,9 @@
 ;;  P and S in drawing units. A P layer can have three more fields: the layer key of its
 ;;  hatch in place of the hatch layer key of its preset (P:qd-Brick:90:HATCH, "": the key of
 ;;  its preset), its own band settings, and its own border, the values of each divided by ~:
-;;    band    on~hatch~ends~extension~angle~corners~miter~lap~joints (on "1"; off "0", the
-;;            values kept for when it is on again; see *mt:bandwindows*)
+;;    band    on~hatch~ends~extension~angle~corners~miter~lap~joints[~justify] (on "1"; off
+;;            "0", the values kept for when it is on again; see *mt:bandwindows*; justify:
+;;            the line of the layer, Center or Edge, Center when there is none)
 ;;    border  on~key (its outline on that layer key)
 ;;  (P:qd-Brick:90::1~Line~Extended~~45~Lapped~4~First~Interrupted:1~A-WALL). Returns
 ;;  ((kind ref thickness [hatch-key [band [border]]]) ...), the layers that are valid only
@@ -218,7 +219,7 @@
           (cond
             ((and (= "P" k) (/= "" r) (Remote>>Dyl:MaterialScale-p w))
              (setq res (cons (list "P" r w (strcase (cond ((cadddr x)) ("")))
-                                   (if (= 9 (length b)) b)
+                                   (cond ((= 10 (length b)) b) ((= 9 (length b)) (append b '("Center"))))
                                    (if (= 2 (length d)) (list (car d) (strcase (cadr d))))
                              )
                              res
@@ -1424,8 +1425,8 @@
 ;;  The layers of the assembly in a material (see Remote>>Dyl:MaterialLayers):
 (setq *mt:layerscol* 60)
 
-;;  Code the Pick... button of the box closes the window with (the status function of the
-;;  Quick Draw window calls Remote>>Dyl:MaterialOriginPick for it), and the code of the open
+;;  Code the Pick... button of the Band Settings window closes it with (Dyl:QuickDrawBandDialog
+;;  calls Remote>>Dyl:MaterialOriginPick for it, then shows it again), and the code of the open
 ;;  button of the assembly (the Assembly Layers window, see Dyl:QuickDrawLayersDialog):
 (setq *mt:originpick* 4
       *mt:layerspick* 5
@@ -1452,6 +1453,13 @@
               (list "mml" "Miter limit:" 'edit)
               (list "mlt" "Lap:" *mt:laps*)
               (list "mjo" "Joints:" *mt:joints*)
+              ;;  The hatch along the band: its scale from the width, its origin on the line
+              ;;  (checkboxes are edit boxes here: "1" or "0"):
+              (list "msw" "Scale by width" 'edit)
+              (list "mfc" "Width factor:" 'edit)
+              (list "mor" "Origin on line" 'edit)
+              (list "moa" "Offset X:" 'edit)
+              (list "mof" "Offset Y:" 'edit)
         )
   )
 )
@@ -1547,8 +1555,8 @@
   ents
 )
 
-;;  Pick... of the box (the window closed with *mt:originpick*): a sample Linear band of the
-;;  material mat (the values being edited) is drawn in the middle of the view along the X
+;;  Pick... of the Band Settings window (closed with *mt:originpick*): a sample Linear band of
+;;  the material mat (the values being edited) is drawn in the middle of the view along the X
 ;;  axis of the UCS, from its start (the red circle on the red line), with the width (the
 ;;  first one; none: the last one used, else asked) and the justify of mat, hatched from its
 ;;  current origin, and zoomed to. The sample is at least 8 widths long, and long and wide
@@ -1558,11 +1566,10 @@
 ;;  center line) at its start: the origin is moved by the start of the line minus that point.
 ;;  Its new offsets from the start of the line, X along it and Y across it (positive into
 ;;  the band; with Hatch scale = width x, in pattern units: divided by the hatch scale of the
-;;  sample, see Dyl:QuickDrawLinear), go to the selected row of pst:lst (local of Remote>>Dyl:PresetDialog) with
-;;  Hatch origin on the line checked; tiles gives the index in that row of each tile of the
-;;  box (*mt:behaviortiles*, *qd:tiles*). The sample is erased and the view restored after,
-;;  Esc included:
-(defun Remote>>Dyl:MaterialOriginPick (mat tiles / mt:scale mt:keepouts doc w jus sd sgn off aln c z
+;;  sample, see Dyl:QuickDrawLinear) are returned with Origin on line checked: (("mor" . "1")
+;;  ("moa" . x) ("mof" . y)), nil when nothing was picked. The sample is erased and the view
+;;  restored after, Esc included:
+(defun Remote>>Dyl:MaterialOriginPick (mat / res mt:scale mt:keepouts doc w jus sd sgn off aln c z
                                        len hi lo shi slo rep m s e ents p r x y cmd u)
   (setq w (car (Remote>>Dyl:MaterialWidths (nth 34 mat))))
   (if (not w) (setq w (distof (cond ((getenv "DynalispQuickDrawWidth")) ("")) 2)))
@@ -1647,10 +1654,7 @@
           (setq x (Remote>>Dyl:MaterialNumP (- aln (/ (- (car p) (car s)) u)) 6)
                 y (Remote>>Dyl:MaterialNumP (- off (/ (* sgn (- (cadr p) (cadr s))) u)) 6)
           )
-          ;;  To every preset selected (see Remote>>Dyl:PresetDlgPut):
-          (foreach v (list (cons "mor" "1") (cons "moa" x) (cons "mof" y))
-            (Remote>>Dyl:PresetDlgPut (cdr (assoc (car v) tiles)) (cdr v))
-          )
+          (setq res (list (cons "mor" "1") (cons "moa" x) (cons "mof" y)))
           (princ (strcat "\nHatch origin on the line: X (along) " x ", Y (across) " y
                          (if mt:scale " (pattern units: x the hatch scale, width x factor)." ".")
                  )
@@ -1660,7 +1664,7 @@
       )
     )
   )
-  (princ)
+  res
 )
 
 ;;  SOLID ignores the scale, angle and annotative values. The drawing scale applies only to
