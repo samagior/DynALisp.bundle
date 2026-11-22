@@ -754,8 +754,45 @@ namespace DynALisp.Windows
                 case "aren": AliasRename(); return true;
                 case "adel": AliasRemove(); return true;
             }
+            // a sub-window on columns of the preset shown (not on the rows of a list, Rows.cs):
+            if (Win.GetOpen(b) is string file && Win.GetColumns(b) is string cols && !(_v.Rows?.HasSub(b) ?? false))
+            {
+                if (Check()) Sub(file, cols);
+                return true;
+            }
             // a button of the window: the value shown must be valid first (Win.Close checks it)
             return false;
+        }
+
+        // The window file opened on the columns cols of the preset shown ("out:5,bco:6"): their
+        // values as those of its keys (a list with key/vals: the index of the value); its OK
+        // gives them to every preset selected, its Cancel keeps them:
+        void Sub(string file, string cols)
+        {
+            if (_rows.Count == 0) return;
+            var map = new List<KeyValuePair<string, int>>();
+            foreach (var x in cols.Split(','))
+            {
+                var p = x.Split(':');
+                if (p.Length == 2 && p[0].Trim().Length > 0 && int.TryParse(p[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out int c) && c >= 0)
+                    map.Add(new KeyValuePair<string, int>(p[0].Trim(), c));
+            }
+            foreach (var m in map)
+            {
+                string cell = Cell(Row, m.Value);
+                if (_s.Lists.TryGetValue(m.Key + "/vals", out var vals))
+                    _s.Values[m.Key] = Math.Max(0, vals.FindIndex(v => Ic.Equals(v, cell))).ToString(CultureInfo.InvariantCulture);
+                else _s.Values[m.Key] = cell;
+            }
+            if (_v.OpenSub(file) == 1)
+                foreach (var m in map)
+                {
+                    _s.Values.TryGetValue(m.Key, out string v);
+                    if (_s.Lists.TryGetValue(m.Key + "/vals", out var vals))
+                        v = int.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out int j) && j >= 0 && j < vals.Count ? vals[j] : Cell(Row, m.Value);
+                    PutAll(m.Value, (v ?? "").Trim());
+                }
+            Show();
         }
 
         string[] NewRow()

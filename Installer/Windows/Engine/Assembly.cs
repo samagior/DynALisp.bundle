@@ -42,6 +42,11 @@
 //             thickness of the row; its ppu "w0.0005": the ppu of a unit of thickness, a
 //             hatch scale from the thickness)
 //   Ends      a list of the Lisp: the ends of the whole band (ends extension angle)
+//   BorderLines    the key of a checkbox of the window: its lines along its first and last
+//                  layers and across its ends drawn ("1", or no key), else not
+//   DividingLines  the key of a checkbox of the window: its lines between two layers drawn
+//                  ("1", or no key), else not (a layer with its own border is outlined all
+//                  the same)
 //   Paper     a list of the Lisp: the inches of a drawing unit (1, 1/25.4) and the drawing
 //             scale (50); without it, the wall fills the tile and its hatches are drawn as
 //             HatchTile draws them
@@ -69,6 +74,12 @@ namespace DynALisp.Windows
         public string Rows { get; set; }
         public string Columns { get; set; } = "0 1 2 5 7 8 9 14 6 16";
         public string Line { get; set; }
+        public string BorderLines { get; set; }
+        public string DividingLines { get; set; }
+
+        // Its border lines and dividing lines drawn (the values of BorderLines and
+        // DividingLines), set by the editor:
+        internal bool BorderOn = true, DividingOn = true;
 
         // The justification of the assembly (the value of Line), set by the editor:
         internal string Justify = "";
@@ -202,8 +213,28 @@ namespace DynALisp.Windows
                     dc.Pop();
                 }
             }
-            // Their borders, then the borders of their own over them:
-            foreach (var l in wide) dc.DrawGeometry(null, pen, Outline(l, whole, x0, yc, k, false));
+            // Their borders (the border lines: around the band, the dividing lines: between two
+            // layers, each one when it is on), then the borders of their own over them:
+            if (BorderOn)
+            {
+                // without the dividing lines: thin strips along the joins left out
+                if (!DividingOn)
+                {
+                    var keep = new GeometryGroup { FillRule = FillRule.EvenOdd };
+                    keep.Children.Add(new RectangleGeometry(r));
+                    for (int i = 0; i + 1 < wide.Count; i++)
+                        keep.Children.Add(new RectangleGeometry(new Rect(0, wide[i].Bottom - 1.5, x0 - 0.5, 3)));
+                    dc.PushClip(keep);
+                }
+                foreach (var l in wide) dc.DrawGeometry(null, pen, Outline(l, whole, x0, yc, k, false));
+                if (!DividingOn) dc.Pop();
+            }
+            else if (DividingOn)
+                for (int i = 0; i + 1 < wide.Count; i++)
+                {
+                    double jy = wide[i].Bottom;
+                    dc.DrawLine(pen, new Point(_xs, jy), new Point(x0 + Math.Min(EndAt(wide[i], whole, jy, yc, k), EndAt(wide[i + 1], whole, jy, yc, k)), jy));
+                }
             foreach (var l in wide.Where(l => l.Border)) dc.DrawGeometry(null, accent, Outline(l, whole, x0, yc, k, false));
             // The Line layers, between the layers they are after:
             int at = 0;

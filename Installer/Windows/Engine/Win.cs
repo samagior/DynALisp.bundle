@@ -45,9 +45,12 @@
 //   dyl:Win.Exclusive="1"                   on a checkbox field: on in one row at most
 //   dyl:Win.Follows="lp/widths"             on a field: takes the item of that list when the
 //                                           field lp changes
+//   dyl:Win.ListBy="lg"                     on a list field: lists only its items whose
+//                                           key/by is the value of the field lg (a group)
 //   dyl:Win.Do="add"                        on a button: add, remove, up, down, flip, reset
 //   dyl:Win.Columns="men:7,mex:8"           on a button with Win.Open: the window it opens
-//                                           edits those columns of the rows selected, as
+//                                           edits those columns of the rows selected (in a
+//                                           preset window, of the presets selected), as
 //                                           the values of those keys
 //   dyl:Win.Summary="{count} rows"          on a TextBlock or a GroupBox: what the rows hold
 //   dyl:Win.SummaryEmpty="No rows."         in its place while there is no row
@@ -122,6 +125,10 @@ namespace DynALisp.Windows
         public static readonly DependencyProperty FollowsProperty = Prop("Follows");
         public static string GetFollows(DependencyObject o) => (string)o.GetValue(FollowsProperty);
         public static void SetFollows(DependencyObject o, string v) => o.SetValue(FollowsProperty, v);
+
+        public static readonly DependencyProperty ListByProperty = Prop("ListBy");
+        public static string GetListBy(DependencyObject o) => (string)o.GetValue(ListByProperty);
+        public static void SetListBy(DependencyObject o, string v) => o.SetValue(ListByProperty, v);
 
         public static readonly DependencyProperty DoProperty = Prop("Do");
         public static string GetDo(DependencyObject o) => (string)o.GetValue(DoProperty);

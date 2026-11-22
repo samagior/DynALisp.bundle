@@ -42,6 +42,11 @@
 //   dyl:Win.Follows="lp/widths"  this field takes the item of lp/widths (a list of the Lisp,
 //                              one item for each item of the field lp) when lp changes, if
 //                              it was empty or the item of its former value.
+//   dyl:Win.ListBy="lg"        a list field that lists only its items whose key/by (a list of
+//                              the Lisp, one item for each of its items: the group of each
+//                              material) is the value of the field lg in the row shown (all
+//                              of them when it is empty); lg changed, a row whose item is not
+//                              one of them gets the first one (none: empty).
 //
 // The buttons: dyl:Win.Do="add" (a row of the fields, after the rows selected, selected),
 // "remove" (the rows selected), "up" and "down" (one row selected), "flip" (the rows the other
@@ -123,11 +128,12 @@ namespace DynALisp.Windows
     {
         sealed class Field
         {
-            public string Key, Unique, Follows;
+            public string Key, Unique, Follows, ListBy;
             public bool Exclusive;
             public int Col;
             public FrameworkElement El;
-            public List<string> Vals;
+            public List<string> Vals, All, By;   // All: its labels, By: the group of each (ListBy)
+            public List<int> Shown;              // the items listed (ListBy), null: all
             public List<string> Rules = new List<string>();
         }
 
@@ -170,8 +176,9 @@ namespace DynALisp.Windows
                 if (c == null || string.IsNullOrEmpty(fe.Name)) continue;
                 if (!int.TryParse(c, NumberStyles.Integer, CultureInfo.InvariantCulture, out int col) || col < 0) continue;
                 var f = new Field { Key = fe.Name, Col = col, El = fe, Unique = Win.GetUnique(fe), Follows = Win.GetFollows(fe),
-                                    Exclusive = fe is ToggleButton && Win.GetExclusive(fe) == "1" };
+                                    Exclusive = fe is ToggleButton && Win.GetExclusive(fe) == "1", ListBy = Win.GetListBy(fe) };
                 f.Vals = _s.Lists.TryGetValue(fe.Name + "/vals", out var vals) ? vals : null;
+                if (f.ListBy != null && !_s.Lists.TryGetValue(fe.Name + "/by", out f.By)) f.ListBy = null;
                 // Its rules and those of the panels holding it, up to the window:
                 for (DependencyObject o = fe; o != null && !(o is Window); o = LogicalTreeHelper.GetParent(o))
                     if (Win.GetEnabledBy(o) is string rule && rule.Trim().Length > 0) f.Rules.Add(rule);
@@ -194,6 +201,9 @@ namespace DynALisp.Windows
         // The keys the editor fills itself (not the view):
         public bool Owns(string key) => key == _k || _fields.Any(f => f.Key == key);
 
+        // A button that opens a window on the rows (Win.Open with Win.Columns):
+        internal bool HasSub(Button b) => _subs.Contains(b);
+
         string[] Pad(string[] r)
         {
             if (r.Length >= _ncols) return r;
@@ -212,7 +222,25 @@ namespace DynALisp.Windows
         }
 
         // The labels of the list of a field, the index of a value in it:
-        static List<string> Labels(Field f) => (f.El as ComboBox)?.ItemsSource as List<string>;
+        static List<string> Labels(Field f) => f.All ?? (f.El as ComboBox)?.ItemsSource as List<string>;
+
+        // The items of the list field f for the row r (ListBy: those of the group of the row):
+        List<int> ItemsOf(Field f, string[] r)
+        {
+            var labels = Labels(f);
+            int n = labels?.Count ?? 0;
+            var g = _fields.FirstOrDefault(x => x.Key == f.ListBy);
+            string grp = g != null ? Cell(r, g.Col) : "";
+            return Enumerable.Range(0, n).Where(i => grp.Length == 0 || (i < f.By.Count && Ic.Equals(f.By[i], grp))).ToList();
+        }
+
+        // The value of the first item of f for the row r (ListBy), "" when it has none:
+        string FirstOf(Field f, string[] r)
+        {
+            var items = ItemsOf(f, r);
+            if (items.Count == 0) return "";
+            return f.Vals != null ? (items[0] < f.Vals.Count ? f.Vals[items[0]] : "") : Labels(f)[items[0]];
+        }
 
         static int IndexOf(Field f, string val)
         {
@@ -236,7 +264,11 @@ namespace DynALisp.Windows
         public void Fill()
         {
             foreach (var f in _fields)
-                if (f.El is ComboBox c && _s.Lists.TryGetValue(f.Key, out var items)) c.ItemsSource = items;
+                if (f.El is ComboBox c && _s.Lists.TryGetValue(f.Key, out var items))
+                {
+                    // (a list by group: its items set for each row shown)
+                    if (f.ListBy != null) f.All = items; else c.ItemsSource = items;
+                }
             _list.ItemsSource = _items;
             // (the rows of the preset shown: k.sel the ones selected when the window opens)
             if (_in >= 0) Load(); else Rebuild();
@@ -314,6 +346,15 @@ namespace DynALisp.Windows
             {
                 case ComboBox c:
                     int i = IndexOf(f, cell);
+                    if (f.ListBy != null)
+                    {
+                        f.Shown = ItemsOf(f, r);
+                        c.ItemsSource = f.Shown.Select(j => f.All[j]).ToList();
+                        int at = f.Shown.IndexOf(i);
+                        c.SelectedIndex = at;
+                        _s.Values[f.Key] = at.ToString(CultureInfo.InvariantCulture);
+                        break;
+                    }
                     c.SelectedIndex = i >= 0 && i < c.Items.Count ? i : -1;
                     _s.Values[f.Key] = c.SelectedIndex.ToString(CultureInfo.InvariantCulture);
                     break;
@@ -335,6 +376,7 @@ namespace DynALisp.Windows
             {
                 case ComboBox c:
                     int i = c.SelectedIndex;
+                    if (f.Shown != null) i = i >= 0 && i < f.Shown.Count ? f.Shown[i] : -1;
                     if (f.Vals != null) return i >= 0 && i < f.Vals.Count ? f.Vals[i] : "";
                     var labels = Labels(f);
                     return labels != null && i >= 0 && i < labels.Count ? labels[i] : "";
@@ -363,7 +405,7 @@ namespace DynALisp.Windows
         {
             if (key == _k) { Picked(); return; }
             var f = _fields.FirstOrDefault(x => x.Key == key);
-            if (f == null) { if (_tiles.Any(t => t.Line == key)) Tiles(); return; }
+            if (f == null) { if (_tiles.Any(t => t.Line == key || t.BorderLines == key || t.DividingLines == key)) Tiles(); return; }
             string val = Read(f);
             var sel = Selected();
             string msg = Problem(f, val, sel.Count == 1 ? sel[0] : -1);
@@ -384,6 +426,9 @@ namespace DynALisp.Windows
                 var nr = Put(r, f.Col, val);
                 foreach (var g in _fields.Where(g => g.Follows != null && g.Follows.Split('/')[0] == f.Key))
                     nr = Follow(g, f, Cell(r, f.Col), val, nr);
+                // the lists by this field (ListBy): their first item when theirs is no longer listed:
+                foreach (var g in _fields.Where(g => g.ListBy == f.Key))
+                    if (!ItemsOf(g, nr).Contains(IndexOf(g, Cell(nr, g.Col)))) nr = Put(nr, g.Col, FirstOf(g, nr));
                 Set(i, nr);
             }
             // an exclusive checkbox checked: cleared in the other rows (the row shown too, when
@@ -395,9 +440,21 @@ namespace DynALisp.Windows
                 if (sel.Count > 0 && sel[0] != kept) _v.Quiet(() => ShowField(f, _rows[sel[0]]));
             }
             if (sel.Count > 0) Store();
+            // none selected (the fields of the row Add adds): the lists by this field follow it:
+            if (sel.Count == 0 && _fields.Any(g => g.ListBy == f.Key))
+            {
+                var nr = Pad(new string[_ncols]);
+                foreach (var x in _fields) nr = Put(nr, x.Col, Read(x));
+                foreach (var g in _fields.Where(g => g.ListBy == f.Key))
+                {
+                    if (!ItemsOf(g, nr).Contains(IndexOf(g, Cell(nr, g.Col)))) nr = Put(nr, g.Col, FirstOf(g, nr));
+                    var row = nr;
+                    _v.Quiet(() => ShowField(g, row));
+                }
+            }
             // the fields that followed it, in the row shown:
             if (sel.Count > 0)
-                _v.Quiet(() => { foreach (var g in _fields.Where(g => g.Follows != null && g.Follows.Split('/')[0] == f.Key)) ShowField(g, _rows[sel[0]]); });
+                _v.Quiet(() => { foreach (var g in _fields.Where(g => (g.Follows != null && g.Follows.Split('/')[0] == f.Key) || g.ListBy == f.Key)) ShowField(g, _rows[sel[0]]); });
             Summary();
         }
 
@@ -635,6 +692,8 @@ namespace DynALisp.Windows
                 }
                 string End(int i) => ends != null && i < ends.Count ? ends[i] : "";
                 t.Justify = t.Line != null ? _v.Stored(t.Line) ?? "" : "";
+                t.BorderOn = t.BorderLines == null || _v.Stored(t.BorderLines) == "1";
+                t.DividingOn = t.DividingLines == null || _v.Stored(t.DividingLines) == "1";
                 var pf = _fields.FirstOrDefault(f => f.Col == c[1]);
                 var parts = new List<string>();
                 for (int i = 0; i < _rows.Count; i++)
