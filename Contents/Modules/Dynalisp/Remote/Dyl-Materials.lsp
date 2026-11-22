@@ -239,6 +239,10 @@
     ("mt-LooseInsulation" "Section" "Loose Insulation" "hp-LooseInsulation" "" "" "" "")
     ("mt-SprayInsulation" "Section" "Spray Insulation" "hp-SprayInsulation" "" "" "" "")
     ("mt-RigidInsulation" "Section" "Rigid Insulation" "hp-RigidInsulation" "" "" "" "")
+    ;;  Three materials of one hatch preset, each with its own data (to fill in from a source):
+    ("mt-ExtrudedPolystyrene" "Section" "Extruded Polystyrene" "hp-RigidInsulation" "" "" "" "")
+    ("mt-ExpandedPolystyrene" "Section" "Expanded Polystyrene" "hp-RigidInsulation" "" "" "" "")
+    ("mt-Polyisocyanurate" "Section" "Polyisocyanurate" "hp-RigidInsulation" "" "" "" "")
     ("mt-Gypsum" "Section" "Gypsum" "hp-Gypsum" "" "" "" "")
     ("mt-Plaster" "Section" "Plaster" "hp-Plaster" "" "" "" "")
     ("mt-CompactedSoil" "Section" "Compacted Soil" "hp-CompactedSoil" "" "" "" "")
@@ -2511,13 +2515,186 @@
   )
 )
 
-;;  Show the materials dialog, on the material id (nil: the last one). Returns the material
-;;  selected on OK, or nil on Cancel. Until the materials have a window of their own, the
-;;  hatch presets dialog, on the hatch preset of id; the material id itself on OK:
-(defun Remote>>Dyl:MaterialDialog (id / m)
-  (setq m (if id (assoc id (cadr (Remote>>Dyl:MaterialBoth)))))
-  (if (Remote>>Dyl:HatchPresetDialog (if m (nth 3 m)))
-    (if id (Remote>>Dyl:MaterialGet id))
+;;-------------------------=={ Materials window }==------------------------;;
+
+;;  The Materials window (Res\Dyl-Materials.xaml, shown by DynALisp.Windows.dll): a preset
+;;  window (Installer\Windows\Engine\Presets.cs) of the materials, each one its name, its
+;;  group, its Cut hatch preset (the Material list of the engine, mat, on the hatch presets:
+;;  (material . 3), (mats . Remote>>Dyl:HatchPresetRead), every one listed, (matfree . T)),
+;;  previewed (mpv), its open button the Hatch Presets dialog on it (code 9, matdialog), its
+;;  Surface hatch preset (sur, "": Same as Cut; its open button: code 10) and its data, shown
+;;  in the units of the drawing (see *mt:data*). The functions below use the local variable
+;;  mt:shown of Remote>>Dyl:MaterialDialog: ((column shown) si) of each value shown in
+;;  imperial units, so a value got back unchanged keeps its SI value as it was.
+
+;;  A band of the preview of a tile (see Installer\Windows\Engine\Hatch.cs), w wide: kind
+;;  "P" the hatch of the material mat (nil: missing, crossed out), "S" a space, "L" a line.
+;;  A hatch: "P?w?pattern?file?ppu?angle?scale", ppu the inches on paper of one unit of its
+;;  pattern: its scale in inches (a metric pattern: in mm), divided by the drawing scale
+;;  unless it keeps its size on paper (annotative or adaptive scaling: a Drafting hatch
+;;  preset; a Model one never does), as it plots:
+(defun Remote>>Dyl:MaterialBand (kind mat w / pat u s ds)
+  (setq w (Remote>>Dyl:MaterialNumP w 6))
+  (cond
+    ((member kind '("S" "L")) (strcat kind "?" w))
+    ((not mat) (strcat "X?" w))
+    ;;  No hatch (see *mt:nohatch*), or no pattern (Void): a space, outlined when it has a
+    ;;  border:
+    ((or (= "1" (nth *mt:nohatch* mat)) (= "" (nth 3 mat))) (strcat "S?" w))
+    ((= "SOLID" (setq pat (strcase (nth 3 mat)))) (strcat "F?" w))
+    (T
+     (setq u  (Remote>>Dyl:MaterialPatUnits pat)
+           s  (cond ((distof (nth 4 mat) 2)) (1.0))
+           ds (if (or (= "1" (nth 9 mat)) (= "1" (nth 10 mat))) 1.0 (Remote>>Dyl:MaterialDrawScale))
+     )
+     (if (= "Metric" (car u)) (setq s (/ s 25.4)))
+     (strcat "P?" w "?" pat "?" (cond ((cdr u)) ("")) "?" (Remote>>Dyl:MaterialNumP (/ s ds) 8)
+             "?" (Remote>>Dyl:MaterialNumP (cond ((distof (nth 6 mat) 2)) (0.0)) 4)
+             "?" (Remote>>Dyl:MaterialNumP ds 4)
+     )
+    )
+  )
+)
+
+
+;;  The preview of a hatch preset hp, as it plots (see Remote>>Dyl:MaterialBand):
+(defun Remote>>Dyl:MaterialWinSpec (hp)
+  (Remote>>Dyl:MaterialBand "P" hp 1.0)
+)
+
+;;  The data of a material: (column factor) of each value, the value in imperial units its
+;;  SI value x factor: thermal conductivity (W/m.K -> Btu.in/h.ft2.F), density (kg/m3 ->
+;;  lb/ft3), thermal resistance (RSI m2.K/W -> R h.ft2.F/Btu):
+(setq *mt:data* '((5 6.933471) (6 0.06242796) (7 5.678263)))
+
+;;  T when the data are shown in imperial units (an imperial drawing, MEASUREMENT 0):
+(defun Remote>>Dyl:MaterialImperial-p ()
+  (= 0 (getvar "MEASUREMENT"))
+)
+
+;;  The number v as text, 4 significant digits at most (0.23574 -> "0.2357", 1234.5 -> "1235"):
+(defun Remote>>Dyl:MaterialSig (v / e)
+  (if (< 0 v)
+    (progn
+      (setq e (/ (log v) (log 10.0))
+            e (if (< e 0) (1- (fix e)) (fix e))
+      )
+      (Remote>>Dyl:MaterialNumP v (max 0 (min 8 (- 3 e))))
+    )
+    (Remote>>Dyl:MaterialNum v)
+  )
+)
+
+;;  A material as the window shows it: its data in imperial units in an imperial drawing
+;;  (each value shown kept in mt:shown with its SI value):
+(defun Remote>>Dyl:MaterialWinRow (r / v s)
+  (if (Remote>>Dyl:MaterialImperial-p)
+    (foreach d *mt:data*
+      (if (setq v (distof (nth (car d) r) 2))
+        (progn
+          (setq s (Remote>>Dyl:MaterialSig (* v (cadr d))))
+          (if (not (assoc (list (car d) s) mt:shown))
+            (setq mt:shown (cons (list (list (car d) s) (nth (car d) r)) mt:shown))
+          )
+          (setq r (Remote>>Dyl:ListSubst r (car d) s))
+        )
+      )
+    )
+  )
+  r
+)
+
+;;  A material got back from the window: its data in SI units again, a value shown and not
+;;  changed its SI value as it was (no rounding added):
+(defun Remote>>Dyl:MaterialWinGet (r / v m)
+  (if (Remote>>Dyl:MaterialImperial-p)
+    (foreach d *mt:data*
+      (setq v (vl-string-trim " " (cond ((nth (car d) r)) (""))))
+      (setq r (Remote>>Dyl:ListSubst r
+                                     (car d)
+                                     (cond
+                                       ((= "" v) "")
+                                       ((setq m (assoc (list (car d) v) mt:shown)) (cadr m))
+                                       ((distof v 2) (Remote>>Dyl:MaterialSig (/ (distof v 2) (cadr d))))
+                                       (v)
+                                     )
+              )
+      )
+    )
+  )
+  r
+)
+
+;;  The values of the window: the Surface list (Same as Cut, then every hatch preset,
+;;  "group - name"), mt.imp ("1": the units shown are imperial, see the window file):
+(defun Remote>>Dyl:MaterialWinVals (/ hps)
+  (setq hps (vl-sort pst:mats
+                     '(lambda (a b) (< (strcase (strcat (nth 1 a) "\t" (nth 2 a))) (strcase (strcat (nth 1 b) "\t" (nth 2 b)))))
+            )
+  )
+  (list (cons "sur/list" (cons "Same as Cut" (mapcar '(lambda (h) (strcat (nth 1 h) " - " (nth 2 h))) hps)))
+        (cons "sur/vals" (cons "" (mapcar 'car hps)))
+        (cons "mt.imp" (if (Remote>>Dyl:MaterialImperial-p) "1" "0"))
+  )
+)
+
+;;  A value of a material (the window checks them too): a hatch preset that exists ("": none),
+;;  a value of its data empty or greater than 0:
+(defun Remote>>Dyl:MaterialWinCheck (key val)
+  (cond
+    ((and (member key '("mat" "sur")) (/= "" val) (not (assoc val pst:mats)))
+     "This hatch preset no longer exists: pick another one."
+    )
+    ((and (member key '("cnd" "den" "rsi"))
+          (/= "" (vl-string-trim " " val))
+          (not (and (distof val 2) (< 0 (distof val 2))))
+     )
+     "A value of the data must be a number greater than 0 (empty: not known)."
+    )
+  )
+)
+
+;;  Code 10 = the open button of Surface: the Hatch Presets dialog on the Surface hatch
+;;  preset of the material shown (its Cut when it is Same as Cut); the hatch preset selected
+;;  on OK becomes the Surface of the materials selected:
+(defun Remote>>Dyl:MaterialWinStatus (sta r / h)
+  (if (and (= 10 sta) (setq h (Remote>>Dyl:HatchPresetDialog (if (/= "" (nth 4 r)) (nth 4 r) (nth 3 r)))))
+    (Remote>>Dyl:PresetDlgPut 4 (car h))
+  )
+  nil
+)
+
+;;  A new material: no hatch preset yet, no data:
+(setq *mt:newrow* '("" "Section" "New material" "" "" "" "" ""))
+
+;;  Show the Materials window, on the material id (nil: the last one). OK writes the
+;;  materials file. Returns the material selected on OK (its row of the file), or nil on
+;;  Cancel:
+(defun Remote>>Dyl:MaterialDialog (id / mt:shown)
+  ;;  A materials file of DynALisp 1.1 and older is split first:
+  (Remote>>Dyl:MaterialMigrate)
+  (Remote>>Dyl:PresetDialog
+    "Material"
+    (list (cons 'defs (Remote>>Dyl:MaterialRowDefs))
+          '(fix . Remote>>Dyl:MaterialRowFix)
+          '(tiles ("sur" . 4) ("cnd" . 5) ("den" . 6) ("rsi" . 7))
+          (cons 'select id)
+          '(groups . T)
+          '(material . 3)
+          '(mats . Remote>>Dyl:HatchPresetRead)
+          '(matdialog . Remote>>Dyl:HatchPresetDialog)
+          '(matnoun . "hatch preset")
+          '(matfree . T)
+          '(mspec . Remote>>Dyl:MaterialWinSpec)
+          (cons 'new *mt:newrow*)
+          '(noun . "materials")
+          '(window . "Dyl-Materials.xaml")
+          '(wrow . Remote>>Dyl:MaterialWinRow)
+          '(wget . Remote>>Dyl:MaterialWinGet)
+          '(wvals . Remote>>Dyl:MaterialWinVals)
+          '(check . Remote>>Dyl:MaterialWinCheck)
+          '(status . Remote>>Dyl:MaterialWinStatus)
+    )
   )
 )
 

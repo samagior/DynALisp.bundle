@@ -43,7 +43,11 @@
 //               ((NAME what-has-it) ...), pst/prefix the text of a new alias by the value of a
 //               column ("4|Polyline=PL-|*=QD-")
 //   pst/mat     the column of the material id, pst/mats the materials
-//               ((id group name spec pattern) ...), spec drawn by a HatchTile (Hatch.cs)
+//               ((id group name spec pattern) ...), spec drawn by a HatchTile (Hatch.cs);
+//               pst/matnoun what they are called in the messages ("material"), pst/matfree
+//               "1": the list holds every one of them, never only those of the group of the
+//               preset, and another group does not change it (the hatch presets of a
+//               material)
 //   pst/spec    a column of the presets with a preview of their own (an assembly), used
 //               when pst/specby holds for the preset (a rule, as Win.EnabledBy); else the
 //               preview is the hatch of its material
@@ -130,7 +134,8 @@ namespace DynALisp.Windows
         readonly Dictionary<string, string> _taken = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         readonly ObservableCollection<PresetItem> _items = new ObservableCollection<PresetItem>();
         readonly bool _cmds;
-        readonly string _base, _cmd, _noun, _title, _specBy, _blankBy, _outlineBy, _prefix;
+        readonly string _base, _cmd, _noun, _title, _specBy, _blankBy, _outlineBy, _prefix, _matNoun;
+        readonly bool _matFree;
         readonly int _matCol = -1, _specCol = -1, _followCol = -1;
         readonly int[] _followTo = new int[0];
         readonly List<string[]> _follow;
@@ -174,6 +179,8 @@ namespace DynALisp.Windows
             _blankBy = Val("pst/blank");
             _prefix = Val("pst/prefix");
             _matCol = Int(Val("pst/mat"), -1);
+            _matNoun = Val("pst/matnoun") is string mn && mn.Length > 0 ? mn : "material";
+            _matFree = Val("pst/matfree") == "1";
             _specCol = Int(Val("pst/spec"), -1);
             var fw = (Val("pst/follow") ?? "").Split(':');
             if (fw.Length == 2)
@@ -517,13 +524,14 @@ namespace DynALisp.Windows
 
         // The material list of the preset shown: the materials of its group by name, then
         // its material when it is not one of them ("group - name", or marked missing); every
-        // material when the group has none (Remote>>Dyl:PresetDlgMatFill):
+        // material when the group has none (Remote>>Dyl:PresetDlgMatFill), or always with
+        // pst/matfree:
         void MatFill()
         {
             if (_mat == null || _matCol < 0) return;
             var r = Row;
             string grp = Cell(r, GroupCol), cur = Cell(r, _matCol);
-            var inGrp = MatsOf(grp);
+            var inGrp = _matFree ? new List<string[]>() : MatsOf(grp);
             List<string[]> lst;
             bool byName = inGrp.Count > 0;
             if (byName)
@@ -535,7 +543,7 @@ namespace DynALisp.Windows
             else lst = _mats.OrderBy(m => Cell(m, 1) + "\t" + Cell(m, 2), StringComparer.OrdinalIgnoreCase).ToList();
             var ids = lst.Select(m => Cell(m, 0)).ToList();
             var labels = lst.Select(m => byName && Ic.Equals(Cell(m, 1), grp) ? Cell(m, 2) : Cell(m, 1) + " - " + Cell(m, 2)).ToList();
-            if (cur.Length > 0 && !ids.Contains(cur)) { ids.Add(cur); labels.Add(cur + "   (missing material)"); }
+            if (cur.Length > 0 && !ids.Contains(cur)) { ids.Add(cur); labels.Add(cur + "   (missing " + _matNoun + ")"); }
             _matIds = ids;
             _v.Quiet(() => _mat.ItemsSource = labels);
         }
@@ -553,15 +561,18 @@ namespace DynALisp.Windows
             _s.Values["pst.many"] = sel.Count > 1 ? "1" : "0";
             if (_prm != null)
                 _prm.Text = sel.Count > 1 ? sel.Count + " " + _noun + " selected"
-                          : d == null ? (_defs.Count == 0 ? "" : "Custom preset")
-                          : Same(r, d) ? "Default preset"
-                          : "Default preset, modified";
+                          : d == null ? (_defs.Count == 0 ? "" : "Custom " + One)
+                          : Same(r, d) ? "Default " + One
+                          : "Default " + One + ", modified";
             if (_src != null)
                 _src.Text = !_cmds ? "" : Cell(r, 0).Length == 0 ? "Gets its command once saved or given an alias." : "Command: " + Command(Cell(r, 0));
             if (_mpv != null) _mpv.Spec = Spec(r);
             List();
             Out();
         }
+
+        // What one preset is called (pst/noun without its plural: "preset", "material"):
+        string One => _noun.EndsWith("s") ? _noun.Substring(0, _noun.Length - 1) : _noun;
 
         int Ncols => Int(Val("pst/ncols"), int.MaxValue);
 
@@ -659,7 +670,7 @@ namespace DynALisp.Windows
             }
             // Another group: the materials of the new group (the first one given to the
             // presets selected when theirs is not one of them):
-            if (f.Key == "grp" && _matCol >= 0 && !Ic.Equals(old, val))
+            if (f.Key == "grp" && _matCol >= 0 && !_matFree && !Ic.Equals(old, val))
             {
                 var inGrp = MatsOf(val);
                 if (inGrp.Count > 0 && !inGrp.Any(m => m[0] == Cell(Row, _matCol))) PutAll(_matCol, inGrp[0][0]);
@@ -679,7 +690,7 @@ namespace DynALisp.Windows
                 return null;
             }
             if (f.Key == "grp" && val.Length == 0) return "The group cannot be empty.";
-            if (f.Key == "mat" && !_mats.Any(m => m[0] == val)) return "This material no longer exists: pick another one.";
+            if (f.Key == "mat" && !_mats.Any(m => m[0] == val)) return "This " + _matNoun + " no longer exists: pick another one.";
             if (f.El is TextBox && Win.GetCheck(f.El) is string kind && !View.Valid(kind, val))
                 return Win.GetCheckMessage(f.El) ?? "This value is not valid.";
             return null;
