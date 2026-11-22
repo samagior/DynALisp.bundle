@@ -9,8 +9,9 @@
   Dyl.Label (the label of a value), Dyl.Sub (the title of a sub-section), Dyl.Error (the text
   named "error"), Dyl.OpenButton (set by OpenButton itself), Dyl.Tile (set by Gallery
   itself), Dyl.Chip (the items of a list of names), Dyl.Search (a search box), Dyl.Pill (a
-  group of a gallery, set by Gallery itself). A TextBox shows its Tag as a hint while it is
-  empty. GroupBox, Button, CheckBox, ComboBox, ListBox and TextBox take theirs on their own.
+  group of a gallery, set by Gallery itself, and Dyl.PillSmall its methods). A TextBox
+  shows its Tag as a hint while it is empty. GroupBox, Button, CheckBox, ComboBox, ListBox
+  and TextBox take theirs on their own.
   Windows are minimal (Windows convention): no colour or box that does not say something.
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -350,13 +351,14 @@
   <Style x:Key="Dyl.Pill" TargetType="RadioButton">
     <Setter Property="Foreground" Value="{DynamicResource Dyl.Text}"/>
     <Setter Property="Margin" Value="0,0,8,0"/>
+    <Setter Property="Padding" Value="14,4"/>
     <Setter Property="Cursor" Value="Hand"/>
     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="RadioButton">
           <Border x:Name="bd" Background="{DynamicResource Dyl.Surface}" BorderBrush="Transparent" BorderThickness="1.5"
-                  CornerRadius="14" Padding="14,4" SnapsToDevicePixels="True">
+                  CornerRadius="14" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
             <ContentPresenter VerticalAlignment="Center"/>
           </Border>
           <ControlTemplate.Triggers>
@@ -375,6 +377,13 @@
         </ControlTemplate>
       </Setter.Value>
     </Setter>
+  </Style>
+
+  <!-- A smaller pill (the methods of the preset selected in a gallery), so they fit in a row: -->
+  <Style x:Key="Dyl.PillSmall" TargetType="RadioButton" BasedOn="{StaticResource Dyl.Pill}">
+    <Setter Property="Margin" Value="0,0,5,0"/>
+    <Setter Property="Padding" Value="9,3"/>
+    <Setter Property="FontSize" Value="12"/>
   </Style>
 
   <!-- A tile of a gallery (Gallery.cs): a card, its border blue under the mouse, and blue and

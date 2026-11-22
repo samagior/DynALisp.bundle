@@ -54,11 +54,11 @@
     <WrapPanel x:Name="kinds" Grid.Row="2" Margin="0,0,0,12"/>
 
     <!-- Six tiles a row, four rows shown, the others under them (scroll): -->
-    <dyl:Gallery x:Name="gal" Grid.Row="3" Group="grp" Pills="pills" Recent="Recent" Kinds="kinds" Methods="mths"
+    <dyl:Gallery x:Name="gal" Grid.Row="3" HorizontalAlignment="Left" Group="grp" Pills="pills" Recent="Recent" Kinds="kinds" Methods="mths"
                  Search="find" Count="cnt" Width="976" Height="568"/>
 
     <!-- The methods of the preset selected, filled by the gallery: -->
-    <DockPanel Grid.Row="4" Margin="0,2,0,8" MinHeight="32" dyl:Win.EnabledBy="gal!=-1">
+    <DockPanel Grid.Row="4" Margin="0,2,0,8" MinHeight="30" Width="976" HorizontalAlignment="Left" dyl:Win.EnabledBy="gal!=-1">
       <TextBlock DockPanel.Dock="Left" Text="Method" Style="{DynamicResource Dyl.Label}" Width="70" VerticalAlignment="Center"/>
       <WrapPanel x:Name="mths" VerticalAlignment="Center"/>
     </DockPanel>

@@ -147,10 +147,10 @@ namespace DynALisp.Windows
             Filter();
         }
 
-        RadioButton Pill(string text, string group, Action picked, string tip = null)
+        RadioButton Pill(string text, string group, Action picked, string tip = null, string style = "Dyl.Pill")
         {
             var p = new RadioButton { Content = text, GroupName = group, ToolTip = string.IsNullOrEmpty(tip) ? null : tip };
-            p.SetResourceReference(StyleProperty, "Dyl.Pill");
+            p.SetResourceReference(StyleProperty, style);
             p.Checked += (s, e) => picked();
             return p;
         }
@@ -251,7 +251,7 @@ namespace DynALisp.Windows
                     if (_method == val) return;
                     _method = val;
                     Selected?.Invoke(_sel?.Index ?? -1, _method);
-                }, m.Length > 2 ? m[2] : null);
+                }, m.Length > 2 ? m[2] : null, "Dyl.PillSmall");
                 p.IsChecked = val == _method;
                 _mths.Children.Add(p);
             }
