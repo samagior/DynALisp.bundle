@@ -106,7 +106,7 @@ namespace DynALisp.Windows
             var wide = all.Where(l => l.B.Kind != "L").ToList();
             if (wide.Count == 0 || wide.Sum(l => l.B.Width) <= 0) { dc.Pop(); return; }
 
-            const double padY = 16, padR = 18;
+            const double padY = 16, padR = 60;
             double avail = r.Height - 2 * padY;
             double tot = wide.Sum(l => l.B.Width);
             double zoom, label;
@@ -156,9 +156,17 @@ namespace DynALisp.Windows
             for (int i = 0; i < wide.Count; i++)
             {
                 var l = wide[i];
+                // in pieces about as wide as tall, so a long thin layer is not drawn as grey
+                // (HatchTile.Draw covers the circle around its box):
                 dc.PushClip(shapes[i]);
-                var box = new Rect(0, l.Top, r.Width, Math.Max(1, l.Bottom - l.Top));
-                Draw(dc, box, l.B, zoom, pen);
+                double lh = Math.Max(1, l.Bottom - l.Top), cw = Math.Max(120, 2 * lh);
+                for (double cx = 0; cx < r.Width; cx += cw)
+                {
+                    var box = new Rect(cx, l.Top, Math.Min(cw, r.Width - cx), lh);
+                    dc.PushClip(new RectangleGeometry(box));
+                    Draw(dc, box, l.B, zoom, pen);
+                    dc.Pop();
+                }
                 dc.Pop();
                 if (l.Sel)
                 {
@@ -172,11 +180,13 @@ namespace DynALisp.Windows
             foreach (var l in wide.Where(l => l.Border)) dc.DrawGeometry(null, accent, Outline(l, whole, x0, yc, k, false));
             // The Line layers, between the layers they are after:
             int at = 0;
+            var dash = new Pen(Ink, 2) { DashStyle = DashStyles.Dash };
+            dash.Freeze();
             foreach (var l in all)
             {
                 if (l.B.Kind != "L") { at++; continue; }
                 double ly = at == 0 ? wide[0].Top : wide[Math.Min(at, wide.Count) - 1].Bottom;
-                dc.DrawLine(new Pen(Ink, 2), new Point(0, ly), new Point(x0 + EndAt(whole, whole, ly, yc, k), ly));
+                dc.DrawLine(dash, new Point(0, ly), new Point(x0 + EndAt(whole, whole, ly, yc, k), ly));
             }
             if (Math.Abs(zoom - 1) > 1e-9 && ShowScale) Label(dc, r, "1:" + label.ToString("0.##", Inv));
             dc.Pop();
