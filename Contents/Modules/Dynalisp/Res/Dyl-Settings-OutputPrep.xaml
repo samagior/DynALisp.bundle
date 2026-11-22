@@ -65,7 +65,7 @@
           <CheckBox x:Name="t_UNHIDE_PLOT" HorizontalAlignment="Center" Margin="0,5" Grid.Row="2" Grid.Column="2"/>
           <CheckBox x:Name="t_UNHIDE_PREVIEW" HorizontalAlignment="Center" Margin="0,5" Grid.Row="2" Grid.Column="3"/>
           <CheckBox x:Name="t_UNHIDE_REGEN" HorizontalAlignment="Center" Margin="0,5" Grid.Row="2" Grid.Column="4"/>
-          <TextBlock Grid.Row="3" Style="{DynamicResource Dyl.Label}" Text="Reload all xrefs (slow)"/>
+          <TextBlock Grid.Row="3" Style="{DynamicResource Dyl.Label}" Text="Reload all xrefs"/>
           <CheckBox x:Name="t_XREFS_SAVE" HorizontalAlignment="Center" Margin="0,5" Grid.Row="3" Grid.Column="1"/>
           <CheckBox x:Name="t_XREFS_PLOT" HorizontalAlignment="Center" Margin="0,5" Grid.Row="3" Grid.Column="2"/>
           <CheckBox x:Name="t_XREFS_PREVIEW" HorizontalAlignment="Center" Margin="0,5" Grid.Row="3" Grid.Column="3"/>
@@ -80,17 +80,17 @@
           <CheckBox x:Name="t_TABLES_PLOT" HorizontalAlignment="Center" Margin="0,5" Grid.Row="5" Grid.Column="2"/>
           <CheckBox x:Name="t_TABLES_PREVIEW" HorizontalAlignment="Center" Margin="0,5" Grid.Row="5" Grid.Column="3"/>
           <CheckBox x:Name="t_TABLES_REGEN" HorizontalAlignment="Center" Margin="0,5" Grid.Row="5" Grid.Column="4"/>
-          <TextBlock Grid.Row="6" Style="{DynamicResource Dyl.Label}" Text="Apply the draw order (if auto draw order on)"/>
+          <TextBlock Grid.Row="6" Style="{DynamicResource Dyl.Label}" Text="Apply the draw order"/>
           <CheckBox x:Name="t_DRAWORDER_SAVE" HorizontalAlignment="Center" Margin="0,5" Grid.Row="6" Grid.Column="1"/>
           <CheckBox x:Name="t_DRAWORDER_PLOT" HorizontalAlignment="Center" Margin="0,5" Grid.Row="6" Grid.Column="2"/>
           <CheckBox x:Name="t_DRAWORDER_PREVIEW" HorizontalAlignment="Center" Margin="0,5" Grid.Row="6" Grid.Column="3"/>
           <CheckBox x:Name="t_DRAWORDER_REGEN" HorizontalAlignment="Center" Margin="0,5" Grid.Row="6" Grid.Column="4"/>
-          <TextBlock Grid.Row="7" Style="{DynamicResource Dyl.Label}" Text="Rebuild the draw order (keeps panning fast)"/>
+          <TextBlock Grid.Row="7" Style="{DynamicResource Dyl.Label}" Text="Rebuild the draw order"/>
           <CheckBox x:Name="t_DRAWORDERCLEAN_SAVE" HorizontalAlignment="Center" Margin="0,5" Grid.Row="7" Grid.Column="1"/>
           <CheckBox x:Name="t_DRAWORDERCLEAN_PLOT" HorizontalAlignment="Center" Margin="0,5" Grid.Row="7" Grid.Column="2"/>
           <CheckBox x:Name="t_DRAWORDERCLEAN_PREVIEW" HorizontalAlignment="Center" Margin="0,5" Grid.Row="7" Grid.Column="3"/>
           <CheckBox x:Name="t_DRAWORDERCLEAN_REGEN" HorizontalAlignment="Center" Margin="0,5" Grid.Row="7" Grid.Column="4"/>
-          <TextBlock Grid.Row="8" Style="{DynamicResource Dyl.Label}" Text="Regenerate the drawing (REGENALL, slow)"/>
+          <TextBlock Grid.Row="8" Style="{DynamicResource Dyl.Label}" Text="Regenerate the drawing"/>
           <CheckBox x:Name="t_REGEN_SAVE" HorizontalAlignment="Center" Margin="0,5" Grid.Row="8" Grid.Column="1"/>
           <CheckBox x:Name="t_REGEN_PLOT" HorizontalAlignment="Center" Margin="0,5" Grid.Row="8" Grid.Column="2"/>
           <CheckBox x:Name="t_REGEN_PREVIEW" HorizontalAlignment="Center" Margin="0,5" Grid.Row="8" Grid.Column="3"/>
