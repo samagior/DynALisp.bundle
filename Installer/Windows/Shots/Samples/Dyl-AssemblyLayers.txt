@@ -1,19 +1,20 @@
 # Sample values of the Assembly Layers window of Quick Draw (Dyl:QuickDrawLayersDialog in
 # Dyl-QuickDraw.lsp), as the Lisp gives them, for an exterior wall drawn with Linear, the
-# Brick layer selected (its own band settings, Extended and Lapped, and its own border), the
-# Gypsum layer with its own border: key=value, key/list=item|item, key/vals=value|value,
+# Brick layer selected (its own band settings, Extended and Lapped, its hatch on its edge, and
+# its own border), the Gypsum layer with its own border, the CMU the structural layer, the line
+# drawn on its middle (lj, Structural layer): key=value, key/list=item|item, key/vals=value|value,
 # +key=field\tfield a row of the table key (ll/rows: kind preset thickness hatch-key line-key,
 # band on, hatch ends extension angle corners miter lap joints, border on, border key,
-# justification: the Brick on its border); \t is
+# structural); \t is
 # a tab. The preview: lp/specs the preview of each preset, ll/ends the ends of the band,
 # ll/paper a millimeter in inches and the drawing scale (a detail at 1:10).
-+ll/rows=P\tqd-Gypsum\t16\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t1\tTHIN\tCenter
-+ll/rows=S\tqd-Brick\t92\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\tCenter
-+ll/rows=P\tqd-RigidInsulation\t25\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\tCenter
-+ll/rows=S\tqd-Brick\t25\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\tCenter
-+ll/rows=P\tqd-Brick\t90\tTHIN\tMED\t1\tLine\tExtended\t30\t45\tLapped\t4\tFirst\tInterrupted\t1\tMED\tEdge
-+ll/rows=L\tqd-Brick\t90\t\tWIDE\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\tCenter
-+ll/new=P\tqd-Existing\t10\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\tCenter
++ll/rows=P\tqd-Gypsum\t16\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t1\tTHIN\t0
++ll/rows=P\tqd-CMU\t190\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t1
++ll/rows=P\tqd-RigidInsulation\t50\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t0
++ll/rows=S\tqd-Brick\t25\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t0
++ll/rows=P\tqd-Brick\t90\tTHIN\tMED\t1\tEdge\tExtended\t30\t45\tLapped\t4\tFirst\tInterrupted\t1\tMED\t0
++ll/rows=L\tqd-Brick\t90\t\tWIDE\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t0
++ll/new=P\tqd-Existing\t10\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t0
 ll.sel=4
 lk/list=Hatch|Space|Line
 lk/vals=P|S|L
@@ -30,10 +31,11 @@ lbk/vals=HATCH|MED|THIN|WIDE|XTHIN
 ll/ends/list=Square||45
 ll/paper/list=0.0393701|10
 mth=Layer
-mjs/list=Center|Edge
-mjs/vals=Center|Edge
-mht/list=Line|Drawing origin
-mht/vals=Line|Origin
+lj/list=Ask when drawn|Center|Edge|Structural layer
+lj/vals=Ask|Center|Edge|Structural
+lj=3
+mht/list=Layer center|Layer edge|Drawing origin
+mht/vals=Line|Edge|Origin
 men/list=Square|Open|Extended|Round|Angled
 men/vals=Square|Open|Extended|Round|Angled
 mco/list=Mitered|Beveled|Round|Lapped

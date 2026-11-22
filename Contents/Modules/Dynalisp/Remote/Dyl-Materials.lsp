@@ -193,22 +193,26 @@
 ;;  layer is kind:ref:thickness, the layers divided by | (never ; or , : the separators of
 ;;  the CSV files). Its kind: P, a band hatched as a Quick Draw preset (ref: its id) draws
 ;;  it; S, a space (no hatch); L, a line (ref: its layer key, no thickness). The thickness of
-;;  P and S in drawing units. A P layer can have three more fields: the layer key of its
+;;  P and S in drawing units. A P layer can have four more fields: the layer key of its
 ;;  hatch in place of the hatch layer key of its preset (P:qd-Brick:90:HATCH, "": the key of
-;;  its preset), its own band settings, and its own border, the values of each divided by ~:
-;;    band    on~hatch~ends~extension~angle~corners~miter~lap~joints[~justify] (on "1"; off
-;;            "0", the values kept for when it is on again; see *mt:bandwindows*; justify:
-;;            the line of the layer, Center or Edge, Center when there is none)
+;;  its preset), its own band settings, its own border, the values of each divided by ~, and
+;;  "1" when it is the structural layer (the line of the band on its middle, justification
+;;  Structural layer, see *mt:justify*):
+;;    band    on~hatch~ends~extension~angle~corners~miter~lap~joints (on "1"; off "0", the
+;;            values kept for when it is on again; see *mt:bandwindows*; hatch: Line, the
+;;            middle of the layer, Edge, its border nearer to the line of the band, or Origin;
+;;            a 10th value Edge of an older file is the hatch on Edge)
 ;;    border  on~key (its outline on that layer key)
-;;  (P:qd-Brick:90::1~Line~Extended~~45~Lapped~4~First~Interrupted:1~A-WALL). Returns
-;;  ((kind ref thickness [hatch-key [band [border]]]) ...), the layers that are valid only
-;;  (ref and layer key in upper case for L; the hatch key in upper case, "" for the key of the
-;;  preset; band and border as lists of their values, nil when there are none):
+;;  (P:qd-Brick:90::1~Line~Extended~~45~Lapped~4~First~Interrupted:1~A-WALL:1). Returns
+;;  ((kind ref thickness [hatch-key [band [border [structural]]]]) ...), the layers that are
+;;  valid only (ref and layer key in upper case for L; the hatch key in upper case, "" for the
+;;  key of the preset; band and border as lists of their values, nil when there are none;
+;;  structural "1", else nil):
 (defun Remote>>Dyl:MaterialLayers (str / res k r w b d)
   (if (= 'STR (type str))
     (foreach x (Remote>>LM:str->lst str "|")
       (setq x (mapcar '(lambda (y) (vl-string-trim " " y)) (Remote>>LM:str->lst x ":")))
-      (if (member (length x) '(3 4 5 6))
+      (if (member (length x) '(3 4 5 6 7))
         (progn
           (setq k (strcase (car x))
                 r (cadr x)
@@ -219,8 +223,16 @@
           (cond
             ((and (= "P" k) (/= "" r) (Remote>>Dyl:MaterialScale-p w))
              (setq res (cons (list "P" r w (strcase (cond ((cadddr x)) ("")))
-                                   (cond ((= 10 (length b)) b) ((= 9 (length b)) (append b '("Center"))))
+                                   (cond ((= 9 (length b)) b)
+                                         ((= 10 (length b))
+                                          (if (and (= "Edge" (last b)) (= "Line" (cadr b)))
+                                            (Remote>>Dyl:ListSubst (Remote>>LM:sublst b 0 9) 1 "Edge")
+                                            (Remote>>LM:sublst b 0 9)
+                                          )
+                                         )
+                                   )
                                    (if (= 2 (length d)) (list (car d) (strcase (cadr d))))
+                                   (if (= "1" (nth 6 x)) "1")
                              )
                              res
                        )
@@ -246,6 +258,7 @@
                             (list (cond ((cadddr l)) (""))
                                   (cond ((Remote>>LM:lst->str (nth 4 l) "~")) (""))
                                   (cond ((Remote>>LM:lst->str (nth 5 l) "~")) (""))
+                                  (if (= "1" (nth 6 l)) "1" "")
                             )
                           )
                   )
@@ -325,6 +338,8 @@
 (setq *mt:justify* '(("Ask" "Ask when drawn")
                      ("Center" "Center")
                      ("Edge" "Edge")
+                     ;;  An assembly: the middle of its structural layer (Center without one):
+                     ("Structural" "Structural layer")
                     )
 )
 
@@ -1440,11 +1455,11 @@
 
 ;;  The tiles of the Band Settings window (Dyl:QuickDrawBandDialog), not tiles of the
 ;;  Behaviors box: kind -> (title (key label kind) ...), kind of a tile: list (a popup of the
-;;  list), edit (an edit box). The justification, what the hatch is aligned to, the ends and
-;;  the corners: what the sketches of the window show:
+;;  list), edit (an edit box). What the hatch is aligned to, the ends and the corners: what the
+;;  sketches of the window show, with the justification of the preset (the line drawn, set in
+;;  the Behaviors box, not here: mjs given to the window, no control):
 (setq *mt:bandwindows*
   (list (list "BandSettings" "Band Settings"
-              (list "mjs" "Justification:" *mt:justify*)
               (list "mht" "Hatch aligned to:" *mt:hatchmodes*)
               (list "men" "Ends:" *mt:ends*)
               (list "mex" "Extension:" 'edit)
@@ -1481,13 +1496,11 @@
   r
 )
 
-;;  A summary of the bands of the material r, under Custom band settings: its justification (not
-;;  with Offset, whose line is always a border), its ends and its corners, by their keys
-;;  (Center, Extended, Lapped):
+;;  A summary of the bands of the material r, under Custom band settings: its ends and its
+;;  corners, by their keys (Extended, Lapped):
 (defun Remote>>Dyl:MaterialBandText (r)
   (setq r (Remote>>Dyl:MaterialBandOwn r))
-  (strcat (if (= "Offset" (nth 33 r)) "" (strcat (cond ((/= "" (nth 35 r)) (nth 35 r)) ("Center")) ", "))
-          (nth 51 r)
+  (strcat (nth 51 r)
           ", "
           (nth 54 r)
   )

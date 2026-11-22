@@ -23,13 +23,15 @@
   a Hatch layer: 5 its own band settings on ("1"), 6 to 13 those settings (hatch aligned to,
   ends, extension, angle, corners, miter limit, lap, joints: edited in the Band Settings
   window, opened by lbe on the layers selected), 14 its own border on, 15 the layer key of
-  that border, 16 the justification of its band settings (Center, Edge: the line of the
-  layer, its middle or its border nearer to the line of the band). Every column is kept in every row, so a layer turned into another kind and
+  that border, 16 Structural ("1": the structural layer, one at most: the window clears it in
+  the others, dyl:Win.Exclusive). lj is the justification of the assembly (the line drawn,
+  that of the preset: Structural layer puts it in the middle of the structural layer). Every
+  column is kept in every row, so a layer turned into another kind and
   back gets its values again; the Lisp keeps those of its kind. Add, Remove, Move up, Move
   down and Flip run in the window; OK gives the layers to every preset selected. The preview
   (an AssemblyTile, Installer\Windows\Engine\Assembly.cs) draws the rows as they are edited:
   lp/specs the preview of each preset, ll/ends the ends of the whole band, ll/paper the
-  inches of a drawing unit and the drawing scale.
+  inches of a drawing unit and the drawing scale, and the line drawn where lj puts it.
 -->
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -91,7 +93,7 @@
                 <TextBlock Text="{Binding [0]}"/>
                 <StackPanel Grid.Column="1" Margin="0,0,8,0">
                   <TextBlock x:Name="pre" TextTrimming="CharacterEllipsis">
-                    <Run Text="{Binding [1], Mode=OneWay}"/><Run x:Name="hk" Foreground="{DynamicResource Dyl.Muted}" Text="{Binding V[3], Mode=OneWay, StringFormat='{}  [{0}]'}"/>
+                    <Run Text="{Binding [1], Mode=OneWay}"/><Run x:Name="hk" Foreground="{DynamicResource Dyl.Muted}" Text="{Binding V[3], Mode=OneWay, StringFormat='{}  [{0}]'}"/><Run x:Name="sr" Foreground="{DynamicResource Dyl.Accent}" Text=""/>
                   </TextBlock>
                   <TextBlock x:Name="key" Visibility="Collapsed" Text="{Binding [4]}" TextTrimming="CharacterEllipsis"/>
                   <!-- Its own band settings (its ends, its corners) and its own border: -->
@@ -120,6 +122,9 @@
                 <DataTrigger Binding="{Binding V[3]}" Value="">
                   <Setter TargetName="hk" Property="Text" Value=""/>
                 </DataTrigger>
+                <DataTrigger Binding="{Binding V[16]}" Value="1">
+                  <Setter TargetName="sr" Property="Text" Value="  Structural"/>
+                </DataTrigger>
                 <DataTrigger Binding="{Binding V[0]}" Value="S">
                   <Setter TargetName="pre" Property="Visibility" Value="Collapsed"/>
                   <Setter TargetName="own" Property="Visibility" Value="Collapsed"/>
@@ -137,8 +142,9 @@
       </DockPanel>
     </GroupBox>
 
+    <StackPanel Grid.Column="2">
     <!-- The layer shown (the first one selected); with none selected, the layer Add adds: -->
-    <GroupBox Grid.Column="2" Header="Layer" Margin="0" VerticalAlignment="Top" dyl:Win.Summary="Layer{sel| (# selected)}">
+    <GroupBox Header="Layer" Margin="0" dyl:Win.Summary="Layer{sel| (# selected)}">
       <StackPanel>
         <DockPanel Style="{StaticResource Row}">
           <ComboBox x:Name="lk" DockPanel.Dock="Right" Width="220" dyl:Win.Column="0"/>
@@ -157,6 +163,10 @@
                    dyl:Win.Check="positive" dyl:Win.CheckMessage="The thickness must be a number greater than 0."/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Thickness"/>
         </DockPanel>
+        <!-- The structural layer, the line of the band on its middle (Structural layer): -->
+        <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
+          <CheckBox x:Name="lsr" Content="Structural" dyl:Win.Column="16" dyl:Win.Exclusive="1"/>
+        </DockPanel>
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=L">
           <ComboBox x:Name="ly" DockPanel.Dock="Right" Width="220" dyl:Win.Column="4"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Line layer key"/>
@@ -166,7 +176,7 @@
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
           <dyl:OpenButton x:Name="lbe" DockPanel.Dock="Right" ToolTip="Band Settings" dyl:Win.EnabledBy="lbs"
                           dyl:Win.Open="Dyl-QuickDrawBandSettings.xaml"
-                          dyl:Win.Columns="mjs:16,mht:6,men:7,mex:8,mea:9,mco:10,mml:11,mlt:12,mjo:13"/>
+                          dyl:Win.Columns="mht:6,men:7,mex:8,mea:9,mco:10,mml:11,mlt:12,mjo:13"/>
           <CheckBox x:Name="lbs" Content="Custom band settings" dyl:Win.Column="5"/>
         </DockPanel>
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
@@ -175,10 +185,18 @@
         </DockPanel>
       </StackPanel>
     </GroupBox>
+    <!-- The whole assembly: where the line drawn is (the Justification of the preset): -->
+    <GroupBox Header="Assembly" Margin="0,10,0,0">
+      <DockPanel Style="{StaticResource Row}">
+        <ComboBox x:Name="lj" DockPanel.Dock="Right" Width="220"/>
+        <TextBlock Style="{DynamicResource Dyl.Label}" Text="Justification"/>
+      </DockPanel>
+    </GroupBox>
+    </StackPanel>
 
     <!-- The assembly as it is drawn, a wall in plan, built as the layers are edited: -->
     <GroupBox Grid.Row="1" Grid.ColumnSpan="3" Header="Preview" Margin="0,10,0,0">
-      <dyl:AssemblyTile Height="150" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14 16" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
+      <dyl:AssemblyTile Height="150" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14 6 16" Line="lj" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper"
                         Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"
                         Accent="{DynamicResource Dyl.Accent}"/>
     </GroupBox>

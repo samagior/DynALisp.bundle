@@ -2,12 +2,11 @@
 # Dyl-QuickDraw.lsp, Dyl:QuickDrawBandVals), as the Lisp gives them, for a preset drawn with
 # Linear whose line is a border of its bands, Extended ends and Lapped corners: key=value,
 # key/list=item|item, key/vals=value|value, its hatch scaled by the width, its origin on the
-# line. mth, with no control, is the method of the preset, solid "1" for a SOLID hatch.
+# line. mth and mjs, with no control, are the method and the justification of the preset
+# (the line of the sketches), solid "1" for a SOLID hatch.
 mth=Linear
 solid=0
-mjs/list=Ask when drawn|Center|Edge
-mjs/vals=Ask|Center|Edge
-mjs=2
+mjs=Edge
 mht/list=Line|Drawing origin
 mht/vals=Line|Origin
 mht=0

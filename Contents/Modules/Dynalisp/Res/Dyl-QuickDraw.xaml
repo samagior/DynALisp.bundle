@@ -23,7 +23,7 @@
   The controls of the values are named as the tiles of the presets (pst/tiles, the column
   of each one in a preset, see *qd:tiles*); mbs is Custom band settings; mai, mei, mwl and
   mld show the columns the Lisp adds for the window (the layers of the assembly, the own
-  justification, ends and corners of the bands, the width of the layers, the description of
+  ends and corners of the bands, the width of the layers, the description of
   the assembly under the preview); mpv is the preview of the preset shown (pst/spec,
   pst/outline). The open
   buttons close the window with the code of what they open, as the DCL window did: 3 Band
@@ -206,6 +206,13 @@
               </Grid>
               <TextBlock Style="{DynamicResource Dyl.Label}" Text="Width"/>
             </DockPanel>
+            <!-- Where the line drawn is in the band (Linear), an assembly's too (also set in the
+                 Assembly Layers window, with Structural layer: the middle of its structural
+                 layer): -->
+            <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|">
+              <ComboBox x:Name="mjs" DockPanel.Dock="Right" Width="150"/>
+              <TextBlock Style="{DynamicResource Dyl.Label}" Text="Justification"/>
+            </DockPanel>
             <!-- A band of several layers, edited in the Assembly Layers window (what they are
                  beside its open button): -->
             <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|Offset|">
@@ -215,7 +222,7 @@
                               dyl:Win.EnabledBy="mas"/>
               <CheckBox x:Name="mas" Content="Assembly"/>
             </DockPanel>
-            <!-- Custom band settings: on, the justification, the hatch along the line (its scale
+            <!-- Custom band settings: on, the hatch along the line (its scale
                  and origin), the ends and the corners of the Band Settings window (its open
                  button); off, the defaults; greyed out for an assembly (each layer has its own,
                  in the Assembly Layers window). What the bands are drawn with is summed up
@@ -227,8 +234,7 @@
             </DockPanel>
             <Grid Margin="46,0,0,4" dyl:Win.EnabledBy="!mas,mth=Linear|Offset|">
               <TextBlock x:Name="mei" Style="{DynamicResource Dyl.Desc}" Margin="0" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" dyl:Win.VisibleBy="mbs"/>
-              <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="0" Text="Center, Square, Mitered" dyl:Win.VisibleBy="!mbs,mth!=Offset"/>
-              <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="0" Text="Square, Mitered" dyl:Win.VisibleBy="!mbs,mth=Offset"/>
+              <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="0" Text="Square, Mitered" dyl:Win.VisibleBy="!mbs"/>
             </Grid>
           </StackPanel>
         </GroupBox>
