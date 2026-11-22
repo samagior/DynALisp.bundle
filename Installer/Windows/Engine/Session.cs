@@ -506,7 +506,7 @@ namespace DynALisp.Windows
         // The text boxes checked (Win.Check) before the window closes:
         bool Checks()
         {
-            if (Presets != null) return Presets.Check();
+            if (Presets != null) return Presets.Check() && (Rows == null || Rows.Check());
             if (Rows != null && !Rows.Check()) return false;
             foreach (var x in _all.OfType<TextBox>())
             {

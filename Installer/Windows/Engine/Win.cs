@@ -38,6 +38,8 @@
 // A list of rows edited in the window (Rows.cs: the layers of an assembly, the groups):
 //
 //   dyl:Win.Rows="1"                        on a ListBox: its rows (key/rows) are edited here
+//   dyl:Win.RowsIn="4"                      on that ListBox in a preset window: its rows are
+//                                           those of the column 4 of the preset shown
 //   dyl:Win.Column="2"                      on a field: the column of the row shown it edits
 //   dyl:Win.Unique="message"                on a field: its column unique (any case)
 //   dyl:Win.Exclusive="1"                   on a checkbox field: on in one row at most
@@ -100,6 +102,10 @@ namespace DynALisp.Windows
         public static readonly DependencyProperty RowsProperty = Prop("Rows");
         public static string GetRows(DependencyObject o) => (string)o.GetValue(RowsProperty);
         public static void SetRows(DependencyObject o, string v) => o.SetValue(RowsProperty, v);
+
+        public static readonly DependencyProperty RowsInProperty = Prop("RowsIn");
+        public static string GetRowsIn(DependencyObject o) => (string)o.GetValue(RowsInProperty);
+        public static void SetRowsIn(DependencyObject o, string v) => o.SetValue(RowsInProperty, v);
 
         public static readonly DependencyProperty ColumnProperty = Prop("Column");
         public static string GetColumn(DependencyObject o) => (string)o.GetValue(ColumnProperty);

@@ -49,9 +49,17 @@
 //               preview is the hatch of its material
 //   pst/outline a rule (as Win.EnabledBy): the preview of a preset it holds for is outlined
 //               ("O*" before its bands, see Hatch.cs: the preset has a border)
+//   pst/follow  "38:44,45,46": when the value of the column 38 changes (a list of the window,
+//               the assembly preset of a Quick Draw preset), the columns 44, 45 and 46 of the
+//               presets selected take the values of its row in pst/follow/rows ((value v44
+//               v45 v46) ...: its width, its preview, its description), "" when it has none
 //   pst/title   the name of the tool, pst/noun what the presets are called ("presets")
 //   key/list, key/vals  the labels and the stored values of a list of the values
 //   grp/list    the groups
+//
+// A list of rows of the window (Rows.cs) with dyl:Win.RowsIn="n" edits the rows held in the
+// column n of the preset shown (the layers of an assembly preset); pst.many is "1" while
+// several presets are selected (a rule greys it out then: it is for one preset only).
 //
 // It gives back pst/rows and pst/als as edited, pst.idx, pst.sel, pst.shw, pst.shd ("1":
 // Set default was clicked, the group shown is the one the window opens on), and the values
@@ -121,7 +129,9 @@ namespace DynALisp.Windows
         readonly ObservableCollection<PresetItem> _items = new ObservableCollection<PresetItem>();
         readonly bool _cmds;
         readonly string _base, _cmd, _noun, _title, _specBy, _outlineBy, _prefix;
-        readonly int _matCol = -1, _specCol = -1;
+        readonly int _matCol = -1, _specCol = -1, _followCol = -1;
+        readonly int[] _followTo = new int[0];
+        readonly List<string[]> _follow;
 
         int _idx;
         List<int> _sel = new List<int>();
@@ -162,6 +172,13 @@ namespace DynALisp.Windows
             _prefix = Val("pst/prefix");
             _matCol = Int(Val("pst/mat"), -1);
             _specCol = Int(Val("pst/spec"), -1);
+            var fw = (Val("pst/follow") ?? "").Split(':');
+            if (fw.Length == 2)
+            {
+                _followCol = Int(fw[0], -1);
+                _followTo = fw[1].Split(',').Select(x => Int(x, -1)).Where(c => c >= 0).ToArray();
+            }
+            _follow = Table("pst/follow/rows");
 
             _list = (ListBox)v.Find("lst");
             _alsList = v.Find("als") as ListBox;
@@ -233,6 +250,17 @@ namespace DynALisp.Windows
         }
 
         string[] Row => _rows.Count > 0 ? _rows[_idx] : new string[0];
+
+        // The column col of the preset shown, and a value given to it only (the rows of a list
+        // of the window that it holds, Rows.cs: Win.RowsIn):
+        internal string ShownCell(int col) => Cell(Row, col);
+
+        internal void PutShown(int col, string val)
+        {
+            if (_rows.Count == 0 || Cell(Row, col) == val) return;
+            _rows[_idx] = Put(_rows[_idx], col, val);
+            State();
+        }
 
         // The keys the editor fills itself (not the view):
         public bool Owns(string key) =>
@@ -479,6 +507,7 @@ namespace DynALisp.Windows
             _s.Values["error"] = "";
             Aliases();
             State();
+            _v.Rows?.Load();
         }
 
         // The hatch preset list of the preset shown: the materials of its group by name, then
@@ -516,6 +545,7 @@ namespace DynALisp.Windows
             var d = _defs.FirstOrDefault(x => x.Length > 0 && x[0] == Cell(r, 0));
             var sel = _sel.Select(j => _rows[j]).ToList();
             _s.Values["pst/solid"] = Solid(r) ? "1" : "0";
+            _s.Values["pst.many"] = sel.Count > 1 ? "1" : "0";
             if (_prm != null)
                 _prm.Text = sel.Count > 1 ? sel.Count + " " + _noun + " selected"
                           : d == null ? "Custom preset"
@@ -614,6 +644,14 @@ namespace DynALisp.Windows
             if (_bad == f.Key) { _bad = null; _v.Error(""); }
             string old = Cell(r, f.Col);
             PutAll(f.Col, val, f.Key == "nam");
+            // The columns that follow it (pst/follow), shown again:
+            if (f.Col == _followCol && _followCol >= 0)
+            {
+                var fr = _follow.FirstOrDefault(x => x.Length > 0 && Ic.Equals(x[0], val));
+                for (int k = 0; k < _followTo.Length; k++) PutAll(_followTo[k], Cell(fr, k + 1));
+                Show();
+                return;
+            }
             // Another group: the hatch presets of the new group (the first one given to the
             // presets selected when theirs is not one of them):
             if (f.Key == "grp" && _matCol >= 0 && !Ic.Equals(old, val))

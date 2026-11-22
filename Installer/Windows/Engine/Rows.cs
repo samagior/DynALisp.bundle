@@ -62,6 +62,13 @@
 // them. It is greyed out while no row is selected. The other values the window needs (its
 // lists) are given by the Lisp with the rows.
 //
+// In a preset window (Presets.cs), dyl:Win.RowsIn="n" on the list makes its rows those of the
+// column n of the preset shown (the layers of an assembly preset): the column holds them, a
+// row on each line ("\n"), its columns divided by tabs. They are loaded each time another
+// preset is shown (none selected: the fields show k/new), and each change is given back to
+// that column, of the preset shown only (the window greys the list out while several presets
+// are selected: pst.many). k/rows is then not given.
+//
 // An AssemblyTile (Assembly.cs) whose Rows is the key of the list draws the rows (the layers
 // of an assembly): the editor gives it its Spec each time the rows or the selection change,
 // and the value of its Line (the justification of the assembly, a key of the window that is
@@ -140,6 +147,7 @@ namespace DynALisp.Windows
         readonly List<AssemblyTile> _tiles;
         readonly ObservableCollection<RowItem> _items = new ObservableCollection<RowItem>();
         readonly int _ncols;
+        readonly int _in = -1;             // the column of the preset shown holding the rows (RowsIn)
         string _bad;                       // the key of a value not valid (not stored), null else
 
         // A list of rows of a window: a ListBox with Win.Rows:
@@ -171,6 +179,7 @@ namespace DynALisp.Windows
             _buttons = all.Where(e => e is Button && Win.GetDo(e) != null).ToList();
             _subs = all.OfType<Button>().Where(b => Win.GetOpen(b) != null && Win.GetColumns(b) != null).ToList();
             _tiles = all.OfType<AssemblyTile>().Where(t => t.Rows == _k).ToList();
+            if (int.TryParse(Win.GetRowsIn(list) ?? "", NumberStyles.Integer, CultureInfo.InvariantCulture, out int rin) && rin >= 0) _in = rin;
             _ncols = new[] { _new?.Length ?? 0, _fields.Count > 0 ? _fields.Max(f => f.Col) + 1 : 0 }
                 .Concat(_rows.Select(x => x.Length)).Concat((_defs ?? new List<string[]>()).Select(x => x.Length)).Max();
             for (int i = 0; i < _rows.Count; i++) _rows[i] = Pad(_rows[i]);
@@ -228,6 +237,7 @@ namespace DynALisp.Windows
                 if (f.El is ComboBox c && _s.Lists.TryGetValue(f.Key, out var items)) c.ItemsSource = items;
             _list.SelectionMode = SelectionMode.Extended;
             _list.ItemsSource = _items;
+            if (_in >= 0) { Load(); return; }
             Rebuild();
             var sel = new List<int>();
             if (_s.Values.TryGetValue(_k + ".sel", out string s))
@@ -236,6 +246,31 @@ namespace DynALisp.Windows
             Select(sel);
             // none selected: the fields show the new row (what Add adds):
             if (sel.Count == 0) Show(_new ?? (_rows.Count > 0 ? _rows[0] : new string[_ncols]));
+        }
+
+        // The rows of the preset shown (RowsIn), none selected:
+        internal void Load()
+        {
+            if (_in < 0 || _v.Presets == null) return;
+            _rows.Clear();
+            _rows.AddRange(Decode(_v.Presets.ShownCell(_in)).Select(Pad));
+            _bad = null;
+            Rebuild();
+            Select(new List<int>());
+            Show(_new ?? new string[_ncols]);
+            Summary();
+        }
+
+        // The rows of a column (RowsIn): a row on each line, its columns divided by tabs:
+        static IEnumerable<string[]> Decode(string cell) =>
+            (cell ?? "").Split('\n').Where(l => l.Trim().Length > 0).Select(l => l.TrimEnd('\r').Split('\t'));
+
+        string Encode() => string.Join("\n", _rows.Select(r => string.Join("\t", r.Select(c => (c ?? "").Replace("\t", " ").Replace("\n", " ")))));
+
+        // A change given back to the preset shown (RowsIn):
+        void Store()
+        {
+            if (_in >= 0) _v.Presets?.PutShown(_in, Encode());
         }
 
         void Rebuild()
@@ -358,6 +393,7 @@ namespace DynALisp.Windows
                     if (i != kept && Cell(_rows[i], f.Col) == "1") Set(i, Put(_rows[i], f.Col, "0"));
                 if (sel.Count > 0 && sel[0] != kept) _v.Quiet(() => ShowField(f, _rows[sel[0]]));
             }
+            if (sel.Count > 0) Store();
             // the fields that followed it, in the row shown:
             if (sel.Count > 0)
                 _v.Quiet(() => { foreach (var g in _fields.Where(g => g.Follows != null && g.Follows.Split('/')[0] == f.Key)) ShowField(g, _rows[sel[0]]); });
@@ -462,6 +498,7 @@ namespace DynALisp.Windows
             _v.Error("");
             Rebuild();
             Select(keep);
+            Store();
             Summary();
             return true;
         }
@@ -512,6 +549,7 @@ namespace DynALisp.Windows
                 Set(i, r);
             }
             Show(_rows[sel[0]]);
+            Store();
             Summary();
         }
 
