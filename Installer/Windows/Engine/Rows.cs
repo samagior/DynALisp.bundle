@@ -237,8 +237,8 @@ namespace DynALisp.Windows
                 if (f.El is ComboBox c && _s.Lists.TryGetValue(f.Key, out var items)) c.ItemsSource = items;
             _list.SelectionMode = SelectionMode.Extended;
             _list.ItemsSource = _items;
-            if (_in >= 0) { Load(); return; }
-            Rebuild();
+            // (the rows of the preset shown: k.sel the ones selected when the window opens)
+            if (_in >= 0) Load(); else Rebuild();
             var sel = new List<int>();
             if (_s.Values.TryGetValue(_k + ".sel", out string s))
                 foreach (var x in s.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))

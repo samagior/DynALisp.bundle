@@ -39,7 +39,9 @@
               "BorderTransparencyOn" "BorderTransparency" "NoBorder"
               ;;  The bands of Linear and Offset: their ends, corners, joints and hatch:
               "Ends" "EndExtension" "EndAngle" "Corners" "MiterLimit" "LapThrough" "Joints" "HatchFollows"
-              ;;  Linear: the assembly, a band of several layers (see Remote>>Dyl:MaterialLayers):
+              ;;  Linear and Offset: the assembly, a band of several layers: on, and the id of
+              ;;  its assembly preset (below; an older file: its layers, see
+              ;;  Remote>>Dyl:MaterialLayers and Dyl:QuickDrawAsmMigrate):
               "AssemblyOn" "Assembly"
               ;;  Linear and Offset: their own ends / corners (off: the defaults), the same
               ;;  as Custom band settings:
@@ -59,6 +61,24 @@
       (run . Dyl:QuickDrawRun)
      )
     (vl-remove (assoc "QuickDraw" *dyl:presetspecs*) *dyl:presetspecs*)
+  )
+)
+
+;;  The assembly presets of Quick Draw, picked by a preset with Assembly checked: each one its
+;;  layers (see Remote>>Dyl:MaterialLayers), edited in the Assembly Presets window (opened from
+;;  the Quick Draw window, see Dyl:QuickDrawAsmDialog). No commands of their own: OK gives the
+;;  assembly selected to the Quick Draw presets selected. No default assembly: the user makes
+;;  them (their thicknesses are in the units of the drawings):
+(setq *dyl:presetspecs*
+  (cons
+    '("QuickDrawAssembly"
+      (file . "QuickDrawAssemblies.csv")
+      (header "Id" "Group" "Name" "Layers")
+      (default . "AS-*")
+      (title . "Assembly Presets")
+      (doc . "Draw\\Dyl-AssemblyPresets.htm")
+     )
+    (vl-remove (assoc "QuickDrawAssembly" *dyl:presetspecs*) *dyl:presetspecs*)
   )
 )
 

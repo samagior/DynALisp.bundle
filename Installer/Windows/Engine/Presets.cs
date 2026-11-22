@@ -548,7 +548,7 @@ namespace DynALisp.Windows
             _s.Values["pst.many"] = sel.Count > 1 ? "1" : "0";
             if (_prm != null)
                 _prm.Text = sel.Count > 1 ? sel.Count + " " + _noun + " selected"
-                          : d == null ? "Custom preset"
+                          : d == null ? (_defs.Count == 0 ? "" : "Custom preset")
                           : Same(r, d) ? "Default preset"
                           : "Default preset, modified";
             if (_src != null)

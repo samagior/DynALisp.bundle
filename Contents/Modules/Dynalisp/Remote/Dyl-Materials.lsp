@@ -398,7 +398,10 @@
   (setq row (Remote>>Dyl:ListSubst row 63 (if (= "MODEL" (strcase (nth 63 row))) "Model" "Drafting")))
   (if (= "Model" (nth 63 row)) (foreach i '(9 10) (setq row (Remote>>Dyl:ListSubst row i "0"))))
   ;;  The layers of the assembly, those that are valid only:
-  (setq row (Remote>>Dyl:ListSubst row 60 (Remote>>Dyl:MaterialLayersStr (Remote>>Dyl:MaterialLayers (nth 60 row)))))
+  ;;  (the id of an assembly preset, without ":", is kept as it is: see Dyl:QuickDrawAsmLayers)
+  (if (vl-string-search ":" (nth 60 row))
+    (setq row (Remote>>Dyl:ListSubst row 60 (Remote>>Dyl:MaterialLayersStr (Remote>>Dyl:MaterialLayers (nth 60 row)))))
+  )
   ;;  Bands: a key of each list (else its default), an extension >= 0 or "", an end angle
   ;;  between -80 and 80, a miter limit of 1 or more:
   (foreach x (list (list 51 *mt:ends*) (list 54 *mt:corners*) (list 56 *mt:laps*) (list 57 *mt:joints*) (list 58 *mt:hatchmodes*))
@@ -1428,8 +1431,8 @@
                            ;;  joints, hatch:
                            ("men" . 51) ("mex" . 52) ("mea" . 53) ("mco" . 54) ("mml" . 55) ("mlt" . 56)
                            ("mjo" . 57) ("mht" . 58)
-                           ;;  The assembly of Linear (on/off; its layers, column 60, are edited
-                           ;;  in the Assembly Layers window, see *mt:layerspick*):
+                           ;;  The assembly of Linear (on/off; column 60 the id of its assembly
+                           ;;  preset, picked in the Quick Draw window, see *mt:layerspick*):
                            ("mas" . 59)
                            ;;  Its own ends and corners (their values: the Band Settings
                            ;;  window, see *mt:bandpick*):
@@ -1437,12 +1440,13 @@
                           )
 )
 
-;;  The layers of the assembly in a material (see Remote>>Dyl:MaterialLayers):
+;;  The assembly in a material: the id of its assembly preset, or its layers in an older file
+;;  (see Remote>>Dyl:MaterialLayers and Dyl:QuickDrawAsmLayers):
 (setq *mt:layerscol* 60)
 
 ;;  Code the Pick... button of the Band Settings window closes it with (Dyl:QuickDrawBandDialog
 ;;  calls Remote>>Dyl:MaterialOriginPick for it, then shows it again), and the code of the open
-;;  button of the assembly (the Assembly Layers window, see Dyl:QuickDrawLayersDialog):
+;;  button of the assembly (the Assembly Presets window, see Dyl:QuickDrawAsmDialog):
 (setq *mt:originpick* 4
       *mt:layerspick* 5
       ;;  The open button of Band settings: the Band Settings window (see

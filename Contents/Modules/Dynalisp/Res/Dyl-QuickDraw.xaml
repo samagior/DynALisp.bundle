@@ -21,13 +21,13 @@
   in the window itself by the preset editor (Installer\Windows\Engine\Presets.cs: the list,
   New, Copy, Delete, the resets, the aliases), the Lisp saves them on Draw (1) and Save (2).
   The controls of the values are named as the tiles of the presets (pst/tiles, the column
-  of each one in a preset, see *qd:tiles*); mbs is Custom band settings; mai, mei, mwl and
-  mld show the columns the Lisp adds for the window (the layers of the assembly, the own
-  ends and corners of the bands, the width of the layers, the description of
-  the assembly under the preview); mpv is the preview of the preset shown (pst/spec,
-  pst/outline). The open
+  of each one in a preset, see *qd:tiles*); mbs is Custom band settings, mak the assembly
+  preset of an assembly (its id); mei, mwl and mld show the columns the Lisp adds for the
+  window (the own ends and corners of the bands, the width of the layers of the assembly, its
+  description under the preview: those of the assembly picked in mak, pst/follow); mpv is the
+  preview of the preset shown (pst/spec, pst/outline). The open
   buttons close the window with the code of what they open, as the DCL window did: 3 Band
-  Settings, 5 Assembly Layers, 6 Layer Keys, 8 Preset Groups, 9 Hatch Presets, 11 the
+  Settings, 5 Assembly Presets, 6 Layer Keys, 8 Preset Groups, 9 Hatch Presets, 11 the
   color of AutoCAD; the Lisp opens the
   window again once it is done. What each control greys out, as Remote>>Dyl:MaterialDlgBehaviors
   and Remote>>Dyl:MaterialDlgBorderState did: its dyl:Win.EnabledBy (the method, an
@@ -206,26 +206,24 @@
               </Grid>
               <TextBlock Style="{DynamicResource Dyl.Label}" Text="Width"/>
             </DockPanel>
-            <!-- Where the line drawn is in the band (Linear), an assembly's too (also set in the
-                 Assembly Layers window, with Structural layer: the middle of its structural
-                 layer): -->
+            <!-- Where the line drawn is in the band (Linear), an assembly's too (Structural
+                 layer: the middle of the layer of its assembly checked Structural): -->
             <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|">
               <ComboBox x:Name="mjs" DockPanel.Dock="Right" Width="150"/>
               <TextBlock Style="{DynamicResource Dyl.Label}" Text="Justification"/>
             </DockPanel>
-            <!-- A band of several layers, edited in the Assembly Layers window (what they are
-                 beside its open button): -->
+            <!-- A band of several layers: an assembly preset, picked in the list; its open
+                 button opens the Assembly Presets window, to make or edit them: -->
             <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="mth=Linear|Offset|">
-              <TextBlock x:Name="mai" DockPanel.Dock="Right" Width="70" VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}"
-                         TextTrimming="CharacterEllipsis"/>
-              <dyl:OpenButton x:Name="mae" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="5" ToolTip="Assembly Layers"
+              <ComboBox x:Name="mak" DockPanel.Dock="Right" Width="150" dyl:Win.EnabledBy="mas"/>
+              <dyl:OpenButton x:Name="mae" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="5" ToolTip="Assembly Presets"
                               dyl:Win.EnabledBy="mas"/>
               <CheckBox x:Name="mas" Content="Assembly"/>
             </DockPanel>
             <!-- Custom band settings: on, the hatch along the line (its scale
                  and origin), the ends and the corners of the Band Settings window (its open
                  button); off, the defaults; greyed out for an assembly (each layer has its own,
-                 in the Assembly Layers window). What the bands are drawn with is summed up
+                 in the Assembly Presets window). What the bands are drawn with is summed up
                  under it: -->
             <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="!mas,mth=Linear|Offset|">
               <dyl:OpenButton x:Name="mbe" DockPanel.Dock="Right" dyl:Win.Close="3" ToolTip="Band Settings"

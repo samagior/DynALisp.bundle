@@ -26,7 +26,7 @@
   hatch origin on the line (Pick... closes the window with 4: the Lisp picks the origin on a
   sample band and opens it again); a list gets the keys of its items (key/vals). mth, with
   no control, is the method of the preset (Linear, Offset, "": asked when drawn; Layer: a
-  layer of an assembly, opened by the Assembly Layers window), mjs, with no control, the
+  layer of an assembly, opened by the Assembly Presets window), mjs, with no control, the
   justification of the preset (the line drawn, set in the Quick Draw window), solid "1" for a
   SOLID hatch: the scale and the origin of the hatch are for a preset that is not SOLID (a
   layer has those of its own preset). A value is greyed out unless what

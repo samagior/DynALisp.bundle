@@ -1,19 +1,28 @@
-# Sample values of the Assembly Layers window of Quick Draw (Dyl:QuickDrawLayersDialog in
-# Dyl-QuickDraw.lsp), as the Lisp gives them, for an exterior wall drawn with Linear, the
-# Brick layer selected (its own band settings, Extended and Lapped, its hatch on its edge, and
-# its own border), the Gypsum layer with its own border, the CMU the structural layer, the line
-# drawn on its middle (lj, Structural layer): key=value, key/list=item|item, key/vals=value|value,
-# +key=field\tfield a row of the table key (ll/rows: kind preset thickness hatch-key line-key,
-# band on, hatch ends extension angle corners miter lap joints, border on, border key,
-# structural); \t is
-# a tab. The preview: lp/specs the preview of each preset, ll/ends the ends of the band,
-# ll/paper a millimeter in inches and the drawing scale (a detail at 1:10).
-+ll/rows=P\tqd-Gypsum\t16\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t1\tTHIN\t0
-+ll/rows=P\tqd-CMU\t190\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t1
-+ll/rows=P\tqd-RigidInsulation\t50\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t0
-+ll/rows=S\tqd-Brick\t25\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t0
-+ll/rows=P\tqd-Brick\t90\tTHIN\tMED\t1\tEdge\tExtended\t30\t45\tLapped\t4\tFirst\tInterrupted\t1\tMED\t0
-+ll/rows=L\tqd-Brick\t90\t\tWIDE\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t0
+# Sample values of the Assembly Presets window of Quick Draw (Dyl:QuickDrawAsmDialog in
+# Dyl-QuickDraw.lsp, through Remote>>Dyl:PresetWinVals of Remote\Dyl-Presets.lsp), as the Lisp
+# gives them, for three assemblies, the Exterior Wall shown: its Brick layer selected (its own
+# band settings, Extended and Lapped, its hatch on its edge, and its own border), its Gypsum
+# layer with its own border, its CMU the structural layer: key=value, key/list=item|item,
+# key/vals=value|value, +key=field\tfield a row of the table key (pst/rows: id group name
+# layers, then the layers as rows: kind preset thickness hatch-key line-key, band on, hatch
+# ends extension angle corners miter lap joints, border on, border key, structural; \T a tab
+# between their columns, \n between the rows); \t is a tab. The preview: lp/specs the
+# preview of each preset, ll/ends the ends of the band, ll/paper a millimeter in inches and
+# the drawing scale (a detail at 1:10).
+grp/list=Floor|Wall|Ceiling|Roof|Finish|Structural|Site|Elevation|Section|Detail|Annotation|Phase|Area|Generic
+srt/list=Name|Group
+srt=0
+flt=
+pst/ncols=4
+pst/tiles=nam:2,grp:1
+pst.idx=0
+pst.sel=0
+pst.shw=
+pst/title=Assembly Presets
+pst/noun=assemblies
++pst/rows=cu-ExteriorWall\tWall\tExterior Wall\tP:qd-Gypsum:16:::1~THIN|P:qd-CMU:190::::1|P:qd-RigidInsulation:50|S::25|P:qd-Brick:90:THIN:1~Edge~Extended~30~45~Lapped~4~First~Interrupted:1~MED|L:WIDE:\tP\Tqd-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T1\TTHIN\T0\nP\Tqd-CMU\T190\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T1\nP\Tqd-RigidInsulation\T50\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\nS\Tqd-Brick\T25\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\nP\Tqd-Brick\T90\TTHIN\TMED\T1\TEdge\TExtended\T30\T45\TLapped\T4\TFirst\TInterrupted\T1\TMED\T0\nL\Tqd-Brick\T90\T\TWIDE\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0
++pst/rows=cu-FoundationWall\tWall\tFoundation Wall\tP:qd-Concrete:250::::1|P:qd-RigidInsulation:50\tP\Tqd-Concrete\T250\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T1\nP\Tqd-RigidInsulation\T50\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0
++pst/rows=cu-InteriorPartition\tWall\tInterior Partition\tP:qd-Gypsum:16|S::92|P:qd-Gypsum:16\tP\Tqd-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\nS\Tqd-Brick\T92\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0\nP\Tqd-Gypsum\T16\T\TMED\T0\TLine\TSquare\T\T45\TMitered\T4\TFirst\TInterrupted\T0\TMED\T0
 +ll/new=P\tqd-Existing\t10\t\tMED\t0\tLine\tSquare\t\t45\tMitered\t4\tFirst\tInterrupted\t0\tMED\t0
 ll.sel=4
 lk/list=Hatch|Space|Line
@@ -31,9 +40,6 @@ lbk/vals=HATCH|MED|THIN|WIDE|XTHIN
 ll/ends/list=Square||45
 ll/paper/list=0.0393701|10
 mth=Layer
-lj/list=Ask when drawn|Center|Edge|Structural layer
-lj/vals=Ask|Center|Edge|Structural
-lj=3
 mht/list=Layer center|Layer edge|Drawing origin
 mht/vals=Line|Edge|Origin
 men/list=Square|Open|Extended|Round|Angled

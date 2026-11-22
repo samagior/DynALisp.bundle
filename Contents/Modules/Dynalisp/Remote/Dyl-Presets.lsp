@@ -1389,6 +1389,11 @@
 ;;    (wprefix . "4|Polyline=PL-|*=QD-") ; the text of a new alias, by the value of a column
 ;;    (wprep . <function: called before the window is shown, nil>)
 ;;    (wvals . <function: -> the values of the window the App gives (its lists...)>)
+;;    (wget . <function: preset got back -> the preset, before its columns of the window are
+;;            dropped: the rows of a list of the window held in one of them, see
+;;            Win.RowsIn in Installer\Windows\Engine\Rows.cs, put back in its column of the file>)
+;;    (rowcheck . <function: preset changed -> error message, nil when it is valid: a check of
+;;                the whole preset, after that of its values>)
 ;;
 ;;  The values given are those of Presets.cs (pst/rows...). Before the presets are saved,
 ;;  the values of every preset changed are checked again by the check function of the App,
@@ -1507,7 +1512,7 @@
         n    (Remote>>Dyl:PresetWinCols)
   )
   (if rows
-    (setq pst:lst (mapcar '(lambda (r) (Remote>>Dyl:PresetWinCut r n)) rows)
+    (setq pst:lst (mapcar '(lambda (r) (Remote>>Dyl:PresetWinCut (cond ((Remote>>Dyl:PresetDlgCall 'wget (list r))) (r)) n)) rows)
           pst:als (mapcar '(lambda (p) (cons (car p) (cadr p))) (cdr (assoc "pst/als" (cdr res))))
           pst:idx (max 0 (min (atoi (cond ((Dyl:WinGet res "pst.idx")) ("0"))) (1- (length pst:lst))))
           sel     (vl-remove-if-not '(lambda (i) (and (= 'INT (type i)) (< -1 i (length pst:lst))))
@@ -1526,6 +1531,7 @@
 
 ;;  The presets got back checked again: every value of a preset changed (or added) since the
 ;;  window opened, by the check function of the App (as the dialog checks a value typed),
+;;  then the whole preset by its rowcheck function,
 ;;  and the aliases added, by AutoCAD (an alias with the name of an AutoCAD command never
 ;;  runs: it is removed). The message of the first one not valid, its preset shown (nil:
 ;;  all valid):
@@ -1538,7 +1544,11 @@
               (if (not (member r pst:lst0))
                 (vl-some
                   '(lambda (x / m)
-                     (if (setq m (Remote>>Dyl:PresetDlgCall 'check (list (car x) (nth (cdr x) r))))
+                     (if (setq m (if (= 'rowcheck x)
+                                   (Remote>>Dyl:PresetDlgCall 'rowcheck (list r))
+                                   (Remote>>Dyl:PresetDlgCall 'check (list (car x) (nth (cdr x) r)))
+                                 )
+                         )
                        (progn
                          (setq pst:idx i
                                pst:sel (list i)
@@ -1547,7 +1557,7 @@
                        )
                      )
                    )
-                  (cdr (assoc 'tiles pst:dlg))
+                  (append (cdr (assoc 'tiles pst:dlg)) '(rowcheck))
                 )
               )
             )
@@ -1610,12 +1620,15 @@
   )
   (setq pst:lst  (Remote>>Dyl:PresetRead pst:key (Remote>>Dyl:PresetDlgDefs) (cdr (assoc 'fix pst:dlg)))
         sel      (cdr (assoc 'select pst:dlg))
-        pst:idx  (min (cond
-                        ((if sel (vl-position (assoc sel pst:lst) pst:lst)))
-                        ((cdr (assoc pst:key *dyl:presetlast*)))
-                        (0)
+        ;;  (0 when there is no preset yet: New adds the first one)
+        pst:idx  (max 0
+                      (min (cond
+                             ((if sel (vl-position (assoc sel pst:lst) pst:lst)))
+                             ((cdr (assoc pst:key *dyl:presetlast*)))
+                             (0)
+                           )
+                           (1- (length pst:lst))
                       )
-                      (1- (length pst:lst))
                  )
         pst:sel  (list pst:idx)
         pst:lst0 pst:lst
