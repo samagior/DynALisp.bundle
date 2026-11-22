@@ -1141,8 +1141,9 @@
 ;;  ...), and qd:borderents, the borders of curves already made, see Dyl:QuickDrawCurveBand:
 ;;  enames, or (ename . key)), made or brought to the front after the hatches, so they are
 ;;  drawn over them: on the outline layer key of the material mat with its border settings;
-;;  none when it has no border. A border with a key (a Line layer of an assembly) is on that
-;;  layer key, its properties ByLayer, drawn even without border:
+;;  none when it has no border. A border with a key is drawn even without border: a Line
+;;  layer of an assembly on its layer key, its properties ByLayer; a layer with its own border
+;;  on the key of its border, with the properties it overrides (see Dyl:QuickDrawBorderKey):
 (defun Dyl:QuickDrawBorderMake (mat / ss nob e k)
   (setq nob (= "1" (nth 31 mat))
         ss  (ssadd)
@@ -1150,7 +1151,7 @@
   (foreach b qd:borders
     (if (and (or (cadddr b) (not nob)) (setq e (Dyl:QdPline (car b) (cadr b) (caddr b))))
       (if (cadddr b)
-        (Remote>>Dyl:LayerKeyApply e (cadddr b))
+        (Dyl:QuickDrawBorderKey e (cadddr b))
         (progn
           (Remote>>Dyl:LayerKeyApply e (nth 7 mat))
           (Remote>>Dyl:MaterialProps e mat 'border)
@@ -1164,7 +1165,7 @@
     )
     (cond
       ((not (entget e)))
-      (k (Remote>>Dyl:LayerKeyApply e k) (ssadd e ss))
+      (k (Dyl:QuickDrawBorderKey e k) (ssadd e ss))
       (nob (entdel e))
       (T
        (Remote>>Dyl:LayerKeyApply e (nth 7 mat))
@@ -1174,6 +1175,19 @@
     )
   )
   (if (< 0 (sslength ss)) (command "_.draworder" ss "" "_f"))
+)
+
+;;  The border e on the key k of a line: a layer key (a Line layer), its properties ByLayer;
+;;  or the border of a layer of an assembly (see Dyl:QuickDrawLayerBorder), on its layer key
+;;  with the properties it overrides:
+(defun Dyl:QuickDrawBorderKey (e k)
+  (if (listp k)
+    (progn
+      (Remote>>Dyl:LayerKeyApply e (nth 7 k))
+      (Remote>>Dyl:MaterialProps e k 'border)
+    )
+    (Remote>>Dyl:LayerKeyApply e k)
+  )
 )
 
 ;;-------------------------=={ Assembly }==------------------------;;
@@ -1203,8 +1217,8 @@
 ;;  when its assembly is off or has no thickness: ((kind thickness mat key name lopt bkey
 ;;  ljus core) ...). A Hatch layer (P) has the material of its preset with the behaviors of that
 ;;  preset, its name, the options of its own band settings when they are on (see
-;;  Dyl:QuickDrawLayerOpts, nil: those of the band), the layer key of its own border when it
-;;  has one (nil: none), the line of the layer its own band settings align its hatch to
+;;  Dyl:QuickDrawLayerOpts, nil: those of the band), its own border when it has one (nil: none;
+;;  see Dyl:QuickDrawLayerBorder), the line of the layer its own band settings align its hatch to
 ;;  (Center: its middle, Edge: its border nearer to the line of the band, Hatch aligned to
 ;;  Layer center or Layer edge, see Dyl:QuickDrawLayerPivot and Dyl:QuickDrawLayerHatch; nil:
 ;;  none, its middle) and T when it is the structural layer (see Dyl:QuickDrawLayersCore);
@@ -1224,7 +1238,7 @@
            (if (and (cadddr l) (/= "" (cadddr l))) (setq m (Remote>>Dyl:ListSubst m 8 (cadddr l))))
            (setq res (cons (list "P" w m nil (nth 2 rec)
                                  (if (= "1" (car (nth 4 l))) (Dyl:QuickDrawLayerOpts (nth 4 l)))
-                                 (if (and (= "1" (car (nth 5 l))) (/= "" (cadr (nth 5 l)))) (cadr (nth 5 l)))
+                                 (Dyl:QuickDrawLayerBorder (nth 5 l))
                                  (if (= "1" (car (nth 4 l))) (if (= "Edge" (cadr (nth 4 l))) "Edge" "Center"))
                                  (= "1" (nth 6 l))
                            )
@@ -1243,6 +1257,17 @@
         res
         (progn (princ "\n--> Assembly: no layer with a thickness, drawn as one band.") nil)
       )
+    )
+  )
+)
+
+;;  The own border d of a layer of an assembly (see Remote>>Dyl:MaterialLayers: on key, then
+;;  the properties it overrides) as the border columns of a material (its layer key at 7, its
+;;  overrides from 12, see Remote>>Dyl:MaterialProps), nil when it has none:
+(defun Dyl:QuickDrawLayerBorder (d)
+  (if (and (= "1" (car d)) (/= "" (cadr d)))
+    (append '(nil nil nil nil nil nil nil) (list (cadr d)) '(nil nil nil nil)
+            (if (= 12 (length d)) (cddr d) (Remote>>LM:sublst *mt:new* 12 10))
     )
   )
 )
@@ -2269,13 +2294,16 @@
 ;;  Dyl:QuickDrawBandOpts; the scales of the hatch preset and the drawing origin: Scale by
 ;;  width and Origin on line off). An assembly has the defaults: its layers have their own
 ;;  band settings (see Dyl:QuickDrawLayerPivot). The justification (the line drawn, 35) is
-;;  the preset's, whatever Custom band settings is, an assembly's included:
+;;  the preset's, whatever Custom band settings is, an assembly's included. An assembly has
+;;  no border of the preset either (No border, 31): its layers have their own (Has a border of
+;;  the Assembly Presets window), its Line layers their key:
 (defun Dyl:QuickDrawMat (mat r / asm on)
   (setq asm (and (member (nth 4 r) '("Linear" "Offset" "")) (= "1" (nth 37 r)))
         on  (and (not asm) (= "1" (nth *qd:bandon* r)))
         mat (Dyl:QuickDrawMatRaw mat r)
         mat (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst mat 61 (if on "1" "0")) 62 (if on "1" "0"))
   )
+  (if asm (setq mat (Remote>>Dyl:ListSubst mat 31 "1")))
   (if on
     mat
     (progn
@@ -2503,7 +2531,8 @@
 ;;  preview of its layers side by side (as an assembly even while Assembly is off: the window
 ;;  shows it once it is on; its outline added by the window, Has a border as it is:
 ;;  pst/outline), and the description of the assembly under the preview (see
-;;  Dyl:QuickDrawAsmShow). The window gives the columns 42, 44, 45 and 46 those of the
+;;  Dyl:QuickDrawAsmShow), then the summary of its border under Has a border (47, see
+;;  Dyl:QuickDrawBorderText). The window gives the columns 42, 44, 45 and 46 those of the
 ;;  assembly picked in its list (pst/follow, see Dyl:QuickDrawWinVals):
 (defun Dyl:QuickDrawWinExtra (r / a)
   (setq a (Dyl:QuickDrawAsmShow (Dyl:QuickDrawAsmLayers (nth *qd:layerscol* r))))
@@ -2512,7 +2541,31 @@
         (cadr a)
         (caddr a)
         (cadddr a)
+        (Dyl:QuickDrawBorderText r)
   )
+)
+
+;;  The summary of the border of the preset r (its border columns from *qd:border*, see
+;;  Remote>>Dyl:MaterialBorderTiles): its layer key, then each property it overrides
+;;  (MED, Color 1, Lineweight 0.35 mm):
+(defun Dyl:QuickDrawBorderText (r / v res)
+  (setq v (mapcar '(lambda (x) (cons (car x) (cond ((nth (cdr x) r)) ("")))) (Remote>>Dyl:MaterialBorderTiles *qd:border*))
+        res (list (cdr (assoc "out" v)))
+  )
+  (foreach x '(("bco" "bcv" "Color ") ("blo" "blt" "Linetype ") ("bso" "bsc" "Linetype scale ") ("bwo" "bwt" "Lineweight ") ("bto" "btr" "Transparency "))
+    (if (= "1" (cdr (assoc (car x) v)))
+      (setq res (cons (strcat (caddr x)
+                              (if (= "bwt" (cadr x))
+                                (strcat (rtos (/ (atoi (cdr (assoc "bwt" v))) 100.0) 2 2) " mm")
+                                (cdr (assoc (cadr x) v))
+                              )
+                      )
+                      res
+                )
+      )
+    )
+  )
+  (Remote>>LM:lst->str (reverse res) ", ")
 )
 
 ;;  The description of the assembly of the layers ls (see Remote>>Dyl:MaterialLayers) under
@@ -2599,10 +2652,7 @@
 
 ;;  The open buttons of the window (code sta, the preset shown r). The open button of the
 ;;  assembly: the Assembly Presets window, the assembly selected there on OK given to every
-;;  preset selected (see Remote>>Dyl:PresetDlgPut).
-;;  The open button of the border layer key: the Layer Keys window (see
-;;  Remote>>Dyl:MaterialDlgBorderStatus). The open button of the border color: the color
-;;  window of AutoCAD:
+;;  preset selected (see Remote>>Dyl:PresetDlgPut):
 (defun Dyl:QuickDrawDlgStatus (sta r / v i)
   (if (and (= *mt:layerspick* sta) (setq v (Dyl:QuickDrawAsmDialog pst:lst r)))
     (Remote>>Dyl:PresetDlgPut *qd:layerscol* (car v))
@@ -2612,10 +2662,11 @@
   (if (and (= *mt:bandpick* sta) (setq v (Dyl:QuickDrawBandDialog r)))
     (foreach p v (Remote>>Dyl:PresetDlgPut (cdr (assoc (car p) *qd:behaviors*)) (cdr p)))
   )
-  (if (and (= *mt:colorpick* sta) (setq i (cdr (assoc "bcv" *qd:tiles*)) v (Remote>>Dyl:MaterialColorPick (nth i r))))
-    (Remote>>Dyl:PresetDlgPut i v)
+  ;;  The open button of Has a border: the Border Settings window, its values given to every
+  ;;  preset selected on OK:
+  (if (and (= *mt:borderpick* sta) (setq v (Dyl:QuickDrawBorderDialog r)))
+    (foreach p v (Remote>>Dyl:PresetDlgPut (car p) (cdr p)))
   )
-  (Remote>>Dyl:MaterialDlgBorderStatus sta r *qd:border*)
   nil
 )
 
@@ -2636,12 +2687,13 @@
           '(window . "Dyl-QuickDraw.xaml")
           ;;  Has a border (No border, inverted), Custom band settings, the assembly preset,
           ;;  the columns of Dyl:QuickDrawWinExtra:
-          '(wtiles . "hbr:28:inv,mbs:41,mak:38,mei:43,mwl:44,mld:46")
+          '(wtiles . "hbr:28:inv,mbs:41,mak:38,mei:43,mwl:44,mld:46,hbi:47")
           '(extra . Dyl:QuickDrawWinExtra)
           ;;  The preview of an assembly: its layers side by side:
           '(spec 45 . "mas,mth=Linear|Offset|")
-          ;;  The preview outlined while Has a border is checked, as in the gallery:
-          '(outline . "hbr")
+          ;;  The preview outlined while Has a border is checked, as in the gallery (an assembly
+          ;;  never: its layers have their own):
+          '(outline . "hbr,!mas;hbr,mth!=Linear|Offset|")
           '(mspec . Dyl:QuickDrawWinMatSpec)
           ;;  The text put in the new alias box: PL- for a preset drawn with a polyline, QD- for
           ;;  the others (see CONVENTIONS.md, Preset aliases):
@@ -2745,6 +2797,93 @@
   )
 )
 
+;;-------------------------=={ Border Settings window }==------------------------;;
+
+;;  The open button of Has a border (Parameters box) opens the Border Settings window
+;;  (Res\Dyl-QuickDrawBorderSettings.xaml) on the border of the preset shown: its layer key
+;;  and the properties of the key it overrides, the border columns of the preset (from
+;;  *qd:border*, in the order of *mt:bordertiles*). The open buttons of the window close it
+;;  (the layer key: the Layer Keys window, *mt:borderkeypick*; the color: the color window of
+;;  AutoCAD, *mt:colorpick*), and it opens again on what was picked. OK gives the border to
+;;  every preset selected (see Dyl:QuickDrawDlgStatus). The same window edits the border of a
+;;  Hatch layer of an assembly, opened by the Assembly Presets window itself (sub "1").
+
+;;  The values of the window for the border columns of the preset r, the layer keys keys and
+;;  the layer keys defined lks:
+(defun Dyl:QuickDrawBorderVals (r keys lks / res)
+  (foreach x (Remote>>Dyl:MaterialBorderTiles *qd:border*)
+    (setq res (append res
+                      (cond
+                        ((= "out" (car x))
+                         (list (cons "out/list" (mapcar '(lambda (k) (if (assoc k lks) k (strcat k "   (not defined)"))) keys))
+                               (cons "out/vals" keys)
+                               (cons "out" (itoa (cond ((vl-position (nth (cdr x) r) keys)) (0))))
+                         )
+                        )
+                        ((= "bwt" (car x))
+                         (list (cons "bwt/list" (mapcar '(lambda (w) (strcat (rtos (/ (atoi w) 100.0) 2 2) " mm")) *mt:weights*))
+                               (cons "bwt/vals" *mt:weights*)
+                               (cons "bwt" (itoa (cond ((vl-position (nth (cdr x) r) *mt:weights*)) (0))))
+                         )
+                        )
+                        ((list (cons (car x) (cond ((nth (cdr x) r)) (""))))))
+              )
+    )
+  )
+  res
+)
+
+;;  The Border Settings window on the preset r. Returns its values ((column . value) ...) on
+;;  OK, nil on Cancel (or when the window cannot be shown). An override on is checked again
+;;  (see Remote>>Dyl:MaterialDlgCheck): one not valid is said, nothing given:
+(defun Dyl:QuickDrawBorderDialog (r / tiles lks keys res k v msg)
+  (setq tiles (Remote>>Dyl:MaterialBorderTiles *qd:border*)
+        lks   (Remote>>Dyl:LayerKeyRead)
+        keys  mt:keys
+  )
+  (while
+    (progn
+      (if (and (/= "" (nth *qd:border* r)) (not (member (nth *qd:border* r) keys)))
+        (setq keys (append keys (list (nth *qd:border* r))))
+      )
+      (setq res (Dyl:WinShow "Dyl-QuickDrawBorderSettings.xaml" (cons (cons "sub" "0") (Dyl:QuickDrawBorderVals r keys lks))))
+      (if (member (car res) (list 1 *mt:borderkeypick* *mt:colorpick*))
+        (foreach x tiles
+          (setq v (cond ((= "out" (car x)) (cond ((nth (Dyl:WinIdx res "out") keys)) ("")))
+                        ((= "bwt" (car x)) (nth (Dyl:WinIdx res "bwt") *mt:weights*))
+                        ((vl-string-trim " " (cond ((Dyl:WinGet res (car x))) (""))))
+                  )
+                r (Remote>>Dyl:ListSubst r (cdr x) (if (= "blt" (car x)) (strcase v) v))
+          )
+        )
+      )
+      (member (car res) (list *mt:borderkeypick* *mt:colorpick*))
+    )
+    (cond
+      ((= *mt:borderkeypick* (car res))
+       (if (setq k (Remote>>Dyl:LayerKeyPick (nth *qd:border* r))) (setq r (Remote>>Dyl:ListSubst r *qd:border* k)))
+      )
+      ((setq v (Remote>>Dyl:MaterialColorPick (nth (cdr (assoc "bcv" tiles)) r)))
+       (setq r (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst r (cdr (assoc "bcv" tiles)) v) (cdr (assoc "bco" tiles)) "1"))
+      )
+    )
+  )
+  (if (= 1 (car res))
+    (progn
+      (foreach x '(("bco" . "bcv") ("blo" . "blt") ("bso" . "bsc") ("bto" . "btr"))
+        (if (and (not msg) (= "1" (nth (cdr (assoc (car x) tiles)) r)))
+          (setq msg (Remote>>Dyl:MaterialDlgCheck (cdr x) (nth (cdr (assoc (cdr x) tiles)) r)))
+        )
+      )
+      (cond
+        (msg (alert msg) nil)
+        ((= "" (nth *qd:border* r)) (alert "No layer key for the border: add one in the Layer Keys window.") nil)
+        ((mapcar '(lambda (x) (cons (cdr x) (nth (cdr x) r))) tiles))
+      )
+    )
+  )
+)
+
 ;;-------------------------=={ Layers of an assembly }==------------------------;;
 
 ;;  The layers of an assembly preset (see Remote>>Dyl:MaterialLayers) are edited in the
@@ -2760,7 +2899,10 @@
 ;;  structural): the band settings of a Hatch layer in the columns 5 to 13 (on hatch ends
 ;;  extension angle corners miter lap joints; hatch: see *qd:layerhatch*), its border in 14
 ;;  and 15 (on key), Structural in 16 ("1": the structural layer, see
-;;  Dyl:QuickDrawLayersCore). The columns a layer of its kind does
+;;  Dyl:QuickDrawLayersCore), the properties its border overrides in 17 to 26 (as the border
+;;  of a preset, see *mt:bordertiles*: color on, color, linetype on, linetype, linetype scale
+;;  on, scale, lineweight on, lineweight, transparency on, transparency; edited in the Border
+;;  Settings window). The columns a layer of its kind does
 ;;  not use taken from the new layer def (a row of the same columns), so that it can become
 ;;  another kind:
 (defun Dyl:QuickDrawLayersRows (lst def)
@@ -2769,16 +2911,23 @@
                ((= "P" (car l))
                 (append (list "P" (cadr l) (caddr l) (cond ((cadddr l)) ("")) (nth 4 def))
                         (if (nth 4 l) (Remote>>LM:sublst (nth 4 l) 0 9) (Remote>>LM:sublst def 5 9))
-                        (cond ((nth 5 l)) ((Remote>>LM:sublst def 14 2)))
+                        (Remote>>LM:sublst (cond ((nth 5 l)) ((Dyl:QuickDrawLayersDefBorder def))) 0 2)
                         (list (if (= "1" (nth 6 l)) "1" "0"))
+                        (Remote>>LM:sublst (cond ((nth 5 l)) ((Dyl:QuickDrawLayersDefBorder def))) 2 10)
                 )
                )
-               ((= "S" (car l)) (append (list "S" (nth 1 def) (caddr l) "" (nth 4 def)) (Remote>>LM:sublst def 5 12)))
-               ((append (list "L" (nth 1 def) (nth 2 def) "" (cadr l)) (Remote>>LM:sublst def 5 12)))
+               ((= "S" (car l)) (append (list "S" (nth 1 def) (caddr l) "" (nth 4 def)) (Remote>>LM:sublst def 5 nil)))
+               ((append (list "L" (nth 1 def) (nth 2 def) "" (cadr l)) (Remote>>LM:sublst def 5 nil)))
              )
            )
           lst
   )
+)
+
+;;  The border of the row r of a layer (see Dyl:QuickDrawLayersRows) as the layers keep it
+;;  (see Remote>>Dyl:MaterialLayers): on key, then the properties it overrides:
+(defun Dyl:QuickDrawLayersDefBorder (r)
+  (append (Remote>>LM:sublst r 14 2) (Remote>>LM:sublst r 17 10))
 )
 
 ;;  The band settings of a layer of an assembly when they are the defaults (see
@@ -2789,11 +2938,11 @@
 ;;  Remote>>Dyl:MaterialLayers): (layers), or (nil message) for the first one not valid. The
 ;;  band settings of a Hatch layer when they are on, or off but not the defaults (kept for
 ;;  when they are on again); its border when it is on, or off on another key than the new
-;;  layer def; "1" when it is the structural layer:
+;;  layer def or overriding a property; "1" when it is the structural layer:
 (defun Dyl:QuickDrawLayersOf (rows def / res msg b d)
   (foreach r rows
     (setq b (Remote>>LM:sublst r 5 9)
-          d (Remote>>LM:sublst r 14 2)
+          d (Dyl:QuickDrawLayersDefBorder r)
     )
     (cond
       (msg)
@@ -2811,13 +2960,24 @@
       ((and (= "P" (car r)) (= "1" (car d)) (= "" (cadr d)))
        (setq msg "No layer key for the border: add one in the Layer Keys window.")
       )
+      ((and (= "P" (car r))
+            (= "1" (car d))
+            (setq msg (vl-some '(lambda (i k) (if (= "1" (nth i d)) (Remote>>Dyl:MaterialDlgCheck k (nth (1+ i) d))))
+                               '(2 4 6 10)
+                               '("bcv" "blt" "bsc" "btr")
+                      )
+            )
+       )
+      )
       ((= "P" (car r))
        (setq res (cons (list "P"
                              (cadr r)
                              (caddr r)
                              (cadddr r)
                              (if (or (= "1" (car b)) (not (equal (cdr b) *qd:layerband*))) b)
-                             (if (or (= "1" (car d)) (/= (cadr d) (nth 15 def))) d)
+                             (if (or (= "1" (car d)) (/= (cadr d) (nth 15 def)) (vl-some '(lambda (i) (= "1" (nth i d))) '(2 4 6 8 10)))
+                               (Remote>>Dyl:ListSubst d 5 (strcase (nth 5 d)))
+                             )
                              (if (= "1" (nth 16 r)) "1")
                        )
                        res
@@ -3057,7 +3217,7 @@
 ;;  those of the layers that no longer exist, marked), the layer keys (mt:keys: those of the
 ;;  layers kept when they are not defined) and the row Add starts from (qa:def: a Hatch layer
 ;;  of the first preset, its width, a Line on the border layer key of the Quick Draw preset;
-;;  its band settings off, the defaults; its border off, on that key):
+;;  its band settings off, the defaults; its border off, on that key, overriding nothing):
 (defun Dyl:QuickDrawAsmWinPrep (/ w ls bk)
   (setq qa:pre (mapcar '(lambda (x)
                           (list (car x)
@@ -3093,14 +3253,17 @@
                        )
                        *qd:layerband*
                        (list "0" bk "0")
+                       (Remote>>LM:sublst *mt:new* 12 10)
                )
   )
 )
 
 ;;  The values of the window: the lists of the fields of a layer, the preview of each preset
 ;;  (lp/specs, see Dyl:QuickDrawLayersSpec), the ends of the whole band (ll/ends: the
-;;  defaults, see Dyl:QuickDrawMat), the drawing units and scale (ll/paper), and the lists of
-;;  the Band Settings window of a layer (the method "Layer", see Dyl:QuickDrawLayersBandLists):
+;;  defaults, see Dyl:QuickDrawMat), the drawing units and scale (ll/paper), the lists of
+;;  the Band Settings window of a layer (the method "Layer", see Dyl:QuickDrawLayersBandLists)
+;;  and those of its Border Settings window (sub "1": its open buttons, which close it for the
+;;  Lisp, greyed out):
 (defun Dyl:QuickDrawAsmWinVals (/ lks mark)
   (setq lks  (Remote>>Dyl:LayerKeyRead)
         mark (mapcar '(lambda (k) (if (assoc k lks) k (strcat k "   (not defined)"))) mt:keys)
@@ -3115,8 +3278,11 @@
                 (cons "lh/vals" (cons "" mt:keys))
                 (cons "ly/list" mark)
                 (cons "ly/vals" mt:keys)
-                (cons "lbk/list" mark)
-                (cons "lbk/vals" mt:keys)
+                (cons "out/list" mark)
+                (cons "out/vals" mt:keys)
+                (cons "bwt/list" (mapcar '(lambda (w) (strcat (rtos (/ (atoi w) 100.0) 2 2) " mm")) *mt:weights*))
+                (cons "bwt/vals" *mt:weights*)
+                (cons "sub" "1")
                 (cons "lp/specs" (mapcar '(lambda (p) (cond ((assoc (car p) qa:qd) (Dyl:QuickDrawLayersSpec (assoc (car p) qa:qd))) ("X?1"))) qa:pre))
                 (cons "ll/ends" (list (nth 1 *qd:layerband*) (nth 2 *qd:layerband*) (nth 3 *qd:layerband*)))
                 (cons "ll/paper" (list (Remote>>Dyl:MaterialNumP (Dyl:QuickDrawUnitInches) 10) (Remote>>Dyl:MaterialNumP (Remote>>Dyl:MaterialDrawScale) 4)))
@@ -3125,7 +3291,7 @@
           (Dyl:QuickDrawLayersBandLists)
           (Dyl:WinOff "lp" (not qa:pre))
           (Dyl:WinOff "ly" (not mt:keys))
-          (Dyl:WinOff "lbk" (not mt:keys))
+          (Dyl:WinOff "out" (not mt:keys))
   )
 )
 
@@ -3238,9 +3404,12 @@
 
 ;;  The preview of the preset x ((rec . mat), see qg:all), as the gallery and the Quick Draw
 ;;  window show it: its bands (Dyl:QuickDrawGalleryBands), outlined ("O*" first, see
-;;  Installer\Windows\Engine\Hatch.cs) when it has a border:
+;;  Installer\Windows\Engine\Hatch.cs) when it has a border (an assembly never: its layers
+;;  have their own):
 (defun Dyl:QuickDrawGallerySpec (x)
-  (strcat (if (/= "1" (nth *qd:noborder* (car x))) "O*" "") (Dyl:QuickDrawGalleryBands x))
+  (strcat (if (and (/= "1" (nth *qd:noborder* (car x))) (not (Dyl:QuickDrawDlgAssembly-p (car x)))) "O*" "")
+          (Dyl:QuickDrawGalleryBands x)
+  )
 )
 
 ;;  The bands of the preview of the preset x: an assembly (Linear, its Assembly checked) as

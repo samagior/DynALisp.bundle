@@ -24,6 +24,8 @@ Dynalisp/Draw/Dyl-QuickDraw.fr.htm
 Dynalisp/Draw/Dyl-QuickDraw.htm
 Dynalisp/Draw/Dyl-QuickDrawBandSettings.fr.htm
 Dynalisp/Draw/Dyl-QuickDrawBandSettings.htm
+Dynalisp/Draw/Dyl-QuickDrawBorderSettings.fr.htm
+Dynalisp/Draw/Dyl-QuickDrawBorderSettings.htm
 Dynalisp/Draw/Dyl-QuickDrawGallery.fr.htm
 Dynalisp/Draw/Dyl-QuickDrawGallery.htm
 Dynalisp/Draw/Dyl-QuickShape.fr.htm

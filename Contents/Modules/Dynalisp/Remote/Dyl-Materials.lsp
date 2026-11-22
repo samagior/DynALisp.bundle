@@ -202,12 +202,15 @@
 ;;            values kept for when it is on again; see *mt:bandwindows*; hatch: Line, the
 ;;            middle of the layer, Edge, its border nearer to the line of the band, or Origin;
 ;;            a 10th value Edge of an older file is the hatch on Edge)
-;;    border  on~key (its outline on that layer key)
+;;    border  on~key, then the properties of the key it overrides, as the border of a preset
+;;            (see *mt:bordertiles*): color on~color~linetype on~linetype~linetype scale
+;;            on~scale~lineweight on~lineweight~transparency on~transparency (the commas of
+;;            an r,g,b color written as dots); on~key alone when it overrides none
 ;;  (P:qd-Brick:90::1~Line~Extended~~45~Lapped~4~First~Interrupted:1~A-WALL:1). Returns
 ;;  ((kind ref thickness [hatch-key [band [border [structural]]]]) ...), the layers that are
 ;;  valid only (ref and layer key in upper case for L; the hatch key in upper case, "" for the
-;;  key of the preset; band and border as lists of their values, nil when there are none;
-;;  structural "1", else nil):
+;;  key of the preset; band and border as lists of their values, nil when there are none, the
+;;  border with its 12 values, the overrides off when it has only 2; structural "1", else nil):
 (defun Remote>>Dyl:MaterialLayers (str / res k r w b d)
   (if (= 'STR (type str))
     (foreach x (Remote>>LM:str->lst str "|")
@@ -231,7 +234,13 @@
                                           )
                                          )
                                    )
-                                   (if (= 2 (length d)) (list (car d) (strcase (cadr d))))
+                                   (cond ((= 2 (length d)) (append (list (car d) (strcase (cadr d))) (Remote>>LM:sublst *mt:new* 12 10)))
+                                         ((= 12 (length d))
+                                          (append (list (car d) (strcase (cadr d)) (nth 2 d) (vl-string-translate "." "," (nth 3 d)) (nth 4 d) (strcase (nth 5 d)))
+                                                  (Remote>>LM:sublst d 6 6)
+                                          )
+                                         )
+                                   )
                                    (if (= "1" (nth 6 x)) "1")
                              )
                              res
@@ -248,6 +257,16 @@
   (reverse res)
 )
 
+;;  The values of the border b of a layer as they are written (see Remote>>Dyl:MaterialLayers):
+;;  on and key alone when it overrides nothing, the commas of its color as dots:
+(defun Remote>>Dyl:MaterialLayerBorderStr (b)
+  (cond
+    ((not b) nil)
+    ((not (vl-some '(lambda (i) (= "1" (nth i b))) '(2 4 6 8 10))) (list (car b) (cadr b)))
+    ((Remote>>Dyl:ListSubst b 3 (vl-string-translate "," "." (cond ((nth 3 b)) ("")))))
+  )
+)
+
 ;;  The text of the layers lst (see Remote>>Dyl:MaterialLayers) for the Assembly column (the
 ;;  fields of a P layer after its thickness only when it has them):
 (defun Remote>>Dyl:MaterialLayersStr (lst)
@@ -257,7 +276,7 @@
                   (setq x (if (= "P" (car l))
                             (list (cond ((cadddr l)) (""))
                                   (cond ((Remote>>LM:lst->str (nth 4 l) "~")) (""))
-                                  (cond ((Remote>>LM:lst->str (nth 5 l) "~")) (""))
+                                  (cond ((Remote>>LM:lst->str (Remote>>Dyl:MaterialLayerBorderStr (nth 5 l)) "~")) (""))
                                   (if (= "1" (nth 6 l)) "1" "")
                             )
                           )
@@ -1455,6 +1474,9 @@
       ;;  The open button of the color of the border: the color window of AutoCAD (see
       ;;  Remote>>Dyl:MaterialColorPick):
       *mt:colorpick* 11
+      ;;  The open button of Has a border: the Border Settings window (see
+      ;;  Dyl:QuickDrawBorderDialog):
+      *mt:borderpick* 12
 )
 
 ;;  The tiles of the Band Settings window (Dyl:QuickDrawBandDialog), not tiles of the

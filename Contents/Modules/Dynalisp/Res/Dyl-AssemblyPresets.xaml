@@ -29,7 +29,10 @@
   a Hatch layer: 5 its own band settings on ("1"), 6 to 13 those settings (hatch aligned to,
   ends, extension, angle, corners, miter limit, lap, joints: edited in the Band Settings
   window, opened by lbe on the layers selected), 14 its own border on, 15 the layer key of
-  that border, 16 Structural ("1": the structural layer, one at most: the window clears it in
+  that border (edited in the Border Settings window, opened by lbo on the layers selected,
+  with the properties it overrides in 17 to 26: color on, color, linetype on, linetype,
+  linetype scale on, scale, lineweight on, lineweight, transparency on, transparency), 16
+  Structural ("1": the structural layer, one at most: the window clears it in
   the others, dyl:Win.Exclusive; the Justification Structural layer of a Quick Draw preset puts
   the line drawn in its middle). Every column is kept in every row, so a layer turned into
   another kind and back gets its values again; the Lisp keeps those of its kind. Add, Remove,
@@ -238,7 +241,8 @@
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Line layer key"/>
         </DockPanel>
         <!-- A Hatch layer: its own band settings (the Band Settings window on the layers
-             selected), its own border on its layer key: -->
+             selected), its own border (the Border Settings window on the layers selected: its
+             layer key and the properties it overrides): -->
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
           <dyl:OpenButton x:Name="lbe" DockPanel.Dock="Right" ToolTip="Band Settings" dyl:Win.EnabledBy="lbs"
                           dyl:Win.Open="Dyl-QuickDrawBandSettings.xaml"
@@ -246,8 +250,10 @@
           <CheckBox x:Name="lbs" Content="Custom band settings" dyl:Win.Column="5"/>
         </DockPanel>
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lk=P">
-          <ComboBox x:Name="lbk" DockPanel.Dock="Right" Width="220" dyl:Win.Column="15" dyl:Win.EnabledBy="lbr"/>
-          <CheckBox x:Name="lbr" Content="Border" dyl:Win.Column="14"/>
+          <dyl:OpenButton x:Name="lbo" DockPanel.Dock="Right" ToolTip="Border Settings" dyl:Win.EnabledBy="lbr"
+                          dyl:Win.Open="Dyl-QuickDrawBorderSettings.xaml"
+                          dyl:Win.Columns="out:15,bco:17,bcv:18,blo:19,blt:20,bso:21,bsc:22,bwo:23,bwt:24,bto:25,btr:26"/>
+          <CheckBox x:Name="lbr" Content="Has a border" dyl:Win.Column="14"/>
         </DockPanel>
       </StackPanel>
     </GroupBox>
