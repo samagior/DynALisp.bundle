@@ -33,8 +33,8 @@
     <GridLength x:Key="ColFold">18</GridLength>
     <GridLength x:Key="ColCmd">250</GridLength>
     <GridLength x:Key="ColAls">180</GridLength>
-    <GridLength x:Key="ColMod">90</GridLength>
-    <GridLength x:Key="ColGrp">120</GridLength>
+    <GridLength x:Key="ColName">330</GridLength>
+    <GridLength x:Key="ColMod">100</GridLength>
   </Window.Resources>
 
   <Grid Margin="14">
@@ -76,9 +76,9 @@
             <ColumnDefinition Width="{StaticResource ColFold}"/>
             <ColumnDefinition Width="{StaticResource ColCmd}"/>
             <ColumnDefinition Width="{StaticResource ColAls}"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="{StaticResource ColName}"/>
             <ColumnDefinition Width="{StaticResource ColMod}"/>
-            <ColumnDefinition Width="{StaticResource ColGrp}"/>
+            <ColumnDefinition Width="*"/>
           </Grid.ColumnDefinitions>
           <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Load"/>
           <TextBlock Grid.Column="2" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Command"/>
@@ -104,9 +104,9 @@
                   <ColumnDefinition Width="{StaticResource ColFold}"/>
                   <ColumnDefinition Width="{StaticResource ColCmd}"/>
                   <ColumnDefinition Width="{StaticResource ColAls}"/>
-                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="{StaticResource ColName}"/>
                   <ColumnDefinition Width="{StaticResource ColMod}"/>
-                  <ColumnDefinition Width="{StaticResource ColGrp}"/>
+                  <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <CheckBox Style="{DynamicResource Dyl.Check}" HorizontalAlignment="Left" Margin="4,0,0,0"
                           IsChecked="{Binding On, Mode=TwoWay}" IsEnabled="{Binding CanToggle}"/>
