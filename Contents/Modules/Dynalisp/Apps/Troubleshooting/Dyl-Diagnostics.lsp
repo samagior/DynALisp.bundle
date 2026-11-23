@@ -984,7 +984,48 @@
   (dg:try 'dg:dwg-tables)
   (dg:try 'dg:dwg-objects)
   (dg:try 'dg:dwg-revisions)
+  (dg:try 'dg:dwg-materials)
   (dg:try 'dg:dwg-regen)
+)
+
+;;  The objects that carry a material (their DynALisp data, see Remote>>Dyl:MaterialTags):
+;;  how many, of how many materials, those of a material that no longer exists (a problem: a
+;;  simulation cannot read them) and how many are closed outlines rather than hatches.
+;;  Counts only: the id of a material of one's own can name a client:
+(defun dg:dwg-materials (/ ss i e id ids gone n reg own)
+  (dg:sub "Material of the objects (Pst-MaterialAssign)")
+  (cond
+    ((not Remote>>Dyl:MaterialTags) (dg:bad "Remote\\Dyl-Materials.lsp is not loaded"))
+    ((not (setq ss (ssget "_X" (list (list -3 (list *mt:app*))))))
+     (dg:item "No object carries a material")
+    )
+    (T
+     (setq i 0 n 0 reg 0)
+     (repeat (sslength ss)
+       (setq e (ssname ss i)
+             i (1+ i)
+       )
+       (if (setq id (Remote>>Dyl:MaterialOf e))
+         (progn
+           (setq n (1+ n))
+           (if (not (member id ids)) (setq ids (cons id ids)))
+           (if (/= "HATCH" (cdr (assoc 0 (entget e)))) (setq reg (1+ reg)))
+         )
+       )
+     )
+     (foreach x ids
+       (if (not (or (assoc x (cadr (Remote>>Dyl:MaterialBoth))) (assoc x (Remote>>Dyl:MaterialRowDefs))))
+         (setq gone (cons x gone))
+       )
+     )
+     (setq own (vl-remove-if '(lambda (x) (assoc x (Remote>>Dyl:MaterialRowDefs))) ids))
+     (dg:kv "Objects with a material" (strcat (itoa n) " (" (itoa reg) " closed outline(s), the others hatches)"))
+     (dg:kv "Materials used" (strcat (itoa (length ids)) " (" (itoa (length own)) " of one's own)"))
+     (if gone
+       (dg:bad (strcat (itoa (length gone)) " material(s) used in the drawing no longer exist: give their objects another one (Pst-MaterialAssign)"))
+     )
+    )
+  )
 )
 
 ;;  The revisions of the project of the drawing (Dyl-Revisions): its files, and the title

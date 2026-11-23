@@ -6,6 +6,7 @@ WIDE;A-Detl-Wide;4;CONTINUOUS;0.50;1;Detail: Wide Lines;0
 XLINE;A-Detl-XFin;8;CONTINUOUS;0.13;1;Detail: Extra Fine Lines;0
 HATCH;A-Detl-Patt;8;CONTINUOUS;0.18;1;Detail: Texture Or Hatch Patterns;0
 G-DS-ANNO-STD-BACKGROUND_SCREEN;A-Detl-Scrn;254;CONTINUOUS;0.18;1;Detail: Screening Of Coordination Objects And Backgrounds;0
+MATREGION;A-Detl-Matl-Nplt;8;CONTINUOUS;0.18;0;Detail: Material Regions Without Hatch;0
 ANNDTOBJ;G-Detl-Iden;31;CONTINUOUS;0.25;1;Detail marks;1
 ANNELKEY;G-Elev-Iden;151;CONTINUOUS;0.25;1;Elevation marks;1
 ANNELOBJ;G-Elev-Line;141;CONTINUOUS;0.25;0;Elevation Definition Lines;1
