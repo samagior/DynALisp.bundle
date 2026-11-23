@@ -70,7 +70,7 @@
     <!-- The core commands defined (*dyl:core*): command TAB what it does: -->
     <GroupBox Grid.Row="1" Grid.ColumnSpan="3" Header="Core commands">
       <StackPanel>
-        <ListBox x:Name="cmd" Height="330" dyl:Win.Close="2">
+        <ListBox x:Name="cmd" Height="346" dyl:Win.Close="2">
           <ListBox.ItemTemplate>
             <DataTemplate>
               <Grid>
