@@ -69,6 +69,14 @@
 //     The last run shown again with its relative humidity or its temperatures; nil when
 //     there is no run, or no vapour for the humidity.
 //
+//   (Dyl:SimulationKeep step height hatch)
+//     Adds the last run of the current drawing to its current space, on the current layer
+//     (Keep.cs): the isotherms every step degrees (F in an imperial drawing; 0: none), each
+//     level labelled once with a text of height height, the line of the dew point and its
+//     label, and a hatch over the cells where vapour condenses, its lines hatch apart (drawing
+//     units). Returns (("Isotherm" ename ...) ("Label" ename ...) ("Dew" ename ...)
+//     ("Condensation" ename ...)), a kind with nothing left out; nil when there is no run.
+//
 //   (Dyl:SimulationClear)  clears what the simulation shows over the current drawing; T.
 
 using System;
@@ -290,6 +298,36 @@ namespace DynALisp.Simulation
             bool wet = a.Count > 0 && a[0] is string k && k.Equals("Humidity", StringComparison.OrdinalIgnoreCase);
             return Show.View(AcApp.DocumentManager.MdiActiveDocument, wet)
                 ? new ResultBuffer(new TypedValue((int)LispDataType.T_atom)) : null;
+        }
+
+        [LispFunction("Dyl:SimulationKeep")]
+        public ResultBuffer KeepRun(ResultBuffer args)
+        {
+            try
+            {
+                var a = Args(args);
+                var doc = AcApp.DocumentManager.MdiActiveDocument;
+                var last = Show.Last(doc);
+                if (last == null) return null;
+                double Arg(int i) => a.Count > i && a[i] is double x ? x : 0;
+                var made = Keep.Draw(doc, last, Arg(0), Arg(1), Arg(2));
+                var res = new ResultBuffer();
+                res.Add(new TypedValue((int)LispDataType.ListBegin));
+                foreach (var (key, ids) in new[] { ("Isotherm", made.Isotherms), ("Label", made.Labels), ("Dew", made.Dew), ("Condensation", made.Condensation) })
+                {
+                    if (ids.Count == 0) continue;
+                    res.Add(new TypedValue((int)LispDataType.ListBegin));
+                    res.Add(new TypedValue((int)LispDataType.Text, key));
+                    foreach (var id in ids) res.Add(new TypedValue((int)LispDataType.ObjectId, id));
+                    res.Add(new TypedValue((int)LispDataType.ListEnd));
+                }
+                res.Add(new TypedValue((int)LispDataType.ListEnd));
+                return res;
+            }
+            catch (System.Exception ex)
+            {
+                return Text("Dyl:SimulationKeep: " + ex.Message);
+            }
         }
 
         [LispFunction("Dyl:SimulationClear")]

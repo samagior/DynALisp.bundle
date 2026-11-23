@@ -57,6 +57,61 @@ namespace DynALisp.Simulation.Core
             return res;
         }
 
+        // The segments joined into lines where they share an end (two ends closer than eps are
+        // the same point): each line its points in order, closed when its first point is its
+        // last. A line of a contour ends only at a surface or the edge of the zone:
+        public static List<List<P>> Chains(List<(P, P)> segs, double eps)
+        {
+            var ends = new Dictionary<(long, long), List<int>>();
+            (long, long) Key(P p) => ((long)Math.Round(p.X / eps), (long)Math.Round(p.Y / eps));
+            for (int k = 0; k < segs.Count; k++)
+            {
+                foreach (var p in new[] { segs[k].Item1, segs[k].Item2 })
+                {
+                    var key = Key(p);
+                    if (!ends.TryGetValue(key, out var l)) ends[key] = l = new List<int>();
+                    l.Add(k);
+                }
+            }
+            var used = new bool[segs.Count];
+            var res = new List<List<P>>();
+
+            // From the point p, the segment not used yet at it, and its other end:
+            bool Next(P p, out P q)
+            {
+                q = p;
+                foreach (int k in ends[Key(p)])
+                {
+                    if (used[k]) continue;
+                    used[k] = true;
+                    var (a, b) = segs[k];
+                    q = Key(a).Equals(Key(p)) ? b : a;
+                    return true;
+                }
+                return false;
+            }
+
+            List<P> Walk(int k)
+            {
+                used[k] = true;
+                var line = new List<P> { segs[k].Item1, segs[k].Item2 };
+                while (Next(line[line.Count - 1], out var q)) line.Add(q);
+                var back = new List<P>();
+                var p = line[0];
+                while (Next(p, out var q)) { back.Add(q); p = q; }
+                back.Reverse();
+                back.AddRange(line);
+                return back;
+            }
+
+            // The open lines first (from an end that has one segment), then the loops:
+            for (int k = 0; k < segs.Count; k++)
+                if (!used[k] && (ends[Key(segs[k].Item1)].Count == 1 || ends[Key(segs[k].Item2)].Count == 1)) res.Add(Walk(k));
+            for (int k = 0; k < segs.Count; k++)
+                if (!used[k]) res.Add(Walk(k));
+            return res;
+        }
+
         // The point of the edge p-q where the value goes past level (an end at level counts as
         // above, so a value equal on two corners gives one point):
         static void Cut(List<P> pts, double va, double vb, P p, P q, double level)

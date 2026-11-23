@@ -74,6 +74,10 @@
                       ;;  *sim:zonekey* in Apps\Analysis\Dyl-Simulation.lsp), not plotted:
                       ("SIMZONE" "G-Anno-Simu-Nplt" "30" "DASHED" "0.18" "0" "Simulation: Simulation Zones" "0" "0")
                       ("SIMCLIMATE" "G-Anno-Clim-Nplt" "151" "CONTINUOUS" "0.18" "0" "Simulation: Climate Zones" "0" "0")
+                      ;;  What is kept of a simulation (see *sim:keepkeys*), plotted:
+                      ("SIMISOTHERM" "A-Detl-Isot" "150" "CONTINUOUS" "0.18" "1" "Simulation: Isotherms" "0" "0")
+                      ("SIMDEWPOINT" "A-Detl-Dewp" "6" "CONTINUOUS" "0.35" "1" "Simulation: Dew Point Line" "0" "0")
+                      ("SIMCONDENSATION" "A-Detl-Cond" "6" "CONTINUOUS" "0.18" "1" "Simulation: Condensation" "0" "0")
                      )
       ;;  Module Res folder (this file loads before Dyl-Paths.lsp sets *dyl:dylres):
       *lk:file*     (strcat (if *dyl:dylres *dyl:dylres (strcat *dyl:dyl "\\Res")) "\\LayerKeys.csv")

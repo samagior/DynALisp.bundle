@@ -28,8 +28,9 @@
 ;;  (Installer\Simulation) reads the detail of a zone in the drawing, builds its grid and
 ;;  shows it over the drawing with its problems (Dyl:SimulationRead, Dyl:SimulationClear),
 ;;  solves the heat through it and shows its temperatures (Dyl:SimulationRun), and reads the
-;;  temperature at a point (Dyl:SimulationProbe); this file gives it the materials, the
-;;  climates and the units, and says what it found.
+;;  temperature at a point (Dyl:SimulationProbe), and adds the result to the drawing on
+;;  purpose (Dyl:SimulationKeep); this file gives it the materials, the climates and the
+;;  units, says what it found, puts what is kept on its layer keys and writes the report.
 
 ;;-------------------------=={ Commands }==------------------------;;
 
@@ -69,7 +70,7 @@
 )
 
 ;; Simulation Play
-;; Solves the heat through the detail of a simulation zone and shows its temperatures over the drawing, the dew point and the coldest interior surface.
+;; Solves the heat and the vapour through the detail of a simulation zone and shows its temperatures over the drawing, the dew point, the coldest interior surface and where vapour condenses.
 
 (defun c:Pst-SimulationPlay (/ z)
   (if (setq z (Dyl:SimZonePick T))
@@ -79,10 +80,26 @@
 )
 
 ;; Simulation Probe
-;; Gives the temperature and the material at the points picked in the detail of the last simulation.
+;; Gives the temperature, the relative humidity and the material at the points picked in the detail of the last simulation.
 
 (defun c:Pst-SimulationProbe ()
   (Dyl:SimProbe)
+  (princ)
+)
+
+;; Simulation Keep
+;; Adds the result of the last simulation to the drawing, to print it: its isotherms, the dew point line and a hatch where vapour condenses, on their layer keys.
+
+(defun c:Pst-SimulationKeep ()
+  (Dyl:SimKeep)
+  (princ)
+)
+
+;; Simulation Report
+;; Writes a text report of the last simulation: the zone, the climates, the materials and their data, the results and the methods.
+
+(defun c:Pst-SimulationReport ()
+  (Dyl:SimReportWrite)
   (princ)
 )
 
@@ -218,6 +235,11 @@
 ;;  metres (the target size: the cells are this size or smaller, see Installer\Simulation):
 (setq *sim:zonekey* "SIMZONE"
       *sim:climkey* "SIMCLIMATE"
+      ;;  The layer keys of what is kept of a run (Dyl:SimKeep), plotted: the isotherms and
+      ;;  their labels, the dew point line and its label, the hatch of the condensation:
+      *sim:keepkeys* '(("Isotherm" . "SIMISOTHERM") ("Label" . "SIMISOTHERM") ("Dew" . "SIMDEWPOINT")
+                       ("Condensation" . "SIMCONDENSATION")
+                      )
       *sim:grids*   '(("Coarse" 0.010) ("Medium" 0.005) ("Fine" 0.002))
 )
 
@@ -607,7 +629,11 @@
               rep    (strcat "Not solved:\n" (car (Dyl:SimReport (car res) grid notemp)))
         )
        )
-       (T (setq rep (Dyl:SimResult (cadr res) rows (cadddr m) imp)))
+       (T
+        (setq rep         (Dyl:SimResult (cadr res) rows (cadddr m) imp)
+              *sim:lastrun* (list z grid res rows m rep)
+        )
+       )
      )
     )
   )
@@ -622,15 +648,17 @@
 (defun Dyl:SimAfter (vap / k)
   (while
     (progn
-      (initget (if vap "Probe Humidity Temperature Window Clear eXit" "Probe Window Clear eXit"))
+      (initget (if vap "Probe Humidity Temperature Keep Report Window Clear eXit" "Probe Keep Report Window Clear eXit"))
       (setq k (getkword (if vap
-                          "\nSimulation [Probe/Humidity/Temperature/Window/Clear/eXit] <eXit>: "
-                          "\nSimulation [Probe/Window/Clear/eXit] <eXit>: "
+                          "\nSimulation [Probe/Humidity/Temperature/Keep/Report/Window/Clear/eXit] <eXit>: "
+                          "\nSimulation [Probe/Keep/Report/Window/Clear/eXit] <eXit>: "
                         )
               )
       )
       (cond
         ((= k "Probe") (Dyl:SimProbe) T)
+        ((= k "Keep") (Dyl:SimKeep) T)
+        ((= k "Report") (Dyl:SimReportWrite) T)
         ((member k '("Humidity" "Temperature")) (if Dyl:SimulationView (Dyl:SimulationView k)) T)
         ((= k "Window") (Dyl:SimulationDialog) nil)
         ((= k "Clear") (if Dyl:SimulationClear (Dyl:SimulationClear)) nil)
@@ -664,6 +692,192 @@
            )
          )
        )
+     )
+    )
+  )
+)
+
+;;-------------------------=={ Keep And Report }==------------------------;;
+
+;;  The interval of the isotherms kept, in the units shown (C, F in an imperial drawing), for
+;;  the session:
+(setq *sim:step* nil)
+
+;;  Add the last run of the drawing to it (Dyl:SimulationKeep): the isotherms every interval
+;;  asked, the dew point line and the hatch of the condensation, each on its layer key, the
+;;  texts 2.5 mm high on paper and the hatch lines 3 mm apart at the drawing scale (CANNOSCALE),
+;;  in one undo:
+(defun Dyl:SimKeep (/ imp st m sc res n k)
+  (setq imp (Remote>>Dyl:MaterialImperial-p)
+        m   (Remote>>Dyl:MaterialUnitMetres)
+        sc  (Remote>>Dyl:MaterialDrawScale)
+  )
+  (cond
+    ((not Dyl:SimulationKeep) (princ "\nKeep needs DynALisp.Simulation.dll."))
+    (T
+     (initget 4)
+     (setq st (getreal (strcat "\nIsotherms every how many degrees, 0 for none <"
+                               (Remote>>Dyl:MaterialNum (cond (*sim:step*) ((if imp 10.0 5.0)))) (if imp " F" " C") ">: "
+                       )
+              )
+           st (cond (st) (*sim:step*) ((if imp 10.0 5.0)))
+     )
+     (setq *sim:step* st)
+     (vla-StartUndoMark (vla-get-ActiveDocument (vlax-get-acad-object)))
+     (setq res (Dyl:SimulationKeep st (/ (* 0.0025 sc) m) (/ (* 0.003 sc) m)))
+     (cond
+       ((= 'STR (type res)) (princ (strcat "\n" res)))
+       ((not res) (princ "\nNo simulation to keep: run Play first."))
+       (T
+        (foreach x res
+          (setq k (cdr (assoc (car x) *sim:keepkeys*)))
+          (foreach e (cdr x) (Remote>>Dyl:LayerKeyApply e k))
+        )
+        (setq n (length (cdr (assoc "Isotherm" res))))
+        (princ (strcat "\nKept: " (Dyl:SimCount n "isotherm" "isotherms")
+                       (if (assoc "Dew" res) ", the dew point line" "")
+                       (if (assoc "Condensation" res) ", the hatch of the condensation" "")
+                       "."
+               )
+        )
+       )
+     )
+     (vla-EndUndoMark (vla-get-ActiveDocument (vlax-get-acad-object)))
+    )
+  )
+)
+
+;;  Open the file f in the program Windows opens it with:
+(defun Dyl:SimOpen (f / sh)
+  (if (setq sh (vlax-create-object "Shell.Application"))
+    (progn
+      (vl-catch-all-apply 'vlax-invoke-method (list sh 'ShellExecute f "" "" "open" 1))
+      (vlax-release-object sh)
+    )
+  )
+)
+
+;;  A value v of a file with its unit u, or nil when it is empty:
+(defun Dyl:SimWith (label v u / x)
+  (if (setq x (Dyl:SimNum v)) (strcat label " " (Remote>>Dyl:MaterialSig x) " " u))
+)
+
+;;  The lines of the report of the last run (*sim:lastrun*: zone grid res rows materials text):
+(defun Dyl:SimReportLines (run / z grid res chk rows m names mats imp lines c d)
+  (setq z     (nth 0 run)
+        grid  (nth 1 run)
+        res   (nth 2 run)
+        chk   (car res)
+        rows  (nth 3 run)
+        m     (nth 4 run)
+        names (cadddr m)
+        mats  (cadr (Remote>>Dyl:MaterialBoth))
+        imp   (Remote>>Dyl:MaterialImperial-p)
+  )
+  (setq lines
+    (list
+      "DynALisp simulation report"
+      (strcat "Date: " (menucmd "M=$(edtime,$(getvar,date),YYYY-MO-DD HH:MM)"))
+      (strcat "Drawing: " (getvar "DWGPREFIX") (getvar "DWGNAME"))
+      (strcat "Zone: " (if (and (= 'ENAME (type z)) (entget z)) (strcat (cdr (assoc 5 (entget z))) ", " (Dyl:SimZoneSize z)) "erased")
+              ", grid " grid " (cells of " (Remote>>Dyl:MaterialNum (* 1000 (cadr (assoc grid *sim:grids*)))) " mm at most), "
+              (itoa (nth 0 chk)) " cells (" (itoa (nth 1 chk)) " x " (itoa (nth 2 chk)) ")"
+      )
+      ""
+      "Climates (SI):"
+    )
+  )
+  (foreach id (nth 13 chk)
+    (if (setq c (assoc id rows))
+      (setq lines (append lines
+                          (list (strcat "  " (cadr c) " (" (car c) "): "
+                                        (Remote>>LM:lst->str
+                                          (vl-remove nil
+                                                     (list (Dyl:SimWith "temperature" (nth 2 c) "C")
+                                                           (Dyl:SimWith "relative humidity" (nth 3 c) "%")
+                                                           (Dyl:SimWith "surface resistance" (nth 4 c) "m2.K/W")
+                                                           (Dyl:SimWith "condensation resistance" (nth 5 c) "m2.K/W")
+                                                     )
+                                          )
+                                          ", "
+                                        )
+                                )
+                          )
+                  )
+      )
+    )
+  )
+  (setq lines (append lines (list "" "Materials (SI):")))
+  (foreach id (nth 12 chk)
+    (setq d (assoc id mats))
+    (setq lines (append lines
+                        (list (strcat "  " (cond ((cdr (assoc id names))) (id)) " (" id "): "
+                                      (cond
+                                        ((not d) "no longer a material")
+                                        ((Remote>>LM:lst->str
+                                           (vl-remove nil
+                                                      (list (Dyl:SimWith "conductivity" (nth 5 d) "W/(m.K)")
+                                                            (Dyl:SimWith "resistance" (nth 7 d) "m2.K/W")
+                                                            (Dyl:SimWith "vapour permeability" (nth 8 d) "ng/(Pa.s.m)")
+                                                            (Dyl:SimWith "vapour permeance" (nth 9 d) "ng/(Pa.s.m2)")
+                                                      )
+                                           )
+                                           ", "
+                                         )
+                                        )
+                                      )
+                              )
+                        )
+                )
+    )
+  )
+  (append lines
+          (list ""
+                (strcat "Results" (if imp " (imperial units):" ":"))
+          )
+          (mapcar '(lambda (l) (strcat "  " l)) (Dyl:SimLines (nth 5 run)))
+          (list ""
+                "Methods:"
+                "  Steady heat flow of ISO 10211: finite volumes on the grid, the edge of the zone outside a climate adiabatic."
+                "  Surface resistances of ISO 6946 for the heat flow, L2D and the effective RSI; the condensation resistance"
+                "  (ISO 13788) for the surface temperatures, fRsi and the dew point on the surfaces."
+                "  Vapour inside the detail: the method of Glaser of ISO 13788 in two dimensions, by diffusion alone, at the"
+                "  temperatures of the heat flow; a steady state of the conditions given, not a monthly balance."
+                "  A material without a conductivity is simulated by its fixed RSI, one without a vapour permeability by its"
+                "  fixed permeance, across the smaller side of its region."
+          )
+  )
+)
+
+;;  The lines of a text divided by new lines:
+(defun Dyl:SimLines (s / i res)
+  (while (setq i (vl-string-search "\n" s))
+    (setq res (cons (substr s 1 i) res)
+          s   (substr s (+ i 2))
+    )
+  )
+  (reverse (cons s res))
+)
+
+;;  Write the report of the last run to a text file picked (beside the drawing by default),
+;;  then open it:
+(defun Dyl:SimReportWrite (/ f h)
+  (cond
+    ((not *sim:lastrun*) (princ "\nNo simulation to report: run Play first."))
+    ((setq f (getfiled "Simulation report"
+                       (strcat (getvar "DWGPREFIX") (vl-filename-base (getvar "DWGNAME")) " - Simulation.txt")
+                       "txt"
+                       1
+             )
+     )
+     (if (setq h (open f "w"))
+       (progn
+         (foreach l (Dyl:SimReportLines *sim:lastrun*) (write-line l h))
+         (close h)
+         (princ (strcat "\nReport written: " f))
+         (Dyl:SimOpen f)
+       )
+       (princ (strcat "\nThe report could not be written: " f))
      )
     )
   )

@@ -254,6 +254,29 @@ namespace DynALisp.Simulation.Tests
         }
 
         [Fact]
+        public void TheSegmentsOfAContourAreJoinedIntoLines()
+        {
+            // A ring of values: high in the middle of a 5 x 5 grid, its level a closed loop:
+            var g = new Grid(new double[] { 0, 1, 2, 3, 4, 5 }, new double[] { 0, 1, 2, 3, 4, 5 });
+            var v = new double[25];
+            for (int j = 0; j < 5; j++)
+                for (int i = 0; i < 5; i++)
+                    v[i + j * 5] = 10 - Math.Abs(i - 2) - Math.Abs(j - 2);
+            var segs = Contour.Segments(g, v, 8.5);
+            var lines = Contour.Chains(segs, 1e-9);
+            Assert.Single(lines);
+            Assert.Equal(segs.Count + 1, lines[0].Count);
+            Assert.Equal(lines[0][0].X, lines[0][lines[0].Count - 1].X, 9);
+            Assert.Equal(lines[0][0].Y, lines[0][lines[0].Count - 1].Y, 9);
+
+            // A straight field: one open line, its ends on the edge of the grid:
+            for (int c = 0; c < 25; c++) v[c] = c % 5;
+            lines = Contour.Chains(Contour.Segments(g, v, 1.5), 1e-9);
+            Assert.Single(lines);
+            Assert.Equal(5, lines[0].Count);
+        }
+
+        [Fact]
         public void TheCellAtAPoint()
         {
             var g = new Grid(new double[] { 0, 1, 3, 6 }, new double[] { 0, 2, 4 });
