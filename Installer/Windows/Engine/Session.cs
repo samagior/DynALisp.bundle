@@ -255,6 +255,8 @@ namespace DynALisp.Windows
         internal PresetEditor Presets;
         // The list of rows edited in the window (a ListBox with Win.Rows, Rows.cs):
         internal RowsEditor Rows;
+        // The list of the Startup Suite window (its list named "lst", the rows ste/rows, Suite.cs):
+        internal SuiteEditor Suite;
         internal Session Session => _s;
 
         internal View(Session s, Window w, string dir)
@@ -322,6 +324,7 @@ namespace DynALisp.Windows
             _s.Values[key] = value;
             Presets?.Changed(key);
             Rows?.Changed(key);
+            Suite?.Changed(key);
             // A checkbox turned on turns off the ones it excludes (one answer at most):
             string ex = Win.GetExcludes(from);
             if (value == "1" && !string.IsNullOrEmpty(ex))
@@ -360,6 +363,8 @@ namespace DynALisp.Windows
                 Presets = new PresetEditor(this);
             if (Rows == null && _all.FirstOrDefault(RowsEditor.Is) is ListBox rl)
                 Rows = new RowsEditor(this, rl, _all);
+            if (Suite == null && _s.Rows.ContainsKey(SuiteEditor.RowsKey) && Find("lst") is ListBox)
+                Suite = new SuiteEditor(this);
             _filling = true;
             try
             {
@@ -368,6 +373,7 @@ namespace DynALisp.Windows
                     // the controls of the presets, filled by the editor:
                     if (Presets != null && Presets.Owns(fe.Name)) continue;
                     if (Rows != null && Rows.Owns(fe.Name)) continue;
+                    if (Suite != null && Suite.Owns(fe.Name)) continue;
                     bool has = _s.Values.TryGetValue(fe.Name, out string v);
                     switch (fe)
                     {
@@ -388,6 +394,11 @@ namespace DynALisp.Windows
                         case TextBlock tb:
                             if (has) tb.Text = v ?? "";
                             break;
+                        // A button named by the Lisp (the answers of a question): its label.
+                        // Its value stays the Lisp's (a button gives no value back):
+                        case Button b when b.GetType() == typeof(Button):
+                            if (has && !string.IsNullOrEmpty(v)) b.Content = v;
+                            break;
                         case Gallery g:
                             g.Attach(Find, k => _s.Lists.TryGetValue(k, out var l) ? l : null);
                             // A tile selected when it opens (a sample), else none:
@@ -402,6 +413,7 @@ namespace DynALisp.Windows
             finally { _filling = false; }
             Presets?.Fill();
             Rows?.Fill();
+            Suite?.Fill();
             Refresh();
         }
 
@@ -419,6 +431,7 @@ namespace DynALisp.Windows
             }
             Presets?.Refresh();
             Rows?.Refresh();
+            Suite?.Refresh();
         }
 
         // A rule of the values (Win.EnabledBy, Win.VisibleBy):
@@ -481,6 +494,7 @@ namespace DynALisp.Windows
             if (b.Name == "docs") { try { Session.OpenTarget(Docs()); } catch (Exception e) { Error("Unable to open the docs: " + e.Message); } return; }
             if (Presets != null && Presets.Click(b)) { Refresh(); return; }
             if (Rows != null && Rows.Click(b)) { Refresh(); return; }
+            if (Suite != null && Suite.Click(b)) { Refresh(); return; }
             string all = Win.GetSetAll(b);
             if (all != null)
             {
