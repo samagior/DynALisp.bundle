@@ -44,6 +44,8 @@ __pycache__/
 # (Installer\Startup): their DLLs are copied to Contents\Resources and committed there:
 Installer/Ribbon/Plugin/bin/
 Installer/Ribbon/Plugin/obj/
+Installer/Assistant/bin/
+Installer/Assistant/obj/
 Installer/Startup/bin/
 Installer/Startup/obj/
 # Build output of the windows plugin (Installer\Windows, its DLLs committed in

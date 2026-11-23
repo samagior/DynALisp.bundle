@@ -544,6 +544,31 @@ begin
     end;
 end;
 
+// The Assistant (Dyl-Assistant): its working folder (%LOCALAPPDATA%\DynALisp\Assistant) and
+// the conversations Claude Code kept for it, in its own folder of projects, named after that
+// working folder (C--Users-<user>-AppData-Local-DynALisp-Assistant). Claude Code itself, its
+// sign-in and its other projects are the user's: they stay.
+procedure CleanAssistant;
+var
+  Projects: String;
+  F: TFindRec;
+begin
+  DelTree(ExpandConstant('{localappdata}\DynALisp\Assistant'), True, True, True);
+  RemoveDir(ExpandConstant('{localappdata}\DynALisp'));
+  Projects := GetEnv('USERPROFILE') + '\.claude\projects';
+  if FindFirst(Projects + '\*-DynALisp-Assistant', F) then
+  begin
+    try
+      repeat
+        if (F.Attributes and FILE_ATTRIBUTE_DIRECTORY) <> 0 then
+          DelTree(Projects + '\' + F.Name, True, True, True);
+      until not FindNext(F);
+    finally
+      FindClose(F);
+    end;
+  end;
+end;
+
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   Products: TArrayOfString;
@@ -556,4 +581,5 @@ begin
   Products := AcadProducts();
   for I := 0 to GetArrayLength(Products) - 1 do
     CleanProduct(Products[I], App);
+  CleanAssistant;
 end;
