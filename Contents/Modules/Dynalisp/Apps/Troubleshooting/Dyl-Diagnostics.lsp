@@ -303,19 +303,20 @@
   (dg:try 'dg:dyl-assistant)
 )
 
-;;  The Assistant (Dyl-Assistant, DynALisp.Assistant.dll, AutoCAD 2016 and later) runs
-;;  Claude Code, installed and signed in by the user: checked only when its command is
-;;  turned on in the Startup Suite (Dyl:ClaudeInfo runs Claude Code twice, a second or two).
+;;  The Assistant (Dyl-Assistant, DynALisp.Assistant.dll, AutoCAD 2016 and later) and Text
+;;  Fix (Dyl-TextFix, through Dyl:ClaudeRun) run Claude Code, installed and signed in by the
+;;  user: checked only when one of their commands is turned on in the Startup Suite
+;;  (Dyl:ClaudeInfo runs Claude Code twice, a second or two).
 ;;  Never the account or a token: whether it is signed in, and how.
 (defun dg:dyl-assistant (/ info v)
-  (if c:Dyl-Assistant
+  (if (or c:Dyl-Assistant c:Dyl-TextFix)
     (progn
       (dg:sub "Assistant")
       (cond
         ((not Dyl:ClaudeInfo)
          (if (< (atof (getvar "ACADVER")) 20.1)
-           (dg:bad "Dyl-Assistant is turned on, but the Assistant needs AutoCAD 2016 or later")
-           (dg:bad "Dyl-Assistant is turned on, but DynALisp.Assistant.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)")
+           (dg:bad "Dyl-Assistant or Dyl-TextFix is turned on, but they need AutoCAD 2016 or later")
+           (dg:bad "Dyl-Assistant or Dyl-TextFix is turned on, but DynALisp.Assistant.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)")
          )
         )
         ((= "" (cdr (assoc "path" (setq info (Dyl:ClaudeInfo)))))

@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Correction de texte Claude</title>
+    <title>Correction de texte</title>
     <link rel="stylesheet" href="../../../../Resources/docs.css">
 </head>
 
@@ -15,7 +15,7 @@
     </div>
 
     <div id="content">
-        <h1>Correction de texte Claude (Claude Text Fix)</h1>
+        <h1>Correction de texte (Text Fix)</h1>
 
 <div class="programs">
 <table>
@@ -25,7 +25,7 @@
 </tr>
 <tr>
 <td>Requis</td>
-<td>AutoCAD pour Windows (objet COM WinHttp), une connexion Anthropic (l'outil <span class="fixw">ant</span>, <span class="fixw">ant auth login</span> lancé une fois) ou une clé d'API Anthropic, une connexion Internet</td>
+<td>AutoCAD 2016 ou plus récent pour Windows, Claude Code (l'outil en ligne de commande d'Anthropic) connecté à votre propre compte Claude, une connexion Internet</td>
 </tr>
 <tr class="alt">
 <td>Licence</td>
@@ -34,15 +34,15 @@
 </table>
 </div>
 <h2>Description</h2>
-<p>Faites relire les textes d'un dessin par Claude : chaque texte, texte multiligne et ligne de repère multiple sélectionné est vérifié pour l'orthographe, la grammaire, les accents et la ponctuation dans sa propre langue, jamais traduit, et remplacé par sa version corrigée une fois que vous dites oui. Les termes techniques, abréviations, unités, cotes et codes restent tels quels.</p>
-<p class="note">Le texte des objets sélectionnés est envoyé à l'API d'Anthropic. Ne l'utilisez pas sur des dessins dont le texte ne doit pas quitter votre ordinateur.</p>
+<p>Faites relire les textes d'un dessin par Claude : chaque texte, texte multiligne et ligne de repère multiple sélectionné est vérifié pour l'orthographe, la grammaire, les accents et la ponctuation dans sa propre langue, jamais traduit, et remplacé par sa version corrigée une fois que vous dites oui. Les termes techniques, abréviations, unités, cotes et codes restent tels quels. Elle passe par Claude Code connecté à votre propre compte Claude : aucune clé d'API, et l'utilisation compte dans votre forfait Claude.</p>
+<p class="note">Le texte des objets sélectionnés est envoyé à Anthropic par Claude Code. Ne l'utilisez pas sur des dessins dont le texte ne doit pas quitter votre ordinateur. Text Fix est désactivé à une nouvelle installation : activez-le dans <span class="fixw">Dyl-Suite</span>.</p>
 <!-- picture: images/Dyl-TextFix-window.png -->
 <!-- picture: images/Dyl-TextFix-use.gif -->
 <h2>Utilisation</h2>
 <div class="spacedbullets">
 <ol>
-<li><strong>Une fois</strong> &ndash; connectez-vous à Anthropic : réglez la variable d'environnement Windows <span class="fixw">ANTHROPIC_API_KEY</span> à votre clé d'API (puis redémarrez AutoCAD), ou connectez-vous avec l'outil en ligne de commande d'Anthropic (<span class="fixw">ant auth login</span>). Sans l'un ni l'autre, la commande demande une clé, gardée pour la session seulement.</li>
-<li>Sélectionnez les textes, puis tapez <span class="fixw">Dyl-TextFix</span>.</li>
+<li><strong>Une fois</strong> &ndash; activez <em>Text Fix</em> dans <span class="fixw">Dyl-Suite</span>. Quand Claude Code n'est pas encore installé ou connecté, lancez l'<a href="Dyl-Assistant.fr.htm">Assistant</a> (<span class="fixw">Dyl-Assistant</span>) : sa palette installe Claude Code et le connecte à votre compte Claude.</li>
+<li>Sélectionnez les textes, puis tapez <span class="fixw">Dyl-TextFix</span>. Tous les textes sont envoyés ensemble à Claude et AutoCAD attend la réponse quelques secondes (une grande sélection est envoyée en quelques parties).</li>
 <li>Pour chaque texte qui change, la ligne de commande montre l'original et la correction : répondez <em>Oui</em> pour le remplacer, <em>Non</em> pour le garder, <em>Tous</em> pour accepter tous les autres, <em>Quitter</em> pour arrêter.</li>
 <li>Un résumé donne les textes vérifiés, corrigés et en échec. Un <span class="fixw">U</span> annule toutes les corrections.</li>
 </ol>
@@ -51,7 +51,8 @@
 <div class="spacedbullets">
 <ul>
 <li>Les attributs de blocs ne sont pas traités (ils ne peuvent pas être sélectionnés à l'invite de sélection).</li>
-<li>Les caractères hors de la page de codes d'AutoLISP (codes au-dessus de 255) dans la réponse sont remplacés par <span class="fixw">?</span>.</li>
+<li>Dans un AutoCAD antérieur à 2021, les caractères hors de la page de codes de Windows dans la réponse sont remplacés par <span class="fixw">?</span>.</li>
+<li>Quand la variable d'environnement Windows <span class="fixw">ANTHROPIC_API_KEY</span> existe, Claude Code utilise cette clé d'API, facturée par l'API d'Anthropic, au lieu de votre forfait Claude.</li>
 <li>Les invites de la ligne de commande sont en français.</li>
 </ul>
 </div>
@@ -61,7 +62,7 @@
 <div class="programs commands wide">
 <table>
 <tr><th>Commande</th><th>Alias</th><th>Nom</th></tr>
-<tr><td><span class="fixw">Dyl-TextFix</span></td><td><span class="fixw">TEXTFIX</span></td><td>Claude Text Fix</td></tr>
+<tr><td><span class="fixw">Dyl-TextFix</span></td><td><span class="fixw">TEXTFIX</span></td><td>Text Fix</td></tr>
 </table>
 </div>
 <!-- /dyl:aliases -->

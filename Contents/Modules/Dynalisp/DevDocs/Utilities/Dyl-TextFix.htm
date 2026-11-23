@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Claude Text Fix &ndash; Developer docs</title>
+    <title>Text Fix &ndash; Developer docs</title>
     <link rel="stylesheet" href="../../../../Resources/docs.css">
 </head>
 
@@ -15,33 +15,35 @@
     </div>
 
     <div id="content">
-        <h1>Claude Text Fix</h1>
+        <h1>Text Fix</h1>
 
-<p class="note">The developer docs of Claude Text Fix: its files and how its code works. What it does and how to use it are in its <a href="../../Docs/Utilities/Dyl-TextFix.htm">User Guide</a> page.</p>
+<p class="note">The developer docs of Text Fix: its files and how its code works. What it does and how to use it are in its <a href="../../Docs/Utilities/Dyl-TextFix.htm">User Guide</a> page.</p>
 <div class="programs">
 <table>
 <tr class="alt"><td>Source Files</td><td><span class="fixw">Modules\Dynalisp\Apps\Utilities\Dyl-TextFix.lsp</span></td></tr>
-<tr><td>Sends</td><td>The text of each object to the Messages API of Anthropic (<span class="fixw">https://api.anthropic.com/v1/messages</span>); nothing is saved</td></tr>
+<tr><td>Needs</td><td><span class="fixw">Dyl:ClaudeRun</span> of <span class="fixw">DynALisp.Assistant.dll</span> (AutoCAD 2016 or later, see <a href="Dyl-Assistant.htm">Assistant</a>), Claude Code installed and signed in by the user</td></tr>
+<tr class="alt"><td>Sends</td><td>The texts of the objects selected, to Anthropic through Claude Code; nothing is saved</td></tr>
 </table>
 </div>
 <h2>How It Works</h2>
 <div class="spacedbullets">
 <ol>
-<li>Sign-in: the <span class="fixw">ANTHROPIC_API_KEY</span> environment variable when set (it wins), else the Anthropic login of the user (the <span class="fixw">ant</span> CLI: run <span class="fixw">ant auth login</span> once; its short-lived token is read again every 10 minutes), else a key asked on the command line.</li>
-<li>The API key is taken from the <span class="fixw">ANTHROPIC_API_KEY</span> Windows environment variable (restart AutoCAD after creating it), else asked on the command line; a key typed is kept for the session only, never saved.</li>
-<li>The objects selected before the command are used (right-click menu), else the command asks for a selection: <span class="fixw">TEXT</span>, <span class="fixw">MTEXT</span> and <span class="fixw">MULTILEADER</span>.</li>
-<li>Each object is sent on its own (model <span class="fixw">claude-haiku-5-5</span>, 30 s timeout). When the text changes, the original and the corrected text are shown (<span class="fixw">Avant</span> / <span class="fixw">Apres</span>) and the command asks <span class="fixw">Appliquer la correction ? [Oui/Non/Tous/Quitter] &lt;Oui&gt;</span>: <em>Oui</em> replaces it, <em>Non</em> keeps it, <em>Tous</em> replaces it and every next correction without asking, <em>Quitter</em> stops.</li>
+<li><span class="fixw">c:Dyl-TextFix</span> checks that <span class="fixw">Dyl:ClaudeRun</span> is defined, then takes the objects selected before the command (right-click menu), else asks for a selection: <span class="fixw">TEXT</span>, <span class="fixw">MTEXT</span> and <span class="fixw">MULTILEADER</span>.</li>
+<li>The texts are sent together, one request for at most <span class="fixw">*ctf:batch-max*</span> texts (40) and <span class="fixw">*ctf:batch-chars*</span> characters (6000), a longer selection in a few (<span class="fixw">ctf:batches</span>). Each request is <span class="fixw">(Dyl:ClaudeRun input system "haiku" schema 180)</span>: the input <span class="fixw">{"texts":["...", ...]}</span>, the instructions <span class="fixw">*ctf:system-prompt*</span> (correct, never translate, keep terms, codes and lines, one text per text in the same order), the JSON schema <span class="fixw">*ctf:schema*</span> (an object with a <span class="fixw">texts</span> array of strings). AutoCAD waits for the answer.</li>
+<li>The answer is the JSON of its <span class="fixw">structured_output</span>, read by <span class="fixw">ctf:json-strings</span>; a request whose answer has not one text per text sent fails as a whole (its texts counted <em>failed</em>). An error that speaks of a sign-in adds that <span class="fixw">Dyl-Assistant</span> signs Claude Code in.</li>
+<li>When a text changes, the original and the corrected text are shown (<span class="fixw">Avant</span> / <span class="fixw">Apres</span>) and the command asks <span class="fixw">Appliquer la correction ? [Oui/Non/Tous/Quitter] &lt;Oui&gt;</span>: <em>Oui</em> replaces it, <em>Non</em> keeps it, <em>Tous</em> replaces it and every next correction without asking, <em>Quitter</em> stops.</li>
 <li>The corrections are written with ActiveX, so objects on locked layers are corrected too. The whole command is one undo step, and a summary gives the objects checked, corrected and failed.</li>
 </ol>
 </div>
 <h2>The Code</h2>
 <div class="spacedbullets">
 <ul>
-<li><strong>Signing in</strong> &ndash; <span class="fixw">ctf:get-auth</span> returns the key or the token: <span class="fixw">ANTHROPIC_API_KEY</span> first, else the token of the <span class="fixw">ant</span> command line tool (<span class="fixw">ctf:ant-token</span>, read again every 10 minutes), else a key typed; <span class="fixw">ctf:forget-auth</span> drops it after a refusal. A key is never written to a file (the <a href="../../../../../README.md#working-on-dynalisp-with-claude-code">README</a> rule on keys).</li>
-<li><strong>The request</strong> &ndash; <span class="fixw">ctf:build-request-body</span> writes the JSON (the model, the instructions: correct, never translate, keep terms and codes; the text escaped by <span class="fixw">ctf:json-escape</span>); <span class="fixw">ctf:http-post</span> sends it with <span class="fixw">WinHttp.WinHttpRequest.5.1</span> (30 s timeout); <span class="fixw">ctf:send-request</span> and <span class="fixw">ctf:correct-text</span> read the answer (<span class="fixw">ctf:json-string-after</span>, <span class="fixw">ctf:unicode-to-char</span> for the <span class="fixw">\uXXXX</span> escapes).</li>
-<li><strong>The texts</strong> &ndash; <span class="fixw">ctf:get-selection</span> (the selection made first, else a new one of <span class="fixw">TEXT</span>, <span class="fixw">MTEXT</span>, <span class="fixw">MULTILEADER</span>), <span class="fixw">ctf:text-editable-p</span>, <span class="fixw">ctf:print-change</span> and <span class="fixw">ctf:ask-confirmation</span>, then <span class="fixw">ctf:apply-text</span> through ActiveX; <span class="fixw">ctf:process-selection</span> runs them in one undo mark.</li>
+<li><strong>Claude</strong> &ndash; <span class="fixw">ctf:correct-texts</span> writes the input (<span class="fixw">ctf:json-escape</span>), calls <span class="fixw">Dyl:ClaudeRun</span> and returns <span class="fixw">(T corrected ...)</span> or <span class="fixw">(nil error)</span>. No API key or token is read or kept: the sign-in is Claude Code's own (the <a href="../../../../../CONVENTIONS.md#claude">Claude</a> convention).</li>
+<li><strong>JSON</strong> &ndash; <span class="fixw">ctf:json-strings</span> and <span class="fixw">ctf:json-string-at</span> read the array of the answer (<span class="fixw">ctf:unicode-to-char</span> for the <span class="fixw">\uXXXX</span> escapes: any character in AutoCAD 2021 and later, <span class="fixw">?</span> outside the code page in an older one).</li>
+<li><strong>The texts</strong> &ndash; <span class="fixw">ctf:get-selection</span>, <span class="fixw">ctf:text-editable-p</span>, <span class="fixw">ctf:print-change</span> and <span class="fixw">ctf:ask-confirmation</span>, then <span class="fixw">ctf:apply-text</span> through ActiveX; <span class="fixw">ctf:process-selection</span> runs them in one undo mark.</li>
 </ul>
 </div>
+<p><span class="fixw">Dyl-Diagnostics</span> checks Claude Code when Text Fix is turned on (<span class="fixw">dg:dyl-assistant</span>).</p>
 <p><a href="../index.htm">&larr; Dynalisp developer docs</a></p>
 
     </div>
