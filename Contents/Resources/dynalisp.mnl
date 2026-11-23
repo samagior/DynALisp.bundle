@@ -386,29 +386,8 @@
     )
   )
 
-  ;;  Export settings button of Dyl-UserFiles: a folder picked, the settings saved in it:
-  (defun Dyl:UserDlgExport (/ dir)
-    (if (setq dir (Remote>>LM:browseforfolder "Save the DynALisp settings in:" 0 81))
-      (set_tile "msg" (Dyl:SetsExport dir))
-    )
-  )
-
-  ;;  Import settings button of Dyl-UserFiles: a DynALisp-Settings.txt picked, its folder
-  ;;  imported:
-  (defun Dyl:UserDlgImport (/ fil)
-    (if (setq fil (getfiled "Import DynALisp Settings (DynALisp-Settings.txt)" "" "txt" 0))
-      (progn
-        (setq fil     (Dyl:SetsImport (vl-filename-directory fil))
-              uf:done (or uf:done (not (vl-string-search "-->" fil)))
-        )
-        (Dyl:UserDlgFill)
-        (set_tile "msg" fil)
-      )
-    )
-  )
-
   ;;; ---------------------------------------------------------------------------
-  ;;; Dyl-UserFiles: list the user copies (Resources\Dyl-UserFiles.dcl), open
+  ;;; Dyl-UserFiles: list the user copies (Res\Dyl-UserFiles.xaml), open
   ;;; them, reset them to their default (the user copy is deleted) or make them
   ;;; the default (the user copy replaces its default under Contents, to commit
   ;;; it, and is deleted). A user folder (Dyl:UserDirW) is one item: it is reset
@@ -441,38 +420,32 @@
     )
   )
 
-  ;;  Fill the list (uf:items) and keep the selection uf:idx in range:
-  (defun Dyl:UserDlgFill ()
+  ;;  The user copies read again (uf:items), the selection uf:idx kept in range (-1 when
+  ;;  there is none):
+  (defun Dyl:UserWinFill ()
     (setq uf:items (if (vl-file-directory-p *dyl:user) (Dyl:UserItems *dyl:user))
-          uf:idx   (max 0 (min uf:idx (1- (length uf:items))))
-          uf:arm   nil
+          uf:idx   (if uf:items (max 0 (min uf:idx (1- (length uf:items)))) -1)
     )
-    (start_list "lst")
-    (foreach i uf:items (add_list (Dyl:UserLine i)))
-    (end_list)
-    (if uf:items (set_tile "lst" (itoa uf:idx)))
-    (foreach k '("opn" "rst" "pub") (mode_tile k (if uf:items 0 1)))
-    (set_tile "msg" (if uf:items "" "No user file: every file is its default."))
   )
 
   ;;  Reset (mode 'reset) or make default (mode 'publish) the item selected, on the
-  ;;  second click of the same button on the same item:
-  (defun Dyl:UserDlgDo (mode / itm usr dft ok)
-    (setq itm (nth uf:idx uf:items))
+  ;;  second click of the same button on the same item (uf:arm: the first one). Returns
+  ;;  the line shown under the list:
+  (defun Dyl:UserWinDo (mode / itm usr dft ok)
+    (setq itm (if (<= 0 uf:idx) (nth uf:idx uf:items)))
     (cond
-      ((not itm))
+      ((not itm) "")
       ((not (equal uf:arm (cons mode uf:idx)))
        (setq uf:arm (cons mode uf:idx))
-       (set_tile "msg"
-                 (if (= mode 'reset)
-                   "Click Reset to default again to delete your copy and use the default."
-                   "Click Make it the default again to replace the default under Contents with your copy."
-                 )
+       (if (= mode 'reset)
+         "Click Reset to default again to delete your copy and use the default."
+         "Click Make it the default again to replace the default under Contents with your copy."
        )
       )
       (T
-       (setq usr (car itm)
-             dft (Dyl:UserDefault usr)
+       (setq usr    (car itm)
+             dft    (Dyl:UserDefault usr)
+             uf:arm nil
        )
        (setq ok (cond
                   ((= mode 'reset) (if (cdr itm) (Dyl:UserRmDir usr) (vl-file-delete usr)))
@@ -490,41 +463,80 @@
                 )
              uf:done (or uf:done ok)
        )
-       (Dyl:UserDlgFill)
-       (set_tile "msg"
-                 (cond
-                   ((not ok) (strcat "Unable to change " usr " (open in another program?)."))
-                   ((= mode 'reset) "Reset: the default is used again.")
-                   ("Done: the default under Contents is now your version (commit it).")
-                 )
+       (cond
+         ((not ok) (strcat "Unable to change " usr " (open in another program?)."))
+         ((= mode 'reset) "Reset: the default is used again.")
+         ("Done: the default under Contents is now your version (commit it).")
        )
       )
     )
   )
 
-  (defun c:Dyl-UserFiles (/ uf:items uf:idx uf:arm uf:done dch)
-    (setq uf:idx 0
-          dch    (load_dialog (strcat *dyl:res "\\Dyl-UserFiles.dcl"))
+  ;;  Export settings button of Dyl-UserFiles: a folder picked, the settings saved in it.
+  ;;  Returns the line shown under the list:
+  (defun Dyl:UserWinExport (/ dir)
+    (if (setq dir (Remote>>LM:browseforfolder "Save the DynALisp settings in:" 0 81))
+      (Dyl:SetsExport dir)
+      ""
     )
-    (cond
-      ((> 0 dch) (princ "\n--> Unable to load the dialog : Dyl-UserFiles.dcl"))
-      ((not (new_dialog "dyl_userfiles" dch)) (princ "\n--> Unable to show the dialog : Dyl-UserFiles.dcl"))
-      (T
-       (set_tile "loc" (strcat "User folder: " *dyl:user))
-       (Dyl:UserDlgFill)
-       (action_tile "lst" "(setq uf:idx (atoi $value) uf:arm nil) (set_tile \"msg\" \"\") (if (= 4 $reason) (Dyl:SuiteDlgShell (list (car (nth uf:idx uf:items)))))")
-       (action_tile "opn" "(Dyl:SuiteDlgShell (list (car (nth uf:idx uf:items))))")
-       (action_tile "dir" "(Dyl:UserMkdir *dyl:user) (Dyl:SuiteDlgShell (list *dyl:user))")
-       (action_tile "rst" "(Dyl:UserDlgDo 'reset)")
-       (action_tile "pub" "(Dyl:UserDlgDo 'publish)")
-       (action_tile "exp" "(Dyl:UserDlgExport)")
-       (action_tile "imp" "(Dyl:UserDlgImport)")
-       (action_tile "cancel" "(done_dialog 0)")
-       (Dyl:DocsTile "Core\\Dyl-Info.htm")
-       (start_dialog)
+  )
+
+  ;;  Import settings button of Dyl-UserFiles: a DynALisp-Settings.txt picked, its folder
+  ;;  imported. Returns the line shown under the list:
+  (defun Dyl:UserWinImport (/ fil)
+    (if (setq fil (getfiled "Import DynALisp Settings (DynALisp-Settings.txt)" "" "txt" 0))
+      (progn
+        (setq fil     (Dyl:SetsImport (vl-filename-directory fil))
+              uf:done (or uf:done (not (vl-string-search "-->" fil)))
+        )
+        fil
+      )
+      ""
+    )
+  )
+
+  ;;  The window (Res\Dyl-UserFiles.xaml) is shown again after each button, which closes
+  ;;  it with its number (see the window file), on the list read again and what was done:
+  (defun c:Dyl-UserFiles (/ uf:items uf:idx uf:arm uf:done res sta msg itm)
+    (setq uf:idx 0
+          sta    T
+    )
+    (while sta
+      (Dyl:UserWinFill)
+      (setq res (Dyl:WinShow "Dyl-UserFiles.xaml"
+                             (append (list (cons "loc" (strcat "User folder: " *dyl:user))
+                                           (cons "msg"
+                                                 (cond
+                                                   (msg)
+                                                   ((not uf:items) "No user file: every file is its default.")
+                                                   ("")
+                                                 )
+                                           )
+                                     )
+                                     (Dyl:WinList "lst" (mapcar 'Dyl:UserLine uf:items) uf:idx)
+                             )
+                )
+            sta (if res (car res))
+            msg nil
+      )
+      (if (and sta (/= 0 sta))
+        (progn
+          (if uf:items (setq uf:idx (Dyl:WinIdx res "lst")))
+          ;; A button other than the one armed takes the first click back:
+          (if (not (member sta '(4 5))) (setq uf:arm nil))
+          (setq itm (if (and uf:items (<= 0 uf:idx)) (nth uf:idx uf:items)))
+          (cond
+            ((= 2 sta) (if itm (Dyl:SuiteDlgShell (list (car itm)))))
+            ((= 3 sta) (Dyl:UserMkdir *dyl:user) (Dyl:SuiteDlgShell (list *dyl:user)))
+            ((= 4 sta) (setq msg (Dyl:UserWinDo 'reset)))
+            ((= 5 sta) (setq msg (Dyl:UserWinDo 'publish)))
+            ((= 6 sta) (setq msg (Dyl:UserWinExport)))
+            ((= 7 sta) (setq msg (Dyl:UserWinImport)))
+          )
+        )
+        (setq sta nil)
       )
     )
-    (if (<= 0 dch) (unload_dialog dch))
     ;;  Files changed: the cached presets are read again, the aliases defined again:
     (if uf:done
       (progn
@@ -1221,7 +1233,7 @@
   )
 
   ;;; ---------------------------------------------------------------------------
-  ;;; Child picker: the list dialog of a main command whose Lisp file holds
+  ;;; Child picker: the list window of a main command whose Lisp file holds
   ;;; preset child commands (Pst-*). The main command only calls it, e.g.
   ;;;   (defun c:Dyl-LayerMake ()
   ;;;     (Dyl:ChildPicker "Dyl-LayerMake.lsp" "Make Layers"
@@ -1256,66 +1268,32 @@
     (reverse lst)
   )
 
-  ;;  Write the dialog definition (n lines in the list) to a temporary DCL file and
-  ;;  return its path:
-  (defun Dyl:ChildDcl (title hint n / path file)
-    (setq path (vl-filename-mktemp "dch" nil ".dcl")
-          file (open path "w")
-    )
-    (foreach line
-      (list (strcat "dyl_child : dialog { label = \"DynALisp - " title "\";")
-            (strcat "  : list_box { key = \"lst\"; label = \"Alias / command:\"; width = 72; height = "
-                    (itoa (min 26 (max 6 (1+ n))))
-                    "; tabs = \"16\"; }"
-            )
-            (strcat "  : text { label = \"" hint "\"; }")
-            "  : text { label = \"The aliases are edited in Dyl-Suite.\"; }"
-            ;;  OK / Cancel, and Open Docs (the page of the main command, see Dyl:DocsTile):
-            "  : row { fixed_width = true; alignment = right;"
-            "    : button { key = \"accept\"; label = \"OK\"; is_default = true; width = 12; fixed_width = true; }"
-            "    : button { key = \"cancel\"; label = \"Cancel\"; is_cancel = true; width = 12; fixed_width = true; }"
-            "    : button { key = \"docs\"; label = \"Open Docs\"; width = 12; fixed_width = true; }"
-            "  }"
-            "  errtile;"
-            "}"
-      )
-      (write-line line file)
-    )
-    (close file)
-    path
-  )
-
-  ;;  Show the children of the Lisp file fle in a dialog titled title, with hint under
-  ;;  the list, and run the child picked. last is the quoted symbol of a global that
-  ;;  keeps the name of the last child picked, selected first the next time:
-  (defun Dyl:ChildPicker (fle title hint last / lst dcl:pth dcl:id sta idx)
+  ;;  Show the children of the Lisp file fle in a window titled title (Res\Dyl-ChildPicker.xaml),
+  ;;  with hint under the list, and run the child picked. last is the quoted symbol of a
+  ;;  global that keeps the name of the last child picked, selected first the next time:
+  (defun Dyl:ChildPicker (fle title hint last / lst idx res doc)
     (cond
       ((not (setq lst (Dyl:ChildList fle)))
        (princ (strcat "\nNo command of " title " is turned on (see Dyl-Suite)."))
       )
-      ((> 0 (setq dcl:id (load_dialog (setq dcl:pth (Dyl:ChildDcl title hint (length lst))))))
-       (princ (strcat "\n--> Unable to load the " title " dialog."))
-      )
-      ((not (new_dialog "dyl_child" dcl:id)) (princ (strcat "\n--> Unable to show the " title " dialog.")))
-      (T
-       (start_list "lst")
-       (foreach x lst (add_list (strcat (car x) "\t" (cadr x))))
-       (end_list)
-       (setq idx (cond ((vl-position (eval last) (mapcar 'cadr lst))) (0)))
-       (set_tile "lst" (itoa idx))
-       (action_tile "lst" "(setq idx (atoi $value)) (if (= 4 $reason) (done_dialog 1))")
-       (action_tile "accept" "(setq idx (atoi (get_tile \"lst\"))) (done_dialog 1)")
-       (Dyl:DocsTile (Dyl:DocsOfFile fle))
-       (setq sta (start_dialog))
-      )
-    )
-    (if (and dcl:id (<= 0 dcl:id)) (unload_dialog dcl:id))
-    (if dcl:pth (vl-file-delete dcl:pth))
-    (if (and (= 1 sta) (nth idx lst))
-      (progn
-        (set last (cadr (nth idx lst)))
-        (princ (strcat "\n" (cadr (nth idx lst))))
-        (eval (list (caddr (nth idx lst))))
+      ((setq idx (cond ((vl-position (eval last) (mapcar 'cadr lst))) (0))
+             doc (Dyl:DocsOfFile fle)
+             res (Dyl:WinShow "Dyl-ChildPicker.xaml"
+                              (append (list (cons "win/title" (strcat "DynALisp - " title))
+                                            (cons "hnt" hint)
+                                      )
+                                      (if doc (list (cons "docs/child" (Dyl:DocsTarget doc))))
+                                      (Dyl:WinList "lst" (mapcar '(lambda (x) (strcat (car x) "\t" (cadr x))) lst) idx)
+                              )
+                 )
+       )
+       (if (and (= 1 (car res)) (nth (setq idx (Dyl:WinIdx res "lst")) lst))
+         (progn
+           (set last (cadr (nth idx lst)))
+           (princ (strcat "\n" (cadr (nth idx lst))))
+           (eval (list (caddr (nth idx lst))))
+         )
+       )
       )
     )
     (princ)
@@ -2749,7 +2727,7 @@
   ;;; ----------------------------------------------------------------------------
   ;;; Dyl-Info: version of DynALisp, new version check, links to the GitHub
   ;;; repository and to the module docs, and the core commands
-  ;;; (Resources\Dyl-Info.dcl).
+  ;;; (Res\Dyl-Info.xaml, Res\Dyl-WhatsNew.xaml).
   ;;;
   ;;; Two repositories: the source (*dyl:gitrepo*, private, the one a git clone
   ;;; pulls) and the releases (*dyl:relrepo*, public: read without signing in to
@@ -2954,30 +2932,30 @@
     (reverse res)
   )
 
-  ;;; The What's new window (dyl_whatsnew of Dyl-Info.dcl): head (the line above the
-  ;;; notes), lines (the notes), msg (the line under them), ins (the label of the
-  ;;; Install button, nil: greyed out). T when Install was picked:
-  (defun Dyl:InfoNotesDlg (head lines msg ins / dch sta)
-    (setq dch (load_dialog (strcat *dyl:res "\\Dyl-Info.dcl")))
-    (cond
-      ((> 0 dch) (princ "\n--> Unable to load the dialog : Dyl-Info.dcl"))
-      ((not (new_dialog "dyl_whatsnew" dch)) (princ "\n--> Unable to show the dialog : Dyl-Info.dcl"))
-      (T
-       (set_tile "hed" head)
-       (start_list "lst")
-       (foreach l (cond (lines) ('("(No notes found for these versions in CHANGELOG.md.)"))) (add_list l))
-       (end_list)
-       (set_tile "msg" (cond (msg) ("")))
-       (if ins (set_tile "ins" ins) (mode_tile "ins" 1))
-       (action_tile "ins" "(done_dialog 2)")
-       (action_tile "rel" "(Dyl:SuiteDlgShell (list *dyl:releases*))")
-       (action_tile "cancel" "(done_dialog 0)")
-       (Dyl:DocsTile "Core\\Dyl-Info.htm")
-       (setq sta (start_dialog))
+  ;;; The What's new window (Res\Dyl-WhatsNew.xaml): head (the line above the notes),
+  ;;; lines (the notes), msg (the line under them), ins (the label of the Install button,
+  ;;; nil: greyed out). All releases opens the releases page and shows it again. T when
+  ;;; Install was picked:
+  (defun Dyl:InfoNotesDlg (head lines msg ins / res)
+    (while
+      (and (setq res (Dyl:WinShow "Dyl-WhatsNew.xaml"
+                                  (append (list (cons "hed" head)
+                                                (cons "msg" (cond (msg) ("")))
+                                                (cons "ins" (cond (ins) ("Install")))
+                                                (cons "lst/list"
+                                                      (cond (lines) ('("(No notes found for these versions in CHANGELOG.md.)")))
+                                                )
+                                                (cons "lst" "-1")
+                                          )
+                                          (Dyl:WinOff "ins" (not ins))
+                                  )
+                      )
+           )
+           (= 3 (car res))
       )
+      (Dyl:SuiteDlgShell (list *dyl:releases*))
     )
-    (if (<= 0 dch) (unload_dialog dch))
-    (= 2 sta)
+    (= 2 (car res))
   )
 
   ;;; What's new button of Dyl-Info: the changes of every version up to this one
@@ -3080,12 +3058,14 @@
     )
   )
 
-  ;;; Show the update status and set the update button:
-  (defun Dyl:InfoDlgUpd (/ how ver)
+  ;;; The update status and the update button of the Info window, as values to give:
+  (defun Dyl:InfoWinUpd (/ how ver)
     (setq how (Dyl:InfoUpdHow)
           ver (if (vl-consp *dyl:latest*) (car *dyl:latest*))
     )
-    (set_tile "upd"
+    (append
+      (list
+        (cons "upd"
               (cond
                 ((eq how 'WAIT) (strcat "DynALisp " (vl-bb-ref '*dyl:installing*) " downloaded: it installs when you close AutoCAD."))
                 ((not ver) "Unable to check for a new version (offline or no public release).")
@@ -3093,21 +3073,24 @@
                 ((not (eq how 'NONE)) (strcat "New version available: " ver))
                 ((strcat "Up to date (latest: " ver ")."))
               )
-    )
-    (set_tile "dwn"
+        )
+        (cons "dwn"
               (cond
                 ((eq how 'SETUP) (strcat "Update to " ver "..."))
                 ((eq how 'GIT) (strcat "What's new in " ver "..."))
                 ((eq how 'PAGE) (strcat "Download " ver))
                 ("Update")
               )
+        )
+      )
+      (Dyl:WinOff "dwn" (member how '(NONE WAIT)))
     )
-    (mode_tile "dwn" (if (member how '(NONE WAIT)) 1 0))
   )
 
   ;;; Update button of Dyl-Info: the notes of the versions since this one (the
   ;;; CHANGELOG.md asset of the latest release), whose Install starts the setup (SETUP); a git
-  ;;; clone gets the notes only (GIT); the release page opened when it has no setup (PAGE):
+  ;;; clone gets the notes only (GIT); the release page opened when it has no setup (PAGE).
+  ;;; Returns the status line when the install failed ("-->"), nil else:
   (defun Dyl:InfoUpdate (/ how ver res)
     (setq how (Dyl:InfoUpdHow)
           ver (if (vl-consp *dyl:latest*) (car *dyl:latest*))
@@ -3134,8 +3117,7 @@
        (princ (strcat "\n" (setq res (Dyl:InfoInstall *dyl:latest*))))
       )
     )
-    (Dyl:InfoDlgUpd)
-    (if (and res (vl-string-search "-->" res)) (set_tile "upd" res))
+    (if (and res (vl-string-search "-->" res)) res)
   )
 
   ;;; Automatic updates on (Updates in Dyl-Settings, off by default):
@@ -3203,7 +3185,9 @@
     )
   )
 
-  (defun c:Dyl-Info (/ cmds mods dch sta idx res)
+  ;;; The Info window (Res\Dyl-Info.xaml) is shown again after each button but Run and
+  ;;; Close, which close it with their number (see the window file):
+  (defun c:Dyl-Info (/ cmds mods sta res idx mdx err)
     (if (not *dyl:latest*) (Dyl:InfoCheck))
     ;; Core commands defined, and the modules with a docs index, on the website or on
     ;; this computer (Dyl:DocsFind): ((name . index) ...)
@@ -3219,43 +3203,44 @@
                                   (vl-remove-if '(lambda (x) (wcmatch x "*.*")) (vl-directory-files *dyl:module nil -1))
                           )
                )
-          dch  (load_dialog (strcat *dyl:res "\\Dyl-Info.dcl"))
           idx  0
+          mdx  (cond ((vl-position "DYNALISP" (mapcar 'strcase (mapcar 'car mods)))) (0))
+          sta  T
     )
-    (cond
-      ((> 0 dch) (princ "\n--> Unable to load the dialog : Dyl-Info.dcl"))
-      ((not (new_dialog "dyl_info" dch)) (princ "\n--> Unable to show the dialog : Dyl-Info.dcl"))
-      (T
-       (set_tile "ver" (strcat "Version: " (Dyl:InfoVersion)))
-       (set_tile "acv" (strcat "AutoCAD: " (getvar "PRODUCT") " " (getvar "ACADVER")))
-       (set_tile "pth" (strcat "Folder: " *dyl:repo))
-       (Dyl:InfoDlgUpd)
-       (start_list "mod")
-       (foreach m mods (add_list (car m)))
-       (end_list)
-       (if mods
-         (set_tile "mod" (itoa (cond ((vl-position "DYNALISP" (mapcar 'strcase (mapcar 'car mods)))) (0))))
-         (progn (mode_tile "mod" 1) (mode_tile "mdc" 1))
-       )
-       (start_list "cmd")
-       (foreach c cmds (add_list (strcat (car c) "\t" (cadr c))))
-       (end_list)
-       (set_tile "cmd" "0")
-       (action_tile "dwn" "(Dyl:InfoUpdate)")
-       (action_tile "whn" "(Dyl:InfoWhatsNew)")
-       (action_tile "chk" "(Dyl:InfoCheck) (Dyl:InfoDlgUpd)")
-       (action_tile "git" "(Dyl:SuiteDlgShell (list (if (Dyl:InfoGit-p) *dyl:github* (strcat \"https://github.com/\" *dyl:relrepo*))))")
-       (action_tile "mdc" "(Dyl:SuiteDlgShell (list (cdr (nth (atoi (get_tile \"mod\")) mods))))")
-       (action_tile "cmd" "(setq idx (atoi $value)) (if (= 4 $reason) (done_dialog 2))")
-       (action_tile "run" "(setq idx (atoi (get_tile \"cmd\"))) (done_dialog 2)")
-       (action_tile "cancel" "(done_dialog 0)")
-       (Dyl:DocsTile "Core\\Dyl-Info.htm")
-       (setq sta (start_dialog))
+    (while sta
+      (setq res (Dyl:WinShow "Dyl-Info.xaml"
+                             (append (list (cons "ver" (strcat "Version: " (Dyl:InfoVersion)))
+                                           (cons "acv" (strcat "AutoCAD: " (getvar "PRODUCT") " " (getvar "ACADVER")))
+                                           (cons "pth" (strcat "Folder: " *dyl:repo))
+                                     )
+                                     (Dyl:InfoWinUpd)
+                                     ;; the install failed: its message in place of the status:
+                                     (if err (list (cons "upd" err)))
+                                     (Dyl:WinList "mod" (mapcar 'car mods) (if mods mdx -1))
+                                     (Dyl:WinOff '("mod" "mdc") (not mods))
+                                     (Dyl:WinList "cmd" (mapcar '(lambda (c) (strcat (car c) "\t" (cadr c))) cmds) idx)
+                             )
+                )
+            sta (if res (car res))
+            err nil
+      )
+      (if (member sta '(2 3 4 5 6 7))
+        (setq idx (Dyl:WinIdx res "cmd")
+              mdx (Dyl:WinIdx res "mod")
+        )
+      )
+      (cond
+        ((= 3 sta) (setq err (Dyl:InfoUpdate)))
+        ((= 4 sta) (Dyl:InfoWhatsNew))
+        ((= 5 sta) (Dyl:InfoCheck))
+        ((= 6 sta) (Dyl:SuiteDlgShell (list (if (Dyl:InfoGit-p) *dyl:github* (strcat "https://github.com/" *dyl:relrepo*)))))
+        ((= 7 sta) (if (nth mdx mods) (Dyl:SuiteDlgShell (list (cdr (nth mdx mods))))))
+        ;; Run (2) keeps res for the command picked; Close, or not shown:
+        (T (if (/= 2 sta) (setq res nil)) (setq sta nil))
       )
     )
-    (if (<= 0 dch) (unload_dialog dch))
     ;; Run the command picked (Dyl-Info itself only closes the window):
-    (if (and (= 2 sta) (nth idx cmds) (/= "DYL-INFO" (strcase (car (nth idx cmds)))))
+    (if (and res (= 2 (car res)) (nth idx cmds) (/= "DYL-INFO" (strcase (car (nth idx cmds)))))
       (progn
         (princ (strcat "\n" (car (nth idx cmds))))
         (setq res (vl-catch-all-apply (read (strcat "C:" (car (nth idx cmds)))) nil))

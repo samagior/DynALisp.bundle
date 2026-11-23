@@ -24,7 +24,8 @@
 //   dyl:Win.EnabledBy="rea,!lkk"            enabled while every key is on ("1"), or off with !
 //   dyl:Win.VisibleBy="prp"                 shown while every key is on (or off with !)
 //   dyl:Win.Excludes="lkk"                  on a checkbox: turning it on turns those off
-//   dyl:Win.Close="4"                       on a button: closes the window, the Lisp gets 4
+//   dyl:Win.Close="4"                       on a button: closes the window, the Lisp gets 4;
+//                                           on a ListBox: an item double-clicked closes it
 //   dyl:Win.Open="Dyl-Settings-Display.xaml" on a button: opens that window over this one,
 //                                           beside this file; its OK keeps its values,
 //                                           its Cancel puts them back
@@ -60,8 +61,13 @@
 //   dyl:Win.SummaryEmpty="No rows."         in its place while there is no row
 //
 // A button with IsDefault closes the window with 1 (OK, Save), one with IsCancel with 0.
+//
+// The items of a list given by the Lisp (key/list) may hold columns divided by a tab: its
+// template shows one with {Binding Converter={x:Static dyl:Cell.Converter},
+// ConverterParameter=1} (the second one).
 
 using System.Windows;
+using System.Windows.Data;
 
 namespace DynALisp.Windows
 {
@@ -162,5 +168,20 @@ namespace DynALisp.Windows
         public static readonly On Converter = new On();
         public object Convert(object value, System.Type t, object p, System.Globalization.CultureInfo c) => (value as string) == "1";
         public object ConvertBack(object value, System.Type t, object p, System.Globalization.CultureInfo c) => value is bool b && b ? "1" : "0";
+    }
+
+    // The column n (ConverterParameter, from 0) of an item divided by tabs ("CC\tChange
+    // Color"), "" when it has none: {Binding Converter={x:Static dyl:Cell.Converter},
+    // ConverterParameter=1}:
+    public sealed class Cell : System.Windows.Data.IValueConverter
+    {
+        public static readonly Cell Converter = new Cell();
+        public object Convert(object value, System.Type t, object p, System.Globalization.CultureInfo c)
+        {
+            var f = (value as string ?? "").Split('\t');
+            int.TryParse(p as string ?? "0", System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int n);
+            return n >= 0 && n < f.Length ? f[n] : "";
+        }
+        public object ConvertBack(object value, System.Type t, object p, System.Globalization.CultureInfo c) => Binding.DoNothing;
     }
 }

@@ -1,0 +1,6 @@
+# The values of the User Files window (Res\Dyl-UserFiles.xaml) for its picture in the docs, as
+# c:Dyl-UserFiles gives them after a first click on Reset to default:
+loc=User folder: C:\Users\<user>\AppData\Roaming\Autodesk\ApplicationPlugins\DynALisp.bundle\User
+msg=Click Reset to default again to delete your copy and use the default.
+lst/list=Contents\Modules\Dynalisp\Res\HatchPresets.csv\tChanged|Contents\Modules\Dynalisp\Res\Materials.csv\tChanged|Contents\Modules\Dynalisp\Res\QuickDraw.csv\tChanged|Contents\Modules\Dynalisp\Res\QuickDrawAssemblies.csv\tAdded (no default)|Contents\Modules\Dynalisp\Res\Shapes\tFolder, replaces its default|Contents\Resources\Aliases.csv\tChanged|Contents\Resources\StartupSuite.csv\tChanged
+lst=1

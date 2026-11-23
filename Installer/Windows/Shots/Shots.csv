@@ -20,3 +20,7 @@ Contents/Modules/Dynalisp/Res/Dyl-QuickDrawHatchSettings.xaml;Dyl-QuickDrawHatch
 Contents/Modules/Dynalisp/Res/Dyl-Materials.xaml;Dyl-Materials.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-Materials-window.png
 Contents/Modules/Dynalisp/Res/Dyl-Suite.xaml;Dyl-Suite.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Suite-window.png
 Contents/Modules/Dynalisp/Res/Dyl-VSCode.xaml;Dyl-VSCode.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Suite-vscode.png
+Contents/Modules/Dynalisp/Res/Dyl-Info.xaml;Dyl-Info.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Info-window.png
+Contents/Modules/Dynalisp/Res/Dyl-WhatsNew.xaml;Dyl-WhatsNew.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Info-whatsnew.png
+Contents/Modules/Dynalisp/Res/Dyl-UserFiles.xaml;Dyl-UserFiles.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Info-userfiles.png
+Contents/Modules/Dynalisp/Res/Dyl-ChildPicker.xaml;Dyl-ChildPicker.txt;Contents/Modules/Dynalisp/Docs/Layer/images/Dyl-LayerMake-window.png

@@ -292,6 +292,15 @@ namespace DynALisp.Windows
                     break;
                 case ListBox l when Named(l):
                     l.SelectionChanged += (a, b) => Changed(l.Name, l.SelectedIndex.ToString(CultureInfo.InvariantCulture), l);
+                    // An item double-clicked closes the window (Win.Close: Run, OK):
+                    if (Win.GetClose(l) != null)
+                        l.MouseDoubleClick += (a, e) =>
+                        {
+                            if (!(Item(e.OriginalSource as DependencyObject) is ListBoxItem)) return;
+                            int.TryParse(Win.GetClose(l), NumberStyles.Integer, CultureInfo.InvariantCulture, out int st);
+                            e.Handled = true;
+                            CloseWith(st);
+                        };
                     break;
                 case TextBox x when Named(x):
                     x.TextChanged += (a, b) => Changed(x.Name, x.Text, x);
@@ -304,6 +313,15 @@ namespace DynALisp.Windows
                     g.Picked += (i, m) => { _s.Values[g.Name + ".method"] = m; Pick(g, i); };
                     break;
             }
+        }
+
+        // The item of a list that holds o (an element of its template), null when o is not
+        // in an item (its scroll bar):
+        static DependencyObject Item(DependencyObject o)
+        {
+            while (o != null && !(o is ListBoxItem))
+                o = o is Visual || o is System.Windows.Media.Media3D.Visual3D ? VisualTreeHelper.GetParent(o) : LogicalTreeHelper.GetParent(o);
+            return o;
         }
 
         // A tile of a gallery double-clicked: its index, then the window closes (status 1, or
@@ -385,6 +403,7 @@ namespace DynALisp.Windows
                             if (_s.Lists.TryGetValue(c.Name, out var items)) c.ItemsSource = items;
                             if (has && int.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i))
                                 c.SelectedIndex = i >= 0 && i < c.Items.Count ? i : -1;
+                            if (c is ListBox lb && lb.SelectedItem != null) lb.ScrollIntoView(lb.SelectedItem);
                             else if (!has) _s.Values[c.Name] = c.SelectedIndex.ToString(CultureInfo.InvariantCulture);
                             break;
                         case TextBox x:

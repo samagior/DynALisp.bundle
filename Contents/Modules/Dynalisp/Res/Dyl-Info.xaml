@@ -1,0 +1,101 @@
+<!--
+  Dyl-Info.xaml - the Info window of DynALisp (Dyl-Info command)
+  Copyright (C) 2026  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Shown by c:Dyl-Info (Info region of Resources\dynalisp.mnl): the version, the update status
+  and the core commands are its values. Every button but Close runs Lisp, so it closes the
+  window with its number and the Lisp shows it again: 2 Run (or a command double-clicked),
+  3 the update button (its label from the Lisp: Update to x..., What's new in x...,
+  Download x), 4 What's new, 5 Check again, 6 GitHub repository, 7 Open docs index.
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - Info" dyl:Win.Docs="Core\Dyl-Info.htm">
+  <Grid Margin="14" Width="860">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*"/>
+      <ColumnDefinition Width="12"/>
+      <ColumnDefinition Width="280"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <!-- The version, the update status (Dyl:InfoWinUpd), AutoCAD and the folder: -->
+    <GroupBox Header="DynALisp" Margin="0">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,10,0,0">
+          <Button x:Name="dwn" Margin="0" Content="Update" dyl:Win.Close="3"/>
+          <Button x:Name="whn" Content="What's new" dyl:Win.Close="4"/>
+          <Button x:Name="chk" Content="Check again" dyl:Win.Close="5"/>
+          <Button x:Name="git" Content="GitHub repository" dyl:Win.Close="6"/>
+        </StackPanel>
+        <StackPanel>
+          <TextBlock x:Name="ver" FontWeight="SemiBold" Margin="0,0,0,4"/>
+          <TextBlock x:Name="upd" TextWrapping="Wrap" Margin="0,0,0,4"/>
+          <TextBlock x:Name="acv" Style="{DynamicResource Dyl.Desc}" Margin="0"/>
+          <TextBlock x:Name="pth" Style="{DynamicResource Dyl.Desc}" Margin="0" TextTrimming="CharacterEllipsis"/>
+        </StackPanel>
+      </DockPanel>
+    </GroupBox>
+
+    <!-- The modules with a docs index: -->
+    <GroupBox Grid.Column="2" Header="Module docs" Margin="0">
+      <DockPanel>
+        <Button x:Name="mdc" DockPanel.Dock="Bottom" HorizontalAlignment="Left" Margin="0,10,0,0"
+                Content="Open docs index" dyl:Win.Close="7"/>
+        <DockPanel VerticalAlignment="Top">
+          <ComboBox x:Name="mod" DockPanel.Dock="Right" Width="160"/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Module"/>
+        </DockPanel>
+      </DockPanel>
+    </GroupBox>
+
+    <!-- The core commands defined (*dyl:core*): command TAB what it does: -->
+    <GroupBox Grid.Row="1" Grid.ColumnSpan="3" Header="Core commands">
+      <StackPanel>
+        <ListBox x:Name="cmd" Height="330" dyl:Win.Close="2">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="200"/>
+                  <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Converter={x:Static dyl:Cell.Converter}, ConverterParameter=0}" Margin="0,0,8,0"/>
+                <TextBlock Grid.Column="1" Foreground="{DynamicResource Dyl.Muted}" TextTrimming="CharacterEllipsis"
+                           Text="{Binding Converter={x:Static dyl:Cell.Converter}, ConverterParameter=1}"/>
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+        <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="0,6,0,0"
+                   Text="Double-click a command to run it. The commands of the modules are in Dyl-Suite."/>
+      </StackPanel>
+    </GroupBox>
+
+    <DockPanel Grid.Row="2" Grid.ColumnSpan="3" Margin="0,12,0,0">
+      <Button x:Name="run" DockPanel.Dock="Left" Margin="0" Content="_Run" dyl:Win.Close="2"/>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Content="Close" IsCancel="True" IsDefault="True"/>
+        <Button x:Name="docs" Content="Open Docs"/>
+      </StackPanel>
+    </DockPanel>
+  </Grid>
+</Window>

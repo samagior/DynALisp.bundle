@@ -1,0 +1,7 @@
+# The values of the child picker (Res\Dyl-ChildPicker.xaml) for its picture in the docs, as
+# Dyl:ChildPicker gives them for Make Layers (c:Dyl-LayerMake): its children turned on, with
+# their aliases (StartupSuite.csv, Aliases.csv).
+win/title=DynALisp - Make Layers
+hnt=Double-click a layer set (or OK) to create its layers.
+lst/list=LL-BASICDRAWING\tMake Basic Drawing Layers|LL-A-ELEV\tMake Architectural Elevation Layers|LL-A-SECT\tMake Architectural Section Layers|LL-A-DETL\tMake Architectural Detail Layers|LL-A-FLOOR\tMake Architectural Floor Plan Layers|LL-A-ROOF\tMake Architectural Roof Plan Layers|LL-A-CEIL\tMake Architectural Ceiling Plan Layers|LL-A-FURN\tMake Architectural Furniture Plan Layers|LL-NCS1\tMake NCS Level 1 Layers|LL-NCS2\tMake NCS Level 2 Layers|LL-NCS3\tMake NCS Level 3 Layers
+lst=0

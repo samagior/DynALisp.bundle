@@ -1,0 +1,51 @@
+<!--
+  Dyl-WhatsNew.xaml - the changes of the versions of DynALisp (What's new of Dyl-Info)
+  Copyright (C) 2026  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Shown by Dyl:InfoNotesDlg (Info region of Resources\dynalisp.mnl): before an update, after
+  one (the first startup of a new version) or all of them (What's new of Dyl-Info). hed is
+  the line above the notes, lst the notes of CHANGELOG.md, msg the line under them. Install
+  (2, its label from the Lisp, greyed out when there is nothing to install) starts the setup;
+  All releases (3) opens the releases page, and the Lisp shows the window again.
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - What's New" dyl:Win.Docs="Core\Dyl-Info.htm">
+  <StackPanel Margin="14" Width="760">
+    <GroupBox Header="What's new" Margin="0">
+      <StackPanel>
+        <TextBlock x:Name="hed" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,8"/>
+        <ListBox x:Name="lst" Height="420" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+        <TextBlock x:Name="msg" TextWrapping="Wrap" Margin="0,8,0,0"/>
+      </StackPanel>
+    </GroupBox>
+    <DockPanel Margin="0,12,0,0">
+      <Button x:Name="ins" DockPanel.Dock="Left" Margin="0" Content="Install" dyl:Win.Close="2"/>
+      <Button x:Name="rel" DockPanel.Dock="Left" Content="All releases" dyl:Win.Close="3"/>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="8,0,0,0">
+        <Button Content="Close" IsCancel="True" IsDefault="True"/>
+        <Button x:Name="docs" Content="Open Docs"/>
+      </StackPanel>
+    </DockPanel>
+  </StackPanel>
+</Window>
