@@ -1142,6 +1142,20 @@ def i_diagnostics(c):
            1 if c.small else 1.3)
 
 
+def i_simulation(c):
+    """A section of a wall in a gradient from cold (blue) to warm (red), its cells drawn: the
+    temperatures of a simulation over a 2D detail."""
+    cols = (BLUE, BLUE_L, ORANGE_L, RED)
+    x0, x1, y0, y1 = 4, 28, 4, 28
+    w = (x1 - x0) / len(cols)
+    for k, col in enumerate(cols):
+        c.rect(x0 + k * w, y0, x0 + (k + 1) * w, y1, col, None)
+    if not c.small:
+        for y in (12, 20):
+            c.line([(x0, y), (x1, y)], PAPER, 0.8, caps=False)
+    c.rect(x0, y0, x1, y1, None, INK)
+
+
 ICONS = {
     # core
     'DYL-SETTINGS': i_settings,
@@ -1204,6 +1218,8 @@ ICONS = {
     'DYL-RESETLINETYPESCALE': i_resetlinetypescale,
     'DYL-UNGROUPNEXT': i_ungroupnext,
     'DYL-VIEWPORTTOPAPERSPACE': i_viewporttopaperspace,
+    # analysis
+    'DYL-SIMULATION': i_simulation,
     # troubleshooting
     'DYL-DIAGNOSTICS': i_diagnostics,
     # children with an icon of their own

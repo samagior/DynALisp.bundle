@@ -1,0 +1,156 @@
+<!--
+  Dyl-Simulation.xaml - the Simulation window: the zone of a 2D detail and its climates
+  Copyright (C) 2026  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Shown by Dyl-Simulation (Dyl:SimulationDialog of Apps\Analysis\Dyl-Simulation.lsp). Every
+  button that acts on the drawing closes it with its number and the Lisp shows it again on the
+  values it got (nothing calls the Lisp back while it is open):
+    zsum  the zone picked (its size, or none), zpk Pick... (2) and znw New... (3) the zone;
+    grd   the size of the cells (grd/list: Coarse, Medium, Fine), kept on the zone;
+    cl    the climates, a list of rows (Installer\Windows\Engine\Rows.cs): id name temperature
+          humidity rs rscond, then the values of the file and those shown when it opened
+          (Lisp: a value shown and not changed is saved as it was), in the units of the
+          drawing (sim.imp "1": imperial); cpl Place... (4) draws a zone of the climate
+          selected (cl.sel);
+    res   what the last check found; chk Check (5) reads the zone and shows its grid and its
+          problems over the drawing (the window stays closed), clr Clear (6) clears them;
+    sim.zone "1" while a zone is picked, sim.plugin "1" while DynALisp.Simulation.dll is
+    loaded. OK saves the climates and the grid, Cancel drops what was changed in the window.
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - Simulation" dyl:Win.Docs="Analysis\Dyl-Simulation.htm">
+  <Window.Resources>
+    <!-- A row of a value: its label on the left, its box at the right of the column: -->
+    <Style x:Key="Row" TargetType="DockPanel">
+      <Setter Property="Margin" Value="0,3"/>
+      <Setter Property="LastChildFill" Value="True"/>
+    </Style>
+    <!-- The unit after a value box: -->
+    <Style x:Key="Unit" TargetType="TextBlock">
+      <Setter Property="DockPanel.Dock" Value="Right"/>
+      <Setter Property="Width" Value="90"/>
+      <Setter Property="Margin" Value="8,0,0,0"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="Foreground" Value="{DynamicResource Dyl.Muted}"/>
+    </Style>
+  </Window.Resources>
+
+  <Grid Margin="14">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="360"/>
+      <ColumnDefinition Width="10"/>
+      <ColumnDefinition Width="440"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <!-- The zone and its check: -->
+    <StackPanel>
+      <GroupBox Header="Zone" Margin="0">
+        <StackPanel>
+          <TextBlock x:Name="zsum" TextWrapping="Wrap" Margin="0,3"/>
+          <StackPanel Orientation="Horizontal" Margin="0,6,0,6">
+            <Button x:Name="zpk" Margin="0" Content="Pick..." dyl:Win.Close="2"/>
+            <Button x:Name="znw" Content="New..." dyl:Win.Close="3"/>
+          </StackPanel>
+          <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="sim.zone=1">
+            <ComboBox x:Name="grd" DockPanel.Dock="Right" Width="160"/>
+            <TextBlock Style="{DynamicResource Dyl.Label}" Text="Grid"/>
+          </DockPanel>
+        </StackPanel>
+      </GroupBox>
+      <GroupBox Header="Check">
+        <StackPanel>
+          <TextBlock x:Name="res" TextWrapping="Wrap" Margin="0,3" MinHeight="96"/>
+          <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+            <Button x:Name="chk" Margin="0" Content="Check" dyl:Win.Close="5" dyl:Win.EnabledBy="sim.zone=1,sim.plugin=1"/>
+            <Button x:Name="clr" Content="Clear" dyl:Win.Close="6" dyl:Win.EnabledBy="sim.plugin=1"/>
+          </StackPanel>
+        </StackPanel>
+      </GroupBox>
+    </StackPanel>
+
+    <!-- The climates, a list of rows edited here: -->
+    <GroupBox Grid.Column="2" Header="Climates" Margin="0" dyl:Win.Summary="Climates{sel| (# selected)}">
+      <StackPanel>
+        <ListBox x:Name="cl" Height="150" SelectionMode="Extended" dyl:Win.Rows="1"
+                 dyl:Win.Check="rows" dyl:Win.CheckMessage="Keep at least one climate.">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <DockPanel>
+                <TextBlock DockPanel.Dock="Right" Foreground="{DynamicResource Dyl.Muted}" Text="{Binding V[3]}" Width="50" TextAlignment="Right"/>
+                <TextBlock DockPanel.Dock="Right" Foreground="{DynamicResource Dyl.Muted}" Text="{Binding V[2]}" Width="60" TextAlignment="Right"/>
+                <TextBlock Text="{Binding V[1]}" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
+              </DockPanel>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+        <DockPanel Style="{StaticResource Row}" Margin="0,10,0,3">
+          <TextBlock Style="{StaticResource Unit}"/>
+          <TextBox x:Name="cln" DockPanel.Dock="Right" Width="180" MaxLength="32" dyl:Win.Column="1"
+                   dyl:Win.Unique="There is already a climate with this name."
+                   dyl:Win.Check="text;plain" dyl:Win.CheckMessage="Type a climate name, without ; , or &quot;."/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Name"/>
+        </DockPanel>
+        <DockPanel Style="{StaticResource Row}">
+          <TextBlock Style="{StaticResource Unit}" Text="°C" dyl:Win.VisibleBy="!sim.imp"/>
+          <TextBlock Style="{StaticResource Unit}" Text="°F" dyl:Win.VisibleBy="sim.imp"/>
+          <TextBox x:Name="clt" DockPanel.Dock="Right" Width="120" dyl:Win.Column="2" dyl:Win.Check="empty;number"
+                   dyl:Win.CheckMessage="The temperature must be a number (empty: not known)."/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Temperature"/>
+        </DockPanel>
+        <DockPanel Style="{StaticResource Row}">
+          <TextBlock Style="{StaticResource Unit}" Text="%"/>
+          <TextBox x:Name="clh" DockPanel.Dock="Right" Width="120" dyl:Win.Column="3" dyl:Win.Check="empty;number;min=0;max=100"
+                   dyl:Win.CheckMessage="The relative humidity must be a number from 0 to 100 (empty: not known)."/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Relative humidity"/>
+        </DockPanel>
+        <DockPanel Style="{StaticResource Row}">
+          <TextBlock Style="{StaticResource Unit}" Text="m²·K/W" dyl:Win.VisibleBy="!sim.imp"/>
+          <TextBlock Style="{StaticResource Unit}" Text="h·ft²·°F/Btu" dyl:Win.VisibleBy="sim.imp"/>
+          <TextBox x:Name="clr1" DockPanel.Dock="Right" Width="120" dyl:Win.Column="4" dyl:Win.Check="empty;positive"
+                   dyl:Win.CheckMessage="The surface resistance must be a number greater than 0 (empty: not known)."/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Surface resistance"/>
+        </DockPanel>
+        <DockPanel Style="{StaticResource Row}">
+          <TextBlock Style="{StaticResource Unit}" Text="m²·K/W" dyl:Win.VisibleBy="!sim.imp"/>
+          <TextBlock Style="{StaticResource Unit}" Text="h·ft²·°F/Btu" dyl:Win.VisibleBy="sim.imp"/>
+          <TextBox x:Name="clr2" DockPanel.Dock="Right" Width="120" dyl:Win.Column="5" dyl:Win.Check="empty;positive"
+                   dyl:Win.CheckMessage="The surface resistance for condensation must be a number greater than 0 (empty: not known)."/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Condensation resistance"/>
+        </DockPanel>
+        <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+          <Button x:Name="cla" Margin="0" Content="Add" dyl:Win.Do="add"/>
+          <Button x:Name="cld" Content="Remove" dyl:Win.Do="remove"/>
+          <Button x:Name="clz" Content="Reset" dyl:Win.Do="reset"/>
+          <Button x:Name="cpl" Content="Place..." dyl:Win.Close="4"/>
+        </StackPanel>
+      </StackPanel>
+    </GroupBox>
+
+    <TextBlock x:Name="error" Grid.Row="1" Grid.ColumnSpan="3" Style="{DynamicResource Dyl.Error}" Margin="2,10,0,0" TextWrapping="Wrap" Visibility="Collapsed"/>
+    <StackPanel Grid.Row="2" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+      <Button Content="OK" IsDefault="True"/>
+      <Button Content="_Cancel" IsCancel="True"/>
+      <Button x:Name="docs" Content="Open Docs"/>
+    </StackPanel>
+  </Grid>
+</Window>

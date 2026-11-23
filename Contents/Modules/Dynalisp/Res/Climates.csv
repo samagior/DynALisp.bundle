@@ -1,0 +1,3 @@
+Id;Name;Temperature;Humidity;Rs;RsCondensation
+cl-Interior;Interior;;;0.13;0.25
+cl-Exterior;Exterior;;;0.04;0.04
