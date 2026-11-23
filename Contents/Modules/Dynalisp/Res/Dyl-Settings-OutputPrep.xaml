@@ -1,0 +1,114 @@
+<!--
+  Dyl-Settings-OutputPrep.xaml - the Output Prep window (Dyl-PrepSuite, and Commands of Dyl-Settings)
+  Copyright (C) 2023  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  The steps each output command runs (Dyl-CmdOptimizer), a grid of checkboxes: keys
+  t_<STEP>_<COLUMN>, the steps of MAJ:steps and the columns of MAJ:PrepCols (MAJ:PrepDlgKey):
+  the save commands share the SAVE column, the print commands the PLOT one (MAJ:groups),
+  PREVIEW and REGEN have their own. A step added to MAJ:steps gets its row here.
+  Opened alone by Dyl-PrepSuite (MAJ:PrepDlg: OK saves it at once), and over the Settings
+  window by the open button of Commands (dyl:Win.Open of Dyl-Settings.xaml: saved with the
+  other settings by Save). The line under the grid follows the Commands checkbox (prp): the
+  value of the Settings window, or the one given by MAJ:PrepDlg.
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - Output Prep" dyl:Win.Docs="Output\Dyl-CmdOptimizer.htm">
+  <StackPanel Margin="16,16,16,14">
+    <GroupBox Header="Steps run before each command" Margin="0">
+      <StackPanel>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="300"/>
+            <ColumnDefinition Width="84"/>
+            <ColumnDefinition Width="84"/>
+            <ColumnDefinition Width="84"/>
+            <ColumnDefinition Width="84"/>
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+          </Grid.RowDefinitions>
+          <TextBlock Style="{DynamicResource Dyl.Label}" FontWeight="SemiBold" Margin="0,0,0,4" Text="Step"/>
+          <TextBlock Grid.Column="1" Style="{DynamicResource Dyl.Label}" FontWeight="SemiBold" Margin="0,0,0,4" HorizontalAlignment="Center" Text="All saves"/>
+          <TextBlock Grid.Column="2" Style="{DynamicResource Dyl.Label}" FontWeight="SemiBold" Margin="0,0,0,4" HorizontalAlignment="Center" Text="All prints"/>
+          <TextBlock Grid.Column="3" Style="{DynamicResource Dyl.Label}" FontWeight="SemiBold" Margin="0,0,0,4" HorizontalAlignment="Center" Text="PREVIEW"/>
+          <TextBlock Grid.Column="4" Style="{DynamicResource Dyl.Label}" FontWeight="SemiBold" Margin="0,0,0,4" HorizontalAlignment="Center" Text="REGEN"/>
+          <TextBlock Grid.Row="1" Style="{DynamicResource Dyl.Label}" Text="Turn on and thaw all layers"/>
+          <CheckBox x:Name="t_LAYERS_SAVE" HorizontalAlignment="Center" Margin="0,5" Grid.Row="1" Grid.Column="1"/>
+          <CheckBox x:Name="t_LAYERS_PLOT" HorizontalAlignment="Center" Margin="0,5" Grid.Row="1" Grid.Column="2"/>
+          <CheckBox x:Name="t_LAYERS_PREVIEW" HorizontalAlignment="Center" Margin="0,5" Grid.Row="1" Grid.Column="3"/>
+          <CheckBox x:Name="t_LAYERS_REGEN" HorizontalAlignment="Center" Margin="0,5" Grid.Row="1" Grid.Column="4"/>
+          <TextBlock Grid.Row="2" Style="{DynamicResource Dyl.Label}" Text="Unhide hidden / isolated objects"/>
+          <CheckBox x:Name="t_UNHIDE_SAVE" HorizontalAlignment="Center" Margin="0,5" Grid.Row="2" Grid.Column="1"/>
+          <CheckBox x:Name="t_UNHIDE_PLOT" HorizontalAlignment="Center" Margin="0,5" Grid.Row="2" Grid.Column="2"/>
+          <CheckBox x:Name="t_UNHIDE_PREVIEW" HorizontalAlignment="Center" Margin="0,5" Grid.Row="2" Grid.Column="3"/>
+          <CheckBox x:Name="t_UNHIDE_REGEN" HorizontalAlignment="Center" Margin="0,5" Grid.Row="2" Grid.Column="4"/>
+          <TextBlock Grid.Row="3" Style="{DynamicResource Dyl.Label}" Text="Reload all xrefs"/>
+          <CheckBox x:Name="t_XREFS_SAVE" HorizontalAlignment="Center" Margin="0,5" Grid.Row="3" Grid.Column="1"/>
+          <CheckBox x:Name="t_XREFS_PLOT" HorizontalAlignment="Center" Margin="0,5" Grid.Row="3" Grid.Column="2"/>
+          <CheckBox x:Name="t_XREFS_PREVIEW" HorizontalAlignment="Center" Margin="0,5" Grid.Row="3" Grid.Column="3"/>
+          <CheckBox x:Name="t_XREFS_REGEN" HorizontalAlignment="Center" Margin="0,5" Grid.Row="3" Grid.Column="4"/>
+          <TextBlock Grid.Row="4" Style="{DynamicResource Dyl.Label}" Text="Update all data links"/>
+          <CheckBox x:Name="t_DATALINKS_SAVE" HorizontalAlignment="Center" Margin="0,5" Grid.Row="4" Grid.Column="1"/>
+          <CheckBox x:Name="t_DATALINKS_PLOT" HorizontalAlignment="Center" Margin="0,5" Grid.Row="4" Grid.Column="2"/>
+          <CheckBox x:Name="t_DATALINKS_PREVIEW" HorizontalAlignment="Center" Margin="0,5" Grid.Row="4" Grid.Column="3"/>
+          <CheckBox x:Name="t_DATALINKS_REGEN" HorizontalAlignment="Center" Margin="0,5" Grid.Row="4" Grid.Column="4"/>
+          <TextBlock Grid.Row="5" Style="{DynamicResource Dyl.Label}" Text="Fit table row heights"/>
+          <CheckBox x:Name="t_TABLES_SAVE" HorizontalAlignment="Center" Margin="0,5" Grid.Row="5" Grid.Column="1"/>
+          <CheckBox x:Name="t_TABLES_PLOT" HorizontalAlignment="Center" Margin="0,5" Grid.Row="5" Grid.Column="2"/>
+          <CheckBox x:Name="t_TABLES_PREVIEW" HorizontalAlignment="Center" Margin="0,5" Grid.Row="5" Grid.Column="3"/>
+          <CheckBox x:Name="t_TABLES_REGEN" HorizontalAlignment="Center" Margin="0,5" Grid.Row="5" Grid.Column="4"/>
+          <TextBlock Grid.Row="6" Style="{DynamicResource Dyl.Label}" Text="Apply the draw order"/>
+          <CheckBox x:Name="t_DRAWORDER_SAVE" HorizontalAlignment="Center" Margin="0,5" Grid.Row="6" Grid.Column="1"/>
+          <CheckBox x:Name="t_DRAWORDER_PLOT" HorizontalAlignment="Center" Margin="0,5" Grid.Row="6" Grid.Column="2"/>
+          <CheckBox x:Name="t_DRAWORDER_PREVIEW" HorizontalAlignment="Center" Margin="0,5" Grid.Row="6" Grid.Column="3"/>
+          <CheckBox x:Name="t_DRAWORDER_REGEN" HorizontalAlignment="Center" Margin="0,5" Grid.Row="6" Grid.Column="4"/>
+          <TextBlock Grid.Row="7" Style="{DynamicResource Dyl.Label}" Text="Rebuild the draw order"/>
+          <CheckBox x:Name="t_DRAWORDERCLEAN_SAVE" HorizontalAlignment="Center" Margin="0,5" Grid.Row="7" Grid.Column="1"/>
+          <CheckBox x:Name="t_DRAWORDERCLEAN_PLOT" HorizontalAlignment="Center" Margin="0,5" Grid.Row="7" Grid.Column="2"/>
+          <CheckBox x:Name="t_DRAWORDERCLEAN_PREVIEW" HorizontalAlignment="Center" Margin="0,5" Grid.Row="7" Grid.Column="3"/>
+          <CheckBox x:Name="t_DRAWORDERCLEAN_REGEN" HorizontalAlignment="Center" Margin="0,5" Grid.Row="7" Grid.Column="4"/>
+          <TextBlock Grid.Row="8" Style="{DynamicResource Dyl.Label}" Text="Regenerate the drawing"/>
+          <CheckBox x:Name="t_REGEN_SAVE" HorizontalAlignment="Center" Margin="0,5" Grid.Row="8" Grid.Column="1"/>
+          <CheckBox x:Name="t_REGEN_PLOT" HorizontalAlignment="Center" Margin="0,5" Grid.Row="8" Grid.Column="2"/>
+          <CheckBox x:Name="t_REGEN_PREVIEW" HorizontalAlignment="Center" Margin="0,5" Grid.Row="8" Grid.Column="3"/>
+          <CheckBox x:Name="t_REGEN_REGEN" HorizontalAlignment="Center" Margin="0,5" Grid.Row="8" Grid.Column="4"/>
+        </Grid>
+        <DockPanel Margin="0,10,0,0">
+          <Button Content="_All On" Margin="0" dyl:Win.SetAll="1"/>
+          <Button Content="All O_ff" dyl:Win.SetAll="0"/>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="14,0,0,0" VerticalAlignment="Center" Text="A command with no step checked runs as the native one."/>
+        </DockPanel>
+      </StackPanel>
+    </GroupBox>
+    <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="2,10,0,0" dyl:Win.VisibleBy="prp" Text="Commands on: the commands run the steps checked, then the native command."/>
+    <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="2,10,0,0" dyl:Win.VisibleBy="!prp" Text="Commands off: the steps run once Commands is on (Dyl-Settings, Overrides)."/>
+    <StackPanel Margin="0,10,0,0" Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button Content="OK" IsDefault="True"/>
+      <Button Content="_Cancel" IsCancel="True"/>
+      <Button x:Name="docs" Content="Open Docs"/>
+    </StackPanel>
+  </StackPanel>
+</Window>

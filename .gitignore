@@ -46,3 +46,9 @@ Installer/Ribbon/Plugin/bin/
 Installer/Ribbon/Plugin/obj/
 Installer/Startup/bin/
 Installer/Startup/obj/
+# Build output of the windows plugin (Installer\Windows, its DLLs committed in
+# Contents\Resources) and of its pictures tool (Installer\Windows\Shots):
+Installer/Windows/bin/
+Installer/Windows/obj/
+Installer/Windows/Shots/bin/
+Installer/Windows/Shots/obj/

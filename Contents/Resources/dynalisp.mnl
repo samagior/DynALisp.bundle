@@ -3161,7 +3161,7 @@
   ;;; of a "..." button. An image button one line high (a plain button cannot be made
   ;;; that small; the aspect ratio of 1 makes it as wide as it is high):
   ;;;   : image_button {key = "..."; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15;}
-  ;;; (set_more in Dyl-Settings.dcl). After new_dialog, (Dyl:MoreTile key on) draws
+  ;;; After new_dialog, (Dyl:MoreTile key on) draws
   ;;; its "open" icon: a box open at its top-right corner, an arrow coming out of it.
   ;;; Grey and disabled when on is nil: call it again in place of mode_tile each time
   ;;; the button is turned on or off (mode_tile leaves the icon black). Pixels, y
@@ -3242,6 +3242,120 @@
   (defun c:Dyl-Docs () (Dyl:DocsAll))
 
   (defun c:LM-Docs () (Dyl:DocsOpen *dyl:lmapps))
+
+  ;#endregion
+
+
+  ;#region Windows
+
+  ;;; ============================================================================
+  ;;; Windows
+  ;;; ----------------------------------------------------------------------------
+  ;;; The windows of DynALisp are WPF windows shown by DynALisp.Windows.dll
+  ;;; (Installer\Windows, AutoCAD 2015 and later). Each one is a .xaml file of the
+  ;;; Res folder of its module, read when it is shown, as a .dcl file: its controls
+  ;;; are named by their key (x:Name), and it says what they do itself (greyed out
+  ;;; while a checkbox is off, its sub-windows, its Open Docs page: the dyl:Win.*
+  ;;; properties of Installer\Windows\Engine\Win.cs). It has no code and no callback
+  ;;; to the Lisp while it is open: the Lisp gives it its values, and gets back the
+  ;;; button that closed it with the values of every key.
+  ;;;
+  ;;;   (Dyl:WinShow file vals)  file: a .xaml of Modules\Dynalisp\Res, or a full path;
+  ;;;                            vals: ((key . value) ...), the values as set_tile
+  ;;;                            takes them ("1" / "0" for a checkbox, the index of
+  ;;;                            the item picked for a list, a text), with
+  ;;;                            ("key/list" item ...) for the items of a list and
+  ;;;                            ("key/off" . "1") for a key greyed out (mode_tile 1).
+  ;;;   Returns (status (key . value) ...): 0 Cancel, 1 OK / Save, or the number of the
+  ;;;   button that closed it (dyl:Win.Close, as done_dialog), nil when it could not be
+  ;;;   shown (the reason on the command line).
+  ;;;
+  ;;; A button that must run Lisp (a command, a window of the Lisp) closes the window
+  ;;; with its number; the caller runs it, then shows the window again on the values
+  ;;; it got (see c:Dyl-Settings). The helpers below build and read the values.
+  ;;; ============================================================================
+
+  ;;  The full path of a window file, nil when it is missing:
+  (defun Dyl:WinFile (file)
+    (findfile (if (wcmatch file "?:\\*,\\\\*") file (strcat *dyl:dyl "\\Res\\" file)))
+  )
+
+  ;;  The values of the attribute att="..." in a line of a window file:
+  (defun Dyl:WinAttrs (line att / pos end lst)
+    (setq att (strcat att "=\""))
+    (while (setq pos (vl-string-search att line))
+      (setq line (substr line (+ pos (strlen att) 1))
+            end  (vl-string-search "\"" line)
+      )
+      (if end (setq lst (cons (substr line 1 end) lst) line (substr line (+ end 2))) (setq line ""))
+    )
+    (reverse lst)
+  )
+
+  ;;  What the Open Docs buttons of the window file path and of its sub-windows
+  ;;  (dyl:Win.Open, beside it) open: (("docs/<page>" . target) ...), the page as given
+  ;;  to Dyl:DocsTile, found as Dyl:DocsShow finds it (a page missing: its button
+  ;;  greyed out):
+  (defun Dyl:WinDocs (path / todo done des line f res)
+    (setq todo (list path))
+    (while (setq path (car todo))
+      (setq todo (cdr todo)
+            done (cons (strcase path) done)
+      )
+      (if (setq des (open path "r"))
+        (progn
+          (while (setq line (read-line des))
+            (foreach p (Dyl:WinAttrs line "Win.Docs")
+              (if (and (not (assoc (strcat "docs/" p) res)) (setq f (Dyl:DocsPage p)))
+                (setq res (cons (cons (strcat "docs/" p) (Dyl:DocsTarget f)) res))
+              )
+            )
+            (foreach s (Dyl:WinAttrs line "Win.Open")
+              (setq s (strcat (vl-filename-directory path) "\\" s))
+              (if (not (member (strcase s) done)) (setq todo (append todo (list s))))
+            )
+          )
+          (close des)
+        )
+      )
+    )
+    res
+  )
+
+  (defun Dyl:WinShow (file vals / path res)
+    (cond
+      ((not Dyl:Window)
+       (princ (strcat "\n--> This window needs DynALisp.Windows.dll (AutoCAD 2015 or later, not blocked by SECURELOAD): " file))
+       nil
+      )
+      ((not (setq path (Dyl:WinFile file)))
+       (princ (strcat "\n--> Window file not found: " file))
+       nil
+      )
+      ((vl-catch-all-error-p (setq res (vl-catch-all-apply 'Dyl:Window (list path (append vals (Dyl:WinDocs path))))))
+       (princ (strcat "\n--> Unable to show the window " file ": " (vl-catch-all-error-message res)))
+       nil
+      )
+      (res)
+    )
+  )
+
+  ;;  Values to give: a checkbox, (key . "1") or (key . "0"):
+  (defun Dyl:WinTog (key on) (cons key (if on "1" "0")))
+
+  ;;  A list, its items (strings) and the index picked: ((key/list item ...) (key . "i")):
+  (defun Dyl:WinList (key items idx) (list (cons (strcat key "/list") items) (cons key (itoa idx))))
+
+  ;;  Keys greyed out when off is not nil: (("key/off" . "1") ...), nil else:
+  (defun Dyl:WinOff (keys off)
+    (if off (mapcar '(lambda (k) (cons (strcat k "/off") "1")) (if (listp keys) keys (list keys))))
+  )
+
+  ;;  Values got back: the value of key (a string, nil when the window has no such key),
+  ;;  a checkbox on, the index picked in a list (0 when none):
+  (defun Dyl:WinGet (res key) (cdr (assoc key (cdr res))))
+  (defun Dyl:WinOn-p (res key) (= "1" (Dyl:WinGet res key)))
+  (defun Dyl:WinIdx (res key) (max 0 (atoi (cond ((Dyl:WinGet res key)) ("0")))))
 
   ;#endregion
 
@@ -4274,38 +4388,36 @@
   (defun MAJ:PrepSteps (cmd) (cdr (assoc cmd (MAJ:PrepRead))))
 
   ;;; ---------------------------------------------------------------------------
-  ;;; Output prep window (dyl_prepsuite of Dyl-Settings.dcl): check which steps
-  ;;; each output command runs, in a grid of toggles (keys t_<STEP>_<COLUMN>).
-  ;;; The commands of a group share its column (MAJ:PrepCol). Opened by
-  ;;; Dyl-PrepSuite and by the Output prep button of Dyl-Settings.
+  ;;; Output prep window (Res\Dyl-Settings-OutputPrep.xaml): check which steps each
+  ;;; output command runs, in a grid of checkboxes (keys t_<STEP>_<COLUMN>). The
+  ;;; commands of a group share its column (MAJ:PrepCol). Opened by Dyl-PrepSuite
+  ;;; (MAJ:PrepDlg) and by the open button of Commands in Dyl-Settings (over it, on its
+  ;;; values: MAJ:PrepWinVals, MAJ:PrepWinGet).
   ;;; ---------------------------------------------------------------------------
   (defun MAJ:PrepDlgKey (stp cmd) (strcat "t_" stp "_" (MAJ:PrepCol cmd)))
 
-  ;; Set every toggle from a list in the MAJ:PrepRead format:
-  (defun MAJ:PrepDlgSet (cfg) 
-    (foreach cmd MAJ:cmds 
-      (foreach stp MAJ:steps 
-        (set_tile (MAJ:PrepDlgKey (car stp) cmd) 
-                  (if (member (car stp) (cdr (assoc cmd cfg))) "1" "0")
-        )
-      )
+  ;; The values of the checkboxes from a list in the MAJ:PrepRead format:
+  (defun MAJ:PrepWinVals (cfg)
+    (apply 'append
+           (mapcar '(lambda (cmd)
+                      (mapcar '(lambda (stp)
+                                 (Dyl:WinTog (MAJ:PrepDlgKey (car stp) cmd) (member (car stp) (cdr (assoc cmd cfg))))
+                               )
+                              MAJ:steps
+                      )
+                    )
+                   MAJ:cmds
+           )
     )
   )
 
-  ;; Set every toggle to "1" or "0":
-  (defun MAJ:PrepDlgAll (val) 
-    (foreach cmd MAJ:cmds 
-      (foreach stp MAJ:steps (set_tile (MAJ:PrepDlgKey (car stp) cmd) val))
-    )
-  )
-
-  ;; Read the toggles back into the MAJ:PrepRead format:
-  (defun MAJ:PrepDlgGet () 
-    (mapcar 
-      '(lambda (cmd) 
-         (cons cmd 
-               (vl-remove-if-not 
-                 '(lambda (stp) (= "1" (get_tile (MAJ:PrepDlgKey stp cmd))))
+  ;; The values got back (Dyl:WinShow) into the MAJ:PrepRead format:
+  (defun MAJ:PrepWinGet (res)
+    (mapcar
+      '(lambda (cmd)
+         (cons cmd
+               (vl-remove-if-not
+                 '(lambda (stp) (Dyl:WinOn-p res (MAJ:PrepDlgKey stp cmd)))
                  (mapcar 'car MAJ:steps)
                )
          )
@@ -4314,28 +4426,15 @@
     )
   )
 
-  ;; Open the window on cfg (MAJ:PrepRead format) from the DCL file loaded as dch,
-  ;; on: the command optimizer is on (shown in the window). Returns the steps
-  ;; checked on OK, nil on Cancel or when the window cannot be shown:
-  (defun MAJ:PrepDlg (dch cfg on / res)
-    (if (new_dialog "dyl_prepsuite" dch)
-      (progn
-        (MAJ:PrepDlgSet cfg)
-        (set_tile "sta"
-                  (if on
-                    "Commands on: the commands run the steps checked, then the native command."
-                    "Commands off: the steps run once Commands is on (Dyl-Settings, Overrides)."
-                  )
+  ;; Open the window on cfg (MAJ:PrepRead format), on: the command optimizer is on (the
+  ;; line under the grid says so). Returns the steps checked on OK, nil on Cancel or when
+  ;; the window cannot be shown:
+  (defun MAJ:PrepDlg (cfg on / res)
+    (if (and (setq res (Dyl:WinShow "Dyl-Settings-OutputPrep.xaml" (cons (Dyl:WinTog "prp" on) (MAJ:PrepWinVals cfg))))
+             (= 1 (car res))
         )
-        (action_tile "allon" "(MAJ:PrepDlgAll \"1\")")
-        (action_tile "alloff" "(MAJ:PrepDlgAll \"0\")")
-        (action_tile "accept" "(setq res (MAJ:PrepDlgGet)) (done_dialog 1)")
-        (action_tile "cancel" "(done_dialog 0)")
-        (Dyl:DocsTile "Output\\Dyl-PrepDrawing.htm")
-        (start_dialog)
-      )
+      (MAJ:PrepWinGet res)
     )
-    res
   )
 
   ;; Save the steps cfg to PrepSuite.csv when they differ from old, and list them
@@ -4369,18 +4468,14 @@
   )
 
   ;;; Output prep window on its own: saved on OK.
-  (defun c:Dyl-PrepSuite (/ dch old cfg)
-    (setq old (MAJ:PrepRead)
-          dch (load_dialog (strcat (vl-filename-directory *dyl:prep) "\\Dyl-Settings.dcl"))
-    )
+  (defun c:Dyl-PrepSuite (/ old cfg)
+    (setq old (MAJ:PrepRead))
     (cond
-      ((> 0 dch) (princ "\n--> Unable to load the dialog : Dyl-Settings.dcl"))
-      ((setq cfg (MAJ:PrepDlg dch old (MAJ:Redefine-p)))
+      ((setq cfg (MAJ:PrepDlg old (MAJ:Redefine-p)))
        (if (equal cfg old) (princ "\nOutput prep unchanged.") (MAJ:PrepSave cfg old))
       )
       ((princ "\nOutput prep unchanged."))
     )
-    (if (<= 0 dch) (unload_dialog dch))
     (princ)
   )
 
@@ -4603,16 +4698,17 @@
   ;;; Settings
   ;;; ----------------------------------------------------------------------------
   ;;; Dyl-Settings: one window for the drawing setup and the passive behaviors
-  ;;; (Modules\Dynalisp\Res\Dyl-Settings.dcl):
+  ;;; (Modules\Dynalisp\Res\Dyl-Settings.xaml, shown by DynALisp.Windows.dll: see the
+  ;;; Windows region; its sub-windows are the Dyl-Settings-*.xaml files beside it):
   ;;;
   ;;;   - Drawing defaults (Overrides, DynalispSetupOn) and its open button, the
-  ;;;     drawing defaults window (Dyl:SetDefsDlg, greyed out while the check is
-  ;;;     off): the unit and grid presets of the imperial and metric drawings,
+  ;;;     drawing defaults window (Dyl-Settings-DrawingSettings.xaml, available while
+  ;;;     the check is off): the unit and grid presets of the imperial and metric drawings,
   ;;;     checked each time a drawing opens and set when the drawing differs (user
   ;;;     settings, see Modules\Dynalisp\Remote\Dyl-DrawingSetup.lsp). Saving a
   ;;;     change checks the current drawing right away.
   ;;;   - DynALisp profile (Overrides) and its open button, the file preferences
-  ;;;     window (Dyl:SetPrefsDlg, greyed out while the profile is off): the AEC
+  ;;;     window (Dyl-Settings-FilePreferences.xaml, greyed out while the profile is off): the AEC
   ;;;     library classification, the drawing units and the language, which set the
   ;;;     paths and the main dictionary of the DynALisp profile when it is on, and
   ;;;     whether the DynALisp custom dictionary of the language is used (when it has
@@ -4634,7 +4730,7 @@
   ;;;     preset and the preset of the drawing)
   ;;;   - Command optimizer (Overrides): the redefinition of the save and print
   ;;;     commands and REGEN (DynalispPrepRedefine user setting, see MAJ:Redefine-p),
-  ;;;     its Output prep button opening the output prep window (MAJ:PrepDlg) for
+  ;;;     its open button opening the output prep window (Dyl-Settings-OutputPrep.xaml) for
   ;;;     the steps each one runs, the draw order among them (PrepSuite.csv,
   ;;;     see MAJ:PrepRead)
   ;;;   - System variables (Overrides, DynalispSysVarOn) and its open button, which
@@ -4643,12 +4739,12 @@
   ;;;     when Dyl-SysVars is turned off): the active profile set in every drawing
   ;;;     opened (see Modules\Dynalisp\Remote\Dyl-SysVars.lsp)
   ;;;   - Display (Overrides, DynalispDisplayOn) and its open button, the display
-  ;;;     window (Dyl:SetDisplayDlg, greyed out while Display is off): the display
+  ;;;     window (Dyl-Settings-Display.xaml, greyed out while Display is off): the display
   ;;;     settings applied in every drawing opened while Display is on, for now the
   ;;;     model space background color, Black, Default or White, or (Not set): the
   ;;;     current color kept (DynalispBackground, see
   ;;;     Modules\Dynalisp\Remote\Dyl-EnvColor.lsp). More display settings go in
-  ;;;     that window, with their value in st:bkg's place made a list
+  ;;;     that window (Dyl:SetDisplayVals), with their value in st:bkg's place made a list
   ;;;   - Layer keys: the answer remembered to "update this layer to its layer key?"
 ;;;     (Remote>>Dyl:LayerKeyCheck): Update them without asking (DynalispLayerKeyUpdate)
 ;;;     or Keep them without asking (DynalispLayerKeyKeep), one of them at most; both
@@ -4712,7 +4808,7 @@
   ;;; when the DynALisp custom dictionaries are used (the last item, after the ones
   ;;; of *fp:prefs*), nil when Dyl-FilePrefs.lsp is not loaded. on is the DynALisp
   ;;; profile toggle (pfo) of the settings window, the others are in the file
-  ;;; preferences window (dyl_fileprefs): their popups, in the *fp:prefs* order, then
+  ;;; preferences window (Dyl-Settings-FilePreferences.xaml): their lists, in the *fp:prefs* order, then
   ;;; the custom dictionary toggle (pcd):
   (setq *dyl:setprefs* '("pcl" "pun" "pla"))
   (defun Dyl:SetPrefsRead ()
@@ -4727,134 +4823,122 @@
   ;;; then the names of the colors:
   (defun Dyl:SetBkgs () (cons nil (mapcar 'car *ec:colors*)))
 
-  ;;; The reactor settings (auto-phase, auto draw order, settings sync) greyed out
-  ;;; while the DynALisp reactors are off (on: the DynALisp reactors checkbox), or
-  ;;; when their Remote file is not loaded:
-  (defun Dyl:SetDlgRea (on)
-    (mode_tile "aph" (if (and on Remote>>Dyl:PhaseAutoSet) 0 1))
-    (mode_tile "ado" (if (and on Remote>>Dyl:DrawOrderAutoSet) 0 1))
-    (mode_tile "alk" (if (and on Remote>>Dyl:ObjectKeysAutoSet) 0 1))
-    (mode_tile "syn" (if on 0 1))
-  )
-
-  ;;; Set the tiles from the values being edited:
-  (defun Dyl:SetDlgFill ()
-    ;; Language of DynALisp (Environment): the languages of *dyl:langs*:
-    (start_list "lng")
-    (foreach l *dyl:langs* (add_list (car l)))
-    (end_list)
-    (set_tile "lng" (itoa (cond ((vl-position (assoc st:lng *dyl:langs*) *dyl:langs*)) (0))))
-    ;; Drawing defaults: its open button (the drawing settings window) available even while
-    ;; the check is off (the Shrinkwrap gap step of that window is used anyway), greyed out
-    ;; with the checkbox when Dyl-DrawingSetup.lsp is not loaded:
-    (set_tile "dso" (if st:dso "1" "0"))
-    (if (not Remote>>Dyl:SetupOnSet) (mode_tile "dso" 1))
-    (Dyl:MoreTile "dsm" (and Remote>>Dyl:SetupDefaultSet T))
-    ;; DynALisp profile: its open button (the file preferences window) greyed out while
-    ;; the profile is off, both when Dyl-FilePrefs.lsp is not loaded:
-    (set_tile "pfo" (if (car st:pfp) "1" "0"))
-    (if (not st:pfp) (mode_tile "pfo" 1))
-    (Dyl:MoreTile "pfm" (car st:pfp))
-    (set_tile "rea" (if st:rea "1" "0"))
-    (set_tile "aph" (if st:aph "1" "0"))
-    ;; Greyed out when Dyl-LayerPhase is turned off in Dyl-Suite:
-    (Dyl:MoreTile "lph" c:Dyl-LayerPhase)
-    (Dyl:MoreTile "ldo" c:Dyl-DrawOrder)
-    ;; Auto layer keys: its open button greyed out when Dyl-ObjectLayerKeys is turned off in Dyl-Suite:
-    (set_tile "alk" (if st:alk "1" "0"))
-    (Dyl:MoreTile "lol" c:Dyl-ObjectLayerKeys)
-    (Dyl:MoreTile "prs" T)
-    (set_tile "ado" (if st:ado "1" "0"))
-    (set_tile "syn" (if st:syn "1" "0"))
-    (Dyl:SetDlgRea st:rea)
-    (set_tile "prp" (if st:prp "1" "0"))
-    ;; Display: its open button (the display window) greyed out while Display is off,
-    ;; both when Dyl-EnvColor.lsp is not loaded:
-    (set_tile "dpo" (if st:dpo "1" "0"))
-    (if (not Remote>>Dyl:DisplayOnSet) (mode_tile "dpo" 1))
-    (Dyl:MoreTile "dpm" (and st:dpo Remote>>Dyl:DisplayOnSet))
-    ;; System variables: its open button (Dyl-SysVars, the profiles) greyed out while off,
-    ;; or when Dyl-SysVars is turned off in Dyl-Suite; both when Dyl-SysVars.lsp of the
-    ;; Remote folder is not loaded:
-    (set_tile "svo" (if st:svo "1" "0"))
-    (if (not Remote>>Dyl:SysVarOnSet) (mode_tile "svo" 1))
-    (Dyl:MoreTile "svm" (and st:svo c:Dyl-SysVars))
-    ;; Revisions: its open button (the title blocks) available while off, greyed out when
-    ;; Dyl-Revisions is turned off in Dyl-Suite; both when Dyl-Revisions.lsp of the Remote
-    ;; folder is not loaded:
-    (set_tile "rvo" (if st:rvo "1" "0"))
-    (if (not Remote>>Dyl:RevSyncSet) (mode_tile "rvo" 1))
-    (Dyl:MoreTile "rvm" (and Remote>>Dyl:RevSyncSet c:Pst-RevisionTitleBlocks T))
-    ;; Clean startup: greyed out without the plugin that does it (AutoCAD older than 2015):
-    (set_tile "csu" (if st:csu "1" "0"))
-    (if (not Dyl:CleanStartup) (mode_tile "csu" 1))
-    ;; Layer keys: the answer remembered (greyed out when Dyl-LayerKey.lsp is not loaded):
-    (set_tile "lku" (if (= "Update" st:lkm) "1" "0"))
-    (set_tile "lkk" (if (= "Keep" st:lkm) "1" "0"))
-    (if (not Remote>>Dyl:LayerKeyMatchSet) (foreach k '("lku" "lkk") (mode_tile k 1)))
-    ;; Automatic updates: greyed out for a git clone (updated with git pull):
-    (set_tile "aup" (if st:aup "1" "0"))
-    (if (Dyl:InfoGit-p)
-      (progn (mode_tile "aup" 1) (set_tile "aud" "Git clone: update it with git pull."))
-    )
-  )
-
-  ;;; Read the tiles back into the values being edited (before the window closes):
-  (defun Dyl:SetDlgGet ()
-    ;; The drawing defaults themselves (st:defs) are set in their own window (Dyl:SetDefsDlg):
-    (setq st:dso (= "1" (get_tile "dso"))
-          st:aph (= "1" (get_tile "aph"))
-          st:ado (= "1" (get_tile "ado"))
-          st:alk (= "1" (get_tile "alk"))
-          st:rea (= "1" (get_tile "rea"))
-          st:syn (= "1" (get_tile "syn"))
-          st:prp (= "1" (get_tile "prp"))
-          ;; The display settings themselves (st:bkg) are set in their own window (Dyl:SetDisplayDlg):
-          st:dpo (= "1" (get_tile "dpo"))
-          st:svo (= "1" (get_tile "svo"))
-          st:aup (= "1" (get_tile "aup"))
-          st:csu (= "1" (get_tile "csu"))
-          st:lng (car (nth (atoi (get_tile "lng")) *dyl:langs*))
-          st:rvo (= "1" (get_tile "rvo"))
-          st:lkm (cond ((= "1" (get_tile "lku")) "Update") ((= "1" (get_tile "lkk")) "Keep"))
-          ;; The other file preferences are set in their own window (Dyl:SetPrefsDlg):
-          st:pfp (if st:pfp (cons (= "1" (get_tile "pfo")) (cdr st:pfp)))
-    )
-  )
-
-  ;;; Open button of Drawing defaults: the drawing defaults window (dyl_drawdefs) over
-  ;;; this one, on the values being edited (st:defs). OK keeps the presets picked in
-  ;;; st:defs, saved with the other settings by Save; Cancel leaves them:
-  (defun Dyl:SetDefsDlg (/ res gaps)
-    (if (new_dialog "dyl_drawdefs" st:dch)
-      (progn
-        (mapcar
-          '(lambda (d key / pos)
-             (start_list (caddr d))
-             (add_list "(Not checked)")
-             (foreach p (Dyl:SetPresets (car d)) (add_list (cadr p)))
-             (end_list)
-             (setq pos (vl-position key (mapcar 'car (Dyl:SetPresets (car d)))))
-             (set_tile (caddr d) (itoa (if pos (1+ pos) 0)))
-           )
-          *dyl:setdefs*
-          st:defs
-        )
-        ;;  Shrinkwrap gap steps (imperial, metric), checked on OK:
-        (set_tile "gpi" (car st:gaps))
-        (set_tile "gpm" (cadr st:gaps))
-        (if (not Remote>>Dyl:ShrinkwrapStep) (foreach k '("gpi" "gpm") (mode_tile k 1)))
-        (action_tile "accept"
-                     (strcat "(if (setq gaps (Dyl:SetGapsGet))"
-                             " (progn (setq res (Dyl:SetDefsGet)) (done_dialog 1))"
-                             " (set_tile \"gerr\" \"A gap step is a number greater than 0 (drawing units).\"))"
-                     )
-        )
-        (action_tile "cancel" "(done_dialog 0)")
-        (Dyl:DocsTile "Core\\Dyl-Settings.htm")
-        (start_dialog)
-        (if res (setq st:defs res st:gaps gaps))
+  ;;; The values of the Settings window (Res\Dyl-Settings.xaml, see the Windows region)
+  ;;; and of its sub-windows, from the values being edited (st:*). A setting whose
+  ;;; Remote file or command is not loaded is greyed out (its key /off); the window
+  ;;; greys out itself the reactor settings while the DynALisp reactors are off, and
+  ;;; an open button while its checkbox is off (dyl:Win.EnabledBy):
+  (defun Dyl:SetWinVals ()
+    (append
+      ;; Language of DynALisp (Environment): the languages of *dyl:langs*:
+      (Dyl:WinList "lng" (mapcar 'car *dyl:langs*) (cond ((vl-position (assoc st:lng *dyl:langs*) *dyl:langs*)) (0)))
+      (list (Dyl:WinTog "rea" st:rea)
+            (Dyl:WinTog "aph" st:aph)
+            (Dyl:WinTog "ado" st:ado)
+            (Dyl:WinTog "alk" st:alk)
+            (Dyl:WinTog "syn" st:syn)
+            (Dyl:WinTog "dso" st:dso)
+            (Dyl:WinTog "prp" st:prp)
+            (Dyl:WinTog "pfo" (car st:pfp))
+            (Dyl:WinTog "svo" st:svo)
+            (Dyl:WinTog "dpo" st:dpo)
+            (Dyl:WinTog "rvo" st:rvo)
+            (Dyl:WinTog "csu" st:csu)
+            (Dyl:WinTog "lku" (= "Update" st:lkm))
+            (Dyl:WinTog "lkk" (= "Keep" st:lkm))
+            (Dyl:WinTog "aup" st:aup)
       )
+      ;; The reactor settings, when their Remote file is not loaded; their open buttons
+      ;; when their command is turned off in Dyl-Suite:
+      (Dyl:WinOff "aph" (not Remote>>Dyl:PhaseAutoSet))
+      (Dyl:WinOff "ado" (not Remote>>Dyl:DrawOrderAutoSet))
+      (Dyl:WinOff "alk" (not Remote>>Dyl:ObjectKeysAutoSet))
+      (Dyl:WinOff "lph" (not c:Dyl-LayerPhase))
+      (Dyl:WinOff "ldo" (not c:Dyl-DrawOrder))
+      (Dyl:WinOff "lol" (not c:Dyl-ObjectLayerKeys))
+      ;; Drawing Settings: its open button (the Drawing Settings window) available even
+      ;; while the check is off (the Shrinkwrap gap step of that window is used anyway):
+      (Dyl:WinOff "dso" (not Remote>>Dyl:SetupOnSet))
+      (Dyl:WinOff "dsm" (not Remote>>Dyl:SetupDefaultSet))
+      ;; File Preferences, Display, System variables: greyed out with their open button
+      ;; when their Remote file is not loaded:
+      (Dyl:WinOff '("pfo" "pfm") (not st:pfp))
+      (Dyl:WinOff '("dpo" "dpm") (not Remote>>Dyl:DisplayOnSet))
+      (Dyl:WinOff "svo" (not Remote>>Dyl:SysVarOnSet))
+      (Dyl:WinOff "svm" (not c:Dyl-SysVars))
+      ;; Revisions: its open button (the title blocks) available while off:
+      (Dyl:WinOff "rvo" (not Remote>>Dyl:RevSyncSet))
+      (Dyl:WinOff "rvm" (not (and Remote>>Dyl:RevSyncSet c:Pst-RevisionTitleBlocks)))
+      ;; Clean startup: without the plugin that does it:
+      (Dyl:WinOff "csu" (not Dyl:CleanStartup))
+      ;; Layer keys: the answer remembered, when Dyl-LayerKey.lsp is not loaded:
+      (Dyl:WinOff '("lku" "lkk") (not Remote>>Dyl:LayerKeyMatchSet))
+      ;; Automatic updates: greyed out for a git clone (updated with git pull):
+      (if (Dyl:InfoGit-p) (cons '("aud" . "Git clone: update it with git pull.") (Dyl:WinOff "aup" T)))
+      ;; The sub-windows:
+      (Dyl:SetDefsVals)
+      (Dyl:SetDisplayVals)
+      (Dyl:SetPrefsVals)
+      (MAJ:PrepWinVals st:cfg)
+    )
+  )
+
+  ;;; Read the values got back into the values being edited (st:*), those of the
+  ;;; sub-windows too (their OK kept them, their Cancel put them back):
+  (defun Dyl:SetWinGet (res / gaps)
+    (setq st:dso (Dyl:WinOn-p res "dso")
+          st:aph (Dyl:WinOn-p res "aph")
+          st:ado (Dyl:WinOn-p res "ado")
+          st:alk (Dyl:WinOn-p res "alk")
+          st:rea (Dyl:WinOn-p res "rea")
+          st:syn (Dyl:WinOn-p res "syn")
+          st:prp (Dyl:WinOn-p res "prp")
+          st:dpo (Dyl:WinOn-p res "dpo")
+          st:svo (Dyl:WinOn-p res "svo")
+          st:aup (Dyl:WinOn-p res "aup")
+          st:csu (Dyl:WinOn-p res "csu")
+          st:rvo (Dyl:WinOn-p res "rvo")
+          st:lng (car (nth (Dyl:WinIdx res "lng") *dyl:langs*))
+          st:lkm (cond ((Dyl:WinOn-p res "lku") "Update") ((Dyl:WinOn-p res "lkk") "Keep"))
+          st:defs (Dyl:SetDefsWinGet res)
+          st:bkg (nth (Dyl:WinIdx res "bkg") (Dyl:SetBkgs))
+          st:cfg (MAJ:PrepWinGet res)
+          st:pfp (if st:pfp (cons (Dyl:WinOn-p res "pfo") (Dyl:SetPrefsWinGet res)))
+    )
+    ;; The window checked them (a number greater than 0); kept as they were otherwise:
+    (setq gaps (mapcar '(lambda (k) (vl-string-trim " " (cond ((Dyl:WinGet res k)) ("")))) '("gpi" "gpm")))
+    (if (vl-every '(lambda (s / v) (and (setq v (distof s 2)) (< 0 v))) gaps) (setq st:gaps gaps))
+  )
+
+  ;;; Drawing Settings window (Res\Dyl-Settings-DrawingSettings.xaml): the lists of the
+  ;;; drawing defaults, first item: not checked, and the Shrinkwrap gap steps:
+  (defun Dyl:SetDefsVals ()
+    (append
+      (apply 'append
+             (mapcar '(lambda (d key / pos)
+                        (setq pos (vl-position key (mapcar 'car (Dyl:SetPresets (car d)))))
+                        (Dyl:WinList (caddr d)
+                                     (cons "(Not checked)" (mapcar 'cadr (Dyl:SetPresets (car d))))
+                                     (if pos (1+ pos) 0)
+                        )
+                      )
+                     *dyl:setdefs*
+                     st:defs
+             )
+      )
+      (list (cons "gpi" (car st:gaps)) (cons "gpm" (cadr st:gaps)))
+      (Dyl:WinOff '("gpi" "gpm") (not Remote>>Dyl:ShrinkwrapStep))
+    )
+  )
+
+  ;;; Preset keys picked in the Drawing Settings window, in the *dyl:setdefs* order
+  ;;; (nil: not checked):
+  (defun Dyl:SetDefsWinGet (res)
+    (mapcar '(lambda (d / i)
+               (setq i (Dyl:WinIdx res (caddr d)))
+               (if (< 0 i) (car (nth (1- i) (Dyl:SetPresets (car d)))))
+             )
+            *dyl:setdefs*
     )
   )
 
@@ -4867,82 +4951,54 @@
     )
   )
 
-  ;;; Gap steps typed in the drawing settings window, nil when one is not a number > 0:
-  (defun Dyl:SetGapsGet (/ l)
-    (setq l (mapcar '(lambda (k) (vl-string-trim " " (get_tile k))) '("gpi" "gpm")))
-    (if (vl-every '(lambda (s / v) (and (setq v (distof s 2)) (< 0 v))) l) l)
-  )
-
-  ;;; Preset keys picked in the drawing defaults window, in the *dyl:setdefs* order
-  ;;; (nil: not checked):
-  (defun Dyl:SetDefsGet ()
-    (mapcar '(lambda (d / i)
-               (setq i (atoi (get_tile (caddr d))))
-               (if (< 0 i) (car (nth (1- i) (Dyl:SetPresets (car d)))))
-             )
-            *dyl:setdefs*
-    )
-  )
-
   ;;; What a drawing compares to follow the drawing defaults changed in another one
   ;;; (DS:synced, see Dyl:SetSync): (on default ...):
   (defun Dyl:SetDefsSync ()
     (cons (and Remote>>Dyl:SetupOn-p (Remote>>Dyl:SetupOn-p) T) (Dyl:SetDefsRead))
   )
 
-  ;;; Open button of Display: the display window (dyl_display) over this one, on the
-  ;;; values being edited (st:bkg). OK keeps the values picked, saved with the other
-  ;;; settings by Save; Cancel leaves them. More display settings: set and read
-  ;;; their tiles here too:
-  (defun Dyl:SetDisplayDlg (/ res)
-    (if (new_dialog "dyl_display" st:dch)
-      (progn
-        (start_list "bkg")
-        (foreach b (Dyl:SetBkgs) (add_list (cond (b) ("(Not set: current color kept)"))))
-        (end_list)
-        (set_tile "bkg" (itoa (cond ((vl-position st:bkg (Dyl:SetBkgs))) (0))))
-        (if (not Remote>>Dyl:BackgroundSet) (mode_tile "bkg" 1))
-        ;; res: (background), a list so that "not set" (nil) is told from Cancel:
-        (action_tile "accept" "(setq res (list (nth (atoi (get_tile \"bkg\")) (Dyl:SetBkgs)))) (done_dialog 1)")
-        (action_tile "cancel" "(done_dialog 0)")
-        (Dyl:DocsTile "Core\\Dyl-Settings.htm")
-        (start_dialog)
-        (if res (setq st:bkg (car res)))
+  ;;; Display window (Res\Dyl-Settings-Display.xaml): the background, first item: not
+  ;;; set (the current color kept). More display settings: give and read their values
+  ;;; here too:
+  (defun Dyl:SetDisplayVals ()
+    (append
+      (Dyl:WinList "bkg"
+                   (mapcar '(lambda (b) (cond (b) ("(Not set)"))) (Dyl:SetBkgs))
+                   (cond ((vl-position st:bkg (Dyl:SetBkgs))) (0))
       )
+      (Dyl:WinOff "bkg" (not Remote>>Dyl:BackgroundSet))
     )
   )
 
-  ;;; Open button of the DynALisp profile: the file preferences window (dyl_fileprefs)
-  ;;; over this one, on the values being edited (st:pfp). OK keeps the values picked
-  ;;; in st:pfp, saved with the other settings by Save; Cancel leaves them:
-  (defun Dyl:SetPrefsDlg (/ res)
-    (if (and st:pfp (new_dialog "dyl_fileprefs" st:dch))
-      (progn
-        (mapcar '(lambda (p key tile)
-                   (start_list tile)
-                   (foreach c (caddr p) (add_list (cadr c)))
-                   (end_list)
-                   (set_tile tile (itoa (cond ((vl-position key (mapcar 'car (caddr p)))) (0))))
-                 )
-                *fp:prefs*
-                (cdr st:pfp)
-                *dyl:setprefs*
+  ;;; File Preferences window (Res\Dyl-Settings-FilePreferences.xaml), when
+  ;;; Dyl-FilePrefs.lsp is loaded: its lists in the *fp:prefs* order, the custom
+  ;;; dictionary checkbox and the current profile:
+  (defun Dyl:SetPrefsVals ()
+    (if st:pfp
+      (append
+        (apply 'append
+               (mapcar '(lambda (p key tile)
+                          (Dyl:WinList tile
+                                       (mapcar 'cadr (caddr p))
+                                       (cond ((vl-position key (mapcar 'car (caddr p)))) (0))
+                          )
+                        )
+                       *fp:prefs*
+                       (cdr st:pfp)
+                       *dyl:setprefs*
+               )
         )
-        (set_tile "pcd" (if (last st:pfp) "1" "0"))
-        (set_tile "pfs" (strcat "Current profile: " (vla-get-ActiveProfile (vla-get-Profiles *acad:pref))))
-        (action_tile "accept" "(setq res (Dyl:SetPrefsGet)) (done_dialog 1)")
-        (action_tile "cancel" "(done_dialog 0)")
-        (Dyl:DocsTile "Setup\\Dyl-SetFilePrefs.htm")
-        (start_dialog)
-        (if res (setq st:pfp (cons (car st:pfp) res)))
+        (list (Dyl:WinTog "pcd" (last st:pfp))
+              (cons "pfs" (strcat "Current profile: " (vla-get-ActiveProfile (vla-get-Profiles *acad:pref))))
+        )
       )
     )
   )
 
-  ;;; Values of the file preferences window: (class units language custom):
-  (defun Dyl:SetPrefsGet ()
-    (append (mapcar '(lambda (p tile) (car (nth (atoi (get_tile tile)) (caddr p)))) *fp:prefs* *dyl:setprefs*)
-            (list (= "1" (get_tile "pcd")))
+  ;;; Values of the File Preferences window: (class units language custom):
+  (defun Dyl:SetPrefsWinGet (res)
+    (append (mapcar '(lambda (p tile) (car (nth (Dyl:WinIdx res tile) (caddr p)))) *fp:prefs* *dyl:setprefs*)
+            (list (Dyl:WinOn-p res "pcd"))
     )
   )
 
@@ -5124,7 +5180,7 @@
     )
   )
 
-  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:old st:dch st:sta)
+  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:old st:res st:sta)
     (setq st:defs (Dyl:SetDefsRead)
           st:aph  (and Remote>>Dyl:PhaseAuto-p (Remote>>Dyl:PhaseAuto-p) T)
           st:ado  (and Remote>>Dyl:DrawOrderAuto-p (Remote>>Dyl:DrawOrderAuto-p) T)
@@ -5145,56 +5201,28 @@
           st:lng  (Dyl:Lang)
           st:rvo  (and Remote>>Dyl:RevSyncOn-p (Remote>>Dyl:RevSyncOn-p) T)
           st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo)
-          st:dch  (load_dialog (strcat (vl-filename-directory *dyl:prep) "\\Dyl-Settings.dcl"))
           st:sta  2
     )
-    ;; ... of Auto-phase (4) closes the window, runs Dyl-LayerPhase and opens it again,
-    ;; ... of Auto draw order (5) the same with Dyl-DrawOrder:
-    (while (and (< 1 st:sta) (<= 0 st:dch) (new_dialog "dyl_settings" st:dch))
-      (Dyl:SetDlgFill)
-      (action_tile "lph" "(Dyl:SetDlgGet) (done_dialog 4)")
-      (action_tile "ldo" "(Dyl:SetDlgGet) (done_dialog 5)")
-      ;; ... of Auto layer keys (7): closes the window, runs Dyl-ObjectLayerKeys, opens it again:
-      (action_tile "lol" "(Dyl:SetDlgGet) (done_dialog 7)")
-      (action_tile "rea" "(Dyl:SetDlgRea (= \"1\" $value))")
-      ;; The output prep window over this one: its steps are kept in st:cfg, saved
-      ;; with the other settings:
-      (action_tile "prs" "(setq st:cfg (cond ((MAJ:PrepDlg st:dch st:cfg (= \"1\" (get_tile \"prp\")))) (st:cfg)))")
-      ;; The file preferences window over this one, its open button greyed out while
-      ;; the DynALisp profile is off:
-      (action_tile "pfo" "(Dyl:MoreTile \"pfm\" (= \"1\" $value))")
-      (action_tile "pfm" "(Dyl:SetPrefsDlg)")
-      ;; The drawing settings window over this one (available while the check is off too):
-      (action_tile "dsm" "(Dyl:SetDefsDlg)")
-      ;; The display window over this one, its open button greyed out while Display is off:
-      (action_tile "dpo" "(Dyl:MoreTile \"dpm\" (and (= \"1\" $value) Remote>>Dyl:DisplayOnSet))")
-      (action_tile "dpm" "(Dyl:SetDisplayDlg)")
-      ;; ... of System variables (6) closes the window, runs Dyl-SysVars and opens it
-      ;; again; greyed out while off:
-      (action_tile "svo" "(Dyl:MoreTile \"svm\" (and (= \"1\" $value) c:Dyl-SysVars))")
-      (action_tile "svm" "(Dyl:SetDlgGet) (done_dialog 6)")
-      ;; ... of Revisions (8) closes the window, runs Pst-RevisionTitleBlocks and opens it again:
-      (action_tile "rvm" "(Dyl:SetDlgGet) (done_dialog 8)")
-      ;; Layer keys: one of the two answers at most:
-      (action_tile "lku" "(if (= \"1\" $value) (set_tile \"lkk\" \"0\"))")
-      (action_tile "lkk" "(if (= \"1\" $value) (set_tile \"lku\" \"0\"))")
-      (action_tile "accept" "(Dyl:SetDlgGet) (done_dialog 1)")
-      (action_tile "cancel" "(done_dialog 0)")
-      (Dyl:DocsTile "Core\\Dyl-Settings.htm")
-      (setq st:sta (start_dialog))
-      (if (= 4 st:sta) (Dyl:SetPhases))
-      (if (= 5 st:sta) (Dyl:SetDrawOrder))
-      (if (= 6 st:sta) (Dyl:SetSysVars))
-      (if (= 7 st:sta) (Dyl:SetObjectKeys))
-      (if (= 8 st:sta) (Dyl:SetRevBlocks))
+    ;; An open button that runs a command closes the window with its number (dyl:Win.Close
+    ;; of Dyl-Settings.xaml), the command runs, and the window opens again on the values
+    ;; being edited: ... of Auto-phase (4) runs Dyl-LayerPhase, of Auto draw order (5)
+    ;; Dyl-DrawOrder, of System variables (6) Dyl-SysVars, of Auto layer keys (7)
+    ;; Dyl-ObjectLayerKeys, of Revisions (8) Pst-RevisionTitleBlocks. The sub-windows
+    ;; (Drawing Settings, Commands, File Preferences, Display) open over it on the same
+    ;; values, saved with the others by Save:
+    (while (and (< 1 st:sta) (setq st:res (Dyl:WinShow "Dyl-Settings.xaml" (Dyl:SetWinVals))))
+      (setq st:sta (car st:res))
+      (if (/= 0 st:sta) (Dyl:SetWinGet st:res))
+      (cond
+        ((= 4 st:sta) (Dyl:SetPhases))
+        ((= 5 st:sta) (Dyl:SetDrawOrder))
+        ((= 6 st:sta) (Dyl:SetSysVars))
+        ((= 7 st:sta) (Dyl:SetObjectKeys))
+        ((= 8 st:sta) (Dyl:SetRevBlocks))
+      )
     )
-    (if (<= 0 st:dch) (unload_dialog st:dch))
-    (cond
-      ((> 0 st:dch) (princ "\n--> Unable to load the dialog : Dyl-Settings.dcl"))
-      ((= 1 st:sta) (Dyl:SetApply st:old))
-      ((= 0 st:sta) (princ "\nSettings unchanged."))
-      ((princ "\n--> Unable to show the dialog : Dyl-Settings.dcl"))
-    )
+    ;; Not shown (Dyl:WinShow said why), or Cancel:
+    (if (and st:res (= 1 st:sta)) (Dyl:SetApply st:old) (princ "\nSettings unchanged."))
     (princ)
   )
 

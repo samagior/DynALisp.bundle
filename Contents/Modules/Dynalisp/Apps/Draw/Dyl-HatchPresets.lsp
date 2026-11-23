@@ -1,4 +1,4 @@
-;; Materials - Create and edit the Dynalisp materials used by the drawing tools
+;; Hatch Presets - Create and edit the hatches that the Dynalisp materials share
 ;; Copyright (C) 2026  Samuel Martineau
 ;;
 ;; This program is free software: you can redistribute it and/or modify
@@ -16,17 +16,18 @@
 ;;
 ;;-------------------------=={ End of Licence }==------------------------;;
 
-;;  The hatch presets (called materials in the code: Materials.csv, hatching, dialog) are in
-;;  Modules\Dynalisp\Remote\Dyl-Materials.lsp, loaded at startup for every App. The same
-;;  window opens from the Quick Draw and Quick Shape windows (the open button beside Hatch preset).
+
+;;  The hatch presets (HatchPresets.csv, the hatching, the window) are in
+;;  Modules\Dynalisp\Remote\Dyl-Materials.lsp with the materials, loaded at startup for every
+;;  App: a material names its hatch preset, and several materials can share one.
 
 ;;-------------------------=={ Commands }==------------------------;;
 
 ;; Hatch Presets
-;; Opens a dialog to create and edit the hatch presets (pattern, scale and layer key of a hatch) used by Quick Draw and Quick Shape.
+;; Opens a dialog to create and edit the hatch presets (pattern, scale and layer key of a hatch) that the materials share.
 
 (defun c:Dyl-HatchPresets ()
-  (Remote>>Dyl:MaterialDialog nil)
+  (Remote>>Dyl:HatchPresetDialog nil)
   (princ)
 )
 

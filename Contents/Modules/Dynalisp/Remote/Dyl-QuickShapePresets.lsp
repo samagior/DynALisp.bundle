@@ -33,6 +33,10 @@
               "OutlineKey" "BorderColorOn" "BorderColor" "BorderLinetypeOn" "BorderLinetype"
               "BorderLtScaleOn" "BorderLtScale" "BorderLineweightOn" "BorderLineweight"
               "BorderTransparencyOn" "BorderTransparency"
+              ;;  The view of the preset, the hatch preset of its material it is drawn with:
+              ;;  Cut (in section) or Surface (in elevation; an older file: Surface for a preset
+              ;;  of the Elevation group, see Remote>>Dyl:MaterialView):
+              "View"
       )
       (default . "QS-*")
       (base . "Pst-QuickShape")
@@ -40,7 +44,7 @@
       (title . "Quick Shape")
       (path . "Dynalisp\\Apps\\Draw\\Dyl-QuickShape.lsp")
       (info . 4)
-      (desc . "inserts its shape and fills it with its hatch preset.")
+      (desc . "inserts its shape and fills it with its material.")
       (get . Dyl:QuickShapeGet)
       (run . Dyl:QuickShapeRun)
      )

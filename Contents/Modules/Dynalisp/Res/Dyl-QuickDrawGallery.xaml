@@ -1,0 +1,75 @@
+<!--
+  Dyl-QuickDrawGallery.xaml - the Quick Draw Gallery window (Pst-QuickDrawGallery command)
+  Copyright (C) 2026  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Shown by DynALisp.Windows.dll (Installer\Windows): (Dyl:WinShow "Dyl-QuickDrawGallery.xaml"
+  ...) in Dyl:QuickDrawGallery (Apps\Draw\Dyl-QuickDraw.lsp), which gives the groups (grp),
+  the kinds (gal/kinds), the methods (gal/methods) and a tile for each preset (gal/list: its
+  name, its group, the preview of its hatch, see Installer\Windows\Engine\Hatch.cs, its rank
+  among the presets drawn last, its kind, the methods it can be drawn with and its default
+  method). The pills of the groups (All first, Recent last when presets were drawn) and of the
+  kinds, and the search, filter the tiles in the window itself (Gallery.cs); the group pills
+  pick the group of the hidden list grp, which the Lisp gets back. A tile clicked is selected
+  and shows the pills of its methods, its default method picked; a tile double-clicked, or
+  Draw, closes it with the preset (gal) and the method (gal.method), and the preset is drawn
+  with that method. Quick Draw Manager closes it with 2: the Quick Draw window opens in its
+  place.
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - Quick Draw Gallery" dyl:Win.Docs="Draw\Dyl-QuickDrawGallery.htm">
+  <Grid Margin="14">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <DockPanel Margin="0,0,0,10">
+      <ComboBox x:Name="grp" Visibility="Collapsed"/>
+      <TextBlock x:Name="cnt" DockPanel.Dock="Right" Tag="preset,presets" VerticalAlignment="Center" Margin="12,0,4,0"
+                 Foreground="{DynamicResource Dyl.Muted}"/>
+      <TextBox x:Name="find" Style="{DynamicResource Dyl.Search}" Tag="Search presets" Width="340" HorizontalAlignment="Left"/>
+    </DockPanel>
+
+    <!-- The groups and the kinds, filled by the gallery: -->
+    <WrapPanel x:Name="pills" Grid.Row="1" Margin="0,0,0,8"/>
+    <WrapPanel x:Name="kinds" Grid.Row="2" Margin="0,0,0,12"/>
+
+    <!-- Six tiles a row, four rows shown, the others under them (scroll): -->
+    <dyl:Gallery x:Name="gal" Grid.Row="3" HorizontalAlignment="Left" Group="grp" Pills="pills" Recent="Recent" Kinds="kinds" Methods="mths"
+                 Search="find" Count="cnt" Width="976" Height="568"/>
+
+    <!-- The methods of the preset selected, filled by the gallery: -->
+    <DockPanel Grid.Row="4" Margin="0,2,0,8" MinHeight="30" Width="976" HorizontalAlignment="Left" dyl:Win.EnabledBy="gal!=-1">
+      <TextBlock DockPanel.Dock="Left" Text="Method" Style="{DynamicResource Dyl.Label}" Width="70" VerticalAlignment="Center"/>
+      <WrapPanel x:Name="mths" VerticalAlignment="Center"/>
+    </DockPanel>
+
+    <DockPanel Grid.Row="5" Margin="0,6,0,0">
+      <Button DockPanel.Dock="Left" Margin="0" Content="Quick Draw _Manager" dyl:Win.Close="2"/>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Content="_Draw" IsDefault="True" dyl:Win.EnabledBy="gal!=-1"/>
+        <Button Content="_Cancel" IsCancel="True"/>
+        <Button x:Name="docs" Content="Open Docs"/>
+      </StackPanel>
+    </DockPanel>
+  </Grid>
+</Window>

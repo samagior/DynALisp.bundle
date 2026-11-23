@@ -431,7 +431,7 @@ def pattern(c, kind, x0, y0, x1, y1, bg, fg=INK, clip=None):
     c.paste(s, s_clip)
 
 
-# The swatch of each hatch preset of Quick Draw (its pattern, background, line colour):
+# The swatch of each material of Quick Draw (its pattern, background, line colour):
 MATERIALS = {
     'DEMOLITION': ('ansi31', PAPER, RED),
     'NOTINCONTRACT': ('ansi31', PAPER, GRAY),
@@ -532,7 +532,7 @@ def i_quickdraw(c):
 
 
 def i_quickdrawgallery(c):
-    # the gallery: four hatch preset tiles
+    # the gallery: four material tiles
     swatch(c, 'CONCRETE', 2, 2, 15, 15)
     swatch(c, 'BRICK', 17, 2, 30, 15)
     swatch(c, 'RIGIDINSULATION', 2, 17, 15, 30)
@@ -689,10 +689,21 @@ def i_shrinkwrap(c):
            1.6 if c.small else 2.2)
 
 
-def i_hatchpresets(c):
+def i_materials(c):
     swatch(c, 'CONCRETE', 2, 2, 18, 18)
     swatch(c, 'STEEL', 8, 8, 24, 24)
     swatch(c, 'BRICK', 14, 14, 30, 30)
+
+
+def i_hatchpresets(c):
+    # one hatch (Rigid Insulation) shared by three materials
+    kind, bg, fg = MATERIALS['RIGIDINSULATION']
+    pattern(c, kind, 2, 3, 18, 29, bg, fg)
+    c.rect(2, 3, 18, 29, None, INK)
+    lw = 1 if c.small else 1.3
+    for y0 in (3, 12.5, 22):
+        c.line([(18, y0 + 3.5), (22, y0 + 3.5)], TEAL, lw)
+        c.rect(22, y0, 30, y0 + 7, TEAL_L, INK)
 
 
 # ---------------------------------------------------------------- layers
@@ -1144,6 +1155,7 @@ ICONS = {
     'PST-QUICKDRAWGALLERY': i_quickdrawgallery,
     'DYL-QUICKSHAPE': i_quickshape,
     'DYL-SHRINKWRAP': i_shrinkwrap,
+    'DYL-MATERIALS': i_materials,
     'DYL-HATCHPRESETS': i_hatchpresets,
     # layers
     'DYL-LAYERKEYS': i_layerkeys,

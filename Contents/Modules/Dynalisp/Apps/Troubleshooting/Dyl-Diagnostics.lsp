@@ -344,6 +344,15 @@
       (dg:bad "The ribbon stays in English: DynALisp.Ribbon.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)")
     )
   )
+  ;;  The windows of DynALisp (Dyl-Settings...) are shown by DynALisp.Windows.dll (AutoCAD
+  ;;  2015 and later, the Windows region of dynalisp.mnl):
+  (cond
+    (Dyl:Window)
+    ((< (atof (getvar "ACADVER")) 20.0)
+     (dg:bad "The windows of DynALisp cannot open: DynALisp.Windows.dll needs AutoCAD 2015 or later")
+    )
+    ((dg:bad "The windows of DynALisp cannot open: DynALisp.Windows.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
+  )
   (if (not (vl-some '(lambda (r) (= (strcase r) (strcase (vl-filename-directory *dyl:repo))))
                     (dg:pluginroots)
            )
@@ -739,6 +748,8 @@
   (dg:try 'dg:set-values)
   (dg:try 'dg:set-user)
   (dg:try 'dg:set-csv)
+  (dg:try 'dg:set-asm)
+  (dg:try 'dg:set-mat)
 )
 
 ;;  Every Dynalisp* user setting, local ones included: (name ...):
@@ -830,6 +841,81 @@
     )
   )
   (dg:kv "Files" (strcat (itoa (length files)) " read in " (itoa tot) " ms"))
+)
+
+;;  The assembly presets of Quick Draw (QuickDrawAssemblies.csv): how many, and the Quick
+;;  Draw presets whose assembly (column 38: its id) is not one of them (drawn without
+;;  layers). A column with ":" is the layers of a preset of an older file, made an assembly
+;;  preset when the Quick Draw window opens:
+(defun dg:set-asm (/ ids bad v)
+  (if (and Remote>>Dyl:PresetCsv (Remote>>Dyl:PresetProp "QuickDrawAssembly" 'header))
+    (progn
+      (dg:sub "Assembly presets")
+      (setq ids (mapcar '(lambda (a) (strcase (car a))) (Remote>>Dyl:PresetCsv "QuickDrawAssembly")))
+      (foreach r (Remote>>Dyl:PresetCsv "QuickDraw")
+        (setq v (vl-string-trim " " (cond ((nth 38 r)) (""))))
+        (if (and (/= "" v) (not (vl-string-search ":" v)) (not (member (strcase v) ids)))
+          (setq bad (cons (nth 2 r) bad))
+        )
+      )
+      (dg:kv "Assemblies" (itoa (length ids)))
+      (if bad
+        (dg:bad (strcat "Quick Draw presets whose assembly no longer exists: " (Remote>>LM:lst->str (reverse bad) ", ")))
+      )
+    )
+  )
+)
+
+;;  The materials and their hatch presets: a materials file of DynALisp 1.1 and older not split
+;;  yet (each material its own hatch), a material whose hatch preset no longer exists (drawn
+;;  without hatch), the materials in a group that is not one of the groups of the materials
+;;  (MaterialGroups.csv: still listed, after the others), a User copy of the HatchPresets.csv
+;;  of DynALisp 1.0 (not read):
+(defun dg:set-mat (/ b ids bad f grps odd)
+  (if Remote>>Dyl:MaterialBoth
+    (progn
+      (dg:sub "Materials")
+      ;;  (never split here: the report changes no file)
+      (if (Remote>>Dyl:MaterialOld-p)
+        (dg:note "The materials file is of DynALisp 1.1 or older: it is split into materials and hatch presets when it is read")
+        (progn
+          (setq b   (Remote>>Dyl:MaterialBoth)
+                ids (mapcar 'car (car b))
+          )
+          (dg:kv "Materials" (itoa (length (cadr b))))
+          (dg:kv "Hatch presets" (itoa (length ids)))
+          (foreach m (cadr b)
+            (foreach i '(3 4)
+              (if (and (/= "" (nth i m)) (not (member (nth i m) ids)))
+                (setq bad (cons (strcat (nth 2 m) " (" (nth i m) ")") bad))
+              )
+            )
+          )
+          (if bad
+            (dg:bad (strcat "Materials whose hatch preset no longer exists: " (Remote>>LM:lst->str (reverse bad) ", ")))
+          )
+          (if Remote>>Dyl:GroupsOf
+            (progn
+              (setq grps (mapcar 'strcase (Remote>>Dyl:GroupsOf "Material")))
+              (dg:kv "Groups of the materials" (itoa (length grps)))
+              (foreach m (cadr b)
+                (if (not (member (strcase (nth 1 m)) grps)) (setq odd (cons (strcat (nth 2 m) " (" (nth 1 m) ")") odd)))
+              )
+              (if odd
+                (dg:note (strcat "Materials in a group that is not one of the groups of the materials: " (Remote>>LM:lst->str (reverse odd) ", ")))
+              )
+            )
+          )
+        )
+      )
+      (setq f (Dyl:UserFile (Remote>>Dyl:PresetDefault "HatchPreset")))
+      (if (and (/= (strcase f) (strcase (Remote>>Dyl:PresetDefault "HatchPreset")))
+               (/= (Remote>>Dyl:PresetFile "HatchPreset") f)
+          )
+        (dg:note "The User copy of HatchPresets.csv is the file of DynALisp 1.0: not read (saving the hatch presets replaces it)")
+      )
+    )
+  )
 )
 
 ;;-------------------------=={ Reactors }==------------------------;;

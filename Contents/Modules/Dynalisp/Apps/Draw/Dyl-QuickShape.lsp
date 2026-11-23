@@ -342,12 +342,13 @@
   (princ)
 )
 
-;;  Draw a preset: its material gives the hatch, the preset its border (put in the border
-;;  columns of the material, always a border):
+;;  Draw a preset: its material gives the hatch (the hatch preset of its view, Cut or
+;;  Surface), the preset its border (put in the border columns of the material, always a
+;;  border):
 (defun Dyl:QuickShapeRun (rec / mat)
-  (if (setq mat (Remote>>Dyl:MaterialGet (nth 3 rec)))
+  (if (setq mat (Remote>>Dyl:MaterialGetAs (nth 3 rec) (nth *qs:view* rec)))
     (Dyl:QuickShape rec (Dyl:QuickShapeMat mat rec))
-    (alert (strcat "\nError: the hatch preset of the preset \""
+    (alert (strcat "\nError: the material of the preset \""
                    (nth 2 rec)
                    "\" no longer exists ("
                    (nth 3 rec)
@@ -367,24 +368,34 @@
 ;;  The border of the preset (outline-key and its optional settings, index 6 to 16: the values
 ;;  of the border columns of a material, see *mt:bordertiles*). A shape always has its border
 ;;  (no No border). A preset of an older file, without it, gets the border of its material.
+;;  Then its view (index 17), the hatch preset of its material it is drawn with: Cut (in
+;;  section) or Surface (in elevation).
 ;;  The presets are saved to Res\QuickShape.csv (spec in Remote\Dyl-QuickShapePresets.lsp).
 
 ;;  The border columns of a preset start at 6 (see Remote>>Dyl:MaterialBorderTiles):
 (setq *qs:border* 6)
+
+;;  The view of a preset (see Remote>>Dyl:MaterialView):
+(setq *qs:view* 17)
 
 ;;  The material mat with the border of the preset r (always a border):
 (defun Dyl:QuickShapeMat (mat r)
   (Remote>>Dyl:MaterialBorderPut mat r *qs:border* nil)
 )
 
-;;  Values of a row of the presets file (its 17 columns): scale "1" when it is not a number
+;;  Values of a row of the presets file (its 18 columns): scale "1" when it is not a number
 ;;  greater than 0, the border checked as that of a material (see Remote>>Dyl:MaterialFix).
 ;;  A row of a file without the border columns (no outline key) gets the border of its
 ;;  material. Its group as in the groups (any case; a group not listed there is kept, see
-;;  Remote>>Dyl:GroupCase):
-(defun Dyl:QuickShapeFix (row)
-  (while (< (length row) 17) (setq row (append row (list ""))))
+;;  Remote>>Dyl:GroupCase). Its view Cut or Surface (an older file: Surface in the Elevation
+;;  group), its material and view after *mt:moved*:
+(defun Dyl:QuickShapeFix (row / m)
+  (while (< (length row) 18) (setq row (append row (list ""))))
   (setq row (Remote>>Dyl:ListSubst row 1 (Remote>>Dyl:GroupCase (nth 1 row))))
+  (setq row (Remote>>Dyl:ListSubst row *qs:view* (Remote>>Dyl:MaterialView (nth *qs:view* row) (nth 1 row)))
+        m   (Remote>>Dyl:MaterialMoved (nth 3 row) (nth *qs:view* row))
+        row (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst row 3 (car m)) *qs:view* (cadr m))
+  )
   (if (not (and (distof (nth 5 row)) (< 0 (distof (nth 5 row)))))
     (setq row (Remote>>Dyl:ListSubst row 5 "1"))
   )
@@ -395,9 +406,9 @@
 )
 
 ;;  A default preset (id group name material shape scale): the border of its default
-;;  material (Res\Materials.csv as shipped, see Remote>>Dyl:MaterialDefs):
+;;  material (its hatch preset in Res\HatchPresets.csv as shipped, see Remote>>Dyl:MaterialDefs):
 (defun Dyl:QuickShapeDefault (row)
-  (while (< (length row) 17) (setq row (append row (list ""))))
+  (while (< (length row) 18) (setq row (append row (list ""))))
   (Dyl:QuickShapeFix
     (Remote>>Dyl:MaterialBorderOf row (cond ((assoc (nth 3 row) (Remote>>Dyl:MaterialDefs))) (*mt:new*)) *qs:border* nil)
   )
@@ -436,12 +447,16 @@
 ;;  libraries), qs:refs (shapes of the Shape popup), mt:keys (layer keys of the border popup).
 
 ;;  Tiles of Quick Shape and index of their value in a preset, then those of the border:
-(setq *qs:tiles* (append '(("scl" . 5) ("shp" . 4)) (Remote>>Dyl:MaterialBorderTiles *qs:border*)))
+(setq *qs:tiles* (append (list '("scl" . 5) '("shp" . 4) (cons "mvw" *qs:view*)) (Remote>>Dyl:MaterialBorderTiles *qs:border*)))
+
+;;  The views of a preset (the View popup):
+(setq *qs:views* '("Cut" "Surface"))
 
 ;;  Popup tiles -> list of their values (nil for the other tiles):
 (defun Dyl:QuickShapeDlgItems (key)
   (cond
     ((= "shp" key) qs:refs)
+    ((= "mvw" key) *qs:views*)
     ((assoc key *mt:bordertiles*) (Remote>>Dyl:MaterialDlgItems key))
   )
 )
@@ -457,7 +472,7 @@
 
 ;;  The border of the preset r (see Remote>>Dyl:MaterialDlgBorderState; always a border):
 (defun Dyl:QuickShapeDlgState (r)
-  (Remote>>Dyl:MaterialDlgBorderState (Dyl:QuickShapeMat (cond ((assoc (nth 3 r) pst:mats)) (*mt:new*)) r) nil)
+  (Remote>>Dyl:MaterialDlgBorderState (Dyl:QuickShapeMat (cond ((Remote>>Dyl:PresetDlgMatOf r)) (*mt:new*)) r))
 )
 
 ;;  Fill the Shape popup (each time the dialog is shown: a shape may have been added): the shapes
@@ -478,12 +493,15 @@
     )
   )
   (end_list)
+  (start_list "mvw")
+  (mapcar 'add_list *qs:views*)
+  (end_list)
   ;;  Add shape / Open library: close the dialog with code 3 / 4, see Dyl:QuickShapeDlgStatus.
   ;;  Also when the shape of the preset is missing (only the shape is then invalid):
   (action_tile "sad" "(if (or (Remote>>Dyl:PresetDlgCommit) (not (member (nth 4 (nth pst:idx pst:lst)) qs:shapes))) (done_dialog 3))")
   (action_tile "sop" "(if (or (Remote>>Dyl:PresetDlgCommit) (not (member (nth 4 (nth pst:idx pst:lst)) qs:shapes))) (done_dialog 4))")
   ;;  The Border settings box (no Has a border):
-  (Remote>>Dyl:MaterialDlgBorderInit (mapcar '(lambda (r) (nth *qs:border* r)) (append *qs:defaults* pst:lst)) nil)
+  (Remote>>Dyl:MaterialDlgBorderInit (mapcar '(lambda (r) (nth *qs:border* r)) (append *qs:defaults* pst:lst)))
 )
 
 ;;  Code 3 = Add shape from selection: the new shape goes to the library of the shape of the
@@ -519,15 +537,21 @@
     (list (cons 'defs *qs:defaults*)
           (cons 'fix 'Dyl:QuickShapeFix)
           (cons 'tiles *qs:tiles*)
-          ;;  The Group popup of the Hatch Presets window (the other groups used by a preset
-          ;;  are added to it); the Hatch preset popup lists the hatch presets of the group:
+          ;;  The Group popup of the Materials window (the other groups used by a preset
+          ;;  are added to it); the Material popup lists the materials of the group:
           '(groups . T)
           '(material . 3)
+          ;;  The Material popup lists the materials of the group picked in the Material group
+          ;;  popup above it (the groups of the materials, by what they are made of):
+          '(matgroups . T)
+          ;;  The view of a preset: its material joined to its Cut or Surface hatch preset:
+          (cons 'mview *qs:view*)
           '(upper "out" "blt")
-          ;;  The shape, then the border of the preset:
+          ;;  The view, the shape, then the border of the preset:
           (cons 'params
                 (append
-                  '("      : popup_list { key = \"shp\"; label = \"Shape:\"; edit_width = 32; }"
+                  '("      : popup_list { key = \"mvw\"; label = \"View:\"; edit_width = 32; }"
+                    "      : popup_list { key = \"shp\"; label = \"Shape:\"; edit_width = 32; }"
                     "      : row { alignment = right; fixed_width = true;"
                     "        : button { key = \"sad\"; label = \"Add shape from selection...\"; }"
                     "        : button { key = \"sop\"; label = \"Open library\"; }"
@@ -535,7 +559,7 @@
                     "      : edit_box { key = \"scl\"; label = \"Scale:\"; edit_width = 12; }"
                     "      spacer;"
                    )
-                  (Remote>>Dyl:MaterialBorderDcl nil nil)
+                  (Remote>>Dyl:MaterialBorderDcl)
                 )
           )
           (cons 'new (Dyl:QuickShapeDefault '("" "" "New shape" "mt-Brick" "Shapes|Stud-2x4" "1")))

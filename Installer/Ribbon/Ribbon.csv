@@ -2,6 +2,7 @@ Panel;Stack;Command;Children;Name;Description;Selection
 Draw;;PST-QUICKDRAWGALLERY;@*qd:gallerygroup*=All|Phase|Section|Detail|Elevation|Wall|Floor|Ceiling|Roof|Finish|Structural|Site|Area|Annotation|Generic;Quick Draw;
 Draw;;DYL-QUICKSHAPE;*;;
 Draw;1;DYL-QUICKDRAW;;Quick Draw Manager;
+Draw;1;DYL-MATERIALS;;;
 Draw;1;DYL-HATCHPRESETS;;;
 Draw;1;DYL-SHRINKWRAP;;;
 Drawing Behaviors;;DYL-LAYERPHASE;;;

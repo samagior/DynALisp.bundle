@@ -1,0 +1,31 @@
+<!--
+  DynALisp.Windows.Shots - the pictures of the windows of DynALisp for the docs, drawn without
+  AutoCAD from the window files themselves (the .xaml of the Res folders).
+
+    dotnet run -c Release (in Installer\Windows\Shots)
+
+  Renders each window of Shots.csv on its sample values (Samples\) to the picture its docs
+  page names (images\<Page>-window.png). Compiles the engine of the plugin
+  (..\Engine: no AutoCAD in it), so a window is drawn as AutoCAD shows it. Windows only
+  (WPF): run it on a Windows computer or in GitHub Actions (windows.yml).
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>DynALisp.Windows.Shots</AssemblyName>
+    <!-- The window files name the engine as this assembly (no assembly in their dyl: prefix): -->
+    <RootNamespace>DynALisp.Windows</RootNamespace>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Engine\*.cs" Link="Engine\%(Filename)%(Extension)" />
+    <EmbeddedResource Include="..\Engine\Theme.xaml" LogicalName="DynALisp.Windows.Theme.xaml" Link="Engine\Theme.xaml" />
+  </ItemGroup>
+
+</Project>

@@ -41,7 +41,7 @@
 ;;;
 ;;; Used by other files:
 ;;;   rpat:rebuild-hatch - rebuilds the pattern of one hatch, without asking;
-;;;                        the Pick hatch... button of the Hatch Presets window
+;;;                        the Pick hatch... button of the Materials window
 ;;;                        loads this file to call it (see
 ;;;                        Remote>>Dyl:MaterialPatRebuild).
 ;;;
@@ -631,7 +631,7 @@
 ;;;   Rebuilds the pattern of one hatch when it is missing, as Dyl-RebuildPat
 ;;;   does, without asking anything: written to <name>.pat in the target
 ;;;   folder (a file already there is kept), the folder added to the support
-;;;   path. Used by the Pick hatch... button of the Hatch Presets window
+;;;   path. Used by the Pick hatch... button of the Materials window
 ;;;   (Remote>>Dyl:MaterialPickHatch).
 ;;;   Arguments : ename - hatch entity name
 ;;;   Returns   : full path of the .pat file, nil (with a message) when it

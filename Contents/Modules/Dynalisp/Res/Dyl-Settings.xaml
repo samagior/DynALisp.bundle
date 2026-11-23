@@ -1,0 +1,157 @@
+<!--
+  Dyl-Settings.xaml - the Settings window of DynALisp (Dyl-Settings command)
+  Copyright (C) 2023  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Shown by DynALisp.Windows.dll (Installer\Windows): (Dyl:WinShow "Dyl-Settings.xaml" ...) in
+  c:Dyl-Settings (Settings region of dynalisp.mnl), its values given by Dyl:SetWinVals and
+  read back by Dyl:SetWinGet. The x:Name of a control is its key; the dyl:Win.* properties
+  are explained in Installer\Windows\Engine\Win.cs. Its sub-windows are the
+  Dyl-Settings-*.xaml files beside it (dyl:Win.Open), on the same values: Save keeps
+  what they changed. An open button that runs a command closes this window with its number
+  (dyl:Win.Close): c:Dyl-Settings runs the command, then opens the window again.
+
+  Two columns of about the same height (Windows convention): Environment and Reactors on the
+  left, Overrides, Layer keys and Updates on the right.
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - Settings" dyl:Win.Docs="Core\Dyl-Settings.htm">
+  <Grid Margin="14,14,14,14">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="320"/>
+      <ColumnDefinition Width="10"/>
+      <ColumnDefinition Width="320"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <StackPanel Grid.Column="0">
+      <!-- The language of DynALisp (DynalispLanguage, Dyl:Lang): its docs only (the ribbon is in
+           the language of the AutoCAD installed). Not the Language of the File Preferences: -->
+      <GroupBox Header="Environment">
+        <StackPanel>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Text="The language its docs open in."/>
+          <DockPanel>
+            <ComboBox x:Name="lng" DockPanel.Dock="Right" Width="150"/>
+            <TextBlock Style="{DynamicResource Dyl.Label}" Text="Language"/>
+          </DockPanel>
+        </StackPanel>
+      </GroupBox>
+
+      <!-- The reactors (Reactor folder of each module). DynALisp reactors (DynalispReactors)
+           turns them all off: the reactor settings under it are greyed out while it is off: -->
+      <GroupBox Header="Reactors">
+        <StackPanel>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Text="Act on new objects as you draw."/>
+          <CheckBox x:Name="rea" Content="DynALisp reactors"/>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,6" Text="Off: no reactor runs."/>
+          <!-- runs Dyl-LayerPhase (4), then opens this window again: -->
+          <DockPanel>
+            <dyl:OpenButton x:Name="lph" DockPanel.Dock="Right" dyl:Win.Close="4"/>
+            <CheckBox x:Name="aph" Content="Auto-phase new objects" dyl:Win.EnabledBy="rea"/>
+          </DockPanel>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,6" Text="Puts new objects on the active phase."/>
+          <!-- runs Dyl-DrawOrder (5): -->
+          <DockPanel>
+            <dyl:OpenButton x:Name="ldo" DockPanel.Dock="Right" dyl:Win.Close="5"/>
+            <CheckBox x:Name="ado" Content="Auto draw order" dyl:Win.EnabledBy="rea"/>
+          </DockPanel>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,6" Text="Stacks new objects by layer level."/>
+          <!-- runs Dyl-ObjectLayerKeys (7): -->
+          <DockPanel>
+            <dyl:OpenButton x:Name="lol" DockPanel.Dock="Right" dyl:Win.Close="7"/>
+            <CheckBox x:Name="alk" Content="Auto layer keys" dyl:Win.EnabledBy="rea"/>
+          </DockPanel>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,6" Text="Puts new dimensions, text on their key."/>
+          <CheckBox x:Name="syn" Content="Settings sync" dyl:Win.EnabledBy="rea"/>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,0" Text="Open drawings follow saved settings."/>
+        </StackPanel>
+      </GroupBox>
+    </StackPanel>
+
+    <StackPanel Grid.Column="2">
+      <GroupBox Header="Overrides">
+        <StackPanel>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Text="Set in every drawing opened."/>
+          <!-- Drawing defaults (DynalispSetupOn): its window available while the check is off
+               too (the Shrinkwrap gap step is used anyway): -->
+          <DockPanel>
+            <dyl:OpenButton x:Name="dsm" DockPanel.Dock="Right" dyl:Win.Open="Dyl-Settings-DrawingSettings.xaml"/>
+            <CheckBox x:Name="dso" Content="Drawing Settings"/>
+          </DockPanel>
+          <!-- The save and print commands and REGEN redefined (Dyl-CmdOptimizer), the steps
+               they run in the Output Prep window: -->
+          <DockPanel>
+            <dyl:OpenButton x:Name="prs" DockPanel.Dock="Right" dyl:Win.Open="Dyl-Settings-OutputPrep.xaml"/>
+            <CheckBox x:Name="prp" Content="Commands"/>
+          </DockPanel>
+          <!-- The DynALisp profile (Remote\Dyl-FilePrefs.lsp): -->
+          <DockPanel>
+            <dyl:OpenButton x:Name="pfm" DockPanel.Dock="Right" dyl:Win.Open="Dyl-Settings-FilePreferences.xaml" dyl:Win.EnabledBy="pfo"/>
+            <CheckBox x:Name="pfo" Content="File Preferences"/>
+          </DockPanel>
+          <!-- System variables (DynalispSysVarOn): runs Dyl-SysVars (6), the profiles: -->
+          <DockPanel>
+            <dyl:OpenButton x:Name="svm" DockPanel.Dock="Right" dyl:Win.Close="6" dyl:Win.EnabledBy="svo"/>
+            <CheckBox x:Name="svo" Content="System variables"/>
+          </DockPanel>
+          <!-- Display (DynalispDisplayOn): -->
+          <DockPanel>
+            <dyl:OpenButton x:Name="dpm" DockPanel.Dock="Right" dyl:Win.Open="Dyl-Settings-Display.xaml" dyl:Win.EnabledBy="dpo"/>
+            <CheckBox x:Name="dpo" Content="Display"/>
+          </DockPanel>
+          <!-- Revisions (DynalispRevisionSync): runs Pst-RevisionTitleBlocks (8): -->
+          <DockPanel>
+            <dyl:OpenButton x:Name="rvm" DockPanel.Dock="Right" dyl:Win.Close="8"/>
+            <CheckBox x:Name="rvo" Content="Revisions"/>
+          </DockPanel>
+          <!-- Clean startup (DynalispCleanStartup, DynALisp.Startup.dll): -->
+          <CheckBox x:Name="csu" Content="Clean startup"/>
+        </StackPanel>
+      </GroupBox>
+
+      <!-- The answer remembered to "update this layer to its layer key?", one of the two at
+           most (DynalispLayerKeyUpdate, DynalispLayerKeyKeep): -->
+      <GroupBox Header="Layer keys">
+        <StackPanel>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Text="Existing layers that differ from their key."/>
+          <CheckBox x:Name="lku" Content="Update them without asking" dyl:Win.Excludes="lkk"/>
+          <CheckBox x:Name="lkk" Content="Keep them without asking" dyl:Win.Excludes="lku"/>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,0" Text="Both off: asked when the key is used."/>
+        </StackPanel>
+      </GroupBox>
+
+      <!-- New versions of DynALisp (DynalispAutoUpdate); for a git clone, greyed out and its
+           description says so (aud, given by Dyl:SetWinVals): -->
+      <GroupBox Header="Updates" Margin="0">
+        <StackPanel>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Text="New versions of DynALisp."/>
+          <CheckBox x:Name="aup" Content="Install updates automatically"/>
+          <TextBlock x:Name="aud" Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,0" Text="Checks daily, installs as AutoCAD closes."/>
+        </StackPanel>
+      </GroupBox>
+    </StackPanel>
+
+    <StackPanel Grid.Row="1" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+      <Button Content="_Save" IsDefault="True"/>
+      <Button Content="_Cancel" IsCancel="True"/>
+      <Button x:Name="docs" Content="Open Docs"/>
+    </StackPanel>
+  </Grid>
+</Window>

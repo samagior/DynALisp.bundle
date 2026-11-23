@@ -1,0 +1,44 @@
+# Sample values of the Materials window (Remote>>Dyl:MaterialDialog in Remote\Dyl-Materials.lsp,
+# through Remote>>Dyl:PresetWinVals of Remote\Dyl-Presets.lsp), as the Lisp gives them, for
+# eight materials, Extruded Polystyrene shown, three insulations on the one hatch preset Rigid
+# Insulation, their data not filled in (a value is never made up): key=value, key/list=item|item,
+# key/vals=value|value, +key=field\tfield a row of the table key (pst/rows: id group name cut
+# surface conductivity density resistance; pst/mats: the hatch presets, id group name preview
+# pattern); \t is a tab. mt.imp "0": the units shown are SI (a metric drawing).
+grp/list=Concrete|Masonry|Metal|Wood|Board|Insulation|Finish|Roofing|Site|Air|Phase|Generic
+srt/list=Name|Group
+srt=0
+flt=
+pst/ncols=8
+pst/tiles=nam:2,grp:1,sur:4,cnd:5,den:6,rsi:7,mat:3
+pst.idx=3
+pst.sel=3
+pst.shw=
+pst/title=Materials
+pst/noun=materials
+error=
+pst/mat=3
+pst/matnoun=hatch preset
+pst/matfree=1
+mt.imp=0
++pst/rows=mt-Brick\tMasonry\tBrick\thp-Brick\t\t\t\t
++pst/rows=mt-Concrete\tConcrete\tConcrete\thp-Concrete\t\t\t\t
++pst/rows=mt-ExpandedPolystyrene\tInsulation\tExpanded Polystyrene\thp-RigidInsulation\t\t0.03571\t\t
++pst/rows=mt-ExtrudedPolystyrene\tInsulation\tExtruded Polystyrene\thp-RigidInsulation\t\t0.02857\t\t
++pst/rows=mt-Gypsum\tBoard\tGypsum\thp-Gypsum\t\t\t\t
++pst/rows=mt-Hardboard\tWood\tHardboard\thp-Brick\t\t\t\t
++pst/rows=mt-Polyisocyanurate\tInsulation\tPolyisocyanurate\thp-RigidInsulation\t\t0.02381\t\t
++pst/rows=mt-Void\tAir\tVoid\thp-Void\t\t\t\t
++pst/defs=mt-Brick\tMasonry\tBrick\thp-Brick\t\t\t\t
++pst/defs=mt-Concrete\tConcrete\tConcrete\thp-Concrete\t\t\t\t
++pst/defs=mt-Gypsum\tBoard\tGypsum\thp-Gypsum\t\t\t\t
++pst/defs=mt-Hardboard\tWood\tHardboard\thp-Brick\t\t\t\t
++pst/defs=mt-Void\tAir\tVoid\thp-Void\t\t\t\t
++pst/new=\tGeneric\tNew material\t\t\t\t\t
++pst/mats=hp-Brick\tSection\tBrick\tP?1?ANSI31?{samples}\Sample.pat?1?0?1\tANSI31
++pst/mats=hp-Concrete\tSection\tConcrete\tP?1?CONCRETE_C?{samples}\Sample.pat?1?0?1\tCONCRETE_C
++pst/mats=hp-Gypsum\tSection\tGypsum\tP?1?GENERAL_TEXTURE?{samples}\Sample.pat?0.5?0?1\tGENERAL_TEXTURE
++pst/mats=hp-RigidInsulation\tSection\tRigid Insulation\tP?1?THERMAL_INSULATION?{samples}\Sample.pat?0.5?90?1\tTHERMAL_INSULATION
++pst/mats=hp-Void\tSection\tVoid\tS?1\t
+sur/list=Same as Cut|Section - Brick|Section - Concrete|Section - Gypsum|Section - Rigid Insulation|Section - Void
+sur/vals=|hp-Brick|hp-Concrete|hp-Gypsum|hp-RigidInsulation|hp-Void
