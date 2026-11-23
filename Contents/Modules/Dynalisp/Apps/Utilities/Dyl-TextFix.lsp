@@ -9,7 +9,7 @@
 ;;;   - AutoCAD formatting codes (\P, \f...;, %%c, ...) are preserved.
 ;;;
 ;;; Command :
-;;;   CLAUDETEXT  - uses the current pickfirst selection (right-click menu)
+;;;   TEXTFIX  - uses the current pickfirst selection (right-click menu)
 ;;;                 or asks for a selection if nothing is selected.
 ;;;
 ;;; Requirements :
@@ -511,7 +511,7 @@
 ;;; ==========================================================================
 
 ;;; --------------------------------------------------------------------------
-;;; C:Dyl-ClaudeTextFix
+;;; C:Dyl-TextFix
 ;;;   Main command: gets the API key and the selection, runs the proofreading
 ;;;   inside one UNDO transaction and prints a summary.
 ;;; --------------------------------------------------------------------------
@@ -519,7 +519,7 @@
 ;; Claude Text Fix
 ;; Proofreads the selected texts, mtexts and multileaders with Claude and replaces them after confirmation.
 
-(defun c:Dyl-ClaudeTextFix (/ *error* doc undo-open auth ss stats)
+(defun c:Dyl-TextFix (/ *error* doc undo-open auth ss stats)
 
   ;; Local error handler: closes the UNDO group and hides Esc/cancel noise.
   (defun *error* (msg) 
@@ -538,7 +538,7 @@
     )
 
     ((not (setq ss (ctf:get-selection)))
-     (princ "\nCLAUDETEXT : aucun texte selectionne.")
+     (princ "\nTEXTFIX : aucun texte selectionne.")
     )
 
     (T
@@ -549,7 +549,7 @@
      (setq undo-open nil)
 
      (princ 
-       (strcat "\n\nCLAUDETEXT : " 
+       (strcat "\n\nTEXTFIX : " 
                (itoa (nth 0 stats))
                " texte(s) analyse(s), "
                (itoa (nth 1 stats))
@@ -563,5 +563,5 @@
   (princ)
 )
 
-(princ "\nClaudeTextFix.lsp charge. Tapez Dyl-ClaudeTextFix pour executer.")
+(princ "\nClaudeTextFix.lsp charge. Tapez Dyl-TextFix pour executer.")
 (princ)

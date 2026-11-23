@@ -170,7 +170,7 @@ The [release workflow](.github/workflows/release.yml) checks the tag against `Ap
 
 [![Claude](https://img.shields.io/badge/Claude-Anthropic-D97757?logo=claude&logoColor=white&style=for-the-badge)](https://claude.com/claude-code)
 
-DynALisp is developed with [Claude Code](https://claude.com/claude-code), Anthropic's coding assistant: the ribbon and its icons, the Quick Draw gallery and assemblies, the layer keys, the docs pages and the [conventions](CONVENTIONS.md) were written with it. The **Claude Text Fix** tool (`Dyl-ClaudeTextFix`) uses Claude itself to proofread the texts of a drawing.
+DynALisp is developed with [Claude Code](https://claude.com/claude-code), Anthropic's coding assistant: the ribbon and its icons, the Quick Draw gallery and assemblies, the layer keys, the docs pages and the [conventions](CONVENTIONS.md) were written with it. The **Text Fix** tool (`Dyl-TextFix`) uses Claude itself to proofread the texts of a drawing.
 
 ### Working on DynALisp with Claude Code
 

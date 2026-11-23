@@ -96,8 +96,6 @@ Dynalisp/Utilities/Dyl-Assistant.fr.htm
 Dynalisp/Utilities/Dyl-Assistant.htm
 Dynalisp/Utilities/Dyl-BatchInsert.fr.htm
 Dynalisp/Utilities/Dyl-BatchInsert.htm
-Dynalisp/Utilities/Dyl-ClaudeTextFix.fr.htm
-Dynalisp/Utilities/Dyl-ClaudeTextFix.htm
 Dynalisp/Utilities/Dyl-CountByLayers.fr.htm
 Dynalisp/Utilities/Dyl-CountByLayers.htm
 Dynalisp/Utilities/Dyl-Dictionary.fr.htm
@@ -120,6 +118,8 @@ Dynalisp/Utilities/Dyl-RebuildPat.fr.htm
 Dynalisp/Utilities/Dyl-RebuildPat.htm
 Dynalisp/Utilities/Dyl-ResetLinetypeScale.fr.htm
 Dynalisp/Utilities/Dyl-ResetLinetypeScale.htm
+Dynalisp/Utilities/Dyl-TextFix.fr.htm
+Dynalisp/Utilities/Dyl-TextFix.htm
 Dynalisp/Utilities/Dyl-UngroupNext.fr.htm
 Dynalisp/Utilities/Dyl-UngroupNext.htm
 Dynalisp/Utilities/Dyl-ViewportToPaperSpace.fr.htm

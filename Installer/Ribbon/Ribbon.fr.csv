@@ -113,7 +113,7 @@ PST-DIMENSIONTEXTTYPICAL;Texte de cote Typique;Ajoute ou retire le suffixe (TYP)
 PST-DIMENSIONTEXTOB;Texte de cote OB;Ajoute ou retire le suffixe (OB) du texte de la cote sélectionnée.
 PST-DIMENSIONTEXTOL;Texte de cote OL;Ajoute ou retire le suffixe (OL) du texte de la cote sélectionnée.
 DYL-ASSISTANT;Assistant;Ouvre une palette pour poser vos questions à Claude sur AutoCAD, AutoLISP et DynALisp, par Claude Code connecté à votre compte Claude.
-DYL-CLAUDETEXTFIX;Correction de texte Claude;Révise les textes, textes multilignes et lignes de repère multiples sélectionnés avec Claude et les remplace après confirmation.
+DYL-TEXTFIX;Correction de texte;Révise les textes, textes multilignes et lignes de repère multiples sélectionnés avec Claude et les remplace après confirmation.
 DYL-DICTIONARY;Dictionnaire;Cherche les mots des dictionnaires DynALisp, leurs définitions et catégories, dans la langue des préférences de fichiers.
 DYL-MULTILEADERLIST;Liste des lignes de repère et blocs;Liste les lignes de repère multiples et les blocs sélectionnés, groupés par valeurs d'attributs, avec un compte par groupe.
 DYL-COLORBYLAYER;Couleur DuCalque;Règle la couleur des objets sélectionnés sur DuCalque.
