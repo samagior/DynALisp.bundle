@@ -19,13 +19,14 @@
   (Remote>>Dyl:PresetWin of Remote\Dyl-Presets.lsp, for Remote>>Dyl:MaterialDialog of
   Remote\Dyl-Materials.lsp): by the command Dyl-Materials, and by the open button beside
   Material in the Quick Draw and Quick Shape windows. A preset window: its list "lst" is the
-  materials (pst/rows: id group name cut surface conductivity density resistance), edited in
+  materials (pst/rows: id group name cut surface conductivity density resistance permeability
+  permeance), edited in
   the window itself (Installer\Windows\Engine\Presets.cs: the list, New, Copy, Delete, the
   resets); OK (1) saves them and gives the material selected to the window it was opened
   from. mat is the Cut hatch preset (the Material list of the engine, on the hatch presets:
   pst/mats, every one listed, pst/matfree), mpv its preview, sur the Surface hatch preset
-  (sur/list, sur/vals: "" Same as Cut), cnd, den and rsi the data, in the units of the
-  drawing (mt.imp "1": imperial, the Lisp converts them, *mt:data*). The open buttons close
+  (sur/list, sur/vals: "" Same as Cut), cnd, den, rsi, vpm and vpc the data, in the units
+  of the drawing (mt.imp "1": imperial, the Lisp converts them, *mt:data*). The open buttons close
   the window with the code of what they open: 8 Preset Groups, 9 Hatch Presets on the Cut
   hatch preset, 10 Hatch Presets on the Surface hatch preset; the Lisp opens the window
   again once it is done.
@@ -172,6 +173,20 @@
             <TextBox x:Name="rsi" DockPanel.Dock="Right" Width="120" dyl:Win.Check="empty;positive"
                      dyl:Win.CheckMessage="The thermal resistance must be a number greater than 0 (empty: not known)."/>
             <TextBlock Style="{DynamicResource Dyl.Label}" Text="Thermal resistance"/>
+          </DockPanel>
+          <DockPanel Style="{StaticResource Row}">
+            <TextBlock Style="{StaticResource Unit}" Text="ng/Pa·s·m" dyl:Win.VisibleBy="!mt.imp"/>
+            <TextBlock Style="{StaticResource Unit}" Text="perm·in" dyl:Win.VisibleBy="mt.imp"/>
+            <TextBox x:Name="vpm" DockPanel.Dock="Right" Width="120" dyl:Win.Check="empty;positive"
+                     dyl:Win.CheckMessage="The vapour permeability must be a number greater than 0 (empty: not known)."/>
+            <TextBlock Style="{DynamicResource Dyl.Label}" Text="Vapour permeability"/>
+          </DockPanel>
+          <DockPanel Style="{StaticResource Row}">
+            <TextBlock Style="{StaticResource Unit}" Text="ng/Pa·s·m²" dyl:Win.VisibleBy="!mt.imp"/>
+            <TextBlock Style="{StaticResource Unit}" Text="perm" dyl:Win.VisibleBy="mt.imp"/>
+            <TextBox x:Name="vpc" DockPanel.Dock="Right" Width="120" dyl:Win.Check="empty;positive"
+                     dyl:Win.CheckMessage="The vapour permeance must be a number greater than 0 (empty: not known)."/>
+            <TextBlock Style="{DynamicResource Dyl.Label}" Text="Vapour permeance"/>
           </DockPanel>
         </StackPanel>
       </GroupBox>

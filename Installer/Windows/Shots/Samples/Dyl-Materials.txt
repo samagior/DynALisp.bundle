@@ -3,14 +3,14 @@
 # eight materials, Extruded Polystyrene shown, three insulations on the one hatch preset Rigid
 # Insulation, their data not filled in (a value is never made up): key=value, key/list=item|item,
 # key/vals=value|value, +key=field\tfield a row of the table key (pst/rows: id group name cut
-# surface conductivity density resistance; pst/mats: the hatch presets, id group name preview
+# surface conductivity density resistance permeability permeance; pst/mats: the hatch presets, id group name preview
 # pattern); \t is a tab. mt.imp "0": the units shown are SI (a metric drawing).
 grp/list=Concrete|Masonry|Metal|Wood|Board|Insulation|Finish|Roofing|Site|Air|Phase|Generic
 srt/list=Name|Group
 srt=0
 flt=
-pst/ncols=8
-pst/tiles=nam:2,grp:1,sur:4,cnd:5,den:6,rsi:7,mat:3
+pst/ncols=10
+pst/tiles=nam:2,grp:1,sur:4,cnd:5,den:6,rsi:7,vpm:8,vpc:9,mat:3
 pst.idx=3
 pst.sel=3
 pst.shw=
@@ -21,14 +21,14 @@ pst/mat=3
 pst/matnoun=hatch preset
 pst/matfree=1
 mt.imp=0
-+pst/rows=mt-Brick\tMasonry\tBrick\thp-Brick\t\t\t\t
-+pst/rows=mt-Concrete\tConcrete\tConcrete\thp-Concrete\t\t\t\t
-+pst/rows=mt-ExpandedPolystyrene\tInsulation\tExpanded Polystyrene\thp-RigidInsulation\t\t0.03571\t\t
-+pst/rows=mt-ExtrudedPolystyrene\tInsulation\tExtruded Polystyrene\thp-RigidInsulation\t\t0.02857\t\t
-+pst/rows=mt-Gypsum\tBoard\tGypsum\thp-Gypsum\t\t\t\t
-+pst/rows=mt-Hardboard\tWood\tHardboard\thp-Brick\t\t\t\t
-+pst/rows=mt-Polyisocyanurate\tInsulation\tPolyisocyanurate\thp-RigidInsulation\t\t0.02381\t\t
-+pst/rows=mt-Void\tAir\tVoid\thp-Void\t\t\t\t
++pst/rows=mt-Brick\tMasonry\tBrick\thp-Brick\t\t\t\t\t\t
++pst/rows=mt-Concrete\tConcrete\tConcrete\thp-Concrete\t\t\t\t\t\t
++pst/rows=mt-ExpandedPolystyrene\tInsulation\tExpanded Polystyrene\thp-RigidInsulation\t\t0.03571\t\t\t\t
++pst/rows=mt-ExtrudedPolystyrene\tInsulation\tExtruded Polystyrene\thp-RigidInsulation\t\t0.02857\t\t\t\t
++pst/rows=mt-Gypsum\tBoard\tGypsum\thp-Gypsum\t\t\t\t\t\t
++pst/rows=mt-Hardboard\tWood\tHardboard\thp-Brick\t\t\t\t\t\t
++pst/rows=mt-Polyisocyanurate\tInsulation\tPolyisocyanurate\thp-RigidInsulation\t\t0.02381\t\t\t\t
++pst/rows=mt-Void\tAir\tVoid\thp-Void\t\t\t\t\t\t
 +pst/defs=mt-Brick\tMasonry\tBrick\thp-Brick\t\t\t\t
 +pst/defs=mt-Concrete\tConcrete\tConcrete\thp-Concrete\t\t\t\t
 +pst/defs=mt-Gypsum\tBoard\tGypsum\thp-Gypsum\t\t\t\t

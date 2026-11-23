@@ -212,6 +212,8 @@
   (foreach d (list (list 5 "Conductivity" "W/m.K" "Btu.in/h.ft2.F")
                    (list 6 "Density" "kg/m3" "lb/ft3")
                    (list 7 "Resistance" "RSI" "R")
+                   (list 8 "Vapour permeability" "ng/Pa.s.m" "perm-in")
+                   (list 9 "Vapour permeance" "ng/Pa.s.m2" "perm")
              )
     (if (setq v (distof (cond ((nth (car d) m)) ("")) 2))
       (setq lst (cons (strcat (cadr d) " "
