@@ -75,6 +75,14 @@
 //
 // A button with IsDefault closes the window with 1 (OK, Save), one with IsCancel with 0.
 //
+// Shown over AutoCAD, a window fits the screen and its lists grow with it (Fit.cs):
+//
+//   dyl:Win.Grow="1"                        on an element: its height grows with the window
+//                                           (as a list does), and its Width if it has one;
+//                                           on a ColumnDefinition: that column of its Grid
+//                                           takes the extra width (in place of the column
+//                                           of the list); "0": a list that never grows
+//
 // The items of a list given by the Lisp (key/list) may hold columns divided by a tab: its
 // template shows one with {Binding Converter={x:Static dyl:Cell.Converter},
 // ConverterParameter=1} (the second one).
@@ -123,6 +131,10 @@ namespace DynALisp.Windows
         public static readonly DependencyProperty ItemsByProperty = Prop("ItemsBy");
         public static string GetClose(DependencyObject o) => (string)o.GetValue(CloseProperty);
         public static void SetClose(DependencyObject o, string v) => o.SetValue(CloseProperty, v);
+
+        public static readonly DependencyProperty GrowProperty = Prop("Grow");
+        public static string GetGrow(DependencyObject o) => (string)o.GetValue(GrowProperty);
+        public static void SetGrow(DependencyObject o, string v) => o.SetValue(GrowProperty, v);
 
         public static readonly DependencyProperty OpenProperty = Prop("Open");
         public static string GetOpen(DependencyObject o) => (string)o.GetValue(OpenProperty);

@@ -67,6 +67,11 @@ namespace DynALisp.Windows
         // Shows the first window (over AutoCAD); ShowDialog when null:
         public Func<Window, bool?> ShowRoot;
 
+        // The windows shown fit the screen, and those with lists can be resized (Fit.cs),
+        // where they were left kept in Places (Bridge.cs; none: always at their size):
+        public bool FitToScreen;
+        public IPlaces Places;
+
         // The docs of a window: "docs/<page>" -> what opens it (the address on the docs
         // website, or a file), given by the Lisp (Dyl:WinShow), as Dyl:DocsTarget finds it:
         public static string DocsKey(string page) => "docs/" + (page ?? "");
@@ -79,6 +84,7 @@ namespace DynALisp.Windows
         int Show(string path, Window owner)
         {
             var view = Open(path);
+            if (FitToScreen) Fit.Attach(view.Window, Path.GetFileNameWithoutExtension(path), Places);
             if (owner != null)
             {
                 view.Window.Owner = owner;
