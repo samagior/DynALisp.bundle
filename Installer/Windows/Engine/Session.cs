@@ -291,7 +291,12 @@ namespace DynALisp.Windows
                     c.SelectionChanged += (a, b) => Changed(c.Name, c.SelectedIndex.ToString(CultureInfo.InvariantCulture), c);
                     break;
                 case ListBox l when Named(l):
-                    l.SelectionChanged += (a, b) => Changed(l.Name, l.SelectedIndex.ToString(CultureInfo.InvariantCulture), l);
+                    l.SelectionChanged += (a, b) =>
+                    {
+                        if (Owned(l.Name)) { Changed(l.Name, l.SelectedIndex.ToString(CultureInfo.InvariantCulture), l); return; }
+                        if (!_filling) FillFrom(l);
+                        Changed(l.Name, ListValue(l), l);
+                    };
                     // An item double-clicked closes the window (Win.Close: Run, OK):
                     if (Win.GetClose(l) != null)
                         l.MouseDoubleClick += (a, e) =>
@@ -303,7 +308,7 @@ namespace DynALisp.Windows
                         };
                     break;
                 case TextBox x when Named(x):
-                    x.TextChanged += (a, b) => Changed(x.Name, x.Text, x);
+                    x.TextChanged += (a, b) => { Filter(x); Changed(x.Name, x.Text, x); };
                     break;
                 case Button b:
                     b.Click += (a, e) => Click(b);
@@ -312,6 +317,130 @@ namespace DynALisp.Windows
                     g.Selected += (i, m) => { _s.Values[g.Name + ".method"] = m; Changed(g.Name, i.ToString(CultureInfo.InvariantCulture), g); };
                     g.Picked += (i, m) => { _s.Values[g.Name + ".method"] = m; Pick(g, i); };
                     break;
+            }
+        }
+
+        // A key run by an editor of the window (presets, rows, Startup Suite):
+        bool Owned(string key) =>
+            (Presets != null && Presets.Owns(key)) || (Rows != null && Rows.Owns(key)) || (Suite != null && Suite.Owns(key));
+
+        // The value of a plain list, as get_tile of a DCL list_box: the index of its item
+        // picked ("-1": none), or for a list of several (SelectionMode Extended or Multiple)
+        // the indexes of the items selected divided by spaces ("0 3 5", "" none); while a
+        // text box filters it (Win.Filter), the indexes in all its items:
+        internal static string ListValue(ListBox l)
+        {
+            var src = l.ItemsSource as System.Collections.IList;
+            bool filtered = src != null && System.Windows.Data.CollectionViewSource.GetDefaultView(src)?.Filter != null;
+            if (l.SelectionMode == SelectionMode.Single)
+            {
+                if (!filtered) return l.SelectedIndex.ToString(CultureInfo.InvariantCulture);
+                return (l.SelectedItem == null ? -1 : src.IndexOf(l.SelectedItem)).ToString(CultureInfo.InvariantCulture);
+            }
+            var all = filtered ? src : (System.Collections.IList)l.Items;
+            return string.Join(" ", l.SelectedItems.Cast<object>().Select(o => all.IndexOf(o)).Where(i => i >= 0)
+                                          .OrderBy(i => i).Select(i => i.ToString(CultureInfo.InvariantCulture)));
+        }
+
+        // Selects the items of a plain list from its value (see ListValue):
+        static void SelectList(ListBox l, string v)
+        {
+            var idx = (v ?? "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                               .Select(x => int.TryParse(x, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i) ? i : -1)
+                               .Where(i => i >= 0 && i < l.Items.Count).ToList();
+            if (l.SelectionMode == SelectionMode.Single) { l.SelectedIndex = idx.Count > 0 ? idx[0] : -1; return; }
+            l.SelectedItems.Clear();
+            foreach (int i in idx) l.SelectedItems.Add(l.Items[i]);
+        }
+
+        // The text boxes a list fills with the columns of its item picked (Win.Fills="var:0,
+        // val:1": the item divided by tabs), as the action of a DCL list_box did:
+        void FillFrom(ListBox l)
+        {
+            string fills = Win.GetFills(l);
+            if (string.IsNullOrEmpty(fills) || !(l.SelectedItem is string item)) return;
+            var f = item.Split('\t');
+            foreach (var part in Keys(fills))
+            {
+                int c = part.IndexOf(':');
+                if (c < 1 || !int.TryParse(part.Substring(c + 1), NumberStyles.Integer, CultureInfo.InvariantCulture, out int n)) continue;
+                string v = n >= 0 && n < f.Length ? f[n] : "";
+                switch (Find(part.Substring(0, c)))
+                {
+                    case TextBox x: x.Text = v; break;
+                    case TextBlock tb: tb.Text = v; _s.Values[tb.Name] = v; break;
+                    // a list: its items the field divided by commas, the first one picked:
+                    case ComboBox cb:
+                        var items = v.Split(',').Select(i => i.Trim()).Where(i => i.Length > 0).ToList();
+                        Quiet(() => { cb.ItemsSource = items; cb.SelectedIndex = items.Count > 0 ? 0 : -1; });
+                        _s.Lists[cb.Name] = items;
+                        _s.Values[cb.Name] = cb.SelectedIndex.ToString(CultureInfo.InvariantCulture);
+                        break;
+                }
+            }
+        }
+
+        // A text box that filters a list as it is typed (Win.Filter="lst:0,2": its items whose
+        // columns 0 or 2 hold each word typed, accents and case ignored; "lst": the whole item;
+        // "lst:4;ind:5": the columns 5 in place of 4 while the checkbox ind is on). The text
+        // naming the list in its Win.CountOf shows how many are listed (Win.CountText):
+        void Filter(TextBox x)
+        {
+            string spec = Win.GetFilter(x);
+            if (string.IsNullOrEmpty(spec)) return;
+            var parts = spec.Split(';');
+            int c = parts[0].IndexOf(':');
+            string key = c > 0 ? parts[0].Substring(0, c) : parts[0];
+            if (!(Find(key) is ListBox l) || !(l.ItemsSource is System.Collections.IList src)) return;
+            string cols = c > 0 ? parts[0].Substring(c + 1) : null;
+            foreach (var alt in parts.Skip(1))
+            {
+                int ac = alt.IndexOf(':');
+                if (ac > 0 && _s.Values.TryGetValue(alt.Substring(0, ac).Trim(), out string on) && on == "1") cols = alt.Substring(ac + 1);
+            }
+            var idx = cols == null ? null : Keys(cols).Select(k => int.TryParse(k, out int n) ? n : -1).Where(n => n >= 0).ToList();
+            var words = Fold(x.Text).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var view = System.Windows.Data.CollectionViewSource.GetDefaultView(src);
+            if (words.Length == 0) view.Filter = null;
+            else view.Filter = o =>
+            {
+                string s = o as string ?? "";
+                string hay = idx == null ? Fold(s) : string.Join("\n", idx.Select(n => { var f = s.Split('\t'); return n < f.Length ? Fold(f[n]) : ""; }));
+                return words.All(w => hay.IndexOf(w, StringComparison.Ordinal) >= 0);
+            };
+            if (l.SelectedItem == null && l.Items.Count > 0) l.SelectedIndex = 0;
+            if (l.SelectedItem != null) l.ScrollIntoView(l.SelectedItem);
+            Count(l);
+        }
+
+        // A text in upper case without its accents, its ligatures as two letters (as
+        // dic:fold of the dictionaries): "Équarri" and "equarri" are the same:
+        internal static string Fold(string s)
+        {
+            var sb = new System.Text.StringBuilder();
+            foreach (char ch in (s ?? "").Normalize(System.Text.NormalizationForm.FormD))
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(ch) == UnicodeCategory.NonSpacingMark) continue;
+                switch (ch)
+                {
+                    case '\u0153': case '\u0152': sb.Append("OE"); break;
+                    case '\u00E6': case '\u00C6': sb.Append("AE"); break;
+                    default: sb.Append(char.ToUpperInvariant(ch)); break;
+                }
+            }
+            return sb.ToString();
+        }
+
+        // The texts that count the items of the list l listed (Win.CountOf="lst", Win.CountText
+        // "{0} of {1} words": those listed, all of them):
+        void Count(ListBox l)
+        {
+            foreach (var tb in _all.OfType<TextBlock>().Where(t => Win.GetCountOf(t) == l.Name))
+            {
+                int all = l.ItemsSource is System.Collections.ICollection col ? col.Count : l.Items.Count;
+                string fmt = Win.GetCountText(tb) ?? "{0} of {1}";
+                tb.Text = string.Format(CultureInfo.InvariantCulture, fmt, l.Items.Count, all);
+                _s.Values[tb.Name] = tb.Text;
             }
         }
 
@@ -340,6 +469,9 @@ namespace DynALisp.Windows
         {
             if (_filling) return;
             _s.Values[key] = value;
+            // a checkbox that changes the columns a text box filters (Win.Filter "...;ind:5"):
+            if (from is ToggleButton)
+                foreach (var x in _all.OfType<TextBox>().Where(t => (Win.GetFilter(t) ?? "").Contains(";" + key + ":"))) Filter(x);
             Presets?.Changed(key);
             Rows?.Changed(key);
             Suite?.Changed(key);
@@ -354,6 +486,11 @@ namespace DynALisp.Windows
                 }
             }
             Refresh();
+            // A list picked that closes the window (Win.Close on a ComboBox: the Lisp shows it
+            // again on the item picked, as the action of a DCL popup_list):
+            if (from is ComboBox && Win.GetClose(from) is string cl
+                && int.TryParse(cl, NumberStyles.Integer, CultureInfo.InvariantCulture, out int cs))
+                CloseWith(cs);
         }
 
         internal FrameworkElement Find(string key) => _all.FirstOrDefault(e => e.Name == key);
@@ -401,7 +538,12 @@ namespace DynALisp.Windows
                             break;
                         case Selector c:
                             if (_s.Lists.TryGetValue(c.Name, out var items)) c.ItemsSource = items;
-                            if (has && int.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i))
+                            if (c is ListBox pl && pl.SelectionMode != SelectionMode.Single)
+                            {
+                                if (has) SelectList(pl, v);
+                                else _s.Values[c.Name] = ListValue(pl);
+                            }
+                            else if (has && int.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i))
                                 c.SelectedIndex = i >= 0 && i < c.Items.Count ? i : -1;
                             if (c is ListBox lb && lb.SelectedItem != null) lb.ScrollIntoView(lb.SelectedItem);
                             else if (!has) _s.Values[c.Name] = c.SelectedIndex.ToString(CultureInfo.InvariantCulture);
@@ -430,6 +572,18 @@ namespace DynALisp.Windows
                 }
             }
             finally { _filling = false; }
+            // The lists filtered by a text given (Win.Filter), once both are filled:
+            var before = _all.OfType<ListBox>().ToDictionary(b => b, b => b.SelectedItem);
+            Quiet(() =>
+            {
+                foreach (var x in _all.OfType<TextBox>().Where(t => Win.GetFilter(t) != null)) Filter(x);
+            });
+            // a list whose item picked the filter hid shows the one it picked instead:
+            foreach (var kv in before)
+                if (!Equals(kv.Key.SelectedItem, kv.Value) && Named(kv.Key) && !Owned(kv.Key.Name)) FillFrom(kv.Key);
+            foreach (var l in _all.OfType<ListBox>().Where(b => Named(b))) Count(l);
+            foreach (var l in _all.OfType<ListBox>().Where(b => Named(b) && !Owned(b.Name)))
+                _s.Values[l.Name] = ListValue(l);
             Presets?.Fill();
             Rows?.Fill();
             Suite?.Fill();

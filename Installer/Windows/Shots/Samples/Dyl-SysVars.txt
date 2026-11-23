@@ -1,0 +1,13 @@
+# The values of the System Variables window (Res\Dyl-SysVars.xaml) for its picture in the docs, as
+# c:Dyl-SysVars gives them for a profile of one's own, its third row picked:
+pro/list=Default|Drafting
+pro=1
+lst/list=DIMASSOC\t2\t2|HPASSOC\t1\t1|INSUNITS\t4\t1  *|LTSCALE\t1\t1|MEASUREMENT\t1\t0  *|OSMODE\t4133\t4133|PSLTSCALE\t1\t1|TEXTFILL\t1\t1|UCSFOLLOW\t0\t0|XREFTYPE\t1\t0  *
+lst=2
+var=INSUNITS
+val=4
+kls/list=CMDDIA\t1\t1|FILEDIA\t1\t1|LAYLOCKFADECTL\t50\t50|MIRRTEXT\t0\t0|PICKADD\t2\t2|PICKAUTO\t5\t5|PICKFIRST\t1\t1
+kls=0
+kvr=CMDDIA
+kvl=1
+msg=3 variable(s) differ from their preferred value (marked *).

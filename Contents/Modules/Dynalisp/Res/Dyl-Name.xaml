@@ -1,0 +1,41 @@
+<!--
+  Dyl-Name.xaml - a name typed (a new, copied or renamed profile...)
+  Copyright (C) 2026  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Shown by a tool that asks for a name: its title (win/title), the label of the box (lbl), the
+  name proposed (nam) and, when the Lisp refused the name typed, why (error): the Lisp checks
+  the name on OK and shows the window again with its message. A name prompt has no Open Docs.
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp">
+  <StackPanel Margin="14" Width="460">
+    <GroupBox Margin="0">
+      <StackPanel>
+        <DockPanel>
+          <TextBox x:Name="nam" DockPanel.Dock="Right" Width="280" MaxLength="64"/>
+          <TextBlock x:Name="lbl" Style="{DynamicResource Dyl.Label}" Text="Name"/>
+        </DockPanel>
+        <TextBlock x:Name="error" Style="{DynamicResource Dyl.Error}" TextWrapping="Wrap" Margin="0,8,0,0"/>
+      </StackPanel>
+    </GroupBox>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+      <Button Content="OK" IsDefault="True"/>
+      <Button Content="Cancel" IsCancel="True"/>
+    </StackPanel>
+  </StackPanel>
+</Window>
