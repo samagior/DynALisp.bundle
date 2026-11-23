@@ -80,6 +80,35 @@
         />
     </Components>
 
+    <!-- The Assistant (Installer\Assistant): the palette of Dyl-Assistant and the requests of
+         (Dyl:ClaudeRun ...), through Claude Code. The same code built for .NET 8 (AutoCAD 2025
+         and later) and .NET Framework 4.8 (AutoCAD 2016 to 2024: not 2015, see CONVENTIONS.md): -->
+    <Components Description="Assistant">
+        <RuntimeRequirements
+            OS="Win64"
+            Platform="AutoCAD|AutoCAD*"
+            SeriesMin="R25.0"
+        />
+        <ComponentEntry
+            AppName="DynALisp assistant"
+            ModuleName="./Contents/Resources/DynALisp.Assistant.dll"
+            LoadOnAutoCADStartup="True"
+        />
+    </Components>
+    <Components Description="Assistant (.NET Framework)">
+        <RuntimeRequirements
+            OS="Win64"
+            Platform="AutoCAD|AutoCAD*"
+            SeriesMin="R20.1"
+            SeriesMax="R24.3"
+        />
+        <ComponentEntry
+            AppName="DynALisp assistant (.NET Framework)"
+            ModuleName="./Contents/Resources/Net48/DynALisp.Assistant.dll"
+            LoadOnAutoCADStartup="True"
+        />
+    </Components>
+
     <Components>
         <RuntimeRequirements
             OS="Win32|Win64"
