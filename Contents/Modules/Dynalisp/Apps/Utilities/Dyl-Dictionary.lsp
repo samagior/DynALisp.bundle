@@ -22,7 +22,7 @@
 ;;    Word;Forms;Type;Category;Subcategory;Definition;See also
 ;;  Forms: its plural and feminine forms of the dictionary (comma separated), searched
 ;;  with the word. See also: related words of the file (comma separated).
-;;  The window (Res\Dyl-Dictionary.dcl) opens the file of the language of the file
+;;  The window (Res\Dyl-Dictionary.xaml) opens the file of the language of the file
 ;;  preferences, searches it (accents and case ignored) and filters it by category,
 ;;  subcategory and type. This file has no accented letter: they are made with chr, so
 ;;  that it reads the same whatever the encoding AutoCAD loads it with.
@@ -152,19 +152,6 @@
   (vl-sort res '(lambda (a b) (< (dic:fold a) (dic:fold b))))
 )
 
-;;  str cut in lines of at most n characters, at the spaces:
-(defun dic:wrap (str n / lst lin)
-  (foreach w (Remote>>LM:str->lst str " ")
-    (if (and lin (< n (+ (strlen lin) 1 (strlen w))))
-      (setq lst (cons lin lst)
-            lin w
-      )
-      (setq lin (if lin (strcat lin " " w) w))
-    )
-  )
-  (reverse (if lin (cons lin lst) lst))
-)
-
 ;;  Copy str to the Windows clipboard, T when done:
 (defun dic:clip (str / htm res)
   (if (setq htm (vlax-create-object "htmlfile"))
@@ -194,46 +181,41 @@
   (if (not (vl-catch-all-error-p shl)) (vlax-release-object shl))
 )
 
-;;-------------------------=={ Dialog }==------------------------;;
+;;-------------------------=={ Window }==------------------------;;
 
 ;;  The functions below run inside c:Dyl-Dictionary and use its local variables:
 ;;  dic:dics (names of the definitions files), dic:idx (index of the file shown),
-;;  dic:all (its words, see dic:read), dic:view (the words listed), dic:cats / dic:subs /
-;;  dic:typs (items of the Category, Subcategory and Type popups, the first one: all),
-;;  dic:cat / dic:sub / dic:typ (their index), dic:keys (folded words searched),
-;;  dic:ind (T: also in the definitions), dic:cur (the word shown), dic:seel (its see
-;;  also words).
+;;  dic:all (its words, see dic:read), dic:view (the words listed: those of the category,
+;;  subcategory and type picked; the window searches them itself), dic:cats / dic:subs /
+;;  dic:typs (items of the Category, Subcategory and Type lists, the first one: all),
+;;  dic:cat / dic:sub / dic:typ (their index), dic:src (the words typed in Words),
+;;  dic:ind (T: also in the definitions), dic:cur (the word shown), dic:msg (the message
+;;  under the definition).
 
-(defun dic:popup (key lst idx)
-  (start_list key)
-  (mapcar 'add_list lst)
-  (end_list)
-  (set_tile key (itoa idx))
-)
+;;  A cell without tab, to be a column of an item of the window:
+(defun dic:cell (str) (vl-string-translate "\t" " " str))
 
 ;;  Load the definitions file dic:idx, every filter cleared:
-(defun dic:dlgload ()
+(defun dic:winload ()
   (setq dic:all  (if (nth dic:idx dic:dics) (dic:read (dic:path (nth dic:idx dic:dics))))
         dic:cats (cons "All categories" (dic:distinct '(lambda (e) (list (nth 3 e))) dic:all))
         dic:typs (cons "All types" (dic:distinct '(lambda (e) (dic:types (nth 2 e))) dic:all))
+        dic:cur  nil
   )
-  (dic:dlgclear)
+  (dic:winclear)
 )
 
 ;;  Clear the search and the filters:
-(defun dic:dlgclear ()
-  (setq dic:cat  0
-        dic:typ  0
-        dic:keys nil
+(defun dic:winclear ()
+  (setq dic:cat 0
+        dic:typ 0
+        dic:src ""
   )
-  (set_tile "src" "")
-  (dic:popup "cat" dic:cats 0)
-  (dic:popup "typ" dic:typs 0)
-  (dic:dlgsubs)
+  (dic:winsubs)
 )
 
 ;;  Subcategories of the category chosen (of every category when all are):
-(defun dic:dlgsubs ()
+(defun dic:winsubs ()
   (setq dic:subs (cons "All subcategories"
                        (dic:distinct '(lambda (e) (if (or (= 0 dic:cat) (= (nth 3 e) (nth dic:cat dic:cats))) (list (nth 4 e))))
                                      dic:all
@@ -241,83 +223,100 @@
                  )
         dic:sub  0
   )
-  (dic:popup "sub" dic:subs 0)
-  (dic:dlglist)
 )
 
-;;  T when the word e passes the search and the filters:
+;;  T when the word e passes the filters (the search is made by the window):
 (defun dic:match-p (e)
   (and (or (= 0 dic:cat) (= (nth 3 e) (nth dic:cat dic:cats)))
        (or (= 0 dic:sub) (= (nth 4 e) (nth dic:sub dic:subs)))
        (or (= 0 dic:typ) (member (nth dic:typ dic:typs) (dic:types (nth 2 e))))
-       (vl-every '(lambda (k) (or (vl-string-search k (nth 8 e)) (and dic:ind (vl-string-search k (nth 9 e)))))
-                 dic:keys
-       )
   )
 )
 
-;;  Fill the list with the words that pass, the word shown kept selected when it is one:
-(defun dic:dlglist (/ i)
-  (setq dic:view (vl-remove-if-not 'dic:match-p dic:all))
-  (start_list "lst")
-  (foreach e dic:view (add_list (strcat (car e) "\t" (nth 2 e) "\t" (nth 3 e) "\t" (nth 4 e))))
-  (end_list)
-  (set_tile "cnt"
-            (strcat (itoa (length dic:view))
-                    " of "
-                    (itoa (length dic:all))
-                    " words"
-                    (if dic:all "" " (no definitions file in Res\\Dictionaries)")
-            )
+;;  The item of the word e: its word, type, category and subcategory shown, then the word
+;;  and its forms (searched), the same with its definition (searched with Also in the
+;;  definitions), and what the Definition box shows (its word and type, its forms, its
+;;  definition, its class, its See also words):
+(defun dic:item (e)
+  (apply 'strcat
+         (cdr (apply 'append
+                     (mapcar '(lambda (s) (list "\t" (dic:cell s)))
+                             (list (car e)
+                                   (nth 2 e)
+                                   (nth 3 e)
+                                   (nth 4 e)
+                                   (strcat (car e) ", " (nth 1 e))
+                                   (strcat (car e) ", " (nth 1 e) " " (nth 5 e))
+                                   (strcat (car e) (if (/= "" (nth 2 e)) (strcat "   (" (nth 2 e) ")") ""))
+                                   (if (/= "" (nth 1 e)) (strcat "Forms: " (nth 1 e)) "")
+                                   (nth 5 e)
+                                   (strcat (nth 3 e) (if (/= "" (nth 4 e)) (strcat "  >  " (nth 4 e)) ""))
+                                   (apply 'strcat (cdr (apply 'append (mapcar '(lambda (w) (list ", " w)) (dic:split (nth 6 e))))))
+                             )
+                     )
+                )
+         )
   )
-  (setq i (cond ((if dic:cur (vl-position dic:cur dic:view))) (0)))
-  (if dic:view (set_tile "lst" (itoa i)))
-  (dic:dlgshow (nth i dic:view))
 )
 
-;;  Show the word e (nil: none):
-(defun dic:dlgshow (e / lns)
-  (setq dic:cur  e
-        dic:seel (if e (dic:split (nth 6 e)))
-        lns      (if e (dic:wrap (nth 5 e) 108))
+;;  The values of the window: the lists, the words that pass the filters, the word shown
+;;  (the first one when it no longer passes) and its definition:
+(defun dic:winvals (/ i e see)
+  (setq dic:view (vl-remove-if-not 'dic:match-p dic:all)
+        i        (cond ((if dic:cur (vl-position dic:cur dic:view))) (0))
+        e        (nth i dic:view)
+        dic:cur  e
+        see      (if e (dic:split (nth 6 e)))
   )
-  (set_tile "wrd" (if e (strcat (car e) (if (/= "" (nth 2 e)) (strcat "   (" (nth 2 e) ")") "")) ""))
-  (set_tile "frm" (if (and e (/= "" (nth 1 e))) (strcat "Forms: " (nth 1 e)) ""))
-  (mapcar '(lambda (k l) (set_tile k (cond (l) ("")))) '("d1" "d2" "d3") (list (car lns) (cadr lns) (caddr lns)))
-  (set_tile "cls" (if e (strcat (nth 3 e) (if (/= "" (nth 4 e)) (strcat "  >  " (nth 4 e)) "")) ""))
-  (dic:popup "see" (cond (dic:seel) ('("(none)"))) 0)
-  (mode_tile "see" (if dic:seel 0 1))
-  (mode_tile "jmp" (if dic:seel 0 1))
-  (mode_tile "cpy" (if e 0 1))
-  (set_tile "msg" "")
+  (append (Dyl:WinList "dic" (cond ((mapcar 'dic:code dic:dics)) ('("(none)"))) dic:idx)
+          (Dyl:WinList "cat" dic:cats dic:cat)
+          (Dyl:WinList "sub" dic:subs dic:sub)
+          (Dyl:WinList "typ" dic:typs dic:typ)
+          (Dyl:WinList "lst" (mapcar 'dic:item dic:view) (if e i -1))
+          (Dyl:WinList "see" see (if see 0 -1))
+          (list (cons "src" dic:src)
+                (Dyl:WinTog "ind" dic:ind)
+                (cons "wrd" (if e (strcat (car e) (if (/= "" (nth 2 e)) (strcat "   (" (nth 2 e) ")") "")) ""))
+                (cons "frm" (if (and e (/= "" (nth 1 e))) (strcat "Forms: " (nth 1 e)) ""))
+                (cons "def" (if e (nth 5 e) ""))
+                (cons "cls" (if e (strcat (nth 3 e) (if (/= "" (nth 4 e)) (strcat "  >  " (nth 4 e)) "")) ""))
+                (cons "msg" (cond (dic:msg) ((not dic:all) "No definitions file in Res\\Dictionaries") ("")))
+          )
+          (Dyl:WinOff "edt" (not dic:dics))
+  )
 )
 
-;;  Search the words typed:
-(defun dic:dlgsearch (str)
-  (setq dic:keys (mapcar 'dic:fold (vl-remove "" (Remote>>LM:str->lst (vl-string-trim " " str) " "))))
-  (dic:dlglist)
+;;  Keep what the window got back: the search typed, Also in the definitions, the word
+;;  picked (nil: none):
+(defun dic:winget (res / i)
+  (setq dic:src (cond ((Dyl:WinGet res "src")) (""))
+        dic:ind (Dyl:WinOn-p res "ind")
+        i       (atoi (cond ((Dyl:WinGet res "lst")) ("-1")))
+        dic:cur (if (<= 0 i) (nth i dic:view))
+        dic:msg nil
+  )
 )
 
-;;  Go to the see also word picked (index i of dic:seel): the filters are cleared when it
-;;  is not listed:
-(defun dic:dlgjump (i / w e)
-  (setq w (nth i dic:seel)
-        e (vl-some '(lambda (x) (if (= w (car x)) x)) dic:all)
+;;  Go to the See also word picked (index i of the See also list of the word shown): the
+;;  filters and the search are cleared when it does not pass them:
+(defun dic:winjump (i / w e)
+  (setq w (if dic:cur (nth i (dic:split (nth 6 dic:cur))))
+        e (if w (vl-some '(lambda (x) (if (= w (car x)) x)) dic:all))
   )
   (cond
-    ((not e) (set_tile "msg" (strcat w ": not in the list")))
+    ((not w))
+    ((not e) (setq dic:msg (strcat w ": not in the list")))
     (T
-     (if (not (member e dic:view)) (dic:dlgclear))
+     (if (or (not (dic:match-p e)) (/= "" dic:src)) (dic:winclear))
      (setq dic:cur e)
-     (dic:dlglist)
     )
   )
 )
 
 ;;  Copy the word shown to the clipboard:
-(defun dic:dlgcopy ()
+(defun dic:wincopy ()
   (if dic:cur
-    (set_tile "msg" (if (dic:clip (car dic:cur)) (strcat "Copied: " (car dic:cur)) "--> Unable to copy to the clipboard"))
+    (setq dic:msg (if (dic:clip (car dic:cur)) (strcat "Copied: " (car dic:cur)) "--> Unable to copy to the clipboard"))
   )
 )
 
@@ -326,8 +325,12 @@
 ;; Dictionary
 ;; Searches the words of the DynALisp dictionaries, their definitions and categories, in the language of the file preferences.
 
-(defun c:Dyl-Dictionary (/ dcl:id sta dic:dics dic:idx dic:all dic:view dic:cats dic:subs dic:typs dic:cat dic:sub
-                         dic:typ dic:keys dic:ind dic:cur dic:seel fle usr
+;;  The window (Res\Dyl-Dictionary.xaml) closes with the number of what changed the words
+;;  listed (2 Dictionary, 3 Category, 4 Subcategory, 5 Type, 9 Clear), of Go to (6) and of
+;;  Copy word (7, a word double-clicked): it is shown again on the words of the new
+;;  choice. Edit list... (8) opens the definitions file.
+(defun c:Dyl-Dictionary (/ res sta dic:dics dic:idx dic:all dic:view dic:cats dic:subs dic:typs dic:cat dic:sub dic:typ
+                         dic:src dic:ind dic:cur dic:msg fle usr
                         )
   (setq dic:dics (dic:files)
         ;;  The file of the language of the file preferences, else the first one:
@@ -340,46 +343,38 @@
                    )
                    (0)
                  )
-        dcl:id   (load_dialog (strcat (if *dyl:dylres *dyl:dylres (strcat *dyl:dyl "\\Res")) "\\Dyl-Dictionary.dcl"))
   )
-  (cond
-    ((> 0 dcl:id) (princ "\n--> Unable to load the dialog : Dyl-Dictionary.dcl"))
-    ((not (new_dialog "dyl_dictionary" dcl:id)) (princ "\n--> Unable to show the dialog : Dyl-Dictionary.dcl"))
-    (T
-     (dic:popup "dic" (cond ((mapcar 'dic:code dic:dics)) ('("(none)"))) dic:idx)
-     (start_list "hdr")
-     (add_list "Word\tType\tCategory\tSubcategory")
-     (end_list)
-     (dic:dlgload)
-     (action_tile "dic" "(setq dic:idx (atoi $value) dic:cur nil) (dic:dlgload)")
-     ;;  Enter searches (not leaving the box: a click in the list would refresh it):
-     (action_tile "src" "(if (= 1 $reason) (dic:dlgsearch $value))")
-     (action_tile "go" "(dic:dlgsearch (get_tile \"src\"))")
-     (action_tile "ind" "(setq dic:ind (= \"1\" $value)) (dic:dlglist)")
-     (action_tile "cat" "(setq dic:cat (atoi $value)) (dic:dlgsubs)")
-     (action_tile "sub" "(setq dic:sub (atoi $value)) (dic:dlglist)")
-     (action_tile "typ" "(setq dic:typ (atoi $value)) (dic:dlglist)")
-     (action_tile "clr" "(dic:dlgclear)")
-     (action_tile "lst" "(dic:dlgshow (nth (atoi $value) dic:view)) (if (= 4 $reason) (dic:dlgcopy))")
-     (action_tile "jmp" "(dic:dlgjump (atoi (get_tile \"see\")))")
-     (action_tile "cpy" "(dic:dlgcopy)")
-     (action_tile "edt" "(done_dialog 2)")
-     (mode_tile "edt" (if dic:dics 0 1))
-     (Dyl:DocsTile "Utilities\\Dyl-Dictionary.htm")
-     (setq sta (start_dialog))
-     ;;  Edit list: the user copy of the file (made from its default the first time),
-     ;;  opened in Excel:
-     (if (and (= 2 sta) (setq fle (nth dic:idx dic:dics)))
-       (progn
-         (setq usr (Dyl:UserFileW (strcat (dic:dir) "\\" fle)))
-         (if (not (findfile usr)) (vl-file-copy (strcat (dic:dir) "\\" fle) usr))
-         (dic:shell usr)
-         (princ (strcat "\nEditing " usr " (save it as CSV UTF-8), then run Dyl-Dictionary again."))
-       )
-     )
+  (dic:winload)
+  (while (and (setq res (Dyl:WinShow "Dyl-Dictionary.xaml" (dic:winvals)))
+              (member (setq sta (car res)) '(2 3 4 5 6 7 9))
+         )
+    (dic:winget res)
+    (cond
+      ((= 2 sta)
+       (setq dic:idx (Dyl:WinIdx res "dic"))
+       (dic:winload)
+      )
+      ((= 3 sta)
+       (setq dic:cat (Dyl:WinIdx res "cat"))
+       (dic:winsubs)
+      )
+      ((= 4 sta) (setq dic:sub (Dyl:WinIdx res "sub")))
+      ((= 5 sta) (setq dic:typ (Dyl:WinIdx res "typ")))
+      ((= 6 sta) (dic:winjump (Dyl:WinIdx res "see")))
+      ((= 7 sta) (dic:wincopy))
+      ((= 9 sta) (dic:winclear))
     )
   )
-  (if (<= 0 dcl:id) (unload_dialog dcl:id))
+  ;;  Edit list...: the user copy of the file (made from its default the first time),
+  ;;  opened in Excel:
+  (if (and (= 8 (car res)) (setq fle (nth dic:idx dic:dics)))
+    (progn
+      (setq usr (Dyl:UserFileW (strcat (dic:dir) "\\" fle)))
+      (if (not (findfile usr)) (vl-file-copy (strcat (dic:dir) "\\" fle) usr))
+      (dic:shell usr)
+      (princ (strcat "\nEditing " usr " (save it as CSV UTF-8), then run Dyl-Dictionary again."))
+    )
+  )
   (princ)
 )
 
