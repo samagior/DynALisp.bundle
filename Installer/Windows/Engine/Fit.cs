@@ -409,9 +409,9 @@ namespace DynALisp.Windows
                 double vBarW = vBar ? full.Width - view.Width : SystemParameters.VerticalScrollBarWidth;
 
                 // the width: never narrower than the content, a bar under it when it is:
-                bool needH = _natW > full.Width + 0.5;
                 bool needV = _sv.VerticalScrollBarVisibility == ScrollBarVisibility.Auto && vBar;
                 double availW = full.Width - (needV ? vBarW : 0);
+                bool needH = _natW > availW + 0.5;
                 double dx = Math.Max(0, availW - _natW);
                 foreach (var t in _wides)
                 {

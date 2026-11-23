@@ -21,6 +21,7 @@
 //                                         AutoCAD does (Engine\Fit.cs), smallest, larger,
 //                                         maximized and opened again, and prints its sizes
 //                                         and those of its lists (the Windows workflow)
+//   ... -- -fit -trace <window>           the same, with each step of the fit of its lists
 //
 // Each row of Shots.csv (Window;Sample;Picture, paths from the root of the repository) is a
 // window file opened as the plugin opens it (Session.Open: the same engine, the same theme),

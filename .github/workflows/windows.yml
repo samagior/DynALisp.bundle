@@ -35,11 +35,6 @@ jobs:
         continue-on-error: true
         run: dotnet run -c Release --project Installer/Windows/Shots -- -fit
 
-      - name: Trace Revisions (temporary)
-        shell: pwsh
-        continue-on-error: true
-        run: dotnet run -c Release --project Installer/Windows/Shots -- -fit -trace Dyl-Revisions.xaml
-
       - name: Commit the pictures to the branch
         if: github.ref != 'refs/heads/main'
         shell: pwsh
