@@ -26,13 +26,15 @@
 ;;  The climates are a data file (Res\Climates.csv, its user copy), shared by every drawing:
 ;;  changing Interior changes every detail. The plugin DynALisp.Simulation.dll
 ;;  (Installer\Simulation) reads the detail of a zone in the drawing, builds its grid and
-;;  shows it over the drawing with its problems (Dyl:SimulationRead, Dyl:SimulationClear);
-;;  this file gives it the materials, the climates and the units.
+;;  shows it over the drawing with its problems (Dyl:SimulationRead, Dyl:SimulationClear),
+;;  solves the heat through it and shows its temperatures (Dyl:SimulationRun), and reads the
+;;  temperature at a point (Dyl:SimulationProbe); this file gives it the materials, the
+;;  climates and the units, and says what it found.
 
 ;;-------------------------=={ Commands }==------------------------;;
 
 ;; Simulation
-;; Opens a window to pick the simulation zone of a 2D detail, edit the climates, place the climate zones and check the detail before it is simulated.
+;; Opens a window to pick the simulation zone of a 2D detail, edit the climates, place the climate zones, check the detail and simulate the heat through it.
 
 (defun c:Dyl-Simulation ()
   (Dyl:SimulationDialog)
@@ -63,6 +65,24 @@
   (if (setq z (Dyl:SimZonePick T))
     (progn (setq *sim:zone* z) (Dyl:SimCheck z))
   )
+  (princ)
+)
+
+;; Simulation Play
+;; Solves the heat through the detail of a simulation zone and shows its temperatures over the drawing, the dew point and the coldest interior surface.
+
+(defun c:Pst-SimulationPlay (/ z)
+  (if (setq z (Dyl:SimZonePick T))
+    (progn (setq *sim:zone* z) (Dyl:SimPlay z T))
+  )
+  (princ)
+)
+
+;; Simulation Probe
+;; Gives the temperature and the material at the points picked in the detail of the last simulation.
+
+(defun c:Pst-SimulationProbe ()
+  (Dyl:SimProbe)
   (princ)
 )
 
@@ -337,13 +357,42 @@
 
 ;;-------------------------=={ Check }==------------------------;;
 
-;;  The materials for the plugin: (known data), the ids of every material and of those that
-;;  have a thermal conductivity or a fixed thermal resistance (columns 5 and 7):
-(defun Dyl:SimMaterials (/ ms)
-  (setq ms (cadr (Remote>>Dyl:MaterialBoth)))
-  (list (mapcar 'car ms)
-        (mapcar 'car (vl-remove-if-not '(lambda (m) (or (Dyl:SimNum (nth 5 m)) (Dyl:SimNum (nth 7 m)))) ms))
+;;  The materials for the plugin: (known data table names), the ids of every material, of
+;;  those that have a thermal conductivity or a fixed thermal resistance (columns 5 and 7),
+;;  their texts "id|conductivity|resistance" (SI) and ((id . name) ...) of every material:
+(defun Dyl:SimMaterials (/ ms data)
+  (setq ms   (cadr (Remote>>Dyl:MaterialBoth))
+        data (vl-remove-if-not '(lambda (m) (or (Dyl:SimNum (nth 5 m)) (Dyl:SimNum (nth 7 m)))) ms)
   )
+  (list (mapcar 'car ms)
+        (mapcar 'car data)
+        (mapcar '(lambda (m) (strcat (car m) "|" (Dyl:SimText (nth 5 m)) "|" (Dyl:SimText (nth 7 m)))) data)
+        (mapcar '(lambda (m) (cons (car m) (caddr m))) ms)
+  )
+)
+
+;;  A value of a file as a number in text for the plugin ("" when empty):
+(defun Dyl:SimText (v / x)
+  (if (setq x (Dyl:SimNum v)) (rtos x 2 8) "")
+)
+
+;;  The climates for the plugin: "id|temperature|humidity|rs|rscondensation" (SI):
+(defun Dyl:SimClimTexts (rows)
+  (mapcar '(lambda (r) (strcat (car r) "|" (Dyl:SimText (nth 2 r)) "|" (Dyl:SimText (nth 3 r)) "|"
+                               (Dyl:SimText (nth 4 r)) "|" (Dyl:SimText (nth 5 r))
+                       )
+           )
+          rows
+  )
+)
+
+;;  The climates of the zone (their ids, item 13 of a check r) that have no temperature, by
+;;  their names:
+(defun Dyl:SimNoTemp (r rows / c res)
+  (foreach id (nth 13 r)
+    (if (and (setq c (assoc id rows)) (not (Dyl:SimNum (nth 2 c)))) (setq res (cons (cadr c) res)))
+  )
+  (reverse res)
 )
 
 ;;  n things, their noun one or many:
@@ -353,7 +402,7 @@
 
 ;;  What the check of a zone found (the result of Dyl:SimulationRead, see Plugin.cs), a line per
 ;;  item, the problems first; and whether it found one: (text problems-p):
-(defun Dyl:SimReport (r grid / n bad lines)
+(defun Dyl:SimReport (r grid notemp / n bad lines)
   (cond
     ((not r) (list "The zone could not be read." T))
     ((= 'STR (type r)) (list r T))
@@ -367,6 +416,7 @@
         (if (< 0 (car x)) (setq bad (cons (apply 'Dyl:SimCount x) bad)))
       )
       (if (= 0 (nth 10 r)) (setq bad (cons "No climate zone in the zone" bad)))
+      (foreach c notemp (setq bad (cons (strcat "Climate " c " without a temperature") bad)))
       (setq lines (append (reverse bad)
                           (list (strcat (Dyl:SimCount (nth 3 r) "region" "regions") " of "
                                         (Dyl:SimCount (length (nth 12 r)) "material" "materials")
@@ -401,7 +451,7 @@
                   (cadr m)
                   (mapcar 'car (Dyl:SimClimates))
                 )
-           rep  (car (Dyl:SimReport res grid))
+           rep  (car (Dyl:SimReport res grid (if (listp res) (Dyl:SimNoTemp res (Dyl:SimClimates)))))
      )
     )
   )
@@ -409,10 +459,158 @@
   (setq *sim:last* rep)
 )
 
+;;-------------------------=={ Play }==------------------------;;
+
+;;  A temperature deg (C) as it is shown in the drawing ("-12.3 C", "9.9 F"):
+(defun Dyl:SimDeg (deg imp)
+  (if imp
+    (strcat (Remote>>Dyl:MaterialNumP (+ 32.0 (* 1.8 deg)) 1) " F")
+    (strcat (Remote>>Dyl:MaterialNumP deg 1) " C")
+  )
+)
+
+;;  The value of the key k of a result (nil when not known):
+(defun Dyl:SimGet (k res) (cdr (assoc k res)))
+
+;;  The name of a climate id (its id when it is not a climate of the file):
+(defun Dyl:SimClimName (id rows / r)
+  (if (setq r (assoc id rows)) (cadr r) id)
+)
+
+;;  What a run found (res, see Plugin.cs), a line per value, in the units of the drawing:
+(defun Dyl:SimResult (res rows names imp / v lines dew)
+  (setq dew (Dyl:SimGet "Dew" res))
+  (foreach x
+    (list
+      (if (setq v (Dyl:SimGet "Ti" res))
+        (strcat (Dyl:SimClimName (Dyl:SimGet "Interior" res) rows) " " (Dyl:SimDeg v imp) ", "
+                (Dyl:SimClimName (Dyl:SimGet "Exterior" res) rows) " " (Dyl:SimDeg (Dyl:SimGet "Te" res) imp)
+        )
+      )
+      (if (setq v (Dyl:SimGet "Tsi" res))
+        (strcat "Coldest interior surface " (Dyl:SimDeg v imp)
+                (if (Dyl:SimGet "TsiMaterial" res)
+                  (strcat " (" (cond ((cdr (assoc (Dyl:SimGet "TsiMaterial" res) names))) ((Dyl:SimGet "TsiMaterial" res))) ")")
+                  ""
+                )
+        )
+      )
+      (if (setq v (Dyl:SimGet "fRsi" res)) (strcat "Temperature factor fRsi " (rtos v 2 3)))
+      (if dew
+        (strcat "Dew point of the interior air " (Dyl:SimDeg dew imp)
+                (if (< 0 (cond ((Dyl:SimGet "BelowDew" res)) (0)))
+                  ": condensation on the interior surface (in magenta)"
+                  ": no condensation on the interior surface"
+                )
+        )
+        "No humidity for the interior climate: no dew point"
+      )
+      (if (setq v (Dyl:SimGet "Rsi" res))
+        (strcat "Effective " (if imp "R " "RSI ") (Remote>>Dyl:MaterialNumP (if imp (* v 5.678263) v) 2)
+                " over the interior surface"
+        )
+      )
+      (if (setq v (Dyl:SimGet "L2D" res))
+        (strcat "Thermal coupling L2D "
+                (if imp
+                  (strcat (Remote>>Dyl:MaterialNumP (* v 0.577789) 4) " Btu/(h.ft.F)")
+                  (strcat (Remote>>Dyl:MaterialNumP v 4) " W/(m.K)")
+                )
+        )
+      )
+      (if (< 0 (setq v (cond ((Dyl:SimGet "Isolated" res)) (0))))
+        (strcat (itoa v) " cells of a material touch no climate: not solved (in grey)")
+      )
+    )
+    (if x (setq lines (cons x lines)))
+  )
+  (Remote>>LM:lst->str (reverse lines) "\n")
+)
+
+;;  Solve the zone z and show its temperatures (the plugin); say what was found. With ask, the
+;;  command line then offers to probe the detail, open the window or clear it. Returns the text
+;;  of the report (kept for the window):
+(defun Dyl:SimPlay (z ask / grid m rows imp res rep notemp)
+  (setq imp (Remote>>Dyl:MaterialImperial-p))
+  (cond
+    ((not Dyl:SimulationRun)
+     (setq rep "Play needs DynALisp.Simulation.dll (AutoCAD 2015 or later, not blocked by SECURELOAD).")
+    )
+    (T
+     (setq grid (Dyl:SimZoneGrid z)
+           m    (Dyl:SimMaterials)
+           rows (Dyl:SimClimates)
+           res  (Dyl:SimulationRun
+                  z
+                  (/ (cadr (assoc grid *sim:grids*)) (Remote>>Dyl:MaterialUnitMetres))
+                  (car m)
+                  (caddr m)
+                  (Dyl:SimClimTexts rows)
+                  (if imp 1 0)
+                  (Remote>>Dyl:MaterialUnitMetres)
+                )
+     )
+     (cond
+       ((or (not res) (= 'STR (type res))) (setq rep (car (Dyl:SimReport res grid nil))))
+       ((not (cadr res))
+        ;;  A problem: the check shown, nothing solved.
+        (setq notemp (if (listp (car res)) (Dyl:SimNoTemp (car res) rows))
+              rep    (strcat "Not solved:\n" (car (Dyl:SimReport (car res) grid notemp)))
+        )
+       )
+       (T (setq rep (Dyl:SimResult (cadr res) rows (cadddr m) imp)))
+     )
+    )
+  )
+  (princ (strcat "\n" rep))
+  (setq *sim:last* rep)
+  (if (and ask res (listp res) (cadr res)) (Dyl:SimAfter))
+  rep
+)
+
+;;  After a run: probe the detail, open the window or clear what is shown, until Enter:
+(defun Dyl:SimAfter (/ k)
+  (while
+    (progn
+      (initget "Probe Window Clear eXit")
+      (setq k (getkword "\nSimulation [Probe/Window/Clear/eXit] <eXit>: "))
+      (cond
+        ((= k "Probe") (Dyl:SimProbe) T)
+        ((= k "Window") (Dyl:SimulationDialog) nil)
+        ((= k "Clear") (if Dyl:SimulationClear (Dyl:SimulationClear)) nil)
+      )
+    )
+  )
+)
+
+;;  The temperature and the material at the points picked, until Enter (the last run):
+(defun Dyl:SimProbe (/ imp names rows p r)
+  (setq imp   (Remote>>Dyl:MaterialImperial-p)
+        names (cadddr (Dyl:SimMaterials))
+        rows  (Dyl:SimClimates)
+  )
+  (cond
+    ((not Dyl:SimulationProbe) (princ "\nThe probe needs DynALisp.Simulation.dll."))
+    (T
+     (while (setq p (getpoint "\nPoint to probe <done>: "))
+       (setq r (Dyl:SimulationProbe (trans p 1 0)))
+       (princ
+         (cond
+           ((not r) "\nOutside the last simulation (run Play first).")
+           ((/= "" (caddr r)) (strcat "\nClimate " (Dyl:SimClimName (caddr r) rows)))
+           ((not (car r)) (strcat "\nNo temperature here" (if (/= "" (cadr r)) " (a region that touches no climate)" " (a hole)")))
+           ((strcat "\n" (Dyl:SimDeg (car r) imp) "  " (cond ((cdr (assoc (cadr r) names))) ((cadr r)))))
+         )
+       )
+     )
+    )
+  )
+)
+
 ;;-------------------------=={ Window }==------------------------;;
 
 ;;  The Simulation window (Res\Dyl-Simulation.xaml): the zone, its grid, the climates and the
-;;  last check. Its buttons that act on the drawing close it with their number, and it is shown
+;;  last check or run. Its buttons that act on the drawing close it with their number, and it is shown
 ;;  again on the values it gave back (the climates edited are kept until OK or Cancel):
 (defun Dyl:SimulationDialog (/ imp rows z go res code sel names gi climates)
   (setq imp  (Remote>>Dyl:MaterialImperial-p)
@@ -453,13 +651,17 @@
     )
     (cond
       ((or (not res) (= 0 code)) (setq go nil))
-      ((member code '(1 5))
+      ((member code '(1 5 7))
        (setq climates (Dyl:SimClimsOf rows imp))
        (if (not (Dyl:SimClimatesWrite climates))
          (alert "The climates could not be saved: is Climates.csv open in Excel?")
        )
        (setq go nil)
-       (if (and (= 5 code) z) (Dyl:SimCheck z))
+       (cond
+         ((not z))
+         ((= 5 code) (Dyl:SimCheck z))
+         ((= 7 code) (Dyl:SimPlay z T))
+       )
       )
       ((= 2 code) (if (setq z (Dyl:SimZonePick nil)) (setq *sim:zone* z *sim:last* nil)))
       ((= 3 code) (if (setq z (Dyl:SimZoneNew)) (setq *sim:zone* z *sim:last* nil)))

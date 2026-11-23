@@ -1,12 +1,12 @@
 # Sample values of the Simulation window (Dyl:SimulationDialog in
 # Apps\Analysis\Dyl-Simulation.lsp), as the Lisp gives them, for a zone picked around a wall
-# section of a metric drawing, checked once, the default climates, Interior selected:
+# section of a metric drawing, played once, the climates typed, Interior selected:
 # +key=field\tfield a row of the table key (cl/rows: id name temperature humidity rs rscond,
 # then the values of the file and those shown); \t is a tab, \n a new line.
 zsum=Zone of 900 x 600, made of the hatches and closed outlines inside it.
-res=2 hatches without a material\n1 hole (no material, no climate)\n14 regions of 6 materials\n22140 cells (180 x 123), Medium grid
-+cl/rows=cl-Interior\tInterior\t\t\t0.13\t0.25\t\t\t0.13\t0.25\t\t\t0.13\t0.25
-+cl/rows=cl-Exterior\tExterior\t\t\t0.04\t0.04\t\t\t0.04\t0.04\t\t\t0.04\t0.04
+res=Interior 21 C, Exterior -25 C\nColdest interior surface 13.4 C (Gypsum Board)\nTemperature factor fRsi 0.835\nDew point of the interior air 5 C: no condensation on the interior surface\nEffective RSI 3.12 over the interior surface\nThermal coupling L2D 0.1923 W/(m.K)
++cl/rows=cl-Interior\tInterior\t21\t35\t0.13\t0.25\t21\t35\t0.13\t0.25\t21\t35\t0.13\t0.25
++cl/rows=cl-Exterior\tExterior\t-25\t\t0.04\t0.04\t-25\t\t0.04\t0.04\t-25\t\t0.04\t0.04
 +cl/defs=cl-Interior\tInterior\t\t\t0.13\t0.25\t\t\t0.13\t0.25\t\t\t0.13\t0.25
 +cl/defs=cl-Exterior\tExterior\t\t\t0.04\t0.04\t\t\t0.04\t0.04\t\t\t0.04\t0.04
 +cl/new=\tNew climate\t\t\t\t\t\t\t\t\t\t

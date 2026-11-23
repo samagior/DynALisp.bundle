@@ -25,8 +25,9 @@
           (Lisp: a value shown and not changed is saved as it was), in the units of the
           drawing (sim.imp "1": imperial); cpl Place... (4) draws a zone of the climate
           selected (cl.sel);
-    res   what the last check found; chk Check (5) reads the zone and shows its grid and its
-          problems over the drawing (the window stays closed), clr Clear (6) clears them;
+    res   what the last check or run found; chk Check (5) reads the zone and shows its grid
+          and its problems over the drawing (the window stays closed), ply Play (7) solves it
+          and shows its temperatures, clr Clear (6) clears them;
     sim.zone "1" while a zone is picked, sim.plugin "1" while DynALisp.Simulation.dll is
     loaded. OK saves the climates and the grid, Cancel drops what was changed in the window.
 -->
@@ -77,11 +78,12 @@
           </DockPanel>
         </StackPanel>
       </GroupBox>
-      <GroupBox Header="Check">
+      <GroupBox Header="Simulation">
         <StackPanel>
-          <TextBlock x:Name="res" TextWrapping="Wrap" Margin="0,3" MinHeight="96"/>
+          <TextBlock x:Name="res" TextWrapping="Wrap" Margin="0,3" MinHeight="150"/>
           <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-            <Button x:Name="chk" Margin="0" Content="Check" dyl:Win.Close="5" dyl:Win.EnabledBy="sim.zone=1,sim.plugin=1"/>
+            <Button x:Name="ply" Margin="0" Content="Play" dyl:Win.Close="7" dyl:Win.EnabledBy="sim.zone=1,sim.plugin=1"/>
+            <Button x:Name="chk" Content="Check" dyl:Win.Close="5" dyl:Win.EnabledBy="sim.zone=1,sim.plugin=1"/>
             <Button x:Name="clr" Content="Clear" dyl:Win.Close="6" dyl:Win.EnabledBy="sim.plugin=1"/>
           </StackPanel>
         </StackPanel>
