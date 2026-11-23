@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.Colors;
@@ -53,6 +54,18 @@ namespace DynALisp.Assistant
             "OPEN", "NEW", "QNEW", "RECOVER", "AUDIT", "PURGE", "-PURGE", "BROWSER", "HYPERLINK", "OPTIONS", "CUI",
             "CUILOAD", "CUIUNLOAD", "MENU", "MENULOAD", "MENUUNLOAD", "SECURELOAD", "TRUSTEDPATHS", "ACTSTOP", "ACTRECORD",
             "ACTUSERMESSAGE", "LISP", "UNDO", "U", "REDO", "MREDO",
+            // the commands that write a file
+            "DXFOUT", "DWFOUT", "3DDWF", "PNGOUT", "BMPOUT", "JPGOUT", "TIFOUT", "WMFOUT", "EPSOUT", "STLOUT",
+            "ACISOUT", "FBXEXPORT", "-FBXEXPORT", "IGESEXPORT", "MSLIDE", "ARCHIVE", "-ARCHIVE", "EXPORTLAYOUT",
+            "EXPORTTOAUTOCAD", "-EXPORTTOAUTOCAD", "EXPORTDWF", "EXPORTDWFX", "-EXPORTPDF", "SAVEASR12", "ATTEXT",
+            "-ATTEXT", "DATAEXTRACTION", "-DATAEXTRACTION", "MAKEPREVIEW", "-LAYERSTATE", "LAYERSTATE", "LAYTRANS",
+            "SHEETSET", "SHEETSETHIDE", "COPYCLIP", "COPYBASE", "CUTCLIP", "COPYLINK", "PASTECLIP", "PASTEBLOCK",
+            "PASTEORIG", "PASTESPEC",
+            // the commands that bring in another file or run one
+            "XATTACH", "-XATTACH", "XREF", "-XREF", "IMAGEATTACH", "-IMAGE", "IMAGE", "PDFATTACH", "-PDFATTACH",
+            "PDFIMPORT", "-PDFIMPORT", "DWFATTACH", "-DWFATTACH", "DGNATTACH", "-DGNATTACH", "DGNIMPORT", "IMPORT",
+            "-IMPORT", "INSERTOBJ", "OLELINKS", "ATTACH", "DXFIN", "ACISIN", "STLIN", "3DSIN", "WMFIN", "VSLIDE",
+            "DATALINK", "-DATALINK", "DATALINKUPDATE",
         };
 
         // tool_use_id -> the drawing approved for that call
@@ -198,6 +211,13 @@ namespace DynALisp.Assistant
             return r;
         }
 
+        static readonly Regex FileAnswer = new Regex(
+            @"\\|^[A-Za-z]:|^~$|\.(dwg|dwt|dws|dxf|dxb|dwf|dwfx|pdf|dgn|png|jpe?g|bmp|gif|tiff?|wmf|emf|eps|sat|stl|fbx|iges?|3ds|sld|slb|scr|lsp|fas|vlx|mnl|arx|crx|dbx|dll|exe|com|bat|cmd|ps1|vbs|js|dvb|cuix?|mnu|lin|pat|shx|ctb|stb|pc3|pgp|csv|txt|xls[xm]?|xml|ini|zip)$",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+        // An answer to a command that names a file: a path, a file name, ~ (the file dialog).
+        static bool NamesFile(string x) => FileAnswer.IsMatch((x ?? "").Trim().Trim('"'));
+
         static List<string> CommandArgs(Dictionary<string, object> a)
         {
             if (!(Json.Get(a, "command") is List<object> l) || l.Count == 0) throw new ToolError("command: give the command and its answers.");
@@ -208,6 +228,8 @@ namespace DynALisp.Assistant
             if (Refused.Contains(name)) throw new ToolError("The command " + name + " is not allowed to the Assistant: it leaves the drawing, or would undo work outside the change.");
             if (cmd.Any(x => x.TrimStart().StartsWith("(", StringComparison.Ordinal)))
                 throw new ToolError("command: an answer that starts with ( would run AutoLISP, which the Assistant does not do.");
+            if (cmd.Skip(1).Any(NamesFile))
+                throw new ToolError("command: an answer that names a file (a path, a file name, ~ for the file dialog) is not allowed to the Assistant: it works in the drawing only.");
             return cmd;
         }
 
