@@ -1,0 +1,9 @@
+# The values of the Revision Title Blocks window (Res\Dyl-RevisionTitleBlocks.xaml) for its
+# picture in the docs, as Dyl:RevBlocksDialog gives them for two title blocks, the second picked:
++tbl/rows=CARTOUCHE-ARCH*\t6\tOldest\tNO_REV#\tDATE_REV#\tDESC_REV#\tEMIS_POUR#\tPAR#\tREV_ACTUELLE\tDATE_REV_ACTUELLE
++tbl/rows=TB-24X36\t5\tNewest\tREV#_NUM\tREV#_DATE\tREV#_DESC\tREV#_TO\tREV#_BY\tCURRENT_REV\tCURRENT_DATE
+tbl.sel=1
++tbl/new=*TITLE*\t5\tOldest\t\t\t\t\t\t\t
+fst/list=Newest revision|Oldest revision
+fst/vals=Newest|Oldest
+error=

@@ -35,6 +35,10 @@
 //                                           the checkbox ind is on
 //   dyl:Win.CountOf="lst"                   on a TextBlock: how many items of lst are listed,
 //   dyl:Win.CountText="{0} of {1} words"    as this text says (listed, all)
+//   dyl:Win.ItemsBy="rev"                   on a ListBox or a TextBlock: its items (its text)
+//                                           follow the item picked in the list rev: the row i
+//                                           of its table key/by while the item i is the first
+//                                           one selected (the indexes selected are kept)
 //   dyl:Win.Open="Dyl-Settings-Display.xaml" on a button: opens that window over this one,
 //                                           beside this file; its OK keeps its values,
 //                                           its Cancel puts them back
@@ -114,6 +118,9 @@ namespace DynALisp.Windows
         public static string GetCountText(DependencyObject o) => (string)o.GetValue(CountTextProperty);
         public static void SetCountText(DependencyObject o, string v) => o.SetValue(CountTextProperty, v);
         public static readonly DependencyProperty CountTextProperty = Prop("CountText");
+        public static string GetItemsBy(DependencyObject o) => (string)o.GetValue(ItemsByProperty);
+        public static void SetItemsBy(DependencyObject o, string v) => o.SetValue(ItemsByProperty, v);
+        public static readonly DependencyProperty ItemsByProperty = Prop("ItemsBy");
         public static string GetClose(DependencyObject o) => (string)o.GetValue(CloseProperty);
         public static void SetClose(DependencyObject o, string v) => o.SetValue(CloseProperty, v);
 

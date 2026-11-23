@@ -28,3 +28,5 @@ Contents/Modules/Dynalisp/Res/Dyl-SysVars.xaml;Dyl-SysVars.txt;Contents/Modules/
 Contents/Modules/Dynalisp/Res/Dyl-SysVarsList.xaml;Dyl-SysVarsList.txt;Contents/Modules/Dynalisp/Docs/Setup/images/Dyl-SysVars-list.png
 Contents/Modules/Dynalisp/Res/Dyl-Name.xaml;Dyl-Name.txt;Contents/Modules/Dynalisp/Docs/Setup/images/Dyl-SysVars-name.png
 Contents/Modules/Dynalisp/Res/Dyl-Dictionary.xaml;Dyl-Dictionary.txt;Contents/Modules/Dynalisp/Docs/Utilities/images/Dyl-Dictionary-window.png
+Contents/Modules/Dynalisp/Res/Dyl-Revisions.xaml;Dyl-Revisions.txt;Contents/Modules/Dynalisp/Docs/Output/images/Dyl-Revisions-window.png
+Contents/Modules/Dynalisp/Res/Dyl-RevisionTitleBlocks.xaml;Dyl-RevisionTitleBlocks.txt;Contents/Modules/Dynalisp/Docs/Output/images/Dyl-Revisions-titleblocks.png

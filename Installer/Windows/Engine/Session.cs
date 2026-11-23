@@ -293,9 +293,10 @@ namespace DynALisp.Windows
                 case ListBox l when Named(l):
                     l.SelectionChanged += (a, b) =>
                     {
-                        if (Owned(l.Name)) { Changed(l.Name, l.SelectedIndex.ToString(CultureInfo.InvariantCulture), l); return; }
+                        if (Owned(l.Name)) { Changed(l.Name, l.SelectedIndex.ToString(CultureInfo.InvariantCulture), l); Follow(l); return; }
                         if (!_filling) FillFrom(l);
                         Changed(l.Name, ListValue(l), l);
+                        Follow(l);
                     };
                     // An item double-clicked closes the window (Win.Close: Run, OK):
                     if (Win.GetClose(l) != null)
@@ -587,7 +588,44 @@ namespace DynALisp.Windows
             Presets?.Fill();
             Rows?.Fill();
             Suite?.Fill();
+            foreach (var l in _all.OfType<ListBox>().Where(b => Named(b))) Follow(l);
             Refresh();
+        }
+
+        // The lists and texts that follow the item picked in the list l (Win.ItemsBy="l"): the
+        // row i of their table key/by (given by the Lisp) while the item i of l is the first one
+        // selected, their own items (key/list) or text while none is; a list keeps the indexes
+        // selected (the sheets of a project, what each one has of the revision picked):
+        readonly Dictionary<string, object> _byOwn = new Dictionary<string, object>();
+        void Follow(ListBox l)
+        {
+            var targets = _all.Where(e => Named(e) && Win.GetItemsBy(e) == l.Name).ToList();
+            if (targets.Count == 0) return;
+            int i = l.SelectedItems.Count == 0 ? -1 : l.SelectedItems.Cast<object>().Select(o => l.Items.IndexOf(o)).Where(n => n >= 0).DefaultIfEmpty(-1).Min();
+            foreach (var t in targets)
+            {
+                _s.Rows.TryGetValue(t.Name + "/by", out var by);
+                string[] row = by != null && i >= 0 && i < by.Count ? by[i] : null;
+                switch (t)
+                {
+                    case ListBox tl:
+                        if (!_byOwn.ContainsKey(t.Name))
+                            _byOwn[t.Name] = _s.Lists.TryGetValue(t.Name, out var own) ? own : new List<string>();
+                        var items = row != null ? row.ToList() : (List<string>)_byOwn[t.Name];
+                        if (tl.ItemsSource is List<string> cur && cur.SequenceEqual(items)) break;
+                        string sel = ListValue(tl);
+                        Quiet(() => { tl.ItemsSource = items; SelectList(tl, sel); });
+                        _s.Lists[t.Name] = items;
+                        _s.Values[t.Name] = ListValue(tl);
+                        Count(tl);
+                        break;
+                    case TextBlock tb:
+                        if (!_byOwn.ContainsKey(t.Name)) _byOwn[t.Name] = tb.Text ?? "";
+                        tb.Text = row != null ? (row.Length > 0 ? row[0] : "") : (string)_byOwn[t.Name];
+                        _s.Values[t.Name] = tb.Text;
+                        break;
+                }
+            }
         }
 
         // Enabled and shown from the values (Win.EnabledBy, Win.VisibleBy, Session.Off):
