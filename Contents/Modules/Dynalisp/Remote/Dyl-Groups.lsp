@@ -65,7 +65,7 @@
 
 ;;  The kind k of groups ((kind file defaults noun), the groups of the presets for any other k):
 (defun Remote>>Dyl:GroupsKind (k)
-  (cond ((and k (assoc k *grp:kinds*))) ((assoc nil *grp:kinds*)))
+  (cond ((if k (assoc k *grp:kinds*))) ((assoc nil *grp:kinds*)))
 )
 
 ;;  The default groups file of the kind k (Res\Groups.csv or Res\MaterialGroups.csv under
