@@ -1,4 +1,4 @@
-;; Simulation - Simulate the heat (and later the vapour) through a 2D detail of the drawing
+;; Simulation - Simulate the heat and the vapour through a 2D detail of the drawing
 ;; Copyright (C) 2026  Samuel Martineau
 ;;
 ;; This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,8 @@
 ;;  changing Interior changes every detail. The plugin DynALisp.Simulation.dll
 ;;  (Installer\Simulation) reads the detail of a zone in the drawing, builds its grid and
 ;;  shows it over the drawing with its problems (Dyl:SimulationRead, Dyl:SimulationClear),
-;;  solves the heat through it and shows its temperatures (Dyl:SimulationRun), and reads the
+;;  solves the heat and the vapour through it and shows its temperatures (Dyl:SimulationRun),
+;;  adds up the water of its months (Dyl:SimulationMonthly, the monthly balance), reads the
 ;;  temperature at a point (Dyl:SimulationProbe), and adds the result to the drawing on
 ;;  purpose (Dyl:SimulationKeep); this file gives it the materials, the climates and the
 ;;  units, says what it found, puts what is kept on its layer keys and writes the report.
@@ -79,6 +80,16 @@
   (princ)
 )
 
+;; Simulation Monthly
+;; Adds up month by month the water that condenses inside the detail of a simulation zone and dries out of it (the monthly balance of ISO 13788), from the climates of each month.
+
+(defun c:Pst-SimulationMonthly (/ z)
+  (if (setq z (Dyl:SimZonePick T))
+    (progn (setq *sim:zone* z) (Dyl:SimMonthly z T))
+  )
+  (princ)
+)
+
 ;; Simulation Probe
 ;; Gives the temperature, the relative humidity and the material at the points picked in the detail of the last simulation.
 
@@ -115,8 +126,24 @@
 
 ;;  The climates file and its columns: id, name, temperature (C), relative humidity (%), the
 ;;  surface resistance of its faces (RSI, m2.K/W, for the heat) and the one used to judge the
-;;  condensation on a surface (RSI), each value empty when not known:
-(setq *sim:climhead* '("Id" "Name" "Temperature" "Humidity" "Rs" "RsCondensation"))
+;;  condensation on a surface (RSI), then the temperature of each month (C, T01 January to T12
+;;  December) and its relative humidity (%, RH01 to RH12), for the monthly balance; each value
+;;  empty when not known (a climate without its months is the same all year):
+(setq *sim:climhead* '("Id" "Name" "Temperature" "Humidity" "Rs" "RsCondensation"
+                       "T01" "T02" "T03" "T04" "T05" "T06" "T07" "T08" "T09" "T10" "T11" "T12"
+                       "RH01" "RH02" "RH03" "RH04" "RH05" "RH06" "RH07" "RH08" "RH09" "RH10" "RH11" "RH12"
+                      )
+)
+
+;;  The columns of the values of a climate (2 to 29), and a row r padded to all of them:
+(setq *sim:climcols* '(2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29))
+(defun Dyl:SimPad (r)
+  (while (< (length r) 30) (setq r (append r (list ""))))
+  r
+)
+
+;;  The names of the months:
+(setq *sim:months* '("January" "February" "March" "April" "May" "June" "July" "August" "September" "October" "November" "December"))
 
 ;;  The default climates, each value from a source (a value is never made up): the surface
 ;;  resistances of ISO 6946 (Rsi 0.13 for a horizontal heat flow, Rse 0.04) and ISO 13788
@@ -125,10 +152,12 @@
 ;;  35% throughout the heating season", 21 C on average, Chown and Mukhopadhyaya, NRCC-47656,
 ;;  2005); the exterior at -23 C, the January 2.5 % design temperature of Montreal (NBC 2020,
 ;;  Division B, Appendix C, Table C-2), to change for a project elsewhere:
-(setq *sim:climdefs* '(("cl-Interior" "Interior" "21" "35" "0.13" "0.25") ("cl-Exterior" "Exterior" "-23" "" "0.04" "0.04")))
+;;  No month has a default: no source gives the monthly climate of the interior and the exterior
+;;  of every project, so they are typed (the normals of the weather station nearest the site):
+(setq *sim:climdefs* (mapcar 'Dyl:SimPad '(("cl-Interior" "Interior" "21" "35" "0.13" "0.25") ("cl-Exterior" "Exterior" "-23" "" "0.04" "0.04"))))
 
 ;;  The imperial factors of the values shown (a temperature in F is C x 1.8 + 32), by column:
-(setq *sim:climdata* '((2 . T) (4 . 5.678263) (5 . 5.678263)))
+(setq *sim:climdata* (append '((2 . T) (4 . 5.678263) (5 . 5.678263)) (mapcar '(lambda (c) (cons c T)) '(6 7 8 9 10 11 12 13 14 15 16 17))))
 
 (defun Dyl:SimClimFile ()
   (strcat *dyl:dylres "\\Climates.csv")
@@ -137,7 +166,7 @@
 ;;  The climates (rows of *sim:climhead*), the defaults when the file has none:
 (defun Dyl:SimClimates (/ f rows)
   (if (findfile (setq f (Dyl:UserFile (Dyl:SimClimFile))))
-    (setq rows (vl-remove-if '(lambda (r) (= "" (car r))) (Remote>>Dyl:CsvRead f 6)))
+    (setq rows (vl-remove-if '(lambda (r) (= "" (car r))) (Remote>>Dyl:CsvRead f 30)))
   )
   (cond (rows) (*sim:climdefs*))
 )
@@ -170,12 +199,15 @@
   )
 )
 
-;;  The row of the window of a climate r: id name temperature humidity rs rscond as shown, then
-;;  the values of the file and those shown (the columns 2 to 5 each), so a value shown and not
-;;  changed is saved as it was, never rounded by opening the window:
+;;  The row of the window of a climate r: id name, its values as shown (temperature humidity
+;;  rs rscond, the temperatures of the months, their humidities: the columns 2 to 29), then the
+;;  values of the file (30 to 57) and those shown (58 to 85), so a value shown and not changed
+;;  is saved as it was, never rounded by opening the window:
 (defun Dyl:SimClimRow (r imp / shown)
-  (setq shown (mapcar '(lambda (c) (Dyl:SimShown (nth c r) c imp)) '(2 3 4 5)))
-  (append (list (car r) (cadr r)) shown (mapcar '(lambda (c) (nth c r)) '(2 3 4 5)) shown)
+  (setq r     (Dyl:SimPad r)
+        shown (mapcar '(lambda (c) (Dyl:SimShown (nth c r) c imp)) *sim:climcols*)
+  )
+  (append (list (car r) (cadr r)) shown (mapcar '(lambda (c) (nth c r)) *sim:climcols*) shown)
 )
 
 ;;  The climate of a row of the window w (see Dyl:SimClimRow), its id made from its name when
@@ -194,9 +226,9 @@
   (append (list id (vl-string-trim " " (cadr w)))
           (mapcar '(lambda (c / v)
                      (setq v (vl-string-trim " " (cond ((nth c w)) (""))))
-                     (if (= v (cond ((nth (+ c 8) w)) (""))) (cond ((nth (+ c 4) w)) ("")) (Dyl:SimStored v c imp))
+                     (if (= v (cond ((nth (+ c 56) w)) (""))) (cond ((nth (+ c 28) w)) ("")) (Dyl:SimStored v c imp))
                    )
-                  '(2 3 4 5)
+                  *sim:climcols*
           )
   )
 )
@@ -414,6 +446,19 @@
                        )
            )
           rows
+  )
+)
+
+;;  The months of the climates for the plugin: "id|t1|...|t12|rh1|...|rh12" (SI), for the
+;;  climates with a month typed:
+(defun Dyl:SimMonthTexts (rows / v)
+  (vl-remove nil
+    (mapcar '(lambda (r)
+               (setq v (mapcar '(lambda (c) (Dyl:SimText (nth c r))) '(6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29)))
+               (if (vl-remove "" v) (strcat (car r) "|" (Remote>>LM:lst->str v "|")))
+             )
+            rows
+    )
   )
 )
 
@@ -643,6 +688,148 @@
   rep
 )
 
+;;-------------------------=={ Monthly Balance }==------------------------;;
+
+;;  A water w (g per metre of the depth of the detail) as it is shown (imperial: per foot):
+(defun Dyl:SimWater (w imp)
+  (strcat (Remote>>Dyl:MaterialSig (* w (if imp 0.3048 1.0))) (if imp " g/ft" " g/m"))
+)
+
+;;  What the monthly balance of a run res tells, a line per value (see Dyl:SimulationMonthly
+;;  of Plugin.cs): the water, whether it dries out, a line per month, then the heat of the
+;;  month shown:
+(defun Dyl:SimMonthResult (res rows names imp / v lines len)
+  (setq len (Dyl:SimGet "Length" res))
+  (if (= 0 (cond ((Dyl:SimGet "Start" res)) (0)))
+    (setq lines (list "No condensation inside the detail in any month (monthly balance of ISO 13788)"))
+    (setq lines
+      (list
+        (strcat "Monthly balance of ISO 13788 from " (nth (1- (Dyl:SimGet "Start" res)) *sim:months*) ": "
+                (if (< 0 (cond ((Dyl:SimGet "MaxMonth" res)) (0)))
+                  (strcat "the most water " (Dyl:SimWater (Dyl:SimGet "MaxWater" res) imp)
+                          (if (and len (< 0 len))
+                            (strcat " ("
+                                    (if imp
+                                      (strcat (Remote>>Dyl:MaterialSig (* 0.204816 (/ (Dyl:SimGet "MaxWater" res) len 1000.0))) " lb/ft2")
+                                      (strcat (Remote>>Dyl:MaterialSig (/ (Dyl:SimGet "MaxWater" res) len 1000.0)) " kg/m2")
+                                    )
+                                    " of interior surface)"
+                            )
+                            ""
+                          )
+                          " at the end of " (nth (1- (Dyl:SimGet "MaxMonth" res)) *sim:months*) " (in magenta)"
+                          (if (setq v (Dyl:SimGet "WaterMaterials" res)) (strcat ", in " (Dyl:SimNames v names)) "")
+                  )
+                  "no water held at the end of a month"
+                )
+        )
+        (if (= 1 (Dyl:SimGet "Dries" res))
+          "All of it dries out by the end of the year: the detail passes"
+          (strcat (Dyl:SimWater (Dyl:SimGet "Remaining" res) imp)
+                  " still wet at the end of the year: the water builds up year after year"
+          )
+        )
+      )
+    )
+  )
+  (foreach m (Dyl:SimGet "Months" res)
+    (setq lines (append lines
+                        (list (strcat (substr (nth (1- (car m)) *sim:months*) 1 3) "  "
+                                      (Dyl:SimDeg (caddr m) imp)
+                                      "  condensed " (Dyl:SimWater (nth 4 m) imp)
+                                      "  dried " (Dyl:SimWater (nth 5 m) imp)
+                                      "  held " (Dyl:SimWater (nth 6 m) imp)
+                              )
+                        )
+                )
+    )
+  )
+  (if (Dyl:SimGet "VapourNotConverged" res)
+    (setq lines (append lines (list "The vapour did not settle in a month: the balance is approximate")))
+  )
+  (Remote>>LM:lst->str
+    (append lines
+            (list (strcat "Shown: " (nth (1- (Dyl:SimGet "Shown" res)) *sim:months*)))
+            (list (Dyl:SimResult (vl-remove-if '(lambda (x) (= "Vapour" (car x))) res) rows names imp))
+    )
+    "\n"
+  )
+)
+
+;;  What the monthly balance needs that it did not have (a run res without Monthly):
+(defun Dyl:SimMonthMissing (res rows names / v lines)
+  (if (Dyl:SimGet "NoMonths" res)
+    (setq lines (list "No climate of the zone has its months: type them with the open button of Months in the Simulation window"))
+  )
+  (if (setq v (Dyl:SimGet "PartMonths" res))
+    (setq lines (cons (strcat "Months missing for " (Remote>>LM:lst->str (mapcar '(lambda (id) (Dyl:SimClimName id rows)) v) ", ")
+                              ": type all twelve, or none (the same all year)"
+                      )
+                      lines
+                )
+    )
+  )
+  (if (setq v (Dyl:SimGet "NoHumidity" res))
+    (setq lines (cons (strcat "No relative humidity for " (Remote>>LM:lst->str (mapcar '(lambda (id) (Dyl:SimClimName id rows)) v) ", ")) lines))
+  )
+  (if (setq v (Dyl:SimGet "NoVapour" res))
+    (setq lines (cons (strcat "No vapour permeability for " (Dyl:SimNames v names)) lines))
+  )
+  (strcat "The monthly balance needs:\n" (Remote>>LM:lst->str (reverse lines) "\n"))
+)
+
+;;  The monthly balance of the zone z (the plugin): solve each month, show the month that holds
+;;  the most water, say what was found. With ask, the command line then offers to probe the
+;;  detail, keep it, report it... Returns the text of the report (kept for the window):
+(defun Dyl:SimMonthly (z ask / grid m rows imp res rep notemp r)
+  (setq imp (Remote>>Dyl:MaterialImperial-p))
+  (cond
+    ((not Dyl:SimulationMonthly)
+     (setq rep "The monthly balance needs DynALisp.Simulation.dll (AutoCAD 2015 or later, not blocked by SECURELOAD).")
+    )
+    (T
+     (setq grid (Dyl:SimZoneGrid z)
+           m    (Dyl:SimMaterials)
+           rows (Dyl:SimClimates)
+     )
+     (princ "\nSolving twelve months...")
+     (setq res (Dyl:SimulationMonthly
+                 z
+                 (/ (cadr (assoc grid *sim:grids*)) (Remote>>Dyl:MaterialUnitMetres))
+                 (car m)
+                 (caddr m)
+                 (Dyl:SimClimTexts rows)
+                 (Dyl:SimMonthTexts rows)
+                 (if imp 1 0)
+                 (Remote>>Dyl:MaterialUnitMetres)
+               )
+     )
+     (cond
+       ((or (not res) (= 'STR (type res))) (setq rep (car (Dyl:SimReport res grid nil))))
+       ((not (setq r (cadr res)))
+        (setq notemp (if (listp (car res)) (Dyl:SimNoTemp (car res) rows))
+              rep    (strcat "Not solved:\n" (car (Dyl:SimReport (car res) grid notemp)))
+        )
+       )
+       ((not (Dyl:SimGet "Monthly" r))
+        (setq rep (Dyl:SimMonthMissing r rows (cadddr m))
+              res nil
+        )
+       )
+       (T
+        (setq rep           (Dyl:SimMonthResult r rows (cadddr m) imp)
+              *sim:lastrun* (list z grid res rows m rep)
+        )
+       )
+     )
+    )
+  )
+  (princ (strcat "\n" rep))
+  (setq *sim:last* rep)
+  (if (and ask res (listp res) (cadr res)) (Dyl:SimAfter T))
+  rep
+)
+
 ;;  After a run: probe the detail, show its humidity or its temperatures, open the window or
 ;;  clear what is shown, until Enter (Humidity only when its vapour was computed: vap):
 (defun Dyl:SimAfter (vap / k)
@@ -803,6 +990,17 @@
                                         )
                                 )
                           )
+                          (if (vl-remove "" (mapcar '(lambda (i) (nth i c)) '(6 7 8 9 10 11 12 13 14 15 16 17)))
+                            (list (strcat "    months (C / %): "
+                                          (Remote>>LM:lst->str
+                                            (mapcar '(lambda (i) (strcat (substr (nth (- i 6) *sim:months*) 1 3) " " (nth i c) " / " (nth (+ i 12) c)))
+                                                    '(6 7 8 9 10 11 12 13 14 15 16 17)
+                                            )
+                                            ", "
+                                          )
+                                  )
+                            )
+                          )
                   )
       )
     )
@@ -842,7 +1040,19 @@
                 "  Surface resistances of ISO 6946 for the heat flow, L2D and the effective RSI; the condensation resistance"
                 "  (ISO 13788) for the surface temperatures, fRsi and the dew point on the surfaces."
                 "  Vapour inside the detail: the method of Glaser of ISO 13788 in two dimensions, by diffusion alone, at the"
-                "  temperatures of the heat flow; a steady state of the conditions given, not a monthly balance."
+                (if (Dyl:SimGet "Monthly" (cadr res))
+                  "  temperatures of the heat flow, each month steady."
+                  "  temperatures of the heat flow; a steady state of the conditions given, not a monthly balance."
+                )
+          )
+          (if (Dyl:SimGet "Monthly" (cadr res))
+            (list "  Monthly balance of ISO 13788 (clause 6.4): the water of each cell added up from the first month that"
+                  "  condenses after one that does not, a cell that holds water held at the saturation pressure, so it dries"
+                  "  by what it gives back; the detail passes when every cell is dry at the end of the twelve months. Months"
+                  "  of 31, 28, 31... days; a climate without its months the same all year."
+            )
+          )
+          (list
                 "  A material without a conductivity is simulated by its fixed RSI, one without a vapour permeability by its"
                 "  fixed permeance, across the smaller side of its region."
           )
@@ -904,7 +1114,7 @@
                         (cons "res" (cond (*sim:last*) ("Not checked yet.")))
                         (cons "cl/rows" rows)
                         (cons "cl/defs" (mapcar '(lambda (r) (Dyl:SimClimRow r imp)) *sim:climdefs*))
-                        (list "cl/new" (list "" "New climate" "" "" "" "" "" "" "" "" "" ""))
+                        (list "cl/new" (Dyl:SimClimRow (list "" "New climate") imp))
                         (cons "sim.imp" (if imp "1" "0"))
                         (cons "sim.zone" (if z "1" "0"))
                         (cons "sim.plugin" (if Dyl:SimulationRead "1" "0"))
@@ -927,7 +1137,7 @@
     )
     (cond
       ((or (not res) (= 0 code)) (setq go nil))
-      ((member code '(1 5 7))
+      ((member code '(1 5 7 8))
        (setq climates (Dyl:SimClimsOf rows imp))
        (if (not (Dyl:SimClimatesWrite climates))
          (alert "The climates could not be saved: is Climates.csv open in Excel?")
@@ -937,6 +1147,7 @@
          ((not z))
          ((= 5 code) (Dyl:SimCheck z))
          ((= 7 code) (Dyl:SimPlay z T))
+         ((= 8 code) (Dyl:SimMonthly z T))
        )
       )
       ((= 2 code) (if (setq z (Dyl:SimZonePick nil)) (setq *sim:zone* z *sim:last* nil)))

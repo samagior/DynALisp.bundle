@@ -2,6 +2,8 @@
 # <Module>/<path> of each page; a module index: its title and first sentence after tabs
 Dynalisp/Analysis/Dyl-Simulation.fr.htm
 Dynalisp/Analysis/Dyl-Simulation.htm
+Dynalisp/Analysis/Dyl-SimulationMonths.fr.htm
+Dynalisp/Analysis/Dyl-SimulationMonths.htm
 Dynalisp/Cleaning/Dyl-ColorByLayer.fr.htm
 Dynalisp/Cleaning/Dyl-ColorByLayer.htm
 Dynalisp/Cleaning/Dyl-DataLinks.fr.htm

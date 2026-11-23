@@ -171,6 +171,7 @@ PST-SIMULATIONZONE;Simulation Zone;Dessine la zone de simulation d'un détail 2D
 PST-SIMULATIONCLIMATE;Simulation Climat;Dessine une zone de climat (intérieur, extérieur...) sur l'air d'un côté d'un détail 2D, ou en fait une d'une polyligne fermée choisie.
 PST-SIMULATIONCHECK;Simulation Vérifier;Lit le détail d'une zone de simulation et montre sa grille et ses problèmes sur le dessin : hachures sans matériau, matériaux sans données, trous.
 PST-SIMULATIONPLAY;Simulation Lancer;Calcule la chaleur et la vapeur qui traversent le détail d'une zone de simulation et montre ses températures sur le dessin, le point de rosée, la surface intérieure la plus froide et où la vapeur condense.
+PST-SIMULATIONMONTHLY;Simulation Mensuel;Cumule mois par mois l'eau qui condense dans le détail d'une zone de simulation et qui en sèche (le bilan mensuel de l'ISO 13788), à partir des climats de chaque mois.
 PST-SIMULATIONPROBE;Simulation Sonder;Donne la température, l'humidité relative et le matériau aux points choisis dans le détail de la dernière simulation.
 PST-SIMULATIONKEEP;Simulation Garder;Ajoute le résultat de la dernière simulation au dessin, pour l'imprimer : ses isothermes, la ligne du point de rosée et une hachure là où la vapeur condense, sur leurs clés de calque.
 PST-SIMULATIONREPORT;Simulation Rapport;Écrit un rapport texte de la dernière simulation : la zone, les climats, les matériaux et leurs données, les résultats et les méthodes.

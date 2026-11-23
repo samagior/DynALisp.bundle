@@ -1094,10 +1094,10 @@
 ;;  The simulation zones and the climate zones of the drawing (Dyl-Simulation, their DynALisp
 ;;  data: Role SimulationZone or Climate), and the climates of Climates.csv: a climate zone
 ;;  of a climate the file no longer has is a problem. Counts only:
-(defun dg:dwg-simulation (/ ss i e role f rows clims zones czs gone notemp)
+(defun dg:dwg-simulation (/ ss i e role f rows clims zones czs gone notemp n full part)
   (dg:sub "Simulation zones (Dyl-Simulation)")
   (setq f     (Dyl:UserFile (strcat *dyl:dylres "\\Climates.csv"))
-        rows  (if (findfile f) (vl-remove-if '(lambda (r) (= "" (car r))) (Remote>>Dyl:CsvRead f 6)))
+        rows  (if (findfile f) (vl-remove-if '(lambda (r) (= "" (car r))) (Remote>>Dyl:CsvRead f 30)))
         clims (mapcar '(lambda (r) (strcase (car r))) rows)
         notemp (vl-remove-if '(lambda (r) (distof (vl-string-translate "," "." (cond ((nth 2 r)) (""))) 2)) rows)
         zones 0
@@ -1106,9 +1106,21 @@
   )
   (dg:kv "Climates" (if clims (itoa (length clims)) "none (the defaults: Interior and Exterior)"))
   ;;  Play refuses a zone with a climate without a temperature:
-  (if (or (not rows) notemp)
+  (if notemp
     (dg:note (strcat "Climates without a temperature (Play refuses them until one is typed): "
-                     (if rows (Remote>>LM:lst->str (mapcar 'cadr notemp) ", ") "Interior, Exterior")
+                     (Remote>>LM:lst->str (mapcar 'cadr notemp) ", ")
+             )
+    )
+  )
+  ;;  The months of the monthly balance (columns 6 to 29): all 24 or none, else it refuses them:
+  (foreach r rows
+    (setq n (length (vl-remove "" (mapcar '(lambda (c) (cond ((nth c r)) (""))) '(6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29)))))
+    (cond ((= 24 n) (setq full (cons (cadr r) full))) ((< 0 n) (setq part (cons (cadr r) part))))
+  )
+  (dg:kv "Climates with their months" (if full (Remote>>LM:lst->str (reverse full) ", ") "none"))
+  (if part
+    (dg:note (strcat "Climates with some months and not all (the monthly balance refuses them): "
+                     (Remote>>LM:lst->str (reverse part) ", ")
              )
     )
   )

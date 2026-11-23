@@ -31,7 +31,9 @@
 // saturation pressure and the system solved again, until no other cell goes above it and no
 // cell held would give vapour back (less coming in than going out), the 2D form of the
 // condensation planes of Glaser. What a cell held condenses is what comes into it less what
-// goes out. Everything is computed in metres, for a depth of 1 m, the permeabilities in
+// goes out. The cells that are wet (the water of the months before, Monthly.cs) are held at
+// the saturation pressure whatever they take in: what they give back (less coming in than
+// going out) is the water that dries from them, their rate below 0. Everything is computed in metres, for a depth of 1 m, the permeabilities in
 // ng/(Pa.s.m): the flows are in ng/(s.m).
 
 using System;
@@ -44,8 +46,8 @@ namespace DynALisp.Simulation.Core
         public Detail Detail;
         public double[] Pv;              // by cell: Pa, NaN where no material or not solved
         public double[] Psat;            // by cell: Pa, the saturation pressure at its temperature
-        public double[] Rate;            // by cell: ng/(s.m) condensing in it, 0 elsewhere
-        public bool[] Condensing;        // by cell
+        public double[] Rate;            // by cell: ng/(s.m) condensing in it (below 0: drying from a cell wet), 0 elsewhere
+        public bool[] Condensing;        // by cell: held at the saturation pressure (condensing, or wet)
         public int Rounds;               // the systems solved, until the cells held did not change
         public int Iterations;           // of all the solves
         public int Sweeps;               // the sweeps of the cells around the cells held, between them
@@ -68,8 +70,9 @@ namespace DynALisp.Simulation.Core
         // The detail d, the water vapour permeability of each region (ng/(Pa.s.m), by index of
         // d.Regions; NaN or 0 for a climate or a material without one), the relative humidity
         // (%) of each climate region, the heat flow th (its temperatures by cell, and of the
-        // climates temp, C), and the metres of a drawing unit:
-        public static Vapour Solve(Detail d, double[] delta, double[] rh, Thermal th, double[] temp, double metres)
+        // climates temp, C), and the metres of a drawing unit; wet, by cell, the cells that hold
+        // water (null: none):
+        public static Vapour Solve(Detail d, double[] delta, double[] rh, Thermal th, double[] temp, double metres, bool[] wet = null)
         {
             var g = d.Grid;
             int nx = g.Nx, ny = g.Ny, n = nx * ny;
@@ -119,6 +122,8 @@ namespace DynALisp.Simulation.Core
             var an = new double[n];
             var x = new double[n];
             var held = v.Condensing;
+            if (wet != null) for (int c = 0; c < n; c++) if (wet[c] && solved[c]) held[c] = true;
+            bool Wet(int c) => wet != null && wet[c];
             bool tight = false;
             for (v.Rounds = 1; ; v.Rounds++)
             {
@@ -150,6 +155,7 @@ namespace DynALisp.Simulation.Core
                     if (!solved[c]) continue;
                     if (held[c])
                     {
+                        if (Wet(c)) continue;
                         double net = Net(v, c, nx, n, ge, gn, kc, kp, solved);
                         if (net < 0) { held[c] = false; changed = true; }
                     }
@@ -158,11 +164,15 @@ namespace DynALisp.Simulation.Core
                 // The cells held found with a solve not as close: once more, as close as the heat:
                 if (!changed) { if (tight) break; tight = true; continue; }
                 if (v.Rounds >= MaxRounds) { v.Converged = false; break; }
-                v.Sweeps += Relax(v, solved, held, nx, n, ge, gn, kc, kp);
+                v.Sweeps += Relax(v, solved, held, wet, nx, n, ge, gn, kc, kp);
             }
 
             for (int c = 0; c < n; c++)
-                if (held[c]) v.Rate[c] = Math.Max(0, Net(v, c, nx, n, ge, gn, kc, kp, solved));
+                if (held[c])
+                {
+                    double net = Net(v, c, nx, n, ge, gn, kc, kp, solved);
+                    v.Rate[c] = Wet(c) ? net : Math.Max(0, net);
+                }
             return v;
         }
 
@@ -170,10 +180,10 @@ namespace DynALisp.Simulation.Core
         // Gauss-Seidel): each one at the pressure its neighbours give it, held at the saturation
         // pressure when that is above it. The edge of a band of cells held moves by one cell a
         // sweep, at the cost of the band alone, where a solve of the whole detail would move it
-        // by one cell too. Returns the sweeps:
+        // by one cell too. A cell wet stays held. Returns the sweeps:
         public const int MaxSweeps = 2000;
 
-        static int Relax(Vapour v, bool[] solved, bool[] held, int nx, int n, double[] ge, double[] gn, double[] kc, double[] kp)
+        static int Relax(Vapour v, bool[] solved, bool[] held, bool[] wet, int nx, int n, double[] ge, double[] gn, double[] kc, double[] kp)
         {
             var p = v.Pv;
             var near = new bool[n];
@@ -188,6 +198,7 @@ namespace DynALisp.Simulation.Core
                 for (int k = 0; k < list.Count; k++)
                 {
                     int c = list[k];
+                    if (wet != null && wet[c]) continue;
                     double s = kp[c], t = kc[c];
                     if (c % nx < nx - 1 && ge[c] != 0) { s += ge[c] * p[c + 1]; t += ge[c]; }
                     if (c % nx > 0 && ge[c - 1] != 0) { s += ge[c - 1] * p[c - 1]; t += ge[c - 1]; }

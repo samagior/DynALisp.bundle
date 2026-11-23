@@ -1,0 +1,29 @@
+# Sample values of the Months window of the Simulation (opened by the Simulation window on
+# the climate shown, Res\Dyl-SimulationMonths.xaml), for a climate whose twelve months are
+# typed: illustrative values, not data of a place. mt1 to mt12 the temperatures (C, sim.imp
+# "0"), mh1 to mh12 the relative humidities (%), January first.
+sim.imp=0
+mt1=-10
+mt2=-8
+mt3=-2
+mt4=6
+mt5=13
+mt6=18
+mt7=21
+mt8=20
+mt9=15
+mt10=8
+mt11=2
+mt12=-6
+mh1=75
+mh2=70
+mh3=65
+mh4=60
+mh5=60
+mh6=65
+mh7=70
+mh8=70
+mh9=75
+mh10=75
+mh11=80
+mh12=80

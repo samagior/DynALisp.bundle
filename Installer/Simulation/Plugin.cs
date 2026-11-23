@@ -59,6 +59,21 @@
 //     ("NoVapour" id ...) the materials without one, ("NoHumidity" id ...) the climates
 //     without one. A text when the zone cannot be read or solved.
 //
+//   (Dyl:SimulationMonthly zone size known mats climates months imperial metres)
+//     As Dyl:SimulationRun, months a text "id|t1|...|t12|rh1|...|rh12" for each climate (C, %,
+//     January first, each one empty when not typed): the monthly balance of ISO 13788
+//     (Core\Monthly.cs). A climate of the zone without its months is the same all year; one
+//     with some months and not all of them is a problem. Without a climate of its twelve
+//     months, a material without vapour data or a climate without a humidity, shows the check
+//     and returns (check (("NoMonths" . 1) ("PartMonths" id ...) ("NoVapour" id ...)
+//     ("NoHumidity" id ...))). Else shows the month that holds the most water (its cells that
+//     hold water in magenta; no water: the coldest month) and returns (check result), result
+//     the pairs of the heat of that month as Dyl:SimulationRun, then ("Vapour" . 1)
+//     ("Monthly" . 1) ("Shown" . month) ("Start" . month, 0: no month condenses)
+//     ("MaxWater" . g/m) ("MaxMonth" . month) ("Remaining" . g/m) ("Dries" . 1 or 0)
+//     ("WaterMaterials" id ...) ("Months" (month Ti Te condenses condensed dried water wet)
+//     ...), the months from 1 (January), the water in g per metre of depth.
+//
 //   (Dyl:SimulationProbe point)
 //     The result of the last run of the current drawing at point (WCS): (temperature material
 //     climate [rh pv condensing]), temperature nil where the cell has none (a climate, a
@@ -122,143 +137,320 @@ namespace DynALisp.Simulation
             }
         }
 
+        // What a run reads from its arguments: the detail checked, the data of each of its
+        // regions by index (lambda, delta: the materials; temp, rh, rs, rsc: the climates), the
+        // materials of the detail without vapour data and its climates without a humidity:
+        class Input
+        {
+            public Check Ck;
+            public double[] Lambda, Delta, Temp, Rh, Rs, Rsc;
+            public bool Same = true;
+            public SortedSet<string> NoVapour = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+            public SortedSet<string> NoHumidity = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+            public Dictionary<string, string[]> Climates;
+            public double Metres;
+            public bool Imperial;
+        }
+
+        // The input of a run (zone size known mats climates, then imperial and metres at ip and
+        // ip + 1), or null with the result to return (res: the check and nil when the detail has
+        // a problem, or a climate of the zone has no temperature, but those of yearly that have
+        // their months; a text when it cannot be read):
+        static Input Prepare(List<object> a, int ip, out ResultBuffer res, ISet<string> yearly = null)
+        {
+            res = null;
+            var mats = Table(a[3]);
+            var clims = Table(a[4]);
+            var data = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var m in mats) if (Num(m.Value, 0) > 0 || Num(m.Value, 1) > 0) data.Add(m.Key);
+            var climIds = new HashSet<string>(clims.Keys, StringComparer.OrdinalIgnoreCase);
+            var doc = AcApp.DocumentManager.MdiActiveDocument;
+            var inp = new Input
+            {
+                Climates = clims,
+                Imperial = a.Count > ip && a[ip] is double imp && imp != 0,
+                Metres = a.Count > ip + 1 && a[ip + 1] is double mu && mu > 0 ? mu : Metres(doc.Database),
+            };
+            using (var tr = doc.Database.TransactionManager.StartTransaction())
+            {
+                var ck = Check.Of(tr, (ObjectId)a[0], (double)a[1], Set(a[2]), data, climIds, out string error);
+                tr.Commit();
+                if (ck == null) { res = Text(error); return null; }
+                bool noTemp = false;
+                foreach (var c in ck.Climates)
+                    if (clims.TryGetValue(c, out var row) && double.IsNaN(Num(row, 0)) && !(yearly?.Contains(c) ?? false)) noTemp = true;
+                if (ck.Problems || noTemp)
+                {
+                    ck.Show(doc);
+                    res = new ResultBuffer();
+                    ck.Write(res);
+                    res.Add(new TypedValue((int)LispDataType.Nil));
+                    return null;
+                }
+                inp.Ck = ck;
+            }
+
+            var d = inp.Ck.Detail;
+            int nr = d.Regions.Count;
+            inp.Lambda = new double[nr]; inp.Temp = new double[nr]; inp.Rs = new double[nr];
+            inp.Rsc = new double[nr]; inp.Rh = new double[nr]; inp.Delta = new double[nr];
+            for (int r = 0; r < nr; r++)
+            {
+                var reg = d.Regions[r];
+                inp.Lambda[r] = inp.Temp[r] = inp.Rs[r] = inp.Rsc[r] = inp.Rh[r] = inp.Delta[r] = double.NaN;
+                if (reg.IsClimate)
+                {
+                    if (!clims.TryGetValue(reg.Climate, out var row)) continue;
+                    inp.Temp[r] = Num(row, 0);
+                    inp.Rh[r] = Num(row, 1);
+                    inp.Rs[r] = Num(row, 2);
+                    inp.Rsc[r] = Num(row, 3);
+                    if (double.IsNaN(inp.Rs[r])) inp.Rs[r] = 0;
+                    if (double.IsNaN(inp.Rsc[r])) inp.Rsc[r] = inp.Rs[r];
+                    if (inp.Rsc[r] != inp.Rs[r]) inp.Same = false;
+                }
+                else if (mats.TryGetValue(reg.Material, out var row))
+                {
+                    inp.Lambda[r] = Num(row, 0);
+                    if (!(inp.Lambda[r] > 0)) inp.Lambda[r] = Thermal.Equivalent(reg.Shape, Num(row, 1), inp.Metres);
+                    inp.Delta[r] = Num(row, 2);
+                    if (!(inp.Delta[r] > 0)) inp.Delta[r] = Vapour.Equivalent(reg.Shape, Num(row, 3), inp.Metres);
+                    if (d.CellsOf[r] > 0 && !(inp.Delta[r] > 0)) inp.NoVapour.Add(reg.Material);
+                }
+            }
+            return inp;
+        }
+
+        // The climates of the zone without a humidity (rh by region):
+        static SortedSet<string> NoHumidity(Detail d, double[] rh)
+        {
+            var res = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+            for (int r = 0; r < d.Regions.Count; r++)
+                if (d.Regions[r].IsClimate && d.CellsOf[r] > 0 && !(rh[r] > 0)) res.Add(d.Regions[r].Climate);
+            return res;
+        }
+
         [LispFunction("Dyl:SimulationRun")]
         public ResultBuffer Run(ResultBuffer args)
         {
             try
             {
                 var a = Args(args);
-                if (a.Count < 6 || !(a[0] is ObjectId zoneId) || !(a[1] is double size))
+                if (a.Count < 6 || !(a[0] is ObjectId) || !(a[1] is double))
                     return Text("Dyl:SimulationRun: (zone size known mats climates imperial metres) expected.");
-                var mats = Table(a[3]);
-                var clims = Table(a[4]);
-                bool imperial = a[5] is double imp && imp != 0;
-                var data = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                foreach (var m in mats) if (Num(m.Value, 0) > 0 || Num(m.Value, 1) > 0) data.Add(m.Key);
-                var climIds = new HashSet<string>(clims.Keys, StringComparer.OrdinalIgnoreCase);
+                var inp = Prepare(a, 5, out var early);
+                if (inp == null) return early;
                 var doc = AcApp.DocumentManager.MdiActiveDocument;
-                double metres = a.Count > 6 && a[6] is double mu && mu > 0 ? mu : Metres(doc.Database);
+                var ck = inp.Ck;
+                var d = ck.Detail;
+                double metres = inp.Metres;
+                var noHumidity = NoHumidity(d, inp.Rh);
 
-                using (var tr = doc.Database.TransactionManager.StartTransaction())
+                var heat = Thermal.Solve(d, inp.Lambda, inp.Temp, inp.Rs, metres);
+                var surf = inp.Same ? heat : Thermal.Solve(d, inp.Lambda, inp.Temp, inp.Rsc, metres);
+                var sum = Summary.Of(heat, surf, inp.Temp, inp.Rh);
+
+                // The vapour, when every material has a permeability and every climate a
+                // humidity (the temperatures of the heat, ISO 13788):
+                Vapour vap = null;
+                if (inp.NoVapour.Count == 0 && noHumidity.Count == 0)
                 {
-                    var ck = Check.Of(tr, zoneId, size, Set(a[2]), data, climIds, out string error);
-                    tr.Commit();
-                    if (ck == null) return Text(error);
-                    var res = new ResultBuffer();
-                    bool noTemp = false;
-                    foreach (var c in ck.Climates)
-                        if (clims.TryGetValue(c, out var row) && double.IsNaN(Num(row, 0))) noTemp = true;
-                    if (ck.Problems || noTemp)
-                    {
-                        ck.Show(doc);
-                        ck.Write(res);
-                        res.Add(new TypedValue((int)LispDataType.Nil));
-                        return res;
-                    }
-
-                    var d = ck.Detail;
-                    int nr = d.Regions.Count;
-                    double[] lambda = new double[nr], temp = new double[nr], rs = new double[nr], rsc = new double[nr], rh = new double[nr];
-                    var delta = new double[nr];
-                    var noVapour = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
-                    var noHumidity = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
-                    bool same = true;
-                    for (int r = 0; r < nr; r++)
-                    {
-                        var reg = d.Regions[r];
-                        lambda[r] = temp[r] = rs[r] = rsc[r] = rh[r] = delta[r] = double.NaN;
-                        if (reg.IsClimate)
-                        {
-                            if (!clims.TryGetValue(reg.Climate, out var row)) continue;
-                            temp[r] = Num(row, 0);
-                            rh[r] = Num(row, 1);
-                            rs[r] = Num(row, 2);
-                            rsc[r] = Num(row, 3);
-                            if (double.IsNaN(rs[r])) rs[r] = 0;
-                            if (double.IsNaN(rsc[r])) rsc[r] = rs[r];
-                            if (rsc[r] != rs[r]) same = false;
-                            if (d.CellsOf[r] > 0 && !(rh[r] > 0)) noHumidity.Add(reg.Climate);
-                        }
-                        else if (mats.TryGetValue(reg.Material, out var row))
-                        {
-                            lambda[r] = Num(row, 0);
-                            if (!(lambda[r] > 0)) lambda[r] = Thermal.Equivalent(reg.Shape, Num(row, 1), metres);
-                            delta[r] = Num(row, 2);
-                            if (!(delta[r] > 0)) delta[r] = Vapour.Equivalent(reg.Shape, Num(row, 3), metres);
-                            if (d.CellsOf[r] > 0 && !(delta[r] > 0)) noVapour.Add(reg.Material);
-                        }
-                    }
-
-                    var heat = Thermal.Solve(d, lambda, temp, rs, metres);
-                    var surf = same ? heat : Thermal.Solve(d, lambda, temp, rsc, metres);
-                    var sum = Summary.Of(heat, surf, temp, rh);
-
-                    // The vapour, when every material has a permeability and every climate a
-                    // humidity (the temperatures of the heat, ISO 13788):
-                    Vapour vap = null;
-                    if (noVapour.Count == 0 && noHumidity.Count == 0)
-                    {
-                        vap = Vapour.Solve(d, delta, rh, heat, temp, metres);
-                        sum.Add(vap, metres);
-                    }
-                    var zb = ck.Zone.Bounds;
-                    Show.Field(doc, new Show.Result
-                    {
-                        Heat = heat, Surface = surf, Summary = sum, Vapour = vap, Zone = ck.Zone, Imperial = imperial,
-                        W = Math.Max(zb.Width, zb.Height) / 400,
-                    });
-
-                    ck.Write(res);
-                    res.Add(new TypedValue((int)LispDataType.ListBegin));
-                    Pair(res, "Interior", sum.Interior);
-                    Pair(res, "Exterior", sum.Exterior);
-                    Pair(res, "Ti", sum.Ti);
-                    Pair(res, "Te", sum.Te);
-                    Pair(res, "Q", sum.Q);
-                    Pair(res, "L2D", sum.L2D);
-                    Pair(res, "Length", sum.Length);
-                    Pair(res, "Rsi", sum.Rsi);
-                    Pair(res, "Tsi", sum.Tsi);
-                    if (!double.IsNaN(sum.Tsi))
-                    {
-                        res.Add(new TypedValue((int)LispDataType.ListBegin));
-                        res.Add(new TypedValue((int)LispDataType.Text, "TsiAt"));
-                        res.Add(new TypedValue((int)LispDataType.Double, sum.TsiAt.X));
-                        res.Add(new TypedValue((int)LispDataType.Double, sum.TsiAt.Y));
-                        res.Add(new TypedValue((int)LispDataType.ListEnd));
-                    }
-                    Pair(res, "TsiMaterial", sum.TsiMaterial);
-                    Pair(res, "fRsi", sum.FRsi);
-                    Pair(res, "Dew", sum.Dew);
-                    if (!double.IsNaN(sum.Dew)) Pair(res, "BelowDew", sum.BelowDew);
-                    if (vap != null)
-                    {
-                        Pair(res, "Vapour", 1);
-                        Pair(res, "MaxRh", sum.MaxRh);
-                        Pair(res, "Condensing", sum.Condensing);
-                        if (sum.Condensing > 0)
-                        {
-                            Pair(res, "Rate", sum.Rate);
-                            Pair(res, "CondensingArea", sum.CondensingArea);
-                            List(res, "CondensingMaterials", sum.CondensingMaterials);
-                        }
-                        if (!sum.VapourConverged) Pair(res, "VapourNotConverged", 1);
-                        Pair(res, "Rounds", vap.Rounds);
-                    }
-                    else
-                    {
-                        List(res, "NoVapour", noVapour);
-                        List(res, "NoHumidity", noHumidity);
-                    }
-                    Pair(res, "Isolated", heat.Isolated);
-                    Pair(res, "Iterations", heat.Iterations);
-                    res.Add(new TypedValue((int)LispDataType.ListEnd));
-                    return res;
+                    vap = Vapour.Solve(d, inp.Delta, inp.Rh, heat, inp.Temp, metres);
+                    sum.Add(vap, metres);
                 }
+                var zb = ck.Zone.Bounds;
+                Show.Field(doc, new Show.Result
+                {
+                    Heat = heat, Surface = surf, Summary = sum, Vapour = vap, Zone = ck.Zone, Imperial = inp.Imperial,
+                    W = Math.Max(zb.Width, zb.Height) / 400,
+                });
+
+                var res = new ResultBuffer();
+                ck.Write(res);
+                res.Add(new TypedValue((int)LispDataType.ListBegin));
+                Heat(res, sum);
+                if (vap != null)
+                {
+                    Pair(res, "Vapour", 1);
+                    Pair(res, "MaxRh", sum.MaxRh);
+                    Pair(res, "Condensing", sum.Condensing);
+                    if (sum.Condensing > 0)
+                    {
+                        Pair(res, "Rate", sum.Rate);
+                        Pair(res, "CondensingArea", sum.CondensingArea);
+                        List(res, "CondensingMaterials", sum.CondensingMaterials);
+                    }
+                    if (!sum.VapourConverged) Pair(res, "VapourNotConverged", 1);
+                    Pair(res, "Rounds", vap.Rounds);
+                }
+                else
+                {
+                    List(res, "NoVapour", inp.NoVapour);
+                    List(res, "NoHumidity", noHumidity);
+                }
+                Pair(res, "Isolated", heat.Isolated);
+                Pair(res, "Iterations", heat.Iterations);
+                res.Add(new TypedValue((int)LispDataType.ListEnd));
+                return res;
             }
             catch (System.Exception ex)
             {
                 return Text("Dyl:SimulationRun: " + ex.Message);
+            }
+        }
+
+        // The pairs of the heat of a summary:
+        static void Heat(ResultBuffer res, Summary sum)
+        {
+            Pair(res, "Interior", sum.Interior);
+            Pair(res, "Exterior", sum.Exterior);
+            Pair(res, "Ti", sum.Ti);
+            Pair(res, "Te", sum.Te);
+            Pair(res, "Q", sum.Q);
+            Pair(res, "L2D", sum.L2D);
+            Pair(res, "Length", sum.Length);
+            Pair(res, "Rsi", sum.Rsi);
+            Pair(res, "Tsi", sum.Tsi);
+            if (!double.IsNaN(sum.Tsi))
+            {
+                res.Add(new TypedValue((int)LispDataType.ListBegin));
+                res.Add(new TypedValue((int)LispDataType.Text, "TsiAt"));
+                res.Add(new TypedValue((int)LispDataType.Double, sum.TsiAt.X));
+                res.Add(new TypedValue((int)LispDataType.Double, sum.TsiAt.Y));
+                res.Add(new TypedValue((int)LispDataType.ListEnd));
+            }
+            Pair(res, "TsiMaterial", sum.TsiMaterial);
+            Pair(res, "fRsi", sum.FRsi);
+            Pair(res, "Dew", sum.Dew);
+            if (!double.IsNaN(sum.Dew)) Pair(res, "BelowDew", sum.BelowDew);
+        }
+
+        [LispFunction("Dyl:SimulationMonthly")]
+        public ResultBuffer RunMonthly(ResultBuffer args)
+        {
+            try
+            {
+                var a = Args(args);
+                if (a.Count < 7 || !(a[0] is ObjectId) || !(a[1] is double))
+                    return Text("Dyl:SimulationMonthly: (zone size known mats climates months imperial metres) expected.");
+                var months = Table(a[5]);
+                var yearly = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var x in months)
+                {
+                    int k = 0;
+                    for (int m = 0; m < 12; m++) if (!double.IsNaN(Num(x.Value, m))) k++;
+                    if (k == 12) yearly.Add(x.Key);
+                }
+                var inp = Prepare(a, 6, out var early, yearly);
+                if (inp == null) return early;
+                var doc = AcApp.DocumentManager.MdiActiveDocument;
+                var ck = inp.Ck;
+                var d = ck.Detail;
+                double metres = inp.Metres;
+                int nr = d.Regions.Count;
+
+                // The climates of each month: those of the months typed, else the climate all year;
+                // a climate of the zone with some months typed and not all of them is a problem:
+                var temp = new double[12][];
+                var rh = new double[12][];
+                var partial = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+                bool typed = false;
+                for (int m = 0; m < 12; m++) { temp[m] = (double[])inp.Temp.Clone(); rh[m] = (double[])inp.Rh.Clone(); }
+                for (int r = 0; r < nr; r++)
+                {
+                    var reg = d.Regions[r];
+                    if (!reg.IsClimate || d.CellsOf[r] == 0 || !months.TryGetValue(reg.Climate, out var row)) continue;
+                    int nt = 0, nh = 0;
+                    for (int m = 0; m < 12; m++)
+                    {
+                        if (!double.IsNaN(Num(row, m))) nt++;
+                        if (!double.IsNaN(Num(row, 12 + m))) nh++;
+                    }
+                    if (nt == 0 && nh == 0) continue;
+                    if (nt < 12 || nh < 12) { partial.Add(reg.Climate); continue; }
+                    typed = true;
+                    for (int m = 0; m < 12; m++) { temp[m][r] = Num(row, m); rh[m][r] = Num(row, 12 + m); }
+                }
+                var noHumidity = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+                for (int m = 0; m < 12; m++) noHumidity.UnionWith(NoHumidity(d, rh[m]));
+
+                var res = new ResultBuffer();
+                if (!typed || partial.Count > 0 || inp.NoVapour.Count > 0 || noHumidity.Count > 0)
+                {
+                    ck.Show(doc);
+                    ck.Write(res);
+                    res.Add(new TypedValue((int)LispDataType.ListBegin));
+                    if (!typed && partial.Count == 0) Pair(res, "NoMonths", 1);
+                    List(res, "PartMonths", partial);
+                    List(res, "NoVapour", inp.NoVapour);
+                    List(res, "NoHumidity", noHumidity);
+                    res.Add(new TypedValue((int)LispDataType.ListEnd));
+                    return res;
+                }
+
+                var mo = Monthly.Solve(d, inp.Lambda, inp.Delta, inp.Rs, temp, rh, metres);
+
+                // Shown: the month that holds the most water (else the coldest one), its cells
+                // that hold water in magenta:
+                int shown = mo.MaxMonth;
+                if (shown < 0)
+                {
+                    shown = 0;
+                    for (int m = 1; m < 12; m++) if (Summary.Of(mo.Heat[m], mo.Heat[m], temp[m], rh[m]).Te < Summary.Of(mo.Heat[shown], mo.Heat[shown], temp[shown], rh[shown]).Te) shown = m;
+                }
+                var heat = mo.Heat[shown];
+                var surf = inp.Same ? heat : Thermal.Solve(d, inp.Lambda, temp[shown], inp.Rsc, metres);
+                var sum = Summary.Of(heat, surf, temp[shown], rh[shown]);
+                var vap = mo.MaxVapour ?? Vapour.Solve(d, inp.Delta, rh[shown], heat, temp[shown], metres);
+                sum.Add(vap, metres);
+                var zb = ck.Zone.Bounds;
+                Show.Field(doc, new Show.Result
+                {
+                    Heat = heat, Surface = surf, Summary = sum, Vapour = vap, Zone = ck.Zone, Imperial = inp.Imperial,
+                    W = Math.Max(zb.Width, zb.Height) / 400,
+                });
+
+                ck.Write(res);
+                res.Add(new TypedValue((int)LispDataType.ListBegin));
+                Heat(res, sum);
+                Pair(res, "Vapour", 1);
+                Pair(res, "Monthly", 1);
+                Pair(res, "Shown", shown + 1);
+                Pair(res, "Start", mo.Start + 1);
+                Pair(res, "MaxWater", mo.MaxWater);
+                Pair(res, "MaxMonth", mo.MaxMonth + 1);
+                Pair(res, "Remaining", mo.Remaining);
+                Pair(res, "Dries", mo.Dries ? 1 : 0);
+                if (mo.MaxMonth >= 0) List(res, "WaterMaterials", sum.CondensingMaterials);
+                bool converged = true;
+                // Each month: (month Ti Te condenses condensed dried water wet), January first:
+                res.Add(new TypedValue((int)LispDataType.ListBegin));
+                res.Add(new TypedValue((int)LispDataType.Text, "Months"));
+                for (int m = 0; m < 12; m++)
+                {
+                    var x = mo.Months[m];
+                    var s = Summary.Of(mo.Heat[m], mo.Heat[m], temp[m], rh[m]);
+                    converged &= x.Converged;
+                    res.Add(new TypedValue((int)LispDataType.ListBegin));
+                    res.Add(new TypedValue((int)LispDataType.Int32, m + 1));
+                    res.Add(new TypedValue((int)LispDataType.Double, double.IsNaN(s.Ti) ? 0 : s.Ti));
+                    res.Add(new TypedValue((int)LispDataType.Double, double.IsNaN(s.Te) ? 0 : s.Te));
+                    res.Add(new TypedValue((int)LispDataType.Int32, x.Condenses ? 1 : 0));
+                    res.Add(new TypedValue((int)LispDataType.Double, x.Condensed));
+                    res.Add(new TypedValue((int)LispDataType.Double, x.Dried));
+                    res.Add(new TypedValue((int)LispDataType.Double, x.Water));
+                    res.Add(new TypedValue((int)LispDataType.Int32, x.Wet));
+                    res.Add(new TypedValue((int)LispDataType.ListEnd));
+                }
+                res.Add(new TypedValue((int)LispDataType.ListEnd));
+                if (!converged) Pair(res, "VapourNotConverged", 1);
+                Pair(res, "Isolated", heat.Isolated);
+                res.Add(new TypedValue((int)LispDataType.ListEnd));
+                return res;
+            }
+            catch (System.Exception ex)
+            {
+                return Text("Dyl:SimulationMonthly: " + ex.Message);
             }
         }
 
