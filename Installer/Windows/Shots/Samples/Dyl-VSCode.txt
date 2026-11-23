@@ -1,0 +1,3 @@
+# The values of the install guide of Visual Studio Code (Res\Dyl-VSCode.xaml) for its picture
+# in the docs, as Dyl:VSCodeGuide gives them after Install (winget):
+msg=Installing in the black window: wait for Successfully installed, close it, then click Open DynALisp.

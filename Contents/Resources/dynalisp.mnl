@@ -386,29 +386,8 @@
     )
   )
 
-  ;;  Export settings button of Dyl-UserFiles: a folder picked, the settings saved in it:
-  (defun Dyl:UserDlgExport (/ dir)
-    (if (setq dir (Remote>>LM:browseforfolder "Save the DynALisp settings in:" 0 81))
-      (set_tile "msg" (Dyl:SetsExport dir))
-    )
-  )
-
-  ;;  Import settings button of Dyl-UserFiles: a DynALisp-Settings.txt picked, its folder
-  ;;  imported:
-  (defun Dyl:UserDlgImport (/ fil)
-    (if (setq fil (getfiled "Import DynALisp Settings (DynALisp-Settings.txt)" "" "txt" 0))
-      (progn
-        (setq fil     (Dyl:SetsImport (vl-filename-directory fil))
-              uf:done (or uf:done (not (vl-string-search "-->" fil)))
-        )
-        (Dyl:UserDlgFill)
-        (set_tile "msg" fil)
-      )
-    )
-  )
-
   ;;; ---------------------------------------------------------------------------
-  ;;; Dyl-UserFiles: list the user copies (Resources\Dyl-UserFiles.dcl), open
+  ;;; Dyl-UserFiles: list the user copies (Res\Dyl-UserFiles.xaml), open
   ;;; them, reset them to their default (the user copy is deleted) or make them
   ;;; the default (the user copy replaces its default under Contents, to commit
   ;;; it, and is deleted). A user folder (Dyl:UserDirW) is one item: it is reset
@@ -441,38 +420,32 @@
     )
   )
 
-  ;;  Fill the list (uf:items) and keep the selection uf:idx in range:
-  (defun Dyl:UserDlgFill ()
+  ;;  The user copies read again (uf:items), the selection uf:idx kept in range (-1 when
+  ;;  there is none):
+  (defun Dyl:UserWinFill ()
     (setq uf:items (if (vl-file-directory-p *dyl:user) (Dyl:UserItems *dyl:user))
-          uf:idx   (max 0 (min uf:idx (1- (length uf:items))))
-          uf:arm   nil
+          uf:idx   (if uf:items (max 0 (min uf:idx (1- (length uf:items)))) -1)
     )
-    (start_list "lst")
-    (foreach i uf:items (add_list (Dyl:UserLine i)))
-    (end_list)
-    (if uf:items (set_tile "lst" (itoa uf:idx)))
-    (foreach k '("opn" "rst" "pub") (mode_tile k (if uf:items 0 1)))
-    (set_tile "msg" (if uf:items "" "No user file: every file is its default."))
   )
 
   ;;  Reset (mode 'reset) or make default (mode 'publish) the item selected, on the
-  ;;  second click of the same button on the same item:
-  (defun Dyl:UserDlgDo (mode / itm usr dft ok)
-    (setq itm (nth uf:idx uf:items))
+  ;;  second click of the same button on the same item (uf:arm: the first one). Returns
+  ;;  the line shown under the list:
+  (defun Dyl:UserWinDo (mode / itm usr dft ok)
+    (setq itm (if (<= 0 uf:idx) (nth uf:idx uf:items)))
     (cond
-      ((not itm))
+      ((not itm) "")
       ((not (equal uf:arm (cons mode uf:idx)))
        (setq uf:arm (cons mode uf:idx))
-       (set_tile "msg"
-                 (if (= mode 'reset)
-                   "Click Reset to default again to delete your copy and use the default."
-                   "Click Make it the default again to replace the default under Contents with your copy."
-                 )
+       (if (= mode 'reset)
+         "Click Reset to default again to delete your copy and use the default."
+         "Click Make it the default again to replace the default under Contents with your copy."
        )
       )
       (T
-       (setq usr (car itm)
-             dft (Dyl:UserDefault usr)
+       (setq usr    (car itm)
+             dft    (Dyl:UserDefault usr)
+             uf:arm nil
        )
        (setq ok (cond
                   ((= mode 'reset) (if (cdr itm) (Dyl:UserRmDir usr) (vl-file-delete usr)))
@@ -490,41 +463,80 @@
                 )
              uf:done (or uf:done ok)
        )
-       (Dyl:UserDlgFill)
-       (set_tile "msg"
-                 (cond
-                   ((not ok) (strcat "Unable to change " usr " (open in another program?)."))
-                   ((= mode 'reset) "Reset: the default is used again.")
-                   ("Done: the default under Contents is now your version (commit it).")
-                 )
+       (cond
+         ((not ok) (strcat "Unable to change " usr " (open in another program?)."))
+         ((= mode 'reset) "Reset: the default is used again.")
+         ("Done: the default under Contents is now your version (commit it).")
        )
       )
     )
   )
 
-  (defun c:Dyl-UserFiles (/ uf:items uf:idx uf:arm uf:done dch)
-    (setq uf:idx 0
-          dch    (load_dialog (strcat *dyl:res "\\Dyl-UserFiles.dcl"))
+  ;;  Export settings button of Dyl-UserFiles: a folder picked, the settings saved in it.
+  ;;  Returns the line shown under the list:
+  (defun Dyl:UserWinExport (/ dir)
+    (if (setq dir (Remote>>LM:browseforfolder "Save the DynALisp settings in:" 0 81))
+      (Dyl:SetsExport dir)
+      ""
     )
-    (cond
-      ((> 0 dch) (princ "\n--> Unable to load the dialog : Dyl-UserFiles.dcl"))
-      ((not (new_dialog "dyl_userfiles" dch)) (princ "\n--> Unable to show the dialog : Dyl-UserFiles.dcl"))
-      (T
-       (set_tile "loc" (strcat "User folder: " *dyl:user))
-       (Dyl:UserDlgFill)
-       (action_tile "lst" "(setq uf:idx (atoi $value) uf:arm nil) (set_tile \"msg\" \"\") (if (= 4 $reason) (Dyl:SuiteDlgShell (list (car (nth uf:idx uf:items)))))")
-       (action_tile "opn" "(Dyl:SuiteDlgShell (list (car (nth uf:idx uf:items))))")
-       (action_tile "dir" "(Dyl:UserMkdir *dyl:user) (Dyl:SuiteDlgShell (list *dyl:user))")
-       (action_tile "rst" "(Dyl:UserDlgDo 'reset)")
-       (action_tile "pub" "(Dyl:UserDlgDo 'publish)")
-       (action_tile "exp" "(Dyl:UserDlgExport)")
-       (action_tile "imp" "(Dyl:UserDlgImport)")
-       (action_tile "cancel" "(done_dialog 0)")
-       (Dyl:DocsTile "Core\\Dyl-Info.htm")
-       (start_dialog)
+  )
+
+  ;;  Import settings button of Dyl-UserFiles: a DynALisp-Settings.txt picked, its folder
+  ;;  imported. Returns the line shown under the list:
+  (defun Dyl:UserWinImport (/ fil)
+    (if (setq fil (getfiled "Import DynALisp Settings (DynALisp-Settings.txt)" "" "txt" 0))
+      (progn
+        (setq fil     (Dyl:SetsImport (vl-filename-directory fil))
+              uf:done (or uf:done (not (vl-string-search "-->" fil)))
+        )
+        fil
+      )
+      ""
+    )
+  )
+
+  ;;  The window (Res\Dyl-UserFiles.xaml) is shown again after each button, which closes
+  ;;  it with its number (see the window file), on the list read again and what was done:
+  (defun c:Dyl-UserFiles (/ uf:items uf:idx uf:arm uf:done res sta msg itm)
+    (setq uf:idx 0
+          sta    T
+    )
+    (while sta
+      (Dyl:UserWinFill)
+      (setq res (Dyl:WinShow "Dyl-UserFiles.xaml"
+                             (append (list (cons "loc" (strcat "User folder: " *dyl:user))
+                                           (cons "msg"
+                                                 (cond
+                                                   (msg)
+                                                   ((not uf:items) "No user file: every file is its default.")
+                                                   ("")
+                                                 )
+                                           )
+                                     )
+                                     (Dyl:WinList "lst" (mapcar 'Dyl:UserLine uf:items) uf:idx)
+                             )
+                )
+            sta (if res (car res))
+            msg nil
+      )
+      (if (and sta (/= 0 sta))
+        (progn
+          (if uf:items (setq uf:idx (Dyl:WinIdx res "lst")))
+          ;; A button other than the one armed takes the first click back:
+          (if (not (member sta '(4 5))) (setq uf:arm nil))
+          (setq itm (if (and uf:items (<= 0 uf:idx)) (nth uf:idx uf:items)))
+          (cond
+            ((= 2 sta) (if itm (Dyl:SuiteDlgShell (list (car itm)))))
+            ((= 3 sta) (Dyl:UserMkdir *dyl:user) (Dyl:SuiteDlgShell (list *dyl:user)))
+            ((= 4 sta) (setq msg (Dyl:UserWinDo 'reset)))
+            ((= 5 sta) (setq msg (Dyl:UserWinDo 'publish)))
+            ((= 6 sta) (setq msg (Dyl:UserWinExport)))
+            ((= 7 sta) (setq msg (Dyl:UserWinImport)))
+          )
+        )
+        (setq sta nil)
       )
     )
-    (if (<= 0 dch) (unload_dialog dch))
     ;;  Files changed: the cached presets are read again, the aliases defined again:
     (if uf:done
       (progn
@@ -1221,7 +1233,7 @@
   )
 
   ;;; ---------------------------------------------------------------------------
-  ;;; Child picker: the list dialog of a main command whose Lisp file holds
+  ;;; Child picker: the list window of a main command whose Lisp file holds
   ;;; preset child commands (Pst-*). The main command only calls it, e.g.
   ;;;   (defun c:Dyl-LayerMake ()
   ;;;     (Dyl:ChildPicker "Dyl-LayerMake.lsp" "Make Layers"
@@ -1256,66 +1268,32 @@
     (reverse lst)
   )
 
-  ;;  Write the dialog definition (n lines in the list) to a temporary DCL file and
-  ;;  return its path:
-  (defun Dyl:ChildDcl (title hint n / path file)
-    (setq path (vl-filename-mktemp "dch" nil ".dcl")
-          file (open path "w")
-    )
-    (foreach line
-      (list (strcat "dyl_child : dialog { label = \"DynALisp - " title "\";")
-            (strcat "  : list_box { key = \"lst\"; label = \"Alias / command:\"; width = 72; height = "
-                    (itoa (min 26 (max 6 (1+ n))))
-                    "; tabs = \"16\"; }"
-            )
-            (strcat "  : text { label = \"" hint "\"; }")
-            "  : text { label = \"The aliases are edited in Dyl-Suite.\"; }"
-            ;;  OK / Cancel, and Open Docs (the page of the main command, see Dyl:DocsTile):
-            "  : row { fixed_width = true; alignment = right;"
-            "    : button { key = \"accept\"; label = \"OK\"; is_default = true; width = 12; fixed_width = true; }"
-            "    : button { key = \"cancel\"; label = \"Cancel\"; is_cancel = true; width = 12; fixed_width = true; }"
-            "    : button { key = \"docs\"; label = \"Open Docs\"; width = 12; fixed_width = true; }"
-            "  }"
-            "  errtile;"
-            "}"
-      )
-      (write-line line file)
-    )
-    (close file)
-    path
-  )
-
-  ;;  Show the children of the Lisp file fle in a dialog titled title, with hint under
-  ;;  the list, and run the child picked. last is the quoted symbol of a global that
-  ;;  keeps the name of the last child picked, selected first the next time:
-  (defun Dyl:ChildPicker (fle title hint last / lst dcl:pth dcl:id sta idx)
+  ;;  Show the children of the Lisp file fle in a window titled title (Res\Dyl-ChildPicker.xaml),
+  ;;  with hint under the list, and run the child picked. last is the quoted symbol of a
+  ;;  global that keeps the name of the last child picked, selected first the next time:
+  (defun Dyl:ChildPicker (fle title hint last / lst idx res doc)
     (cond
       ((not (setq lst (Dyl:ChildList fle)))
        (princ (strcat "\nNo command of " title " is turned on (see Dyl-Suite)."))
       )
-      ((> 0 (setq dcl:id (load_dialog (setq dcl:pth (Dyl:ChildDcl title hint (length lst))))))
-       (princ (strcat "\n--> Unable to load the " title " dialog."))
-      )
-      ((not (new_dialog "dyl_child" dcl:id)) (princ (strcat "\n--> Unable to show the " title " dialog.")))
-      (T
-       (start_list "lst")
-       (foreach x lst (add_list (strcat (car x) "\t" (cadr x))))
-       (end_list)
-       (setq idx (cond ((vl-position (eval last) (mapcar 'cadr lst))) (0)))
-       (set_tile "lst" (itoa idx))
-       (action_tile "lst" "(setq idx (atoi $value)) (if (= 4 $reason) (done_dialog 1))")
-       (action_tile "accept" "(setq idx (atoi (get_tile \"lst\"))) (done_dialog 1)")
-       (Dyl:DocsTile (Dyl:DocsOfFile fle))
-       (setq sta (start_dialog))
-      )
-    )
-    (if (and dcl:id (<= 0 dcl:id)) (unload_dialog dcl:id))
-    (if dcl:pth (vl-file-delete dcl:pth))
-    (if (and (= 1 sta) (nth idx lst))
-      (progn
-        (set last (cadr (nth idx lst)))
-        (princ (strcat "\n" (cadr (nth idx lst))))
-        (eval (list (caddr (nth idx lst))))
+      ((setq idx (cond ((vl-position (eval last) (mapcar 'cadr lst))) (0))
+             doc (Dyl:DocsOfFile fle)
+             res (Dyl:WinShow "Dyl-ChildPicker.xaml"
+                              (append (list (cons "win/title" (strcat "DynALisp - " title))
+                                            (cons "hnt" hint)
+                                      )
+                                      (if doc (list (cons "docs/child" (Dyl:DocsTarget doc))))
+                                      (Dyl:WinList "lst" (mapcar '(lambda (x) (strcat (car x) "\t" (cadr x))) lst) idx)
+                              )
+                 )
+       )
+       (if (and (= 1 (car res)) (nth (setq idx (Dyl:WinIdx res "lst")) lst))
+         (progn
+           (set last (cadr (nth idx lst)))
+           (princ (strcat "\n" (cadr (nth idx lst))))
+           (eval (list (caddr (nth idx lst))))
+         )
+       )
       )
     )
     (princ)
@@ -1629,57 +1607,16 @@
   )
 
   ;;; ---------------------------------------------------------------------------
-  ;;; Dyl-Suite dialog helpers. They work on the locals of c:Dyl-Suite
-  ;;; (recs vis sel mods grps mains als acmd alst) by dynamic scoping:
-  ;;;   recs - every record, vis - indexes of the listed records,
-  ;;;   sel  - indexes of the selected records (always listed ones),
-  ;;;   als  - aliases being edited, in the Dyl:AliasRead format,
-  ;;;   acmd - command shown in the Aliases panel, alst - its aliases.
-  ;;; In the dialog each record gets a 9th item: its aliases as one string,
-  ;;; kept up to date by Dyl:SuiteDlgAliasCache (Dyl:SuiteWrite ignores it).
+  ;;; The Startup Suite window (Res\Dyl-Suite.xaml of the Dynalisp module, see the
+  ;;; Windows region). Its list runs in the window itself (the list of the Startup
+  ;;; Suite window, Installer\Windows\Engine\Suite.cs): the filters, the sort, the
+  ;;; folding of the children, On/Off, the aliases, the docs and the Lisp files,
+  ;;; with no call to the Lisp. c:Dyl-Suite gives it a row per record
+  ;;; (Dyl:SuiteWinRow), in the order of the list (Dyl:SuiteDlgOrder), and the
+  ;;; aliases, and gets them back as edited. These helpers work on the locals of
+  ;;; c:Dyl-Suite by dynamic scoping: mains, nkids (Dyl:SuiteDlgOrder), dyns
+  ;;; (Dyl:SuiteDlgDyn), docs (Dyl:SuiteWinRow).
   ;;; ---------------------------------------------------------------------------
-  ;; Aliases of the command of a record, as one string ("" if none):
-  (defun Dyl:SuiteDlgAliasCalc (r)
-    (cond
-      ((= "" (nth 1 r)) "")
-      ((Remote>>LM:lst->str (Dyl:AliasesOf (nth 1 r) als) ", "))
-      ("")
-    )
-  )
-  ;; Cached aliases string of a record:
-  (defun Dyl:SuiteDlgAliasStr (r) (cond ((nth 8 r)) ("")))
-
-  ;; First n items of a list:
-  (defun Dyl:SuiteFirst (lst n / res)
-    (repeat (min n (length lst))
-      (setq res (cons (car lst) res)
-            lst (cdr lst)
-      )
-    )
-    (reverse res)
-  )
-
-  ;; Set the cached aliases of every record (cmd nil) or of the records of cmd.
-  ;; Returns the indexes of the records updated:
-  (defun Dyl:SuiteDlgAliasCache (cmd / i ids)
-    (setq i    -1
-          recs (mapcar
-                 '(lambda (r)
-                    (setq i (1+ i))
-                    (if (or (not cmd) (= cmd (nth 1 r)))
-                      (progn
-                        (setq ids (cons i ids))
-                        (append (Dyl:SuiteFirst r 8) (list (Dyl:SuiteDlgAliasCalc r)))
-                      )
-                      r
-                    )
-                  )
-                 recs
-               )
-    )
-    ids
-  )
-
   ;;; Child commands: a command whose name starts with "Pst-" (e.g.
   ;;; Pst-QuickDrawConcrete) is a preset of the main command of its file,
   ;;; the first command of the same file that is not a child. A child is run by
@@ -1779,442 +1716,107 @@
     (if (= (nth 1 r) (cdr (assoc (nth 5 r) mains))) (cdr (assoc (nth 5 r) nkids)))
   )
 
-  ;;; Folding: the children of a main command are listed only when it is
-  ;;; unfolded (its PATH is in opens, a local of c:Dyl-Suite), or when they
-  ;;; match the search text. showk ("1" / "0", the "Show child commands"
-  ;;; toggle) set to "0" hides every child. The folding is kept for the next
-  ;;; Dyl-Suite, the toggle is checked at each Dyl-Suite.
-  ;; Lines shown by the list box (the lst tile of Dyl-Suite.dcl, height = 28). A
-  ;; main command unfolded is scrolled to the top of the list with this number:
-  ;; lower it if the main command ends up above the list, raise it if below the top.
-  (setq *dyl:suiterows* 26)
+  ;; The row of the window for the record r, its columns as Suite.cs reads them:
+  ;; on, command, file, module, group, path, name, description, the main command of
+  ;; a child, the number of children of a main command, preset child (Pst-*),
+  ;; dynamic child, main command of its file, what opens its docs page ("" none),
+  ;; the page it would have, its Lisp file (full path, "" missing). The docs and
+  ;; the Lisp file of each file are found once (docs: ((PATH target page lisp) ...)):
+  (defun Dyl:SuiteWinRow (r / d f)
+    (if (not (setq d (assoc (nth 5 r) docs)))
+      (setq d    (list (nth 5 r)
+                       (if (setq f (Dyl:SuiteDocs r)) (Dyl:DocsTarget f) "")
+                       (strcat "Modules\\"
+                               (nth 3 r)
+                               "\\Docs\\"
+                               (if (= "" (nth 4 r)) "" (strcat (nth 4 r) "\\"))
+                               (vl-filename-base (nth 2 r))
+                               ".htm"
+                       )
+                       (cond ((findfile (strcat *dyl:module "\\" (nth 5 r)))) (""))
+                 )
+            docs (cons d docs)
+      )
+    )
+    (list (car r)
+          (nth 1 r)
+          (nth 2 r)
+          (nth 3 r)
+          (nth 4 r)
+          (nth 5 r)
+          (nth 6 r)
+          (nth 7 r)
+          (cond ((Dyl:SuiteDlgMain r)) (""))
+          (if (Dyl:SuiteDlgKids r) (itoa (Dyl:SuiteDlgKids r)) "")
+          (if (Dyl:SuitePreset-p r) "1" "0")
+          (if (member (nth 1 r) dyns) "1" "0")
+          (if (and (/= "" (nth 1 r)) (= (nth 1 r) (cdr (assoc (nth 5 r) mains)))) "1" "0")
+          (nth 1 d)
+          (nth 2 d)
+          (nth 3 d)
+    )
+  )
 
-  ;; Index in recs of the main command of the file pth:
-  (defun Dyl:SuiteDlgMainIdx (pth / i res)
-    (setq i -1)
-    (foreach r recs
-      (setq i (1+ i))
-      (if (and (not res) (= pth (nth 5 r)) (= (nth 1 r) (cdr (assoc pth mains)))) (setq res i))
+  ;; The names an alias cannot take, for the window ((NAME what-has-it) ...): the
+  ;; commands of the other programs (the Lisp commands defined that are neither a
+  ;; command of the records nor an alias of DynALisp), the aliases of acad.pgp, and
+  ;; what has the name of an alias of als (an AutoCAD command, Dyl:AliasTakenOther),
+  ;; so that the window says it. An AutoCAD command typed in the window is refused
+  ;; by Dyl:SuiteWinBad once it is saved:
+  (defun Dyl:SuiteWinTaken (recs als / defs cmds res v)
+    (setq defs (mapcar 'strcase *dyl:aliasdefs*)
+          cmds (mapcar 'cadr recs)
+    )
+    (foreach a (atoms-family 1)
+      (setq a (strcase a))
+      (if (and (wcmatch a "C:?*")
+               (not (member (substr a 3) defs))
+               (not (member (substr a 3) cmds))
+               (not (vl-catch-all-error-p (setq v (vl-catch-all-apply 'eval (list (read a))))))
+               v
+          )
+        (setq res (cons (list (substr a 3) "a command of another program") res))
+      )
+    )
+    (foreach p (Dyl:PgpAliases)
+      (setq res (cons (list (car p) (strcat "an alias of acad.pgp (" (cdr p) ")")) res))
+    )
+    (foreach p als
+      (if (setq v (Dyl:AliasTakenOther (car p))) (setq res (cons (list (car p) v) res)))
     )
     res
   )
 
-  ;; Scroll the list so that the record n is its first line (the list box shows
-  ;; the line selected: selecting the line one page below brings n to the top),
-  ;; then select the selection again:
-  (defun Dyl:SuiteDlgTop (n / pos)
-    (if (and n (setq pos (vl-position n vis)))
-      (progn
-        (set_tile "lst" (itoa (min (1- (length vis)) (+ pos *dyl:suiterows* -1))))
-        (Dyl:SuiteDlgReselect)
-      )
-    )
-  )
-
-  ;; Fold or unfold the children of the main command of the file pth. An unfolded
-  ;; main command goes to the top of the list, so its children can be seen:
-  (defun Dyl:SuiteDlgFold (pth)
-    (setq opens (if (member pth opens) (vl-remove pth opens) (cons pth opens)))
-    (Dyl:SuiteDlgList)
-    (if (member pth opens) (Dyl:SuiteDlgTop (Dyl:SuiteDlgMainIdx pth)))
-  )
-
-  ;; Groups (PATH of their file) of the selected main commands and children:
-  (defun Dyl:SuiteDlgFoldPaths (/ pths)
-    (foreach n sel
-      (if
-        (and (or (Dyl:SuiteDlgKids (nth n recs)) (Dyl:SuiteDlgMain (nth n recs)))
-             (not (member (nth 5 (nth n recs)) pths))
-        )
-        (setq pths (cons (nth 5 (nth n recs)) pths))
-      )
-    )
-    pths
-  )
-
-  ;; Fold/Unfold button: the main commands of the selected lines, a selected child
-  ;; standing for its main command. Folds them when one of them is unfolded,
-  ;; unfolds them otherwise. The main command is selected too, so it stays
-  ;; selected when its children are folded:
-  (defun Dyl:SuiteDlgFoldSel (/ pths open r i)
-    (setq pths (Dyl:SuiteDlgFoldPaths)
-          open (not (vl-some '(lambda (p) (member p opens)) pths))
-    )
-    (foreach n sel
-      (setq r (nth n recs))
-      (if (or (Dyl:SuiteDlgKids r) (Dyl:SuiteDlgMain r))
-        (progn
-          (setq opens (cond
-                        ((not open) (vl-remove (nth 5 r) opens))
-                        ((member (nth 5 r) opens) opens)
-                        ((cons (nth 5 r) opens))
-                      )
-                i     -1
-          )
-          (foreach x recs
-            (setq i (1+ i))
-            (if
-              (and (= (nth 5 x) (nth 5 r))
-                   (= (nth 1 x) (cdr (assoc (nth 5 r) mains)))
-                   (not (member i sel))
+  ;; The first alias of als that is not in alsold and has the name of an AutoCAD
+  ;; command (the window cannot know them): its message, nil when there is none:
+  (defun Dyl:SuiteWinBad (als alsold)
+    (vl-some '(lambda (p)
+                (if (and (not (member p alsold)) (getcname (car p)))
+                  (strcat (car p) " is already an AutoCAD command: rename it before saving.")
+                )
               )
-              (setq sel (cons i sel))
+             als
+    )
+  )
+
+  ;; The values of the window: the rows, the aliases ((ALIAS . COMMAND) ...), the
+  ;; names taken, and st, the state of the list ((key . value) ...: srt shw flt sof
+  ;; sch ste.mod ste.grp ste.opens ste.sel, as the window gave them back):
+  (defun Dyl:SuiteWinVals (rows als taken st)
+    (append (list (cons "ste/rows" rows)
+                  (cons "ste/als" (mapcar '(lambda (p) (list (car p) (cdr p))) als))
+                  (cons "ste/taken" taken)
+                  (cons "srt/list" '("Command" "Aliases" "Name" "Module" "Group"))
+                  (cons "shw/list" '("All" "On" "Off" "With aliases"))
             )
-          )
-        )
-      )
-    )
-    (Dyl:SuiteDlgList)
-    ;; Unfolded: the first main command listed goes to the top of the list:
-    (if (and open pths)
-      (Dyl:SuiteDlgTop
-        (car (vl-sort (vl-remove-if-not '(lambda (n) (member n vis)) (mapcar 'Dyl:SuiteDlgMainIdx pths))
-                      '(lambda (a b) (< (vl-position a vis) (vl-position b vis)))
-             )
-        )
-      )
+            st
     )
   )
 
-  ;; Groups (PATH of their file) of the main commands with children listed, or
-  ;; with a child listed:
-  (defun Dyl:SuiteDlgFoldAllPaths (/ r pths)
-    (foreach n vis
-      (setq r (nth n recs))
-      (if
-        (and (or (Dyl:SuiteDlgKids r) (Dyl:SuiteDlgMain r))
-             (not (member (nth 5 r) pths))
-        )
-        (setq pths (cons (nth 5 r) pths))
-      )
-    )
-    pths
-  )
-
-  ;; Fold/Unfold All button: the main commands listed. Unfolds them all when one
-  ;; of them is folded, folds them all otherwise:
-  (defun Dyl:SuiteDlgFoldAll (/ pths)
-    (if (setq pths (Dyl:SuiteDlgFoldAllPaths))
-      (progn
-        (setq opens
-               (if (vl-some '(lambda (p) (not (member p opens))) pths)
-                 (append (vl-remove-if '(lambda (p) (member p opens)) pths) opens)
-                 (vl-remove-if '(lambda (p) (member p pths)) opens)
-               )
-        )
-        (Dyl:SuiteDlgList)
-      )
-    )
-  )
-
-  ;; Column titles of the list (hdr tile), in the order of Dyl:SuiteDlgLine:
-  (setq *dyl:suitehdr* '("Load" "Fold" "Command" "Aliases" "Name" "Module" "Group"))
-
-  ;;; Sorting: the "Sort by" list (srt tile) orders the list by Command, Aliases,
-  ;;; Name, Module or Group (the order of the CSV for the same value). A child
-  ;;; always follows its main command. recs keeps its order (the On / Off changes
-  ;;; are found by position): ord, a local of c:Dyl-Suite, holds the indexes of
-  ;;; recs in list order.
-  ;; Sort value of a record for the sort k (index in the srt tile). A command
-  ;; without aliases goes after the others:
-  (defun Dyl:SuiteDlgSortKey (r k)
-    (strcase
-      (cond
-        ((= 0 k) (if (= "" (nth 1 r)) (nth 2 r) (nth 1 r)))
-        ((= 1 k) (if (= "" (Dyl:SuiteDlgAliasStr r)) "~" (Dyl:SuiteDlgAliasStr r)))
-        ((= 2 k) (nth 6 r))
-        ((= 3 k) (strcat (nth 3 r) "\t" (nth 4 r)))
-        ((strcat (nth 4 r) "\t" (nth 3 r)))
-      )
-    )
-  )
-
-  ;; Sort the list by the srt tile: sets ord, marks the column sorted in the titles.
-  ;; Each key ends with the index of the record (same value: CSV order), a child
-  ;; takes the key of its main command (cur), followed by its own index:
-  (defun Dyl:SuiteDlgSort (/ k i cur keys)
-    (setq k (atoi (get_tile "srt"))
-          i -1
-    )
-    (foreach r recs
-      (setq i (1+ i))
-      (if (not (and cur (Dyl:SuiteDlgMain r) (= (nth 5 r) (car cur))))
-        (setq cur (list (nth 5 r) (strcat (Dyl:SuiteDlgSortKey r k) "\t" (substr (itoa (+ 100000 i)) 2))))
-      )
-      (setq keys (cons (strcat (cadr cur) "\t" (substr (itoa (+ 100000 i)) 2)) keys))
-    )
-    (setq ord (vl-sort-i (reverse keys) '<))
-    (setq i -1)
-    (start_list "hdr")
-    (add_list
-      (Remote>>LM:lst->str
-        (mapcar '(lambda (s) (if (= (+ 2 k) (setq i (1+ i))) (strcat s "  v") s)) *dyl:suitehdr*)
-        "\t"
-      )
-    )
-    (end_list)
-  )
-
-  ;; List box line of a record: state, fold, command, aliases, name, module, group
-  ;; (the file is shown in the details of the selection). A child shows its name
-  ;; in the Command column, indented under its main command, and no name in the
-  ;; Name column (it stays for the main commands):
-  (defun Dyl:SuiteDlgLine (r)
-    (strcat (if (= "1" (car r)) "[X]" "[  ]")
-            "\t"
-            ;; A main command with children: [+] folded / [-] unfolded
-            (cond ((or (/= "1" showk) (Dyl:SuiteDlgMain r) (not (Dyl:SuiteDlgKids r))) "")
-                  ((member (nth 5 r) opens) "[-]")
-                  ("[+]")
-            )
-            "\t"
-            (cond
-              ((= "" (nth 1 r)) (strcat "(whole file) " (nth 2 r)))
-              ((Dyl:SuiteDlgMain r) (strcat "   |_ " (nth 6 r)))
-              ;; A main command with children: their number
-              ((Dyl:SuiteDlgKids r)
-               (strcat (nth 1 r) " (" (itoa (Dyl:SuiteDlgKids r)) ")")
-              )
-              ((nth 1 r))
-            )
-            "\t"
-            (cond ((/= "" (Dyl:SuiteDlgAliasStr r)) (Dyl:SuiteDlgAliasStr r))
-                  ((not (Dyl:SuiteDlgMain r)) "")
-                  ((Dyl:SuitePreset-p r) "(no alias)")
-                  ((nth 1 r))
-            )
-            "\t"
-            (if (Dyl:SuiteDlgMain r) "" (nth 6 r))
-            "\t"
-            (nth 3 r)
-            "\t"
-            (nth 4 r)
-    )
-  )
-
-  ;; Fill a popup list, "" shown as (root):
-  (defun Dyl:SuiteDlgPopup (key lst) 
-    (start_list key)
-    (foreach x lst (add_list (if (= "" x) "(root)" x)))
-    (end_list)
-    (set_tile key "0")
-  )
-
-  ;; T if the record r can be listed: a command turned off only when "Show
-  ;; unloaded commands" is checked (or Show: Off, shw = "2"):
-  (defun Dyl:SuiteDlgShown-p (r shw)
-    (or (= "1" showoff) (= "2" shw) (= "1" (car r)))
-  )
-
-  ;; Module popup: "All" + the modules of the commands that can be listed. The
-  ;; module selected is kept while it is there, else All (groups rebuilt):
-  (defun Dyl:SuiteDlgModules (/ cur shw lst)
-    (setq cur (if mods (nth (atoi (get_tile "mod")) mods))
-          shw (get_tile "shw")
-    )
-    (foreach r recs
-      (if (and (Dyl:SuiteDlgShown-p r shw) (not (member (nth 3 r) lst)))
-        (setq lst (cons (nth 3 r) lst))
-      )
-    )
-    (Dyl:SuiteDlgPopup "mod" (setq mods (cons "All" (acad_strlsort lst))))
-    (cond
-      ((member cur (cdr mods)) (set_tile "mod" (itoa (vl-position cur mods))))
-      ((and cur (/= "All" cur)) (Dyl:SuiteDlgGroups))
-    )
-  )
-
-  ;; Group popup: "All" + the groups of the module selected:
-  (defun Dyl:SuiteDlgGroups (/ mod) 
-    (setq mod  (if (/= "0" (get_tile "mod")) (nth (atoi (get_tile "mod")) mods))
-          grps nil
-    )
-    (foreach r recs 
-      (if (and (or (not mod) (= mod (nth 3 r))) (not (member (nth 4 r) grps))) 
-        (setq grps (cons (nth 4 r) grps))
-      )
-    )
-    (Dyl:SuiteDlgPopup "grp" (setq grps (cons "All" (acad_strlsort grps))))
-  )
-
-  ;; Select the listed records of sel again (the list box forgets them):
-  (defun Dyl:SuiteDlgReselect (/ i pos) 
-    (setq i -1)
-    (foreach n vis 
-      (setq i (1+ i))
-      (if (member n sel) (setq pos (cons (itoa i) pos)))
-    )
-    (set_tile "lst" (if pos (Remote>>LM:lst->str (reverse pos) " ") ""))
-  )
-
-  ;; Rebuild the list from the filters, in the order ord, keep the selection
-  ;; still listed:
-  (defun Dyl:SuiteDlgList (/ mod grp shw txt r lns)
-    (setq mod (if (/= "0" (get_tile "mod")) (nth (atoi (get_tile "mod")) mods))
-          grp (if (/= "0" (get_tile "grp")) (nth (atoi (get_tile "grp")) grps))
-          shw (get_tile "shw")
-          txt (strcase (vl-string-trim " " (get_tile "flt")))
-          vis nil
-    )
-    (foreach i ord
-      (setq r (nth i recs))
-      (if
-        (and (or (not mod) (= mod (nth 3 r)))
-             (or (not grp) (= grp (nth 4 r)))
-             (cond
-               ((= "1" shw) (= "1" (car r)))
-               ((= "2" shw) (= "0" (car r)))
-               ((= "3" shw) (/= "" (Dyl:SuiteDlgAliasStr r)))
-               (T)
-             )
-             (Dyl:SuiteDlgShown-p r shw)
-             ;; A child is listed when its main command is unfolded or when
-             ;; searching, unless the children are hidden:
-             (or (not (Dyl:SuiteDlgMain r))
-                 (and (= "1" showk) (or (/= "" txt) (member (nth 5 r) opens)))
-             )
-             ;; The search also finds a command by any of its aliases:
-             (or (= "" txt)
-                 (vl-some '(lambda (s) (vl-string-search txt (strcase s)))
-                          (list (nth 1 r) (nth 2 r) (nth 6 r) (nth 7 r) (Dyl:SuiteDlgAliasStr r))
-                 )
-             )
-        )
-        (setq vis (cons i vis)
-              lns (cons (Dyl:SuiteDlgLine r) lns)
-        )
-      )
-    )
-    (setq vis (reverse vis)
-          sel (vl-remove-if-not '(lambda (n) (member n vis)) sel)
-    )
-    (start_list "lst")
-    (foreach x (reverse lns) (add_list x))
-    (end_list)
-    (Dyl:SuiteDlgReselect)
-    (Dyl:SuiteDlgInfo)
-  )
-
-  ;; Records of ids that can be set on / off (a dynamic child follows its main command):
-  (defun Dyl:SuiteDlgOwn (ids)
-    (vl-remove-if '(lambda (n) (member (nth 1 (nth n recs)) dyns)) ids)
-  )
-
-  ;; On/Off and All Listed On/Off buttons: turn the records ids on when one of
-  ;; them is off, off when they are all on:
-  (defun Dyl:SuiteDlgSwitch (ids)
-    (setq ids (Dyl:SuiteDlgOwn ids))
-    (if ids
-      (Dyl:SuiteDlgSet ids (if (vl-some '(lambda (n) (/= "1" (car (nth n recs)))) ids) "1" "0"))
-    )
-  )
-
-  ;; Grey the buttons that would do nothing for the selection and the list:
-  (defun Dyl:SuiteDlgButtons ()
-    (mode_tile "onf" (if (Dyl:SuiteDlgOwn sel) 0 1))
-    (mode_tile "aonf" (if (Dyl:SuiteDlgOwn vis) 0 1))
-    (mode_tile "doc" (if sel 0 1))
-    (mode_tile "lsp" (if sel 0 1))
-    ;; Fold/Unfold: a main command or child selected, children not hidden:
-    (mode_tile "fld" (if (and (= "1" showk) (Dyl:SuiteDlgFoldPaths)) 0 1))
-    ;; Fold/Unfold All: a main command with children listed, children not hidden:
-    (mode_tile "fal" (if (and (= "1" showk) (Dyl:SuiteDlgFoldAllPaths)) 0 1))
-  )
-
-  ;; Counter, details and aliases of the selected record, state of the buttons:
-  (defun Dyl:SuiteDlgInfo (/ r dup)
-    (set_tile "cnt"
-              (strcat (itoa (length vis))
-                      " listed   |   "
-                      (itoa (length (vl-remove-if-not '(lambda (x) (= "1" (car x))) recs)))
-                      " on / "
-                      (itoa (length recs))
-                      " total   |   "
-                      (itoa (length als))
-                      " aliases"
-              )
-    )
-    (Dyl:SuiteDlgAliases)
-    (Dyl:SuiteDlgButtons)
-    (cond 
-      ((null sel)
-       (foreach k '("nam" "des" "pth") (set_tile k ""))
-      )
-      ((cdr sel)
-       (set_tile "nam" (strcat (itoa (length sel)) " items selected"))
-       (set_tile "des" "")
-       (set_tile "pth" "")
-      )
-      (T
-       (setq r (nth (car sel) recs))
-       ;; Other files defining the same command (module and file):
-       (if (/= "" (nth 1 r))
-         (foreach x recs
-           (if (and (= (nth 1 x) (nth 1 r)) (/= (nth 5 x) (nth 5 r)))
-             (setq dup (cons (strcat (nth 3 x) "\\" (nth 2 x) (if (= "1" (car x)) " (on)" "")) dup))
-           )
-         )
-       )
-       ;; 1st line: command (a child: its aliases) and name, 2nd line: description,
-       ;; 3rd line: parent / child relation and duplicates (Open Lisp opens the file):
-       (set_tile "nam"
-                 (cond
-                   ((= "" (nth 1 r)) (strcat (nth 2 r) " (whole file)"))
-                   ((Dyl:SuiteDlgMain r)
-                    (strcat (cond ((/= "" (Dyl:SuiteDlgAliasStr r)) (Dyl:SuiteDlgAliasStr r))
-                                  ((Dyl:SuitePreset-p r) "(no alias)")
-                                  ((nth 1 r))
-                            )
-                            " - "
-                            (nth 6 r)
-                    )
-                   )
-                   ((strcat (nth 1 r) " - " (nth 6 r)))
-                 )
-       )
-       (set_tile "des"
-                 (if (= "" (nth 1 r)) "No command: turning it on loads the whole file." (nth 7 r))
-       )
-       (set_tile "pth"
-                 (cond
-                   ((Remote>>LM:lst->str
-                      (vl-remove nil
-                                 (list
-                                   (if (Dyl:SuiteDlgMain r)
-                                     (strcat "Child of "
-                                             (Dyl:SuiteDlgMain r)
-                                             ", runs "
-                                             (nth 1 r)
-                                             (if (member (nth 1 r) dyns) " (custom preset, on / off with it)" "")
-                                     )
-                                   )
-                                   (if (Dyl:SuiteDlgKids r)
-                                     (strcat (itoa (Dyl:SuiteDlgKids r)) " child commands: double-click to fold / unfold")
-                                   )
-                                   (if dup (strcat "Also defined in: " (Remote>>LM:lst->str dup ", ")))
-                                 )
-                      )
-                      "   |   "
-                    )
-                   )
-                   ("")
-                 )
-       )
-      )
-    )
-  )
-
-  ;; List box picked: keep the selection. A double-click folds / unfolds a main
-  ;; command with children, and opens the docs pages of anything else:
-  (defun Dyl:SuiteDlgPick (val why)
-    (setq sel (mapcar '(lambda (n) (nth n vis)) (read (strcat "(" val ")"))))
-    (Dyl:SuiteDlgInfo)
-    (cond
-      ((/= 4 why))
-      ((and sel (not (cdr sel)) (Dyl:SuiteDlgKids (nth (car sel) recs)) (= "1" showk))
-       (Dyl:SuiteDlgFold (nth 5 (nth (car sel) recs)))
-      )
-      ((Dyl:SuiteDlgDocs sel))
+  ;; The state of the list the window gave back in res, to open it again as it was:
+  (defun Dyl:SuiteWinState (res)
+    (mapcar '(lambda (k) (cons k (cond ((Dyl:WinGet res k)) (""))))
+            '("srt" "shw" "flt" "sof" "sch" "ste.mod" "ste.grp" "ste.opens" "ste.sel")
     )
   )
 
@@ -2222,7 +1824,7 @@
   ;; fails). More than 10 files at once is refused (likely a wrong selection):
   (defun Dyl:SuiteDlgShell (fils / shl) 
     (if (< 10 (length fils)) 
-      (set_tile "pth" (strcat (itoa (length fils)) " files to open: select 10 items or fewer"))
+      (princ (strcat "\n--> " (itoa (length fils)) " files to open: select 10 items or fewer."))
       (progn 
         (setq shl (vl-catch-all-apply 'vla-getinterfaceobject 
                                       (list (vlax-get-acad-object) "Shell.Application")
@@ -2252,257 +1854,38 @@
     )
   )
 
-  ;; Open the .lsp files of the records ids, each file once:
-  (defun Dyl:SuiteDlgOpen (ids / f fils) 
-    (foreach n ids 
-      (setq f (strcat *dyl:module "\\" (nth 5 (nth n recs))))
-      (cond 
-        ((member f fils))
-        ((findfile f) (setq fils (cons f fils)))
-        ((set_tile "pth" (strcat "File not found: " f)))
-      )
-    )
-    (Dyl:SuiteDlgShell (reverse fils))
+  ;; Question of up to 3 lines in the window Res\Dyl-Ask.xaml, titled DynALisp -
+  ;; Startup Suite, with the labels of its two buttons (asked on the command line
+  ;; if the window cannot be shown). Returns T for the first button:
+  (defun Dyl:SuiteAsk (lines yes no)
+    (Dyl:AskIn "DynALisp - Startup Suite" lines yes no)
   )
 
-  ;; Open the docs pages of the records ids, each page once. The expected page
-  ;; of the first record without one is shown in the details:
-  (defun Dyl:SuiteDlgDocs (ids / r f fils miss) 
-    (foreach n ids 
-      (setq r (nth n recs))
-      (cond 
-        ((not (setq f (Dyl:SuiteDocs r)))
-         (if (not miss) (setq miss r))
-        )
-        ((not (member f fils)) (setq fils (cons f fils)))
-      )
-    )
-    (if miss 
-      (set_tile "pth" 
-                (strcat "No docs page: Modules\\" 
-                        (nth 3 miss)
-                        "\\Docs\\"
-                        (if (= "" (nth 4 miss)) "" (strcat (nth 4 miss) "\\"))
-                        (vl-filename-base (nth 2 miss))
-                        ".htm"
+  ;; The same question titled DynALisp, for a question that is not about the
+  ;; Startup Suite:
+  (defun Dyl:Ask (lines yes no)
+    (Dyl:AskIn "DynALisp" lines yes no)
+  )
+
+  ;; The question in the window Dyl-Ask.xaml titled title, its lines one under the
+  ;; other (msg), its buttons yes (Enter, 1) and no (Esc, 0):
+  (defun Dyl:AskIn (title lines yes no / res)
+    (if
+      (setq res (Dyl:WinShow "Dyl-Ask.xaml"
+                             (list (cons "win/title" title)
+                                   (cons "msg" (Remote>>LM:lst->str (vl-remove "" (vl-remove nil lines)) "\n"))
+                                   (cons "yes" yes)
+                                   (cons "no" no)
+                             )
                 )
       )
-    )
-    (Dyl:SuiteDlgShell (reverse fils))
-  )
-
-  ;; Set the records ids to "1", "0" or toggle them ("T"). A few lines are
-  ;; changed in place so the list keeps its scroll position, more are rebuilt.
-  ;; A dynamic child is not set on its own: it follows its main command:
-  (defun Dyl:SuiteDlgSet (ids mode / i pths)
-    (setq ids  (vl-remove-if '(lambda (n) (member (nth 1 (nth n recs)) dyns)) ids)
-          i    -1
-          recs (mapcar
-                 '(lambda (r)
-                    (setq i (1+ i))
-                    (if (member i ids)
-                      (cons (cond ((/= "T" mode) mode) ((= "1" (car r)) "0") ("1")) (cdr r))
-                      r
-                    )
-                  )
-                 recs
-               )
-    )
-    ;; The dynamic children of the main commands set take their new value:
-    (foreach n ids
-      (if (= (nth 1 (nth n recs)) (cdr (assoc (nth 5 (nth n recs)) mains)))
-        (setq pths (cons (cons (nth 5 (nth n recs)) (car (nth n recs))) pths))
-      )
-    )
-    (setq i    -1
-          recs (mapcar
-                 '(lambda (r / p)
-                    (setq i (1+ i))
-                    (if (and (member (nth 1 r) dyns) (setq p (assoc (nth 5 r) pths)))
-                      (progn
-                        (setq ids (cons i ids))
-                        (cons (cdr p) (cdr r))
-                      )
-                      r
-                    )
-                  )
-                 recs
-               )
-    )
-    (Dyl:SuiteDlgRedraw ids)
-  )
-
-  ;; Redraw the lines of the records ids: in place for a few (the list keeps
-  ;; its scroll position), the whole list for more:
-  (defun Dyl:SuiteDlgRedraw (ids / pos)
-    (if (< 50 (length ids))
-      (Dyl:SuiteDlgList)
+      (= 1 (car res))
       (progn
-        (foreach n ids
-          (if (setq pos (vl-position n vis))
-            (progn
-              (start_list "lst" 1 pos)
-              (add_list (Dyl:SuiteDlgLine (nth n recs)))
-              (end_list)
-            )
-          )
-        )
-        (Dyl:SuiteDlgReselect)
-        (Dyl:SuiteDlgInfo)
-      )
-    )
-  )
-
-  ;;; ---------------------------------------------------------------------------
-  ;;; Aliases panel: the aliases of the single command selected. Add creates
-  ;;; the alias typed, Rename gives the alias picked the name typed, Remove
-  ;;; deletes the alias picked. Changes are saved with the dialog (Save).
-  ;;; ---------------------------------------------------------------------------
-  ;; T if name is the command of a record:
-  (defun Dyl:SuiteDlgIsCmd (name)
-    (vl-some '(lambda (r) (= name (nth 1 r))) recs)
-  )
-
-  ;; Fill the panel for the selection (empty unless one command is selected):
-  (defun Dyl:SuiteDlgAliases (/ r)
-    (setq r    (if (and sel (not (cdr sel))) (nth (car sel) recs))
-          acmd (if (and r (/= "" (nth 1 r))) (nth 1 r))
-          alst (if acmd (Dyl:AliasesOf acmd als))
-    )
-    (start_list "als")
-    (foreach a alst (add_list (if (Dyl:SuiteDlgIsCmd a) (strcat a "  (also a command)") a)))
-    (end_list)
-    (mode_tile "aln" (if acmd 0 1))
-    (mode_tile "aad" (if acmd 0 1))
-    (mode_tile "aren" 1)
-    (mode_tile "adel" 1)
-    (set_tile "aln" "")
-    (set_tile "ams"
-              (cond
-                ((not acmd) "Select one command to edit its aliases.")
-                ((and (not alst) (Dyl:SuiteDlgMain r) (Dyl:SuitePreset-p r)) "A child command runs by its aliases: add one.")
-                ((/= "1" (car r)) "Aliases run once the command is turned on.")
-                ((not alst) "No alias yet: type one and click Add.")
-                ;; An alias whose name another program took (e.g. an Express Tools
-                ;; command) never runs: tell which one, so it is renamed:
-                ((vl-some '(lambda (a / w) (if (setq w (Dyl:AliasTakenOther a)) (strcat a " is already " w ": rename it."))) alst))
-                ("Pick an alias to rename or remove it.")
-              )
-    )
-  )
-
-  ;; An alias was picked: put it in the edit box for a rename:
-  (defun Dyl:SuiteDlgAliasPick (val)
-    (if (and val (/= "" val) (nth (atoi val) alst))
-      (progn
-        (set_tile "aln" (nth (atoi val) alst))
-        (mode_tile "aren" 0)
-        (mode_tile "adel" 0)
-        (set_tile "ams" "")
-      )
-    )
-  )
-
-  ;; Error message for the alias name a (nil when valid). old is the alias being
-  ;; renamed (nil for a new one):
-  (defun Dyl:SuiteDlgAliasCheck (a old / x)
-    (cond
-      ((= "" a) "Type an alias name.")
-      ((not (Dyl:AliasName-p a)) "Use letters, digits, - and _ only.")
-      ;; An alias is a short name: never one of the command prefixes (the
-      ;; command line suggests the Dyl-* commands, a long former name is dropped):
-      ((wcmatch a "DYL-*,LM-*,PST-*") "An alias is a short name: no Dyl-, LM- or Pst- prefix.")
-      ((= a old) "The name did not change.")
-      ((= a acmd) "This is the name of the command itself.")
-      ((setq x (assoc a als)) (strcat a " is already an alias of " (cdr x) "."))
-      ((setq x (vl-some '(lambda (r) (if (= a (nth 1 r)) r)) recs))
-       (strcat a " is already a command: Modules\\" (nth 5 x))
-      )
-      ((setq x (Dyl:AliasTakenOther a)) (strcat a " is already " x "."))
-    )
-  )
-
-  ;; Apply a change of the aliases of acmd (new als) and show msg:
-  (defun Dyl:SuiteDlgAliasDone (new msg / cmd)
-    (setq als new
-          cmd acmd
-    )
-    (Dyl:SuiteDlgRedraw (Dyl:SuiteDlgAliasCache cmd))
-    (set_tile "ams" msg)
-  )
-
-  ;; Alias picked in the panel list (nil if none):
-  (defun Dyl:SuiteDlgAliasSel (/ v)
-    (if (/= "" (setq v (get_tile "als"))) (nth (atoi v) alst))
-  )
-
-  ;; Add, Rename and Remove buttons:
-  (defun Dyl:SuiteDlgAliasAdd (/ a err)
-    (setq a (Dyl:SuiteCmd (get_tile "aln")))
-    (if (setq err (Dyl:SuiteDlgAliasCheck a nil))
-      (set_tile "ams" err)
-      (Dyl:SuiteDlgAliasDone (append als (list (cons a acmd))) (strcat a " added."))
-    )
-  )
-  (defun Dyl:SuiteDlgAliasRename (/ old a err)
-    (setq old (Dyl:SuiteDlgAliasSel)
-          a   (Dyl:SuiteCmd (get_tile "aln"))
-    )
-    (cond
-      ((not old) (set_tile "ams" "Pick the alias to rename."))
-      ((setq err (Dyl:SuiteDlgAliasCheck a old)) (set_tile "ams" err))
-      ((Dyl:SuiteDlgAliasDone
-         (subst (cons a acmd) (cons old acmd) als)
-         (strcat old " renamed " a ".")
-       )
-      )
-    )
-  )
-  (defun Dyl:SuiteDlgAliasRemove (/ old)
-    (if (setq old (Dyl:SuiteDlgAliasSel))
-      (Dyl:SuiteDlgAliasDone (vl-remove (cons old acmd) als) (strcat old " removed."))
-      (set_tile "ams" "Pick the alias to remove.")
-    )
-  )
-
-  ;; Question of up to 3 lines in the dyl_suite_ask dialog of Dyl-Suite.dcl, with
-  ;; the labels of its two buttons (asked on the command line if the dialog
-  ;; cannot be shown). Returns T for the first button:
-  (defun Dyl:SuiteAsk (lines yes no)
-    (Dyl:AskIn "dyl_suite_ask" lines yes no)
-  )
-
-  ;; The same question in the dyl_ask dialog (titled DynALisp), for a question that
-  ;; is not about the Startup Suite:
-  (defun Dyl:Ask (lines yes no)
-    (Dyl:AskIn "dyl_ask" lines yes no)
-  )
-
-  ;; The question in the dialog nam of Dyl-Suite.dcl (dyl_suite_ask or dyl_ask):
-  (defun Dyl:AskIn (nam lines yes no / dch res)
-    (if
-      (and (< 0 (setq dch (load_dialog (strcat *dyl:res "\\Dyl-Suite.dcl"))))
-           (new_dialog nam dch)
-      )
-      (progn
-        (foreach k '("l1" "l2" "l3")
-          (set_tile k (cond ((car lines)) ("")))
-          (setq lines (cdr lines))
-        )
-        (set_tile "accept" yes)
-        (set_tile "cancel" no)
-        (setq res (= 1 (start_dialog)))
-        (unload_dialog dch)
-        res
-      )
-      (progn
-        (if (< 0 dch) (unload_dialog dch))
         (initget "Yes No")
         (/= "No" (getkword (strcat "\n" (car lines) " [Yes/No] <Yes>: ")))
       )
     )
   )
-
   ;; Write a file with write-fn, asking to retry while it is open in another
   ;; program. Returns T once written, nil when the user gives up:
   (defun Dyl:SuiteSave (write-fn name / ok)
@@ -2553,157 +1936,134 @@
 
   ;;; ---------------------------------------------------------------------------
   ;;; Dyl-Suite: turn the commands of StartupSuite.csv on or off and edit their
-  ;;; aliases from a dialog, save StartupSuite.csv and Aliases.csv, then apply
-  ;;; the changes to the current drawing (aliases always, on / off on request).
+  ;;; aliases in the Startup Suite window (Res\Dyl-Suite.xaml), save
+  ;;; StartupSuite.csv and Aliases.csv, then apply the changes to the current
+  ;;; drawing (aliases always, on / off on request). The window opens on the
+  ;;; Dynalisp module, the commands turned off and the children hidden, sorted as
+  ;;; the last time (DynalispSuiteSort), the main commands unfolded the last time
+  ;;; unfolded (*dyl:suiteopen*). Open in VS Code (3) opens the folder, then the
+  ;;; window again as it was; an alias typed that is an AutoCAD command opens it
+  ;;; again with its message (Dyl:SuiteWinBad).
   ;;; ---------------------------------------------------------------------------
-  (defun c:Dyl-Suite (/ recs old vis sel ord mods grps mains nkids opens showk showoff dyns als alsold acmd alst dch res ons offs achg)
+  (defun c:Dyl-Suite (/ recs old mains nkids dyns docs als alsold rows taken st res bad ons offs achg)
     (setq recs   (Dyl:SuiteDlgOrder (Dyl:SuiteDlgDyn (Dyl:SuiteRecs)))
           old    recs
           als    (Dyl:AliasRead)
           alsold als
     )
-    (cond
-      ((null recs)
-       (alert (strcat "Unable to read the Startup Suite:\n" (Dyl:UserFile *dyl:suite) "\n\nRun Dyl-SuiteUpdate and try again."))
-      )
-      ((not
-         (and (< 0 (setq dch (load_dialog (strcat *dyl:res "\\Dyl-Suite.dcl"))))
-              (new_dialog "dyl_suite" dch)
-         )
-       )
-       (princ "\n--> Unable to load the dialog : Dyl-Suite.dcl")
-      )
-      (T
-       (Dyl:SuiteDlgAliasCache nil)
-       ;; Column titles (set by Dyl:SuiteDlgSort); a click on them is undone
-       ;; (they are not a selection):
-       (action_tile "hdr" "(set_tile \"hdr\" \"\")")
-       ;; Main commands unfolded in the last Dyl-Suite; the child commands hidden
-       ;; at each Dyl-Suite (Show child commands unchecked):
-       (setq opens *dyl:suiteopen*
-             showk "0"
-       )
-       (set_tile "sch" showk)
-       ;; The commands turned off are hidden at each Dyl-Suite:
-       (setq showoff "0")
-       (set_tile "sof" showoff)
-       (Dyl:SuiteDlgPopup "shw" '("All" "On" "Off" "With aliases"))
-       (Dyl:SuiteDlgModules)
-       ;; The Dynalisp module selected at each Dyl-Suite: the other modules are
-       ;; listed once picked in Module (or All). All when it is not listed:
-       (if (setq res (vl-position "DYNALISP" (mapcar 'strcase mods)))
-         (set_tile "mod" (itoa res))
-       )
-       (setq res nil)
-       ;; Sort of the last Dyl-Suite (Module: the order of the CSV):
-       (Dyl:SuiteDlgPopup "srt" '("Command" "Aliases" "Name" "Module" "Group"))
-       (set_tile "srt"
-                 (if (member (getenv "DynalispSuiteSort") '("0" "1" "2" "3" "4")) (getenv "DynalispSuiteSort") "3")
-       )
-       (Dyl:SuiteDlgSort)
-       (Dyl:SuiteDlgGroups)
-       (Dyl:SuiteDlgList)
-       (action_tile "srt" "(Dyl:SuiteDlgSort) (Dyl:SuiteDlgList)")
-       (action_tile "mod" "(Dyl:SuiteDlgGroups) (Dyl:SuiteDlgList)")
-       (action_tile "grp" "(Dyl:SuiteDlgList)")
-       (action_tile "shw" "(Dyl:SuiteDlgModules) (Dyl:SuiteDlgList)")
-       (action_tile "flt" "(Dyl:SuiteDlgList)")
-       (action_tile "clr"
-                    "(set_tile \"mod\" \"0\") (set_tile \"shw\" \"0\") (Dyl:SuiteDlgModules) (Dyl:SuiteDlgGroups) (set_tile \"flt\" \"\") (Dyl:SuiteDlgList)"
-       )
-       (action_tile "lst" "(Dyl:SuiteDlgPick $value $reason)")
-       (action_tile "doc" "(Dyl:SuiteDlgDocs sel)")
-       (action_tile "lsp" "(Dyl:SuiteDlgOpen sel)")
-       (action_tile "onf" "(Dyl:SuiteDlgSwitch sel)")
-       (action_tile "aonf" "(Dyl:SuiteDlgSwitch vis)")
-       (action_tile "als" "(Dyl:SuiteDlgAliasPick $value)")
-       ;; Enter in the alias box adds it (focus lost does nothing):
-       (action_tile "aln" "(if (= 1 $reason) (Dyl:SuiteDlgAliasAdd))")
-       (action_tile "aad" "(Dyl:SuiteDlgAliasAdd)")
-       (action_tile "aren" "(Dyl:SuiteDlgAliasRename)")
-       (action_tile "adel" "(Dyl:SuiteDlgAliasRemove)")
-       (action_tile "sch"
-                    "(setq showk $value) (Dyl:SuiteDlgList)"
-       )
-       (action_tile "sof" "(setq showoff $value) (Dyl:SuiteDlgModules) (Dyl:SuiteDlgList)")
-       (action_tile "fld" "(Dyl:SuiteDlgFoldSel)")
-       (action_tile "fal" "(Dyl:SuiteDlgFoldAll)")
-       (action_tile "vsc" "(Dyl:VSCode)")
-       ;; The sort is kept (Save or Cancel), read before the dialog closes:
-       (action_tile "accept" "(setenv \"DynalispSuiteSort\" (get_tile \"srt\")) (done_dialog 1)")
-       (action_tile "cancel" "(setenv \"DynalispSuiteSort\" (get_tile \"srt\")) (done_dialog 0)")
-       (Dyl:DocsTile "Core\\Dyl-Suite.htm")
-       (setq res (start_dialog))
-       (unload_dialog dch)
-       ;; The folding is kept (Save or Cancel):
-       (setq *dyl:suiteopen* opens)
-
-       ;; The dynamic children are not saved in StartupSuite.csv (they follow
-       ;; their main command):
-       (setq recs (vl-remove-if '(lambda (r) (member (nth 1 r) dyns)) recs)
-             old  (vl-remove-if '(lambda (r) (member (nth 1 r) dyns)) old)
-       )
-       ;; Records turned on / off in the dialog:
-       (mapcar 
-         '(lambda (n o) 
-            (cond 
-              ((= (car n) (car o)))
-              ((= "1" (car n)) (setq ons (cons n ons)))
-              ((setq offs (cons n offs)))
+    (if (null recs)
+      (alert (strcat "Unable to read the Startup Suite:\n" (Dyl:UserFile *dyl:suite) "\n\nRun Dyl-SuiteUpdate and try again."))
+      (progn
+        (setq rows  (mapcar 'Dyl:SuiteWinRow recs)
+              taken (Dyl:SuiteWinTaken recs als)
+              st    (list (cons "srt"
+                                (if (member (getenv "DynalispSuiteSort") '("0" "1" "2" "3" "4")) (getenv "DynalispSuiteSort") "3")
+                          )
+                          (cons "shw" "0")
+                          (cons "flt" "")
+                          (cons "sof" "0")
+                          (cons "sch" "0")
+                          (cons "ste.mod"
+                                (if (vl-some '(lambda (r) (= "DYNALISP" (strcase (nth 3 r)))) recs) "Dynalisp" "")
+                          )
+                          (cons "ste.grp" "")
+                          (cons "ste.opens" (cond ((Remote>>LM:lst->str *dyl:suiteopen* "|")) ("")))
+                          (cons "ste.sel" "")
+                    )
+        )
+        (while
+          (and
+            (setq res (Dyl:WinShow "Dyl-Suite.xaml"
+                                   (append (Dyl:SuiteWinVals rows als taken st)
+                                           (if bad (list (cons "error" bad)))
+                                   )
+                      )
             )
-          )
-         recs
-         old
-       )
-       (setq achg (not (equal als alsold)))
-       (cond
-         ((/= 1 res) (princ "\nStartup Suite unchanged."))
-         ((not (or ons offs achg)) (princ "\nNo change to the Startup Suite."))
-         (T
-          ;; Each file is written again while it is open in another program:
-          (if achg
-            (if (Dyl:SuiteSave '(lambda () (Dyl:AliasWrite als)) "Aliases.csv")
-              (princ (strcat "\nAliases.csv saved (" (itoa (length als)) " aliases)."))
-              (progn
-                (setq achg nil)
-                (princ "\n--> Alias changes dropped.")
-              )
-            )
-          )
-          (if (or ons offs)
-            (cond
-              ((not (Dyl:SuiteSave '(lambda () (Dyl:SuiteWrite recs)) "StartupSuite.csv"))
-               (princ "\n--> Startup Suite changes dropped.")
-              )
-              ((Dyl:SuiteAsk
-                 (list "StartupSuite.csv saved."
-                       (strcat (itoa (length ons)) " item(s) turned on, " (itoa (length offs)) " item(s) turned off.")
-                       "Apply the changes to the current drawing now?"
-                 )
-                 "Yes"
-                 "No"
-               )
-               ;; Commands turned off are undefined (Dyl:autoload defines them
-               ;; again when another file of the same command is still on).
-               ;; Dyl:autoload also defines the aliases again:
-               (foreach r offs
-                 (if (/= "" (nth 1 r)) (set (read (strcat "C:" (nth 1 r))) nil))
-               )
-               (Dyl:autoload)
-               (setq achg nil)
-              )
-              ((princ "\nChanges apply to the drawings opened from now on (or run Dyl-Reload)."))
-            )
-          )
-          ;; Alias changes apply to the current drawing right away:
-          (if achg
             (progn
-              (Dyl:AliasApply)
-              (princ "\nAliases updated in this drawing (other open drawings: run Dyl-Reload).")
+              (setq rows (cond ((Dyl:WinGet res "ste/rows")) (rows))
+                    als  (mapcar '(lambda (p) (cons (car p) (cadr p))) (Dyl:WinGet res "ste/als"))
+                    st   (Dyl:SuiteWinState res)
+                    bad  nil
+              )
+              ;; The sort and the folding are kept (Save or Cancel):
+              (if (member (Dyl:WinGet res "srt") '("0" "1" "2" "3" "4")) (setenv "DynalispSuiteSort" (Dyl:WinGet res "srt")))
+              (setq *dyl:suiteopen* (vl-remove "" (Remote>>LM:str->lst (cond ((Dyl:WinGet res "ste.opens")) ("")) "|")))
+              (cond
+                ((= 3 (car res)) (Dyl:VSCode) T)
+                ((and (= 1 (car res)) (setq bad (Dyl:SuiteWinBad als alsold))) T)
+              )
             )
           )
-         )
-       )
+        )
+        ;; The records turned on and off in the window (its rows in the order of recs):
+        (if (and res (= 1 (car res)) (= (length rows) (length recs)))
+          (setq recs (mapcar '(lambda (r w) (cons (if (= "1" (car w)) "1" "0") (cdr r))) recs rows))
+        )
+        ;; The dynamic children are not saved in StartupSuite.csv (they follow
+        ;; their main command):
+        (setq recs (vl-remove-if '(lambda (r) (member (nth 1 r) dyns)) recs)
+              old  (vl-remove-if '(lambda (r) (member (nth 1 r) dyns)) old)
+        )
+        (mapcar
+          '(lambda (n o)
+             (cond
+               ((= (car n) (car o)))
+               ((= "1" (car n)) (setq ons (cons n ons)))
+               ((setq offs (cons n offs)))
+             )
+           )
+          recs
+          old
+        )
+        (setq achg (not (equal als alsold)))
+        (cond
+          ((not (and res (= 1 (car res)))) (princ "\nStartup Suite unchanged."))
+          ((not (or ons offs achg)) (princ "\nNo change to the Startup Suite."))
+          (T
+           ;; Each file is written again while it is open in another program:
+           (if achg
+             (if (Dyl:SuiteSave '(lambda () (Dyl:AliasWrite als)) "Aliases.csv")
+               (princ (strcat "\nAliases.csv saved (" (itoa (length als)) " aliases)."))
+               (progn
+                 (setq achg nil)
+                 (princ "\n--> Alias changes dropped.")
+               )
+             )
+           )
+           (if (or ons offs)
+             (cond
+               ((not (Dyl:SuiteSave '(lambda () (Dyl:SuiteWrite recs)) "StartupSuite.csv"))
+                (princ "\n--> Startup Suite changes dropped.")
+               )
+               ((Dyl:SuiteAsk
+                  (list "StartupSuite.csv saved."
+                        (strcat (itoa (length ons)) " item(s) turned on, " (itoa (length offs)) " item(s) turned off.")
+                        "Apply the changes to the current drawing now?"
+                  )
+                  "Yes"
+                  "No"
+                )
+                ;; Commands turned off are undefined (Dyl:autoload defines them
+                ;; again when another file of the same command is still on).
+                ;; Dyl:autoload also defines the aliases again:
+                (foreach r offs
+                  (if (/= "" (nth 1 r)) (set (read (strcat "C:" (nth 1 r))) nil))
+                )
+                (Dyl:autoload)
+                (setq achg nil)
+               )
+               ((princ "\nChanges apply to the drawings opened from now on (or run Dyl-Reload)."))
+             )
+           )
+           ;; Alias changes apply to the current drawing right away:
+           (if achg
+             (progn
+               (Dyl:AliasApply)
+               (princ "\nAliases updated in this drawing (other open drawings: run Dyl-Reload).")
+             )
+           )
+          )
+        )
       )
     )
     (princ)
@@ -2717,8 +2077,8 @@
   ;;; ---------------------------------------------------------------------------
   ;;; Dyl-VSCode: open the whole DynALisp.bundle folder (*dyl:repo) in Visual
   ;;; Studio Code, with its .vscode settings and recommended AutoLISP extension.
-  ;;; When VS Code is not found, the dyl_vscode dialog of Dyl-Suite.dcl guides
-  ;;; its install (winget or download page), then opens the folder. Also the
+  ;;; When VS Code is not found, the window Res\Dyl-VSCode.xaml guides its
+  ;;; install (winget or download page), then opens the folder. Also the
   ;;; "Open in VS Code" button of Dyl-Suite.
   ;;; ---------------------------------------------------------------------------
 
@@ -2773,52 +2133,52 @@
     )
   )
 
-  ;; Install guide (dyl_vscode dialog). Install (winget) and Download page leave
-  ;; it open, Open DynALisp closes it once Code.exe is found. Returns the path of
-  ;; Code.exe, or nil (closed, or the dialog cannot be shown: the steps are
+  ;; Install guide (the window Res\Dyl-VSCode.xaml). Install (winget, 2) and
+  ;; Download page (3) start it, then open the guide again with what to do next
+  ;; (msg); Open DynALisp (1) closes it once Code.exe is found. Returns the path of
+  ;; Code.exe, or nil (closed, or the window cannot be shown: the steps are
   ;; written on the command line):
-  (defun Dyl:VSCodeGuide (/ dch res exe)
-    (if
-      (and (< 0 (setq dch (load_dialog (strcat *dyl:res "\\Dyl-Suite.dcl"))))
-           (new_dialog "dyl_vscode" dch)
-      )
-      (progn
-        (action_tile "wgt"
-                     (strcat "(if (Dyl:VSCodeShell \"cmd.exe\" \"/k winget install --id Microsoft.VisualStudioCode -e --scope user"
-                             " --accept-package-agreements --accept-source-agreements\")"
-                             " (set_tile \"msg\" \"Installing in the black window: wait for Successfully installed, close it, then click Open DynALisp.\")"
-                             " (set_tile \"msg\" \"Unable to start winget: use Download page.\"))"
+  (defun Dyl:VSCodeGuide (/ res exe msg shown)
+    (while
+      (and
+        (setq res (Dyl:WinShow "Dyl-VSCode.xaml" (list (cons "msg" (cond (msg) (""))))))
+        (setq shown T)
+        (cond
+          ((= 2 (car res))
+           (setq msg (if (Dyl:VSCodeShell "cmd.exe"
+                                          (strcat "/k winget install --id Microsoft.VisualStudioCode -e --scope user"
+                                                  " --accept-package-agreements --accept-source-agreements"
+                                          )
+                         )
+                       "Installing in the black window: wait for Successfully installed, close it, then click Open DynALisp."
+                       "Unable to start winget: use Download page."
                      )
-        )
-        (action_tile "web"
-                     (strcat "(if (Dyl:VSCodeShell \"https://code.visualstudio.com/download\" \"\")"
-                             " (set_tile \"msg\" \"Download the Windows User Installer, run it, then click Open DynALisp.\")"
-                             " (set_tile \"msg\" \"Unable to open the browser: go to code.visualstudio.com/download\"))"
-                     )
-        )
-        (action_tile "accept"
-                     (strcat "(if (setq exe (Dyl:VSCodeExe)) (done_dialog 1)"
-                             " (set_tile \"msg\" \"Visual Studio Code is still not found: finish its install, then retry.\"))"
-                     )
-        )
-        (Dyl:DocsTile "Core\\Dyl-Suite.htm")
-        (setq res (start_dialog))
-        (unload_dialog dch)
-        (if (= 1 res) exe)
-      )
-      (progn
-        (if (< 0 dch) (unload_dialog dch))
-        (princ
-          (strcat "\nVisual Studio Code was not found. To install it:"
-                  "\n  1. Run in a command prompt: winget install --id Microsoft.VisualStudioCode -e --scope user"
-                  "\n     or download the Windows User Installer from https://code.visualstudio.com/download"
-                  "\n  2. Run Dyl-VSCode again to open the DynALisp.bundle folder."
-                  "\n  3. In VS Code, trust the folder and install the recommended AutoLISP extension."
+           )
           )
+          ((= 3 (car res))
+           (setq msg (if (Dyl:VSCodeShell "https://code.visualstudio.com/download" "")
+                       "Download the Windows User Installer, run it, then click Open DynALisp."
+                       "Unable to open the browser: go to code.visualstudio.com/download"
+                     )
+           )
+          )
+          ((/= 1 (car res)) nil)
+          ((setq exe (Dyl:VSCodeExe)) nil)
+          ((setq msg "Visual Studio Code is still not found: finish its install, then retry."))
         )
-        nil
       )
     )
+    (if (not shown)
+      (princ
+        (strcat "\nVisual Studio Code was not found. To install it:"
+                "\n  1. Run in a command prompt: winget install --id Microsoft.VisualStudioCode -e --scope user"
+                "\n     or download the Windows User Installer from https://code.visualstudio.com/download"
+                "\n  2. Run Dyl-VSCode again to open the DynALisp.bundle folder."
+                "\n  3. In VS Code, trust the folder and install the recommended AutoLISP extension."
+        )
+      )
+    )
+    exe
   )
 
   ;; Open the bundle in VS Code, the install guide first when it is missing:
@@ -3367,7 +2727,7 @@
   ;;; ----------------------------------------------------------------------------
   ;;; Dyl-Info: version of DynALisp, new version check, links to the GitHub
   ;;; repository and to the module docs, and the core commands
-  ;;; (Resources\Dyl-Info.dcl).
+  ;;; (Res\Dyl-Info.xaml, Res\Dyl-WhatsNew.xaml).
   ;;;
   ;;; Two repositories: the source (*dyl:gitrepo*, private, the one a git clone
   ;;; pulls) and the releases (*dyl:relrepo*, public: read without signing in to
@@ -3572,30 +2932,30 @@
     (reverse res)
   )
 
-  ;;; The What's new window (dyl_whatsnew of Dyl-Info.dcl): head (the line above the
-  ;;; notes), lines (the notes), msg (the line under them), ins (the label of the
-  ;;; Install button, nil: greyed out). T when Install was picked:
-  (defun Dyl:InfoNotesDlg (head lines msg ins / dch sta)
-    (setq dch (load_dialog (strcat *dyl:res "\\Dyl-Info.dcl")))
-    (cond
-      ((> 0 dch) (princ "\n--> Unable to load the dialog : Dyl-Info.dcl"))
-      ((not (new_dialog "dyl_whatsnew" dch)) (princ "\n--> Unable to show the dialog : Dyl-Info.dcl"))
-      (T
-       (set_tile "hed" head)
-       (start_list "lst")
-       (foreach l (cond (lines) ('("(No notes found for these versions in CHANGELOG.md.)"))) (add_list l))
-       (end_list)
-       (set_tile "msg" (cond (msg) ("")))
-       (if ins (set_tile "ins" ins) (mode_tile "ins" 1))
-       (action_tile "ins" "(done_dialog 2)")
-       (action_tile "rel" "(Dyl:SuiteDlgShell (list *dyl:releases*))")
-       (action_tile "cancel" "(done_dialog 0)")
-       (Dyl:DocsTile "Core\\Dyl-Info.htm")
-       (setq sta (start_dialog))
+  ;;; The What's new window (Res\Dyl-WhatsNew.xaml): head (the line above the notes),
+  ;;; lines (the notes), msg (the line under them), ins (the label of the Install button,
+  ;;; nil: greyed out). All releases opens the releases page and shows it again. T when
+  ;;; Install was picked:
+  (defun Dyl:InfoNotesDlg (head lines msg ins / res)
+    (while
+      (and (setq res (Dyl:WinShow "Dyl-WhatsNew.xaml"
+                                  (append (list (cons "hed" head)
+                                                (cons "msg" (cond (msg) ("")))
+                                                (cons "ins" (cond (ins) ("Install")))
+                                                (cons "lst/list"
+                                                      (cond (lines) ('("(No notes found for these versions in CHANGELOG.md.)")))
+                                                )
+                                                (cons "lst" "-1")
+                                          )
+                                          (Dyl:WinOff "ins" (not ins))
+                                  )
+                      )
+           )
+           (= 3 (car res))
       )
+      (Dyl:SuiteDlgShell (list *dyl:releases*))
     )
-    (if (<= 0 dch) (unload_dialog dch))
-    (= 2 sta)
+    (= 2 (car res))
   )
 
   ;;; What's new button of Dyl-Info: the changes of every version up to this one
@@ -3698,12 +3058,14 @@
     )
   )
 
-  ;;; Show the update status and set the update button:
-  (defun Dyl:InfoDlgUpd (/ how ver)
+  ;;; The update status and the update button of the Info window, as values to give:
+  (defun Dyl:InfoWinUpd (/ how ver)
     (setq how (Dyl:InfoUpdHow)
           ver (if (vl-consp *dyl:latest*) (car *dyl:latest*))
     )
-    (set_tile "upd"
+    (append
+      (list
+        (cons "upd"
               (cond
                 ((eq how 'WAIT) (strcat "DynALisp " (vl-bb-ref '*dyl:installing*) " downloaded: it installs when you close AutoCAD."))
                 ((not ver) "Unable to check for a new version (offline or no public release).")
@@ -3711,21 +3073,24 @@
                 ((not (eq how 'NONE)) (strcat "New version available: " ver))
                 ((strcat "Up to date (latest: " ver ")."))
               )
-    )
-    (set_tile "dwn"
+        )
+        (cons "dwn"
               (cond
                 ((eq how 'SETUP) (strcat "Update to " ver "..."))
                 ((eq how 'GIT) (strcat "What's new in " ver "..."))
                 ((eq how 'PAGE) (strcat "Download " ver))
                 ("Update")
               )
+        )
+      )
+      (Dyl:WinOff "dwn" (member how '(NONE WAIT)))
     )
-    (mode_tile "dwn" (if (member how '(NONE WAIT)) 1 0))
   )
 
   ;;; Update button of Dyl-Info: the notes of the versions since this one (the
   ;;; CHANGELOG.md asset of the latest release), whose Install starts the setup (SETUP); a git
-  ;;; clone gets the notes only (GIT); the release page opened when it has no setup (PAGE):
+  ;;; clone gets the notes only (GIT); the release page opened when it has no setup (PAGE).
+  ;;; Returns the status line when the install failed ("-->"), nil else:
   (defun Dyl:InfoUpdate (/ how ver res)
     (setq how (Dyl:InfoUpdHow)
           ver (if (vl-consp *dyl:latest*) (car *dyl:latest*))
@@ -3752,8 +3117,7 @@
        (princ (strcat "\n" (setq res (Dyl:InfoInstall *dyl:latest*))))
       )
     )
-    (Dyl:InfoDlgUpd)
-    (if (and res (vl-string-search "-->" res)) (set_tile "upd" res))
+    (if (and res (vl-string-search "-->" res)) res)
   )
 
   ;;; Automatic updates on (Updates in Dyl-Settings, off by default):
@@ -3821,7 +3185,9 @@
     )
   )
 
-  (defun c:Dyl-Info (/ cmds mods dch sta idx res)
+  ;;; The Info window (Res\Dyl-Info.xaml) is shown again after each button but Run and
+  ;;; Close, which close it with their number (see the window file):
+  (defun c:Dyl-Info (/ cmds mods sta res idx mdx err)
     (if (not *dyl:latest*) (Dyl:InfoCheck))
     ;; Core commands defined, and the modules with a docs index, on the website or on
     ;; this computer (Dyl:DocsFind): ((name . index) ...)
@@ -3837,43 +3203,44 @@
                                   (vl-remove-if '(lambda (x) (wcmatch x "*.*")) (vl-directory-files *dyl:module nil -1))
                           )
                )
-          dch  (load_dialog (strcat *dyl:res "\\Dyl-Info.dcl"))
           idx  0
+          mdx  (cond ((vl-position "DYNALISP" (mapcar 'strcase (mapcar 'car mods)))) (0))
+          sta  T
     )
-    (cond
-      ((> 0 dch) (princ "\n--> Unable to load the dialog : Dyl-Info.dcl"))
-      ((not (new_dialog "dyl_info" dch)) (princ "\n--> Unable to show the dialog : Dyl-Info.dcl"))
-      (T
-       (set_tile "ver" (strcat "Version: " (Dyl:InfoVersion)))
-       (set_tile "acv" (strcat "AutoCAD: " (getvar "PRODUCT") " " (getvar "ACADVER")))
-       (set_tile "pth" (strcat "Folder: " *dyl:repo))
-       (Dyl:InfoDlgUpd)
-       (start_list "mod")
-       (foreach m mods (add_list (car m)))
-       (end_list)
-       (if mods
-         (set_tile "mod" (itoa (cond ((vl-position "DYNALISP" (mapcar 'strcase (mapcar 'car mods)))) (0))))
-         (progn (mode_tile "mod" 1) (mode_tile "mdc" 1))
-       )
-       (start_list "cmd")
-       (foreach c cmds (add_list (strcat (car c) "\t" (cadr c))))
-       (end_list)
-       (set_tile "cmd" "0")
-       (action_tile "dwn" "(Dyl:InfoUpdate)")
-       (action_tile "whn" "(Dyl:InfoWhatsNew)")
-       (action_tile "chk" "(Dyl:InfoCheck) (Dyl:InfoDlgUpd)")
-       (action_tile "git" "(Dyl:SuiteDlgShell (list (if (Dyl:InfoGit-p) *dyl:github* (strcat \"https://github.com/\" *dyl:relrepo*))))")
-       (action_tile "mdc" "(Dyl:SuiteDlgShell (list (cdr (nth (atoi (get_tile \"mod\")) mods))))")
-       (action_tile "cmd" "(setq idx (atoi $value)) (if (= 4 $reason) (done_dialog 2))")
-       (action_tile "run" "(setq idx (atoi (get_tile \"cmd\"))) (done_dialog 2)")
-       (action_tile "cancel" "(done_dialog 0)")
-       (Dyl:DocsTile "Core\\Dyl-Info.htm")
-       (setq sta (start_dialog))
+    (while sta
+      (setq res (Dyl:WinShow "Dyl-Info.xaml"
+                             (append (list (cons "ver" (strcat "Version: " (Dyl:InfoVersion)))
+                                           (cons "acv" (strcat "AutoCAD: " (getvar "PRODUCT") " " (getvar "ACADVER")))
+                                           (cons "pth" (strcat "Folder: " *dyl:repo))
+                                     )
+                                     (Dyl:InfoWinUpd)
+                                     ;; the install failed: its message in place of the status:
+                                     (if err (list (cons "upd" err)))
+                                     (Dyl:WinList "mod" (mapcar 'car mods) (if mods mdx -1))
+                                     (Dyl:WinOff '("mod" "mdc") (not mods))
+                                     (Dyl:WinList "cmd" (mapcar '(lambda (c) (strcat (car c) "\t" (cadr c))) cmds) idx)
+                             )
+                )
+            sta (if res (car res))
+            err nil
+      )
+      (if (member sta '(2 3 4 5 6 7))
+        (setq idx (Dyl:WinIdx res "cmd")
+              mdx (Dyl:WinIdx res "mod")
+        )
+      )
+      (cond
+        ((= 3 sta) (setq err (Dyl:InfoUpdate)))
+        ((= 4 sta) (Dyl:InfoWhatsNew))
+        ((= 5 sta) (Dyl:InfoCheck))
+        ((= 6 sta) (Dyl:SuiteDlgShell (list (if (Dyl:InfoGit-p) *dyl:github* (strcat "https://github.com/" *dyl:relrepo*)))))
+        ((= 7 sta) (if (nth mdx mods) (Dyl:SuiteDlgShell (list (cdr (nth mdx mods))))))
+        ;; Run (2) keeps res for the command picked; Close, or not shown:
+        (T (if (/= 2 sta) (setq res nil)) (setq sta nil))
       )
     )
-    (if (<= 0 dch) (unload_dialog dch))
     ;; Run the command picked (Dyl-Info itself only closes the window):
-    (if (and (= 2 sta) (nth idx cmds) (/= "DYL-INFO" (strcase (car (nth idx cmds)))))
+    (if (and res (= 2 (car res)) (nth idx cmds) (/= "DYL-INFO" (strcase (car (nth idx cmds)))))
       (progn
         (princ (strcat "\n" (car (nth idx cmds))))
         (setq res (vl-catch-all-apply (read (strcat "C:" (car (nth idx cmds)))) nil))

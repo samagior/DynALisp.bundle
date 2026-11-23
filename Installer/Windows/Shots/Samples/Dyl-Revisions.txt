@@ -1,0 +1,32 @@
+# The values of the Revisions window (Res\Dyl-Revisions.xaml) for its picture in the docs, as
+# c:Dyl-Revisions gives them for a project of four revisions, two issued, the third one picked:
+prj=Project: Maison Tremblay (24-118)   P:\Projects\24-118 Maison Tremblay\24-118.apj
++rev/rows=1\tNumeric\t2026-09-12\tIssued for permit\tCity of Laval\tSM\t1\t1\t1
++rev/rows=2\tNumeric\t2026-10-03\tIssued for tender\tContractors\tSM\t1\t2\t2
++rev/rows=3\tNumeric\t2026-11-05\tRevised window schedule\tContractor\tSM\t\t3\t3
++rev/rows=4\tNumeric\t2026-11-20\tStructural coordination\t\tSM\t\t4\t4
+rev.sel=2
++rev/new=\tNumeric\t2026-11-23\t\t\t\t\t\t
+num/list=Numeric|Alphabetic|None
+sht/list=A-000 Cover\tA-000\t\t1, 2|A-101 Floor Plans\tA-101\tCloud\t1, 2, 3|A-102 Floor Plans\tA-102\tYes\t1, 2, 3|A-201 Elevations\tA-201\t\t1, 2|A-301 Sections\tA-301\tYes\t1, 2, 3, 4|A-501 Details\tA-501\tYes, cloud\t2, 3|S-101 Foundation Plan\tS-101\t\t4|S-201 Framing Plan\tS-201\t\t4
+sht=1 2
++sht/by=A-000 Cover\TA-000\TYes\T1, 2\tA-101 Floor Plans\TA-101\TYes\T1, 2, 3\tA-102 Floor Plans\TA-102\TYes\T1, 2, 3\tA-201 Elevations\TA-201\TYes\T1, 2\tA-301 Sections\TA-301\TYes\T1, 2, 3, 4\tA-501 Details\TA-501\T\T2, 3\tS-101 Foundation Plan\TS-101\T\T4\tS-201 Framing Plan\TS-201\T\T4
++sht/by=A-000 Cover\TA-000\TYes\T1, 2\tA-101 Floor Plans\TA-101\TYes\T1, 2, 3\tA-102 Floor Plans\TA-102\TYes\T1, 2, 3\tA-201 Elevations\TA-201\TYes\T1, 2\tA-301 Sections\TA-301\TYes\T1, 2, 3, 4\tA-501 Details\TA-501\TYes\T2, 3\tS-101 Foundation Plan\TS-101\T\T4\tS-201 Framing Plan\TS-201\T\T4
++sht/by=A-000 Cover\TA-000\T\T1, 2\tA-101 Floor Plans\TA-101\TCloud\T1, 2, 3\tA-102 Floor Plans\TA-102\TYes\T1, 2, 3\tA-201 Elevations\TA-201\T\T1, 2\tA-301 Sections\TA-301\TYes\T1, 2, 3, 4\tA-501 Details\TA-501\TYes, cloud\T2, 3\tS-101 Foundation Plan\TS-101\T\T4\tS-201 Framing Plan\TS-201\T\T4
++sht/by=A-000 Cover\TA-000\T\T1, 2\tA-101 Floor Plans\TA-101\T\T1, 2, 3\tA-102 Floor Plans\TA-102\T\T1, 2, 3\tA-201 Elevations\TA-201\T\T1, 2\tA-301 Sections\TA-301\TYes\T1, 2, 3, 4\tA-501 Details\TA-501\T\T2, 3\tS-101 Foundation Plan\TS-101\TYes\T4\tS-201 Framing Plan\TS-201\TYes\T4
++shh/by=Rev. 1
++shh/by=Rev. 2
++shh/by=Rev. 3
++shh/by=Rev. 4
++scn/by=8 sheet(s), 5 with revision 1
++scn/by=8 sheet(s), 6 with revision 2
++scn/by=8 sheet(s), 4 with revision 3
++scn/by=8 sheet(s), 3 with revision 4
+shh=Rev. 3
+scn=8 sheet(s), 4 with revision 3
+pnm/list=Per project|Per sheet
+pnm=0
+pst/list=1|0
+pst=0
+tbs=2 title blocks
+error=

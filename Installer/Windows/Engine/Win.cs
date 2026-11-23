@@ -24,7 +24,21 @@
 //   dyl:Win.EnabledBy="rea,!lkk"            enabled while every key is on ("1"), or off with !
 //   dyl:Win.VisibleBy="prp"                 shown while every key is on (or off with !)
 //   dyl:Win.Excludes="lkk"                  on a checkbox: turning it on turns those off
-//   dyl:Win.Close="4"                       on a button: closes the window, the Lisp gets 4
+//   dyl:Win.Close="4"                       on a button: closes the window, the Lisp gets 4;
+//                                           on a ListBox: an item double-clicked closes it;
+//                                           on a ComboBox: an item picked closes it
+//   dyl:Win.Fills="var:0,val:1"             on a ListBox: the item picked (divided by tabs)
+//                                           puts its column 0 in the box var, 1 in val
+//   dyl:Win.Filter="lst:0,2"                on a TextBox: lists only the items of lst whose
+//                                           columns 0 or 2 hold each word typed (accents and
+//                                           case ignored); "lst:4;ind:5": the column 5 while
+//                                           the checkbox ind is on
+//   dyl:Win.CountOf="lst"                   on a TextBlock: how many items of lst are listed,
+//   dyl:Win.CountText="{0} of {1} words"    as this text says (listed, all)
+//   dyl:Win.ItemsBy="rev"                   on a ListBox or a TextBlock: its items (its text)
+//                                           follow the item picked in the list rev: the row i
+//                                           of its table key/by while the item i is the first
+//                                           one selected (the indexes selected are kept)
 //   dyl:Win.Open="Dyl-Settings-Display.xaml" on a button: opens that window over this one,
 //                                           beside this file; its OK keeps its values,
 //                                           its Cancel puts them back
@@ -60,8 +74,13 @@
 //   dyl:Win.SummaryEmpty="No rows."         in its place while there is no row
 //
 // A button with IsDefault closes the window with 1 (OK, Save), one with IsCancel with 0.
+//
+// The items of a list given by the Lisp (key/list) may hold columns divided by a tab: its
+// template shows one with {Binding Converter={x:Static dyl:Cell.Converter},
+// ConverterParameter=1} (the second one).
 
 using System.Windows;
+using System.Windows.Data;
 
 namespace DynALisp.Windows
 {
@@ -87,6 +106,21 @@ namespace DynALisp.Windows
         public static void SetExcludes(DependencyObject o, string v) => o.SetValue(ExcludesProperty, v);
 
         public static readonly DependencyProperty CloseProperty = Prop("Close");
+        public static string GetFills(DependencyObject o) => (string)o.GetValue(FillsProperty);
+        public static void SetFills(DependencyObject o, string v) => o.SetValue(FillsProperty, v);
+        public static readonly DependencyProperty FillsProperty = Prop("Fills");
+        public static string GetFilter(DependencyObject o) => (string)o.GetValue(FilterProperty);
+        public static void SetFilter(DependencyObject o, string v) => o.SetValue(FilterProperty, v);
+        public static readonly DependencyProperty FilterProperty = Prop("Filter");
+        public static string GetCountOf(DependencyObject o) => (string)o.GetValue(CountOfProperty);
+        public static void SetCountOf(DependencyObject o, string v) => o.SetValue(CountOfProperty, v);
+        public static readonly DependencyProperty CountOfProperty = Prop("CountOf");
+        public static string GetCountText(DependencyObject o) => (string)o.GetValue(CountTextProperty);
+        public static void SetCountText(DependencyObject o, string v) => o.SetValue(CountTextProperty, v);
+        public static readonly DependencyProperty CountTextProperty = Prop("CountText");
+        public static string GetItemsBy(DependencyObject o) => (string)o.GetValue(ItemsByProperty);
+        public static void SetItemsBy(DependencyObject o, string v) => o.SetValue(ItemsByProperty, v);
+        public static readonly DependencyProperty ItemsByProperty = Prop("ItemsBy");
         public static string GetClose(DependencyObject o) => (string)o.GetValue(CloseProperty);
         public static void SetClose(DependencyObject o, string v) => o.SetValue(CloseProperty, v);
 
@@ -162,5 +196,20 @@ namespace DynALisp.Windows
         public static readonly On Converter = new On();
         public object Convert(object value, System.Type t, object p, System.Globalization.CultureInfo c) => (value as string) == "1";
         public object ConvertBack(object value, System.Type t, object p, System.Globalization.CultureInfo c) => value is bool b && b ? "1" : "0";
+    }
+
+    // The column n (ConverterParameter, from 0) of an item divided by tabs ("CC\tChange
+    // Color"), "" when it has none: {Binding Converter={x:Static dyl:Cell.Converter},
+    // ConverterParameter=1}:
+    public sealed class Cell : System.Windows.Data.IValueConverter
+    {
+        public static readonly Cell Converter = new Cell();
+        public object Convert(object value, System.Type t, object p, System.Globalization.CultureInfo c)
+        {
+            var f = (value as string ?? "").Split('\t');
+            int.TryParse(p as string ?? "0", System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int n);
+            return n >= 0 && n < f.Length ? f[n] : "";
+        }
+        public object ConvertBack(object value, System.Type t, object p, System.Globalization.CultureInfo c) => Binding.DoNothing;
     }
 }

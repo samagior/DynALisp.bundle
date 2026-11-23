@@ -1,0 +1,6 @@
+# The values of the name prompt (Res\Dyl-Name.xaml) for its picture in the docs, as sv:dlgname
+# gives them for a profile copied:
+win/title=DynALisp - Copy Profile
+lbl=Profile name
+nam=Drafting - Copy
+error=

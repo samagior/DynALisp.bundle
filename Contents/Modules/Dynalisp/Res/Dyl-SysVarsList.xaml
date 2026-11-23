@@ -1,0 +1,90 @@
+<!--
+  Dyl-SysVarsList.xaml - every system variable of AutoCAD (List... of Dyl-SysVars)
+  Copyright (C) 2026  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Shown by sv:browse (Apps\Setup\Dyl-SysVars.lsp), its title (win/title) naming the list it adds
+  to: the variables of Express\sysvdlg.dat (lst: name TAB current value TAB short description
+  TAB what it is TAB its description), filtered as Search is typed (Win.Filter), the one picked
+  described under the list (Win.Fills). Add (2) adds it to the list the window was opened from
+  and AutoCAD Help (4) opens its page: the Lisp shows the window again. A variable
+  double-clicked (3) closes it: the Lisp puts the variable in the box of that list.
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - System Variables" dyl:Win.Docs="Setup\Dyl-SysVars.htm">
+  <Window.Resources>
+    <GridLength x:Key="ColVar">220</GridLength>
+    <GridLength x:Key="ColCur">150</GridLength>
+  </Window.Resources>
+  <StackPanel Margin="14" Width="900">
+    <GroupBox Header="System variables" Margin="0">
+      <StackPanel>
+        <DockPanel Margin="0,0,0,10">
+          <TextBlock x:Name="cnt" DockPanel.Dock="Right" Style="{DynamicResource Dyl.Desc}" VerticalAlignment="Center" Margin="12,0,0,0"
+                     dyl:Win.CountOf="lst" dyl:Win.CountText="{}{0} of {1} variables"/>
+          <TextBox x:Name="flt" Style="{DynamicResource Dyl.Search}" Tag="Search" MaxLength="64" dyl:Win.Filter="lst:0,2"/>
+        </DockPanel>
+        <Grid Margin="6,0,24,4">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{StaticResource ColVar}"/>
+            <ColumnDefinition Width="{StaticResource ColCur}"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Variable"/>
+          <TextBlock Grid.Column="1" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Current value"/>
+          <TextBlock Grid.Column="2" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Description"/>
+        </Grid>
+        <ListBox x:Name="lst" Height="380" dyl:Win.Close="3" dyl:Win.Fills="inf:3,dsc:4">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="{StaticResource ColVar}"/>
+                  <ColumnDefinition Width="{StaticResource ColCur}"/>
+                  <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Converter={x:Static dyl:Cell.Converter}, ConverterParameter=0}" Margin="0,0,8,0"/>
+                <TextBlock Grid.Column="1" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"
+                           Text="{Binding Converter={x:Static dyl:Cell.Converter}, ConverterParameter=1}"/>
+                <TextBlock Grid.Column="2" Foreground="{DynamicResource Dyl.Muted}" TextTrimming="CharacterEllipsis"
+                           Text="{Binding Converter={x:Static dyl:Cell.Converter}, ConverterParameter=2}"/>
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </StackPanel>
+    </GroupBox>
+
+    <!-- The variable picked: what it is, then the first paragraphs of its description: -->
+    <GroupBox Header="Description">
+      <StackPanel MinHeight="110">
+        <TextBlock x:Name="inf" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,6"/>
+        <TextBlock x:Name="dsc" TextWrapping="Wrap"/>
+      </StackPanel>
+    </GroupBox>
+
+    <TextBlock x:Name="msg" Foreground="{DynamicResource Dyl.Accent}" TextWrapping="Wrap" Margin="2,10,0,0"/>
+    <DockPanel Margin="0,12,0,0">
+      <Button x:Name="add" DockPanel.Dock="Left" Margin="0" Content="_Add" dyl:Win.Close="2" dyl:Win.EnabledBy="lst!=-1"/>
+      <Button x:Name="doc" DockPanel.Dock="Left" Content="AutoCAD Help" dyl:Win.Close="4" dyl:Win.EnabledBy="lst!=-1"/>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="8,0,0,0">
+        <Button Content="Close" IsCancel="True"/>
+        <Button x:Name="docs" Content="Open Docs"/>
+      </StackPanel>
+    </DockPanel>
+  </StackPanel>
+</Window>

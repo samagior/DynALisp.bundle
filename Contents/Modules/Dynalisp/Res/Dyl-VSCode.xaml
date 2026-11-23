@@ -1,0 +1,51 @@
+<!--
+  Dyl-VSCode.xaml - the install guide of Visual Studio Code, shown when Dyl-VSCode does not find it
+  Copyright (C) 2026  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Shown by Dyl:VSCodeGuide (VSCode region of Resources\dynalisp.mnl). Install (winget) closes
+  it with 2 and Download page with 3: the Lisp starts them, then shows it again with what to
+  do next (msg). Open DynALisp (1): the Lisp opens the folder once Code.exe is found, else
+  shows it again with its message.
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - Visual Studio Code" dyl:Win.Docs="Core\Dyl-Suite.htm">
+  <StackPanel Margin="14" Width="560">
+    <GroupBox Header="Visual Studio Code was not found" Margin="0">
+      <StackPanel>
+        <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="0,0,0,10"
+                   Text="A free code editor from Microsoft, used to read and edit the Lisp files of DynALisp."/>
+        <TextBlock TextWrapping="Wrap" Margin="0,0,0,6"
+                   Text="1. Install it: Install (winget) installs it for your Windows user, no administrator rights needed. Or Download page: get the User Installer for Windows, run it and keep Add to PATH checked."/>
+        <TextBlock TextWrapping="Wrap" Margin="0,0,0,6"
+                   Text="2. Click Open DynALisp: the DynALisp.bundle folder opens in Visual Studio Code."/>
+        <TextBlock TextWrapping="Wrap"
+                   Text="3. In Visual Studio Code, trust the folder and install the recommended AutoLISP extension (Autodesk) when asked."/>
+        <TextBlock x:Name="msg" Foreground="{DynamicResource Dyl.Accent}" TextWrapping="Wrap" Margin="0,10,0,0"/>
+      </StackPanel>
+    </GroupBox>
+    <DockPanel Margin="0,12,0,0">
+      <Button x:Name="wgt" DockPanel.Dock="Left" Margin="0" Content="Install (winget)" dyl:Win.Close="2"/>
+      <Button x:Name="web" DockPanel.Dock="Left" Content="Download page" dyl:Win.Close="3"/>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="8,0,0,0">
+        <Button Content="_Open DynALisp" IsDefault="True"/>
+        <Button Content="Close" IsCancel="True"/>
+        <Button x:Name="docs" Content="Open Docs"/>
+      </StackPanel>
+    </DockPanel>
+  </StackPanel>
+</Window>

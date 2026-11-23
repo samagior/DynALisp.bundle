@@ -1,0 +1,12 @@
+# The values of the Info window (Res\Dyl-Info.xaml) for its picture in the docs, as c:Dyl-Info
+# gives them: a setup installation, up to date, the core commands defined.
+ver=Version: 1.1
+upd=Up to date (latest: 1.1).
+acv=AutoCAD: AutoCAD 25.0s (LMS Tech)
+pth=Folder: C:\Users\<user>\AppData\Roaming\Autodesk\ApplicationPlugins\DynALisp.bundle
+dwn=Update
+dwn/off=1
+mod/list=Dynalisp|LeeMac
+mod=0
+cmd/list=Dyl-Info\tThis window: version, updates, links and core commands|Dyl-Suite\tTurn the module commands on or off, edit their aliases, open their docs|Dyl-Settings\tDrawing settings, file preferences, reactors, commands|Dyl-PrepSuite\tOutput prep: the steps run before the saves, prints and REGEN|Dyl-UserFiles\tYour edited files (presets, aliases...): open, reset or make default|Dyl-Docs\tOpen the docs of the DynALisp module|LM-Docs\tOpen the docs of the LeeMac sample module|Dyl-Reload\tLoad the module commands again, as turned on in Dyl-Suite|Dyl-SuiteUpdate\tRebuild the command index (StartupSuite.csv) from the Lisp files|Dyl-VSCode\tOpen the DynALisp folder in Visual Studio Code to read or edit it|CMDINDEX\tExport the commands of a Lisp folder to a CSV file|Dyl-RestoreCommands\tUse the native save, plot, publish, preview and regen commands this session|TBLFIX\tFit every table row of the drawing to its text height now
+cmd=0

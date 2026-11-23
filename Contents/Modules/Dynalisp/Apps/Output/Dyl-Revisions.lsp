@@ -17,7 +17,8 @@
 ;;-------------------------=={ End of Licence }==------------------------;;
 
 ;;  The revisions, the sheets, their files and the update of the drawings are in
-;;  Modules\Dynalisp\Remote\Dyl-Revisions.lsp (read it first). This file has the windows:
+;;  Modules\Dynalisp\Remote\Dyl-Revisions.lsp (read it first). This file has the windows (Res\Dyl-Revisions.xaml,
+;;  Res\Dyl-RevisionTitleBlocks.xaml):
 ;;
 ;;  - The Revisions window (Dyl-Revisions): the revisions of the project of the drawing,
 ;;    their parameters, the numbering of the project, and its sheets with the revisions
@@ -29,19 +30,7 @@
 ;;  And the commands that draw a revision cloud with its tag (Pst-RevisionCloud) and update
 ;;  the drawing (Pst-RevisionsUpdate).
 
-;;-------------------------=={ Dialogs }==------------------------;;
-
-;;  The windows: Modules\Dynalisp\Res\Dyl-Revisions.dcl (dyl_rev, dyl_revtb). Returns its path:
-(defun Dyl:RevDcl ()
-  (strcat (if *dyl:dylres *dyl:dylres (strcat *dyl:dyl "\\Res")) "\\Dyl-Revisions.dcl")
-)
-
-;;  Fill a list or popup tile with the strings lst:
-(defun Dyl:RevFillList (key lst)
-  (start_list key)
-  (foreach x lst (add_list x))
-  (end_list)
-)
+;;-------------------------=={ Windows }==------------------------;;
 
 ;;  Indexes "0 3" <-> (0 3):
 (defun Dyl:RevSelOf (str) (if (and str (/= "" str)) (read (strcat "(" str ")"))))
@@ -68,62 +57,32 @@
   (cond ((= 0 n) "None") ((= 1 n) "1 title block") ((strcat (itoa n) " title blocks")))
 )
 
-;;  Fill the list and show the title block shown:
-(defun Dyl:RevBlocksFill ()
-  (Dyl:RevFillList "tbl"
-                   (mapcar '(lambda (b) (strcat (car b) "\t" (cadr b) "\t" (if (= "Oldest" (caddr b)) "Oldest" "Newest"))) tb:lst)
+;;  A title block as the window gave it back, made right: the block and the tags in capitals,
+;;  the rows a whole number, Row 1 Oldest or Newest:
+(defun Dyl:RevBlocksFix (b / i)
+  (setq i -1)
+  (mapcar '(lambda (v)
+             (setq i (1+ i)
+                   v (vl-string-trim " " (cond (v) ("")))
+             )
+             (cond
+               ((= 1 i) (itoa (atoi v)))
+               ((= 2 i) (if (= "Oldest" v) "Oldest" "Newest"))
+               ((strcase v))
+             )
+           )
+          (list (nth 0 b) (nth 1 b) (nth 2 b) (nth 3 b) (nth 4 b) (nth 5 b) (nth 6 b) (nth 7 b) (nth 8 b) (nth 9 b))
   )
-  (set_tile "tbl" (Dyl:RevSelStr tb:sel))
-  (Dyl:RevBlocksShow)
 )
 
-;;  The fields: the title block shown (the first one selected), greyed out when none is
-;;  selected; the block name for one only:
-(defun Dyl:RevBlocksShow (/ b on)
-  (setq b  (if tb:sel (nth (car tb:sel) tb:lst))
-        on (if b 0 1)
-  )
-  (set_tile "tbx" (if (cdr tb:sel) (strcat "Parameters (" (itoa (length tb:sel)) " selected)") "Parameters"))
-  (set_tile "nam" (if b (car b) ""))
-  (set_tile "rws" (if b (cadr b) ""))
-  (set_tile "fst" (if (and b (= "Oldest" (caddr b))) "1" "0"))
-  (foreach i '(3 4 5 6 7 8 9) (set_tile (strcat "a" (itoa i)) (if b (nth i b) "")))
-  (foreach k '("rws" "fst" "a3" "a4" "a5" "a6" "a7" "a8" "a9") (mode_tile k on))
-  (mode_tile "nam" (if (and b (not (cdr tb:sel))) 0 1))
-  (mode_tile "del" on)
-)
-
-;;  A field changed: its value given to every title block selected (i: its column):
-(defun Dyl:RevBlocksPut (i val)
-  (setq val (strcase (vl-string-trim " " val)))
+;;  Why the title blocks cannot be saved, nil when they can (the window checks them first):
+(defun Dyl:RevBlocksCheck (/ v)
   (cond
-    ((and (= 0 i) (= "" val)) (set_tile "error" "A title block needs a block name (wildcards * and ? can be used)."))
-    ((and (= 1 i) (or (not (distof val 2)) (> 0 (atoi val)) (< 50 (atoi val)) (/= (atoi val) (distof val 2))))
-     (set_tile "error" "Rows: a whole number from 0 to 50.")
-    )
-    (T
-     (set_tile "error" "")
-     (if (= 2 i) (setq val (if (= "1" val) "Oldest" "Newest")))
-     (foreach s tb:sel (setq tb:lst (Remote>>Dyl:ListSubst tb:lst s (Remote>>Dyl:ListSubst (nth s tb:lst) i val))))
-     (Dyl:RevBlocksFill)
+    ((vl-some '(lambda (b) (= "" (car b))) tb:lst) "A title block needs a block name (wildcards * and ? can be used).")
+    ((vl-some '(lambda (b) (not (and (setq v (distof (cadr b) 2)) (<= 0 v 50) (= v (fix v))))) tb:lst)
+     "Rows: a whole number from 0 to 50."
     )
   )
-)
-
-;;  A new title block, selected:
-(defun Dyl:RevBlocksNew ()
-  (setq tb:lst (append tb:lst (list (list "*TITLE*" "5" "Oldest" "" "" "" "" "" "" "")))
-        tb:sel (list (1- (length tb:lst)))
-  )
-  (Dyl:RevBlocksFill)
-)
-
-(defun Dyl:RevBlocksDelete (/ i)
-  (setq i -1
-        tb:lst (vl-remove-if '(lambda (b) (member (setq i (1+ i)) tb:sel)) tb:lst)
-        tb:sel nil
-  )
-  (Dyl:RevBlocksFill)
 )
 
 ;;  Words of a tag: its letters, cut at every other character (REV#_DATE: REV DATE):
@@ -221,44 +180,39 @@
   )
 )
 
-;;  The Revision Title Blocks window. OK saves RevisionBlocks.csv (the user copy). Returns T
+;;  The Revision Title Blocks window (Res\Dyl-RevisionTitleBlocks.xaml): the title blocks
+;;  are edited in the window (a list of rows); Pick... (3) closes it, the title block picked is
+;;  guessed and the window shown again. OK saves RevisionBlocks.csv (the user copy). Returns T
 ;;  when saved:
-(defun Dyl:RevBlocksDialog (/ tb:lst tb:sel dcl id sta)
+(defun Dyl:RevBlocksDialog (/ tb:lst tb:sel res sta err)
   (setq tb:lst (Dyl:RevBlocksStr)
         tb:sel (if tb:lst '(0))
-        dcl    (Dyl:RevDcl)
-        id     (load_dialog dcl)
         sta    3
   )
-  ;;  Code 3: Pick..., then this window again:
-  (while (= 3 sta)
-    (setq sta nil)
-    (if (and (<= 0 id) (new_dialog "dyl_revtb" id))
-      (progn
-        (Dyl:RevFillList "thd" '("Block\tRows\tRow 1"))
-        (Dyl:RevFillList "fst" '("Newest revision" "Oldest revision"))
-        (Dyl:LineTile "ln1")
-        (Dyl:LineTile "ln2")
-        (Dyl:RevBlocksFill)
-        (action_tile "tbl" "(setq tb:sel (Dyl:RevSelOf $value)) (Dyl:RevBlocksShow)")
-        (action_tile "nam" "(Dyl:RevBlocksPut 0 $value)")
-        (action_tile "rws" "(Dyl:RevBlocksPut 1 $value)")
-        (action_tile "fst" "(Dyl:RevBlocksPut 2 $value)")
-        (foreach i '(3 4 5 6 7 8 9)
-          (action_tile (strcat "a" (itoa i)) (strcat "(Dyl:RevBlocksPut " (itoa i) " $value)"))
-        )
-        (action_tile "new" "(Dyl:RevBlocksNew)")
-        (action_tile "del" "(Dyl:RevBlocksDelete)")
-        (action_tile "pck" "(done_dialog 3)")
-        (action_tile "accept" "(done_dialog 1)")
-        (Dyl:DocsTile "Output\\Dyl-Revisions.htm")
-        (setq sta (start_dialog))
-      )
-      (alert "\nError: the Revision Title Blocks window could not be loaded")
+  ;;  3: Pick..., then this window again; 5: shown again with why it cannot be saved:
+  (while (member sta '(3 5))
+    (setq res (Dyl:WinShow "Dyl-RevisionTitleBlocks.xaml"
+                           (list (cons "tbl/rows" tb:lst)
+                                 (cons "tbl.sel" (Dyl:RevSelStr tb:sel))
+                                 (list "tbl/new" (list "*TITLE*" "5" "Oldest" "" "" "" "" "" "" ""))
+                                 (list "fst/list" "Newest revision" "Oldest revision")
+                                 (list "fst/vals" "Newest" "Oldest")
+                                 (cons "error" (cond (err) ("")))
+                           )
+              )
+          sta (if res (car res))
+          err nil
     )
-    (if (= 3 sta) (Dyl:RevBlocksPick))
+    (if res
+      (setq tb:lst (mapcar 'Dyl:RevBlocksFix (cdr (assoc "tbl/rows" (cdr res))))
+            tb:sel (Dyl:RevSelOf (Dyl:WinGet res "tbl.sel"))
+      )
+    )
+    (cond
+      ((= 3 sta) (Dyl:RevBlocksPick))
+      ((and (= 1 sta) (setq err (Dyl:RevBlocksCheck))) (setq sta 5))
+    )
   )
-  (if (<= 0 id) (unload_dialog id))
   (cond
     ((/= 1 sta) nil)
     ((Remote>>Dyl:RevCsvWrite (Dyl:UserFileW (Remote>>Dyl:RevBlocksFile)) *rev:blkhdr* tb:lst)
@@ -305,26 +259,6 @@
   (vl-remove-if '(lambda (r) (member (car r) ids)) rv:revs)
 )
 
-;;  Line of the revisions list: sequence, number (per project, or how it counts per sheet),
-;;  date, description, issued:
-(defun Dyl:RevLine (r i nums)
-  (strcat (itoa (1+ i))
-          "\t"
-          (cond
-            ((= "None" (nth 1 r)) "-")
-            ((/= "Sheet" (cdr (assoc "Numbering" rv:sets))) (cdr (assoc (car r) nums)))
-            ((= "Numeric" (nth 1 r)) (strcat (cdr (assoc "Start" rv:sets)) "..."))
-            ("A...")
-          )
-          "\t"
-          (nth 2 r)
-          "\t"
-          (nth 3 r)
-          "\t"
-          (if (Dyl:RevIssued-p r) "Issued" "")
-  )
-)
-
 ;;  Name of a sheet in the list: its file in the sheet folder, without .dwg:
 (defun Dyl:RevSheetName (s / full sub nam)
   (setq full (Remote>>Dyl:RevFull rv:prj (car s))
@@ -363,99 +297,104 @@
   )
 )
 
-;;  Fill the revisions list (the ones of rv:sel selected) and the sheets list:
-(defun Dyl:RevFill (/ nums i)
-  (setq nums (Dyl:RevAllNumbers) i -1)
-  (Dyl:RevFillList "rev" (mapcar '(lambda (r) (Dyl:RevLine r (setq i (1+ i)) nums)) rv:revs))
-  (set_tile "rev" (Dyl:RevSelStr rv:sel))
-  (Dyl:RevSheetsFill)
-  (Dyl:RevShow)
+;;  The number shown of a revision: per project, or how it counts per sheet:
+(defun Dyl:RevNumberOf (r nums)
+  (cond
+    ((= "None" (nth 1 r)) "-")
+    ((/= "Sheet" (cdr (assoc "Numbering" rv:sets))) (cdr (assoc (car r) nums)))
+    ((= "Numeric" (nth 1 r)) (strcat (cdr (assoc "Start" rv:sets)) "..."))
+    ("A...")
+  )
 )
 
-;;  Fill the sheets list (the ones of rv:ssel selected), its column of the revision shown:
-(defun Dyl:RevSheetsFill (/ shown all)
-  (setq shown (if rv:sel (car (nth (car rv:sel) rv:revs)))
-        all   (Dyl:RevAllNumbers)
-  )
-  (Dyl:RevFillList "shd" (list (strcat "Sheet\tLayout\t" (if rv:sel (strcat "Rev. " (itoa (1+ (car rv:sel)))) "") "\tRevisions")))
-  (Dyl:RevFillList "sht" (mapcar '(lambda (s) (Dyl:RevSheetLine s shown all)) rv:shts))
-  (set_tile "sht" (Dyl:RevSelStr rv:ssel))
-  (set_tile "sbx"
-            (strcat "Sheets ("
-                    (itoa (length rv:shts))
-                    (if shown
-                      (strcat ", "
-                              (itoa (length (vl-remove-if-not '(lambda (s) (or (member shown (caddr s)) (member shown (cadddr s)))) rv:shts)))
-                              " with revision "
-                              (itoa (1+ (car rv:sel)))
-                      )
-                      ""
-                    )
-                    ")"
+;;  Row of the revisions list: its columns (id numbering date description issuedto
+;;  issuedby issued), then its sequence and its number, shown:
+(defun Dyl:RevRow (r i nums)
+  (append r (list (itoa (1+ i)) (Dyl:RevNumberOf r nums)))
+)
+
+;;  How many sheets, and with the revision id:
+(defun Dyl:RevSheetsCount (id i)
+  (strcat (itoa (length rv:shts))
+          " sheet(s)"
+          (if id
+            (strcat ", "
+                    (itoa (length (vl-remove-if-not '(lambda (s) (or (member id (caddr s)) (member id (cadddr s)))) rv:shts)))
+                    " with revision "
+                    (itoa (1+ i))
             )
+            ""
+          )
   )
 )
 
-;;  The fields: the revision shown (the first one selected), greyed out when none is
-;;  selected or one of the selected is issued (Issued itself stays, to take it back); the
-;;  buttons that need a selection:
-(defun Dyl:RevShow (/ r sel lock one)
-  (setq sel  (Dyl:RevSelRevs)
-        r    (car sel)
-        lock (or (not r) (vl-some 'Dyl:RevIssued-p sel))
-        one  (and r (not (cdr sel)) (not (Dyl:RevIssued-p r)))
+;;  The values of the window (Res\Dyl-Revisions.xaml): the revisions (rows edited in the
+;;  window), the project, and the sheets for each revision picked (sht/by, shh/by, scn/by:
+;;  the window shows those of the first revision selected):
+(defun Dyl:RevWinVals (/ nums i shown)
+  (setq nums  (Dyl:RevAllNumbers)
+        i     -1
+        rv:sel  (vl-remove-if-not '(lambda (n) (nth n rv:revs)) rv:sel)
+        rv:ssel (vl-remove-if-not '(lambda (n) (nth n rv:shts)) rv:ssel)
+        shown (if rv:sel (car (nth (car rv:sel) rv:revs)))
   )
-  (set_tile "pbx" (if (cdr sel) (strcat "Parameters (" (itoa (length sel)) " selected)") "Parameters"))
-  (set_tile "num" (itoa (if r (cond ((vl-position (nth 1 r) *rev:numberings*)) (0)) 0)))
-  (set_tile "dat" (if r (nth 2 r) ""))
-  (set_tile "dsc" (if r (nth 3 r) ""))
-  (set_tile "ito" (if r (nth 4 r) ""))
-  (set_tile "iby" (if r (nth 5 r) ""))
-  (set_tile "iss" (if (and r (Dyl:RevIssued-p r)) "1" "0"))
-  (foreach k '("num" "dat" "dsc" "ito" "iby") (mode_tile k (if lock 1 0)))
-  ;;  Never deleted when an issued revision after it would be numbered otherwise:
-  (mode_tile "del" (if (or lock (not (Dyl:RevKeepsIssued-p (Dyl:RevWithoutSel)))) 1 0))
-  (mode_tile "iss" (if r 0 1))
-  ;;  Moved one at a time, never past an issued revision (its number would change):
-  (mode_tile "up" (if (and one (< 0 (car rv:sel)) (not (Dyl:RevIssued-p (nth (1- (car rv:sel)) rv:revs)))) 0 1))
-  (mode_tile "dn"
-             (if (and one
-                      (< (car rv:sel) (1- (length rv:revs)))
-                      (not (Dyl:RevIssued-p (nth (1+ (car rv:sel)) rv:revs)))
-                 )
-               0
-               1
+  (append
+    (list (cons "prj"
+                (strcat "Project: "
+                        (nth 2 rv:prj)
+                        (if (/= "" (nth 3 rv:prj)) (strcat " (" (nth 3 rv:prj) ")") "")
+                        "   "
+                        (car rv:prj)
+                )
+          )
+          (cons "rev/rows" (mapcar '(lambda (r) (Dyl:RevRow r (setq i (1+ i)) nums)) rv:revs))
+          (cons "rev.sel" (Dyl:RevSelStr rv:sel))
+          (list "rev/new" (list "" "Numeric" (Dyl:RevToday) "" "" "" "" "" ""))
+          (cons "num/list" *rev:numberings*)
+          (cons "sht/list" (mapcar '(lambda (s) (Dyl:RevSheetLine s shown nums)) rv:shts))
+          (cons "sht" (Dyl:RevSelStr rv:ssel))
+          (cons "shh" (if rv:sel (strcat "Rev. " (itoa (1+ (car rv:sel)))) ""))
+          (cons "scn" (Dyl:RevSheetsCount shown (car rv:sel)))
+          (cons "tbs" (Dyl:RevBlocksSummary))
+          (cons "error" (cond (rv:msg) ("")))
+    )
+    (if rv:revs
+      (list (cons "sht/by" (mapcar '(lambda (r) (mapcar '(lambda (s) (Dyl:RevSheetLine s (car r) nums)) rv:shts)) rv:revs))
+            (progn (setq i -1) (cons "shh/by" (mapcar '(lambda (r) (list (strcat "Rev. " (itoa (1+ (setq i (1+ i))))))) rv:revs)))
+            (progn (setq i -1) (cons "scn/by" (mapcar '(lambda (r) (list (Dyl:RevSheetsCount (car r) (setq i (1+ i))))) rv:revs)))
+      )
+    )
+    (Dyl:WinList "pnm" '("Per project" "Per sheet") (if (= "Sheet" (cdr (assoc "Numbering" rv:sets))) 1 0))
+    (Dyl:WinList "pst" '("1" "0") (if (= "0" (cdr (assoc "Start" rv:sets))) 1 0))
+  )
+)
+
+;;  The revisions as the window gave them back (res): their columns, trimmed, the numbering
+;;  one of *rev:numberings*, Issued "1" or "":
+(defun Dyl:RevWinRevs (res)
+  (mapcar '(lambda (r)
+             (list (nth 0 r)
+                   (if (member (nth 1 r) *rev:numberings*) (nth 1 r) "Numeric")
+                   (vl-string-trim " " (nth 2 r))
+                   (vl-string-trim " " (nth 3 r))
+                   (vl-string-trim " " (nth 4 r))
+                   (vl-string-trim " " (nth 5 r))
+                   (if (= "1" (nth 6 r)) "1" "")
              )
-  )
-  (mode_tile "add" (if (and (not lock) rv:ssel) 0 1))
-  (mode_tile "rem" (if (and (not lock) rv:ssel) 0 1))
-)
-
-;;  A field changed: its value given to every revision selected (i: its column). A
-;;  numbering that would number an issued revision after them otherwise is refused:
-(defun Dyl:RevPutField (i val / revs)
-  (if (= 1 i) (setq val (nth (atoi val) *rev:numberings*)))
-  (if (= 6 i) (setq val (if (= "1" val) "1" "")))
-  (if (/= 1 i) (setq val (vl-string-trim " " val)))
-  (setq revs rv:revs)
-  (foreach s rv:sel (setq revs (Remote>>Dyl:ListSubst revs s (Remote>>Dyl:ListSubst (nth s revs) i val))))
-  (if (and (= 1 i) (not (Dyl:RevKeepsIssued-p revs)))
-    (progn
-      (Dyl:RevShow)
-      (set_tile "error" "An issued revision after it would be numbered otherwise: its numbering cannot change.")
-    )
-    (progn
-      (setq rv:revs revs)
-      (set_tile "error" "")
-      (Dyl:RevFill)
-    )
+           )
+          (cdr (assoc "rev/rows" (cdr res)))
   )
 )
 
-;;  A project setting changed:
-(defun Dyl:RevPutSetting (key val)
-  (setq rv:sets (subst (cons key val) (assoc key rv:sets) rv:sets))
-  (Dyl:RevFill)
+;;  Keep what the window gave back: the revisions selected, the sheets selected and the
+;;  numbering of the project (the revisions themselves: see Dyl:RevWinRevs):
+(defun Dyl:RevWinGet (res)
+  (setq rv:sel  (Dyl:RevSelOf (Dyl:WinGet res "rev.sel"))
+        rv:ssel (Dyl:RevSelOf (Dyl:WinGet res "sht"))
+        rv:sets (subst (cons "Numbering" (if (= 1 (Dyl:WinIdx res "pnm")) "Sheet" "Project")) (assoc "Numbering" rv:sets) rv:sets)
+        rv:sets (subst (cons "Start" (if (= 1 (Dyl:WinIdx res "pst")) "0" "1")) (assoc "Start" rv:sets) rv:sets)
+        rv:msg  nil
+  )
 )
 
 ;;  New: a revision after the last one, of the numbering of the last one, dated today. Its
@@ -470,70 +409,91 @@
                 )
         rv:sel  (list (1- (length rv:revs)))
   )
-  (Dyl:RevFill)
-  (mode_tile "dsc" 2)
 )
 
 ;;  Delete: the revisions selected, from the sheets too, after a confirmation. Their clouds
-;;  stay in the drawings, without a revision:
+;;  stay in the drawings, without a revision. Never an issued one, nor one before an issued
+;;  revision that would be numbered otherwise. Returns why it was not done:
 (defun Dyl:RevDelete (/ ids n)
   (setq ids (mapcar 'car (Dyl:RevSelRevs))
         n   (length (vl-remove-if-not '(lambda (s) (vl-some '(lambda (i) (member i (cadddr s))) ids)) rv:shts))
   )
-  (if
-    (Dyl:Ask (list (strcat "Delete " (itoa (length ids)) " revision(s) from the project?")
-                   "They are removed from every sheet when the window is saved."
-                   (if (< 0 n) (strcat (itoa n) " sheet(s) have clouds of them: erase those clouds.") "")
-             )
-             "Delete"
-             "Cancel"
+  (cond
+    ((not ids) "Select the revisions to delete.")
+    ((vl-some 'Dyl:RevIssued-p (Dyl:RevSelRevs)) "An issued revision cannot be deleted: clear Issued first.")
+    ((not (Dyl:RevKeepsIssued-p (Dyl:RevWithoutSel)))
+     "An issued revision after it would be numbered otherwise: it cannot be deleted."
     )
-    (setq rv:revs (vl-remove-if '(lambda (r) (member (car r) ids)) rv:revs)
-          rv:shts (mapcar '(lambda (s) (Remote>>Dyl:ListSubst s 2 (vl-remove-if '(lambda (i) (member i ids)) (caddr s)))) rv:shts)
-          rv:sel  nil
+    ((Dyl:Ask (list (strcat "Delete " (itoa (length ids)) " revision(s) from the project?")
+                    "They are removed from every sheet when the window is saved."
+                    (if (< 0 n) (strcat (itoa n) " sheet(s) have clouds of them: erase those clouds.") "")
+              )
+              "Delete"
+              "Cancel"
+     )
+     (setq rv:revs (vl-remove-if '(lambda (r) (member (car r) ids)) rv:revs)
+           rv:shts (mapcar '(lambda (s) (Remote>>Dyl:ListSubst s 2 (vl-remove-if '(lambda (i) (member i ids)) (caddr s)))) rv:shts)
+           rv:sel  nil
+     )
+     nil
     )
   )
-  (Dyl:RevFill)
 )
 
-;;  Move Up (d -1) / Move Down (d 1) the revision selected:
-(defun Dyl:RevMove (d / i r)
+;;  Move up (d -1) / Move down (d 1) the revision selected: one at a time, never an issued
+;;  one nor past an issued revision (its number would change). Returns why it was not done:
+(defun Dyl:RevMove (d / i r o)
   (setq i (car rv:sel)
-        r (nth i rv:revs)
+        r (if i (nth i rv:revs))
+        o (if i (nth (+ i d) rv:revs))
   )
-  (setq rv:revs (Remote>>Dyl:ListInsert (Remote>>Dyl:ListRemove rv:revs i) (+ i d) r)
-        rv:sel  (list (+ i d))
+  (cond
+    ((or (not r) (cdr rv:sel)) "Select one revision to move.")
+    ((Dyl:RevIssued-p r) "An issued revision cannot move: clear Issued first.")
+    ((or (not o) (> 0 (+ i d))) nil)
+    ((Dyl:RevIssued-p o) "A revision never moves past an issued one: its number would change.")
+    (T
+     (setq rv:revs (Remote>>Dyl:ListInsert (Remote>>Dyl:ListRemove rv:revs i) (+ i d) r)
+           rv:sel  (list (+ i d))
+     )
+     nil
+    )
   )
-  (Dyl:RevFill)
 )
 
 ;;  Add Revision (add T) / Remove Revision (add nil): the revisions selected given to the
-;;  sheets selected, or taken from them (the ids of a sheet kept in their sequence):
+;;  sheets selected, or taken from them (the ids of a sheet kept in their sequence). Returns
+;;  why it was not done, or what was not:
 (defun Dyl:RevSheetsPut (add / ids i keep)
   (setq ids (mapcar 'car (Dyl:RevSelRevs))
         i   -1
   )
-  (setq rv:shts
-         (mapcar
-           '(lambda (s / hand)
-              (if (member (setq i (1+ i)) rv:ssel)
-                (progn
-                  (setq hand (if add
-                               (mapcar 'car (Remote>>Dyl:RevOn rv:revs (append (caddr s) ids)))
-                               (vl-remove-if '(lambda (x) (member x ids)) (caddr s))
-                             )
-                  )
-                  (if (and (not add) (vl-some '(lambda (x) (member x (cadddr s))) ids)) (setq keep T))
-                  (Remote>>Dyl:ListSubst s 2 hand)
-                )
-                s
-              )
+  (cond
+    ((not (and ids rv:ssel)) "Select the revisions and the sheets.")
+    ((vl-some 'Dyl:RevIssued-p (Dyl:RevSelRevs)) "An issued revision is not given to sheets nor taken from them: clear Issued first.")
+    (T
+     (setq rv:shts
+            (mapcar
+              '(lambda (s / hand)
+                 (if (member (setq i (1+ i)) rv:ssel)
+                   (progn
+                     (setq hand (if add
+                                  (mapcar 'car (Remote>>Dyl:RevOn rv:revs (append (caddr s) ids)))
+                                  (vl-remove-if '(lambda (x) (member x ids)) (caddr s))
+                                )
+                     )
+                     (if (and (not add) (vl-some '(lambda (x) (member x (cadddr s))) ids)) (setq keep T))
+                     (Remote>>Dyl:ListSubst s 2 hand)
+                   )
+                   s
+                 )
+               )
+              rv:shts
             )
-           rv:shts
-         )
+     )
+     (if keep "Some sheets keep the revision through their clouds: erase the clouds to remove it.")
+    )
   )
-  (Dyl:RevFill)
-  (if keep (set_tile "error" "Some sheets keep the revision through their clouds: erase the clouds to remove it."))
 )
 
 ;;  The sheets of the project: Sheets.csv, its sheet drawings it does not have yet read
@@ -637,54 +597,6 @@
   )
 )
 
-;;  Show the Revisions window once. Returns its done_dialog code: 0 Cancel, 1 OK, 2 Update All
-;;  Sheets, 4 the title blocks window (then this one again):
-(defun Dyl:RevDlgRun (/ sta)
-  (cond
-    ((not (new_dialog "dyl_rev" rv:dcl)) (princ "\n--> Unable to show the Revisions window.") 0)
-    (T
-     (set_tile "prj"
-               (strcat "Project: "
-                       (nth 2 rv:prj)
-                       (if (/= "" (nth 3 rv:prj)) (strcat " (" (nth 3 rv:prj) ")") "")
-                       "   " (car rv:prj)
-               )
-     )
-     (Dyl:RevFillList "rhd" '("Seq.\tNumber\tDate\tDescription\tIssued"))
-     (Dyl:RevFillList "num" *rev:numberings*)
-     (Dyl:RevFillList "pnm" '("Per project" "Per sheet"))
-     (Dyl:RevFillList "pst" '("1" "0"))
-     (set_tile "pnm" (if (= "Sheet" (cdr (assoc "Numbering" rv:sets))) "1" "0"))
-     (set_tile "pst" (if (= "0" (cdr (assoc "Start" rv:sets))) "1" "0"))
-     (set_tile "tbs" (Dyl:RevBlocksSummary))
-     (Dyl:MoreTile "tbm" T)
-     (Dyl:RevFill)
-     (action_tile "rev" "(setq rv:sel (Dyl:RevSelOf $value)) (Dyl:RevSheetsFill) (Dyl:RevShow)")
-     (action_tile "sht" "(setq rv:ssel (Dyl:RevSelOf $value)) (Dyl:RevShow)")
-     (action_tile "num" "(Dyl:RevPutField 1 $value)")
-     (action_tile "dat" "(Dyl:RevPutField 2 $value)")
-     (action_tile "dsc" "(Dyl:RevPutField 3 $value)")
-     (action_tile "ito" "(Dyl:RevPutField 4 $value)")
-     (action_tile "iby" "(Dyl:RevPutField 5 $value)")
-     (action_tile "iss" "(Dyl:RevPutField 6 $value)")
-     (action_tile "pnm" "(Dyl:RevPutSetting \"Numbering\" (if (= \"1\" $value) \"Sheet\" \"Project\"))")
-     (action_tile "pst" "(Dyl:RevPutSetting \"Start\" (if (= \"1\" $value) \"0\" \"1\"))")
-     (action_tile "new" "(Dyl:RevNew)")
-     (action_tile "del" "(Dyl:RevDelete)")
-     (action_tile "up" "(Dyl:RevMove -1)")
-     (action_tile "dn" "(Dyl:RevMove 1)")
-     (action_tile "add" "(Dyl:RevSheetsPut T)")
-     (action_tile "rem" "(Dyl:RevSheetsPut nil)")
-     (action_tile "tbm" "(done_dialog 4)")
-     (action_tile "all" "(if (setq rv:msg (Dyl:RevCheck)) (set_tile \"error\" rv:msg) (done_dialog 2))")
-     (action_tile "accept" "(if (setq rv:msg (Dyl:RevCheck)) (set_tile \"error\" rv:msg) (done_dialog 1))")
-     (action_tile "cancel" "(done_dialog 0)")
-     (Dyl:DocsTile "Output\\Dyl-Revisions.htm")
-     (start_dialog)
-    )
-  )
-)
-
 ;;-------------------------=={ Revision clouds }==------------------------;;
 
 ;;  The tag block (*rev:tag*) of the drawing, made when missing: a triangle 8 mm wide around
@@ -741,15 +653,18 @@
 
 ;;-------------------------=={ Commands }==------------------------;;
 
+;;  The window (Res\Dyl-Revisions.xaml) edits the revisions itself; what changes their
+;;  numbers closes it with its number and it is shown again (see the window file). OK (1)
+;;  saves them and updates the sheets they change, Update All Sheets (2) every sheet:
+
 ;; Revisions
 ;; Opens the revisions of the project, as in Revit: their numbering, dates and descriptions, and the sheets that have them.
 
-(defun c:Dyl-Revisions (/ rv:prj rv:revs rv:revs0 rv:sets rv:sets0 rv:shts rv:shts0 rv:sel rv:ssel rv:stamp rv:tbchg rv:dcl rv:msg sta files)
+(defun c:Dyl-Revisions (/ rv:prj rv:revs rv:revs0 rv:sets rv:sets0 rv:shts rv:shts0 rv:sel rv:ssel rv:stamp rv:tbchg rv:msg res sta done revs files)
   (cond
     ((not (setq rv:prj (Remote>>Dyl:RevProjectOf)))
      (princ "\nThis drawing is not in a project: open a drawing of a Project Navigator project (its folder or a folder under it has the .apj file).")
     )
-    ((> 0 (setq rv:dcl (load_dialog (Dyl:RevDcl)))) (princ "\n--> Unable to load the Revisions window."))
     (T
      (setq rv:revs  (Remote>>Dyl:RevRead rv:prj)
            rv:revs0 rv:revs
@@ -759,25 +674,42 @@
            rv:shts0 rv:shts
            rv:stamp (Dyl:RevStamps rv:prj)
            rv:sel   (if rv:revs (list (1- (length rv:revs))))
-           sta      4
+           sta      T
      )
-     ;;  Code 4: the title blocks window, then this one again. Any error closes the window
-     ;;  cleanly and is reported on the command line:
-     (while (= 4 sta)
-       (setq sta (vl-catch-all-apply 'Dyl:RevDlgRun nil))
-       (if (vl-catch-all-error-p sta)
-         (progn
-           (term_dialog)
-           (princ (strcat "\nRevisions window error: " (vl-catch-all-error-message sta)))
-           (setq sta 0)
-         )
+     (while sta
+       (setq res (Dyl:WinShow "Dyl-Revisions.xaml" (Dyl:RevWinVals))
+             sta (if res (car res) 0)
        )
-       (if (and (= 4 sta) (Dyl:RevBlocksDialog)) (setq rv:tbchg T))
+       (if (< 0 sta)
+         (progn
+           (setq revs (Dyl:RevWinRevs res))
+           (Dyl:RevWinGet res)
+           ;;  A numbering that would number an issued revision after them otherwise is
+           ;;  refused: the revisions keep their numberings:
+           (if (and (= 5 sta) (not (Dyl:RevKeepsIssued-p revs)))
+             (setq revs   (mapcar '(lambda (r / o) (if (setq o (assoc (car r) rv:revs)) (Remote>>Dyl:ListSubst r 1 (nth 1 o)) r)) revs)
+                   rv:msg "An issued revision after it would be numbered otherwise: its numbering cannot change."
+             )
+           )
+           (setq rv:revs revs)
+           (cond
+             ((member sta '(1 2)) (if (not (setq rv:msg (Dyl:RevCheck))) (setq done sta sta nil)))
+             ((= 4 sta) (if (Dyl:RevBlocksDialog) (setq rv:tbchg T)))
+             ((= 6 sta) (Dyl:RevNew))
+             ((= 7 sta) (setq rv:msg (Dyl:RevDelete)))
+             ((= 8 sta) (setq rv:msg (Dyl:RevMove -1)))
+             ((= 9 sta) (setq rv:msg (Dyl:RevMove 1)))
+             ((= 10 sta) (setq rv:msg (Dyl:RevSheetsPut T)))
+             ((= 11 sta) (setq rv:msg (Dyl:RevSheetsPut nil)))
+           )
+         )
+         (setq sta nil)
+       )
      )
      (cond
-       ((= 0 sta) (princ "\nRevisions unchanged."))
+       ((not done) (princ "\nRevisions unchanged."))
        ((not (Dyl:RevSave)) (alert "Error: the revisions could not be saved in the DynALisp folder of the project (is a file open in Excel?)."))
-       ((setq files (if (= 2 sta) (Remote>>Dyl:RevSheetFiles rv:prj) (Dyl:RevToUpdate)))
+       ((setq files (if (= 2 done) (Remote>>Dyl:RevSheetFiles rv:prj) (Dyl:RevToUpdate)))
         (princ "\nRevisions saved.")
         (Dyl:RevReport (Remote>>Dyl:RevUpdateFiles rv:prj files))
        )
@@ -785,7 +717,6 @@
      )
     )
   )
-  (if (and rv:dcl (<= 0 rv:dcl)) (unload_dialog rv:dcl))
   (princ)
 )
 
