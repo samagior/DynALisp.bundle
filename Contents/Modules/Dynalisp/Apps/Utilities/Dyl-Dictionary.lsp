@@ -322,13 +322,14 @@
 
 ;;-------------------------=={ Command }==------------------------;;
 
-;; Dictionary
-;; Searches the words of the DynALisp dictionaries, their definitions and categories, in the language of the file preferences.
-
 ;;  The window (Res\Dyl-Dictionary.xaml) closes with the number of what changed the words
 ;;  listed (2 Dictionary, 3 Category, 4 Subcategory, 5 Type, 9 Clear), of Go to (6) and of
 ;;  Copy word (7, a word double-clicked): it is shown again on the words of the new
 ;;  choice. Edit list... (8) opens the definitions file.
+
+;; Dictionary
+;; Searches the words of the DynALisp dictionaries, their definitions and categories, in the language of the file preferences.
+
 (defun c:Dyl-Dictionary (/ res sta dic:dics dic:idx dic:all dic:view dic:cats dic:subs dic:typs dic:cat dic:sub dic:typ
                          dic:src dic:ind dic:cur dic:msg fle usr
                         )
