@@ -346,12 +346,16 @@ namespace DynALisp.Windows
         // Selects the items of a plain list from its value (see ListValue):
         static void SelectList(ListBox l, string v)
         {
-            var idx = (v ?? "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                               .Select(x => int.TryParse(x, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i) ? i : -1)
-                               .Where(i => i >= 0 && i < l.Items.Count).ToList();
-            if (l.SelectionMode == SelectionMode.Single) { l.SelectedIndex = idx.Count > 0 ? idx[0] : -1; return; }
+            // the indexes are those of all its items, while a search filters it too:
+            var all = l.ItemsSource as System.Collections.IList ?? l.Items;
+            var view = l.ItemsSource != null ? System.Windows.Data.CollectionViewSource.GetDefaultView(l.ItemsSource) : null;
+            var items = (v ?? "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                                 .Select(x => int.TryParse(x, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i) ? i : -1)
+                                 .Where(i => i >= 0 && i < all.Count).Select(i => all[i])
+                                 .Where(o => view == null || view.Contains(o)).ToList();
+            if (l.SelectionMode == SelectionMode.Single) { l.SelectedItem = items.Count > 0 ? items[0] : null; return; }
             l.SelectedItems.Clear();
-            foreach (int i in idx) l.SelectedItems.Add(l.Items[i]);
+            foreach (var o in items) l.SelectedItems.Add(o);
         }
 
         // The text boxes a list fills with the columns of its item picked (Win.Fills="var:0,
@@ -548,7 +552,7 @@ namespace DynALisp.Windows
                             break;
                         case Selector c:
                             if (_s.Lists.TryGetValue(c.Name, out var items)) c.ItemsSource = items;
-                            if (c is ListBox pl && pl.SelectionMode != SelectionMode.Single)
+                            if (c is ListBox pl && (pl.SelectionMode != SelectionMode.Single || !Owned(pl.Name)))
                             {
                                 if (has) SelectList(pl, v);
                                 else _s.Values[c.Name] = ListValue(pl);
