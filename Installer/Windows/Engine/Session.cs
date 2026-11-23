@@ -402,6 +402,9 @@ namespace DynALisp.Windows
             var idx = cols == null ? null : Keys(cols).Select(k => int.TryParse(k, out int n) ? n : -1).Where(n => n >= 0).ToList();
             var words = Fold(x.Text).Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             var view = System.Windows.Data.CollectionViewSource.GetDefaultView(src);
+            // the items selected that the new filter keeps stay selected (a Reset of the view
+            // clears the selection of the list):
+            var kept = l.SelectedItems.Cast<object>().ToList();
             if (words.Length == 0) view.Filter = null;
             else view.Filter = o =>
             {
@@ -409,6 +412,12 @@ namespace DynALisp.Windows
                 string hay = idx == null ? Fold(s) : string.Join("\n", idx.Select(n => { var f = s.Split('\t'); return n < f.Length ? Fold(f[n]) : ""; }));
                 return words.All(w => hay.IndexOf(w, StringComparison.Ordinal) >= 0);
             };
+            var still = kept.Where(o => view.Contains(o)).ToList();
+            if (still.Count > 0 && !still.SequenceEqual(l.SelectedItems.Cast<object>()))
+            {
+                if (l.SelectionMode == SelectionMode.Single) l.SelectedItem = still[0];
+                else { l.SelectedItems.Clear(); foreach (var o in still) l.SelectedItems.Add(o); }
+            }
             if (l.SelectedItem == null && l.Items.Count > 0) l.SelectedIndex = 0;
             if (l.SelectedItem != null) l.ScrollIntoView(l.SelectedItem);
             Count(l);
