@@ -3808,7 +3808,9 @@
                                        )
                                )
   )
-  (setq qa:bk  (cond ((car (member (nth *qd:border* qa:r) mt:keys))) ((car mt:keys)) (""))
+  ;;  (the layer key of the border of the Quick Draw preset; none in the Assembly Presets
+  ;;  tab of the Manager, opened from no preset: nth on nil fails in AutoCAD)
+  (setq qa:bk  (cond ((if qa:r (car (member (nth *qd:border* qa:r) mt:keys)))) ((car mt:keys)) (""))
         qa:def (append (list "P" (cond ((car (car qa:mats))) ("")) "10" "" qa:bk "0")
                        (Remote>>LM:sublst *qd:layerband* 0 8)
                        (list "0" qa:bk "0")
