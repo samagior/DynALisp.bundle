@@ -24,7 +24,7 @@ RBN_DYL_CMD_PST_QUICKSHAPESTUD2X8;PST-QUICKSHAPESTUD2X8;Stud 2x8;Montant 2x8;For
 RBN_DYL_CMD_PST_QUICKSHAPEBRICKMODULAR;PST-QUICKSHAPEBRICKMODULAR;Brick Modular;Brique modulaire;Forme rapide Brique modulaire;Insère des briques modulaires en coupe, remplies de la hachure de brique.
 RBN_DYL_CMD_PST_QUICKSHAPECMU8;PST-QUICKSHAPECMU8;CMU 8 in;Bloc de béton 8 po;Forme rapide Bloc de béton 8 po;Insère des blocs de béton de 8 po en coupe en plan (avec leurs alvéoles), remplis de la hachure de bloc.
 RBN_DYL_CMD_PST_QUICKSHAPEHSS4X4;PST-QUICKSHAPEHSS4X4;HSS 4x4;PCC 4x4;Forme rapide PCC 4x4;Insère des profilés tubulaires d'acier 4x4x1/4 en coupe, remplis de la hachure d'acier.
-RBN_DYL_CMD_DYL_MANAGER;DYL-MANAGER;Manager;Gestionnaire;Gestionnaire;Ouvre le gestionnaire : les fenêtres qui configurent les outils de dessin (dessin rapide, assemblages, matériaux, préréglages de hachures), dans les onglets d'une seule fenêtre.
+RBN_DYL_CMD_DYL_MANAGER;DYL-MANAGER;Manager;Gestionnaire;Gestionnaire;Ouvre le gestionnaire : les fenêtres qui configurent les outils de dessin (dessin rapide, assemblages, forme rapide, matériaux, préréglages de hachures), dans les onglets d'une seule fenêtre.
 RBN_DYL_CMD_DYL_QUICKDRAW;DYL-QUICKDRAW;Quick Draw Manager;Gestion du dessin rapide;Gestion du dessin rapide;Ouvre une fenêtre pour modifier, créer et dessiner les préréglages de dessin rapide.
 RBN_DYL_0558;;Materials;Matériaux;;
 RBN_DYL_CMD_DYL_MATERIALS;DYL-MATERIALS;Materials;Matériaux;Matériaux;Ouvre une fenêtre pour créer et modifier les matériaux utilisés par le dessin rapide et la forme rapide : leurs préréglages de hachures et leurs données.
