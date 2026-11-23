@@ -36,9 +36,11 @@
 //   dyl:Win.CountOf="lst"                   on a TextBlock: how many items of lst are listed,
 //   dyl:Win.CountText="{0} of {1} words"    as this text says (listed, all)
 //   dyl:Win.ItemsBy="rev"                   on a ListBox or a TextBlock: its items (its text)
-//                                           follow the item picked in the list rev: the row i
-//                                           of its table key/by while the item i is the first
-//                                           one selected (the indexes selected are kept)
+//                                           follow the item picked in the list rev (a ListBox
+//                                           or a ComboBox): the row i of its table key/by
+//                                           while the item i is the first one selected (the
+//                                           indexes selected are kept); a text followed can
+//                                           be a rule ("1": dyl:Win.EnabledBy="pfl")
 //   dyl:Win.Open="Dyl-Settings-Display.xaml" on a button: opens that window over this one,
 //                                           beside this file; its OK keeps its values,
 //                                           its Cancel puts them back

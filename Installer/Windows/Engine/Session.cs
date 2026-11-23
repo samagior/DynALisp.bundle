@@ -608,13 +608,17 @@ namespace DynALisp.Windows
         // The lists and texts that follow the item picked in the list l (Win.ItemsBy="l"): the
         // row i of their table key/by (given by the Lisp) while the item i of l is the first one
         // selected, their own items (key/list) or text while none is; a list keeps the indexes
-        // selected (the sheets of a project, what each one has of the revision picked):
+        // selected (the sheets of a project, what each one has of the revision picked). l can
+        // be a drop-down (a ComboBox: the units of the pattern picked), followed each time the
+        // rules are read again (Refresh), since a preset window sets it quietly:
         readonly Dictionary<string, object> _byOwn = new Dictionary<string, object>();
-        void Follow(ListBox l)
+        void Follow(Selector l)
         {
             var targets = _all.Where(e => Named(e) && Win.GetItemsBy(e) == l.Name).ToList();
             if (targets.Count == 0) return;
-            int i = l.SelectedItems.Count == 0 ? -1 : l.SelectedItems.Cast<object>().Select(o => l.Items.IndexOf(o)).Where(n => n >= 0).DefaultIfEmpty(-1).Min();
+            int i = l is ListBox lb
+                ? (lb.SelectedItems.Count == 0 ? -1 : lb.SelectedItems.Cast<object>().Select(o => lb.Items.IndexOf(o)).Where(n => n >= 0).DefaultIfEmpty(-1).Min())
+                : l.SelectedIndex;
             foreach (var t in targets)
             {
                 _s.Rows.TryGetValue(t.Name + "/by", out var by);
@@ -644,6 +648,7 @@ namespace DynALisp.Windows
         // Enabled and shown from the values (Win.EnabledBy, Win.VisibleBy, Session.Off):
         public void Refresh()
         {
+            foreach (var c in _all.OfType<ComboBox>().Where(b => Named(b))) Follow(c);
             foreach (var fe in _all)
             {
                 bool off = Named(fe) && _s.Off.Contains(fe.Name);

@@ -83,7 +83,7 @@
 ;;                                                 when it no longer exists
 ;;    (Remote>>Dyl:MaterialRead)                -> every material, the same way
 ;;    (Remote>>Dyl:HatchPresetRead)             -> the hatch presets
-;;    (Remote>>Dyl:HatchPresetDialog id)        -> Hatch Presets dialog opened on id, returns
+;;    (Remote>>Dyl:HatchPresetDialog id)        -> Hatch Presets window opened on id, returns
 ;;                                                 the hatch preset selected on OK
 ;;    (Remote>>Dyl:MaterialDialog id)           -> Materials dialog opened on id, returns the
 ;;                                                 material selected on OK (nil on Cancel)
@@ -977,8 +977,8 @@
 ;;  metric. A file of its own is metric when it says so (a comment line ;%UNITS=MM, as
 ;;  Dyl-RebuildPat writes it; ;%UNITS=INCH: imperial), else when the name of the file or of
 ;;  its folder has ISO or METRIC in it; else imperial, like the patterns of AutoCAD and its
-;;  toolsets. Kept in *mt:patunits* (emptied each time the Materials window opens, see
-;;  Remote>>Dyl:MaterialDlgInit):
+;;  toolsets. Kept in *mt:patunits* (emptied each time the Hatch Presets window opens, see
+;;  Remote>>Dyl:HatchPresetPats):
 (defun Remote>>Dyl:MaterialPatUnits (nam / key std fle res)
   (setq key (strcat (strcase nam) "|" (itoa (getvar "MEASUREMENT"))))
   (if (assoc key *mt:patunits*)
@@ -1820,21 +1820,15 @@
                   )
 )
 
-;;  Optional settings: (checkbox value-tiles...): the value tiles (and the open button of a
-;;  color, see *mt:more*) are greyed out until the checkbox is checked:
-(setq *mt:optional* '(("hco" "hcl" "hcp") ("hlo" "hlt") ("hso" "hsc") ("hbo" "hbg" "hbp") ("hxo" "hxb" "hxp")
-                      ("hwo" "hwt") ("hto" "htr")
-                     )
-)
-
-;;  Optional hatch settings a SOLID hatch does not use (greyed out, not set): background
-;;  color, existing phase background, lineweight, linetype and linetype scale:
+;;  Optional hatch settings a SOLID hatch does not use (not set, greyed out in the Hatch
+;;  Presets window: pat!=|SOLID): background color, existing phase background, lineweight,
+;;  linetype and linetype scale:
 (setq *mt:solidoff* '("hbo" "hxo" "hwo" "hlo" "hso"))
 
 ;;  The open buttons of the colors (the color dialog) and of the layer keys (the Layer Keys
 ;;  window), their icon drawn by Dyl:MoreTile
 ;;  (dynalisp.mnl), greyed out with it in place of mode_tile:
-(setq *mt:more* '("bcp" "hcp" "hbp" "hxp" "hkp" "okp" "suo"))
+(setq *mt:more* '("bcp" "okp"))
 
 ;;  mode_tile of the tile key (m: 0 on, 1 off), the icon of an open button redrawn:
 (defun Remote>>Dyl:MaterialDlgMode (key m)
@@ -1961,49 +1955,26 @@
   )
 )
 
-;;  Fill the popups and set the action of the open buttons (each time the dialog is shown):
-(defun Remote>>Dyl:MaterialDlgInit ()
+;;  The patterns of the Pattern list (mt:pats) and those found in the .pat files of the
+;;  support path (mt:found), read once each time the Hatch Presets window opens (a .pat file
+;;  added or changed is read again, with the units of the patterns):
+(defun Remote>>Dyl:HatchPresetPats ()
   (if (not mt:pats)
     (progn
       (setq mt:found       (Remote>>Dyl:SupportDefs "pat")
             mt:pats        mt:found
-            ;;  The units of the patterns found again (a .pat file added or changed):
             *mt:patunits* nil
       )
-      ;;  The patterns used by the materials stay selectable even when no .pat file defines them:
+      ;;  The patterns used by the hatch presets stay selectable even when no .pat file
+      ;;  defines them:
       (foreach nam (append '("SOLID" "ANSI31") (mapcar 'cadddr (Remote>>Dyl:HatchPresetDefs)) (mapcar 'cadddr pst:lst))
         (if (not (member nam mt:pats)) (setq mt:pats (cons nam mt:pats)))
       )
-      ;;  None first (""): a material without hatch (Void):
+      ;;  None first (""): a hatch preset without hatch (Void):
       (setq mt:pats (cons "" (acad_strlsort (vl-remove "" mt:pats))))
     )
   )
-  (start_list "pat")
-  (foreach nam mt:pats
-    (add_list (cond ((= "" nam) "None") ((member nam mt:found) nam) ((strcat nam "   (not found on the support path)"))))
-  )
-  (end_list)
-  (Remote>>Dyl:MaterialDlgKeys '("hat") (mapcar '(lambda (r) (nth 8 r)) (append (Remote>>Dyl:HatchPresetDefs) pst:lst)))
-  (start_list "typ")
-  (foreach x *mt:types* (add_list x))
-  (end_list)
-  ;;  Lineweight popup, in mm:
-  (start_list "hwt")
-  (foreach w *mt:weights* (add_list (strcat (rtos (/ (atoi w) 100.0) 2 2) " mm")))
-  (end_list)
-  ;;  Open buttons of the colors:
-  (action_tile "hcp" "(Remote>>Dyl:MaterialDlgColor \"hcl\")")
-  (action_tile "hbp" "(Remote>>Dyl:MaterialDlgColor \"hbg\")")
-  (action_tile "hxp" "(Remote>>Dyl:MaterialDlgColor \"hxb\")")
-  ;;  Open button of the layer key: close the dialog with code 5, see Remote>>Dyl:MaterialDlgStatus:
-  (action_tile "hkp" "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog 5))")
-  ;;  Draw legend...: close the dialog with *mt:legendcode*, see Remote>>Dyl:MaterialDlgStatus:
-  (action_tile "leg" (strcat "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog " (itoa *mt:legendcode*) "))"))
-  ;;  Pick hatch...: close the dialog with *mt:hatchpickcode*, see Remote>>Dyl:MaterialDlgStatus:
-  (action_tile "hpk" (strcat "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog " (itoa *mt:hatchpickcode*) "))"))
-  (action_tile "suo" "(Remote>>Dyl:MaterialPatOpen (nth 3 (nth pst:idx pst:lst)))")
-  ;;  The dividing line over the title of the sub-section (dynalisp.mnl):
-  (Dyl:LineTile "hsep")
+  mt:pats
 )
 
 ;;-------------------------=={ Border settings box }==------------------------;;
@@ -2024,7 +1995,8 @@
                         )
 )
 
-;;  Optional settings of the box: (checkbox value-tiles...), as *mt:optional*:
+;;  Optional settings of the box: (checkbox value-tiles...), greyed out until the checkbox
+;;  is checked:
 (setq *mt:borderoptional* '(("bco" "bcv" "bcp") ("blo" "blt") ("bso" "bsc") ("bwo" "bwt") ("bto" "btr")))
 
 ;;  Code the open button of the layer key of the box closes the window with (the status
@@ -2408,62 +2380,6 @@
   res
 )
 
-;;  SOLID ignores the scale, angle and annotative values; no pattern (None, a material that
-;;  is not hatched: Void) the hatch settings too. The drawing scale applies only to
-;;  a hatch that is not annotative. A Model hatch is neither (its real size): both greyed
-;;  out and turned off. The line under it gives the factor in the current drawing
-;;  (the scales set for 1:1, here 1:50 -> x50):
-;;  An optional setting has its value greyed out until its checkbox is checked:
-(defun Remote>>Dyl:MaterialDlgState (r / solid none model ano on tog)
-  (setq none  (= "" (nth 3 r))
-        solid (or none (= "SOLID" (nth 3 r)))
-        model (= "Model" (nth 63 r))
-  )
-  (if model
-    (foreach x '(("ano" . 9) ("sdw" . 10))
-      (if (= "1" (nth (cdr x) r))
-        (progn (Remote>>Dyl:PresetDlgPut (cdr x) "0") (set_tile (car x) "0") (setq r (Remote>>Dyl:ListSubst r (cdr x) "0")))
-      )
-    )
-  )
-  (setq ano (= "1" (nth 9 r))
-        on  (and (not solid) (not ano) (= "1" (nth 10 r)))
-  )
-  (foreach k '("simp" "ang") (mode_tile k (if solid 1 0)))
-  (mode_tile "typ" (if solid 1 0))
-  (mode_tile "ano" (if (or solid model) 1 0))
-  ;;  The units of the pattern, the factor of the scale in this drawing:
-  (set_tile "sunt" (if solid "" (Remote>>Dyl:MaterialUnitText r)))
-  ;;  Its open button: the .pat file of the pattern, greyed out when no file defines it:
-  (Remote>>Dyl:MaterialDlgMode "suo" (if (and (not solid) (cdr (Remote>>Dyl:MaterialPatUnits (nth 3 r)))) 0 1))
-  (mode_tile "sdw" (if (or solid ano model) 1 0))
-  (foreach x *mt:optional*
-    (setq tog (= "1" (nth (cdr (assoc (car x) *mt:tiles*)) r)))
-    ;;  A SOLID hatch has no background, no existing phase background, no lineweight; no
-    ;;  pattern (None), no hatch at all:
-    (if (or none (and solid (member (car x) *mt:solidoff*)))
-      (foreach k x (Remote>>Dyl:MaterialDlgMode k 1))
-      (progn
-        (mode_tile (car x) 0)
-        (foreach k (cdr x) (Remote>>Dyl:MaterialDlgMode k (if tog 0 1)))
-      )
-    )
-  )
-  (mode_tile "hat" (if none 1 0))
-  (Remote>>Dyl:MaterialDlgMode "hkp" (if none 1 0))
-  (set_tile "sinf"
-            (if on
-              (strcat "This drawing is at 1:"
-                      (Remote>>Dyl:MaterialNum (Remote>>Dyl:MaterialDrawScale))
-                      ": hatch scale x"
-                      (Remote>>Dyl:MaterialNum (Remote>>Dyl:MaterialFactor (nth 11 r)))
-                      "."
-              )
-              ""
-            )
-  )
-)
-
 ;;-------------------------=={ Legend }==------------------------;;
 
 ;;  Code the Draw legend... button of the Materials window closes it with (see
@@ -2731,22 +2647,127 @@
   )
 )
 
-;;  Code *mt:hatchpickcode* = Pick hatch...: a hatch picked in the drawing gives its settings to
-;;  the materials selected, then the dialog is shown again.
-;;  Code *mt:legendcode* = Draw legend...: the legend of the materials selected (as they are
-;;  being edited) is drawn from a point picked, then the dialog is shown again.
-;;  Code 5 = the open button of the hatch layer key: the Layer Keys dialog is shown on that key
-;;  (not nested in the materials dialog), then the materials dialog is shown again with the
-;;  materials being edited. A key double-clicked in it becomes the hatch layer key of every
-;;  material selected (see Remote>>Dyl:PresetDlgPut):
-(defun Remote>>Dyl:MaterialDlgStatus (sta r / k)
-  (if (and (= 5 sta) (setq k (Remote>>Dyl:LayerKeyPick (nth 8 r)))) (Remote>>Dyl:PresetDlgPut 8 k))
-  (if (= *mt:legendcode* sta) (Remote>>Dyl:MaterialLegend (Remote>>Dyl:MaterialDlgSelected)))
-  (if (= *mt:hatchpickcode* sta) (Remote>>Dyl:MaterialPickHatch r))
+;;-------------------------=={ Hatch Presets window }==------------------------;;
+
+;;  The Hatch Presets window (Res\Dyl-HatchPresets.xaml, shown by DynALisp.Windows.dll): a
+;;  preset window (Installer\Windows\Engine\Presets.cs) of the hatch presets, its values the
+;;  tiles of *mt:tiles*, what each one greys out its rules (dyl:Win.EnabledBy: no pattern, a
+;;  SOLID pattern, a Model hatch). The preview of each hatch preset is drawn by the window from
+;;  its columns as they are edited (pst/hatch), with the .pat file and the units of each
+;;  pattern (pst/pats) and the drawing scale (pst/ds). The functions below use the local
+;;  variables of Remote>>Dyl:HatchPresetDialog: mt:pats (the patterns of the Pattern list),
+;;  mt:found (the patterns found in the .pat files), mt:keys (the layer keys of its list).
+
+;;  The codes the open buttons of the color of the hatch, its background color and its
+;;  existing phase background close the window with, and the column of that color (its
+;;  checkbox: the column before it):
+(setq *hp:colorcodes* '((11 . 23) (12 . 25) (13 . 42)))
+
+;;  The code the open button of the .pat file of the pattern closes the window with:
+(setq *hp:patcode* 14)
+
+;;  Before the window is shown (again): the patterns (read once), the layer keys of the
+;;  hatch layer key list (those of the hatch presets that are not defined kept, marked):
+(defun Remote>>Dyl:HatchPresetWinPrep ()
+  (Remote>>Dyl:HatchPresetPats)
+  (Remote>>Dyl:MaterialDlgKeys nil (mapcar '(lambda (r) (nth 8 r)) (append (Remote>>Dyl:HatchPresetDefs) pst:lst)))
   nil
 )
 
-;;  Show the hatch presets dialog, on the hatch preset id (nil: the last one). OK writes the
+;;  The values of the window: its lists (labels key/list, values key/vals), the units of each
+;;  pattern under the scale and whether a .pat file has it (sunt/by, pfl/by: a row for each
+;;  item of the Pattern list), the patterns the previews are drawn from, the drawing scale,
+;;  the line under Adaptive scaling:
+(defun Remote>>Dyl:HatchPresetWinVals (/ lks u)
+  (setq lks (Remote>>Dyl:LayerKeyRead))
+  (list (cons "pat/list"
+              (mapcar '(lambda (nam)
+                         (cond ((= "" nam) "None") ((member nam mt:found) nam) ((strcat nam "   (not found on the support path)")))
+                       )
+                      mt:pats
+              )
+        )
+        (cons "pat/vals" mt:pats)
+        (cons "sunt/by"
+              (mapcar '(lambda (nam) (list (if (member nam '("" "SOLID")) "" (Remote>>Dyl:MaterialUnitText (list "" "" "" nam)))))
+                      mt:pats
+              )
+        )
+        (cons "pfl/by"
+              (mapcar '(lambda (nam) (list (if (and (not (member nam '("" "SOLID"))) (cdr (Remote>>Dyl:MaterialPatUnits nam))) "1" "0")))
+                      mt:pats
+              )
+        )
+        (cons "pst/hatch" "3,4,6,9,10,63")
+        (cons "pst/pats"
+              (vl-remove nil
+                         (mapcar '(lambda (nam)
+                                    (if (not (member nam '("" "SOLID")))
+                                      (progn
+                                        (setq u (Remote>>Dyl:MaterialPatUnits nam))
+                                        (list nam (cond ((cdr u)) ("")) (if (= "Metric" (car u)) "1" "0"))
+                                      )
+                                    )
+                                  )
+                                 mt:pats
+                         )
+              )
+        )
+        (cons "pst/ds" (Remote>>Dyl:MaterialNumP (Remote>>Dyl:MaterialDrawScale) 6))
+        (cons "typ/list" *mt:types*)
+        (cons "typ/vals" *mt:types*)
+        (cons "hat/list" (mapcar '(lambda (k) (if (assoc k lks) k (strcat k "   (not defined)"))) mt:keys))
+        (cons "hat/vals" mt:keys)
+        (cons "hwt/list" (mapcar '(lambda (w) (strcat (rtos (/ (atoi w) 100.0) 2 2) " mm")) *mt:weights*))
+        (cons "hwt/vals" *mt:weights*)
+        (cons "sinf"
+              (strcat "This drawing is at 1:"
+                      (Remote>>Dyl:MaterialNum (Remote>>Dyl:MaterialDrawScale))
+                      ": hatch scale x"
+                      (Remote>>Dyl:MaterialNum (Remote>>Dyl:MaterialFactor "1"))
+                      "."
+              )
+        )
+  )
+)
+
+;;  A hatch preset got back from the window: a Model hatch is never annotative nor adaptive
+;;  (see Remote>>Dyl:MaterialFix), whatever its checkboxes, greyed out, still hold:
+(defun Remote>>Dyl:HatchPresetWinGet (r)
+  (if (= "Model" (nth 63 r))
+    (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst r 9 "0") 10 "0")
+    r
+  )
+)
+
+;;  The open buttons and buttons of the window (code sta, the hatch preset shown r):
+;;  Code 5 = the open button of the hatch layer key: the Layer Keys window on that key, the
+;;  key double-clicked there given to every hatch preset selected (see
+;;  Remote>>Dyl:PresetDlgPut).
+;;  Code *mt:legendcode* = Draw legend...: the legend of the hatch presets selected (as they
+;;  are being edited), drawn from a point picked.
+;;  Code *mt:hatchpickcode* = Pick hatch...: a hatch picked in the drawing gives its settings
+;;  to the hatch presets selected.
+;;  The codes of *hp:colorcodes*: the color window of AutoCAD on that color, the color picked
+;;  given to every hatch preset selected, its checkbox checked.
+;;  Code *hp:patcode*: the .pat file of the pattern opened in Notepad.
+;;  The window is shown again once it is done:
+(defun Remote>>Dyl:MaterialDlgStatus (sta r / k c)
+  (cond
+    ((= 5 sta) (if (setq k (Remote>>Dyl:LayerKeyPick (nth 8 r))) (Remote>>Dyl:PresetDlgPut 8 k)))
+    ((= *mt:legendcode* sta) (Remote>>Dyl:MaterialLegend (Remote>>Dyl:MaterialDlgSelected)))
+    ((= *mt:hatchpickcode* sta) (Remote>>Dyl:MaterialPickHatch r))
+    ((setq c (cdr (assoc sta *hp:colorcodes*)))
+     (if (setq k (Remote>>Dyl:MaterialColorPick (nth c r)))
+       (progn (Remote>>Dyl:PresetDlgPut c k) (Remote>>Dyl:PresetDlgPut (1- c) "1"))
+     )
+    )
+    ((= *hp:patcode* sta) (Remote>>Dyl:MaterialPatOpen (nth 3 r)))
+  )
+  nil
+)
+
+;;  Show the Hatch Presets window, on the hatch preset id (nil: the last one). OK writes the
 ;;  hatch presets file. Returns the hatch preset selected on OK, or nil on Cancel:
 (defun Remote>>Dyl:HatchPresetDialog (id / mt:pats mt:found mt:keys)
   ;;  A materials file of DynALisp 1.1 and older is split first, so the hatch presets shown
@@ -2760,99 +2781,15 @@
           (cons 'select id)
           '(groups . T)
           '(upper "pat" "hat" "hlt")
-          ;;  The hatch settings, in two columns: the basic settings and the layer key overrides
-          ;;  on the left, the optional settings on the right (the border and the behaviors,
-          ;;  how a preset is drawn, are in the Quick Draw and Quick Shape windows). Each value is a row of its own, its box (the open button of a
-          ;;  color just before it) at the right of the row: a box with an edit_width is
-          ;;  right-justified in the space of its tile, and the label (or checkbox) takes the
-          ;;  rest, so every box of a column ends at the same distance from its right border
-          ;;  (see CONVENTIONS.md, Windows):
-          (cons 'params '(
-            "      : column {"
-            "        : boxed_column { label = \"Hatch settings\";"
-            "          : row {"
-            ;;  Each sub-section a column of fixed height, its rows close together; a spacer between
-            ;;  them takes the extra height of the column (as tall as its neighbour), spread evenly:
-            "            : column {"
-            "              : column { fixed_height = true;"
-            "              : row { : popup_list { key = \"pat\"; label = \"Pattern:\"; edit_width = 28; } }"
-            ;;  Drafting (a size on paper) or Model (a real size, see Remote>>Dyl:MaterialFix):
-            "              : row { : popup_list { key = \"typ\"; label = \"Type:\"; edit_width = 12; } }"
-            ;;  One scale, in the units of the pattern; the line under it: those units and the
-            ;;  factor in this drawing (see Remote>>Dyl:MaterialUnitText), its open button the
-            ;;  .pat file of the pattern (see Remote>>Dyl:MaterialPatOpen):
-            "              : row { : edit_box { key = \"simp\"; label = \"Scale:\"; edit_width = 12; } }"
-            "              : row { : text { key = \"sunt\"; width = 40; }"
-            "                      : image_button { key = \"suo\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; } }"
-            "              : row { : edit_box { key = \"ang\"; label = \"Angle:\"; edit_width = 12; } }"
-            ;;  The layer keys, their open button the Layer Keys window (see Remote>>Dyl:MaterialDlgStatus):
-            "              : row { : text { key = \"hatl\"; label = \"Layer key:\"; }"
-            "                      : image_button { key = \"hkp\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
-            "                      : popup_list { key = \"hat\"; edit_width = 28; fixed_width = true; } }"
-            "              }"
-            "              : spacer { }"
-            "              : column { fixed_height = true;"
-            ;;  A dividing line and the title of the settings that override the properties of the layer key:
-            "              : image { key = \"hsep\"; height = 0.8; fixed_height = true; color = -15; }"
-            "              : row { : text { label = \"Layer key overrides:\"; } }"
-            "              : row { : toggle { key = \"hco\"; label = \"Color:\"; width = 28; }"
-            "                      : image_button { key = \"hcp\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
-            "                      : edit_box { key = \"hcl\"; edit_width = 12; fixed_width = true; } }"
-            "              : row { : toggle { key = \"hlo\"; label = \"Linetype:\"; width = 28; }"
-            "                      : edit_box { key = \"hlt\"; edit_width = 12; fixed_width = true; } }"
-            "              : row { : toggle { key = \"hso\"; label = \"Linetype scale:\"; width = 28; }"
-            "                      : edit_box { key = \"hsc\"; edit_width = 12; fixed_width = true; } }"
-            "              : row { : toggle { key = \"hwo\"; label = \"Lineweight:\"; width = 28; }"
-            "                      : popup_list { key = \"hwt\"; edit_width = 12; fixed_width = true; } }"
-            "              }"
-            "            }"
-            ;;  The settings that are not a property of the layer key, at the top of their column
-            ;;  (their title only: the border of the group is just above it):
-            "            : column {"
-            "              : column { fixed_height = true;"
-            "              : row { : text { label = \"Optional settings:\"; } }"
-            "              : row { : toggle { key = \"hbo\"; label = \"Background color:\"; width = 28; }"
-            "                      : image_button { key = \"hbp\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
-            "                      : edit_box { key = \"hbg\"; edit_width = 12; fixed_width = true; } }"
-            ;;  In place of the background color while auto-phase is on in the existing phase (E):
-            "              : row { : toggle { key = \"hxo\"; label = \"Existing phase background:\"; width = 28; }"
-            "                      : image_button { key = \"hxp\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
-            "                      : edit_box { key = \"hxb\"; edit_width = 12; fixed_width = true; } }"
-            "              : row { : toggle { key = \"hto\"; label = \"Transparency (0-90):\"; width = 28; }"
-            "                      : edit_box { key = \"htr\"; edit_width = 12; fixed_width = true; } }"
-            ;;  How the hatch is scaled and made (see Remote>>Dyl:MaterialScale, Remote>>Dyl:MaterialHatchAt):
-            "              : row { : toggle { key = \"ano\"; label = \"Annotative\"; } }"
-            "              : row { : toggle { key = \"sdw\"; label = \"Adaptive scaling (see Docs)\"; } }"
-            "              : row { : text { key = \"sinf\"; width = 44; } }"
-            "              : row { : toggle { key = \"asc\"; label = \"Associative\"; } }"
-            "              }"
-            "              : spacer { }"
-            "            }"
-            "          }"
-            "        }"
-            ;;  The legend of the materials selected, drawn in the drawing (see
-            ;;  Remote>>Dyl:MaterialLegend):
-            ;;  Pick hatch...: the hatch settings of a hatch of the drawing (see
-            ;;  Remote>>Dyl:MaterialFromHatch):
-            "        : row { fixed_width = true; alignment = right;"
-            "          : button { key = \"hpk\"; label = \"Pick hatch...\"; }"
-            "          : button { key = \"leg\"; label = \"Draw legend...\"; }"
-            "        }"
-            "      }"
-           ))
           ;;  A new hatch preset: the optional settings off, associative:
           (cons 'new *hp:new*)
-          '(items . Remote>>Dyl:MaterialDlgItems)
-          '(check . Remote>>Dyl:MaterialDlgCheck)
-          '(init . Remote>>Dyl:MaterialDlgInit)
-          '(state . Remote>>Dyl:MaterialDlgState)
-          '(status . Remote>>Dyl:MaterialDlgStatus)
-          ;;  A narrow list, group and name only (the status of the material shown is in the
-          ;;  Parameters heading), as tall as the group of parameters beside it:
-          ;;  OK asks first when more than 5 materials were changed:
-          '(warn . 5)
           '(noun . "hatch presets")
-          '(height . 17)
+          '(window . "Dyl-HatchPresets.xaml")
+          '(wprep . Remote>>Dyl:HatchPresetWinPrep)
+          '(wvals . Remote>>Dyl:HatchPresetWinVals)
+          '(wget . Remote>>Dyl:HatchPresetWinGet)
+          '(check . Remote>>Dyl:MaterialDlgCheck)
+          '(status . Remote>>Dyl:MaterialDlgStatus)
     )
   )
 )
@@ -2863,7 +2800,7 @@
 ;;  window (Installer\Windows\Engine\Presets.cs) of the materials, each one its name, its
 ;;  group, its Cut hatch preset (the Material list of the engine, mat, on the hatch presets:
 ;;  (material . 3), (mats . Remote>>Dyl:HatchPresetRead), every one listed, (matfree . T)),
-;;  previewed (mpv), its open button the Hatch Presets dialog on it (code 9, matdialog), its
+;;  previewed (mpv), its open button the Hatch Presets window on it (code 9, matdialog), its
 ;;  Surface hatch preset (sur, "": Same as Cut; its open button: code 10) and its data, shown
 ;;  in the units of the drawing (see *mt:data*). The functions below use the local variable
 ;;  mt:shown of Remote>>Dyl:MaterialDialog: ((column shown) si) of each value shown in
@@ -2996,7 +2933,7 @@
   )
 )
 
-;;  Code 10 = the open button of Surface: the Hatch Presets dialog on the Surface hatch
+;;  Code 10 = the open button of Surface: the Hatch Presets window on the Surface hatch
 ;;  preset of the material shown (its Cut when it is Same as Cut); the hatch preset selected
 ;;  on OK becomes the Surface of the materials selected:
 (defun Remote>>Dyl:MaterialWinStatus (sta r / h)
