@@ -1,123 +1,123 @@
-Id;Group;Name;Cut;Surface;Conductivity;Density;Resistance
-mt-Demolition;Phase;Demolition;hp-Demolition;;;;
-mt-NotInContract;Phase;Not In Contract;hp-NotInContract;;;;
-mt-Existing;Phase;Existing;hp-Existing;;;;
-mt-Concrete;Concrete;Concrete;hp-Concrete;;2.5;2400;
-mt-LightweightConcrete;Concrete;Lightweight Concrete;hp-LightweightConcrete;;0.7692;1600;
-mt-Mortar;Concrete;Mortar;hp-Mortar;;1.111;;
-mt-Brick;Masonry;Brick;hp-Brick;hp-ModularBrick;1.286;2400;
-mt-Stone;Masonry;Stone;hp-Stone;;2.5;2240;
-mt-CMU;Masonry;CMU;hp-CMU;;;;
-mt-Firebrick;Masonry;Firebrick;hp-Firebrick;;;;
-mt-Marble;Masonry;Marble;hp-Marble;;2.5;2240;
-mt-Grout;Concrete;Grout;hp-Grout;;;;
-mt-Iron;Metal;Iron;hp-Iron;;;;
-mt-Steel;Metal;Steel;hp-Steel;;;;
-mt-Bronze;Metal;Bronze;hp-Bronze;;;;
-mt-Lead;Metal;Lead;hp-Lead;;;;
-mt-Aluminium;Metal;Aluminium;hp-Aluminium;;;;
-mt-Plywood;Wood;Plywood;hp-Plywood;;0.1149;;
-mt-WoodPlank;Wood;Wood Plank;hp-WoodPlank;;;;
-mt-WoodFrame;Wood;Wood Frame;hp-WoodFrame;;0.1176;;
-mt-Particleboard;Wood;Particleboard;hp-Particleboard;;0.1299;;
-mt-Hardboard;Wood;Hardboard;hp-Brick;;0.1053;800;
-mt-Plastic;Generic;Plastic;hp-Plastic;;;;
-mt-LooseInsulation;Insulation;Loose Insulation;hp-LooseInsulation;;;;
-mt-SprayInsulation;Insulation;Spray Insulation;hp-SprayInsulation;;;;
-mt-RigidInsulation;Insulation;Rigid Insulation;hp-RigidInsulation;;;;
-mt-ExtrudedPolystyrene;Insulation;Extruded Polystyrene;hp-RigidInsulation;;0.02857;;
-mt-ExpandedPolystyrene;Insulation;Expanded Polystyrene;hp-RigidInsulation;;0.03571;;
-mt-Polyisocyanurate;Insulation;Polyisocyanurate;hp-RigidInsulation;;0.02381;;
-mt-Gypsum;Board;Gypsum;hp-Gypsum;;0.1639;;
-mt-Plaster;Finish;Plaster;hp-Plaster;;;;
-mt-CompactedSoil;Site;Compacted Soil;hp-CompactedSoil;;;;
-mt-Topsoil;Site;Topsoil;hp-Topsoil;;;;
-mt-UndisturbedSoil;Site;Undisturbed Soil;hp-Topsoil;;;;
-mt-Sand;Site;Sand;hp-Sand;;;;
-mt-Asphalt;Site;Asphalt;hp-Asphalt;;;;
-mt-Gravel;Site;Gravel;hp-Gravel;;;;
-mt-CrushedStone;Site;Crushed Stone;hp-Gravel;;1.667;;
-mt-Birch;Wood;Birch;hp-WoodFrame;;0.1818;;
-mt-Oak;Wood;Oak;hp-WoodFrame;;0.1786;;
-mt-MapleAsh;Wood;Maple And Ash;hp-WoodFrame;;0.1587;;
-mt-WhiteCedar;Wood;White Cedar;hp-WoodFrame;;0.101;;
-mt-YellowCypress;Wood;Yellow Cypress;hp-WoodFrame;;0.1299;;
-mt-WhiteSpruce;Wood;White Spruce;hp-WoodFrame;;0.1031;;
-mt-WhitePine;Wood;White Pine;hp-WoodFrame;;0.1087;;
-mt-LodgepolePine;Wood;Lodgepole Pine;hp-WoodFrame;;0.122;;
-mt-RedPine;Wood;Red Pine;hp-WoodFrame;;0.1299;;
-mt-Hemlock;Wood;Hemlock;hp-WoodFrame;;0.119;;
-mt-WesternHemlock;Wood;Western Hemlock;hp-WoodFrame;;0.1351;;
-mt-DouglasFirLarch;Wood;Douglas Fir Or Larch;hp-WoodFrame;;0.1449;;
-mt-AmabilisFir;Wood;Amabilis Fir;hp-WoodFrame;;0.125;;
-mt-OSB;Wood;OSB;hp-Particleboard;;0.102;;
-mt-AsphaltFiberboard;Board;Asphalt Fiberboard Sheathing;hp-Particleboard;;0.06061;;
-mt-GypsumSheathing;Board;Gypsum Sheathing;hp-Gypsum;;0.1587;;
-mt-FoilFiberboard;Board;Foil-Faced Wood Fiberboard;hp-Particleboard;;0.05155;;
-mt-CementBoard;Board;Lightweight Concrete Board;hp-LightweightConcrete;;0.1449;;
-mt-ExpandedPolystyrene1;Insulation;Expanded Polystyrene Type 1;hp-RigidInsulation;;0.03891;;
-mt-ExpandedPolystyrene3;Insulation;Expanded Polystyrene Type 3;hp-RigidInsulation;;0.03356;;
-mt-ExpandedPolystyrene4;Insulation;Expanded Polystyrene Type 4;hp-RigidInsulation;;0.02882;;
-mt-MineralWoolBoard;Insulation;Rigid Mineral Wool Roof Board;hp-RigidInsulation;;0.0361;;
-mt-PhenolicFoam;Insulation;Phenolic Foam Board;hp-RigidInsulation;;0.03289;;
-mt-InsulatingFiberboard;Insulation;Insulating Fiberboard;hp-Particleboard;;0.05155;;
-mt-StrawBoard;Insulation;Compressed Straw Board;hp-LooseInsulation;;0.07194;;
-mt-WoodFiberBatt;Insulation;Wood Fiber Batt;hp-LooseInsulation;;0.03891;;
-mt-Perlite;Insulation;Expanded Perlite;hp-LooseInsulation;;0.05348;;
-mt-SprayPolyurethane1;Insulation;Spray Polyurethane Type 1;hp-SprayInsulation;;0.02778;;
-mt-SprayPolyurethane2;Insulation;Spray Polyurethane Type 2;hp-SprayInsulation;;0.025;;
-mt-SprayedAsbestos;Insulation;Sprayed Asbestos;hp-SprayInsulation;;0.04975;;
-mt-CMU90;Masonry;CMU 90 mm Hollow;hp-CMU;;;;0.17
-mt-CMU140;Masonry;CMU 140 mm Hollow;hp-CMU;;;;0.19
-mt-CMU190;Masonry;CMU 190 mm Hollow;hp-CMU;;;;0.21
-mt-CMU240;Masonry;CMU 240 mm Hollow;hp-CMU;;;;0.24
-mt-CMU290;Masonry;CMU 290 mm Hollow;hp-CMU;;;;0.26
-mt-CMU190Perlite;Masonry;CMU 190 mm Perlite Filled;hp-CMU;;;;0.53
-mt-CMU140Vermiculite;Masonry;CMU 140 mm Vermiculite Filled;hp-CMU;;;;0.4
-mt-CMU190Vermiculite;Masonry;CMU 190 mm Vermiculite Filled;hp-CMU;;;;0.51
-mt-CMU240Vermiculite;Masonry;CMU 240 mm Vermiculite Filled;hp-CMU;;;;0.61
-mt-CMU290Vermiculite;Masonry;CMU 290 mm Vermiculite Filled;hp-CMU;;;;0.69
-mt-ConcreteBrick;Masonry;Concrete Brick;hp-Brick;;1.698;;
-mt-Sandstone;Masonry;Quartzite And Sandstone;hp-Stone;;3.333;2240;
-mt-Stucco;Finish;Stucco;hp-Plaster;;1.111;;
-mt-WoodShingles;Finish;Wood Shingle Siding;hp-WoodPlank;;;;0.15
-mt-WoodShinglesDouble;Finish;Wood Shingle Siding - Double;hp-WoodPlank;;;;0.21
-mt-WoodSiding;Finish;Wood Siding;hp-WoodPlank;;0.1429;;
-mt-HardboardSiding;Finish;Hardboard Siding;hp-Brick;;0.09167;;
-mt-FiberCementSiding;Finish;Fiber Cement Siding;hp-LightweightConcrete;;;;0.003
-mt-LapSiding;Finish;Metal Or Vinyl Siding;hp-Aluminium;;;;0.11
-mt-LapSidingInsulated;Finish;Metal Or Vinyl Siding - Insulated;hp-Aluminium;;;;0.32
-mt-LapSidingFoil;Finish;Metal Or Vinyl Siding - Insulated And Foil;hp-Aluminium;;;;0.52
-mt-RollRoofing;Roofing;Roll Roofing;hp-Asphalt;;;;0.03
-mt-Bitumen;Roofing;Bitumen;hp-Asphalt;;0.7143;;
-mt-AsphaltShingles;Roofing;Asphalt Shingles;hp-Asphalt;;;;0.078
-mt-BuiltUpRoof;Roofing;Built-Up Roof;hp-Asphalt;;0.1667;;
-mt-WoodShingleRoof;Roofing;Wood Shingle Roofing;hp-WoodPlank;;;;0.17
-mt-Slate;Roofing;Slate;hp-Stone;;1.3;;
-mt-CementPlaster;Finish;Cement Plaster;hp-Plaster;;0.7143;;
-mt-LDF;Wood;Low Density Fiberboard;hp-Particleboard;;0.102;590;
-mt-MDF;Wood;Medium Density Fiberboard;hp-Particleboard;;0.1351;800;
-mt-HDF;Wood;High Density Fiberboard;hp-Particleboard;;0.1695;1000;
-mt-Terrazzo;Finish;Terrazzo;hp-Concrete;;1.667;;
-mt-CarpetFibrous;Finish;Carpet - Fibrous Underlay;hp-Plastic;;;;0.37
-mt-CarpetRubber;Finish;Carpet - Rubber Underlay;hp-Plastic;;;;0.22
-mt-CorkTile;Finish;Cork Tile;hp-Particleboard;;0.06531;;
-mt-HardwoodFloor;Finish;Hardwood Flooring;hp-WoodPlank;;0.1583;;
-mt-ResilientFlooring;Finish;Resilient Flooring;hp-Plastic;;;;0.009
-mt-AirWall13;Air;Air Space - Wall 13 mm;hp-Void;;;;0.16
-mt-AirWall20;Air;Air Space - Wall 20 mm+;hp-Void;;;;0.18
-mt-AirCeiling13;Air;Air Space - Ceiling 13 mm+;hp-Void;;;;0.15
-mt-AirCeiling40;Air;Air Space - Ceiling 40 mm+;hp-Void;;;;0.16
-mt-AirFloor13;Air;Air Space - Floor 13 mm;hp-Void;;;;0.16
-mt-AirFloor20;Air;Air Space - Floor 20 mm+;hp-Void;;;;0.18
-mt-AirFloor40;Air;Air Space - Floor 40 mm+;hp-Void;;;;0.2
-mt-AirFloor90;Air;Air Space - Floor 90 mm+;hp-Void;;;;0.22
-mt-GypsumTypeX;Board;Gypsum Board Type X;hp-Gypsum;;0.1639;;
-mt-GypsumSandPlaster;Finish;Gypsum-Sand Plaster;hp-Plaster;;;;
-mt-AbsorptiveMaterial;Insulation;Absorptive Material;hp-LooseInsulation;;;;
-mt-ResilientChannel;Metal;Resilient Metal Channel;hp-Void;;;;
-mt-SteelFurring;Metal;Steel Furring Channel;hp-Void;;;;
-mt-HollowCoreSlab;Concrete;Hollow Core Slab;hp-Concrete;;;;
-mt-GypsumConcrete;Concrete;Gypsum Concrete;hp-LightweightConcrete;;;;
-mt-SteelDeck;Metal;Steel Deck;hp-Steel;;;;
-mt-Void;Air;Void;hp-Void;;;;
+Id;Group;Name;Cut;Surface;Conductivity;Density;Resistance;Permeability;Permeance
+mt-Demolition;Phase;Demolition;hp-Demolition;;;;;;
+mt-NotInContract;Phase;Not In Contract;hp-NotInContract;;;;;;
+mt-Existing;Phase;Existing;hp-Existing;;;;;;
+mt-Concrete;Concrete;Concrete;hp-Concrete;;2.5;2400;;1.15;
+mt-LightweightConcrete;Concrete;Lightweight Concrete;hp-LightweightConcrete;;0.7692;1600;;;
+mt-Mortar;Concrete;Mortar;hp-Mortar;;1.111;;;;
+mt-Brick;Masonry;Brick;hp-Brick;hp-ModularBrick;1.286;2400;;;
+mt-Stone;Masonry;Stone;hp-Stone;;2.5;2240;;;
+mt-CMU;Masonry;CMU;hp-CMU;;;;;;
+mt-Firebrick;Masonry;Firebrick;hp-Firebrick;;;;;;
+mt-Marble;Masonry;Marble;hp-Marble;;2.5;2240;;;
+mt-Grout;Concrete;Grout;hp-Grout;;;;;;
+mt-Iron;Metal;Iron;hp-Iron;;;;;;
+mt-Steel;Metal;Steel;hp-Steel;;;;;;
+mt-Bronze;Metal;Bronze;hp-Bronze;;;;;;
+mt-Lead;Metal;Lead;hp-Lead;;;;;;
+mt-Aluminium;Metal;Aluminium;hp-Aluminium;;;;;;
+mt-Plywood;Wood;Plywood;hp-Plywood;;0.1149;;;;
+mt-WoodPlank;Wood;Wood Plank;hp-WoodPlank;;;;;;
+mt-WoodFrame;Wood;Wood Frame;hp-WoodFrame;;0.1176;;;;
+mt-Particleboard;Wood;Particleboard;hp-Particleboard;;0.1299;;;;
+mt-Hardboard;Wood;Hardboard;hp-Brick;;0.1053;800;;;
+mt-Plastic;Generic;Plastic;hp-Plastic;;;;;;
+mt-LooseInsulation;Insulation;Loose Insulation;hp-LooseInsulation;;;;;;
+mt-SprayInsulation;Insulation;Spray Insulation;hp-SprayInsulation;;;;;;
+mt-RigidInsulation;Insulation;Rigid Insulation;hp-RigidInsulation;;;;;;
+mt-ExtrudedPolystyrene;Insulation;Extruded Polystyrene;hp-RigidInsulation;;0.02857;;;;
+mt-ExpandedPolystyrene;Insulation;Expanded Polystyrene;hp-RigidInsulation;;0.03571;;;;
+mt-Polyisocyanurate;Insulation;Polyisocyanurate;hp-RigidInsulation;;0.02381;;;;
+mt-Gypsum;Board;Gypsum;hp-Gypsum;;0.1639;;;33.02;
+mt-Plaster;Finish;Plaster;hp-Plaster;;;;;;
+mt-CompactedSoil;Site;Compacted Soil;hp-CompactedSoil;;;;;;
+mt-Topsoil;Site;Topsoil;hp-Topsoil;;;;;;
+mt-UndisturbedSoil;Site;Undisturbed Soil;hp-Topsoil;;;;;;
+mt-Sand;Site;Sand;hp-Sand;;;;;;
+mt-Asphalt;Site;Asphalt;hp-Asphalt;;;;;;
+mt-Gravel;Site;Gravel;hp-Gravel;;;;;;
+mt-CrushedStone;Site;Crushed Stone;hp-Gravel;;1.667;;;;
+mt-Birch;Wood;Birch;hp-WoodFrame;;0.1818;;;;
+mt-Oak;Wood;Oak;hp-WoodFrame;;0.1786;;;;
+mt-MapleAsh;Wood;Maple And Ash;hp-WoodFrame;;0.1587;;;;
+mt-WhiteCedar;Wood;White Cedar;hp-WoodFrame;;0.101;;;;
+mt-YellowCypress;Wood;Yellow Cypress;hp-WoodFrame;;0.1299;;;;
+mt-WhiteSpruce;Wood;White Spruce;hp-WoodFrame;;0.1031;;;;
+mt-WhitePine;Wood;White Pine;hp-WoodFrame;;0.1087;;;;
+mt-LodgepolePine;Wood;Lodgepole Pine;hp-WoodFrame;;0.122;;;;
+mt-RedPine;Wood;Red Pine;hp-WoodFrame;;0.1299;;;;
+mt-Hemlock;Wood;Hemlock;hp-WoodFrame;;0.119;;;;
+mt-WesternHemlock;Wood;Western Hemlock;hp-WoodFrame;;0.1351;;;;
+mt-DouglasFirLarch;Wood;Douglas Fir Or Larch;hp-WoodFrame;;0.1449;;;;
+mt-AmabilisFir;Wood;Amabilis Fir;hp-WoodFrame;;0.125;;;;
+mt-OSB;Wood;OSB;hp-Particleboard;;0.102;;;0.484;
+mt-AsphaltFiberboard;Board;Asphalt Fiberboard Sheathing;hp-Particleboard;;0.06061;;;;
+mt-GypsumSheathing;Board;Gypsum Sheathing;hp-Gypsum;;0.1587;;;17.44;
+mt-FoilFiberboard;Board;Foil-Faced Wood Fiberboard;hp-Particleboard;;0.05155;;;;
+mt-CementBoard;Board;Lightweight Concrete Board;hp-LightweightConcrete;;0.1449;;;;
+mt-ExpandedPolystyrene1;Insulation;Expanded Polystyrene Type 1;hp-RigidInsulation;;0.03891;;;;
+mt-ExpandedPolystyrene3;Insulation;Expanded Polystyrene Type 3;hp-RigidInsulation;;0.03356;;;;
+mt-ExpandedPolystyrene4;Insulation;Expanded Polystyrene Type 4;hp-RigidInsulation;;0.02882;;;;
+mt-MineralWoolBoard;Insulation;Rigid Mineral Wool Roof Board;hp-RigidInsulation;;0.0361;;;;
+mt-PhenolicFoam;Insulation;Phenolic Foam Board;hp-RigidInsulation;;0.03289;;;;
+mt-InsulatingFiberboard;Insulation;Insulating Fiberboard;hp-Particleboard;;0.05155;;;;
+mt-StrawBoard;Insulation;Compressed Straw Board;hp-LooseInsulation;;0.07194;;;;
+mt-WoodFiberBatt;Insulation;Wood Fiber Batt;hp-LooseInsulation;;0.03891;;;;
+mt-Perlite;Insulation;Expanded Perlite;hp-LooseInsulation;;0.05348;;;;
+mt-SprayPolyurethane1;Insulation;Spray Polyurethane Type 1;hp-SprayInsulation;;0.02778;;;;
+mt-SprayPolyurethane2;Insulation;Spray Polyurethane Type 2;hp-SprayInsulation;;0.025;;;;
+mt-SprayedAsbestos;Insulation;Sprayed Asbestos;hp-SprayInsulation;;0.04975;;;;
+mt-CMU90;Masonry;CMU 90 mm Hollow;hp-CMU;;;;0.17;;
+mt-CMU140;Masonry;CMU 140 mm Hollow;hp-CMU;;;;0.19;;
+mt-CMU190;Masonry;CMU 190 mm Hollow;hp-CMU;;;;0.21;;
+mt-CMU240;Masonry;CMU 240 mm Hollow;hp-CMU;;;;0.24;;
+mt-CMU290;Masonry;CMU 290 mm Hollow;hp-CMU;;;;0.26;;
+mt-CMU190Perlite;Masonry;CMU 190 mm Perlite Filled;hp-CMU;;;;0.53;;
+mt-CMU140Vermiculite;Masonry;CMU 140 mm Vermiculite Filled;hp-CMU;;;;0.4;;
+mt-CMU190Vermiculite;Masonry;CMU 190 mm Vermiculite Filled;hp-CMU;;;;0.51;;
+mt-CMU240Vermiculite;Masonry;CMU 240 mm Vermiculite Filled;hp-CMU;;;;0.61;;
+mt-CMU290Vermiculite;Masonry;CMU 290 mm Vermiculite Filled;hp-CMU;;;;0.69;;
+mt-ConcreteBrick;Masonry;Concrete Brick;hp-Brick;;1.698;;;;
+mt-Sandstone;Masonry;Quartzite And Sandstone;hp-Stone;;3.333;2240;;;
+mt-Stucco;Finish;Stucco;hp-Plaster;;1.111;;;;
+mt-WoodShingles;Finish;Wood Shingle Siding;hp-WoodPlank;;;;0.15;;
+mt-WoodShinglesDouble;Finish;Wood Shingle Siding - Double;hp-WoodPlank;;;;0.21;;
+mt-WoodSiding;Finish;Wood Siding;hp-WoodPlank;;0.1429;;;;
+mt-HardboardSiding;Finish;Hardboard Siding;hp-Brick;;0.09167;;;;
+mt-FiberCementSiding;Finish;Fiber Cement Siding;hp-LightweightConcrete;;;;0.003;;
+mt-LapSiding;Finish;Metal Or Vinyl Siding;hp-Aluminium;;;;0.11;;
+mt-LapSidingInsulated;Finish;Metal Or Vinyl Siding - Insulated;hp-Aluminium;;;;0.32;;
+mt-LapSidingFoil;Finish;Metal Or Vinyl Siding - Insulated And Foil;hp-Aluminium;;;;0.52;;
+mt-RollRoofing;Roofing;Roll Roofing;hp-Asphalt;;;;0.03;;
+mt-Bitumen;Roofing;Bitumen;hp-Asphalt;;0.7143;;;;
+mt-AsphaltShingles;Roofing;Asphalt Shingles;hp-Asphalt;;;;0.078;;
+mt-BuiltUpRoof;Roofing;Built-Up Roof;hp-Asphalt;;0.1667;;;;
+mt-WoodShingleRoof;Roofing;Wood Shingle Roofing;hp-WoodPlank;;;;0.17;;
+mt-Slate;Roofing;Slate;hp-Stone;;1.3;;;;
+mt-CementPlaster;Finish;Cement Plaster;hp-Plaster;;0.7143;;;;
+mt-LDF;Wood;Low Density Fiberboard;hp-Particleboard;;0.102;590;;;
+mt-MDF;Wood;Medium Density Fiberboard;hp-Particleboard;;0.1351;800;;;
+mt-HDF;Wood;High Density Fiberboard;hp-Particleboard;;0.1695;1000;;;
+mt-Terrazzo;Finish;Terrazzo;hp-Concrete;;1.667;;;;
+mt-CarpetFibrous;Finish;Carpet - Fibrous Underlay;hp-Plastic;;;;0.37;;
+mt-CarpetRubber;Finish;Carpet - Rubber Underlay;hp-Plastic;;;;0.22;;
+mt-CorkTile;Finish;Cork Tile;hp-Particleboard;;0.06531;;;;
+mt-HardwoodFloor;Finish;Hardwood Flooring;hp-WoodPlank;;0.1583;;;;
+mt-ResilientFlooring;Finish;Resilient Flooring;hp-Plastic;;;;0.009;;
+mt-AirWall13;Air;Air Space - Wall 13 mm;hp-Void;;;;0.16;;
+mt-AirWall20;Air;Air Space - Wall 20 mm+;hp-Void;;;;0.18;;
+mt-AirCeiling13;Air;Air Space - Ceiling 13 mm+;hp-Void;;;;0.15;;
+mt-AirCeiling40;Air;Air Space - Ceiling 40 mm+;hp-Void;;;;0.16;;
+mt-AirFloor13;Air;Air Space - Floor 13 mm;hp-Void;;;;0.16;;
+mt-AirFloor20;Air;Air Space - Floor 20 mm+;hp-Void;;;;0.18;;
+mt-AirFloor40;Air;Air Space - Floor 40 mm+;hp-Void;;;;0.2;;
+mt-AirFloor90;Air;Air Space - Floor 90 mm+;hp-Void;;;;0.22;;
+mt-GypsumTypeX;Board;Gypsum Board Type X;hp-Gypsum;;0.1639;;;;
+mt-GypsumSandPlaster;Finish;Gypsum-Sand Plaster;hp-Plaster;;;;;;
+mt-AbsorptiveMaterial;Insulation;Absorptive Material;hp-LooseInsulation;;;;;;
+mt-ResilientChannel;Metal;Resilient Metal Channel;hp-Void;;;;;;
+mt-SteelFurring;Metal;Steel Furring Channel;hp-Void;;;;;;
+mt-HollowCoreSlab;Concrete;Hollow Core Slab;hp-Concrete;;;;;;
+mt-GypsumConcrete;Concrete;Gypsum Concrete;hp-LightweightConcrete;;;;;;
+mt-SteelDeck;Metal;Steel Deck;hp-Steel;;;;;;
+mt-Void;Air;Void;hp-Void;;;;;;

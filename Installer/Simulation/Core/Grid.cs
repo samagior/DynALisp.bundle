@@ -95,6 +95,25 @@ namespace DynALisp.Simulation.Core
             return lo;
         }
 
+        // The index of the cell at p (i + j * Nx), -1 outside the grid:
+        public int CellAt(P p)
+        {
+            if (p.X < X[0] || p.X > X[Nx] || p.Y < Y[0] || p.Y > Y[Ny]) return -1;
+            return Index(X, p.X) + Index(Y, p.Y) * Nx;
+        }
+
+        // The interval of the lines l that holds v (the last one for the last line):
+        static int Index(double[] l, double v)
+        {
+            int lo = 0, hi = l.Length - 2;
+            while (lo < hi)
+            {
+                int m = (lo + hi + 1) / 2;
+                if (l[m] <= v) lo = m; else hi = m - 1;
+            }
+            return lo;
+        }
+
         // Calls f(i, j) for every cell whose center is inside the shape (a scan of each row):
         public void Fill(Shape s, Action<int, int> f)
         {
