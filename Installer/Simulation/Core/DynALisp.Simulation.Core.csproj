@@ -1,0 +1,21 @@
+<!--
+  DynALisp.Simulation.Core - the calculation of the simulation of a 2D detail, without AutoCAD.
+
+    dotnet test Installer\Simulation\Tests
+
+  A library of its own, with no reference to AutoCAD: it is compiled into the plugin
+  (Installer\Simulation\DynALisp.Simulation.csproj, which includes its files) and tested
+  alone (Installer\Simulation\Tests), on any computer, by the Simulation workflow.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>DynALisp.Simulation.Core</AssemblyName>
+    <RootNamespace>DynALisp.Simulation.Core</RootNamespace>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+</Project>

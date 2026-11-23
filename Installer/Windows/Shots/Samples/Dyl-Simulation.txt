@@ -1,0 +1,18 @@
+# Sample values of the Simulation window (Dyl:SimulationDialog in
+# Apps\Analysis\Dyl-Simulation.lsp), as the Lisp gives them, for a zone picked around a wall
+# section of a metric drawing, checked once, the default climates, Interior selected:
+# +key=field\tfield a row of the table key (cl/rows: id name temperature humidity rs rscond,
+# then the values of the file and those shown); \t is a tab, \n a new line.
+zsum=Zone of 900 x 600, made of the hatches and closed outlines inside it.
+res=2 hatches without a material\n1 hole (no material, no climate)\n14 regions of 6 materials\n22140 cells (180 x 123), Medium grid
++cl/rows=cl-Interior\tInterior\t\t\t0.13\t0.25\t\t\t0.13\t0.25\t\t\t0.13\t0.25
++cl/rows=cl-Exterior\tExterior\t\t\t0.04\t0.04\t\t\t0.04\t0.04\t\t\t0.04\t0.04
++cl/defs=cl-Interior\tInterior\t\t\t0.13\t0.25\t\t\t0.13\t0.25\t\t\t0.13\t0.25
++cl/defs=cl-Exterior\tExterior\t\t\t0.04\t0.04\t\t\t0.04\t0.04\t\t\t0.04\t0.04
++cl/new=\tNew climate\t\t\t\t\t\t\t\t\t\t
+cl.sel=0
+sim.imp=0
+sim.zone=1
+sim.plugin=1
+grd/list=Coarse|Medium|Fine
+grd=1

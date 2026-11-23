@@ -70,6 +70,10 @@
                       ;;  The outlines of the regions of a material without hatch (see
                       ;;  *mt:regionkey* in Dyl-Materials.lsp), not plotted:
                       ("MATREGION" "A-Detl-Matl-Nplt" "8" "CONTINUOUS" "0.18" "0" "Detail: Material Regions Without Hatch" "0" "0")
+                      ;;  The simulation zones and the climate zones of the 2D details (see
+                      ;;  *sim:zonekey* in Apps\Analysis\Dyl-Simulation.lsp), not plotted:
+                      ("SIMZONE" "G-Anno-Simu-Nplt" "30" "DASHED" "0.18" "0" "Simulation: Simulation Zones" "0" "0")
+                      ("SIMCLIMATE" "G-Anno-Clim-Nplt" "151" "CONTINUOUS" "0.18" "0" "Simulation: Climate Zones" "0" "0")
                      )
       ;;  Module Res folder (this file loads before Dyl-Paths.lsp sets *dyl:dylres):
       *lk:file*     (strcat (if *dyl:dylres *dyl:dylres (strcat *dyl:dyl "\\Res")) "\\LayerKeys.csv")
