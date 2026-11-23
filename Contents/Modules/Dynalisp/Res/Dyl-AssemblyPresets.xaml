@@ -82,11 +82,11 @@
        column of the layer on the right as it is: -->
   <Grid Margin="14">
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="300" MinWidth="210"/>
+      <ColumnDefinition Width="370" MinWidth="300"/>
       <ColumnDefinition Width="10"/>
       <ColumnDefinition Width="640" MinWidth="540"/>
       <ColumnDefinition Width="10"/>
-      <ColumnDefinition Width="330"/>
+      <ColumnDefinition Width="330" MinWidth="280"/>
     </Grid.ColumnDefinitions>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
@@ -104,9 +104,8 @@
         </DockPanel>
         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
           <TextBlock DockPanel.Dock="Left" Style="{DynamicResource Dyl.Label}" Text="Show"/>
-          <ComboBox x:Name="shg" DockPanel.Dock="Left" Width="110"/>
-          <Button x:Name="shd" DockPanel.Dock="Left" Content="Set default"/>
-          <TextBlock x:Name="pcn" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}"/>
+          <Button x:Name="shd" DockPanel.Dock="Right" Content="Set default"/>
+          <ComboBox x:Name="shg"/>
         </DockPanel>
         <Grid DockPanel.Dock="Top" Margin="6,0,10,4">
           <Grid.ColumnDefinitions>
@@ -115,12 +114,14 @@
           </Grid.ColumnDefinitions>
           <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Group"/>
           <TextBlock Grid.Column="1" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Name"/>
+          <TextBlock x:Name="pcn" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="11.5" Foreground="{DynamicResource Dyl.Muted}"/>
         </Grid>
-        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,10,0,0">
-          <Button x:Name="new" Margin="0" Content="New"/>
-          <Button x:Name="cpy" Content="Copy"/>
-          <Button x:Name="del" Content="Delete"/>
-        </StackPanel>
+        <!-- the buttons as wide as the column, narrower with it: -->
+        <UniformGrid DockPanel.Dock="Bottom" Rows="1" Margin="0,10,0,0">
+          <Button x:Name="new" Margin="0,0,4,0" MinWidth="0" Content="New"/>
+          <Button x:Name="cpy" Margin="4,0,4,0" MinWidth="0" Content="Copy"/>
+          <Button x:Name="del" Margin="4,0,0,0" MinWidth="0" Content="Delete"/>
+        </UniformGrid>
         <ListBox x:Name="lst" MinHeight="200">
           <ListBox.ItemTemplate>
             <DataTemplate>
@@ -148,7 +149,7 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="24"/>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="130"/>
           </Grid.ColumnDefinitions>
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -202,13 +203,13 @@
           <TextBlock Grid.Row="4" Grid.Column="3" Grid.ColumnSpan="2" Style="{DynamicResource Dyl.Sub}" Text="Sound"/>
           <TextBlock Grid.Row="5" Style="{DynamicResource Dyl.Label}" Text="Load-bearing"/>
           <DockPanel Grid.Row="5" Grid.Column="1" Style="{StaticResource Row}">
-            <TextBox x:Name="afl" DockPanel.Dock="Right" Width="150" MaxLength="4"
+            <TextBox x:Name="afl" DockPanel.Dock="Right" Width="130" MaxLength="4"
                      dyl:Win.Check="empty;integer;min=0" dyl:Win.CheckMessage="The fire-resistance ratings must be whole numbers of minutes."/>
             <Border/>
           </DockPanel>
           <TextBlock Grid.Row="6" Style="{DynamicResource Dyl.Label}" Text="Non-load-bearing"/>
           <DockPanel Grid.Row="6" Grid.Column="1" Style="{StaticResource Row}">
-            <TextBox x:Name="afn" DockPanel.Dock="Right" Width="150" MaxLength="4"
+            <TextBox x:Name="afn" DockPanel.Dock="Right" Width="130" MaxLength="4"
                      dyl:Win.Check="empty;integer;min=0" dyl:Win.CheckMessage="The fire-resistance ratings must be whole numbers of minutes."/>
             <Border/>
           </DockPanel>
@@ -365,17 +366,17 @@
       <StackPanel>
         <!-- The group of its material (the materials of the Material list): -->
         <DockPanel Style="{StaticResource Row}">
-          <ComboBox x:Name="lg" DockPanel.Dock="Right" Width="200" dyl:Win.Column="43"/>
-          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Group"/>
+          <TextBlock DockPanel.Dock="Left" Width="88" Style="{DynamicResource Dyl.Label}" Text="Group"/>
+          <ComboBox x:Name="lg" dyl:Win.Column="43"/>
         </DockPanel>
         <DockPanel Style="{StaticResource Row}">
-          <ComboBox x:Name="lp" DockPanel.Dock="Right" Width="200" dyl:Win.Column="1" dyl:Win.ListBy="lg"/>
-          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Material"/>
+          <TextBlock DockPanel.Dock="Left" Width="88" Style="{DynamicResource Dyl.Label}" Text="Material"/>
+          <ComboBox x:Name="lp" dyl:Win.Column="1" dyl:Win.ListBy="lg"/>
         </DockPanel>
         <DockPanel Style="{StaticResource Row}">
-          <TextBox x:Name="lw" DockPanel.Dock="Right" Width="200" dyl:Win.Column="2"
+          <TextBlock DockPanel.Dock="Left" Width="88" Style="{DynamicResource Dyl.Label}" Text="Thickness"/>
+          <TextBox x:Name="lw" dyl:Win.Column="2"
                    dyl:Win.Check="positive" dyl:Win.CheckMessage="The thickness must be a number greater than 0."/>
-          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Thickness"/>
         </DockPanel>
         <!-- The structural layer, the line of the band on its middle (Structural layer): -->
         <DockPanel Style="{StaticResource Row}">
@@ -384,13 +385,13 @@
         <!-- A discontinuous layer: the material of its framing (the studs, "" None; the
              material of the layer is the insulation between them) and its share of the area: -->
         <DockPanel Style="{StaticResource Row}">
-          <ComboBox x:Name="lfm" DockPanel.Dock="Right" Width="200" dyl:Win.Column="44"/>
-          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Framing"/>
+          <TextBlock DockPanel.Dock="Left" Width="88" Style="{DynamicResource Dyl.Label}" Text="Framing"/>
+          <ComboBox x:Name="lfm" dyl:Win.Column="44"/>
         </DockPanel>
         <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="lfm!=">
-          <TextBox x:Name="lfp" DockPanel.Dock="Right" Width="200" dyl:Win.Column="45"
+          <TextBlock DockPanel.Dock="Left" Width="88" Style="{DynamicResource Dyl.Label}" Text="Framing %"/>
+          <TextBox x:Name="lfp" dyl:Win.Column="45"
                    dyl:Win.Check="positive;max=99.9" dyl:Win.CheckMessage="The framing must be a percentage greater than 0 and less than 100."/>
-          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Framing %"/>
         </DockPanel>
         <!-- What the layer is (also checked in the list): its thickness varies (a tapered
              insulation), a continuous insulation over the framing, the layer of low

@@ -32,7 +32,9 @@
 //     dyl:Win.Grow="1"), shared the same way by those side by side. It is never narrower
 //     than its content, but for what of it has a MinWidth below its Width (a column of a
 //     Grid, a panel): it gets narrower, down to that MinWidth, when the window is, the
-//     width missing taken from those side by side in proportion to what each can give.
+//     width missing taken from those side by side in proportion to what each can give. A
+//     fixed column with a MinWidth that holds no list (the settings beside the lists) gets
+//     narrower the same way, never wider.
 //   - It opens at the size of its content, but never larger than the work area of the
 //     screen of AutoCAD (its lists shorter), centered on the window that opened it and kept
 //     inside the screen.
@@ -85,6 +87,7 @@ namespace DynALisp.Windows
             public double Nat, Min;
             public Rect Box;
             public readonly List<Wide> Side = new List<Wide>();
+            public bool Fixed;          // narrower only, never wider (no list in it)
             public double Give => Nat - Min;
         }
 
@@ -231,6 +234,18 @@ namespace DynALisp.Windows
                     child = p;
                 }
             }
+            // the other fixed columns with a MinWidth (a column of settings beside the
+            // lists): narrower with the window, never wider
+            void Cols(DependencyObject o)
+            {
+                if (o is Grid g)
+                    foreach (var c in g.ColumnDefinitions)
+                        if (c.Width.IsAbsolute && c.MinWidth > 0 && c.MinWidth < c.Width.Value && seen.Add(c))
+                            _wides.Add(new Wide { C = c, G = g, Nat = c.Width.Value, Min = c.MinWidth, Box = ColBox(g, c), Fixed = true });
+                foreach (var k in LogicalTreeHelper.GetChildren(o))
+                    if (k is DependencyObject d) Cols(d);
+            }
+            Cols(_content);
         }
 
         // The least width of what has a fixed width: its MinWidth when it is below it:
@@ -441,7 +456,8 @@ namespace DynALisp.Windows
                     double v;
                     if (dx >= 0)
                     {
-                        double share = t.Nat / (t.Nat + t.Side.Sum(o => o.Nat));
+                        if (t.Fixed) { SetWidth(t, t.Nat); continue; }
+                        double share = t.Nat / (t.Nat + t.Side.Where(o => !o.Fixed).Sum(o => o.Nat));
                         v = t.Nat + dx * (double.IsNaN(share) ? 1 : share);
                     }
                     else
