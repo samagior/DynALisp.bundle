@@ -22,7 +22,8 @@
 ;; API key). The palette is DynALisp.Assistant.dll (Installer\Assistant, AutoCAD 2016 and
 ;; later): (Dyl:AssistantShow docs prompt), docs the page its Open Docs button opens, prompt
 ;; the instructions added to those of Claude Code (Res\Assistant\Prompt.txt, or its User
-;; copy). In this version it only answers: it does not read or change the drawing.
+;; copy). Claude reads the active drawing through the tools of the plugin, and changes it or
+;; runs an AutoCAD command once the user allows it in the palette (one U undoes each change).
 
 (defun c:Dyl-Assistant (/ page prompt)
   (cond

@@ -18,6 +18,9 @@
   Plugin.cs is the Lisp side (the Lisp functions), Cli.cs finds and runs Claude Code,
   Chat.cs drives the conversation of the palette, Palette.cs is the palette itself (built in
   code: a conversation is not a window file of Res), Json.cs reads and writes its messages.
+  Server.cs is the MCP server of the tools of the drawing (local HTTP, a token), Tools.cs
+  lists them and reads the drawing, Writes.cs changes it once the user approves, Host.cs
+  runs them on the thread of AutoCAD, each change in one undo group.
 -->
 <Project Sdk="Microsoft.NET.Sdk">
 

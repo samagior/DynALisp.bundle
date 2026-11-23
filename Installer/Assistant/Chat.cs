@@ -24,6 +24,11 @@
 //
 // Stop ends the process; the next message starts it again on the same session (--resume),
 // so the conversation goes on. New chat forgets the session.
+//
+// The drawing: Claude Code is given the server of DynALisp (Server.cs) by --mcp-config, its
+// token in DYL_ASSISTANT_TOKEN of its own process only. The tools that read are allowed
+// (--allowedTools); those that write are asked to approve (--permission-prompt-tool
+// mcp__dynalisp__approve), which shows the approval card of the palette (Writes.cs).
 
 using System;
 using System.Collections.Generic;
@@ -46,6 +51,7 @@ namespace DynALisp.Assistant
         public event Action<string> Message;       // a message written whole
         public event Action<string, bool> TurnEnd; // the end of a turn: its error (null when none), sign-in needed
         public event Action<string> KeySource;     // apiKeySource of the session, when not "none"
+        public event Action<string> ToolUse;       // a tool of the drawing called by Claude (its short name)
 
         Process _p;
         readonly object _lock = new object();
@@ -88,6 +94,7 @@ namespace DynALisp.Assistant
         {
             Stop();
             SessionId = null;
+            Tools.ForgetApprovals();
         }
 
         void Start()
@@ -98,10 +105,29 @@ namespace DynALisp.Assistant
                 "--include-partial-messages", "--model", Model,
             };
             args.AddRange(Cli.Isolated);
+            Server.Start();
+            var mcp = new Dictionary<string, object>
+            {
+                ["mcpServers"] = new Dictionary<string, object>
+                {
+                    ["dynalisp"] = new Dictionary<string, object>
+                    {
+                        ["type"] = "http",
+                        ["url"] = Server.Url,
+                        ["headers"] = new Dictionary<string, object> { ["Authorization"] = "Bearer ${DYL_ASSISTANT_TOKEN}" },
+                        ["timeout"] = 600000,
+                    },
+                },
+            };
+            args.Add("--mcp-config"); args.Add(Json.Write(mcp));
+            args.Add("--allowedTools"); args.Add(string.Join(",", Tools.Reads.Select(t => Tools.Prefix + t)));
+            args.Add("--permission-prompt-tool"); args.Add(Tools.Prefix + "approve");
             if (!string.IsNullOrEmpty(PromptFile)) { args.Add("--append-system-prompt-file"); args.Add(PromptFile); }
             if (!string.IsNullOrEmpty(SessionId)) { args.Add("--resume"); args.Add(SessionId); }
             lock (_err) _err.Clear();
-            var p = Process.Start(Cli.StartInfo(Exe, args));
+            var psi = Cli.StartInfo(Exe, args);
+            psi.EnvironmentVariables["DYL_ASSISTANT_TOKEN"] = Server.Token;
+            var p = Process.Start(psi);
             _p = p;
             new Thread(() => ReadOut(p)) { IsBackground = true, Name = "DynALisp Assistant output" }.Start();
             new Thread(() => ReadErr(p)) { IsBackground = true, Name = "DynALisp Assistant errors" }.Start();
@@ -161,6 +187,13 @@ namespace DynALisp.Assistant
                 case "assistant":
                     var text = TextOf(Json.Get(e, "message", "content"));
                     if (text != null) Message?.Invoke(text);
+                    if (Json.Get(e, "message", "content") is List<object> blocks)
+                        foreach (var b in blocks)
+                            if (Json.Text(b, "type") == "tool_use")
+                            {
+                                var n = Json.Text(b, "name") ?? "";
+                                ToolUse?.Invoke(n.StartsWith(Tools.Prefix, StringComparison.Ordinal) ? n.Substring(Tools.Prefix.Length) : n);
+                            }
                     break;
                 case "result":
                     Busy = false;
