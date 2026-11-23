@@ -441,7 +441,7 @@
 ;;;   Proofreads every object of the selection set, one API call per object.
 ;;;   Returns a list of counters : (checked fixed failed).
 ;;; --------------------------------------------------------------------------
-(defun ctf:process-selection (auth ss /idx obj original result corrected answer apply-all quit n-checked n-fixed 
+(defun ctf:process-selection (auth ss / idx obj original result corrected answer apply-all quit n-checked n-fixed 
                               n-failed
                              ) 
   (setq idx       0
