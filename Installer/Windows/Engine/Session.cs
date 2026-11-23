@@ -83,8 +83,12 @@ namespace DynALisp.Windows
 
         int Show(string path, Window owner)
         {
-            var view = Open(path);
-            if (FitToScreen) Fit.Attach(view.Window, Path.GetFileNameWithoutExtension(path), Places);
+            var view = Open(path, owner);
+            // a window of several tabs is kept at the one place, whatever its tab (Tabs.cs):
+            string place = view.Window.Content is TabHost host ? host.Place : Path.GetFileNameWithoutExtension(path);
+            if (FitToScreen) Fit.Attach(view.Window, place, Places);
+            // the picture of the window of the tab before, until this one is shown:
+            if (Cover.Shown) view.Window.ContentRendered += (a, b) => Cover.Close();
             if (owner != null)
             {
                 view.Window.Owner = owner;
@@ -97,7 +101,9 @@ namespace DynALisp.Windows
         }
 
         // The window of path on the values, not shown yet (the pictures tool renders it):
-        public View Open(string path)
+        public View Open(string path) => Open(path, null);
+
+        View Open(string path, Window owner)
         {
             var w = Load(path, Dark);
             if (Values.TryGetValue("win/title", out string title) && !string.IsNullOrEmpty(title))
@@ -107,6 +113,8 @@ namespace DynALisp.Windows
             }
             var view = new View(this, w, Path.GetDirectoryName(Path.GetFullPath(path)));
             view.Fill();
+            // the tabs of a window of several tools (the Manager), when the Lisp gives them:
+            if (owner == null) TabHost.Wrap(view, this);
             return view;
         }
 
@@ -752,13 +760,16 @@ namespace DynALisp.Windows
             CloseWith(status);
         }
 
-        // Closes the window with status (its values checked first, unless it is 0, Cancel):
-        internal void CloseWith(int status)
+        // Closes the window with status (its values checked first, unless it is 0, Cancel;
+        // then before, Tabs.cs). False when a value is not valid (the window stays open):
+        internal bool CloseWith(int status, Action before = null)
         {
-            if (status != 0 && !Checks()) return;
+            if (status != 0 && !Checks()) return false;
             Status = status;
+            before?.Invoke();
             // a Cancel button has closed it already (IsCancel):
             if (!_closed) Window.Close();
+            return true;
         }
 
         // The text boxes checked (Win.Check) before the window closes:

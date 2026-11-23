@@ -1511,7 +1511,8 @@
 ;;  aliases): the Lisp gives it the presets, gets them back as edited when it closes, and
 ;;  saves them (Draw, Save) as the dialog does. A code >= 3 (an open button) runs as in the
 ;;  dialog (see Remote>>Dyl:PresetDlgCode), then the window is shown again on the presets
-;;  being edited. The App part gives, besides the properties of the dialog it uses (defs,
+;;  being edited. In the Manager (Remote\Dyl-Manager.lsp), another tab picked closes the
+;;  window with *dyl:wintabcode*: the presets are saved, as Save. The App part gives, besides the properties of the dialog it uses (defs,
 ;;  fix, tiles, upper, new, check, status, groups, material):
 ;;
 ;;    (window . "Dyl-QuickDraw.xaml")   ; the window file, in the Res folder of the Dynalisp module
@@ -1769,6 +1770,9 @@
       ((= 0 sta))
       ;;  A value not valid: shown again with its message (the code asked for is dropped):
       ((setq err (Remote>>Dyl:PresetWinCheck)) (setq sta 99))
+      ;;  Another tab of the Manager picked (Remote\Dyl-Manager.lsp): saved, as Save, and
+      ;;  the Manager shows the window of that tab:
+      ((= *dyl:wintabcode* sta) (setq sta 2))
       ((<= 3 sta) (setq sta (Remote>>Dyl:PresetDlgCode sta)))
     )
   )

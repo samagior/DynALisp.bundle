@@ -41,6 +41,7 @@ PST-MATERIALASSIGN;Matériau Attribuer;Donne un matériau aux hachures et contou
 PST-MATERIALMATCH;Matériau Copier;Donne le matériau d'un objet à d'autres hachures et contours fermés.
 PST-MATERIALSHOW;Matériau Afficher;Affiche le matériau des objets sélectionnés, avec ses données, l'outil et le préréglage qui les ont dessinés.
 DYL-HATCHPRESETS;Préréglages de hachures;Ouvre une fenêtre pour créer et modifier les préréglages de hachures (motif, échelle et clé de calque d'une hachure) que partagent les matériaux.
+DYL-MANAGER;Gestionnaire;Ouvre le gestionnaire : les fenêtres qui configurent les outils de dessin (dessin rapide, assemblages, matériaux, préréglages de hachures), dans les onglets d'une seule fenêtre.
 DYL-SHRINKWRAP;Contour extérieur;Dessine des polylignes fermées autour de l'extérieur des objets sélectionnés (remplace AECLINEWORKSHRINKWRAP).
 DYL-LAYERPHASE;Phase des calques;Liste les phases du dessin pour choisir la phase active et les afficher ou les masquer.
 DYL-OBJECTLAYERKEYS;Clés de calque des objets;Ouvre une fenêtre pour attribuer une clé de calque aux nouvelles cotes, lignes de repère, textes et autres objets courants.

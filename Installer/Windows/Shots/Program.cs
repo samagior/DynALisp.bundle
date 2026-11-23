@@ -106,6 +106,7 @@ namespace DynALisp.Windows
             readonly Dictionary<string, string> _d = new Dictionary<string, string>();
             public string Get(string name) => _d.TryGetValue(name, out string v) ? v : null;
             public void Set(string name, string value) => _d[name] = value;
+            public string First => _d.Keys.FirstOrDefault();
         }
 
         static void FitCheck(string xaml, string sample)
@@ -130,8 +131,10 @@ namespace DynALisp.Windows
                 return true;
             };
             s.Show(xaml);
-            Console.WriteLine("    place kept: " + (places.Get(Path.GetFileNameWithoutExtension(xaml)) ?? "none"));
-            if (places.Get(Path.GetFileNameWithoutExtension(xaml)) == null) return;
+            // (by the name of its file, or the place of its tabs: Dyl-Manager)
+            string kept = places.First;
+            Console.WriteLine("    place kept: " + (kept != null ? kept + " " + places.Get(kept) : "none"));
+            if (kept == null) return;
             s.ShowRoot = w => { w.Show(); Pump(500); Report("reopened", w); w.Close(); return true; };
             s.Show(xaml);
         }

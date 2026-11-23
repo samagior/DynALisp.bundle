@@ -51,6 +51,7 @@ Load;Command;Name;Description;File;Module;Group;Duplicate;Path
 1;C:PST-QUICKSHAPEHSS4X4;Quick Shape HSS 4x4;Inserts 4x4x1/4 steel tubes in section, filled with the steel hatch.;Dyl-QuickShape.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-QuickShape.lsp
 1;C:DYL-SHRINKWRAP;Shrinkwrap;Draws closed polylines around the outside of the selected objects (replaces AECLINEWORKSHRINKWRAP).;Dyl-Shrinkwrap.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-Shrinkwrap.lsp
 1;C:DYL-HATCHPRESETS;Hatch Presets;Opens a dialog to create and edit the hatch presets (pattern, scale and layer key of a hatch) that the materials share.;Dyl-HatchPresets.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-HatchPresets.lsp
+1;C:DYL-MANAGER;Manager;Opens the Manager: the windows that set up the drawing tools (Quick Draw, Assembly Presets, Materials, Hatch Presets) as the tabs of one window.;Dyl-Manager.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-Manager.lsp
 1;C:DYL-MATERIALS;Materials;Opens a window to create and edit the materials used by Quick Draw and Quick Shape: their hatch presets and their data.;Dyl-Materials.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-Materials.lsp
 1;C:PST-MATERIALASSIGN;Material Assign;Gives a material to the hatches and closed outlines selected, or takes it off, so a detail drawn without DynALisp knows what it is made of.;Dyl-Materials.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-Materials.lsp
 1;C:PST-MATERIALMATCH;Material Match;Gives the material of an object to other hatches and closed outlines.;Dyl-Materials.lsp;Dynalisp;Draw;;Dynalisp\Apps\Draw\Dyl-Materials.lsp
