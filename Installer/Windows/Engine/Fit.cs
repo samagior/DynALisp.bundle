@@ -141,6 +141,8 @@ namespace DynALisp.Windows
             };
             if (tabs != null) tabs.Body = _sv;
             else w.Content = _sv;
+            // (its place saved when its tab is left, the window kept: the next tab opens there)
+            if (tabs != null) tabs.Leaving += () => { try { Save(); } catch { } };
             Find(content);
             if (Resizable)
             {
