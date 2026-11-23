@@ -2633,7 +2633,17 @@
   ;;; A button that must run Lisp (a command, a window of the Lisp) closes the window
   ;;; with its number; the caller runs it, then shows the window again on the values
   ;;; it got (see c:Dyl-Settings). The helpers below build and read the values.
+  ;;;
+  ;;; A window of several tools under tabs (the Manager, Remote\Dyl-Manager.lsp) binds
+  ;;; *dyl:wintabs* while it runs: (file titles index title place), the window file of
+  ;;; the tab shown and its tabs. Dyl:WinShow gives them to that window only (never to
+  ;;; a window opened from it: a sub-window), and when another tab is picked the window
+  ;;; closes with *dyl:wintabcode* (90, Installer\Windows\Engine\Tabs.cs) and
+  ;;; *dyl:wintab* is the index of the tab picked (nil else): the tool saves what it
+  ;;; edits, as Save, and the Manager shows the window of that tab.
   ;;; ============================================================================
+
+  (setq *dyl:wintabcode* 90)
 
   ;;  The full path of a window file, nil when it is missing:
   (defun Dyl:WinFile (file)
@@ -2682,7 +2692,26 @@
     res
   )
 
-  (defun Dyl:WinShow (file vals / path res)
+  (defun Dyl:WinShow (file vals / path res tabs)
+    ;;  The tabs, when file is the window of the tab shown (see *dyl:wintabs* above):
+    (if (and *dyl:wintabs* (= (strcase (vl-filename-base file)) (strcase (vl-filename-base (car *dyl:wintabs*)))))
+      (setq tabs        (list (cons "tab/list" (nth 1 *dyl:wintabs*))
+                              (cons "tab" (itoa (nth 2 *dyl:wintabs*)))
+                              (cons "tab/title" (nth 3 *dyl:wintabs*))
+                              (cons "tab/place" (nth 4 *dyl:wintabs*))
+                        )
+            *dyl:wintab* nil
+      )
+    )
+    (setq res (Dyl:WinShowFile file (append vals tabs)))
+    (if (and tabs (= *dyl:wintabcode* (car res)))
+      (setq *dyl:wintab* (atoi (cond ((Dyl:WinGet res "tab")) ("0"))))
+    )
+    res
+  )
+
+  ;;  The window file shown on vals (see Dyl:WinShow):
+  (defun Dyl:WinShowFile (file vals / path res)
     (cond
       ((not Dyl:Window)
        (princ (strcat "\n--> This window needs DynALisp.Windows.dll (AutoCAD 2015 or later, not blocked by SECURELOAD): " file))

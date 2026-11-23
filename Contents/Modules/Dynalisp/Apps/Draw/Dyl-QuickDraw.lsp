@@ -3894,7 +3894,7 @@
                       '(wtiles . "aex:6,ads:8,afl:9,afn:10,ast:11,aii:12,abl:14,adl:26")
                       ;;  (a default assembly whose layers only changed is changed too:)
                       '(wncols . 14)
-                      (cons 'select (if (not (or (= "" (nth *qd:layerscol* r)) (vl-string-search ":" (nth *qd:layerscol* r)))) (nth *qd:layerscol* r)))
+                      (cons 'select (if (and r (not (or (= "" (nth *qd:layerscol* r)) (vl-string-search ":" (nth *qd:layerscol* r))))) (nth *qd:layerscol* r)))
                       '(new "" "Wall" "New assembly" "" "1~" "1~" "First" "" "" "" "" "" "")
                       '(extra . Dyl:QuickDrawAsmExtra)
                       '(wget . Dyl:QuickDrawAsmWinGet)
@@ -3906,6 +3906,13 @@
         *qd:asmcache* nil
   )
   res
+)
+
+;;  The Assembly Presets tab of the Manager (Remote\Dyl-Manager.lsp): the window on its own,
+;;  opened from no Quick Draw preset; OK saves the assemblies:
+(defun Dyl:QuickDrawAsmManager ()
+  (Dyl:QuickDrawAsmDialog nil nil)
+  nil
 )
 
 ;;-------------------------=={ Gallery }==------------------------;;
@@ -4100,7 +4107,8 @@
     )
   )
   (cond
-    ((= 2 sta) (Dyl:QuickDrawDialog))
+    ;;  Manager: the Manager on the Quick Draw tab, which draws what Draw picks there:
+    ((= 2 sta) (Remote>>Dyl:Manager "QuickDraw") nil)
     ((and (= 1 sta) (<= 0 i) (< i (length qg:all)))
      ;;  The method picked, when the preset can be drawn with it (else its own):
      (if (and m (member m (Dyl:QuickDrawGalleryMethods (car (nth i qg:all)))))
@@ -4116,8 +4124,8 @@
 ;; Quick Draw
 ;; Opens a dialog to edit, create and draw the quick draw presets.
 
-(defun c:Dyl-QuickDraw (/ rec)
-  (if (setq rec (Dyl:QuickDrawDialog)) (Dyl:QuickDrawRun rec))
+(defun c:Dyl-QuickDraw ()
+  (Remote>>Dyl:Manager "QuickDraw")
   (princ)
 )
 

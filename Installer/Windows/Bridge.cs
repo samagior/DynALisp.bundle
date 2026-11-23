@@ -59,6 +59,9 @@ namespace DynALisp.Windows
         public void Initialize()
         {
             AppDomain.CurrentDomain.AssemblyResolve += Resolve;
+            // the picture of a window left between two tabs (Engine\Tabs.cs), when the Lisp
+            // showed no other window after it:
+            AcApp.Idle += (a, b) => { if (Cover.Shown) Cover.Close(); };
         }
 
         public void Terminate() { }

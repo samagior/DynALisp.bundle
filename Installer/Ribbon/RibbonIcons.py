@@ -695,6 +695,20 @@ def i_materials(c):
     swatch(c, 'BRICK', 14, 14, 30, 30)
 
 
+def i_manager(c):
+    # one window of tabs: the tab shown in orange, a hatch and the lines of a list under it
+    c.rect(12, 5, 20, 10, GRAY_L, INK, r=1)
+    c.rect(20, 5, 28, 10, GRAY_L, INK, r=1)
+    c.rect(2, 9, 30, 29, PAPER, INK, r=1.5)
+    c.rect(2, 4, 12, 10, ORANGE, INK, r=1)
+    pattern(c, 'ansi31', 5, 13, 15, 26, ORANGE_L, INK)
+    c.rect(5, 13, 15, 26, None, INK)
+    if not c.small:
+        text_lines(c, 18, 14, 27, 3, 4.5)
+    else:
+        text_lines(c, 18, 14, 27, 2, 6)
+
+
 def i_hatchpresets(c):
     # one hatch (Rigid Insulation) shared by three materials
     kind, bg, fg = MATERIALS['RIGIDINSULATION']
@@ -1178,6 +1192,7 @@ ICONS = {
     'DYL-SHRINKWRAP': i_shrinkwrap,
     'DYL-MATERIALS': i_materials,
     'DYL-HATCHPRESETS': i_hatchpresets,
+    'DYL-MANAGER': i_manager,
     # layers
     'DYL-LAYERKEYS': i_layerkeys,
     'DYL-OBJECTLAYERKEYS': i_objectlayerkeys,
