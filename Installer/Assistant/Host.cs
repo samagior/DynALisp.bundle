@@ -22,6 +22,8 @@
 //           AutoCAD 2016), between _.UNDO _Begin and _.UNDO _End: one U undoes it. Refused
 //           while a command runs (CMDACTIVE: a command waiting for a point, a window of
 //           DynALisp open), or when the active drawing is not the one the user approved.
+//   LispRead  a reading through the Lisp side of DynALisp (Lisp.cs), in the command context
+//           too (Application.Invoke), without an undo group: refused while a command runs.
 
 using System;
 using System.Threading;
@@ -81,6 +83,19 @@ namespace DynALisp.Assistant
             }
         });
 
+        // A Dynalisp* setting on (getenv / setenv: the FixedProfile\General key of the profile),
+        // read each time: Dyl-Settings may change it while the palette is open.
+        public static bool Setting(string name)
+        {
+            try
+            {
+                var root = HostApplicationServices.Current.UserRegistryProductRootKey;
+                using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(root + @"\FixedProfile\General"))
+                    return key != null && (key.GetValue(name) as string) == "1";
+            }
+            catch { return false; }
+        }
+
         public static bool CommandActive()
         {
             try { return Convert.ToInt32(AcApp.GetSystemVariable("CMDACTIVE")) != 0; }
@@ -102,24 +117,48 @@ namespace DynALisp.Assistant
                 }
             });
 
-        public static string WriteAsync(Document doc, Func<Document, Editor, Task<string>> f)
+        public static string WriteAsync(Document doc, Func<Document, Editor, Task<string>> f) =>
+            InCommand(doc, true, f);
+
+        // A reading through the Lisp side of DynALisp (Lisp.cs): in the command context of the
+        // active drawing, with no undo group; refused while a command runs.
+        public static object LispRead(string op, params object[] args)
+        {
+            object r = null;
+            InCommand(null, false, (d, ed) =>
+            {
+                r = Lisp.Call(op, args);
+                return Task.FromResult("");
+            }, ReadTimeout);
+            return r;
+        }
+
+        // f in the command context of AutoCAD (ExecuteInCommandContextAsync), in the drawing doc
+        // (null: the active drawing, for a reading); undo: between _.UNDO _Begin and _End, one U.
+        public static string InCommand(Document doc, bool undo, Func<Document, Editor, Task<string>> f, int timeout = WriteTimeout)
         {
             var done = new TaskCompletionSource<string>();
+            string nothing = undo ? "nothing was changed" : "nothing was read";
             OnMain(() =>
             {
                 var cur = AcApp.DocumentManager.MdiActiveDocument;
-                if (cur == null || doc == null || cur != doc)
-                    throw new ToolError("The active drawing is no longer the one the user approved: nothing was changed.");
+                if (cur == null) throw new ToolError("No drawing is open.");
+                if (doc == null) doc = cur;
+                else if (cur != doc)
+                    throw new ToolError("The active drawing is no longer the one the user approved: " + nothing + ".");
                 if (CommandActive())
-                    throw new ToolError("AutoCAD is busy (a command or a window is open): nothing was changed. Ask the user to finish it, then try again.");
+                    throw new ToolError("AutoCAD is busy (a command or a window is open): " + nothing + ". Ask the user to finish it, then try again.");
                 AcApp.DocumentManager.ExecuteInCommandContextAsync(async _ =>
                 {
                     var ed = doc.Editor;
                     bool begun = false;
                     try
                     {
-                        await ed.CommandAsync("_.UNDO", "_Begin");
-                        begun = true;
+                        if (undo)
+                        {
+                            await ed.CommandAsync("_.UNDO", "_Begin");
+                            begun = true;
+                        }
                         var r = await f(doc, ed);
                         done.TrySetResult(r);
                     }
@@ -135,12 +174,12 @@ namespace DynALisp.Assistant
                 }, null);
                 return true;
             });
-            if (!done.Task.Wait(WriteTimeout))
-                throw new ToolError("AutoCAD did not finish the change in " + WriteTimeout / 1000 + " s.");
+            if (!done.Task.Wait(timeout))
+                throw new ToolError("AutoCAD did not finish in " + timeout / 1000 + " s.");
             if (done.Task.IsFaulted)
             {
                 var e = done.Task.Exception?.InnerException;
-                throw e is ToolError ? e : new ToolError(e?.Message ?? "The change failed.");
+                throw e is ToolError ? e : new ToolError(e?.Message ?? "The call failed.");
             }
             return done.Task.Result;
         }

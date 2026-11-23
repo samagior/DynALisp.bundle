@@ -25,6 +25,11 @@
 // Stop ends the process; the next message starts it again on the same session (--resume),
 // so the conversation goes on. New chat forgets the session.
 //
+// The last conversation is kept for the next time AutoCAD opens (Last.json of the working
+// folder, Cli.Workspace: its session, its model and the texts of its messages), written at
+// the end of each turn; Resume last chat of the palette shows its messages again and goes
+// on with its session (--resume). The uninstall removes the folder.
+//
 // The drawing: Claude Code is given the server of DynALisp (Server.cs) by --mcp-config, its
 // token in DYL_ASSISTANT_TOKEN of its own process only. The tools that read are allowed
 // (--allowedTools); those that write are asked to approve (--permission-prompt-tool
@@ -33,6 +38,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -45,6 +51,7 @@ namespace DynALisp.Assistant
         public string Model = "sonnet";
         public string PromptFile;
         public string SessionId { get; private set; }
+        public readonly List<KeyValuePair<string, string>> Transcript = new List<KeyValuePair<string, string>>();   // role, text
         public bool Busy { get; private set; }
 
         public event Action<string> Delta;         // text written so far added to the message
@@ -65,6 +72,7 @@ namespace DynALisp.Assistant
             {
                 if (_p == null || _p.HasExited) Start();
                 Busy = true;
+                lock (Transcript) Transcript.Add(new KeyValuePair<string, string>("user", text));
                 var msg = new Dictionary<string, object>
                 {
                     ["type"] = "user",
@@ -94,7 +102,58 @@ namespace DynALisp.Assistant
         {
             Stop();
             SessionId = null;
+            lock (Transcript) Transcript.Clear();
             Tools.ForgetApprovals();
+        }
+
+        // ---- the last conversation --------------------------------------------------
+
+        static string LastFile => Path.Combine(Cli.Workspace(), "Last.json");
+
+        void Save()
+        {
+            List<KeyValuePair<string, string>> msgs;
+            lock (Transcript) msgs = Transcript.ToList();
+            if (string.IsNullOrEmpty(SessionId) || msgs.Count == 0) return;
+            try
+            {
+                var o = new Dictionary<string, object>
+                {
+                    ["session"] = SessionId,
+                    ["model"] = Model,
+                    ["saved"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm", System.Globalization.CultureInfo.InvariantCulture),
+                    ["messages"] = msgs.Select(kv => (object)new Dictionary<string, object> { ["role"] = kv.Key, ["text"] = kv.Value }).ToList(),
+                };
+                File.WriteAllText(LastFile, Json.Write(o), new UTF8Encoding(false));
+            }
+            catch { }
+        }
+
+        // The last conversation saved: its date and first question, null when there is none.
+        public static Dictionary<string, object> Last()
+        {
+            try
+            {
+                if (!File.Exists(LastFile)) return null;
+                var o = Json.TryParse(File.ReadAllText(LastFile, Encoding.UTF8)) as Dictionary<string, object>;
+                return string.IsNullOrEmpty(Json.Text(o, "session")) || !(Json.Get(o, "messages") is List<object>) ? null : o;
+            }
+            catch { return null; }
+        }
+
+        // Goes on with the conversation o (Last): its session, model and messages.
+        public void Resume(Dictionary<string, object> o)
+        {
+            Reset();
+            SessionId = Json.Text(o, "session");
+            var m = Json.Text(o, "model");
+            if (m == "sonnet" || m == "opus") Model = m;
+            foreach (var x in (Json.Get(o, "messages") as List<object>) ?? new List<object>())
+            {
+                var role = Json.Text(x, "role");
+                var text = Json.Text(x, "text");
+                if ((role == "user" || role == "assistant") && text != null) Transcript.Add(new KeyValuePair<string, string>(role, text));
+            }
         }
 
         void Start()
@@ -186,7 +245,11 @@ namespace DynALisp.Assistant
                     break;
                 case "assistant":
                     var text = TextOf(Json.Get(e, "message", "content"));
-                    if (text != null) Message?.Invoke(text);
+                    if (text != null)
+                    {
+                        lock (Transcript) Transcript.Add(new KeyValuePair<string, string>("assistant", text));
+                        Message?.Invoke(text);
+                    }
                     if (Json.Get(e, "message", "content") is List<object> blocks)
                         foreach (var b in blocks)
                             if (Json.Text(b, "type") == "tool_use")
@@ -199,6 +262,7 @@ namespace DynALisp.Assistant
                     Busy = false;
                     var sid2 = Json.Text(e, "session_id");
                     if (!string.IsNullOrEmpty(sid2)) SessionId = sid2;
+                    Save();
                     if (Json.Get(e, "is_error") is bool bad && bad)
                     {
                         var msg = Json.Text(e, "result") ?? Json.Text(e, "subtype") ?? "Claude Code returned an error.";

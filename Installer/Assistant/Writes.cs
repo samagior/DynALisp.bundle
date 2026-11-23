@@ -88,6 +88,8 @@ namespace DynALisp.Assistant
             var tool = full.StartsWith(Prefix, StringComparison.Ordinal) ? full.Substring(Prefix.Length) : null;
             if (tool == null || !Writes.Contains(tool))
                 return Deny("Only the tools of the drawing are allowed here.");
+            if (tool == "run_lisp" && !Host.Setting(LispSetting))
+                return Deny("Allow Lisp is off in Dyl-Settings (Assistant): the Assistant does not run AutoLISP. Tell the user, who can turn it on; do not try another way.");
             Card card;
             try { card = Host.Read((doc, tr) => Summary(tool, input, doc, tr)); }
             catch (ToolError e) { return Deny(e.Message); }
@@ -95,7 +97,7 @@ namespace DynALisp.Assistant
             bool always;
             lock (_approved) always = _always.Contains(tool);
             string answer = always ? "allow" : Palette.Ask(card);
-            if (answer == "always" && tool != "run_command") { lock (_approved) _always.Add(tool); answer = "allow"; }
+            if (answer == "always" && card.AllowAlways) { lock (_approved) _always.Add(tool); answer = "allow"; }
             else if (answer == "always") answer = "allow";
             if (answer != "allow") return Deny(answer == "busy" ? "The palette is not open: nothing was changed." : "The user refused this change. Do not try it again unless they ask.");
             lock (_approved) _approved[useId ?? ("tool:" + tool)] = target;
@@ -110,7 +112,7 @@ namespace DynALisp.Assistant
         {
             public string Tool, Title, Drawing, Code;
             public List<ObjectId> Objects = new List<ObjectId>();
-            public bool AllowAlways => Tool != "run_command";
+            public bool AllowAlways => Tool != "run_command" && Tool != "run_lisp";
         }
 
         static Card Summary(string tool, Dictionary<string, object> a, Document doc, Transaction tr)
@@ -160,6 +162,33 @@ namespace DynALisp.Assistant
                     if (cur != null) parts.Add("make " + Json.Text(cur, "name") + " current");
                     var s = string.Join(", ", parts);
                     c.Title = s.Length > 0 ? char.ToUpperInvariant(s[0]) + s.Substring(1) : "Change layers";
+                    break;
+                }
+                case "dynalisp_action":
+                {
+                    var act = Action(a);
+                    var hs = Strings(Json.Get(a, "handles"));
+                    if (hs.Count == 0) throw new ToolError("handles: give the objects.");
+                    if (hs.Count > MaxItems) throw new ToolError("handles: " + MaxItems + " at most a call.");
+                    foreach (var h in hs) AddObject(c, db, h);
+                    if (act == "assign_material")
+                    {
+                        var m = Json.Text(a, "material") ?? throw new ToolError("material: give the id of a material (\"\" takes it off).");
+                        c.Title = m == "" ? "Take the material off " + Count(hs.Count, "object") : "Give the material " + m + " to " + Count(hs.Count, "object");
+                    }
+                    else
+                    {
+                        var pr = Json.Text(a, "preset") ?? throw new ToolError("preset: give the id of a Quick Draw preset.");
+                        c.Title = "Hatch " + Count(hs.Count, "outline") + " with the Quick Draw preset " + pr;
+                    }
+                    break;
+                }
+                case "run_lisp":
+                {
+                    var code = Json.Text(a, "code");
+                    if (string.IsNullOrWhiteSpace(code)) throw new ToolError("code: give the AutoLISP code.");
+                    c.Title = "Run this AutoLISP code";
+                    c.Code = code;
                     break;
                 }
                 case "run_command":
@@ -218,6 +247,16 @@ namespace DynALisp.Assistant
         // An answer to a command that names a file: a path, a file name, ~ (the file dialog).
         static bool NamesFile(string x) => FileAnswer.IsMatch((x ?? "").Trim().Trim('"'));
 
+        // The setting of Dyl-Settings that lets the Assistant run AutoLISP (off: run_lisp denied):
+        public const string LispSetting = "DynalispAssistantLisp";
+
+        static string Action(Dictionary<string, object> a)
+        {
+            var act = (Json.Text(a, "action") ?? "").Trim().ToLowerInvariant();
+            if (act != "assign_material" && act != "quick_draw") throw new ToolError("action: assign_material or quick_draw.");
+            return act;
+        }
+
         static List<string> CommandArgs(Dictionary<string, object> a)
         {
             if (!(Json.Get(a, "command") is List<object> l) || l.Count == 0) throw new ToolError("command: give the command and its answers.");
@@ -252,6 +291,13 @@ namespace DynALisp.Assistant
                 case "erase_entities": return Host.Write(doc, (d, tr) => Erase(d, tr, a));
                 case "set_layers": return Host.Write(doc, (d, tr) => SetLayers(d, tr, a));
                 case "run_command": return RunCommand(doc, a);
+                case "dynalisp_action":
+                    return Host.WriteAsync(doc, (d, ed) => Task.FromResult(Action(a) == "assign_material"
+                        ? Json.Write(Lisp.Call("Assign", Json.Text(a, "material") ?? "", Strings(Json.Get(a, "handles"))))
+                        : Json.Write(Lisp.Call("QuickDraw", Json.Text(a, "preset") ?? "", Strings(Json.Get(a, "handles"))))));
+                case "run_lisp":
+                    if (!Host.Setting(LispSetting)) throw new ToolError("Allow Lisp is off in Dyl-Settings: nothing was run.");
+                    return Host.WriteAsync(doc, (d, ed) => Task.FromResult(Json.Write(Lisp.Call("Lisp", Json.Text(a, "code") ?? ""))));
             }
             throw new ToolError("Unknown tool: " + tool);
         }

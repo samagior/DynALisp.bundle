@@ -159,13 +159,14 @@ namespace DynALisp.Assistant
                     var args = Json.Get(m, "params", "arguments") as Dictionary<string, object> ?? new Dictionary<string, object>();
                     var useId = Json.Text(m, "params", "_meta", "claudecode/toolUseId");
                     bool isError = false;
-                    string text;
-                    try { text = Tools.Call(name, args, useId); }
-                    catch (ToolError e) { text = e.Message; isError = true; }
-                    catch (Exception e) { text = "Error: " + e.Message; isError = true; }
+                    object answer;
+                    try { answer = Tools.Call(name, args, useId); }
+                    catch (ToolError e) { answer = e.Message; isError = true; }
+                    catch (Exception e) { answer = "Error: " + e.Message; isError = true; }
                     return Result(id, new Dictionary<string, object>
                     {
-                        ["content"] = new List<object> { new Dictionary<string, object> { ["type"] = "text", ["text"] = text } },
+                        ["content"] = answer as List<object>
+                            ?? new List<object> { new Dictionary<string, object> { ["type"] = "text", ["text"] = answer as string ?? "" } },
                         ["isError"] = isError,
                     });
                 default:

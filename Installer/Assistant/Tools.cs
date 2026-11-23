@@ -16,12 +16,14 @@
 //
 // The tools of the server "dynalisp" (mcp__dynalisp__<name> for Claude Code):
 //   read, allowed without asking (Chat.ReadTools, --allowedTools):
-//     drawing_info, get_selection, list_objects, get_object, list_layers, list_blocks
+//     drawing_info, get_selection, list_objects, get_object, list_layers, list_blocks;
+//     get_materials, get_assembly, list_presets (what DynALisp knows), capture_view (Materials.cs)
 //   write, each one approved by the user in the palette first (Writes.cs):
-//     create_entities, modify_entities, erase_entities, set_layers, run_command
+//     create_entities, modify_entities, erase_entities, set_layers, run_command;
+//     dynalisp_action (a material given, a Quick Draw preset), run_lisp (behind Allow Lisp)
 //   approve, called by Claude Code itself before a write (--permission-prompt-tool), never by
 //     Claude: it shows the approval card and waits for the answer of the user.
-// A tool answers a text of JSON; a list gives 200 objects a page at most (Claude Code takes
+// A tool answers a text of JSON (capture_view: an image and a text); a list gives 200 objects a page at most (Claude Code takes
 // 25 000 tokens of a tool at most). Coordinates are in the units of the drawing, angles in
 // degrees, rounded to 6 decimals.
 
@@ -44,8 +46,12 @@ namespace DynALisp.Assistant
         public const string Prefix = "mcp__dynalisp__";
         public const int Page = 200;
 
-        public static readonly string[] Reads = { "drawing_info", "get_selection", "list_objects", "get_object", "list_layers", "list_blocks" };
-        public static readonly string[] Writes = { "create_entities", "modify_entities", "erase_entities", "set_layers", "run_command" };
+        public static readonly string[] Reads =
+        {
+            "drawing_info", "get_selection", "list_objects", "get_object", "list_layers", "list_blocks",
+            "get_materials", "get_assembly", "list_presets", "capture_view",
+        };
+        public static readonly string[] Writes = { "create_entities", "modify_entities", "erase_entities", "set_layers", "run_command", "dynalisp_action", "run_lisp" };
 
         // ---- the list of tools ------------------------------------------------------
 
@@ -83,6 +89,27 @@ namespace DynALisp.Assistant
                         ["names"] = Str("Block names, divided by commas, * and ? allowed. Empty: every block but the anonymous ones."),
                         ["offset"] = Int("The first block of the page (0 by default)"),
                     })),
+                Tool("get_materials", "The regions of a 2D detail and what they are made of: the hatches and closed curves that carry a DynALisp material (the objects given, else the selection, else the current space), with their area (drawing units and m2) and DynALisp data (material, tool, preset, assembly, layer, role, climate), the total area of each material, and the data of the materials in SI (thermal conductivity, density, fixed resistance, hatch). The base of a thermal resistance or a simulation of the detail.",
+                    Obj(new Dictionary<string, object>
+                    {
+                        ["handles"] = handles,
+                        ["space"] = Str("Read this space (\"current\", \"model\" or a layout) even when objects are selected"),
+                        ["window"] = Arr(Num(), "[xmin, ymin, xmax, ymax]: only the regions whose bounding box touches it"),
+                        ["untagged"] = Bool("Also the hatches and closed curves without a material (default: true for the objects given or selected, false for a space)"),
+                        ["offset"] = Int("The first region of the page (0 by default)"),
+                    })),
+                Tool("get_assembly", "An assembly of Quick Draw (a wall, floor or roof of layers, the NBC 2020 assemblies W1a, F4c... and those of the user): its layers (material, thickness in drawing units and mm, load-bearing, framing and its share, low permeance), its thermal resistance and mass per area (the air films not counted), the resistance of its continuous layers, its low permeance ratio, its fire-resistance ratings, STC and IIC.",
+                    Obj(new Dictionary<string, object> { ["id"] = Str("The id of the assembly (list_presets, kind assemblies)") }, "id")),
+                Tool("list_presets", "Lists what DynALisp draws with, filtered, a page of 200 at a time: the Quick Draw presets, the Quick Shape presets, the materials (with their data in SI), the hatch presets, the layer keys, or the assemblies.",
+                    Obj(new Dictionary<string, object>
+                    {
+                        ["kind"] = Str("quick_draw, quick_shape, materials, hatch_presets, layer_keys or assemblies"),
+                        ["search"] = Str("Words that every item listed has (in its id, name, group...), case ignored"),
+                        ["group"] = Str("Only the items of this group"),
+                        ["offset"] = Int("The first item of the page (0 by default)"),
+                    }, "kind")),
+                Tool("capture_view", "A picture (PNG) of the current view of the active drawing, as it is on the screen, with the extent of the view in drawing units. Use it to see how the drawing looks; read the objects with the other tools.",
+                    Obj(new Dictionary<string, object> { ["width"] = Int("The width of the picture in pixels, 200 to 1568 (1280 by default)") })),
 
                 Tool("create_entities", "Creates objects in the current space of the active drawing, all in one change the user approves first and undoes with one U (500 objects at most). Give everything that goes together in one call. Each item has a type and its geometry, and may have a layer (it must exist: create it with set_layers first), a color (an index 1-255, \"ByLayer\", \"ByBlock\" or \"r,g,b\") and a linetype. Returns the handles made.",
                     Obj(new Dictionary<string, object>
@@ -153,6 +180,16 @@ namespace DynALisp.Assistant
                     {
                         ["command"] = Arr(Str(), "The command, then its answers in order: [\"_.CHPROP\", \"2F1\", \"\", \"_C\", \"1\", \"\"]"),
                     }, "command")),
+                Tool("dynalisp_action", "Runs a tool of DynALisp on objects, in one change the user approves first and undoes with one U: assign_material gives a material to hatches and closed curves (as Pst-MaterialAssign; material \"\" takes it off), quick_draw hatches closed outlines with a Quick Draw preset, its material, hatch and border (as its method Select closed objects; draw the outline first with create_entities).",
+                    Obj(new Dictionary<string, object>
+                    {
+                        ["action"] = Str("assign_material or quick_draw"),
+                        ["handles"] = handles,
+                        ["material"] = Str("assign_material: the id of the material (list_presets, kind materials)"),
+                        ["preset"] = Str("quick_draw: the id of the Quick Draw preset (list_presets, kind quick_draw)"),
+                    }, "action", "handles")),
+                Tool("run_lisp", "Evaluates AutoLISP code in the active drawing and returns its value, only when the user turned on Allow Lisp in Dyl-Settings, after the user approves the code (every time); one U undoes what it changes. Use the other tools first: this one is for what they cannot do.",
+                    Obj(new Dictionary<string, object> { ["code"] = Str("The AutoLISP code, one or more expressions") }, "code")),
 
                 Tool("approve", "Asks the user to approve a change of the drawing (called by Claude Code before a tool that writes).",
                     Obj(new Dictionary<string, object>
@@ -193,10 +230,15 @@ namespace DynALisp.Assistant
 
         // ---- the calls --------------------------------------------------------------
 
-        public static string Call(string name, Dictionary<string, object> a, string useId)
+        // The answer of a tool: a text of JSON, or a list of MCP contents (capture_view).
+        public static object Call(string name, Dictionary<string, object> a, string useId)
         {
             switch (name)
             {
+                case "get_materials": return GetMaterials(a);
+                case "get_assembly": return GetAssembly(a);
+                case "list_presets": return ListPresets(a);
+                case "capture_view": return CaptureView(a);
                 case "drawing_info": return Host.Read(DrawingInfo);
                 case "get_selection": return GetSelection();
                 case "list_objects": return Host.Read((d, t) => ListObjects(d, t, a));

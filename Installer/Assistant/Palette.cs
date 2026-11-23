@@ -369,7 +369,7 @@ namespace DynALisp.Assistant
         {
             var text = _input.Text.Trim();
             if (text == "" || !_ready || Chat.Busy) return;
-            if (_list.Children.Count == 1 && _list.Children[0] is TextBlock) _list.Children.Clear();
+            if (_list.Children.Count == 1 && _list.Children[0] is FrameworkElement w && (string)w.Tag == "welcome") _list.Children.Clear();
             _list.Children.Add(Bubble(text, user: true));
             _input.Clear();
             try
@@ -453,14 +453,44 @@ namespace DynALisp.Assistant
 
         void Welcome()
         {
+            var p = new StackPanel { Tag = "welcome" };
             var t = new TextBlock
             {
-                Text = "Ask about AutoCAD, AutoLISP or DynALisp, or about the drawing: the Assistant reads it, and changes it or runs a command once you allow it. Select objects before asking about them.",
+                Text = "Ask about AutoCAD, AutoLISP or DynALisp, or about the drawing: the Assistant reads it, its materials and assemblies, and changes it or runs a command once you allow it. Select objects before asking about them.",
                 TextWrapping = TextWrapping.Wrap,
                 Margin = new Thickness(0, 8, 0, 0),
             };
             t.SetResourceReference(TextBlock.ForegroundProperty, "Dyl.Muted");
-            _list.Children.Add(t);
+            p.Children.Add(t);
+            // the last conversation, to go on with it:
+            var last = Chat.Last();
+            if (last != null)
+            {
+                var resume = new Button { Content = "Resume last chat", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 10, 0, 0) };
+                var first = ((Json.Get(last, "messages") as List<object>) ?? new List<object>()).Select(x => Json.Text(x, "text")).FirstOrDefault(x => !string.IsNullOrEmpty(x)) ?? "";
+                if (first.Length > 80) first = first.Substring(0, 80) + "...";
+                var what = new TextBlock { Text = Json.Text(last, "saved") + ": " + first, TextWrapping = TextWrapping.Wrap, FontSize = 11.5, Margin = new Thickness(0, 4, 0, 0) };
+                what.SetResourceReference(TextBlock.ForegroundProperty, "Dyl.Muted");
+                resume.Click += (s, e) => ResumeLast(last);
+                p.Children.Add(resume);
+                p.Children.Add(what);
+            }
+            _list.Children.Add(p);
+        }
+
+        void ResumeLast(Dictionary<string, object> last)
+        {
+            if (Chat.Busy) return;
+            Refuse();
+            Chat.Resume(last);
+            _cur = null;
+            _list.Children.Clear();
+            foreach (var kv in Chat.Transcript) _list.Children.Add(Bubble(kv.Value, user: kv.Key == "user"));
+            int i = Array.FindIndex(Models, m => m.Value == Chat.Model);
+            if (i >= 0 && _model.SelectedIndex != i) _model.SelectedIndex = i;
+            _status.Text = "The last chat goes on.";
+            UpdateState();
+            End();
         }
 
         void UpdateState()
@@ -484,6 +514,9 @@ namespace DynALisp.Assistant
             ["create_entities"] = "Creating objects", ["modify_entities"] = "Changing objects",
             ["erase_entities"] = "Erasing objects", ["set_layers"] = "Changing layers",
             ["run_command"] = "Running a command",
+            ["get_materials"] = "Reading the materials", ["get_assembly"] = "Reading an assembly",
+            ["list_presets"] = "Reading the presets", ["capture_view"] = "Looking at the view",
+            ["dynalisp_action"] = "Running a tool of DynALisp", ["run_lisp"] = "Running AutoLISP",
         };
 
         void OnToolUse(string name)

@@ -341,6 +341,11 @@
            (dg:kv "Drawing tools" (strcat "listening on 127.0.0.1:" v))
            (dg:kv "Drawing tools" "not started (the palette starts them with its first message)")
          )
+         ;;  the Lisp side of the tools (Remote\Dyl-Assistant.lsp: the materials, presets, actions):
+         (if (not Remote>>Dyl:AssistantCall)
+           (dg:bad "Remote\\Dyl-Assistant.lsp is not loaded: the Assistant cannot read the materials, assemblies and presets")
+         )
+         (dg:kv "Allow Lisp" (if (= "1" (getenv "DynalispAssistantLisp")) "on (run_lisp asks for each code)" "off"))
         )
       )
       ;;  Claude Code bills ANTHROPIC_API_KEY instead of the subscription when it is set:
