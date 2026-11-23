@@ -9,6 +9,7 @@ Panel:Navigate;Navigation;
 Panel:Output;Sortie;
 Panel:Setup;Configuration;
 Panel:Utilities;Utilitaires;
+Panel:Analysis;Analyse;
 Panel:Troubleshooting;Dépannage;
 Panel:DynALisp;DynALisp;
 PST-QUICKDRAWGALLERY;Dessin rapide;Ouvre la galerie des préréglages de dessin rapide par groupe, et dessine celui cliqué.
@@ -165,6 +166,11 @@ DYL-COUNTBYLAYERS;Compte par calques;Totalise la longueur et l'aire des courbes 
 DYL-REBUILDPAT;Reconstruire les motifs;Reconstruit les fichiers .pat des motifs de hachures absents du chemin de support.
 PST-OPENPATS;Ouvrir le dossier des motifs;Ouvre dans l'Explorateur Windows le dossier des motifs utilisé par Dyl-RebuildPat.
 DYL-OPENFOLDER;Ouvrir un dossier;Ouvre dans l'Explorateur Windows le dossier du dépôt, du dessin courant, des gabarits, du jeu de feuilles ou de support d'AutoCAD.
+DYL-SIMULATION;Simulation;Ouvre une fenêtre pour choisir la zone de simulation d'un détail 2D, modifier les climats, placer les zones de climat et vérifier le détail avant de le simuler.
+PST-SIMULATIONZONE;Simulation Zone;Dessine la zone de simulation d'un détail 2D (un rectangle) ou en fait une d'une polyligne fermée choisie.
+PST-SIMULATIONCLIMATE;Simulation Climat;Dessine une zone de climat (intérieur, extérieur...) sur l'air d'un côté d'un détail 2D, ou en fait une d'une polyligne fermée choisie.
+PST-SIMULATIONCHECK;Simulation Vérifier;Lit le détail d'une zone de simulation et montre sa grille et ses problèmes sur le dessin : hachures sans matériau, matériaux sans données, trous.
+PST-SIMULATIONCLEAR;Simulation Effacer;Efface ce que la simulation montre sur le dessin.
 DYL-DIAGNOSTICS;Diagnostics;Écrit un rapport complet de DynALisp, d'AutoCAD et du dessin avec vos paramètres et fichiers, puis offre de l'envoyer dans un ticket GitHub.
 PST-DIAGNOSTICSDYNALISP;Diagnostics DynALisp;Rapporte la version et l'installation de DynALisp, son démarrage, ses erreurs de chargement et ses modules.
 PST-DIAGNOSTICSAUTOCAD;Diagnostics AutoCAD;Rapporte le produit AutoCAD, Windows, le profil, les variables système, les chemins, les applications et les paquets chargés.

@@ -1,0 +1,31 @@
+# Simulation: tests the calculation of the simulation of a 2D detail (Installer\Simulation\Core,
+# without AutoCAD) and builds its plugin (Installer\Simulation), on each push that changes them.
+# The DLLs of the plugin are built by hand and committed (Contents\Resources): this workflow
+# only checks that the code builds and that the tests pass.
+name: Simulation
+
+on:
+  push:
+    paths:
+      - 'Installer/Simulation/**'
+      - '.github/workflows/simulation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Test the calculation
+        run: dotnet test Installer/Simulation/Tests
+
+      - name: Build the plugin
+        run: dotnet build Installer/Simulation -c Debug

@@ -1,0 +1,258 @@
+<!--
+  Dyl-HatchPresets.xaml - the Hatch Presets window: the pattern, scale and layer key of a hatch,
+  shared by the materials
+  Copyright (C) 2026  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Shown by DynALisp.Windows.dll (Installer\Windows) through the preset engine
+  (Remote>>Dyl:PresetWin of Remote\Dyl-Presets.lsp, for Remote>>Dyl:HatchPresetDialog of
+  Remote\Dyl-Materials.lsp): by the command Dyl-HatchPresets, and by the open buttons of Cut
+  and Surface in the Materials window. A preset window: its list "lst" is the hatch presets
+  (pst/rows: the columns of HatchPresets.csv), edited in the window itself
+  (Installer\Windows\Engine\Presets.cs); OK (1) saves them and gives the hatch preset
+  selected to the window it was opened from. The keys are the tiles of *mt:tiles*: pat the
+  pattern (pat/vals, "" None), typ Drafting or Model, simp the scale, ang the angle, hat the
+  hatch layer key, then the layer key overrides and the optional settings (a checkbox and its
+  value each). The preview of each hatch preset is drawn from its columns as they are edited
+  (pst/hatch, pst/pats, pst/ds). sunt, the units of the pattern picked, and pfl ("1": a .pat
+  file has it, hidden) follow the item picked in pat (dyl:Win.ItemsBy, sunt/by and pfl/by).
+  The open buttons close the window with the code of what they open: 5 Layer Keys, 7 Draw
+  legend, 8 Preset Groups, 10 Pick hatch, 11 the color window of AutoCAD for the hatch color,
+  12 for the background color, 13 for the existing phase background, 14 the .pat file of
+  the pattern; the Lisp opens the window again once it is done. What is greyed out, as
+  the DCL dialog did: no pattern (None) has no hatch settings, SOLID no scale,
+  angle, background, lineweight nor linetype, a Model hatch is never annotative nor adaptive.
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - Hatch Presets" dyl:Win.Docs="Draw\Dyl-HatchPresets.htm">
+  <Window.Resources>
+    <!-- A row of a value: its label on the left, its box at the right of the column: -->
+    <Style x:Key="Row" TargetType="DockPanel">
+      <Setter Property="Margin" Value="0,3"/>
+      <Setter Property="LastChildFill" Value="True"/>
+    </Style>
+  </Window.Resources>
+
+  <Grid Margin="14">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="400"/>
+      <ColumnDefinition Width="10"/>
+      <ColumnDefinition Width="660"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <!-- The hatch presets (Ctrl / Shift click: several edited at once), each one with its
+         preview: -->
+    <GroupBox Header="Hatch Presets" Margin="0">
+      <DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+          <ComboBox x:Name="srt" DockPanel.Dock="Right" Width="90" Margin="8,0,0,0" ToolTip="Sort by"/>
+          <TextBox x:Name="flt" Style="{DynamicResource Dyl.Search}" Tag="Filter" MaxLength="64"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+          <TextBlock DockPanel.Dock="Left" Style="{DynamicResource Dyl.Label}" Text="Show"/>
+          <ComboBox x:Name="shg" DockPanel.Dock="Left" Width="110"/>
+          <Button x:Name="shd" DockPanel.Dock="Left" Content="Set default"/>
+          <TextBlock x:Name="pcn" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}"/>
+        </DockPanel>
+        <Grid DockPanel.Dock="Top" Margin="6,0,10,4">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="44"/>
+            <ColumnDefinition Width="96"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+          <TextBlock Grid.Column="1" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Group"/>
+          <TextBlock Grid.Column="2" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Name"/>
+        </Grid>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,10,0,0">
+          <Button x:Name="new" Margin="0" Content="New"/>
+          <Button x:Name="cpy" Content="Copy"/>
+          <Button x:Name="del" Content="Delete"/>
+        </StackPanel>
+        <ListBox x:Name="lst" MinHeight="320">
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="44"/>
+                  <ColumnDefinition Width="96"/>
+                  <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <dyl:HatchTile Width="34" Height="20" HorizontalAlignment="Left" Radius="3" ShowScale="False" Spec="{Binding Spec}"
+                               Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}"/>
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}" Text="{Binding Group}" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{Binding Name}" TextTrimming="CharacterEllipsis"/>
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </DockPanel>
+    </GroupBox>
+
+    <!-- The hatch preset shown: -->
+    <StackPanel Grid.Column="2">
+      <GroupBox Padding="16,0,16,14" Margin="0">
+        <StackPanel>
+          <DockPanel Style="{StaticResource Row}">
+            <TextBox x:Name="nam" DockPanel.Dock="Right" Width="320" MaxLength="64"/>
+            <TextBlock Style="{DynamicResource Dyl.Label}" Text="Name"/>
+          </DockPanel>
+          <DockPanel Style="{StaticResource Row}">
+            <ComboBox x:Name="grp" DockPanel.Dock="Right" Width="320"/>
+            <dyl:OpenButton x:Name="gre" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="8" ToolTip="Preset Groups"/>
+            <TextBlock Style="{DynamicResource Dyl.Label}" Text="Group"/>
+          </DockPanel>
+          <TextBlock x:Name="prm" Style="{DynamicResource Dyl.Desc}" Margin="0,4,0,0"/>
+        </StackPanel>
+      </GroupBox>
+
+      <!-- The hatch preset shown as it plots in this drawing: -->
+      <GroupBox Header="Preview">
+        <dyl:HatchTile x:Name="mpv" Height="110" Radius="6"
+                       Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"/>
+      </GroupBox>
+
+      <!-- The hatch, in two columns: its pattern, scale and layer key, with the properties of
+           that layer it overrides; then the settings that are not a property of the layer: -->
+      <GroupBox Header="Hatch settings">
+        <StackPanel>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="29"/>
+              <ColumnDefinition Width="1.2*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+              <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0,0,0,4" Text="Hatch"/>
+              <DockPanel Style="{StaticResource Row}">
+                <ComboBox x:Name="pat" DockPanel.Dock="Right" Width="165"/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="Pattern"/>
+              </DockPanel>
+              <!-- Drafting (a size on paper) or Model (a real size): -->
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="pat!=SOLID">
+                <ComboBox x:Name="typ" DockPanel.Dock="Right" Width="165"/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="Type"/>
+              </DockPanel>
+              <!-- One scale, in the units of the pattern; under it those units and the factor
+                   in this drawing, its open button the .pat file of the pattern: -->
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="pat!=SOLID">
+                <TextBox x:Name="simp" DockPanel.Dock="Right" Width="165"
+                         dyl:Win.Check="positive" dyl:Win.CheckMessage="The scale must be a number greater than 0."/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="Scale"/>
+              </DockPanel>
+              <DockPanel Margin="0,0,0,3" dyl:Win.EnabledBy="pat!=SOLID|">
+                <dyl:OpenButton x:Name="suo" DockPanel.Dock="Right" dyl:Win.Close="14" ToolTip="Open the .pat file" dyl:Win.EnabledBy="pfl"/>
+                <TextBlock x:Name="pfl" Visibility="Collapsed" dyl:Win.ItemsBy="pat"/>
+                <TextBlock x:Name="sunt" Style="{DynamicResource Dyl.Desc}" Margin="0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" dyl:Win.ItemsBy="pat"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="pat!=SOLID">
+                <TextBox x:Name="ang" DockPanel.Dock="Right" Width="165"
+                         dyl:Win.Check="number" dyl:Win.CheckMessage="The angle must be a number."/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="Angle"/>
+              </DockPanel>
+              <!-- Its layer key, the open button the Layer Keys window: -->
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="pat!=">
+                <ComboBox x:Name="hat" DockPanel.Dock="Right" Width="165"/>
+                <dyl:OpenButton x:Name="hkp" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="5" ToolTip="Layer Keys"/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="Layer key"/>
+              </DockPanel>
+
+              <!-- The properties of the layer of its key the hatch overrides: -->
+              <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Layer key overrides" dyl:Win.EnabledBy="pat!="/>
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="pat!=">
+                <TextBox x:Name="hcl" DockPanel.Dock="Right" Width="110" dyl:Win.EnabledBy="hco"
+                         dyl:Win.Check="color" dyl:Win.CheckMessage="A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it."/>
+                <dyl:OpenButton x:Name="hcp" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="11" ToolTip="Select Color" dyl:Win.EnabledBy="hco"/>
+                <CheckBox x:Name="hco" Content="Color"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="pat!=|SOLID">
+                <TextBox x:Name="hlt" DockPanel.Dock="Right" Width="110" CharacterCasing="Upper" dyl:Win.EnabledBy="hlo"
+                         dyl:Win.Check="text" dyl:Win.CheckMessage="The linetype cannot be empty."/>
+                <CheckBox x:Name="hlo" Content="Linetype"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="pat!=|SOLID">
+                <TextBox x:Name="hsc" DockPanel.Dock="Right" Width="110" dyl:Win.EnabledBy="hso"
+                         dyl:Win.Check="positive" dyl:Win.CheckMessage="The linetype scale must be a number greater than 0."/>
+                <CheckBox x:Name="hso" Content="Linetype scale"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="pat!=|SOLID">
+                <ComboBox x:Name="hwt" DockPanel.Dock="Right" Width="110" dyl:Win.EnabledBy="hwo"/>
+                <CheckBox x:Name="hwo" Content="Lineweight"/>
+              </DockPanel>
+            </StackPanel>
+            <!-- The line between the two columns: -->
+            <Border Grid.Column="1" Width="1" HorizontalAlignment="Center" Background="{DynamicResource Dyl.Border}"/>
+            <StackPanel Grid.Column="2">
+              <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0,0,0,4" Text="Optional settings" dyl:Win.EnabledBy="pat!="/>
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="pat!=|SOLID">
+                <TextBox x:Name="hbg" DockPanel.Dock="Right" Width="80" dyl:Win.EnabledBy="hbo"
+                         dyl:Win.Check="color" dyl:Win.CheckMessage="A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it."/>
+                <dyl:OpenButton x:Name="hbp" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="12" ToolTip="Select Color" dyl:Win.EnabledBy="hbo"/>
+                <CheckBox x:Name="hbo" Content="Background color"/>
+              </DockPanel>
+              <!-- In place of the background color while auto-phase is on in the existing phase: -->
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="pat!=|SOLID">
+                <TextBox x:Name="hxb" DockPanel.Dock="Right" Width="80" dyl:Win.EnabledBy="hxo"
+                         dyl:Win.Check="color" dyl:Win.CheckMessage="A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it."/>
+                <dyl:OpenButton x:Name="hxp" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="13" ToolTip="Select Color" dyl:Win.EnabledBy="hxo"/>
+                <CheckBox x:Name="hxo" Content="Existing phase background"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="pat!=">
+                <TextBox x:Name="htr" DockPanel.Dock="Right" Width="80" dyl:Win.EnabledBy="hto"
+                         dyl:Win.Check="integer;min=0;max=90" dyl:Win.CheckMessage="The transparency must be a whole number from 0 to 90."/>
+                <CheckBox x:Name="hto" Content="Transparency"/>
+              </DockPanel>
+              <!-- How the hatch is scaled and made: -->
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="pat!=SOLID,typ!=Model">
+                <CheckBox x:Name="ano" Content="Annotative"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="pat!=SOLID,typ!=Model,!ano">
+                <CheckBox x:Name="sdw" Content="Adaptive scaling"/>
+              </DockPanel>
+              <TextBlock x:Name="sinf" Style="{DynamicResource Dyl.Desc}" Margin="28,0,0,4"
+                         dyl:Win.VisibleBy="sdw,!ano,pat!=SOLID,typ!=Model"/>
+              <DockPanel Style="{StaticResource Row}" dyl:Win.EnabledBy="pat!=">
+                <CheckBox x:Name="asc" Content="Associative"/>
+              </DockPanel>
+            </StackPanel>
+          </Grid>
+          <!-- A hatch of the drawing gives its settings to the hatch presets selected; their
+               legend is drawn in the drawing: -->
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button x:Name="hpk" Content="Pick hatch..." dyl:Win.Close="10"/>
+            <Button x:Name="leg" Content="Draw legend..." dyl:Win.Close="7"/>
+          </StackPanel>
+        </StackPanel>
+      </GroupBox>
+    </StackPanel>
+
+    <TextBlock x:Name="error" Grid.Row="1" Grid.ColumnSpan="3" Style="{DynamicResource Dyl.Error}" Margin="2,10,0,0" TextWrapping="Wrap" Visibility="Collapsed"/>
+    <DockPanel Grid.Row="2" Grid.ColumnSpan="3" Margin="0,12,0,0">
+      <Button x:Name="rst" DockPanel.Dock="Left" Margin="0" Content="Reset Selected"/>
+      <Button x:Name="all" DockPanel.Dock="Left" Content="Reset All"/>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Content="OK" IsDefault="True"/>
+        <Button Content="_Cancel" IsCancel="True"/>
+        <Button x:Name="docs" Content="Open Docs"/>
+      </StackPanel>
+    </DockPanel>
+  </Grid>
+</Window>

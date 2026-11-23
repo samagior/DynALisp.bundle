@@ -60,6 +60,10 @@
 //               does not) is a space, without hatch (a Quick Draw preset without Has a hatch)
 //   pst/outline a rule (as Win.EnabledBy): the preview of a preset it holds for is outlined
 //               ("O*" before its bands, see Hatch.cs: the preset has a border)
+//   pst/hatch   "3,4,6,9,10,63": the presets are hatches (the hatch presets): the preview of
+//               each one is drawn from these columns as they are edited (its pattern, scale,
+//               angle, annotative, adaptive scaling, type), with pst/pats, the .pat file of
+//               each pattern ((PATTERN file metric) ...), and pst/ds, the drawing scale
 //   pst/follow  "38:44,45,46": when the value of the column 38 changes (a list of the window,
 //               the assembly preset of a Quick Draw preset), the columns 44, 45 and 46 of the
 //               presets selected take the values of its row in pst/follow/rows ((value v44
@@ -145,6 +149,9 @@ namespace DynALisp.Windows
         readonly int _matCol = -1, _specCol = -1, _followCol = -1, _viewCol = -1;
         readonly int[] _followTo = new int[0];
         readonly List<string[]> _follow;
+        readonly int[] _hatchCols = new int[0];
+        readonly List<string[]> _pats;
+        readonly double _ds = 1.0;
 
         int _idx;
         List<int> _sel = new List<int>();
@@ -198,6 +205,12 @@ namespace DynALisp.Windows
                 _followTo = fw[1].Split(',').Select(x => Int(x, -1)).Where(c => c >= 0).ToArray();
             }
             _follow = Table("pst/follow/rows");
+            // A preset that is itself a hatch (the hatch presets): its preview drawn from its
+            // columns as they are edited (see HatchSpec):
+            _hatchCols = (Val("pst/hatch") ?? "").Split(',').Select(x => Int(x.Trim(), -1)).ToArray();
+            if (_hatchCols.Length != 6 || _hatchCols.Any(c => c < 0)) _hatchCols = new int[0];
+            _pats = Table("pst/pats");
+            if (double.TryParse(Val("pst/ds"), NumberStyles.Float, CultureInfo.InvariantCulture, out double ds) && ds > 0) _ds = ds;
 
             _list = (ListBox)v.Find("lst");
             _alsList = v.Find("als") as ListBox;
@@ -325,11 +338,35 @@ namespace DynALisp.Windows
         string Spec(string[] r)
         {
             string sp;
-            if (_specCol >= 0 && Cell(r, _specCol).Length > 0 && View.Holds(_specBy, k => RowGet(r, k))) sp = Cell(r, _specCol);
+            if (_hatchCols.Length > 0) sp = HatchSpec(r);
+            else if (_specCol >= 0 && Cell(r, _specCol).Length > 0 && View.Holds(_specBy, k => RowGet(r, k))) sp = Cell(r, _specCol);
             else if (!string.IsNullOrWhiteSpace(_blankBy) && View.Holds(_blankBy, k => RowGet(r, k))) sp = "S?1";
             else sp = MatOf(r) is string[] m ? MatCell(r, m, 3) : "X?1";
             if (!string.IsNullOrWhiteSpace(_outlineBy) && View.Holds(_outlineBy, k => RowGet(r, k))) sp = "O*" + sp;
             return sp;
+        }
+
+        // The preview of a preset that is a hatch (pst/hatch: the columns of its pattern, scale,
+        // angle, annotative, adaptive scaling and type), as Remote>>Dyl:MaterialBand draws it:
+        // no pattern a space, SOLID a fill, else its pattern, from the .pat file pst/pats gives
+        // it ((PATTERN file metric) ...: "1" a metric pattern, its scale in mm), its scale in
+        // inches on paper divided by the drawing scale pst/ds, unless it keeps its size on paper
+        // (annotative or adaptive scaling, never a Model hatch):
+        string HatchSpec(string[] r)
+        {
+            string pat = Cell(r, _hatchCols[0]).Trim().ToUpperInvariant();
+            if (pat.Length == 0) return "S?1";
+            if (pat == "SOLID") return "F?1";
+            var p = _pats.FirstOrDefault(x => x.Length > 0 && Ic.Equals(x[0], pat));
+            if (!double.TryParse(Cell(r, _hatchCols[1]), NumberStyles.Float, CultureInfo.InvariantCulture, out double s) || s <= 0) s = 1.0;
+            if (p != null && Cell(p, 2) == "1") s /= 25.4;
+            double.TryParse(Cell(r, _hatchCols[2]), NumberStyles.Float, CultureInfo.InvariantCulture, out double ang);
+            bool model = Ic.Equals(Cell(r, _hatchCols[5]), "Model");
+            double ds = !model && (Cell(r, _hatchCols[3]) == "1" || Cell(r, _hatchCols[4]) == "1") ? 1.0 : _ds;
+            return string.Join("?", "P", "1", pat, p != null ? Cell(p, 1) : "",
+                               (s / ds).ToString("0.########", CultureInfo.InvariantCulture),
+                               ang.ToString("0.####", CultureInfo.InvariantCulture),
+                               ds.ToString("0.####", CultureInfo.InvariantCulture));
         }
 
         // ---- Commands and aliases ----

@@ -18,6 +18,7 @@ Contents/Modules/Dynalisp/Res/Dyl-PresetGroups.xaml;Dyl-MaterialGroups.txt;Conte
 Contents/Modules/Dynalisp/Res/Dyl-QuickDrawBorderSettings.xaml;Dyl-QuickDrawBorderSettings.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-QuickDrawBorderSettings-window.png
 Contents/Modules/Dynalisp/Res/Dyl-QuickDrawHatchSettings.xaml;Dyl-QuickDrawHatchSettings.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-QuickDrawHatchSettings-window.png
 Contents/Modules/Dynalisp/Res/Dyl-Materials.xaml;Dyl-Materials.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-Materials-window.png
+Contents/Modules/Dynalisp/Res/Dyl-HatchPresets.xaml;Dyl-HatchPresets.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-HatchPresets-window.png
 Contents/Modules/Dynalisp/Res/Dyl-Suite.xaml;Dyl-Suite.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Suite-window.png
 Contents/Modules/Dynalisp/Res/Dyl-VSCode.xaml;Dyl-VSCode.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Suite-vscode.png
 Contents/Modules/Dynalisp/Res/Dyl-Info.xaml;Dyl-Info.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Info-window.png
@@ -31,3 +32,4 @@ Contents/Modules/Dynalisp/Res/Dyl-Dictionary.xaml;Dyl-Dictionary.txt;Contents/Mo
 Contents/Modules/Dynalisp/Res/Dyl-Revisions.xaml;Dyl-Revisions.txt;Contents/Modules/Dynalisp/Docs/Output/images/Dyl-Revisions-window.png
 Contents/Modules/Dynalisp/Res/Dyl-RevisionTitleBlocks.xaml;Dyl-RevisionTitleBlocks.txt;Contents/Modules/Dynalisp/Docs/Output/images/Dyl-Revisions-titleblocks.png
 Contents/Modules/Dynalisp/Res/Dyl-MaterialAssign.xaml;Dyl-MaterialAssign.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-MaterialAssign-window.png
+Contents/Modules/Dynalisp/Res/Dyl-Simulation.xaml;Dyl-Simulation.txt;Contents/Modules/Dynalisp/Docs/Analysis/images/Dyl-Simulation-window.png

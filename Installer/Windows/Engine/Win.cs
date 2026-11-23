@@ -36,9 +36,11 @@
 //   dyl:Win.CountOf="lst"                   on a TextBlock: how many items of lst are listed,
 //   dyl:Win.CountText="{0} of {1} words"    as this text says (listed, all)
 //   dyl:Win.ItemsBy="rev"                   on a ListBox or a TextBlock: its items (its text)
-//                                           follow the item picked in the list rev: the row i
-//                                           of its table key/by while the item i is the first
-//                                           one selected (the indexes selected are kept)
+//                                           follow the item picked in the list rev (a ListBox
+//                                           or a ComboBox): the row i of its table key/by
+//                                           while the item i is the first one selected (the
+//                                           indexes selected are kept); a text followed can
+//                                           be a rule ("1": dyl:Win.EnabledBy="pfl")
 //   dyl:Win.Open="Dyl-Settings-Display.xaml" on a button: opens that window over this one,
 //                                           beside this file; its OK keeps its values,
 //                                           its Cancel puts them back
@@ -74,6 +76,14 @@
 //   dyl:Win.SummaryEmpty="No rows."         in its place while there is no row
 //
 // A button with IsDefault closes the window with 1 (OK, Save), one with IsCancel with 0.
+//
+// Shown over AutoCAD, a window fits the screen and its lists grow with it (Fit.cs):
+//
+//   dyl:Win.Grow="1"                        on an element: its height grows with the window
+//                                           (as a list does), and its Width if it has one;
+//                                           on a ColumnDefinition: that column of its Grid
+//                                           takes the extra width (in place of the column
+//                                           of the list); "0": a list that never grows
 //
 // The items of a list given by the Lisp (key/list) may hold columns divided by a tab: its
 // template shows one with {Binding Converter={x:Static dyl:Cell.Converter},
@@ -123,6 +133,10 @@ namespace DynALisp.Windows
         public static readonly DependencyProperty ItemsByProperty = Prop("ItemsBy");
         public static string GetClose(DependencyObject o) => (string)o.GetValue(CloseProperty);
         public static void SetClose(DependencyObject o, string v) => o.SetValue(CloseProperty, v);
+
+        public static readonly DependencyProperty GrowProperty = Prop("Grow");
+        public static string GetGrow(DependencyObject o) => (string)o.GetValue(GrowProperty);
+        public static void SetGrow(DependencyObject o, string v) => o.SetValue(GrowProperty, v);
 
         public static readonly DependencyProperty OpenProperty = Prop("Open");
         public static string GetOpen(DependencyObject o) => (string)o.GetValue(OpenProperty);

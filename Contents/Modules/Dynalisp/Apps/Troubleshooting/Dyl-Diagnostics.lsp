@@ -396,6 +396,15 @@
     )
     ((dg:bad "The windows of DynALisp cannot open: DynALisp.Windows.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
   )
+  ;;  The simulation of a 2D detail (Dyl-Simulation) reads the detail with
+  ;;  DynALisp.Simulation.dll (AutoCAD 2015 and later):
+  (cond
+    (Dyl:SimulationRead)
+    ((< (atof (getvar "ACADVER")) 20.0)
+     (dg:note "The simulation of a 2D detail cannot read a zone: DynALisp.Simulation.dll needs AutoCAD 2015 or later")
+    )
+    ((dg:bad "The simulation of a 2D detail cannot read a zone: DynALisp.Simulation.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
+  )
   (if (not (vl-some '(lambda (r) (= (strcase r) (strcase (vl-filename-directory *dyl:repo))))
                     (dg:pluginroots)
            )
@@ -1038,6 +1047,7 @@
   (dg:try 'dg:dwg-objects)
   (dg:try 'dg:dwg-revisions)
   (dg:try 'dg:dwg-materials)
+  (dg:try 'dg:dwg-simulation)
   (dg:try 'dg:dwg-regen)
 )
 
@@ -1078,6 +1088,44 @@
        (dg:bad (strcat (itoa (length gone)) " material(s) used in the drawing no longer exist: give their objects another one (Pst-MaterialAssign)"))
      )
     )
+  )
+)
+
+;;  The simulation zones and the climate zones of the drawing (Dyl-Simulation, their DynALisp
+;;  data: Role SimulationZone or Climate), and the climates of Climates.csv: a climate zone
+;;  of a climate the file no longer has is a problem. Counts only:
+(defun dg:dwg-simulation (/ ss i e role f clims zones czs gone)
+  (dg:sub "Simulation zones (Dyl-Simulation)")
+  (setq f     (Dyl:UserFile (strcat *dyl:dylres "\\Climates.csv"))
+        clims (if (findfile f) (mapcar '(lambda (r) (strcase (car r))) (Remote>>Dyl:CsvRead f 6)))
+        zones 0
+        czs   0
+        gone  0
+  )
+  (dg:kv "Climates" (if clims (itoa (length clims)) "none (the defaults: Interior and Exterior)"))
+  (if (not clims) (setq clims '("CL-INTERIOR" "CL-EXTERIOR")))
+  (if (and Remote>>Dyl:MaterialTag (setq ss (ssget "_X" (list (list -3 (list *mt:app*))))))
+    (progn
+      (setq i 0)
+      (repeat (sslength ss)
+        (setq e    (ssname ss i)
+              i    (1+ i)
+              role (strcase (cond ((Remote>>Dyl:MaterialTag e "Role")) ("")))
+        )
+        (cond
+          ((= role "SIMULATIONZONE") (setq zones (1+ zones)))
+          ((= role "CLIMATE")
+           (setq czs (1+ czs))
+           (if (not (member (strcase (cond ((Remote>>Dyl:MaterialTag e "Climate")) (""))) clims)) (setq gone (1+ gone)))
+          )
+        )
+      )
+    )
+  )
+  (dg:kv "Simulation zones" (itoa zones))
+  (dg:kv "Climate zones" (itoa czs))
+  (if (< 0 gone)
+    (dg:bad (strcat (itoa gone) " climate zone(s) of a climate that Climates.csv no longer has: place them again (Pst-SimulationClimate)"))
   )
 )
 

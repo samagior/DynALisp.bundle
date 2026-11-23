@@ -54,3 +54,11 @@ Installer/Windows/bin/
 Installer/Windows/obj/
 Installer/Windows/Shots/bin/
 Installer/Windows/Shots/obj/
+# Build output of the simulation plugin (Installer\Simulation, its DLLs committed in
+# Contents\Resources), of its calculation library and of its tests:
+Installer/Simulation/bin/
+Installer/Simulation/obj/
+Installer/Simulation/Core/bin/
+Installer/Simulation/Core/obj/
+Installer/Simulation/Tests/bin/
+Installer/Simulation/Tests/obj/
