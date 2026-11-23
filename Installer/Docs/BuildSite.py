@@ -232,7 +232,7 @@ def module_indexes(pages, code):
     return idx
 
 
-ROW = re.compile(r'<tr><td><a href="([^"#:]+\.htm)[^"]*">(.*?)</a></td>(.*?)</tr>', re.S)
+ROW = re.compile(r'<tr[^>]*><td><a href="([^"#:]+\.htm)[^"]*">(.*?)</a></td>(.*?)</tr>', re.S)
 HEADING = re.compile(r'<h([23])>(.*?)</h\1>', re.S)
 FIXW = re.compile(r'<span class="fixw">(.*?)</span>', re.S)
 
