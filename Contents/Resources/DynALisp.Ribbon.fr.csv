@@ -1,6 +1,6 @@
 ﻿Id;Macro;English;Text;Title;Description
 RBN_DYL_PANEL_DRAW;;Draw;Dessin;;
-RBN_DYL_0507;;Quick Draw;Dessin rapide;;
+RBN_DYL_0522;;Quick Draw;Dessin rapide;;
 RBN_DYL_CMD_PST_QUICKDRAWGALLERY_ALL;(setq *qd:gallerygroup* "All") PST-QUICKDRAWGALLERY;All;Tous;Dessin rapide : Tous;Ouvre la galerie des préréglages de dessin rapide par groupe, et dessine celui cliqué.
 RBN_DYL_CMD_PST_QUICKDRAWGALLERY_PHASE;(setq *qd:gallerygroup* "Phase") PST-QUICKDRAWGALLERY;Phase;Phase;Dessin rapide : Phase;Ouvre la galerie des préréglages de dessin rapide par groupe, et dessine celui cliqué.
 RBN_DYL_CMD_PST_QUICKDRAWGALLERY_SECTION;(setq *qd:gallerygroup* "Section") PST-QUICKDRAWGALLERY;Section;Coupe;Dessin rapide : Coupe;Ouvre la galerie des préréglages de dessin rapide par groupe, et dessine celui cliqué.
@@ -16,7 +16,7 @@ RBN_DYL_CMD_PST_QUICKDRAWGALLERY_SITE;(setq *qd:gallerygroup* "Site") PST-QUICKD
 RBN_DYL_CMD_PST_QUICKDRAWGALLERY_AREA;(setq *qd:gallerygroup* "Area") PST-QUICKDRAWGALLERY;Area;Superficie;Dessin rapide : Superficie;Ouvre la galerie des préréglages de dessin rapide par groupe, et dessine celui cliqué.
 RBN_DYL_CMD_PST_QUICKDRAWGALLERY_ANNOTATION;(setq *qd:gallerygroup* "Annotation") PST-QUICKDRAWGALLERY;Annotation;Annotation;Dessin rapide : Annotation;Ouvre la galerie des préréglages de dessin rapide par groupe, et dessine celui cliqué.
 RBN_DYL_CMD_PST_QUICKDRAWGALLERY_GENERIC;(setq *qd:gallerygroup* "Generic") PST-QUICKDRAWGALLERY;Generic;Générique;Dessin rapide : Générique;Ouvre la galerie des préréglages de dessin rapide par groupe, et dessine celui cliqué.
-RBN_DYL_0523;;Quick Shape;Forme rapide;;
+RBN_DYL_0538;;Quick Shape;Forme rapide;;
 RBN_DYL_CMD_DYL_QUICKSHAPE;DYL-QUICKSHAPE;Quick Shape;Forme rapide;Forme rapide;Ouvre une fenêtre pour modifier, créer et dessiner les préréglages de forme rapide.
 RBN_DYL_CMD_PST_QUICKSHAPESTUD2X4;PST-QUICKSHAPESTUD2X4;Stud 2x4;Montant 2x4;Forme rapide Montant 2x4;Insère des montants 2x4 en coupe, remplis de la hachure d'ossature de bois.
 RBN_DYL_CMD_PST_QUICKSHAPESTUD2X6;PST-QUICKSHAPESTUD2X6;Stud 2x6;Montant 2x6;Forme rapide Montant 2x6;Insère des montants 2x6 en coupe, remplis de la hachure d'ossature de bois.
@@ -25,7 +25,7 @@ RBN_DYL_CMD_PST_QUICKSHAPEBRICKMODULAR;PST-QUICKSHAPEBRICKMODULAR;Brick Modular;
 RBN_DYL_CMD_PST_QUICKSHAPECMU8;PST-QUICKSHAPECMU8;CMU 8 in;Bloc de béton 8 po;Forme rapide Bloc de béton 8 po;Insère des blocs de béton de 8 po en coupe en plan (avec leurs alvéoles), remplis de la hachure de bloc.
 RBN_DYL_CMD_PST_QUICKSHAPEHSS4X4;PST-QUICKSHAPEHSS4X4;HSS 4x4;PCC 4x4;Forme rapide PCC 4x4;Insère des profilés tubulaires d'acier 4x4x1/4 en coupe, remplis de la hachure d'acier.
 RBN_DYL_CMD_DYL_QUICKDRAW;DYL-QUICKDRAW;Quick Draw Manager;Gestion du dessin rapide;Gestion du dessin rapide;Ouvre une fenêtre pour modifier, créer et dessiner les préréglages de dessin rapide.
-RBN_DYL_0536;;Materials;Matériaux;;
+RBN_DYL_0551;;Materials;Matériaux;;
 RBN_DYL_CMD_DYL_MATERIALS;DYL-MATERIALS;Materials;Matériaux;Matériaux;Ouvre une fenêtre pour créer et modifier les matériaux utilisés par le dessin rapide et la forme rapide : leurs préréglages de hachures et leurs données.
 RBN_DYL_CMD_PST_MATERIALASSIGN;PST-MATERIALASSIGN;Assign;Attribuer;Matériau Attribuer;Donne un matériau aux hachures et contours fermés sélectionnés, ou le leur retire, pour qu'un détail dessiné sans DynALisp sache de quoi il est fait.
 RBN_DYL_CMD_PST_MATERIALMATCH;PST-MATERIALMATCH;Match;Copier;Matériau Copier;Donne le matériau d'un objet à d'autres hachures et contours fermés.
@@ -35,7 +35,7 @@ RBN_DYL_CMD_DYL_SHRINKWRAP;DYL-SHRINKWRAP;Shrinkwrap;Contour extérieur;Contour 
 RBN_DYL_PANEL_DRAWING_BEHAVIORS;;Drawing Behaviors;Comportements du dessin;;
 RBN_DYL_CMD_DYL_LAYERPHASE;DYL-LAYERPHASE;Layer Phase;Phase des calques;Phase des calques;Liste les phases du dessin pour choisir la phase active et les afficher ou les masquer.
 RBN_DYL_CMD_DYL_OBJECTLAYERKEYS;DYL-OBJECTLAYERKEYS;Object Layer Keys;Clés de calque des objets;Clés de calque des objets;Ouvre une fenêtre pour attribuer une clé de calque aux nouvelles cotes, lignes de repère, textes et autres objets courants.
-RBN_DYL_0554;;Draw Order;Ordre de tracé;;
+RBN_DYL_0569;;Draw Order;Ordre de tracé;;
 RBN_DYL_CMD_DYL_DRAWORDER;DYL-DRAWORDER;Draw Order;Ordre de tracé;Ordre de tracé;Modifie les niveaux d'ordre de tracé des calques Dynalisp (annotation dessus, hachures dessous), choisit les préréglages préféré et du dessin et réempile le dessin.
 RBN_DYL_CMD_PST_DRAWORDERAPPLY;PST-DRAWORDERAPPLY;Apply;Appliquer;Ordre de tracé Appliquer;Réempile l'espace objet, chaque présentation et chaque définition de bloc par niveau selon le préréglage actif : annotation dessus, hachures et arrière-plans dessous.
 RBN_DYL_CMD_PST_DRAWORDERAUTOTOGGLE;PST-DRAWORDERAUTOTOGGLE;Auto Toggle;Auto activer/désactiver;Ordre de tracé Auto activer/désactiver;Active ou désactive l'ordre de tracé automatique : les objets créés par une commande sont placés à leur niveau à la fin de celle-ci.
@@ -47,7 +47,7 @@ RBN_DYL_CMD_PST_TRANSFERFIELD;PST-TRANSFERFIELD;Transfer;Transférer;Transférer
 RBN_DYL_CMD_DYL_LAYERTRANSFER;DYL-LAYERTRANSFER;Manager;Gestion;Gestion;Liste les transferts de calques avec leurs alias et exécute celui choisi sur les objets sélectionnés.
 RBN_DYL_PANEL_LAYER_TOOLS;;Layer Tools;Outils de calques;;
 RBN_DYL_CMD_DYL_LAYERKEYS;DYL-LAYERKEYS;Layer Keys;Clés de calque;Clés de calque;Ouvre une fenêtre pour créer et modifier les clés de calque utilisées par les Apps Dynalisp.
-RBN_DYL_0571;;Make Layers;Créer des calques;;
+RBN_DYL_0586;;Make Layers;Créer des calques;;
 RBN_DYL_CMD_DYL_LAYERMAKE;DYL-LAYERMAKE;Make Layers;Créer des calques;Créer des calques;Liste les jeux de calques avec leurs alias et crée les calques de celui choisi.
 RBN_DYL_CMD_PST_MAKEBASICDRAWINGLAYERS;PST-MAKEBASICDRAWINGLAYERS;Basic Drawing Layers;de dessin de base;Créer les calques de dessin de base;Crée les calques de dessin de base à partir de la liste de calques CSV de Dynalisp.
 RBN_DYL_CMD_PST_MAKEARCHITECTURALELEVATIONLAYERS;PST-MAKEARCHITECTURALELEVATIONLAYERS;Architectural Elevation Layers;d'élévation d'architecture;Créer les calques d'élévation d'architecture;Crée les calques d'élévation, d'équipement et d'annotation d'architecture à partir des listes de calques CSV.
@@ -60,7 +60,7 @@ RBN_DYL_CMD_PST_MAKEARCHITECTURALFURNITUREPLANLAYERS;PST-MAKEARCHITECTURALFURNIT
 RBN_DYL_CMD_PST_MAKENCSLEVEL1LAYERS;PST-MAKENCSLEVEL1LAYERS;NCS Level 1 Layers;NCS de niveau 1;Créer les calques NCS de niveau 1;Crée les calques NCS de niveau 1 de chaque discipline à partir des listes de calques CSV.
 RBN_DYL_CMD_PST_MAKENCSLEVEL2LAYERS;PST-MAKENCSLEVEL2LAYERS;NCS Level 2 Layers;NCS de niveau 2;Créer les calques NCS de niveau 2;Crée les calques NCS de niveau 2 de chaque discipline à partir des listes de calques CSV.
 RBN_DYL_CMD_PST_MAKENCSLEVEL3LAYERS;PST-MAKENCSLEVEL3LAYERS;NCS Level 3 Layers;NCS de niveau 3;Créer les calques NCS de niveau 3;Crée les calques NCS de niveau 3 de chaque discipline à partir des listes de calques CSV.
-RBN_DYL_0586;;Import Layers From CSV;Importer des calques d'un CSV;;
+RBN_DYL_0601;;Import Layers From CSV;Importer des calques d'un CSV;;
 RBN_DYL_CMD_DYL_LAYERIMPORTFROMCSV;DYL-LAYERIMPORTFROMCSV;Import Layers From CSV;Importer des calques d'un CSV;Importer des calques d'un CSV;Importe les calques d'un fichier CSV choisi, sans enregistrer d'état de calques.
 RBN_DYL_CMD_PST_ARCHITECTURALFLOORPLANLAYERS;PST-ARCHITECTURALFLOORPLANLAYERS;Architectural Floor Plan Layers;d'étage d'architecture;Calques de plan d'étage d'architecture;Importe les calques de plan d'étage d'architecture de leur CSV préréglé et enregistre un état de calques.
 RBN_DYL_CMD_PST_ARCHITECTURALCEILINGPLANLAYERS;PST-ARCHITECTURALCEILINGPLANLAYERS;Architectural Ceiling Plan Layers;de plafond d'architecture;Calques de plan de plafond d'architecture;Importe les calques de plan de plafond d'architecture de leur CSV préréglé et enregistre un état de calques.
@@ -73,7 +73,7 @@ RBN_DYL_CMD_PST_STRUCTURALFLOORPLANLAYERS;PST-STRUCTURALFLOORPLANLAYERS;Structur
 RBN_DYL_CMD_PST_ELECTRICALFLOORPLANLAYERS;PST-ELECTRICALFLOORPLANLAYERS;Electrical Floor Plan Layers;d'étage d'électricité;Calques de plan d'étage d'électricité;Importe les calques de plan d'étage d'électricité de leur CSV préréglé et enregistre un état de calques.
 RBN_DYL_CMD_PST_PLUMBINGFLOORPLANLAYERS;PST-PLUMBINGFLOORPLANLAYERS;Plumbing Floor Plan Layers;d'étage de plomberie;Calques de plan d'étage de plomberie;Importe les calques de plan d'étage de plomberie de leur CSV préréglé et enregistre un état de calques.
 RBN_DYL_CMD_PST_MECHANICALFLOORPLANLAYERS;PST-MECHANICALFLOORPLANLAYERS;Mechanical Floor Plan Layers;d'étage de mécanique;Calques de plan d'étage de mécanique;Importe les calques de plan d'étage de mécanique de leur CSV préréglé et enregistre un état de calques.
-RBN_DYL_0602;;Layer Filters;Filtres de calques;;
+RBN_DYL_0617;;Layer Filters;Filtres de calques;;
 RBN_DYL_CMD_DYL_LAYERFILTER;DYL-LAYERFILTER;Layer Filters;Filtres de calques;Filtres de calques;Liste les préréglages de filtres de calques avec leurs alias et applique celui choisi.
 RBN_DYL_CMD_PST_SHOWALLLAYERS;PST-SHOWALLLAYERS;Show All Layers;Afficher tous les calques;Afficher tous les calques;Active et libère chaque calque du dessin, xréfs comprises.
 RBN_DYL_CMD_PST_SHOWNONPLOTTINGLAYERS;PST-SHOWNONPLOTTINGLAYERS;Show Non-Plotting Layers;Afficher les calques non tracés;Afficher les calques non tracés;Active et libère les calques Defpoints, non tracés et de notes à lire.
@@ -91,22 +91,22 @@ RBN_DYL_CMD_PST_HIDEDEMOLITIONLAYERS;PST-HIDEDEMOLITIONLAYERS;Hide Demolition La
 RBN_DYL_CMD_PST_HIDEEXISTINGLAYERS;PST-HIDEEXISTINGLAYERS;Hide Existing Layers;Masquer les calques existants;Masquer les calques existants;Désactive et gèle les calques de la phase existant à conserver.
 RBN_DYL_CMD_PST_HIDEKEYPLANLAYERS;PST-HIDEKEYPLANLAYERS;Hide Key Plan Layers;Masquer les calques du plan clé;Masquer les calques du plan clé;Désactive et gèle les calques du plan clé.
 RBN_DYL_CMD_DYL_LAYERGROUP;DYL-LAYERGROUP;Layer Groups;Groupes de calques;Groupes de calques;Crée les filtres de groupes de calques standard de Dynalisp dans le Gestionnaire des propriétés des calques.
-RBN_DYL_0623;;Import Layer Filters;Importer des filtres de calques;;
+RBN_DYL_0638;;Import Layer Filters;Importer des filtres de calques;;
 RBN_DYL_CMD_DYL_LAYERIMPORTFILTERSFROMDWG;DYL-LAYERIMPORTFILTERSFROMDWG;Import Layer Filters;Importer des filtres de calques;Importer des filtres de calques;Importe les filtres de calques d'un autre dessin dans le dessin courant.
 RBN_DYL_CMD_PST_LISTLAYERFILTERS;PST-LISTLAYERFILTERS;List Layer Filters;Lister les filtres de calques;Lister les filtres de calques;Liste l'arborescence des filtres de calques du dessin courant à la ligne de commande.
 RBN_DYL_CMD_DYL_LAYERLIST;DYL-LAYERLIST;Layer Drawing List;Liste des calques dessinée;Liste des calques dessinée;Dessine une ligne et une étiquette avec la description de chaque calque du dessin ou de la sélection.
 RBN_DYL_CMD_DYL_LAYEREXPORTTOCSV;DYL-LAYEREXPORTTOCSV;Export Layers To CSV;Exporter les calques en CSV;Exporter les calques en CSV;Exporte chaque calque du dessin avec ses propriétés dans un fichier CSV du dossier Téléchargements.
-RBN_DYL_0632;;Layer Pen Colors;Couleurs de plumes des calques;;
+RBN_DYL_0647;;Layer Pen Colors;Couleurs de plumes des calques;;
 RBN_DYL_CMD_DYL_LAYERPENCOLORS;DYL-LAYERPENCOLORS;Layer Pen Colors;Couleurs de plumes des calques;Couleurs de plumes des calques;Remplace les couleurs des calques par les couleurs de plumes 1 à 7 selon leur épaisseur de ligne, ou rétablit leurs couleurs enregistrées.
 RBN_DYL_CMD_PST_LAYERCOLORSTOPENS;PST-LAYERCOLORSTOPENS;To Pens;Couleurs des calques en plumes;Couleurs des calques en plumes;Règle les couleurs des calques sur les couleurs de plumes 1 à 7 selon leur épaisseur de ligne (30 pour 0,13), en enregistrant leurs couleurs.
 RBN_DYL_CMD_PST_LAYERCOLORSRESTORE;PST-LAYERCOLORSRESTORE;Restore;Rétablir les couleurs des calques;Rétablir les couleurs des calques;Redonne aux calques les couleurs enregistrées quand elles ont été remplacées par les couleurs de plumes.
-RBN_DYL_0637;;Layer Color Weight;Couleur et épaisseur des calques;;
+RBN_DYL_0652;;Layer Color Weight;Couleur et épaisseur des calques;;
 RBN_DYL_CMD_DYL_LAYERCOLORWEIGHT;DYL-LAYERCOLORWEIGHT;Layer Color Weight;Couleur et épaisseur des calques;Couleur et épaisseur des calques;Accorde l'épaisseur de ligne des calques à leur couleur, ou leur couleur à leur épaisseur de ligne (norme Dyl).
 RBN_DYL_CMD_PST_LAYERWEIGHTBYCOLOR;PST-LAYERWEIGHTBYCOLOR;Lineweight By Color;Épaisseur des calques selon la couleur;Épaisseur des calques selon la couleur;Règle l'épaisseur de ligne des calques selon leur couleur (norme Dyl : couleur ##0 = 0,13, ##1 = 0,18...).
 RBN_DYL_CMD_PST_LAYERCOLORBYWEIGHT;PST-LAYERCOLORBYWEIGHT;Color By Lineweight;Couleur des calques selon l'épaisseur;Couleur des calques selon l'épaisseur;Règle le dernier chiffre de la couleur des calques selon leur épaisseur de ligne, en gardant leur teinte (norme Dyl).
 RBN_DYL_PANEL_TEXT;;Text;Texte;;
 RBN_DYL_CMD_DYL_ADDPREFIXSUFFIX;DYL-ADDPREFIXSUFFIX;Text Prefix Suffix;Préfixe et suffixe de texte;Préfixe et suffixe de texte;Ajoute un texte choisi comme préfixe ou suffixe aux textes et textes multilignes sélectionnés.
-RBN_DYL_0648;;Quick Add Prefix / Suffix;Préfixe / suffixe rapide;;
+RBN_DYL_0663;;Quick Add Prefix / Suffix;Préfixe / suffixe rapide;;
 RBN_DYL_CMD_DYL_QUICKADDPREFIXSUFFIX;DYL-QUICKADDPREFIXSUFFIX;Quick Add Prefix / Suffix;Préfixe / suffixe rapide;Préfixe / suffixe rapide;Liste les préréglages de texte de cote avec leurs alias et applique celui choisi.
 RBN_DYL_CMD_PST_DIMENSIONTEXTPLUSMINUS;PST-DIMENSIONTEXTPLUSMINUS;Plus-Minus;Plus-moins;Texte de cote Plus-moins;Ajoute ou retire le préfixe plus-moins du texte de la cote sélectionnée.
 RBN_DYL_CMD_PST_DIMENSIONTEXTDIAMETER;PST-DIMENSIONTEXTDIAMETER;Diameter;Diamètre;Texte de cote Diamètre;Ajoute ou retire le préfixe de diamètre du texte de la cote sélectionnée.
@@ -119,17 +119,17 @@ RBN_DYL_CMD_DYL_CLAUDETEXTFIX;DYL-CLAUDETEXTFIX;Claude Text Fix;Correction de te
 RBN_DYL_CMD_DYL_DICTIONARY;DYL-DICTIONARY;Dictionary;Dictionnaire;Dictionnaire;Cherche les mots des dictionnaires DynALisp, leurs définitions et catégories, dans la langue des préférences de fichiers.
 RBN_DYL_CMD_DYL_MULTILEADERLIST;DYL-MULTILEADERLIST;Multileader and Block List;Liste des lignes de repère et blocs;Liste des lignes de repère et blocs;Liste les lignes de repère multiples et les blocs sélectionnés, groupés par valeurs d'attributs, avec un compte par groupe.
 RBN_DYL_PANEL_CLEANING;;Cleaning;Nettoyage;;
-RBN_DYL_0668;;Color ByLayer;Couleur DuCalque;;
+RBN_DYL_0683;;Color ByLayer;Couleur DuCalque;;
 RBN_DYL_CMD_DYL_COLORBYLAYER;DYL-COLORBYLAYER;Color ByLayer;Couleur DuCalque;Couleur DuCalque;Règle la couleur des objets sélectionnés sur DuCalque.
 RBN_DYL_CMD_PST_CHANGECOLOR;PST-CHANGECOLOR;Change Color;Changer la couleur;Changer la couleur;Règle la couleur des objets sélectionnés sur une couleur choisie dans la boîte de dialogue des couleurs.
-RBN_DYL_0673;;Data Links;Liaisons de données;;
+RBN_DYL_0688;;Data Links;Liaisons de données;;
 RBN_DYL_CMD_DYL_DATALINKS;DYL-DATALINKS;Data Links;Liaisons de données;Liaisons de données;Liste les liaisons de données du dessin avec leur état et leurs tableaux, et supprime celles inutilisées ou brisées.
 RBN_DYL_CMD_PST_DATALINKPURGE;PST-DATALINKPURGE;Purge Data Links;Purger les liaisons de données;Purger les liaisons de données;Supprime chaque liaison de données qu'aucun tableau n'utilise, et liste les liaisons utilisées dont le fichier Excel est manquant.
-RBN_DYL_0678;;Fix Blocks ByBlock;Blocs DuBloc;;
+RBN_DYL_0693;;Fix Blocks ByBlock;Blocs DuBloc;;
 RBN_DYL_CMD_DYL_SETBYBLOCK;DYL-SETBYBLOCK;Fix Blocks ByBlock;Blocs DuBloc;Blocs DuBloc;Place les entités des définitions de blocs sélectionnées sur le calque 0, avec couleur, type de ligne et épaisseur de ligne DuBloc.
 RBN_DYL_CMD_PST_SELECTALLBLOCKS;PST-SELECTALLBLOCKS;Select All Blocks;Sélectionner tous les blocs;Sélectionner tous les blocs;Sélectionne chaque référence de bloc du dessin.
 RBN_DYL_PANEL_NAVIGATE;;Navigate;Navigation;;
-RBN_DYL_0684;;Switch Drawing Scale;Changer l'échelle du dessin;;
+RBN_DYL_0699;;Switch Drawing Scale;Changer l'échelle du dessin;;
 RBN_DYL_CMD_DYL_SWITCHDRAWINGSCALE;DYL-SWITCHDRAWINGSCALE;Switch Drawing Scale;Changer l'échelle du dessin;Changer l'échelle du dessin;Demande une échelle de dessin (p. ex. 100 ou 1:100) et l'applique, comme le font ses commandes préréglées 1-100, 1-48...
 RBN_DYL_CMD_PST_DRAWINGSCALE1_1;PST-DRAWINGSCALE1-1;1:1;1:1;Échelle du dessin 1:1;Règle l'échelle d'annotation à 1:1 dans les dessins métriques ou à 1 pi = 1 pi dans les dessins impériaux.
 RBN_DYL_CMD_PST_DRAWINGSCALE1_5;PST-DRAWINGSCALE1-5;1:5;1:5;Échelle du dessin 1:5;Règle l'échelle d'annotation à 1:5 dans les dessins métriques ou à 3 po = 1 pi dans les dessins impériaux.
@@ -145,20 +145,20 @@ RBN_DYL_CMD_PST_DRAWINGSCALE1_48;PST-DRAWINGSCALE1-48;1/4 in = 1 ft;1/4 po = 1 p
 RBN_DYL_CMD_PST_DRAWINGSCALE1_96;PST-DRAWINGSCALE1-96;1/8 in = 1 ft;1/8 po = 1 pi;Échelle du dessin 1/8 po = 1 pi;Règle l'échelle d'annotation à 1/8 po = 1 pi (1:96) dans les dessins impériaux ou à 1:100 dans les dessins métriques.
 RBN_DYL_PANEL_OUTPUT;;Output;Sortie;;
 RBN_DYL_CMD_DYL_PREPDRAWING;DYL-PREPDRAWING;Prep Drawing;Préparer le dessin;Préparer le dessin;Exécute maintenant chaque étape de préparation de sortie : calques, objets masqués, xréfs, liaisons de données, tableaux, ordre de tracé et régénération.
-RBN_DYL_0702;;Revisions;Révisions;;
+RBN_DYL_0717;;Revisions;Révisions;;
 RBN_DYL_CMD_DYL_REVISIONS;DYL-REVISIONS;Revisions;Révisions;Révisions;Ouvre les révisions du projet, comme dans Revit : leur numérotation, leurs dates et descriptions, et les feuilles qui les ont.
 RBN_DYL_CMD_PST_REVISIONCLOUD;PST-REVISIONCLOUD;Revision Cloud;Nuage de révision;Nuage de révision;Dessine un nuage de révision sur la présentation pour une révision du projet, puis son étiquette, et met à jour le cartouche.
 RBN_DYL_CMD_PST_REVISIONSUPDATE;PST-REVISIONSUPDATE;Update Revisions;Mettre à jour les révisions;Mettre à jour les révisions;Met à jour les cartouches et les étiquettes de révision de cette feuille avec les révisions de son projet.
 RBN_DYL_CMD_PST_REVISIONTITLEBLOCKS;PST-REVISIONTITLEBLOCKS;Revision Title Blocks;Cartouches de révision;Cartouches de révision;Ouvre les cartouches qui affichent les révisions, et les attributs de leurs lignes de révision.
 RBN_DYL_CMD_DYL_CMDOPTIMIZER;DYL-CMDOPTIMIZER;Command Optimizer;Optimiseur de commandes;Optimiseur de commandes;Active ou désactive la redéfinition des commandes d'enregistrement et d'impression et de REGEN, comme dans Dyl-Settings.
 RBN_DYL_PANEL_SETUP;;Setup;Configuration;;
-RBN_DYL_0715;;Set Units;Régler les unités;;
+RBN_DYL_0730;;Set Units;Régler les unités;;
 RBN_DYL_CMD_DYL_SETUNITS;DYL-SETUNITS;Set Units;Régler les unités;Régler les unités;Liste les réglages d'unités avec leurs alias et applique celui choisi.
 RBN_DYL_CMD_PST_UNITSMETRICMM;PST-UNITSMETRICMM;Metric 1 mm;métriques 1 mm;Unités métriques 1 mm;Règle les unités du dessin en décimales avec une précision de 1 mm.
 RBN_DYL_CMD_PST_UNITSMETRICTENTHMM;PST-UNITSMETRICTENTHMM;Metric 0.1 mm;métriques 0,1 mm;Unités métriques 0,1 mm;Règle les unités du dessin en décimales avec une précision de 0,1 mm.
 RBN_DYL_CMD_PST_UNITSMETRICHUNDREDTHMM;PST-UNITSMETRICHUNDREDTHMM;Metric 0.01 mm;métriques 0,01 mm;Unités métriques 0,01 mm;Règle les unités du dessin en décimales avec une précision de 0,01 mm.
 RBN_DYL_CMD_PST_UNITSIMPERIALSIXTEENTHIN;PST-UNITSIMPERIALSIXTEENTHIN;Imperial 1/16 in;impériales 1/16 po;Unités impériales 1/16 po;Règle les unités du dessin en architecture avec une précision de 1/16 po.
-RBN_DYL_0723;;Standard Grid;Grille standard;;
+RBN_DYL_0738;;Standard Grid;Grille standard;;
 RBN_DYL_CMD_DYL_STANDARDGRID;DYL-STANDARDGRID;Standard Grid;Grille standard;Grille standard;Liste les réglages de grille avec leurs alias et applique celui choisi.
 RBN_DYL_CMD_PST_GRIDINCH;PST-GRIDINCH;Inch;Pouce;Grille Pouce;Règle une grille de 1/4 po avec une grille principale de 1 po et un accrochage de 1/8 po, convertis dans les dessins métriques.
 RBN_DYL_CMD_PST_GRIDFOOT;PST-GRIDFOOT;Foot;Pied;Grille Pied;Règle une grille de 1 po avec une grille principale de 1 pi et un accrochage de 1/8 po, convertis dans les dessins métriques.
@@ -176,12 +176,19 @@ RBN_DYL_CMD_DYL_RESETLINETYPESCALE;DYL-RESETLINETYPESCALE;Reset Linetype Scale;R
 RBN_DYL_CMD_DYL_VIEWPORTTOPAPERSPACE;DYL-VIEWPORTTOPAPERSPACE;Viewport To Paper Space;Fenêtre vers l'espace papier;Fenêtre vers l'espace papier;Recrée dans l'espace papier les objets de l'espace objet vus par les fenêtres sélectionnées, puis supprime les fenêtres.
 RBN_DYL_CMD_DYL_BATCHINSERT;DYL-BATCHINSERT;Batch Insert;Insertion par lot;Insertion par lot;Insère chaque dessin d'un dossier côte à côte comme blocs dans le dessin courant.
 RBN_DYL_CMD_DYL_COUNTBYLAYERS;DYL-COUNTBYLAYERS;Count By Layers;Compte par calques;Compte par calques;Totalise la longueur et l'aire des courbes sélectionnées par calque, les étiquette et exporte les résultats.
-RBN_DYL_0757;;Rebuild Patterns;Reconstruire les motifs;;
+RBN_DYL_0772;;Rebuild Patterns;Reconstruire les motifs;;
 RBN_DYL_CMD_DYL_REBUILDPAT;DYL-REBUILDPAT;Rebuild Patterns;Reconstruire les motifs;Reconstruire les motifs;Reconstruit les fichiers .pat des motifs de hachures absents du chemin de support.
 RBN_DYL_CMD_PST_OPENPATS;PST-OPENPATS;Open Patterns Folder;Ouvrir le dossier des motifs;Ouvrir le dossier des motifs;Ouvre dans l'Explorateur Windows le dossier des motifs utilisé par Dyl-RebuildPat.
 RBN_DYL_CMD_DYL_OPENFOLDER;DYL-OPENFOLDER;Open Folder;Ouvrir un dossier;Ouvrir un dossier;Ouvre dans l'Explorateur Windows le dossier du dépôt, du dessin courant, des gabarits, du jeu de feuilles ou de support d'AutoCAD.
+RBN_DYL_PANEL_ANALYSIS;;Analysis;Analyse;;
+RBN_DYL_0779;;Simulation;Simulation;;
+RBN_DYL_CMD_DYL_SIMULATION;DYL-SIMULATION;Simulation;Simulation;Simulation;Ouvre une fenêtre pour choisir la zone de simulation d'un détail 2D, modifier les climats, placer les zones de climat et vérifier le détail avant de le simuler.
+RBN_DYL_CMD_PST_SIMULATIONZONE;PST-SIMULATIONZONE;Zone;Zone;Simulation Zone;Dessine la zone de simulation d'un détail 2D (un rectangle) ou en fait une d'une polyligne fermée choisie.
+RBN_DYL_CMD_PST_SIMULATIONCLIMATE;PST-SIMULATIONCLIMATE;Climate;Climat;Simulation Climat;Dessine une zone de climat (intérieur, extérieur...) sur l'air d'un côté d'un détail 2D, ou en fait une d'une polyligne fermée choisie.
+RBN_DYL_CMD_PST_SIMULATIONCHECK;PST-SIMULATIONCHECK;Check;Vérifier;Simulation Vérifier;Lit le détail d'une zone de simulation et montre sa grille et ses problèmes sur le dessin : hachures sans matériau, matériaux sans données, trous.
+RBN_DYL_CMD_PST_SIMULATIONCLEAR;PST-SIMULATIONCLEAR;Clear;Effacer;Simulation Effacer;Efface ce que la simulation montre sur le dessin.
 RBN_DYL_PANEL_TROUBLESHOOTING;;Troubleshooting;Dépannage;;
-RBN_DYL_0764;;Diagnostics;Diagnostics;;
+RBN_DYL_0788;;Diagnostics;Diagnostics;;
 RBN_DYL_CMD_DYL_DIAGNOSTICS;DYL-DIAGNOSTICS;Diagnostics;Diagnostics;Diagnostics;Écrit un rapport complet de DynALisp, d'AutoCAD et du dessin avec vos paramètres et fichiers, puis offre de l'envoyer dans un ticket GitHub.
 RBN_DYL_CMD_PST_DIAGNOSTICSDYNALISP;PST-DIAGNOSTICSDYNALISP;DynALisp;DynALisp;Diagnostics DynALisp;Rapporte la version et l'installation de DynALisp, son démarrage, ses erreurs de chargement et ses modules.
 RBN_DYL_CMD_PST_DIAGNOSTICSAUTOCAD;PST-DIAGNOSTICSAUTOCAD;AutoCAD;AutoCAD;Diagnostics AutoCAD;Rapporte le produit AutoCAD, Windows, le profil, les variables système, les chemins, les applications et les paquets chargés.
