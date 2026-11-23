@@ -47,6 +47,7 @@ Utilities;>1;DYL-BATCHINSERT;;;
 Utilities;>1;DYL-COUNTBYLAYERS;;;
 Utilities;>2;DYL-REBUILDPAT;*;;
 Utilities;>2;DYL-OPENFOLDER;;;
+Utilities;>2;DYL-ASSISTANT;;;
 Troubleshooting;;DYL-DIAGNOSTICS;*;;
 DynALisp;;DYL-SETTINGS;;Settings;Opens the DynALisp settings: the language, the reactors, the overrides and the updates.
 DynALisp;;DYL-SUITE;;Suite;Turns each command on or off, edits its aliases and opens its docs.

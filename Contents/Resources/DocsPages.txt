@@ -92,6 +92,8 @@ Dynalisp/Troubleshooting/Dyl-Diagnostics.fr.htm
 Dynalisp/Troubleshooting/Dyl-Diagnostics.htm
 Dynalisp/Utilities/Dyl-AddPrefixSuffix.fr.htm
 Dynalisp/Utilities/Dyl-AddPrefixSuffix.htm
+Dynalisp/Utilities/Dyl-Assistant.fr.htm
+Dynalisp/Utilities/Dyl-Assistant.htm
 Dynalisp/Utilities/Dyl-BatchInsert.fr.htm
 Dynalisp/Utilities/Dyl-BatchInsert.htm
 Dynalisp/Utilities/Dyl-ClaudeTextFix.fr.htm

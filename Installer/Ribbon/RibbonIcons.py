@@ -977,6 +977,13 @@ def sparkle(c, cx, cy, r, color=ORANGE):
     c.poly(ps, color, INK, 0.8 if c.small else 1)
 
 
+def i_assistant(c):
+    # a speech bubble, its lines of text, and the sparkle of Text Fix
+    c.poly([(2, 4), (24, 4), (24, 20), (12, 20), (6, 27), (7, 20), (2, 20)], PAPER, INK)
+    text_lines(c, 5.5, 9, 20, 2 if c.small else 3, 5 if c.small else 4)
+    sparkle(c, 24, 21, 8)
+
+
 def i_claudetextfix(c):
     sheet(c, 2, 2, 22, 28)
     text_lines(c, 5.5, 11, 18, 3 if c.small else 4, 4.5 if not c.small else 6)
@@ -1191,6 +1198,7 @@ ICONS = {
     'DYL-ADDPREFIXSUFFIX': i_addprefixsuffix,
     'DYL-QUICKADDPREFIXSUFFIX': i_quickaddprefixsuffix,
     'DYL-BATCHINSERT': i_batchinsert,
+    'DYL-ASSISTANT': i_assistant,
     'DYL-CLAUDETEXTFIX': i_claudetextfix,
     'DYL-COUNTBYLAYERS': i_countbylayers,
     'DYL-DICTIONARY': i_dictionary,
