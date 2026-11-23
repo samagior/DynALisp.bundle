@@ -441,29 +441,23 @@
   (Remote>>Dyl:PresetGet "QuickShape" *qs:defaults* 'Dyl:QuickShapeFix id)
 )
 
-;;-------------------------=={ Dialog }==------------------------;;
+;;-------------------------=={ Window }==------------------------;;
 
-;;  The preset dialog is made by Remote>>Dyl:PresetDialog (Remote\Dyl-Presets.lsp): its
-;;  Parameters column has the Material popup (made by the engine, see (material . 3)), then
-;;  the tiles below and the Border settings box (Remote>>Dyl:MaterialBorderDcl, without Has a
-;;  border). The functions below run inside it and use its local variables pst:lst, pst:idx
-;;  and pst:mats, and the local variables of Dyl:QuickShapeDialog: qs:shapes (shapes of the
-;;  libraries), qs:refs (shapes of the Shape popup), mt:keys (layer keys of the border popup).
+;;  The Quick Shape window (Res\Dyl-QuickShape.xaml, shown by DynALisp.Windows.dll, a tab of
+;;  the Manager, Remote\Dyl-Manager.lsp) is a window of the preset engine
+;;  (Remote>>Dyl:PresetDialog, (window . "Dyl-QuickShape.xaml"), see Remote\Dyl-Presets.lsp):
+;;  the presets are edited in the window itself, the Lisp gives them and saves them. Its
+;;  Parameters: the shape, its scale, the material and its view, then the border of the preset
+;;  (the tiles of *mt:bordertiles*: a shape always has its border, no Has a border). The
+;;  functions below run inside it and use its local variables pst:lst and pst:idx, and the
+;;  local variables of Dyl:QuickShapeDialog: qs:shapes (shapes of the libraries), qs:refs
+;;  (shapes of the Shape list), mt:keys (layer keys of the border list).
 
 ;;  Tiles of Quick Shape and index of their value in a preset, then those of the border:
 (setq *qs:tiles* (append (list '("scl" . 5) '("shp" . 4) (cons "mvw" *qs:view*)) (Remote>>Dyl:MaterialBorderTiles *qs:border*)))
 
-;;  The views of a preset (the View popup):
+;;  The views of a preset (the View list):
 (setq *qs:views* '("Cut" "Surface"))
-
-;;  Popup tiles -> list of their values (nil for the other tiles):
-(defun Dyl:QuickShapeDlgItems (key)
-  (cond
-    ((= "shp" key) qs:refs)
-    ((= "mvw" key) *qs:views*)
-    ((assoc key *mt:bordertiles*) (Remote>>Dyl:MaterialDlgItems key))
-  )
-)
 
 ;;  Error message of an invalid value, nil when it is valid:
 (defun Dyl:QuickShapeDlgCheck (key val)
@@ -474,48 +468,62 @@
   )
 )
 
-;;  The border of the preset r (see Remote>>Dyl:MaterialDlgBorderState; always a border):
-(defun Dyl:QuickShapeDlgState (r)
-  (Remote>>Dyl:MaterialDlgBorderState (Dyl:QuickShapeMat (cond ((Remote>>Dyl:PresetDlgMatOf r)) (*mt:new*)) r))
-)
-
-;;  Fill the Shape popup (each time the dialog is shown: a shape may have been added): the shapes
-;;  of the libraries, then the shapes used by a preset but not found (marked missing):
-(defun Dyl:QuickShapeDlgInit ()
+;;  Before the window is shown (each time: a shape may have been added): the shapes of the
+;;  libraries, then the shapes used by a preset but not found (the Shape list, qs:refs), and
+;;  the layer keys of the border list (mt:keys):
+(defun Dyl:QuickShapeWinPrep ()
   (setq qs:shapes (Dyl:QuickShapeList)
         qs:refs   qs:shapes
   )
   (foreach r pst:lst
     (if (not (member (nth 4 r) qs:refs)) (setq qs:refs (append qs:refs (list (nth 4 r)))))
   )
-  (start_list "shp")
-  (foreach s qs:refs
-    (add_list (if (member s qs:shapes)
-                (strcat (vl-string-subst ": " "|" s))
-                (strcat (vl-string-subst ": " "|" s) "   (missing shape)")
+  (Remote>>Dyl:MaterialDlgKeys nil (mapcar '(lambda (r) (nth *qs:border* r)) (append *qs:defaults* pst:lst)))
+)
+
+;;  The lists of the window: the labels of their items (key/list) and the values they store
+;;  (key/vals): the shapes ("Library: Block", one no longer found marked missing), the views,
+;;  the layer keys (marked when they are not defined), the lineweights:
+(defun Dyl:QuickShapeWinVals (/ lks)
+  (setq lks (Remote>>Dyl:LayerKeyRead))
+  (list (cons "shp/list"
+              (mapcar '(lambda (s)
+                         (if (member s qs:shapes)
+                           (vl-string-subst ": " "|" s)
+                           (strcat (vl-string-subst ": " "|" s) "   (missing shape)")
+                         )
+                       )
+                      qs:refs
               )
-    )
+        )
+        (cons "shp/vals" qs:refs)
+        (cons "mvw/list" *qs:views*)
+        (cons "mvw/vals" *qs:views*)
+        (cons "out/list" (mapcar '(lambda (k) (if (assoc k lks) k (strcat k "   (not defined)"))) mt:keys))
+        (cons "out/vals" mt:keys)
+        (cons "bwt/list" (mapcar '(lambda (w) (strcat (rtos (/ (atoi w) 100.0) 2 2) " mm")) *mt:weights*))
+        (cons "bwt/vals" *mt:weights*)
   )
-  (end_list)
-  (start_list "mvw")
-  (mapcar 'add_list *qs:views*)
-  (end_list)
-  ;;  Add shape / Open library: close the dialog with code 3 / 4, see Dyl:QuickShapeDlgStatus.
-  ;;  Also when the shape of the preset is missing (only the shape is then invalid):
-  (action_tile "sad" "(if (or (Remote>>Dyl:PresetDlgCommit) (not (member (nth 4 (nth pst:idx pst:lst)) qs:shapes))) (done_dialog 3))")
-  (action_tile "sop" "(if (or (Remote>>Dyl:PresetDlgCommit) (not (member (nth 4 (nth pst:idx pst:lst)) qs:shapes))) (done_dialog 4))")
-  ;;  The Border settings box (no Has a border):
-  (Remote>>Dyl:MaterialDlgBorderInit (mapcar '(lambda (r) (nth *qs:border* r)) (append *qs:defaults* pst:lst)))
 )
 
 ;;  Code 3 = Add shape from selection: the new shape goes to the library of the shape of the
-;;  preset and is given to the preset, then the dialog is shown again. Code 4 = Open library:
-;;  the presets are saved and the dialog closed, then the library of the shape is opened.
-;;  The open button of the border layer key: the Layer Keys window (see
-;;  Remote>>Dyl:MaterialDlgBorderStatus):
-(defun Dyl:QuickShapeDlgStatus (sta r / ref)
+;;  preset and is given to the presets selected, then the window is shown again. Code 4 = Open
+;;  library: the presets are saved and the window closed, then the library of the shape is
+;;  opened. The open button of the border layer key: the Layer Keys window (see
+;;  Remote>>Dyl:MaterialDlgBorderStatus); of the border color: the color window of AutoCAD,
+;;  the color picked given to the presets selected, its override checked:
+(defun Dyl:QuickShapeDlgStatus (sta r / ref v)
   (cond
     ((= *mt:borderkeypick* sta) (Remote>>Dyl:MaterialDlgBorderStatus sta r *qs:border*) nil)
+    ((= *mt:colorpick* sta)
+     (if (setq v (Remote>>Dyl:MaterialColorPick (nth (+ *qs:border* 2) r)))
+       (progn
+         (Remote>>Dyl:PresetDlgPut (+ *qs:border* 2) v)
+         (Remote>>Dyl:PresetDlgPut (+ *qs:border* 1) "1")
+       )
+     )
+     nil
+    )
     ((= 3 sta)
      ;;  To every preset selected (see Remote>>Dyl:PresetDlgPut):
      (if (setq ref (Dyl:QuickShapeAdd (car (Dyl:QuickShapeSplit (nth 4 r)))))
@@ -530,10 +538,7 @@
   )
 )
 
-;;  Text put in the new alias box:
-(defun Dyl:QuickShapeDlgPrefix (r) "QS-")
-
-;;  Show the preset dialog. Draw and Save write the presets file and the aliases.
+;;  Show the Quick Shape window. Draw and Save write the presets file and the aliases.
 ;;  Returns the preset to draw, or nil on Save / Cancel:
 (defun Dyl:QuickShapeDialog (/ qs:shapes qs:refs mt:keys)
   (Remote>>Dyl:PresetDialog
@@ -541,40 +546,26 @@
     (list (cons 'defs *qs:defaults*)
           (cons 'fix 'Dyl:QuickShapeFix)
           (cons 'tiles *qs:tiles*)
-          ;;  The Group popup of the Materials window (the other groups used by a preset
-          ;;  are added to it); the Material popup lists the materials of the group:
+          ;;  The Group list of the presets (the other groups used by a preset are added to
+          ;;  it); the Material list lists the materials of the group picked in the Material
+          ;;  group list above it (the groups of the materials, by what they are made of):
           '(groups . T)
           '(material . 3)
-          ;;  The Material popup lists the materials of the group picked in the Material group
-          ;;  popup above it (the groups of the materials, by what they are made of):
           '(matgroups . T)
           ;;  The view of a preset: its material joined to its Cut or Surface hatch preset:
           (cons 'mview *qs:view*)
           '(upper "out" "blt")
-          ;;  The view, the shape, then the border of the preset:
-          (cons 'params
-                (append
-                  '("      : popup_list { key = \"mvw\"; label = \"View:\"; edit_width = 32; }"
-                    "      : popup_list { key = \"shp\"; label = \"Shape:\"; edit_width = 32; }"
-                    "      : row { alignment = right; fixed_width = true;"
-                    "        : button { key = \"sad\"; label = \"Add shape from selection...\"; }"
-                    "        : button { key = \"sop\"; label = \"Open library\"; }"
-                    "      }"
-                    "      : edit_box { key = \"scl\"; label = \"Scale:\"; edit_width = 12; }"
-                    "      spacer;"
-                   )
-                  (Remote>>Dyl:MaterialBorderDcl)
-                )
-          )
+          '(window . "Dyl-QuickShape.xaml")
+          ;;  The preview of a material: its hatch, as it plots:
+          '(mspec . Remote>>Dyl:MaterialWinSpec)
+          ;;  The preview always outlined (a shape always has its border; scl is never empty):
+          '(outline . "scl!=")
+          '(wprefix . "4|*=QS-")
+          '(wprep . Dyl:QuickShapeWinPrep)
+          '(wvals . Dyl:QuickShapeWinVals)
           (cons 'new (Dyl:QuickShapeDefault '("" "" "New shape" "mt-Brick" "Shapes|Stud-2x4" "1")))
-          '(items . Dyl:QuickShapeDlgItems)
           '(check . Dyl:QuickShapeDlgCheck)
-          '(init . Dyl:QuickShapeDlgInit)
-          '(state . Dyl:QuickShapeDlgState)
           '(status . Dyl:QuickShapeDlgStatus)
-          '(prefix . Dyl:QuickShapeDlgPrefix)
-          ;;  A list as tall as the Parameters column (the shape and the Border settings box):
-          '(height . 20)
     )
   )
 )
@@ -584,8 +575,8 @@
 ;; Quick Shape
 ;; Opens a dialog to edit, create and draw the quick shape presets.
 
-(defun c:Dyl-QuickShape (/ rec)
-  (if (setq rec (Dyl:QuickShapeDialog)) (Dyl:QuickShapeRun rec))
+(defun c:Dyl-QuickShape ()
+  (Remote>>Dyl:Manager "QuickShape")
   (princ)
 )
 

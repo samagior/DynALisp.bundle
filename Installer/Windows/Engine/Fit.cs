@@ -112,18 +112,25 @@ namespace DynALisp.Windows
         bool Resizable => _grows.Count > 0;
 
         // Makes the window w (of the file name, without its extension) fit, before it is shown:
+        // (a window of several tabs, Tabs.cs: the window of its tab, under its tabs, which
+        // never scroll)
         internal static void Attach(Window w, string name, IPlaces places)
         {
-            if (w.Content is FrameworkElement c) new Fit(w, c, name, places);
+            if (w.Content is TabHost h) { if (h.Body is FrameworkElement b) new Fit(w, b, name, places, h); }
+            else if (w.Content is FrameworkElement c) new Fit(w, c, name, places, null);
         }
 
-        Fit(Window w, FrameworkElement content, string name, IPlaces places)
+        readonly TabHost _tabs;
+
+        Fit(Window w, FrameworkElement content, string name, IPlaces places, TabHost tabs)
         {
             _w = w;
             _name = name;
             _places = places;
             _content = content;
-            w.Content = null;
+            _tabs = tabs;
+            if (tabs != null) tabs.Body = null;
+            else w.Content = null;
             _sv = new ScrollViewer
             {
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
@@ -132,7 +139,8 @@ namespace DynALisp.Windows
                 IsTabStop = false,
                 Content = content,
             };
-            w.Content = _sv;
+            if (tabs != null) tabs.Body = _sv;
+            else w.Content = _sv;
             Find(content);
             if (Resizable)
             {
@@ -329,7 +337,16 @@ namespace DynALisp.Windows
             GetClientRect(hwnd, out RECT cr);
             double frameW = Math.Max(0, (wr.Right - wr.Left) - (cr.Right - cr.Left)) * sx;
             double frameH = Math.Max(0, (wr.Bottom - wr.Top) - (cr.Bottom - cr.Top)) * sy;
-            double natW = nat.Width + frameW, natH = nat.Height + frameH;
+            // the row of the tabs, above the content:
+            double tabsH = 0, tabsW = 0;
+            if (_tabs != null && _tabs.Strip is UIElement strip)
+            {
+                strip.Measure(Inf);
+                tabsH = strip.DesiredSize.Height;
+                tabsW = strip.DesiredSize.Width;
+            }
+            frameH += tabsH;
+            double natW = Math.Max(nat.Width, tabsW) + frameW, natH = nat.Height + frameH;
 
             // the window that opened it (AutoCAD, or the window under a sub-window):
             IntPtr owner = new WindowInteropHelper(_w).Owner;
