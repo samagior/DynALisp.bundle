@@ -64,6 +64,7 @@ namespace DynALisp.Windows
                 else if (args[i] == "-fit") fit = true;
                 else only.Add(args[i]);
             }
+            if (fit && only.Contains("-trace")) { only.Remove("-trace"); Fit.Trace = Console.WriteLine; }
             if (fit) Console.WriteLine("Work area " + Sz(SystemParameters.WorkArea.Size) + ", screen " + SystemParameters.PrimaryScreenWidth + "x" + SystemParameters.PrimaryScreenHeight);
             int errors = 0, done = 0;
             foreach (var line in File.ReadAllLines(Path.Combine(here, "Shots.csv")))

@@ -85,6 +85,9 @@ namespace DynALisp.Windows
             public readonly List<Wide> Side = new List<Wide>();
         }
 
+        // What Distribute does, for Shots -fit (null in AutoCAD):
+        internal static Action<string> Trace;
+
         const double ListLeast = 100, GalleryLeast = 200, ListDefault = 240;
         static readonly Size Inf = new Size(double.PositiveInfinity, double.PositiveInfinity);
 
@@ -396,7 +399,7 @@ namespace DynALisp.Windows
             // otherwise at each width):
             int now = Environment.TickCount;
             if (now - _runsSince > 500 || !Same(full, _lastFull)) { _runs = 0; _runsSince = now; }
-            if (++_runs > 8) return;
+            if (++_runs > 8) { Trace?.Invoke("      stopped after 8 runs"); return; }
             _busy = true;
             try
             {
@@ -450,6 +453,8 @@ namespace DynALisp.Windows
                 var vv = needV ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden;
                 if (_sv.HorizontalScrollBarVisibility != hv) _sv.HorizontalScrollBarVisibility = hv;
                 if (_sv.VerticalScrollBarVisibility != vv) _sv.VerticalScrollBarVisibility = vv;
+                Trace?.Invoke("      run " + _runs + ": full " + full + " view " + view + " needH " + needH + " needV " + needV + " dx " + Math.Round(dx)
+                              + " dy " + Math.Round(dy) + " want " + _content.DesiredSize + " lists " + string.Join(" ", shown.Select(g => Math.Round(g.E.Height))));
                 _lastFull = full;
                 _lastView = view;
                 _lastWant = _content.DesiredSize;
