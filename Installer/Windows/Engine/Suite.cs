@@ -419,7 +419,7 @@ namespace DynALisp.Windows
                 var parts = new List<string>();
                 if (IsChild(i))
                     parts.Add("Child of " + Cell(r, CMain) + ", runs " + Command(i) + (IsDyn(i) ? " (custom preset, on / off with it)" : ""));
-                if (Kids(i) > 0) parts.Add(Kids(i) + " child commands: double-click to fold / unfold");
+                if (Kids(i) > 0) parts.Add(Kids(i) + (Kids(i) == 1 ? " child command" : " child commands") + ": double-click to fold / unfold");
                 // The other files defining the same command:
                 if (Command(i).Length > 0)
                 {

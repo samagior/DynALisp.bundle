@@ -41,7 +41,7 @@
     <DockPanel Margin="0,12,0,0">
       <Button x:Name="wgt" DockPanel.Dock="Left" Margin="0" Content="Install (winget)" dyl:Win.Close="2"/>
       <Button x:Name="web" DockPanel.Dock="Left" Content="Download page" dyl:Win.Close="3"/>
-      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="8,0,0,0">
         <Button Content="_Open DynALisp" IsDefault="True"/>
         <Button Content="Close" IsCancel="True"/>
         <Button x:Name="docs" Content="Open Docs"/>

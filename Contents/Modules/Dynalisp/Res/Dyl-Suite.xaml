@@ -96,12 +96,6 @@
         <!-- Ctrl / Shift click: several commands; double-click: folds a main command with
              children, opens the docs of any other; its box turns it on or off: -->
         <ListBox x:Name="lst" Height="430" VirtualizingStackPanel.IsVirtualizing="True" VirtualizingStackPanel.VirtualizationMode="Recycling">
-          <ListBox.ItemContainerStyle>
-            <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-              <Setter Property="Padding" Value="6,2"/>
-              <Setter Property="Margin" Value="0"/>
-            </Style>
-          </ListBox.ItemContainerStyle>
           <ListBox.ItemTemplate>
             <DataTemplate>
               <Grid>
