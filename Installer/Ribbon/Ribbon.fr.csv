@@ -9,6 +9,7 @@ Panel:Navigate;Navigation;
 Panel:Output;Sortie;
 Panel:Setup;Configuration;
 Panel:Utilities;Utilitaires;
+Panel:Assistant;Assistant;
 Panel:Analysis;Analyse;
 Panel:Troubleshooting;Dépannage;
 Panel:DynALisp;DynALisp;

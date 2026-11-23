@@ -17,6 +17,7 @@ csu=1
 lku=0
 lkk=0
 aup=1
+asl=0
 # Drawing Settings:
 uim/list=(Not checked)|Metric 1 mm|Metric 0.1 mm|Metric 0.01 mm|Imperial 1/16 in
 uim=4
