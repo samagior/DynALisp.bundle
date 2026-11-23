@@ -300,6 +300,48 @@
   (dg:try 'dg:dyl-install)
   (dg:try 'dg:dyl-startup)
   (dg:try 'dg:dyl-modules)
+  (dg:try 'dg:dyl-assistant)
+)
+
+;;  The Assistant (Dyl-Assistant, DynALisp.Assistant.dll, AutoCAD 2016 and later) runs
+;;  Claude Code, installed and signed in by the user: checked only when its command is
+;;  turned on in the Startup Suite (Dyl:ClaudeInfo runs Claude Code twice, a second or two).
+;;  Never the account or a token: whether it is signed in, and how.
+(defun dg:dyl-assistant (/ info v)
+  (if c:Dyl-Assistant
+    (progn
+      (dg:sub "Assistant")
+      (cond
+        ((not Dyl:ClaudeInfo)
+         (if (< (atof (getvar "ACADVER")) 20.1)
+           (dg:bad "Dyl-Assistant is turned on, but the Assistant needs AutoCAD 2016 or later")
+           (dg:bad "Dyl-Assistant is turned on, but DynALisp.Assistant.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)")
+         )
+        )
+        ((= "" (cdr (assoc "path" (setq info (Dyl:ClaudeInfo)))))
+         (dg:note "Claude Code is not installed: Dyl-Assistant offers to install it")
+        )
+        (T
+         (dg:kv "Claude Code" (cdr (assoc "path" info)))
+         (if (= "" (setq v (cdr (assoc "version" info))))
+           (dg:bad "Claude Code does not run: install it again (Dyl-Assistant)")
+           (dg:kv "Claude Code version" v)
+         )
+         (cond
+           ((not (assoc "loggedIn" info)) (dg:note "Claude Code did not say whether it is signed in"))
+           ((= "1" (cdr (assoc "loggedIn" info)))
+            (dg:kv "Signed in" (strcat "yes (" (cdr (assoc "authMethod" info)) ")"))
+           )
+           ((dg:note "Claude Code is not signed in: Sign in in the Assistant palette"))
+         )
+        )
+      )
+      ;;  Claude Code bills ANTHROPIC_API_KEY instead of the subscription when it is set:
+      (if (= "1" (cdr (assoc "apiKey" info)))
+        (dg:note "ANTHROPIC_API_KEY is set: Claude Code uses that API key (billed by the API), not the Claude subscription")
+      )
+    )
+  )
 )
 
 (defun dg:dyl-install (/ git ver lst res)
