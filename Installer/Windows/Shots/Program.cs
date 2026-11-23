@@ -182,6 +182,11 @@ namespace DynALisp.Windows
             return null;
         }
 
+        // The items of a list, divided by |; \| is a | inside an item (a shape of Quick Shape,
+        // Library|Block):
+        static List<string> Items(string value) =>
+            value.Replace("\\|", "\u0001").Split('|').Select(x => x.Replace("\u0001", "|")).ToList();
+
         // The values of a sample file, as the Lisp gives them:
         static void Read(Session s, string sample)
         {
@@ -197,8 +202,8 @@ namespace DynALisp.Windows
                 // (\T: a tab inside a field of a row, as the rows of a column that holds rows:
                 // Win.RowsIn)
                 value = value.Replace("\\n", "\n").Replace("{samples}", Path.GetDirectoryName(Path.GetFullPath(sample))).Replace("\\t", "\t");
-                if (key.EndsWith("/list")) s.Lists[key.Substring(0, key.Length - 5)] = value.Split('|').ToList();
-                else if (key.EndsWith("/vals")) s.Lists[key] = value.Split('|').ToList();
+                if (key.EndsWith("/list")) s.Lists[key.Substring(0, key.Length - 5)] = Items(value);
+                else if (key.EndsWith("/vals")) s.Lists[key] = Items(value);
                 else if (key.StartsWith("+"))
                 {
                     string table = key.Substring(1);

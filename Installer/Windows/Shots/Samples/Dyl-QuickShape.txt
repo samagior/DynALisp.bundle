@@ -2,6 +2,7 @@
 # a window of the preset engine, Remote>>Dyl:PresetWin): the presets of Res\QuickShape.csv, the
 # materials of Samples\Dyl-QuickDraw.txt. key=value, key/list=item|item, key/vals=value|value,
 # +key=field\tfield a row of the table key; \t is a tab, {samples} this folder (Sample.pat).
+# \| is a | inside an item of a list (a shape: Library|Block).
 grp/list=Floor|Wall|Ceiling|Roof|Finish|Structural|Site|Elevation|Section|Detail|Annotation|Phase|Area|Generic
 mgr/list=Concrete|Masonry|Metal|Wood|Board|Insulation|Finish|Roofing|Site|Air|Phase|Generic
 srt/list=Name|Group
@@ -25,7 +26,7 @@ pst/matfree=0
 pst/matview=17
 pst/outline=scl!=
 shp/list=Masonry: CMU-6|Shapes: Brick-Modular|Shapes: CMU-8|Shapes: HSS-4x4-0.25|Shapes: Stud-2x10|Shapes: Stud-2x4|Shapes: Stud-2x6|Shapes: Stud-2x8|Steel: W8x31|Wood: Stud-2x4
-shp/vals=Masonry|CMU-6|Shapes|Brick-Modular|Shapes|CMU-8|Shapes|HSS-4x4-0.25|Shapes|Stud-2x10|Shapes|Stud-2x4|Shapes|Stud-2x6|Shapes|Stud-2x8|Steel|W8x31|Wood|Stud-2x4
+shp/vals=Masonry\|CMU-6|Shapes\|Brick-Modular|Shapes\|CMU-8|Shapes\|HSS-4x4-0.25|Shapes\|Stud-2x10|Shapes\|Stud-2x4|Shapes\|Stud-2x6|Shapes\|Stud-2x8|Steel\|W8x31|Wood\|Stud-2x4
 mvw/list=Cut|Surface
 mvw/vals=Cut|Surface
 pst.idx=0
