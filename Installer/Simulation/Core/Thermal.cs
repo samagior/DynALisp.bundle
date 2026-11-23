@@ -135,7 +135,7 @@ namespace DynALisp.Simulation.Core
         }
 
         // The cells of mat joined to a climate through cells of mat (sharing a side):
-        static bool[] Joined(Detail d, bool[] mat)
+        internal static bool[] Joined(Detail d, bool[] mat)
         {
             int nx = d.Grid.Nx, ny = d.Grid.Ny, n = nx * ny;
             var res = new bool[n];
@@ -188,7 +188,8 @@ namespace DynALisp.Simulation.Core
         // root of the cells, not their square root. Returns the iterations:
         const double Tau = 0.97, Sigma = 0.25;
 
-        static int Pcg(int nx, int n, bool[] on, double[] diag, double[] ge, double[] gn, double[] b, double[] x, out double residual)
+        internal static int Pcg(int nx, int n, bool[] on, double[] diag, double[] ge, double[] gn, double[] b, double[] x, out double residual,
+                                bool warm = false, double tolerance = Tolerance)
         {
             // The factorization: pc = 1 / sqrt(e) by cell.
             var pc = new double[n];
@@ -218,8 +219,9 @@ namespace DynALisp.Simulation.Core
             for (int c = 0; c < n; c++)
                 if (on[c])
                 {
-                    // A start that is already close: the climates around, through each cell alone:
-                    x[c] = diag[c] > 0 ? b[c] / diag[c] : 0;
+                    // A start that is already close: the solution given (warm), else the climates
+                    // around, through each cell alone:
+                    if (!warm) x[c] = diag[c] > 0 ? b[c] / diag[c] : 0;
                     bn += b[c] * b[c];
                 }
             bn = Math.Sqrt(bn);
@@ -239,7 +241,7 @@ namespace DynALisp.Simulation.Core
                 double rn = 0;
                 for (int c = 0; c < n; c++) if (on[c]) rn += r[c] * r[c];
                 residual = Math.Sqrt(rn) / bn;
-                if (residual < Tolerance) break;
+                if (residual < tolerance) break;
 
                 Mul(nx, n, on, diag, ge, gn, p, q);
                 double pq = 0;

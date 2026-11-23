@@ -46,6 +46,16 @@ namespace DynALisp.Simulation.Core
         public double Dew = double.NaN;                // C, of the interior air (NaN: no humidity)
         public double BelowDew;                        // m of interior surface colder than Dew
 
+        // The vapour (see Vapour), when it was computed:
+        public bool Vapour;
+        public double MaxRh = double.NaN;              // %, the highest relative humidity of a cell not condensing
+        public P MaxRhAt;
+        public int Condensing;                         // the cells where vapour condenses
+        public double CondensingArea;                  // m2 (of the section)
+        public double Rate;                            // g/(m.day), the vapour condensing per metre of depth
+        public List<string> CondensingMaterials = new List<string>();
+        public bool VapourConverged = true;
+
         // heat: the solution with the surface resistances of the heat; surface: the one with
         // those of the condensation (the same one when they are the same); temp and rh: the
         // temperature (C) and the relative humidity (%, NaN when not known) of each climate
@@ -90,6 +100,33 @@ namespace DynALisp.Simulation.Core
             }
             if (s.Ti > s.Te && !double.IsNaN(s.Tsi)) s.FRsi = (s.Tsi - s.Te) / (s.Ti - s.Te);
             return s;
+        }
+
+        // What the vapour v of the detail tells (metres: of a drawing unit):
+        public void Add(Vapour v, double metres)
+        {
+            Vapour = true;
+            VapourConverged = v.Converged;
+            var d = v.Detail;
+            var g = d.Grid;
+            for (int j = 0; j < g.Ny; j++)
+                for (int i = 0; i < g.Nx; i++)
+                {
+                    int c = d.Cell(i, j);
+                    if (double.IsNaN(v.Pv[c])) continue;
+                    if (v.Condensing[c])
+                    {
+                        Condensing++;
+                        CondensingArea += (g.X[i + 1] - g.X[i]) * (g.Y[j + 1] - g.Y[j]) * metres * metres;
+                        var m = d.Regions[d.Owner[c]].Material;
+                        if (!CondensingMaterials.Exists(x => Same(x, m))) CondensingMaterials.Add(m);
+                        continue;
+                    }
+                    double rh = v.Rh(c) * 100;
+                    if (double.IsNaN(MaxRh) || rh > MaxRh) { MaxRh = rh; MaxRhAt = new P(g.Cx(i), g.Cy(j)); }
+                }
+            // ng/(s.m) to g/(m.day):
+            Rate = v.Total() * 86400 * 1e-9;
         }
 
         static bool Same(string a, string b) => string.Equals(a, b, StringComparison.OrdinalIgnoreCase);

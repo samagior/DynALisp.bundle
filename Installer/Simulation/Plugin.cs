@@ -34,8 +34,9 @@
 //     The climates of the climate zones in the zone follow, as a list (climate ...).
 //
 //   (Dyl:SimulationRun zone size known mats climates imperial metres)
-//     zone, size, known: as above; mats: a text "id|conductivity|resistance" for each material
-//     that has one of them (W/(m.K), m2.K/W, either one empty); climates: a text
+//     zone, size, known: as above; mats: a text "id|conductivity|resistance|permeability|
+//     permeance" for each material that has a conductivity or a resistance (W/(m.K), m2.K/W,
+//     ng/(Pa.s.m), ng/(Pa.s.m2), each one empty when not known); climates: a text
 //     "id|temperature|humidity|rs|rscondensation" for each climate (C, %, m2.K/W, empty when
 //     not known); imperial: 1 for the labels in F, else 0; metres: the metres of a drawing
 //     unit (Remote>>Dyl:MaterialUnitMetres).
@@ -49,11 +50,24 @@
 //     (("Interior" . id) ("Exterior" . id) ("Ti" . C) ("Te" . C) ("Q" . W/m) ("L2D" . W/(m.K))
 //     ("Length" . m) ("Rsi" . m2.K/W) ("Tsi" . C) ("TsiAt" x y) ("TsiMaterial" . id)
 //     ("fRsi" . x) ("Dew" . C) ("BelowDew" . m) ("Isolated" . cells) ("Iterations" . n)),
-//     a value not known left out. A text when the zone cannot be read or solved.
+//     a value not known left out. When every material of the detail has a vapour
+//     permeability (or permeance) and every climate a humidity, also solves the vapour
+//     (Core\Vapour.cs, Glaser, with the temperatures of the heat), shows the cells where it
+//     condenses and adds ("Vapour" . 1) ("MaxRh" . %) ("Condensing" . cells) ("Rate" .
+//     g/(m.day)) ("CondensingArea" . m2) ("CondensingMaterials" id ...) ("Rounds" . n)
+//     (("VapourNotConverged" . 1) when the cells held still changed); else
+//     ("NoVapour" id ...) the materials without one, ("NoHumidity" id ...) the climates
+//     without one. A text when the zone cannot be read or solved.
 //
 //   (Dyl:SimulationProbe point)
 //     The result of the last run of the current drawing at point (WCS): (temperature material
-//     climate), temperature nil where the cell has none (a climate, a hole), nil outside it.
+//     climate [rh pv condensing]), temperature nil where the cell has none (a climate, a
+//     hole), nil outside it; with the vapour of the run, its relative humidity (%), its
+//     vapour pressure (Pa) and T where it condenses.
+//
+//   (Dyl:SimulationView "Humidity") or (Dyl:SimulationView "Temperature")
+//     The last run shown again with its relative humidity or its temperatures; nil when
+//     there is no run, or no vapour for the humidity.
 //
 //   (Dyl:SimulationClear)  clears what the simulation shows over the current drawing; T.
 
@@ -137,11 +151,14 @@ namespace DynALisp.Simulation
                     var d = ck.Detail;
                     int nr = d.Regions.Count;
                     double[] lambda = new double[nr], temp = new double[nr], rs = new double[nr], rsc = new double[nr], rh = new double[nr];
+                    var delta = new double[nr];
+                    var noVapour = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
+                    var noHumidity = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
                     bool same = true;
                     for (int r = 0; r < nr; r++)
                     {
                         var reg = d.Regions[r];
-                        lambda[r] = temp[r] = rs[r] = rsc[r] = rh[r] = double.NaN;
+                        lambda[r] = temp[r] = rs[r] = rsc[r] = rh[r] = delta[r] = double.NaN;
                         if (reg.IsClimate)
                         {
                             if (!clims.TryGetValue(reg.Climate, out var row)) continue;
@@ -152,19 +169,36 @@ namespace DynALisp.Simulation
                             if (double.IsNaN(rs[r])) rs[r] = 0;
                             if (double.IsNaN(rsc[r])) rsc[r] = rs[r];
                             if (rsc[r] != rs[r]) same = false;
+                            if (d.CellsOf[r] > 0 && !(rh[r] > 0)) noHumidity.Add(reg.Climate);
                         }
                         else if (mats.TryGetValue(reg.Material, out var row))
                         {
                             lambda[r] = Num(row, 0);
                             if (!(lambda[r] > 0)) lambda[r] = Thermal.Equivalent(reg.Shape, Num(row, 1), metres);
+                            delta[r] = Num(row, 2);
+                            if (!(delta[r] > 0)) delta[r] = Vapour.Equivalent(reg.Shape, Num(row, 3), metres);
+                            if (d.CellsOf[r] > 0 && !(delta[r] > 0)) noVapour.Add(reg.Material);
                         }
                     }
 
                     var heat = Thermal.Solve(d, lambda, temp, rs, metres);
                     var surf = same ? heat : Thermal.Solve(d, lambda, temp, rsc, metres);
                     var sum = Summary.Of(heat, surf, temp, rh);
+
+                    // The vapour, when every material has a permeability and every climate a
+                    // humidity (the temperatures of the heat, ISO 13788):
+                    Vapour vap = null;
+                    if (noVapour.Count == 0 && noHumidity.Count == 0)
+                    {
+                        vap = Vapour.Solve(d, delta, rh, heat, temp, metres);
+                        sum.Add(vap, metres);
+                    }
                     var zb = ck.Zone.Bounds;
-                    Show.Field(doc, surf, sum, ck.Zone, imperial, Math.Max(zb.Width, zb.Height) / 400);
+                    Show.Field(doc, new Show.Result
+                    {
+                        Heat = heat, Surface = surf, Summary = sum, Vapour = vap, Zone = ck.Zone, Imperial = imperial,
+                        W = Math.Max(zb.Width, zb.Height) / 400,
+                    });
 
                     ck.Write(res);
                     res.Add(new TypedValue((int)LispDataType.ListBegin));
@@ -189,6 +223,25 @@ namespace DynALisp.Simulation
                     Pair(res, "fRsi", sum.FRsi);
                     Pair(res, "Dew", sum.Dew);
                     if (!double.IsNaN(sum.Dew)) Pair(res, "BelowDew", sum.BelowDew);
+                    if (vap != null)
+                    {
+                        Pair(res, "Vapour", 1);
+                        Pair(res, "MaxRh", sum.MaxRh);
+                        Pair(res, "Condensing", sum.Condensing);
+                        if (sum.Condensing > 0)
+                        {
+                            Pair(res, "Rate", sum.Rate);
+                            Pair(res, "CondensingArea", sum.CondensingArea);
+                            List(res, "CondensingMaterials", sum.CondensingMaterials);
+                        }
+                        if (!sum.VapourConverged) Pair(res, "VapourNotConverged", 1);
+                        Pair(res, "Rounds", vap.Rounds);
+                    }
+                    else
+                    {
+                        List(res, "NoVapour", noVapour);
+                        List(res, "NoHumidity", noHumidity);
+                    }
                     Pair(res, "Isolated", heat.Isolated);
                     Pair(res, "Iterations", heat.Iterations);
                     res.Add(new TypedValue((int)LispDataType.ListEnd));
@@ -208,16 +261,35 @@ namespace DynALisp.Simulation
             var doc = AcApp.DocumentManager.MdiActiveDocument;
             var last = Show.Last(doc);
             if (last == null || a.Count < 1 || !(a[0] is Point3d pt)) return null;
-            var d = last.Detail;
+            var d = last.Surface.Detail;
             int c = d.Grid.CellAt(new P(pt.X, pt.Y));
             if (c < 0 || d.Kind[c] == CellKind.Outside) return null;
             var res = new ResultBuffer();
-            double t = last.T[c];
+            double t = last.Surface.T[c];
             res.Add(double.IsNaN(t) ? new TypedValue((int)LispDataType.Nil) : new TypedValue((int)LispDataType.Double, t));
             var reg = d.Owner[c] >= 0 ? d.Regions[d.Owner[c]] : null;
             res.Add(new TypedValue((int)LispDataType.Text, reg == null || reg.IsClimate ? "" : reg.Material));
             res.Add(new TypedValue((int)LispDataType.Text, reg != null && reg.IsClimate ? reg.Climate : ""));
+            // The relative humidity (%) and the vapour pressure (Pa), and T when vapour condenses:
+            var v = last.Vapour;
+            if (v != null && !double.IsNaN(v.Pv[c]))
+            {
+                res.Add(new TypedValue((int)LispDataType.Double, Math.Min(100, v.Rh(c) * 100)));
+                res.Add(new TypedValue((int)LispDataType.Double, v.Pv[c]));
+                res.Add(new TypedValue((int)(v.Condensing[c] ? LispDataType.T_atom : LispDataType.Nil)));
+            }
             return res;
+        }
+
+        // (Dyl:SimulationView "Humidity") or "Temperature": the last run shown again with that
+        // field; nil when there is no run (or no vapour for the humidity):
+        [LispFunction("Dyl:SimulationView")]
+        public ResultBuffer View(ResultBuffer args)
+        {
+            var a = Args(args);
+            bool wet = a.Count > 0 && a[0] is string k && k.Equals("Humidity", StringComparison.OrdinalIgnoreCase);
+            return Show.View(AcApp.DocumentManager.MdiActiveDocument, wet)
+                ? new ResultBuffer(new TypedValue((int)LispDataType.T_atom)) : null;
         }
 
         [LispFunction("Dyl:SimulationClear")]
@@ -240,6 +312,17 @@ namespace DynALisp.Simulation
             else if (v is int iv) res.Add(new TypedValue((int)LispDataType.Int32, iv));
             else res.Add(new TypedValue((int)LispDataType.Text, v.ToString()));
             res.Add(new TypedValue((int)LispDataType.DottedPair));
+        }
+
+        // A list (key "text" ...) of a result, left out when it is empty:
+        static void List(ResultBuffer res, string key, IEnumerable<string> items)
+        {
+            var l = new List<string>(items);
+            if (l.Count == 0) return;
+            res.Add(new TypedValue((int)LispDataType.ListBegin));
+            res.Add(new TypedValue((int)LispDataType.Text, key));
+            foreach (var x in l) res.Add(new TypedValue((int)LispDataType.Text, x));
+            res.Add(new TypedValue((int)LispDataType.ListEnd));
         }
 
         // Texts "id|value|value..." by id (the values after the id):

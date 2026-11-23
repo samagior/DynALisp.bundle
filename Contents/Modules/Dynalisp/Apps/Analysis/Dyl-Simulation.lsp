@@ -362,14 +362,20 @@
 
 ;;  The materials for the plugin: (known data table names), the ids of every material, of
 ;;  those that have a thermal conductivity or a fixed thermal resistance (columns 5 and 7),
-;;  their texts "id|conductivity|resistance" (SI) and ((id . name) ...) of every material:
+;;  their texts "id|conductivity|resistance|permeability|permeance" (SI, columns 5, 7, 8 and 9)
+;;  and ((id . name) ...) of every material:
 (defun Dyl:SimMaterials (/ ms data)
   (setq ms   (cadr (Remote>>Dyl:MaterialBoth))
         data (vl-remove-if-not '(lambda (m) (or (Dyl:SimNum (nth 5 m)) (Dyl:SimNum (nth 7 m)))) ms)
   )
   (list (mapcar 'car ms)
         (mapcar 'car data)
-        (mapcar '(lambda (m) (strcat (car m) "|" (Dyl:SimText (nth 5 m)) "|" (Dyl:SimText (nth 7 m)))) data)
+        (mapcar '(lambda (m) (strcat (car m) "|" (Dyl:SimText (nth 5 m)) "|" (Dyl:SimText (nth 7 m))
+                                     "|" (Dyl:SimText (nth 8 m)) "|" (Dyl:SimText (nth 9 m))
+                             )
+                 )
+                data
+        )
         (mapcar '(lambda (m) (cons (car m) (caddr m))) ms)
   )
 )
@@ -480,6 +486,45 @@
   (if (setq r (assoc id rows)) (cadr r) id)
 )
 
+;;  The names of the material ids lst, divided by commas:
+(defun Dyl:SimNames (lst names)
+  (Remote>>LM:lst->str (mapcar '(lambda (id) (cond ((cdr (assoc id names))) (id))) lst) ", ")
+)
+
+;;  What the vapour of a run res tells, a line (nil when it says nothing): where it condenses
+;;  inside the detail and how much, per metre (imperial: per foot) of its depth, or why it was
+;;  not computed:
+(defun Dyl:SimVapour (res rows names imp / v)
+  (cond
+    ((Dyl:SimGet "Vapour" res)
+     (strcat
+       (if (< 0 (cond ((Dyl:SimGet "Condensing" res)) (0)))
+         (strcat "Condensation inside the detail (in magenta): "
+                 (Remote>>Dyl:MaterialSig (* (cond ((Dyl:SimGet "Rate" res)) (0.0)) (if imp 0.3048 1.0)))
+                 (if imp " g/(ft.day)" " g/(m.day)")
+                 (if (setq v (Dyl:SimGet "CondensingMaterials" res)) (strcat " in " (Dyl:SimNames v names)) "")
+         )
+         (strcat "No condensation inside the detail"
+                 (if (setq v (Dyl:SimGet "MaxRh" res))
+                   (strcat " (highest relative humidity " (Remote>>Dyl:MaterialNumP (min 100.0 v) 0) " %)")
+                   ""
+                 )
+         )
+       )
+       (if (Dyl:SimGet "VapourNotConverged" res) "\nThe vapour did not settle: the condensation is approximate" "")
+     )
+    )
+    ((setq v (Dyl:SimGet "NoHumidity" res))
+     (strcat "No vapour inside the detail: no relative humidity for "
+             (Remote>>LM:lst->str (mapcar '(lambda (id) (Dyl:SimClimName id rows)) v) ", ")
+     )
+    )
+    ((setq v (Dyl:SimGet "NoVapour" res))
+     (strcat "No vapour inside the detail: no vapour permeability for " (Dyl:SimNames v names))
+    )
+  )
+)
+
 ;;  What a run found (res, see Plugin.cs), a line per value, in the units of the drawing:
 (defun Dyl:SimResult (res rows names imp / v lines dew)
   (setq dew (Dyl:SimGet "Dew" res))
@@ -508,6 +553,7 @@
         )
         "No humidity for the interior climate: no dew point"
       )
+      (Dyl:SimVapour res rows names imp)
       (if (setq v (Dyl:SimGet "Rsi" res))
         (strcat "Effective " (if imp "R " "RSI ") (Remote>>Dyl:MaterialNumP (if imp (* v 5.678263) v) 2)
                 " over the interior surface"
@@ -567,18 +613,25 @@
   )
   (princ (strcat "\n" rep))
   (setq *sim:last* rep)
-  (if (and ask res (listp res) (cadr res)) (Dyl:SimAfter))
+  (if (and ask res (listp res) (cadr res)) (Dyl:SimAfter (Dyl:SimGet "Vapour" (cadr res))))
   rep
 )
 
-;;  After a run: probe the detail, open the window or clear what is shown, until Enter:
-(defun Dyl:SimAfter (/ k)
+;;  After a run: probe the detail, show its humidity or its temperatures, open the window or
+;;  clear what is shown, until Enter (Humidity only when its vapour was computed: vap):
+(defun Dyl:SimAfter (vap / k)
   (while
     (progn
-      (initget "Probe Window Clear eXit")
-      (setq k (getkword "\nSimulation [Probe/Window/Clear/eXit] <eXit>: "))
+      (initget (if vap "Probe Humidity Temperature Window Clear eXit" "Probe Window Clear eXit"))
+      (setq k (getkword (if vap
+                          "\nSimulation [Probe/Humidity/Temperature/Window/Clear/eXit] <eXit>: "
+                          "\nSimulation [Probe/Window/Clear/eXit] <eXit>: "
+                        )
+              )
+      )
       (cond
         ((= k "Probe") (Dyl:SimProbe) T)
+        ((member k '("Humidity" "Temperature")) (if Dyl:SimulationView (Dyl:SimulationView k)) T)
         ((= k "Window") (Dyl:SimulationDialog) nil)
         ((= k "Clear") (if Dyl:SimulationClear (Dyl:SimulationClear)) nil)
       )
@@ -586,7 +639,8 @@
   )
 )
 
-;;  The temperature and the material at the points picked, until Enter (the last run):
+;;  The temperature, the material and, with the vapour, the relative humidity at the points
+;;  picked, until Enter (the last run):
 (defun Dyl:SimProbe (/ imp names rows p r)
   (setq imp   (Remote>>Dyl:MaterialImperial-p)
         names (cadddr (Dyl:SimMaterials))
@@ -602,7 +656,12 @@
            ((not r) "\nOutside the last simulation (run Play first).")
            ((/= "" (caddr r)) (strcat "\nClimate " (Dyl:SimClimName (caddr r) rows)))
            ((not (car r)) (strcat "\nNo temperature here" (if (/= "" (cadr r)) " (a region that touches no climate)" " (a hole)")))
-           ((strcat "\n" (Dyl:SimDeg (car r) imp) "  " (cond ((cdr (assoc (cadr r) names))) ((cadr r)))))
+           ((strcat "\n" (Dyl:SimDeg (car r) imp)
+                    (if (cadddr r) (strcat "  " (Remote>>Dyl:MaterialNumP (cadddr r) 0) " % RH") "")
+                    (if (nth 5 r) "  condensation" "")
+                    "  " (cond ((cdr (assoc (cadr r) names))) ((cadr r)))
+            )
+           )
          )
        )
      )
