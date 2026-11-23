@@ -51,6 +51,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Interop;
+using System.Windows.Media;
 
 namespace DynALisp.Windows
 {
@@ -78,6 +79,7 @@ namespace DynALisp.Windows
         {
             public FrameworkElement E;
             public ColumnDefinition C;
+            public Grid G;
             public double Nat;
             public Rect Box;
             public readonly List<Wide> Side = new List<Wide>();
@@ -95,7 +97,8 @@ namespace DynALisp.Windows
         readonly List<Wide> _wides = new List<Wide>();
         double _natW;
         bool _ready, _busy;
-        Size _lastView, _lastWant;
+        Size _lastFull, _lastView, _lastWant;
+        int _runs, _runsSince;
 
         bool Resizable => _grows.Count > 0;
 
@@ -200,7 +203,7 @@ namespace DynALisp.Windows
             }
             void AddC(Grid g, ColumnDefinition c)
             {
-                if (c.Width.IsAbsolute && seen.Add(c)) _wides.Add(new Wide { C = c, Nat = c.Width.Value, Box = ColBox(g, c) });
+                if (c.Width.IsAbsolute && seen.Add(c)) _wides.Add(new Wide { C = c, G = g, Nat = c.Width.Value, Box = ColBox(g, c) });
             }
             foreach (var gr in _grows)
             {
@@ -272,11 +275,11 @@ namespace DynALisp.Windows
                 Widen();
                 Relate();
                 foreach (var g in _grows) g.E.Height = g.Min;
-                _content.Measure(Inf);
+                Remeasure();
                 leastH = _content.DesiredSize.Height;
                 foreach (var g in _grows) g.E.Height = g.Nat;
             }
-            _content.Measure(Inf);
+            Remeasure();
             var nat = _content.DesiredSize;
             _natW = nat.Width;
             if (!Resizable) leastH = nat.Height;
@@ -361,16 +364,52 @@ namespace DynALisp.Windows
 
         // ---- The lists follow the size of the window ----
 
+        // Measures the content again at once: what holds a list changed is measured again,
+        // not only the list (a parent measured before keeps its size until then):
+        void Remeasure()
+        {
+            void Dirty(DependencyObject o)
+            {
+                for (; o != null; o = VisualTreeHelper.GetParent(o))
+                {
+                    if (o is UIElement u) u.InvalidateMeasure();
+                    if (o == _content) return;
+                }
+            }
+            foreach (var g in _grows) Dirty(g.E);
+            foreach (var t in _wides) Dirty((DependencyObject)t.E ?? t.G);
+            _content.Measure(Inf);
+        }
+
+        // The height and the width the window has more or less than its content go to its
+        // lists and to what holds them. The scroll bars are shown only when the content
+        // cannot fit, decided from the size of the window alone: a bar shown or hidden by
+        // the content itself would change the room it has, and so the content, again.
         void Distribute()
         {
             if (!_ready || _busy) return;
+            var full = new Size(_sv.ActualWidth, _sv.ActualHeight);
             var view = new Size(_sv.ViewportWidth, _sv.ViewportHeight);
-            if (!(view.Width > 0) || !(view.Height > 0)) return;
-            if (Same(view, _lastView) && Same(_content.DesiredSize, _lastWant)) return;
+            if (!(full.Width > 0) || !(full.Height > 0) || !(view.Width > 0) || !(view.Height > 0)) return;
+            if (Same(full, _lastFull) && Same(view, _lastView) && Same(_content.DesiredSize, _lastWant)) return;
+            // never more than a few times in a row for the same size (a text that wraps
+            // otherwise at each width):
+            int now = Environment.TickCount;
+            if (now - _runsSince > 500 || !Same(full, _lastFull)) { _runs = 0; _runsSince = now; }
+            if (++_runs > 8) return;
             _busy = true;
             try
             {
-                double dx = Math.Max(0, view.Width - _natW);
+                bool hBar = _sv.ComputedHorizontalScrollBarVisibility == Visibility.Visible;
+                bool vBar = _sv.ComputedVerticalScrollBarVisibility == Visibility.Visible;
+                double hBarH = hBar ? full.Height - view.Height : SystemParameters.HorizontalScrollBarHeight;
+                double vBarW = vBar ? full.Width - view.Width : SystemParameters.VerticalScrollBarWidth;
+
+                // the width: never narrower than the content, a bar under it when it is:
+                bool needH = _natW > full.Width + 0.5;
+                bool needV = _sv.VerticalScrollBarVisibility == ScrollBarVisibility.Auto && vBar;
+                double availW = full.Width - (needV ? vBarW : 0);
+                double dx = Math.Max(0, availW - _natW);
                 foreach (var t in _wides)
                 {
                     double share = t.Nat / (t.Nat + t.Side.Sum(o => o.Nat));
@@ -378,16 +417,40 @@ namespace DynALisp.Windows
                     if (t.C != null) { if (Math.Abs(t.C.Width.Value - v) > 0.5) t.C.Width = new GridLength(v); }
                     else if (Math.Abs(t.E.Width - v) > 0.5) t.E.Width = v;
                 }
-                var shown = new HashSet<Grow>(_grows.Where(g => Shown(g.E)));
+
+                // the height: the lists one above the other share it, those at their least
+                // leave it to the others:
+                double availH = full.Height - (needH ? hBarH : 0);
+                var shown = _grows.Where(g => Shown(g.E)).ToList();
                 foreach (var g in _grows) Height(g, g.Nat);
-                _content.Measure(Inf);
-                double dy = view.Height - _content.DesiredSize.Height;
-                foreach (var g in shown)
+                Remeasure();
+                double dy = availH - _content.DesiredSize.Height;
+                var least = new HashSet<Grow>();
+                double Target(Grow g)
                 {
-                    double share = g.Nat / (g.Nat + g.Stack.Where(shown.Contains).Sum(o => o.Nat));
-                    Height(g, Math.Max(g.Min, g.Nat + dy * (double.IsNaN(share) ? 1 : share)));
+                    if (least.Contains(g)) return g.Min;
+                    var stack = g.Stack.Where(shown.Contains).ToList();
+                    double taken = stack.Where(least.Contains).Sum(o => o.Min - o.Nat);
+                    double free = g.Nat + stack.Where(o => !least.Contains(o)).Sum(o => o.Nat);
+                    return g.Nat + (dy - taken) * (free > 0 ? g.Nat / free : 1);
                 }
-                _content.Measure(Inf);
+                for (int pass = 0; pass < 6; pass++)
+                {
+                    var under = shown.Where(g => !least.Contains(g) && Target(g) < g.Min).ToList();
+                    if (under.Count == 0) break;
+                    foreach (var g in under) least.Add(g);
+                }
+                var heights = shown.Select(g => Math.Max(g.Min, Target(g))).ToList();
+                for (int k = 0; k < shown.Count; k++) Height(shown[k], heights[k]);
+                Remeasure();
+
+                // the bars: only for what still does not fit
+                needV = _content.DesiredSize.Height > availH + 0.5;
+                var hv = needH ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden;
+                var vv = needV ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden;
+                if (_sv.HorizontalScrollBarVisibility != hv) _sv.HorizontalScrollBarVisibility = hv;
+                if (_sv.VerticalScrollBarVisibility != vv) _sv.VerticalScrollBarVisibility = vv;
+                _lastFull = full;
                 _lastView = view;
                 _lastWant = _content.DesiredSize;
             }
