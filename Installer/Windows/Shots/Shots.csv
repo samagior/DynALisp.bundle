@@ -24,3 +24,6 @@ Contents/Modules/Dynalisp/Res/Dyl-Info.xaml;Dyl-Info.txt;Contents/Modules/Dynali
 Contents/Modules/Dynalisp/Res/Dyl-WhatsNew.xaml;Dyl-WhatsNew.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Info-whatsnew.png
 Contents/Modules/Dynalisp/Res/Dyl-UserFiles.xaml;Dyl-UserFiles.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Info-userfiles.png
 Contents/Modules/Dynalisp/Res/Dyl-ChildPicker.xaml;Dyl-ChildPicker.txt;Contents/Modules/Dynalisp/Docs/Layer/images/Dyl-LayerMake-window.png
+Contents/Modules/Dynalisp/Res/Dyl-SysVars.xaml;Dyl-SysVars.txt;Contents/Modules/Dynalisp/Docs/Setup/images/Dyl-SysVars-window.png
+Contents/Modules/Dynalisp/Res/Dyl-SysVarsList.xaml;Dyl-SysVarsList.txt;Contents/Modules/Dynalisp/Docs/Setup/images/Dyl-SysVars-list.png
+Contents/Modules/Dynalisp/Res/Dyl-Name.xaml;Dyl-Name.txt;Contents/Modules/Dynalisp/Docs/Setup/images/Dyl-SysVars-name.png
