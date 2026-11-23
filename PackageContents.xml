@@ -80,6 +80,36 @@
         />
     </Components>
 
+    <!-- The simulation of a 2D detail (Installer\Simulation, Dyl-Simulation): reads the detail
+         of a zone in the drawing and shows its grid, its problems and its results over it, from
+         Lisp by (Dyl:SimulationRead ...). The same code built for .NET 8 (AutoCAD 2025 and
+         later) and .NET Framework 4.8 (AutoCAD 2015 to 2024): -->
+    <Components Description="Simulation">
+        <RuntimeRequirements
+            OS="Win64"
+            Platform="AutoCAD|AutoCAD*"
+            SeriesMin="R25.0"
+        />
+        <ComponentEntry
+            AppName="DynALisp simulation"
+            ModuleName="./Contents/Resources/DynALisp.Simulation.dll"
+            LoadOnAutoCADStartup="True"
+        />
+    </Components>
+    <Components Description="Simulation (.NET Framework)">
+        <RuntimeRequirements
+            OS="Win64"
+            Platform="AutoCAD|AutoCAD*"
+            SeriesMin="R20.0"
+            SeriesMax="R24.3"
+        />
+        <ComponentEntry
+            AppName="DynALisp simulation (.NET Framework)"
+            ModuleName="./Contents/Resources/Net48/DynALisp.Simulation.dll"
+            LoadOnAutoCADStartup="True"
+        />
+    </Components>
+
     <Components>
         <RuntimeRequirements
             OS="Win32|Win64"
