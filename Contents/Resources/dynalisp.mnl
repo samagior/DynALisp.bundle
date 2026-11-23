@@ -273,7 +273,7 @@
   ;;; ---------------------------------------------------------------------------
   (setq *dyl:setsfile*  "DynALisp-Settings.txt"
         *dyl:setslocal* '("DYNALISPLASTVERSION" "DYNALISPUPDATECHECKED" "DYNALISPPREFAPPLIED" "DYNALISPPREFBASE"
-                          "DYNALISPPREFCUSTOMBASE" "DYNALISPSYSVARSTAMP"
+                          "DYNALISPPREFCUSTOMBASE" "DYNALISPSYSVARSTAMP" "DYNALISPWINDOWPLACES"
                          )
   )
 

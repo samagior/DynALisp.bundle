@@ -17,6 +17,10 @@
 //   dotnet run -c Release                 every window of Shots.csv
 //   dotnet run -c Release -- Dyl-Settings  the rows whose window or picture has that text
 //   ... -- -out <folder>                  the pictures in that folder (GitHub Actions)
+//   ... -- -fit                           no pictures: shows each window on the screen as
+//                                         AutoCAD does (Engine\Fit.cs), smallest, larger,
+//                                         maximized and opened again, and prints its sizes
+//                                         and those of its lists (the Windows workflow)
 //
 // Each row of Shots.csv (Window;Sample;Picture, paths from the root of the repository) is a
 // window file opened as the plugin opens it (Session.Open: the same engine, the same theme),
@@ -52,12 +56,15 @@ namespace DynALisp.Windows
             if (root == null) { Console.Error.WriteLine("PackageContents.xml not found above " + Environment.CurrentDirectory); return 2; }
             string here = Path.Combine(root, "Installer", "Windows", "Shots");
             string outDir = null;
+            bool fit = false;
             var only = new List<string>();
             for (int i = 0; i < args.Length; i++)
             {
                 if (args[i] == "-out" && i + 1 < args.Length) outDir = Path.GetFullPath(args[++i]);
+                else if (args[i] == "-fit") fit = true;
                 else only.Add(args[i]);
             }
+            if (fit) Console.WriteLine("Work area " + Sz(SystemParameters.WorkArea.Size) + ", screen " + SystemParameters.PrimaryScreenWidth + "x" + SystemParameters.PrimaryScreenHeight);
             int errors = 0, done = 0;
             foreach (var line in File.ReadAllLines(Path.Combine(here, "Shots.csv")))
             {
@@ -67,6 +74,12 @@ namespace DynALisp.Windows
                 if (only.Count > 0 && !only.Any(o => f[0].Contains(o) || f[2].Contains(o))) continue;
                 string xaml = Path.Combine(root, f[0]), sample = Path.Combine(here, "Samples", f[1]);
                 string png = outDir != null ? Path.Combine(outDir, f[2]) : Path.Combine(root, f[2]);
+                if (fit)
+                {
+                    try { FitCheck(xaml, sample); done++; }
+                    catch (Exception e) { Console.Error.WriteLine("--> " + f[0] + ": " + e); errors++; }
+                    continue;
+                }
                 try
                 {
                     Shot(xaml, sample, png, false);
@@ -82,6 +95,78 @@ namespace DynALisp.Windows
             }
             Console.WriteLine(done + " pictures drawn" + (errors > 0 ? ", " + errors + " failed" : "") + ".");
             return errors > 0 ? 1 : 0;
+        }
+
+        // ---- -fit: the windows as AutoCAD shows them (Engine\Fit.cs) ----
+
+        sealed class MemPlaces : IPlaces
+        {
+            readonly Dictionary<string, string> _d = new Dictionary<string, string>();
+            public string Get(string name) => _d.TryGetValue(name, out string v) ? v : null;
+            public void Set(string name, string value) => _d[name] = value;
+        }
+
+        static void FitCheck(string xaml, string sample)
+        {
+            Console.WriteLine(Path.GetFileName(xaml) + ":");
+            var places = new MemPlaces();
+            var s = new Session { FitToScreen = true, Places = places };
+            Read(s, sample);
+            s.ShowRoot = w =>
+            {
+                w.Show();
+                Pump(500);
+                Report("opened", w);
+                if (w.ResizeMode == ResizeMode.CanResize)
+                {
+                    w.Width = w.MinWidth; w.Height = w.MinHeight; Pump(300); Report("smallest", w);
+                    w.Width = w.MinWidth + 300; w.Height = w.MinHeight + 250; Pump(300); Report("larger", w);
+                    w.WindowState = WindowState.Maximized; Pump(300); Report("maximized", w);
+                    w.WindowState = WindowState.Normal; Pump(300);
+                }
+                w.Close();
+                return true;
+            };
+            s.Show(xaml);
+            Console.WriteLine("    place kept: " + (places.Get(Path.GetFileNameWithoutExtension(xaml)) ?? "none"));
+            if (places.Get(Path.GetFileNameWithoutExtension(xaml)) == null) return;
+            s.ShowRoot = w => { w.Show(); Pump(500); Report("reopened", w); w.Close(); return true; };
+            s.Show(xaml);
+        }
+
+        static string Sz(Size z) => Math.Round(z.Width) + "x" + Math.Round(z.Height);
+
+        static void Report(string label, Window w)
+        {
+            var sv = w.Content as ScrollViewer;
+            var sb = new System.Text.StringBuilder();
+            sb.Append("    " + label.PadRight(10) + " window " + Math.Round(w.Left) + "," + Math.Round(w.Top) + " " + Sz(new Size(w.ActualWidth, w.ActualHeight))
+                      + " (min " + Sz(new Size(w.MinWidth, w.MinHeight)) + ", " + w.ResizeMode + ")");
+            if (sv != null)
+            {
+                sb.Append(" view " + Sz(new Size(sv.ViewportWidth, sv.ViewportHeight)) + " content " + Sz(new Size(sv.ExtentWidth, sv.ExtentHeight)));
+                if (sv.ExtentHeight > sv.ViewportHeight + 1) sb.Append(" SCROLLS-V");
+                if (sv.ExtentWidth > sv.ViewportWidth + 1) sb.Append(" SCROLLS-H");
+            }
+            var lists = new List<string>();
+            void Walk(DependencyObject o)
+            {
+                if ((o is ListBox || o is Gallery) && o is FrameworkElement fe && !string.IsNullOrEmpty(fe.Name))
+                    lists.Add(fe.Name + " " + Sz(new Size(fe.ActualWidth, fe.ActualHeight)));
+                foreach (var c in LogicalTreeHelper.GetChildren(o)) if (c is DependencyObject d) Walk(d);
+            }
+            Walk(w);
+            if (lists.Count > 0) sb.Append("; " + string.Join(", ", lists));
+            Console.WriteLine(sb.ToString());
+        }
+
+        static void Pump(int ms)
+        {
+            var frame = new DispatcherFrame();
+            var t = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(ms) };
+            t.Tick += (a, b) => { t.Stop(); frame.Continue = false; };
+            t.Start();
+            Dispatcher.PushFrame(frame);
         }
 
         // The folder of PackageContents.xml, from the current folder up:

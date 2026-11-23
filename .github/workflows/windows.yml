@@ -30,6 +30,11 @@ jobs:
         shell: pwsh
         run: dotnet run -c Release --project Installer/Windows/Shots
 
+      - name: Check the windows fit the screen
+        shell: pwsh
+        continue-on-error: true
+        run: dotnet run -c Release --project Installer/Windows/Shots -- -fit
+
       - name: Commit the pictures to the branch
         if: github.ref != 'refs/heads/main'
         shell: pwsh

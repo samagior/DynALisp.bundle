@@ -80,7 +80,7 @@ namespace DynALisp.Windows
                 var a = Lisp.Read(args);
                 string file = a.Count > 0 ? a[0] as string : null;
                 if (string.IsNullOrEmpty(file)) throw new ArgumentException("(Dyl:Window file values): no file given");
-                var s = new Session { ShowRoot = w => AcApp.ShowModalWindow(w), Dark = DarkTheme() };
+                var s = new Session { ShowRoot = w => AcApp.ShowModalWindow(w), Dark = DarkTheme(), FitToScreen = true, Places = new Places() };
                 if (a.Count > 1 && a[1] is Lisp.List vals) Give(s, vals);
                 int status = s.Show(file);
                 var rb = new ResultBuffer();
@@ -155,6 +155,48 @@ namespace DynALisp.Windows
                 else
                     s.Values[key] = p.Count > 1 ? Lisp.Str(p[1]) : "";
             }
+        }
+    }
+
+    // Where the windows that can be resized were left (Engine\Fit.cs): the user setting
+    // DynalispWindowPlaces (getenv / setenv: the FixedProfile\General key of the profile),
+    // "Dyl-Suite:left,top,width,height,maximized|Dyl-Info:...". A setting of this computer
+    // (its screens): never saved with the settings (*dyl:setslocal* of dynalisp.mnl,
+    // LocalSettings of DynALisp.iss), removed by the uninstall as every Dynalisp* setting.
+    sealed class Places : IPlaces
+    {
+        const string Setting = "DynalispWindowPlaces";
+
+        static string KeyPath => HostApplicationServices.Current.UserRegistryProductRootKey + @"\FixedProfile\General";
+
+        static Dictionary<string, string> Read()
+        {
+            var d = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(KeyPath))
+                foreach (var item in ((key?.GetValue(Setting) as string) ?? "").Split('|'))
+                {
+                    int c = item.IndexOf(':');
+                    if (c > 0) d[item.Substring(0, c)] = item.Substring(c + 1);
+                }
+            return d;
+        }
+
+        public string Get(string name)
+        {
+            try { return Read().TryGetValue(name, out string v) ? v : null; }
+            catch { return null; }
+        }
+
+        public void Set(string name, string value)
+        {
+            try
+            {
+                var d = Read();
+                d[name] = value;
+                using (var key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(KeyPath))
+                    key?.SetValue(Setting, string.Join("|", d.Select(kv => kv.Key + ":" + kv.Value)));
+            }
+            catch { }
         }
     }
 
