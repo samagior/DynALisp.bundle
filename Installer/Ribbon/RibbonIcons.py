@@ -984,7 +984,7 @@ def i_assistant(c):
     sparkle(c, 24, 21, 8)
 
 
-def i_claudetextfix(c):
+def i_textfix(c):
     sheet(c, 2, 2, 22, 28)
     text_lines(c, 5.5, 11, 18, 3 if c.small else 4, 4.5 if not c.small else 6)
     sparkle(c, 23, 21, 9)
@@ -1213,7 +1213,7 @@ ICONS = {
     'DYL-QUICKADDPREFIXSUFFIX': i_quickaddprefixsuffix,
     'DYL-BATCHINSERT': i_batchinsert,
     'DYL-ASSISTANT': i_assistant,
-    'DYL-CLAUDETEXTFIX': i_claudetextfix,
+    'DYL-TEXTFIX': i_textfix,
     'DYL-COUNTBYLAYERS': i_countbylayers,
     'DYL-DICTIONARY': i_dictionary,
     'DYL-GROUPCLUSTER': i_groupcluster,
