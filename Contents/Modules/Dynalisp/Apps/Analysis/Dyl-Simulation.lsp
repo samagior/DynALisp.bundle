@@ -101,11 +101,14 @@
 ;;  condensation on a surface (RSI), each value empty when not known:
 (setq *sim:climhead* '("Id" "Name" "Temperature" "Humidity" "Rs" "RsCondensation"))
 
-;;  The default climates: their surface resistances are those of ISO 6946 (Rsi 0.13 for a
-;;  horizontal heat flow, Rse 0.04) and ISO 13788 (Rsi 0.25 to judge the condensation on an
-;;  interior surface); their temperature and humidity are not given until a source is picked
-;;  for them (a value is never made up):
-(setq *sim:climdefs* '(("cl-Interior" "Interior" "" "" "0.13" "0.25") ("cl-Exterior" "Exterior" "" "" "0.04" "0.04")))
+;;  The default climates, each value from a source (a value is never made up): the surface
+;;  resistances of ISO 6946 (Rsi 0.13 for a horizontal heat flow, Rse 0.04) and ISO 13788
+;;  (Rsi 0.25 to judge the condensation on an interior surface); the interior at 21 C and
+;;  35 % (the indoor conditions behind Table 9.25.1.2. of the NBC: "a maximum indoor RH of
+;;  35% throughout the heating season", 21 C on average, Chown and Mukhopadhyaya, NRCC-47656,
+;;  2005); the temperature of the exterior is the January design temperature of a location
+;;  (NBC, Appendix C, Table C-2), typed for the project:
+(setq *sim:climdefs* '(("cl-Interior" "Interior" "21" "35" "0.13" "0.25") ("cl-Exterior" "Exterior" "" "" "0.04" "0.04")))
 
 ;;  The imperial factors of the values shown (a temperature in F is C x 1.8 + 32), by column:
 (setq *sim:climdata* '((2 . T) (4 . 5.678263) (5 . 5.678263)))
