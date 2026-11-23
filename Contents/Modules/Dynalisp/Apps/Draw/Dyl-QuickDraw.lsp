@@ -2638,6 +2638,27 @@
   (cond ((Remote>>Dyl:PresetDlgMatOf r)) (*qd:matnew*))
 )
 
+;;  A name as it is sorted: in upper case, its numbers padded with zeros, so W2a comes before
+;;  W10a (the numbers of the assemblies of the building code):
+(defun Dyl:QuickDrawNatKey (str / out num)
+  (setq out ""
+        num ""
+  )
+  (foreach c (vl-string->list (strcase str))
+    (if (< 47 c 58)
+      (setq num (strcat num (chr c)))
+      (setq out (strcat out (Dyl:QuickDrawNatPad num) (chr c))
+            num ""
+      )
+    )
+  )
+  (strcat out (Dyl:QuickDrawNatPad num))
+)
+
+(defun Dyl:QuickDrawNatPad (n)
+  (if (= "" n) "" (strcat (substr "00000000" 1 (max 0 (- 8 (strlen n)))) n))
+)
+
 ;;  T when the preset r is drawn as an assembly (Linear, Offset, or a method asked when drawn):
 (defun Dyl:QuickDrawDlgAssembly-p (r)
   (and (member (nth 4 r) '("Linear" "Offset" "")) (= "1" (nth 37 r)))
@@ -2772,7 +2793,7 @@
 (defun Dyl:QuickDrawWinVals (/ lks asms ids)
   (setq lks  (Remote>>Dyl:LayerKeyRead)
         asms (vl-sort (Dyl:QuickDrawAsmRead)
-                      '(lambda (a b) (< (strcase (strcat (nth 1 a) "\t" (nth 2 a))) (strcase (strcat (nth 1 b) "\t" (nth 2 b)))))
+                      '(lambda (a b) (< (Dyl:QuickDrawNatKey (strcat (nth 1 a) "\t" (nth 2 a))) (Dyl:QuickDrawNatKey (strcat (nth 1 b) "\t" (nth 2 b)))))
              )
         ids  (mapcar 'car asms)
   )
@@ -3288,22 +3309,96 @@
 ;;  Material list of a layer: (id label material) ...), qa:def (the row Add starts from) and mt:keys
 ;;  (the layer keys of its lists).
 
-;;  The assembly presets as saved (read again once their file changed), and the one of id:
+;;  The assembly presets as saved, with the default assemblies missing from the file (see
+;;  Dyl:QuickDrawAsmDefs), their thicknesses in the units of the drawing (see
+;;  Dyl:QuickDrawAsmToDwg); read again once their file changed or in a drawing of other units.
+;;  And the one of id:
 (defun Dyl:QuickDrawAsmRead (/ f s)
   (setq f (Remote>>Dyl:PresetFile "QuickDrawAssembly")
-        s (list f (vl-file-systime f))
+        s (list f (vl-file-systime f) (Dyl:QuickDrawAsmFactor))
   )
   (if (not (and *qd:asmcache* (equal s (car *qd:asmcache*))))
-    (setq *qd:asmcache* (cons s (Remote>>Dyl:PresetRead "QuickDrawAssembly" nil 'Dyl:QuickDrawAsmFix)))
+    (setq *qd:asmcache* (cons s
+                              (mapcar 'Dyl:QuickDrawAsmToDwg
+                                      (Remote>>Dyl:PresetRead "QuickDrawAssembly" (Dyl:QuickDrawAsmDefs) 'Dyl:QuickDrawAsmFix)
+                              )
+                        )
+    )
   )
   (cdr *qd:asmcache*)
+)
+
+;;  The default assemblies (as-*, Res\QuickDrawAssemblies.csv as shipped, never its user copy):
+;;  the typical assemblies of the building code, read once, as they are written (their
+;;  thicknesses in millimetres, Units "mm"). A user copy has the ones it changed; the others
+;;  are added to it when it is read (see Remote>>Dyl:PresetRead), and Reset gives them back:
+(defun Dyl:QuickDrawAsmDefs ()
+  (if (not *qd:asmdefs*)
+    (setq *qd:asmdefs*
+           (vl-remove-if-not
+             '(lambda (r) (wcmatch (strcase (car r)) (Remote>>Dyl:PresetProp "QuickDrawAssembly" 'default)))
+             (mapcar 'Dyl:QuickDrawAsmFix
+                     (Remote>>Dyl:CsvRead (Remote>>Dyl:PresetDefault "QuickDrawAssembly")
+                                          (length (Remote>>Dyl:PresetProp "QuickDrawAssembly" 'header))
+                     )
+             )
+           )
+    )
+  )
+  *qd:asmdefs*
+)
+
+;;  The units of the thicknesses of the assemblies: those of the drawing (Units "", the
+;;  assemblies the user makes), or millimetres (Units "mm", the default assemblies), converted
+;;  to the units of the drawing as they are read, and back as they are saved, so an assembly in
+;;  millimetres draws at its size in every drawing. The drawing units in a millimetre (see
+;;  Remote>>Dyl:MaterialUnitMetres: INSUNITS, else MEASUREMENT):
+(defun Dyl:QuickDrawAsmFactor ()
+  (/ 0.001 (Remote>>Dyl:MaterialUnitMetres))
+)
+
+;;  The assembly row with its thicknesses multiplied by f (an assembly in millimetres; any
+;;  other as it is), each written with n decimals at most. The layers of a row the window gave
+;;  back not valid (tabs in its column 3, see Dyl:QuickDrawAsmWinGet) are left as they are:
+(defun Dyl:QuickDrawAsmScale (row f n)
+  (if (and (= "mm" (nth 7 row)) (/= 1.0 f) (not (vl-string-search "\t" (nth 3 row))))
+    (Remote>>Dyl:ListSubst
+      row
+      3
+      (Remote>>Dyl:MaterialLayersStr
+        (mapcar '(lambda (l)
+                   (if (distof (caddr l) 2)
+                     (Remote>>Dyl:ListSubst l 2 (Remote>>Dyl:MaterialNumP (* f (distof (caddr l) 2)) n))
+                     l
+                   )
+                 )
+                (Remote>>Dyl:MaterialLayers (nth 3 row))
+        )
+      )
+    )
+    row
+  )
+)
+
+;;  An assembly in millimetres in the units of the drawing (8 decimals, as a value converted
+;;  back gives the millimetres it was), and back in millimetres (4 decimals: a thickness read
+;;  and saved again keeps its value, never drifting):
+(defun Dyl:QuickDrawAsmToDwg (row)
+  (Dyl:QuickDrawAsmScale row (Dyl:QuickDrawAsmFactor) 8)
+)
+
+(defun Dyl:QuickDrawAsmFromDwg (row)
+  (Dyl:QuickDrawAsmScale row (/ 1.0 (Dyl:QuickDrawAsmFactor)) 4)
 )
 
 (defun Dyl:QuickDrawAsmGet (id)
   (vl-some '(lambda (a) (if (= (strcase id) (strcase (car a))) a)) (Dyl:QuickDrawAsmRead))
 )
 
-;;  A row of the assemblies file (id group name layers border-lines dividing-lines exterior):
+;;  A row of the assemblies file (id group name layers border-lines dividing-lines exterior
+;;  units description load-bearing-rating non-load-bearing-rating stc iic): its units "mm" or
+;;  "" (the units of the drawing), its ratings as they are written (whole numbers checked by
+;;  the window, see Dyl:QuickDrawAsmCheck),
 ;;  its group as in the groups, its exterior side First (its first layer, the default) or
 ;;  Last (for the low permeance ratio, see Remote>>Dyl:MaterialPermRatio), its layers those that are valid, its lines (see
 ;;  Remote>>Dyl:MaterialLines) as they are written. A row of an older file: a Hatch layer
@@ -3315,12 +3410,15 @@
 ;;  with a thickness before it, or none after it) gives its layer key to the Border lines,
 ;;  the first one between two layers its key to the Dividing lines:
 (defun Dyl:QuickDrawAsmFix (row / mats ls bl dl bk dk i new)
-  (while (< (length row) 7) (setq row (append row (list ""))))
+  (while (< (length row) 13) (setq row (append row (list ""))))
   ;;  Its exterior side: its first layer (an older file), or its last one:
   (setq row (Remote>>Dyl:ListSubst row 6 (if (= "LAST" (strcase (nth 6 row))) "Last" "First")))
+  ;;  Its units: millimetres, or those of the drawing (an older file):
+  (setq row (Remote>>Dyl:ListSubst row 7 (if (= "MM" (strcase (nth 7 row))) "mm" "")))
+  ;;  (mats: the ids of the materials, read by Dyl:QuickDrawAsmFixLayer only for a layer
+  ;;  whose id may not be one, see below)
   (setq row  (Remote>>Dyl:ListSubst row 1 (Remote>>Dyl:GroupCase (nth 1 row)))
-        mats (mapcar '(lambda (m) (strcase (car m))) (Remote>>Dyl:MaterialRead))
-        ls   (mapcar '(lambda (l) (Dyl:QuickDrawAsmFixLayer l mats)) (Remote>>Dyl:MaterialLayers (nth 3 row)))
+        ls   (mapcar 'Dyl:QuickDrawAsmFixLayer (Remote>>Dyl:MaterialLayers (nth 3 row)))
         bl   (Remote>>Dyl:MaterialLines (nth 4 row))
         dl   (Remote>>Dyl:MaterialLines (nth 5 row))
         i    0
@@ -3355,13 +3453,19 @@
 )
 
 ;;  The layer l (see Remote>>Dyl:MaterialLayers) of an older file: a Hatch layer whose id is
-;;  not one of the materials mats (their ids in upper case) but a Quick Draw preset's has the
+;;  not one of the materials (their ids in upper case, read once for the row in mats, a local
+;;  variable of Dyl:QuickDrawAsmFix, only for an id that is not the id of a default material,
+;;  mt-*: a default assembly never reads them) but a Quick Draw preset's has the
 ;;  material of that preset; when the preset and the layer have their own band settings, the
 ;;  layer takes the scale and the origin of the hatch of the preset (Scale by width, width
 ;;  factor, Origin on line, X, Y), which it used to have:
-(defun Dyl:QuickDrawAsmFixLayer (l mats / rec b)
+(defun Dyl:QuickDrawAsmFixLayer (l / rec b)
   (if (and (= "P" (car l))
-           (not (member (strcase (cadr l)) mats))
+           (not (wcmatch (strcase (cadr l)) "MT-*"))
+           (not (member (strcase (cadr l))
+                        (cond (mats) ((setq mats (mapcar '(lambda (m) (strcase (car m))) (Remote>>Dyl:MaterialRead)))))
+                )
+           )
            (setq rec (Dyl:QuickDrawGet (cadr l)))
       )
     (progn
@@ -3410,7 +3514,8 @@
   (setq rows (Dyl:QuickDrawRead))
   (if (vl-some '(lambda (r) (vl-string-search ":" (nth *qd:layerscol* r))) rows)
     (progn
-      (setq asms (Dyl:QuickDrawAsmRead))
+      ;;  (as they are written: the default assemblies in millimetres)
+      (setq asms (Remote>>Dyl:PresetRead "QuickDrawAssembly" (Dyl:QuickDrawAsmDefs) 'Dyl:QuickDrawAsmFix))
       (foreach r rows
         (setq l (nth *qd:layerscol* r))
         (if (vl-string-search ":" l)
@@ -3484,16 +3589,21 @@
 ;;  Dyl:QuickDrawAsmRow; nil: none), the columns 55, 57, 58 and 59 of a preset (see
 ;;  Dyl:QuickDrawWinExtra): what its layers are, their width, its preview (its layers side by
 ;;  side, with its lines, see Dyl:QuickDrawGalleryLayers; "" without layers) and its
-;;  description (see Dyl:QuickDrawLayersDesc):
-(defun Dyl:QuickDrawAsmShow (a / ls lst)
+;;  description (see Dyl:QuickDrawLayersDesc), then its ratings (see
+;;  Dyl:QuickDrawAsmRatingsText) and the description of the assembly itself:
+(defun Dyl:QuickDrawAsmShow (a / ls lst d r)
   ;;  (nth on nil fails in AutoCAD: a preset without an assembly gives nil)
   (setq ls  (cond ((if a (nth 3 a))) (""))
         lst (Remote>>Dyl:MaterialLayers ls)
+        d   (Dyl:QuickDrawLayersDesc lst (if a (nth 6 a)))
+        r   (if a (Dyl:QuickDrawAsmRatingsText a) "")
   )
+  (if (/= "" r) (setq d (strcat d (if (= "" d) "" "\n") r)))
+  (if (/= "" (cond ((if a (nth 8 a))) (""))) (setq d (strcat d (if (= "" d) "" "\n\n") (nth 8 a))))
   (list (Remote>>Dyl:MaterialLayersText ls)
         (Remote>>Dyl:MaterialNum (apply '+ (cons 0.0 (mapcar '(lambda (l) (cond ((distof (caddr l) 2)) (0.0))) lst))))
         (if lst (Dyl:QuickDrawGalleryLayers lst (list (Remote>>Dyl:MaterialLines (nth 4 a)) (Remote>>Dyl:MaterialLines (nth 5 a)))) "")
-        (Dyl:QuickDrawLayersDesc lst (if a (nth 6 a)))
+        d
   )
 )
 
@@ -3509,17 +3619,18 @@
   )
 )
 
-;;  The columns the window adds to an assembly r (after its 7 columns): its layers as rows (7),
-;;  its Border lines (8 to 19: on, layer key, the properties they override, see
-;;  Remote>>Dyl:MaterialLines; edited in the Border Settings window) and its Dividing lines (20
-;;  to 31, the same), on the layer
+;;  The columns the window adds to an assembly r (after its 13 columns): its layers as rows
+;;  (13, their thicknesses in the units of the drawing, see Dyl:QuickDrawAsmToDwg), its Border
+;;  lines (14 to 25: on, layer key, the properties they override, see
+;;  Remote>>Dyl:MaterialLines; edited in the Border Settings window) and its Dividing lines (26
+;;  to 37, the same), on the layer
 ;;  key of the border of the Quick Draw preset when they have none (qa:bk). Rows got back
 ;;  that were not valid are kept as they were edited (its column 3 holds them, see
 ;;  Dyl:QuickDrawAsmWinGet):
 (defun Dyl:QuickDrawAsmExtra (r)
   (append (list (if (vl-string-search "\t" (nth 3 r))
                   (nth 3 r)
-                  (Dyl:QuickDrawAsmEncode (Dyl:QuickDrawLayersRows (Remote>>Dyl:MaterialLayers (nth 3 r)) qa:def))
+                  (Dyl:QuickDrawAsmEncode (Dyl:QuickDrawLayersRows (Remote>>Dyl:MaterialLayers (nth 3 (Dyl:QuickDrawAsmToDwg r))) qa:def))
                 )
           )
           (Dyl:QuickDrawAsmLinesOf (nth 4 r))
@@ -3538,16 +3649,22 @@
   )
 )
 
-;;  An assembly got back from the window: its layers from its rows (column 6, see
-;;  Dyl:QuickDrawLayersOf), or its rows themselves in its column 3 when one is not valid (said
+;;  An assembly got back from the window: its layers from its rows (column 13, see
+;;  Dyl:QuickDrawLayersOf), back in millimetres for an assembly in millimetres (see
+;;  Dyl:QuickDrawAsmFromDwg), or its rows themselves in its column 3 when one is not valid (said
 ;;  by Dyl:QuickDrawAsmCheck, the window shown again on them); its lines from their columns
-;;  (their layer key and linetype in upper case):
+;;  (their layer key and linetype in upper case); its ratings trimmed:
 (defun Dyl:QuickDrawAsmWinGet (r / out)
-  (setq out (Dyl:QuickDrawLayersOf (Dyl:QuickDrawAsmDecode (cond ((nth 7 r)) (""))) qa:def)
-        r   (Remote>>Dyl:ListSubst r 3 (if (cadr out) (nth 7 r) (Remote>>Dyl:MaterialLayersStr (car out))))
+  (setq out (Dyl:QuickDrawLayersOf (Dyl:QuickDrawAsmDecode (cond ((nth 13 r)) (""))) qa:def)
+        r   (Dyl:QuickDrawAsmFromDwg
+              (Remote>>Dyl:ListSubst r 3 (if (cadr out) (nth 13 r) (Remote>>Dyl:MaterialLayersStr (car out))))
+            )
   )
-  (if (nth 31 r)
-    (foreach x '((4 8) (5 20))
+  (foreach i '(8 9 10 11 12)
+    (if (nth i r) (setq r (Remote>>Dyl:ListSubst r i (vl-string-trim " " (nth i r)))))
+  )
+  (if (nth 37 r)
+    (foreach x '((4 14) (5 26))
       (setq r (Remote>>Dyl:ListSubst r
                                      (car x)
                                      (Remote>>Dyl:MaterialLinesStr
@@ -3563,13 +3680,48 @@
   r
 )
 
-;;  Why the assembly r is not valid (nil: it is): its layers, then its lines:
+;;  Why the assembly r is not valid (nil: it is): its layers, then its lines, then its
+;;  ratings (whole numbers of 0 or more, or empty: not known):
 (defun Dyl:QuickDrawAsmCheck (r)
   (cond
     ((vl-string-search "\t" (nth 3 r)) (cadr (Dyl:QuickDrawLayersOf (Dyl:QuickDrawAsmDecode (nth 3 r)) qa:def)))
     ((not (Remote>>Dyl:MaterialLayers (nth 3 r))) "No layers: add one.")
     ((Dyl:QuickDrawAsmLinesCheck (Remote>>Dyl:MaterialLines (nth 4 r)) "Border lines"))
     ((Dyl:QuickDrawAsmLinesCheck (Remote>>Dyl:MaterialLines (nth 5 r)) "Dividing lines"))
+    ((vl-some '(lambda (i m) (if (not (Dyl:QuickDrawAsmRating-p (cond ((nth i r)) ("")))) m))
+              '(9 10 11 12)
+              '("The fire-resistance ratings must be whole numbers of minutes."
+                "The fire-resistance ratings must be whole numbers of minutes."
+                "The STC must be a whole number."
+                "The IIC must be a whole number."
+               )
+     )
+    )
+  )
+)
+
+;;  T when v is a rating: empty (not known) or a whole number of 0 or more:
+(defun Dyl:QuickDrawAsmRating-p (v)
+  (or (= "" v) (and (wcmatch v "#*") (not (wcmatch v "*[~0-9]*"))))
+)
+
+;;  The ratings of the assembly a (see Dyl:QuickDrawAsmFix), for its description: its
+;;  fire-resistance ratings (load-bearing, non-load-bearing), its STC and its IIC, those it
+;;  has, "" when it has none:
+(defun Dyl:QuickDrawAsmRatingsText (a / lst)
+  (if (/= "" (cond ((nth 9 a)) (""))) (setq lst (cons (strcat "Fire-resistance rating " (Dyl:QuickDrawAsmMinutes (nth 9 a))) lst)))
+  (if (/= "" (cond ((nth 10 a)) (""))) (setq lst (cons (strcat (if lst "non-load-bearing " "Fire-resistance rating, non-load-bearing ") (Dyl:QuickDrawAsmMinutes (nth 10 a))) lst)))
+  (if (/= "" (cond ((nth 11 a)) (""))) (setq lst (cons (strcat "STC " (nth 11 a)) lst)))
+  (if (/= "" (cond ((nth 12 a)) (""))) (setq lst (cons (strcat "IIC " (nth 12 a)) lst)))
+  (cond ((Remote>>LM:lst->str (reverse lst) ", ")) (""))
+)
+
+;;  A rating in minutes as the code writes it: "45" -> "45 min", "60" -> "1 h", "90" -> "1.5 h":
+(defun Dyl:QuickDrawAsmMinutes (v / n)
+  (setq n (atoi v))
+  (if (and (<= 60 n) (= 0 (rem n 30)))
+    (strcat (Remote>>Dyl:MaterialNum (/ n 60.0)) " h")
+    (strcat (itoa n) " min")
   )
 )
 
@@ -3710,15 +3862,17 @@
         qa:r  r
         res   (Remote>>Dyl:PresetDialog
                 "QuickDrawAssembly"
-                (list '(defs)
+                (list (cons 'defs (Dyl:QuickDrawAsmDefs))
                       (cons 'fix 'Dyl:QuickDrawAsmFix)
                       '(tiles)
                       '(groups . T)
                       '(noun . "assemblies")
                       '(window . "Dyl-AssemblyPresets.xaml")
-                      '(wtiles . "aex:6,abl:8,adl:20")
+                      '(wtiles . "aex:6,ads:8,afl:9,afn:10,ast:11,aii:12,abl:14,adl:26")
+                      ;;  (a default assembly whose layers only changed is changed too:)
+                      '(wncols . 14)
                       (cons 'select (if (not (or (= "" (nth *qd:layerscol* r)) (vl-string-search ":" (nth *qd:layerscol* r)))) (nth *qd:layerscol* r)))
-                      '(new "" "Wall" "New assembly" "" "1~" "1~" "First")
+                      '(new "" "Wall" "New assembly" "" "1~" "1~" "First" "" "" "" "" "" "")
                       '(extra . Dyl:QuickDrawAsmExtra)
                       '(wget . Dyl:QuickDrawAsmWinGet)
                       '(rowcheck . Dyl:QuickDrawAsmCheck)

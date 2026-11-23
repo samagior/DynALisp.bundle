@@ -18,17 +18,23 @@
   Opened by the open button of Assembly in the Quick Draw window (it closes with 5, the Lisp
   shows this one: Dyl:QuickDrawAsmDialog of Apps\Draw\Dyl-QuickDraw.lsp), on the assembly of
   the preset shown. A preset window (Installer\Windows\Engine\Presets.cs): its list "lst" is
-  the assembly presets (pst/rows: id group name layers border-lines dividing-lines exterior,
-  then the columns the Lisp adds: 7 the layers as rows, 8 to 19 the Border lines, 20 to 31 the
-  Dividing lines: on, layer key, the properties they override), New, Copy and Delete run in
+  the assembly presets (pst/rows: id group name layers border-lines dividing-lines exterior
+  units description load-bearing-rating non-load-bearing-rating stc iic, then the columns the
+  Lisp adds: 13 the layers as rows, their thicknesses in the units of the drawing, 14 to 25 the
+  Border lines, 26 to 37 the Dividing lines: on, layer key, the properties they override; the
+  default assemblies, the typical assemblies of the building code, in pst/defs for Reset), New,
+  Copy and Delete run in
   the window; OK saves them and gives the assembly selected to the Quick Draw presets
   selected. Border lines (abl, its two faces and its ends) and Dividing lines (adl, between
   its layers) are checkboxes of the preset (Lisp: wtiles), their open buttons the Border
   Settings window on their columns of the assemblies selected (Presets.cs: Win.Columns).
   Exterior (aex, column 6: "First" or "Last") says which end of the list of layers is the
-  outside of the wall, for the low permeance ratio.
+  outside of the wall, for the low permeance ratio. What the assembly is worth by the building
+  code (the Fire And Sound box): its description (ads, 8), its fire-resistance ratings in
+  minutes (afl load-bearing, 9; afn non-load-bearing, 10), its STC (ast, 11) and its IIC (aii,
+  12), each empty when it is not known.
   The layers of the assembly shown are a list of rows edited in the window (Rows.cs), held in
-  the column 7 of the assembly (dyl:Win.RowsIn), greyed out while several assemblies are
+  the column 13 of the assembly (dyl:Win.RowsIn), greyed out while several assemblies are
   selected (pst.many): a row per layer, its columns: 0 the kind ("P"), 1 its material (its
   id; the Material list shows the materials of the group of its Group list, 43:
   dyl:Win.ListBy, lp/by the group of each material), 2 its thickness, 3 the layer key of its
@@ -144,6 +150,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
           </Grid.RowDefinitions>
           <DockPanel Style="{StaticResource Row}">
             <TextBox x:Name="nam" DockPanel.Dock="Right" Width="300" MaxLength="64"/>
@@ -154,20 +161,25 @@
             <dyl:OpenButton x:Name="gre" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="8" ToolTip="Preset Groups"/>
             <TextBlock Style="{DynamicResource Dyl.Label}" Text="Group"/>
           </DockPanel>
-          <TextBlock x:Name="prm" Grid.Row="2" Style="{DynamicResource Dyl.Desc}" Margin="0,4,0,0"/>
+          <!-- What the assembly is (the text of the building code for its default assemblies): -->
+          <DockPanel Grid.Row="2" Grid.ColumnSpan="3" Style="{StaticResource Row}">
+            <TextBox x:Name="ads" DockPanel.Dock="Right" Width="640" MaxLength="400"/>
+            <TextBlock Style="{DynamicResource Dyl.Label}" Text="Description"/>
+          </DockPanel>
+          <TextBlock x:Name="prm" Grid.Row="3" Style="{DynamicResource Dyl.Desc}" Margin="0,4,0,0"/>
           <!-- The lines of the assembly, replaced by the own border of a layer: its two faces
                and its ends, then the lines between its layers (the Border Settings window on
                the assemblies selected): -->
           <DockPanel Grid.Column="2" Style="{StaticResource Row}">
             <dyl:OpenButton x:Name="abo" DockPanel.Dock="Right" ToolTip="Border Settings" dyl:Win.EnabledBy="abl"
                             dyl:Win.Open="Dyl-QuickDrawBorderSettings.xaml"
-                            dyl:Win.Columns="out:9,bco:10,bcv:11,blo:12,blt:13,bso:14,bsc:15,bwo:16,bwt:17,bto:18,btr:19"/>
+                            dyl:Win.Columns="out:15,bco:16,bcv:17,blo:18,blt:19,bso:20,bsc:21,bwo:22,bwt:23,bto:24,btr:25"/>
             <CheckBox x:Name="abl" Content="Border lines"/>
           </DockPanel>
           <DockPanel Grid.Row="1" Grid.Column="2" Style="{StaticResource Row}">
             <dyl:OpenButton x:Name="ado" DockPanel.Dock="Right" ToolTip="Border Settings" dyl:Win.EnabledBy="adl"
                             dyl:Win.Open="Dyl-QuickDrawBorderSettings.xaml"
-                            dyl:Win.Columns="out:21,bco:22,bcv:23,blo:24,blt:25,bso:26,bsc:27,bwo:28,bwt:29,bto:30,btr:31"/>
+                            dyl:Win.Columns="out:27,bco:28,bcv:29,blo:30,blt:31,bso:32,bsc:33,bwo:34,bwt:35,bto:36,btr:37"/>
             <CheckBox x:Name="adl" Content="Dividing lines"/>
           </DockPanel>
           <!-- Which end of the layers is the outside (the low permeance ratio): -->
@@ -241,7 +253,7 @@
                    dyl:Win.Summary="{}{count:|layer|layers}, width {sum:2}"
                    dyl:Win.SummaryEmpty="No layers."/>
         <!-- Ctrl / Shift click: several layers edited at once: -->
-        <ListBox x:Name="ll" MinHeight="200" dyl:Win.Rows="1" dyl:Win.RowsIn="7">
+        <ListBox x:Name="ll" MinHeight="200" dyl:Win.Rows="1" dyl:Win.RowsIn="13">
           <ListBox.ItemTemplate>
             <DataTemplate>
               <Grid>
@@ -378,6 +390,36 @@
         </DockPanel>
       </StackPanel>
     </GroupBox>
+    <!-- What the assembly is worth by the building code (Tables 9.10.3.1.-A and -B for its
+         default assemblies): its fire-resistance ratings in minutes, load-bearing and
+         non-load-bearing, its sound transmission class and its impact insulation class, each
+         empty when it is not known: -->
+    <GroupBox DockPanel.Dock="Top" Header="Fire And Sound" Margin="0,10,0,0">
+      <StackPanel>
+        <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Fire-resistance rating, minutes"/>
+        <DockPanel Style="{StaticResource Row}">
+          <TextBox x:Name="afl" DockPanel.Dock="Right" Width="120" MaxLength="4"
+                   dyl:Win.Check="empty;integer;min=0" dyl:Win.CheckMessage="The fire-resistance ratings must be whole numbers of minutes."/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Load-bearing"/>
+        </DockPanel>
+        <DockPanel Style="{StaticResource Row}">
+          <TextBox x:Name="afn" DockPanel.Dock="Right" Width="120" MaxLength="4"
+                   dyl:Win.Check="empty;integer;min=0" dyl:Win.CheckMessage="The fire-resistance ratings must be whole numbers of minutes."/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Non-load-bearing"/>
+        </DockPanel>
+        <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Sound" Margin="0,8,0,0"/>
+        <DockPanel Style="{StaticResource Row}">
+          <TextBox x:Name="ast" DockPanel.Dock="Right" Width="120" MaxLength="3"
+                   dyl:Win.Check="empty;integer;min=0" dyl:Win.CheckMessage="The STC must be a whole number."/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="STC"/>
+        </DockPanel>
+        <DockPanel Style="{StaticResource Row}">
+          <TextBox x:Name="aii" DockPanel.Dock="Right" Width="120" MaxLength="3"
+                   dyl:Win.Check="empty;integer;min=0" dyl:Win.CheckMessage="The IIC must be a whole number."/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="IIC"/>
+        </DockPanel>
+      </StackPanel>
+    </GroupBox>
     <!-- The assembly as it is drawn, a wall in plan, built as the layers are edited: -->
     <GroupBox Header="Preview" Margin="0,10,0,0">
       <dyl:AssemblyTile MinHeight="120" Radius="6" Rows="ll" Columns="0 1 2 5 7 8 9 14 6 16 27 38 39" Specs="lp/specs" Ends="ll/ends" Paper="ll/paper" BorderLines="abl" DividingLines="adl"
@@ -387,10 +429,15 @@
     </DockPanel>
 
     <TextBlock x:Name="error" Grid.Row="2" Grid.ColumnSpan="5" Style="{DynamicResource Dyl.Error}" Margin="2,10,0,0" TextWrapping="Wrap" Visibility="Collapsed"/>
-    <StackPanel Grid.Row="3" Grid.ColumnSpan="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
-      <Button Content="OK" IsDefault="True"/>
-      <Button Content="_Cancel" IsCancel="True"/>
-      <Button x:Name="docs" Content="Open Docs"/>
-    </StackPanel>
+    <!-- Reset: the default assemblies selected (or all of them) as the building code has them: -->
+    <DockPanel Grid.Row="3" Grid.ColumnSpan="5" Margin="0,12,0,0">
+      <Button x:Name="rst" DockPanel.Dock="Left" Margin="0" Content="Reset Selected"/>
+      <Button x:Name="all" DockPanel.Dock="Left" Content="Reset All"/>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Content="OK" IsDefault="True"/>
+        <Button Content="_Cancel" IsCancel="True"/>
+        <Button x:Name="docs" Content="Open Docs"/>
+      </StackPanel>
+    </DockPanel>
   </Grid>
 </Window>

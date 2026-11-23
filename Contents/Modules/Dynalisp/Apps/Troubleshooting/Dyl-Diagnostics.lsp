@@ -843,15 +843,25 @@
   (dg:kv "Files" (strcat (itoa (length files)) " read in " (itoa tot) " ms"))
 )
 
-;;  The assembly presets of Quick Draw (QuickDrawAssemblies.csv): how many, and the Quick
+;;  The assembly presets of Quick Draw (QuickDrawAssemblies.csv): how many, with the default
+;;  assemblies (as-*, the typical assemblies of the building code, read from the file as
+;;  shipped when a user copy does not have them yet), and the Quick
 ;;  Draw presets whose assembly (column 38: its id) is not one of them (drawn without
 ;;  layers). A column with ":" is the layers of a preset of an older file, made an assembly
 ;;  preset when the Quick Draw window opens:
-(defun dg:set-asm (/ ids bad v)
+(defun dg:set-asm (/ ids defs bad v)
   (if (and Remote>>Dyl:PresetCsv (Remote>>Dyl:PresetProp "QuickDrawAssembly" 'header))
     (progn
       (dg:sub "Assembly presets")
-      (setq ids (mapcar '(lambda (a) (strcase (car a))) (Remote>>Dyl:PresetCsv "QuickDrawAssembly")))
+      (setq ids  (mapcar '(lambda (a) (strcase (car a))) (Remote>>Dyl:PresetCsv "QuickDrawAssembly"))
+            defs (vl-remove-if-not '(lambda (id) (wcmatch id "AS-?*"))
+                                   (mapcar '(lambda (a) (strcase (car a)))
+                                           (Remote>>Dyl:CsvRead (Remote>>Dyl:PresetDefault "QuickDrawAssembly") 1)
+                                   )
+                 )
+      )
+      (foreach id defs (if (not (member id ids)) (setq ids (cons id ids))))
+      (dg:kv "Default assemblies" (itoa (length defs)))
       (foreach r (Remote>>Dyl:PresetCsv "QuickDraw")
         (setq v (vl-string-trim " " (cond ((nth 38 r)) (""))))
         (if (and (/= "" v) (not (vl-string-search ":" v)) (not (member (strcase v) ids)))

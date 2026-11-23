@@ -1530,6 +1530,10 @@
 ;;    (blank . "!hha")                  ; the rule of the window when the preview is a space
 ;;                                      ; (the preset has no hatch)
 ;;    (wprefix . "4|Polyline=PL-|*=QD-") ; the text of a new alias, by the value of a column
+;;    (wncols . 14)                     ; the columns the window compares to tell a default
+;;                                      ; preset changed (Reset Selected; else those of the
+;;                                      ; file): with a list of rows held in a column the
+;;                                      ; window adds (the layers of an assembly, Win.RowsIn)
 ;;    (wprep . <function: called before the window is shown, nil>)
 ;;    (wvals . <function: -> the values of the window the App gives (its lists...)>)
 ;;    (wrow . <function: preset -> the preset as the window shows it (its data in the units of
@@ -1610,7 +1614,7 @@
     (list (cons "pst/rows" (mapcar 'Remote>>Dyl:PresetWinRow pst:lst))
           (cons "pst/defs" (mapcar 'Remote>>Dyl:PresetWinRow (Remote>>Dyl:PresetDlgDefs)))
           (list "pst/new" (Remote>>Dyl:PresetWinRow (cdr (assoc 'new pst:dlg))))
-          (cons "pst/ncols" (itoa (Remote>>Dyl:PresetWinCols)))
+          (cons "pst/ncols" (itoa (cond ((cdr (assoc 'wncols pst:dlg))) ((Remote>>Dyl:PresetWinCols)))))
           (cons "pst/tiles" (Remote>>Dyl:PresetWinTiles))
           (cons "pst.idx" (itoa pst:idx))
           (cons "pst.sel" (Remote>>LM:lst->str (mapcar 'itoa (Remote>>Dyl:PresetDlgSel)) " "))
