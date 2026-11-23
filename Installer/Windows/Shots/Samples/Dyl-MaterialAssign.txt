@@ -1,0 +1,7 @@
+# Sample values of the Assign Material window (Dyl:MaterialAssignDialog in
+# Apps\Draw\Dyl-Materials.lsp), as the Lisp gives them, for three hatches of brick
+# selected: key=value, key/list=item|item. mat the Material list (None, then Group - Name
+# by the order of the groups of the materials), cnt the number of objects selected.
+mat/list=None|Concrete - Concrete|Concrete - Lightweight Concrete|Masonry - Brick|Masonry - CMU|Masonry - Stone|Wood - Plywood|Wood - Wood Frame|Insulation - Extruded Polystyrene|Insulation - Rigid Insulation|Air - Air Space - Wall 20 mm+|Air - Void
+mat=3
+cnt=3 objects selected

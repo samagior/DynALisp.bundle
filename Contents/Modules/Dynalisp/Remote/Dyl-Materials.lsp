@@ -1373,6 +1373,116 @@
   )
 )
 
+;;-------------------------=={ Material of an object }==------------------------;;
+
+;;  The material an object of the drawing is made of is written on it: the extended data of
+;;  the application DYNALISP (*mt:app*), strings "Key=value" (1000), so another tool can add
+;;  keys of its own (the simulation of a 2D detail reads them):
+;;    Format    the version of these data (*mt:tagformat*), first
+;;    Material  the id of its material (mt-Brick), never its values: a material changed in
+;;              the Materials window changes every object made of it
+;;    Tool      the tool that drew it (QuickDraw, QuickShape), Preset the id of its preset
+;;    Assembly  the id of the assembly preset of a layer of an assembly, Layer its number
+;;              in the assembly preset (1 the first, whichever way the band was drawn)
+;;    Role      Legend: a box of a legend (Draw legend of the Materials window), a sample of
+;;              the material, not a part of the detail
+;;  Remote>>Dyl:MaterialHatchAt writes them on each hatch it makes (and on the outlines it
+;;  keeps when it makes none: see *mt:regionkey*), with the keys of mt:tag, set by the caller
+;;  (((key . value) ...): Dyl:QuickDrawRun, Dyl:QuickShapeRun); Pst-MaterialAssign and
+;;  Pst-MaterialMatch (Apps\Draw\Dyl-Materials.lsp) on the objects the user picks. The
+;;  objects that carry a material are the hatches and the closed curves (see
+;;  Remote>>Dyl:MaterialTaggable-p): the region of a hatch is its boundary, that of a curve
+;;  its inside.
+(setq *mt:app*       "DYNALISP"
+      *mt:tagformat* "1"
+)
+
+;;  The layer key of the outline of a region that has no hatch (a layer of Void, a layer or a
+;;  preset without hatch drawn without border), kept so the region is still there, not
+;;  plotted:
+(setq *mt:regionkey* "MATREGION")
+
+;;  The types of the objects that can carry a material (a closed curve: see
+;;  Remote>>Dyl:MaterialClosed-p):
+(setq *mt:tagtypes* "HATCH,LWPOLYLINE,POLYLINE,CIRCLE,ELLIPSE,SPLINE")
+
+;;  T when the entity e can carry a material: a hatch, or a closed curve:
+(defun Remote>>Dyl:MaterialTaggable-p (e)
+  (and e
+       (entget e)
+       (or (= "HATCH" (cdr (assoc 0 (entget e)))) (Remote>>Dyl:MaterialClosed-p e))
+  )
+)
+
+;;  The DynALisp data of the entity e: (("Key" . "value") ...), its extended data of the
+;;  application *mt:app*, nil when it has none:
+(defun Remote>>Dyl:MaterialTags (e / ed i res)
+  (if (and e (setq ed (entget e (list *mt:app*))))
+    (foreach x (cdr (assoc *mt:app* (cdr (assoc -3 ed))))
+      (if (and (= 1000 (car x)) (setq i (vl-string-search "=" (cdr x))))
+        (setq res (cons (cons (substr (cdr x) 1 i) (substr (cdr x) (+ i 2))) res))
+      )
+    )
+  )
+  (reverse res)
+)
+
+;;  The value of the key k (any case) of the DynALisp data of e, nil when it has none:
+(defun Remote>>Dyl:MaterialTag (e k)
+  (cdr (assoc (strcase k) (mapcar '(lambda (x) (cons (strcase (car x)) (cdr x))) (Remote>>Dyl:MaterialTags e))))
+)
+
+;;  The id of the material of the entity e, nil when it has none:
+(defun Remote>>Dyl:MaterialOf (e)
+  (Remote>>Dyl:MaterialTag e "Material")
+)
+
+;;  Put the keys of pairs (((key . value) ...)) in the DynALisp data of the entity e, those it
+;;  has already replaced, the others kept; a key with nil or "" is removed, and so are the data
+;;  once no key is left. Written with SetXData (never entmod, which would rewrite a hatch whole).
+;;  Returns T, nil when it could not be written (a locked layer):
+(defun Remote>>Dyl:MaterialTagPut (e pairs / lst o typ val res)
+  (setq lst (vl-remove-if '(lambda (x) (= "FORMAT" (strcase (car x)))) (Remote>>Dyl:MaterialTags e)))
+  (foreach p pairs
+    (setq lst (vl-remove-if '(lambda (x) (= (strcase (car x)) (strcase (car p)))) lst))
+    (if (and (cdr p) (/= "" (cdr p))) (setq lst (append lst (list (cons (car p) (cdr p))))))
+  )
+  (if lst (setq lst (cons (cons "Format" *mt:tagformat*) lst)))
+  (if (not (tblsearch "APPID" *mt:app*)) (regapp *mt:app*))
+  (setq o   (vlax-ename->vla-object e)
+        typ (cons 1001 (mapcar '(lambda (x) 1000) lst))
+        val (cons *mt:app* (mapcar '(lambda (x) (strcat (car x) "=" (cdr x))) lst))
+        res (vl-catch-all-apply
+              'vla-SetXData
+              (list o
+                    (vlax-make-variant (vlax-safearray-fill (vlax-make-safearray vlax-vbInteger (cons 0 (1- (length typ)))) typ))
+                    (vlax-make-variant (vlax-safearray-fill (vlax-make-safearray vlax-vbVariant (cons 0 (1- (length val)))) val))
+              )
+            )
+  )
+  (not (vl-catch-all-error-p res))
+)
+
+;;  The DynALisp data of an object made with the material mat: its id, the keys of mt:tag
+;;  (the caller's), Role Legend for a box of a legend (mt:legend):
+(defun Remote>>Dyl:MaterialTagsOf (mat)
+  (append (list (cons "Material" (car mat)))
+          mt:tag
+          (if mt:legend '(("Role" . "Legend")))
+  )
+)
+
+;;  Write the material mat on the entity e (see Remote>>Dyl:MaterialTagsOf), the keys of
+;;  another tool kept; the keys of the tool that drew it before are dropped:
+(defun Remote>>Dyl:MaterialTagSet (e mat)
+  (if (and (car mat) (/= "" (car mat)))
+    (Remote>>Dyl:MaterialTagPut
+      e
+      (append '(("Tool") ("Preset") ("Assembly") ("Layer") ("Role")) (Remote>>Dyl:MaterialTagsOf mat))
+    )
+  )
+)
+
 ;;  Put the entities outs on the layer of the outline layer key of the material mat and hatch
 ;;  their closed curves with one associative hatch (an outline inside another one stays open:
 ;;  island), using the pattern, scale (for the units of the pattern, multiplied by the
@@ -1447,7 +1557,10 @@
 ;;  selected (mt:keepouts T, set by the caller, e.g. Quick Draw Select closed objects). The
 ;;  boxes of a legend (mt:legend T, see Remote>>Dyl:MaterialLegend) are kept as drawn: no
 ;;  layer key, no border settings. With No hatch (see *mt:nohatch*), the outlines are only
-;;  put on their layer key with their border settings, and no hatch is made:
+;;  put on their layer key with their border settings, and no hatch is made. Each hatch made
+;;  carries its material (see Remote>>Dyl:MaterialTagSet); without hatch, the closed outlines
+;;  kept carry it, and those made to be hatched only (No border) are kept as the region of the
+;;  material on *mt:regionkey*, not plotted, so the region is still there:
 (defun Remote>>Dyl:MaterialHatchAt (mat outs ang / ss mark nob asc vars c org)
   (setq ss  (ssadd)
         nob (= "1" (nth 31 mat))
@@ -1464,9 +1577,21 @@
     )
     (if (and ss (Remote>>Dyl:MaterialClosed-p e)) (ssadd e ss))
   )
-  ;;  No hatch: an outline made to be hatched only (No border) is erased:
-  (if (and (not ss) nob (not mt:keepouts))
-    (foreach e outs (if (and (entget e) (Remote>>Dyl:MaterialClosed-p e)) (entdel e)))
+  ;;  No hatch: the closed outlines carry the material; an outline made to be hatched only
+  ;;  (No border) is kept on *mt:regionkey* (a box of a legend: erased):
+  (if (not ss)
+    (foreach e outs
+      (if (and (entget e) (Remote>>Dyl:MaterialClosed-p e))
+        (cond
+          ((and nob (not mt:keepouts) mt:legend) (entdel e))
+          ((and nob (not mt:keepouts))
+           (Remote>>Dyl:LayerKeyApply e *mt:regionkey*)
+           (Remote>>Dyl:MaterialTagSet e mat)
+          )
+          ((Remote>>Dyl:MaterialTagSet e mat))
+        )
+      )
+    )
   )
   (if (and ss (< 0 (sslength ss)))
     (progn
@@ -1530,6 +1655,7 @@
         (Remote>>Dyl:MaterialProps mark mat 'hatch)
         (if (= "HATCH" (cdr (assoc 0 (entget mark))))
           (progn
+            (Remote>>Dyl:MaterialTagSet mark mat)
             (if org (Remote>>Dyl:MaterialOriginCheck mark org))
             ;;  The background color (the existing phase background while it applies), given
             ;;  to the hatch made rather than with HPBACKGROUNDCOLOR before -HATCH:
@@ -1569,8 +1695,8 @@
 ;;  annotative, the layer of the hatch layer key, and the optional hatch settings. Its
 ;;  overrides are reset first (ByLayer, no background), so only those of the material are
 ;;  left. Its boundary, associativity, origin and draw order are kept; a gradient becomes a
-;;  pattern hatch. Returns T, nil when it could not be changed (on a locked layer, pattern not
-;;  found...), with a message:
+;;  pattern hatch. It carries the material afterwards. Returns T, nil when it could not be
+;;  changed (on a locked layer, pattern not found...), with a message:
 (defun Remote>>Dyl:MaterialReplace (mat e / o pat res c)
   (setq o   (vlax-ename->vla-object e)
         pat (nth 3 mat)
@@ -1611,6 +1737,8 @@
                 (Remote>>Dyl:MaterialBackgroundPut e c)
               )
               (vla-Update o)
+              ;;  The hatch is now made of the material (see Remote>>Dyl:MaterialTagSet):
+              (Remote>>Dyl:MaterialTagSet e mat)
               T
             )
          )

@@ -67,6 +67,9 @@
                       ("G-DS-ANNO-STD-BACKGROUND_SCREEN" "A-Detl-Scrn" "254" "CONTINUOUS" "0.18" "1"
                        "Detail: Screening Of Coordination Objects And Backgrounds" "0" "0"
                       )
+                      ;;  The outlines of the regions of a material without hatch (see
+                      ;;  *mt:regionkey* in Dyl-Materials.lsp), not plotted:
+                      ("MATREGION" "A-Detl-Matl-Nplt" "8" "CONTINUOUS" "0.18" "0" "Detail: Material Regions Without Hatch" "0" "0")
                      )
       ;;  Module Res folder (this file loads before Dyl-Paths.lsp sets *dyl:dylres):
       *lk:file*     (strcat (if *dyl:dylres *dyl:dylres (strcat *dyl:dyl "\\Res")) "\\LayerKeys.csv")

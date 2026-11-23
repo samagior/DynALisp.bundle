@@ -344,10 +344,14 @@
 
 ;;  Draw a preset: its material gives the hatch (the hatch preset of its view, Cut or
 ;;  Surface), the preset its border (put in the border columns of the material, always a
-;;  border):
-(defun Dyl:QuickShapeRun (rec / mat)
+;;  border). Its hatches carry their material, the tool and the preset (mt:tag, see
+;;  Remote>>Dyl:MaterialTagSet):
+(defun Dyl:QuickShapeRun (rec / mat mt:tag)
   (if (setq mat (Remote>>Dyl:MaterialGetAs (nth 3 rec) (nth *qs:view* rec)))
-    (Dyl:QuickShape rec (Dyl:QuickShapeMat mat rec))
+    (progn
+      (setq mt:tag (list (cons "Tool" "QuickShape") (cons "Preset" (car rec))))
+      (Dyl:QuickShape rec (Dyl:QuickShapeMat mat rec))
+    )
     (alert (strcat "\nError: the material of the preset \""
                    (nth 2 rec)
                    "\" no longer exists ("

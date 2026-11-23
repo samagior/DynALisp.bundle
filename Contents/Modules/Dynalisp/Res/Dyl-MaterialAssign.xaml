@@ -1,0 +1,45 @@
+<!--
+  Dyl-MaterialAssign.xaml - the Assign Material window: the material given to the hatches
+  and closed outlines selected
+  Copyright (C) 2026  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Shown by Pst-MaterialAssign (Dyl:MaterialAssignDialog of Apps\Draw\Dyl-Materials.lsp) once
+  the objects are selected. mat the Material list (None, then every material as "Group -
+  Name", the material of the first object picked), its open button edm the Materials window
+  (closes with 2, the Lisp shows this one again after it), cnt the number of objects selected.
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - Assign Material" dyl:Win.Docs="Draw\Dyl-MaterialAssign.htm">
+  <StackPanel Margin="14" Width="460">
+    <GroupBox Header="Material" Margin="0">
+      <StackPanel>
+        <DockPanel Margin="0,3" LastChildFill="True">
+          <ComboBox x:Name="mat" DockPanel.Dock="Right" Width="300"/>
+          <dyl:OpenButton x:Name="edm" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="2" ToolTip="Materials"/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Material"/>
+        </DockPanel>
+        <TextBlock x:Name="cnt" Style="{DynamicResource Dyl.Desc}" Margin="0,4,0,0"/>
+      </StackPanel>
+    </GroupBox>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+      <Button Content="OK" IsDefault="True"/>
+      <Button Content="_Cancel" IsCancel="True"/>
+      <Button x:Name="docs" Content="Open Docs"/>
+    </StackPanel>
+  </StackPanel>
+</Window>
