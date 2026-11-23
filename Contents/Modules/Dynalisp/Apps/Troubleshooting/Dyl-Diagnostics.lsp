@@ -307,7 +307,8 @@
 ;;  Fix (Dyl-TextFix, through Dyl:ClaudeRun) run Claude Code, installed and signed in by the
 ;;  user: checked only when one of their commands is turned on in the Startup Suite
 ;;  (Dyl:ClaudeInfo runs Claude Code twice, a second or two).
-;;  Never the account or a token: whether it is signed in, and how.
+;;  Never the account or a token: whether it is signed in, and how, and whether the server of
+;;  the tools of the drawing listens (its port, never its token).
 (defun dg:dyl-assistant (/ info v)
   (if (or c:Dyl-Assistant c:Dyl-TextFix)
     (progn
@@ -335,6 +336,16 @@
            )
            ((dg:note "Claude Code is not signed in: Sign in in the Assistant palette"))
          )
+         ;;  the server of the tools of the drawing, started by the first message of the palette:
+         (if (/= "" (setq v (cdr (assoc "server" info))))
+           (dg:kv "Drawing tools" (strcat "listening on 127.0.0.1:" v))
+           (dg:kv "Drawing tools" "not started (the palette starts them with its first message)")
+         )
+         ;;  the Lisp side of the tools (Remote\Dyl-Assistant.lsp: the materials, presets, actions):
+         (if (not Remote>>Dyl:AssistantCall)
+           (dg:bad "Remote\\Dyl-Assistant.lsp is not loaded: the Assistant cannot read the materials, assemblies and presets")
+         )
+         (dg:kv "Allow Lisp" (if (= "1" (getenv "DynalispAssistantLisp")) "on (run_lisp asks for each code)" "off"))
         )
       )
       ;;  Claude Code bills ANTHROPIC_API_KEY instead of the subscription when it is set:

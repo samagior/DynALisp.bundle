@@ -1984,10 +1984,11 @@
 
 ;;-------------------------=={ Border settings box }==------------------------;;
 
-;;  The Border settings box of the Quick Draw and Quick Shape windows: the border of a preset
-;;  (its layer key, the overrides of its properties, its transparency and, in Quick Draw, Has
-;;  a border). The Quick Draw window is a WPF window (Res\Dyl-QuickDraw.xaml, its Border box:
-;;  the same keys, its rules in the window file); the DCL box below is that of Quick Shape.
+;;  The Border settings of the Quick Draw and Quick Shape windows: the border of a preset (its
+;;  layer key, the overrides of its properties, its transparency and, in Quick Draw, Has a
+;;  border). Both are WPF windows: the Border Settings window of Quick Draw
+;;  (Res\Dyl-QuickDrawBorderSettings.xaml) and the Border box of Quick Shape
+;;  (Res\Dyl-QuickShape.xaml), the same keys, their rules in the window files.
 ;;  Each preset has its own; they are put in the border columns of its material
 ;;  when it is drawn (Remote>>Dyl:MaterialBorderPut), so Remote>>Dyl:MaterialHatchAt and the
 ;;  box read them at the index of a material. Kept here with the materials, whose columns
@@ -1999,10 +2000,6 @@
                          ("bsc" . 17) ("bwo" . 18) ("bwt" . 19) ("bto" . 20) ("btr" . 21)
                         )
 )
-
-;;  Optional settings of the box: (checkbox value-tiles...), greyed out until the checkbox
-;;  is checked:
-(setq *mt:borderoptional* '(("bco" "bcv" "bcp") ("blo" "blt") ("bso" "bsc") ("bwo" "bwt") ("bto" "btr")))
 
 ;;  Code the open button of the layer key of the box closes the window with (the status
 ;;  function of the tool calls Remote>>Dyl:MaterialDlgBorderStatus for it):
@@ -2032,72 +2029,6 @@
     (setq r (Remote>>Dyl:ListSubst r (setq i (1+ i)) (nth (cdr x) mat)))
   )
   (if nob (Remote>>Dyl:ListSubst r nob (nth 31 mat)) r)
-)
-
-;;  DCL lines of the box (under the shape in Quick Shape, a shape always has its border): the
-;;  layer key, the overrides, the optional settings, each sub-section a column of fixed
-;;  height, a dividing line over the title of the last two, the spacers between them take the
-;;  extra height (see CONVENTIONS.md, Windows):
-(defun Remote>>Dyl:MaterialBorderDcl ()
-  (append
-    '("          : boxed_column { label = \"Border settings\";"
-      "            : column { fixed_height = true;"
-      ;;  The layer key, its open button the Layer Keys window (see Remote>>Dyl:MaterialDlgBorderStatus):
-      "            : row { : text { key = \"outl\"; label = \"Layer key:\"; }"
-      "                    : image_button { key = \"okp\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
-      "                    : popup_list { key = \"out\"; edit_width = 28; fixed_width = true; } }"
-      "            }"
-      "            : spacer { }"
-      "            : column { fixed_height = true;"
-      "            : image { key = \"bsep\"; height = 0.8; fixed_height = true; color = -15; }"
-      ;;  The settings that override the properties of the layer key:
-      "            : row { : text { key = \"bovt\"; label = \"Layer key overrides:\"; } }"
-      "            : row { : toggle { key = \"bco\"; label = \"Color:\"; width = 28; }"
-      "                    : image_button { key = \"bcp\"; height = 1; fixed_height = true; aspect_ratio = 1; fixed_width = true; color = -15; }"
-      "                    : edit_box { key = \"bcv\"; edit_width = 12; fixed_width = true; } }"
-      "            : row { : toggle { key = \"blo\"; label = \"Linetype:\"; width = 28; }"
-      "                    : edit_box { key = \"blt\"; edit_width = 12; fixed_width = true; } }"
-      "            : row { : toggle { key = \"bso\"; label = \"Linetype scale:\"; width = 28; }"
-      "                    : edit_box { key = \"bsc\"; edit_width = 12; fixed_width = true; } }"
-      "            : row { : toggle { key = \"bwo\"; label = \"Lineweight:\"; width = 28; }"
-      "                    : popup_list { key = \"bwt\"; edit_width = 12; fixed_width = true; } }"
-      "            }"
-      "            : spacer { }"
-      "            : column { fixed_height = true;"
-      ;;  The settings that are not a property of the layer key, a dividing line over them:
-      "            : image { key = \"bsep2\"; height = 0.8; fixed_height = true; color = -15; }"
-      "            : row { : text { key = \"bopt\"; label = \"Optional settings:\"; } }"
-      "            : row { : toggle { key = \"bto\"; label = \"Transparency:\"; width = 28; }"
-      "                    : edit_box { key = \"btr\"; edit_width = 12; fixed_width = true; } }"
-      "            }"
-      "          }"
-     )
-  )
-)
-
-;;  The layer keys of the box, the Lineweight popup, the open buttons of the color and of the
-;;  layer key, the dividing lines. used: the layer keys of the presets (kept in the popup when
-;;  they are not defined). Each time the dialog is shown:
-(defun Remote>>Dyl:MaterialDlgBorderInit (used)
-  (Remote>>Dyl:MaterialDlgKeys '("out") used)
-  (start_list "bwt")
-  (foreach w *mt:weights* (add_list (strcat (rtos (/ (atoi w) 100.0) 2 2) " mm")))
-  (end_list)
-  (action_tile "bcp" "(Remote>>Dyl:MaterialDlgColor \"bcv\")")
-  (action_tile "okp" (strcat "(if (Remote>>Dyl:PresetDlgCommit) (done_dialog " (itoa *mt:borderkeypick*) "))"))
-  (foreach k '("bsep" "bsep2") (Dyl:LineTile k))
-)
-
-;;  Enable the tiles of the box for the border of the material m (the material of a preset
-;;  with its border, see Remote>>Dyl:MaterialBorderPut). An optional setting has its value
-;;  greyed out until its checkbox is checked:
-(defun Remote>>Dyl:MaterialDlgBorderState (m / tog)
-  (foreach x *mt:borderoptional*
-    (setq tog (= "1" (nth (cdr (assoc (car x) *mt:bordertiles*)) m)))
-    (mode_tile (car x) 0)
-    (foreach k (cdr x) (Remote>>Dyl:MaterialDlgMode k (if tog 0 1)))
-  )
-  (foreach k '("out" "outl" "okp" "bovt" "bopt") (Remote>>Dyl:MaterialDlgMode k 0))
 )
 
 ;;  Code *mt:borderkeypick* = the open button of the layer key of the box: the Layer Keys

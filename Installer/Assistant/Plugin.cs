@@ -27,7 +27,9 @@
 //                                   JSON of the answer that follows the schema.
 // (Dyl:ClaudeInfo)                  what the Diagnostics report: (("path" . p) ("version" . v)
 //                                   ("loggedIn" . "1"|"0") ("authMethod" . m) ("apiKey" .
-//                                   "1"|"0")), only path when Claude Code is not found.
+//                                   "1"|"0") ("server" . port)), only path when Claude Code is
+//                                   not found; server, the port of the server of the tools of
+//                                   the drawing, empty until the palette starts a conversation.
 //
 // The Lisp checks (if Dyl:ClaudeRun ...) first: the plugin loads in AutoCAD 2016 and later.
 
@@ -47,10 +49,20 @@ namespace DynALisp.Assistant
 {
     public class Plugin : IExtensionApplication
     {
-        public void Initialize() { }
+        // Loaded on the main thread of AutoCAD: its Dispatcher runs the work of the tools
+        // (Host.cs), and the selection of each drawing is kept as it changes (Tools.cs).
+        public void Initialize()
+        {
+            Host.Main = System.Windows.Threading.Dispatcher.CurrentDispatcher;
+            try { Selection.Watch(); } catch { }
+        }
 
-        // AutoCAD closes: Claude Code with it.
-        public void Terminate() => Palette.Close();
+        // AutoCAD closes: Claude Code and the server with it.
+        public void Terminate()
+        {
+            Palette.Close();
+            Server.Stop();
+        }
     }
 
     public class Bridge
@@ -140,6 +152,7 @@ namespace DynALisp.Assistant
                 }
             }
             pairs.Add(new KeyValuePair<string, string>("apiKey", Cli.ApiKeySet() ? "1" : "0"));
+            pairs.Add(new KeyValuePair<string, string>("server", Server.Running ? Server.Port.ToString(CultureInfo.InvariantCulture) : ""));
             var rb = new ResultBuffer();
             rb.Add(new TypedValue((int)LispDataType.ListBegin));
             foreach (var kv in pairs)

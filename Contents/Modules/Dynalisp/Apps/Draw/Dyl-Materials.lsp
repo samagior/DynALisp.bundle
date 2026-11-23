@@ -29,7 +29,7 @@
 ;; Opens a window to create and edit the materials used by Quick Draw and Quick Shape: their hatch presets and their data.
 
 (defun c:Dyl-Materials ()
-  (Remote>>Dyl:MaterialDialog nil)
+  (Remote>>Dyl:Manager "Materials")
   (princ)
 )
 ;; Material Assign

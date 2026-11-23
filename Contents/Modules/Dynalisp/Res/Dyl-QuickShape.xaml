@@ -1,0 +1,260 @@
+<!--
+  Dyl-QuickShape.xaml - the Quick Shape window (Dyl-QuickShape command): its presets, edited and drawn
+  Copyright (C) 2026  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Shown by DynALisp.Windows.dll (Installer\Windows) through the preset engine
+  (Remote>>Dyl:PresetWin of Remote\Dyl-Presets.lsp, for Dyl:QuickShapeDialog of
+  Apps\Draw\Dyl-QuickShape.lsp), a tab of the Manager. A preset window: its list is "lst", the
+  presets are edited in the window itself by the preset editor (Installer\Windows\Engine\Presets.cs:
+  the list, New, Copy, Delete, the resets, the aliases), the Lisp saves them on Draw (1) and
+  Save (2). The controls of the values are named as the tiles of the presets (pst/tiles, the
+  column of each one in a preset, see *qs:tiles*): mat the material (mgr the group of the
+  materials it lists, mgr/list), mvw the view (Cut or Surface: the hatch preset of its material
+  the shape is filled with, pst/matview), shp the shape (shp/list "Library: Block", a shape no
+  longer found marked missing; shp/vals "Library|Block"), scl the scale, then the border of
+  the preset, as the Border Settings window of Quick Draw: out the layer key (out/vals the
+  keys), each override a checkbox and its value (bco bcv the color, blo blt the linetype, bso
+  bsc the linetype scale, bwo bwt the lineweight, bwt/vals in hundredths of a millimeter, bto
+  btr the transparency). A shape always has its border: no Has a border. mpv is the preview of
+  the preset shown (the hatch of its material). The buttons close the window with the code of
+  what they do, the Lisp opens it again once it is done: 3 Add shape from selection, 4 Open
+  library (the presets saved, the window closed), 6 Layer Keys, 8 Preset Groups, 9 Materials,
+  11 the color window of AutoCAD.
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - Quick Shape" dyl:Win.Docs="Draw\Dyl-QuickShape.htm">
+  <Window.Resources>
+    <!-- A row of a value: its label on the left, its box at the right of the column: -->
+    <Style x:Key="Row" TargetType="DockPanel">
+      <Setter Property="Margin" Value="0,3"/>
+      <Setter Property="LastChildFill" Value="True"/>
+    </Style>
+  </Window.Resources>
+
+  <Grid Margin="14">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="440"/>
+      <ColumnDefinition Width="10"/>
+      <ColumnDefinition Width="660"/>
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+
+    <!-- The presets: -->
+    <DockPanel>
+      <GroupBox Header="Presets">
+        <DockPanel>
+          <DockPanel DockPanel.Dock="Top" Margin="0,0,0,8">
+            <ComboBox x:Name="srt" DockPanel.Dock="Right" Width="110" Margin="8,0,0,0" ToolTip="Sort by"/>
+            <TextBox x:Name="flt" Style="{DynamicResource Dyl.Search}" Tag="Filter" MaxLength="64"/>
+          </DockPanel>
+          <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+            <TextBlock DockPanel.Dock="Left" Style="{DynamicResource Dyl.Label}" Text="Show"/>
+            <ComboBox x:Name="shg" DockPanel.Dock="Left" Width="150"/>
+            <Button x:Name="shd" DockPanel.Dock="Left" Content="Set default"/>
+            <TextBlock x:Name="pcn" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}"/>
+          </DockPanel>
+          <!-- The titles of the columns of the list (the same widths as its items): -->
+          <Grid DockPanel.Dock="Top" Margin="6,0,10,4">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="44"/>
+              <ColumnDefinition Width="86"/>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="120"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="1" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Group"/>
+            <TextBlock Grid.Column="2" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Name"/>
+            <TextBlock Grid.Column="3" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Aliases"/>
+          </Grid>
+          <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,10,0,0">
+            <Button x:Name="new" Margin="0" Content="New"/>
+            <Button x:Name="cpy" Content="Copy"/>
+            <Button x:Name="del" Content="Delete"/>
+          </StackPanel>
+          <!-- Double-click: inserts the shape of the preset. Ctrl / Shift click: several presets edited at once: -->
+          <ListBox x:Name="lst" Height="470">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="44"/>
+                    <ColumnDefinition Width="86"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="120"/>
+                  </Grid.ColumnDefinitions>
+                  <dyl:HatchTile Width="34" Height="20" HorizontalAlignment="Left" Radius="3" ShowScale="False" Spec="{Binding Spec}"
+                                 Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}"/>
+                  <TextBlock Grid.Column="1" VerticalAlignment="Center" Foreground="{DynamicResource Dyl.Muted}" Text="{Binding Group}" TextTrimming="CharacterEllipsis"/>
+                  <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{Binding Name}" TextTrimming="CharacterEllipsis" Margin="0,0,8,0"/>
+                  <TextBlock Grid.Column="3" VerticalAlignment="Center" FontFamily="Consolas" FontSize="11.5" Foreground="{DynamicResource Dyl.Muted}"
+                             Text="{Binding Aliases}" TextTrimming="CharacterEllipsis"/>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+        </DockPanel>
+      </GroupBox>
+    </DockPanel>
+
+    <!-- The preset shown: -->
+    <StackPanel Grid.Column="2">
+      <GroupBox Padding="16,0,16,14">
+        <StackPanel>
+          <DockPanel Style="{StaticResource Row}">
+            <TextBox x:Name="nam" DockPanel.Dock="Right" Width="320" MaxLength="64"/>
+            <TextBlock Style="{DynamicResource Dyl.Label}" Text="Name"/>
+          </DockPanel>
+          <DockPanel Style="{StaticResource Row}">
+            <ComboBox x:Name="grp" DockPanel.Dock="Right" Width="320"/>
+            <dyl:OpenButton x:Name="gre" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="8" ToolTip="Preset Groups"/>
+            <TextBlock Style="{DynamicResource Dyl.Label}" Text="Group"/>
+          </DockPanel>
+          <DockPanel Margin="0,4,0,0">
+            <TextBlock x:Name="prm" DockPanel.Dock="Left" Style="{DynamicResource Dyl.Desc}" Margin="0,0,12,0"/>
+            <TextBlock x:Name="src" Style="{DynamicResource Dyl.Desc}" Margin="0" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis"/>
+          </DockPanel>
+        </StackPanel>
+      </GroupBox>
+
+      <!-- The hatch the shape is filled with, outlined (a shape always has its border): -->
+      <GroupBox Header="Preview">
+        <dyl:HatchTile x:Name="mpv" Height="110" Radius="6"
+                       Ink="{DynamicResource Dyl.Text}" Fill="{DynamicResource Dyl.Input}" LabelBack="{DynamicResource Dyl.Surface}"/>
+      </GroupBox>
+
+      <!-- The shape and what fills it on the left, its border on the right, then the aliases
+           of the preset: -->
+      <GroupBox Header="Parameters">
+        <StackPanel>
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="29"/>
+              <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel>
+              <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0,0,0,4" Text="Shape"/>
+              <DockPanel Style="{StaticResource Row}">
+                <ComboBox x:Name="shp" DockPanel.Dock="Right" Width="180"/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="Shape"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}" HorizontalAlignment="Right">
+                <Button x:Name="sop" DockPanel.Dock="Right" Content="Open library" dyl:Win.Close="4"/>
+                <Button x:Name="sad" DockPanel.Dock="Right" Margin="0" Content="Add shape from selection..." dyl:Win.Close="3"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}">
+                <TextBox x:Name="scl" DockPanel.Dock="Right" Width="180"
+                         dyl:Win.Check="positive" dyl:Win.CheckMessage="The scale must be a number greater than 0."/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="Scale"/>
+              </DockPanel>
+              <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Fill"/>
+              <!-- The group of the materials the Material list lists (by what they are made
+                   of; the group of the material of the preset shown): -->
+              <DockPanel Style="{StaticResource Row}">
+                <ComboBox x:Name="mgr" DockPanel.Dock="Right" Width="180"/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="Material group"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}">
+                <ComboBox x:Name="mat" DockPanel.Dock="Right" Width="180"/>
+                <dyl:OpenButton x:Name="edm" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="9" ToolTip="Materials"/>
+                <TextBlock x:Name="matl" Style="{DynamicResource Dyl.Label}" Text="Material"/>
+              </DockPanel>
+              <!-- The hatch preset of the material it is filled with: Cut (in section) or
+                   Surface (in elevation): -->
+              <DockPanel Style="{StaticResource Row}">
+                <ComboBox x:Name="mvw" DockPanel.Dock="Right" Width="180"/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="View"/>
+              </DockPanel>
+            </StackPanel>
+            <!-- The line between the two columns: -->
+            <Border Grid.Column="1" Width="1" HorizontalAlignment="Center" Background="{DynamicResource Dyl.Border}"/>
+            <StackPanel Grid.Column="2">
+              <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0,0,0,4" Text="Border"/>
+              <DockPanel Style="{StaticResource Row}">
+                <ComboBox x:Name="out" DockPanel.Dock="Right" Width="150"/>
+                <dyl:OpenButton x:Name="okp" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="6" ToolTip="Layer Keys"/>
+                <TextBlock Style="{DynamicResource Dyl.Label}" Text="Layer key"/>
+              </DockPanel>
+              <!-- The properties of the layer of the key the border overrides: -->
+              <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Layer key overrides"/>
+              <DockPanel Style="{StaticResource Row}">
+                <TextBox x:Name="bcv" DockPanel.Dock="Right" Width="150" dyl:Win.EnabledBy="bco"
+                         dyl:Win.Check="color" dyl:Win.CheckMessage="A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it."/>
+                <dyl:OpenButton x:Name="bcp" DockPanel.Dock="Right" Margin="0,0,8,0" dyl:Win.Close="11" ToolTip="Select Color" dyl:Win.EnabledBy="bco"/>
+                <CheckBox x:Name="bco" Content="Color"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}">
+                <TextBox x:Name="blt" DockPanel.Dock="Right" Width="150" CharacterCasing="Upper" dyl:Win.EnabledBy="blo"
+                         dyl:Win.Check="text" dyl:Win.CheckMessage="The linetype cannot be empty."/>
+                <CheckBox x:Name="blo" Content="Linetype"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}">
+                <TextBox x:Name="bsc" DockPanel.Dock="Right" Width="150" dyl:Win.EnabledBy="bso"
+                         dyl:Win.Check="positive" dyl:Win.CheckMessage="The linetype scale must be a number greater than 0."/>
+                <CheckBox x:Name="bso" Content="Linetype scale"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}">
+                <ComboBox x:Name="bwt" DockPanel.Dock="Right" Width="150" dyl:Win.EnabledBy="bwo"/>
+                <CheckBox x:Name="bwo" Content="Lineweight"/>
+              </DockPanel>
+              <DockPanel Style="{StaticResource Row}">
+                <TextBox x:Name="btr" DockPanel.Dock="Right" Width="150" dyl:Win.EnabledBy="bto"
+                         dyl:Win.Check="integer;min=0;max=90" dyl:Win.CheckMessage="The transparency must be a whole number from 0 to 90."/>
+                <CheckBox x:Name="bto" Content="Transparency"/>
+              </DockPanel>
+            </StackPanel>
+          </Grid>
+          <!-- The aliases of the preset shown (the short names that run it), picked to be renamed
+               or removed: -->
+          <Border Height="1" Margin="0,12,0,0" Background="{DynamicResource Dyl.Border}"/>
+          <TextBlock Style="{DynamicResource Dyl.Sub}" Text="Aliases"/>
+          <ListBox x:Name="als" ItemContainerStyle="{DynamicResource Dyl.Chip}" MinHeight="30" MaxHeight="64" Margin="0,0,0,4">
+            <ListBox.ItemsPanel>
+              <ItemsPanelTemplate>
+                <WrapPanel/>
+              </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+          </ListBox>
+          <DockPanel>
+            <Button x:Name="adel" DockPanel.Dock="Right" Content="Remove" MinWidth="76"/>
+            <Button x:Name="aren" DockPanel.Dock="Right" Content="Rename" MinWidth="76"/>
+            <Button x:Name="aad" DockPanel.Dock="Right" Content="Add" MinWidth="60"/>
+            <TextBox x:Name="aln" Tag="New alias" MaxLength="64"/>
+          </DockPanel>
+          <TextBlock x:Name="ams" Style="{DynamicResource Dyl.Desc}" Margin="2,6,0,0"/>
+        </StackPanel>
+      </GroupBox>
+
+    </StackPanel>
+
+    <TextBlock x:Name="error" Grid.Row="1" Grid.ColumnSpan="3" Style="{DynamicResource Dyl.Error}" Margin="2,10,0,0" Visibility="Collapsed"/>
+    <DockPanel Grid.Row="2" Grid.ColumnSpan="3" Margin="0,12,0,0">
+      <Button x:Name="rst" DockPanel.Dock="Left" Margin="0" Content="Reset Selected"/>
+      <Button x:Name="all" DockPanel.Dock="Left" Content="Reset All"/>
+      <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+        <Button Content="_Draw" IsDefault="True"/>
+        <Button Content="_Save" dyl:Win.Close="2"/>
+        <Button Content="_Cancel" IsCancel="True"/>
+        <Button x:Name="docs" Content="Open Docs"/>
+      </StackPanel>
+    </DockPanel>
+  </Grid>
+</Window>

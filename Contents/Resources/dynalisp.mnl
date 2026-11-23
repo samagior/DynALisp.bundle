@@ -2633,7 +2633,17 @@
   ;;; A button that must run Lisp (a command, a window of the Lisp) closes the window
   ;;; with its number; the caller runs it, then shows the window again on the values
   ;;; it got (see c:Dyl-Settings). The helpers below build and read the values.
+  ;;;
+  ;;; A window of several tools under tabs (the Manager, Remote\Dyl-Manager.lsp) binds
+  ;;; *dyl:wintabs* while it runs: (file titles index title place), the window file of
+  ;;; the tab shown and its tabs. Dyl:WinShow gives them to that window only (never to
+  ;;; a window opened from it: a sub-window), and when another tab is picked the window
+  ;;; closes with *dyl:wintabcode* (90, Installer\Windows\Engine\Tabs.cs) and
+  ;;; *dyl:wintab* is the index of the tab picked (nil else): the tool saves what it
+  ;;; edits, as Save, and the Manager shows the window of that tab.
   ;;; ============================================================================
+
+  (setq *dyl:wintabcode* 90)
 
   ;;  The full path of a window file, nil when it is missing:
   (defun Dyl:WinFile (file)
@@ -2682,7 +2692,26 @@
     res
   )
 
-  (defun Dyl:WinShow (file vals / path res)
+  (defun Dyl:WinShow (file vals / path res tabs)
+    ;;  The tabs, when file is the window of the tab shown (see *dyl:wintabs* above):
+    (if (and *dyl:wintabs* (= (strcase (vl-filename-base file)) (strcase (vl-filename-base (car *dyl:wintabs*)))))
+      (setq tabs        (list (cons "tab/list" (nth 1 *dyl:wintabs*))
+                              (cons "tab" (itoa (nth 2 *dyl:wintabs*)))
+                              (cons "tab/title" (nth 3 *dyl:wintabs*))
+                              (cons "tab/place" (nth 4 *dyl:wintabs*))
+                        )
+            *dyl:wintab* nil
+      )
+    )
+    (setq res (Dyl:WinShowFile file (append vals tabs)))
+    (if (and tabs (= *dyl:wintabcode* (car res)))
+      (setq *dyl:wintab* (atoi (cond ((Dyl:WinGet res "tab")) ("0"))))
+    )
+    res
+  )
+
+  ;;  The window file shown on vals (see Dyl:WinShow):
+  (defun Dyl:WinShowFile (file vals / path res)
     (cond
       ((not Dyl:Window)
        (princ (strcat "\n--> This window needs DynALisp.Windows.dll (AutoCAD 2015 or later, not blocked by SECURELOAD): " file))
@@ -3118,6 +3147,16 @@
       )
     )
     (if (and res (vl-string-search "-->" res)) res)
+  )
+
+  ;;; Allow Lisp (Assistant in Dyl-Settings, DynalispAssistantLisp, off by default): the
+  ;;; Assistant may run AutoLISP (its tool run_lisp), each code approved in its palette; the
+  ;;; plugin reads the setting itself at each call (Host.Setting of Installer\Assistant):
+  (defun Dyl:AssistantLispOn-p () (= "1" (getenv "DynalispAssistantLisp")))
+
+  (defun Dyl:AssistantLispSet (on)
+    (setenv "DynalispAssistantLisp" (if on "1" "0"))
+    (princ (if on "\nAllow Lisp on: the Assistant may run AutoLISP, each code approved in its palette." "\nAllow Lisp off."))
   )
 
   ;;; Automatic updates on (Updates in Dyl-Settings, off by default):
@@ -4128,6 +4167,9 @@
   ;;;     language the docs of DynALisp open in (the ribbon is in the language of the
   ;;;     AutoCAD installed); the language of AutoCAD until it is set. Not the Language
   ;;;     of the File Preferences
+;;;   - Allow Lisp (Assistant, DynalispAssistantLisp, see Dyl:AssistantLispSet): the
+  ;;;     Assistant may run AutoLISP, each code approved in its palette; greyed out
+  ;;;     without DynALisp.Assistant.dll (Dyl:AssistantShow not defined)
 ;;;   - Install updates automatically (Updates, DynalispAutoUpdate, see
   ;;;     Dyl:UpdAuto in the Info region): checked once a day, the setup of a new
   ;;;     version started (installed when AutoCAD closes); greyed out for a git clone
@@ -4214,6 +4256,7 @@
             (Dyl:WinTog "lku" (= "Update" st:lkm))
             (Dyl:WinTog "lkk" (= "Keep" st:lkm))
             (Dyl:WinTog "aup" st:aup)
+            (Dyl:WinTog "asl" st:asl)
       )
       ;; The reactor settings, when their Remote file is not loaded; their open buttons
       ;; when their command is turned off in Dyl-Suite:
@@ -4242,6 +4285,8 @@
       (Dyl:WinOff '("lku" "lkk") (not Remote>>Dyl:LayerKeyMatchSet))
       ;; Automatic updates: greyed out for a git clone (updated with git pull):
       (if (Dyl:InfoGit-p) (cons '("aud" . "Git clone: update it with git pull.") (Dyl:WinOff "aup" T)))
+      ;; Allow Lisp: without the plugin of the Assistant (AutoCAD 2015, not loaded):
+      (Dyl:WinOff "asl" (not Dyl:AssistantShow))
       ;; The sub-windows:
       (Dyl:SetDefsVals)
       (Dyl:SetDisplayVals)
@@ -4263,6 +4308,7 @@
           st:dpo (Dyl:WinOn-p res "dpo")
           st:svo (Dyl:WinOn-p res "svo")
           st:aup (Dyl:WinOn-p res "aup")
+          st:asl (Dyl:WinOn-p res "asl")
           st:csu (Dyl:WinOn-p res "csu")
           st:rvo (Dyl:WinOn-p res "rvo")
           st:lng (car (nth (Dyl:WinIdx res "lng") *dyl:langs*))
@@ -4447,6 +4493,7 @@
     (if (not (eq st:syn (nth 8 old))) (Dyl:SettingsSyncSet st:syn))
     (if (not (eq st:prp (nth 2 old))) (MAJ:RedefineSet st:prp))
     (if (not (eq st:aup (nth 13 old))) (Dyl:UpdAutoSet st:aup))
+    (if (not (eq st:asl (nth 19 old))) (Dyl:AssistantLispSet st:asl))
     (if (not (eq st:csu (nth 16 old))) (Dyl:CleanStartupSet st:csu))
     (if (/= st:lng (nth 17 old)) (Dyl:LangSet st:lng))
     ;; Revisions: turned on, this drawing updated right away when it is a sheet of a project:
@@ -4547,7 +4594,7 @@
     )
   )
 
-  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:old st:res st:sta)
+  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:asl st:old st:res st:sta)
     (setq st:defs (Dyl:SetDefsRead)
           st:aph  (and Remote>>Dyl:PhaseAuto-p (Remote>>Dyl:PhaseAuto-p) T)
           st:ado  (and Remote>>Dyl:DrawOrderAuto-p (Remote>>Dyl:DrawOrderAuto-p) T)
@@ -4567,7 +4614,8 @@
           st:csu  (Dyl:CleanStartupOn-p)
           st:lng  (Dyl:Lang)
           st:rvo  (and Remote>>Dyl:RevSyncOn-p (Remote>>Dyl:RevSyncOn-p) T)
-          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo)
+          st:asl  (Dyl:AssistantLispOn-p)
+          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:asl)
           st:sta  2
     )
     ;; An open button that runs a command closes the window with its number (dyl:Win.Close

@@ -106,6 +106,7 @@ namespace DynALisp.Windows
             readonly Dictionary<string, string> _d = new Dictionary<string, string>();
             public string Get(string name) => _d.TryGetValue(name, out string v) ? v : null;
             public void Set(string name, string value) => _d[name] = value;
+            public string First => _d.Keys.FirstOrDefault();
         }
 
         static void FitCheck(string xaml, string sample)
@@ -130,8 +131,10 @@ namespace DynALisp.Windows
                 return true;
             };
             s.Show(xaml);
-            Console.WriteLine("    place kept: " + (places.Get(Path.GetFileNameWithoutExtension(xaml)) ?? "none"));
-            if (places.Get(Path.GetFileNameWithoutExtension(xaml)) == null) return;
+            // (by the name of its file, or the place of its tabs: Dyl-Manager)
+            string kept = places.First;
+            Console.WriteLine("    place kept: " + (kept != null ? kept + " " + places.Get(kept) : "none"));
+            if (kept == null) return;
             s.ShowRoot = w => { w.Show(); Pump(500); Report("reopened", w); w.Close(); return true; };
             s.Show(xaml);
         }
@@ -179,6 +182,11 @@ namespace DynALisp.Windows
             return null;
         }
 
+        // The items of a list, divided by |; \| is a | inside an item (a shape of Quick Shape,
+        // Library|Block):
+        static List<string> Items(string value) =>
+            value.Replace("\\|", "\u0001").Split('|').Select(x => x.Replace("\u0001", "|")).ToList();
+
         // The values of a sample file, as the Lisp gives them:
         static void Read(Session s, string sample)
         {
@@ -194,8 +202,8 @@ namespace DynALisp.Windows
                 // (\T: a tab inside a field of a row, as the rows of a column that holds rows:
                 // Win.RowsIn)
                 value = value.Replace("\\n", "\n").Replace("{samples}", Path.GetDirectoryName(Path.GetFullPath(sample))).Replace("\\t", "\t");
-                if (key.EndsWith("/list")) s.Lists[key.Substring(0, key.Length - 5)] = value.Split('|').ToList();
-                else if (key.EndsWith("/vals")) s.Lists[key] = value.Split('|').ToList();
+                if (key.EndsWith("/list")) s.Lists[key.Substring(0, key.Length - 5)] = Items(value);
+                else if (key.EndsWith("/vals")) s.Lists[key] = Items(value);
                 else if (key.StartsWith("+"))
                 {
                     string table = key.Substring(1);

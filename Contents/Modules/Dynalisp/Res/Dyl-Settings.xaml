@@ -23,8 +23,8 @@
   what they changed. An open button that runs a command closes this window with its number
   (dyl:Win.Close): c:Dyl-Settings runs the command, then opens the window again.
 
-  Two columns of about the same height (Windows convention): Environment and Reactors on the
-  left, Overrides, Layer keys and Updates on the right.
+  Two columns of about the same height (Windows convention): Environment, Reactors and the
+  Assistant on the left, Overrides, Layer keys and Updates on the right.
 -->
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -81,6 +81,16 @@
           <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,6" Text="Puts new dimensions, text on their key."/>
           <CheckBox x:Name="syn" Content="Settings sync" dyl:Win.EnabledBy="rea"/>
           <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,0" Text="Open drawings follow saved settings."/>
+        </StackPanel>
+      </GroupBox>
+
+      <!-- The Assistant (Dyl-Assistant): Allow Lisp lets it run AutoLISP, each code approved in
+           its palette (DynalispAssistantLisp); greyed out without its plugin: -->
+      <GroupBox Header="Assistant" Margin="0">
+        <StackPanel>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Text="What Claude may do in the drawing."/>
+          <CheckBox x:Name="asl" Content="Allow Lisp"/>
+          <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="46,0,0,0" Text="Runs AutoLISP, each code approved."/>
         </StackPanel>
       </GroupBox>
     </StackPanel>

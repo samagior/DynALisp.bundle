@@ -25,8 +25,13 @@
 //   banner    what to do before the first message: install Claude Code (the installer of
 //             Anthropic, in a console the user sees), sign in (claude auth login, in a
 //             console), Check again; and a note when ANTHROPIC_API_KEY is set
-//   messages  the conversation, its text selectable, code blocks in a fixed font
-//   input     Enter sends, Shift+Enter starts a new line; Stop ends the answer
+//   messages  the conversation, its text selectable, code blocks in a fixed font; a pale
+//             line for each tool of the drawing Claude uses (Reading layers...), and the
+//             approval card of a change (Ask): what it does, the drawing, the command of
+//             run_command, Allow, Allow for this chat, Deny, the objects it changes
+//             highlighted in the drawing while it waits
+//   input     Enter sends, Shift+Enter starts a new line; Stop ends the answer (and refuses
+//             a change that waits)
 
 using System;
 using System.Collections.Generic;
@@ -80,6 +85,51 @@ namespace DynALisp.Assistant
             try { _view?.Chat.Reset(); } catch { }
         }
 
+        // The approval card of a change (Writes.cs), on a thread of the server: "allow",
+        // "always" (Allow for this chat), "deny", or "busy" when the palette is not there.
+        // It waits 9 minutes at most (Claude Code waits 10), then refuses.
+        public static string Ask(Tools.Card c)
+        {
+            var v = _view;
+            if (v == null || _ps == null) return "busy";
+            string answer = "deny";
+            var done = new ManualResetEventSlim();
+            v.Dispatcher.BeginInvoke(new Action(() =>
+            {
+                try { _ps.Visible = true; } catch { }
+                v.ShowCard(c, a => { answer = a; done.Set(); });
+            }));
+            Highlight(c.Objects, true);
+            if (!done.Wait(TimeSpan.FromMinutes(9))) v.Dispatcher.BeginInvoke(new Action(() => v.Expire()));
+            Highlight(c.Objects, false);
+            return answer;
+        }
+
+        static void Highlight(List<Autodesk.AutoCAD.DatabaseServices.ObjectId> ids, bool on)
+        {
+            if (ids == null || ids.Count == 0) return;
+            try
+            {
+                Host.OnMain(() =>
+                {
+                    foreach (var id in ids)
+                    {
+                        if (id.IsNull || id.IsErased) continue;
+                        using (var tr = id.Database.TransactionManager.StartOpenCloseTransaction())
+                        {
+                            if (tr.GetObject(id, Autodesk.AutoCAD.DatabaseServices.OpenMode.ForRead) is Autodesk.AutoCAD.DatabaseServices.Entity e)
+                            {
+                                if (on) e.Highlight(); else e.Unhighlight();
+                            }
+                            tr.Commit();
+                        }
+                    }
+                    return true;
+                }, 10000);
+            }
+            catch { }
+        }
+
         static bool Dark()
         {
             try { return Convert.ToInt32(AcApp.GetSystemVariable("COLORTHEME")) == 0; }
@@ -107,6 +157,7 @@ namespace DynALisp.Assistant
         readonly TextBlock _keyNote = new TextBlock { TextWrapping = TextWrapping.Wrap, Margin = new Thickness(8, 0, 8, 8), Visibility = Visibility.Collapsed };
 
         bool _ready, _checking;
+        readonly List<Action<string>> _pending = new List<Action<string>>();   // the cards that wait
         StackPanel _cur;           // the message being written
         readonly StringBuilder _curText = new StringBuilder();
 
@@ -187,7 +238,7 @@ namespace DynALisp.Assistant
             root.Children.Add(ip);
 
             _send.Click += (s, e) => Send();
-            _stop.Click += (s, e) => { Chat.Stop(); };
+            _stop.Click += (s, e) => { Refuse(); Chat.Stop(); };
             _input.PreviewKeyDown += (s, e) =>
             {
                 if (e.Key == Key.Enter && (Keyboard.Modifiers & ModifierKeys.Shift) == 0)
@@ -201,6 +252,7 @@ namespace DynALisp.Assistant
             Chat.Message += t => Ui(() => OnMessage(t));
             Chat.TurnEnd += (err, login) => Ui(() => OnTurnEnd(err, login));
             Chat.KeySource += src => Ui(() => ShowKeyNote(src));
+            Chat.ToolUse += name => Ui(() => OnToolUse(name));
 
             Content = root;
             Welcome();
@@ -317,7 +369,7 @@ namespace DynALisp.Assistant
         {
             var text = _input.Text.Trim();
             if (text == "" || !_ready || Chat.Busy) return;
-            if (_list.Children.Count == 1 && _list.Children[0] is TextBlock) _list.Children.Clear();
+            if (_list.Children.Count == 1 && _list.Children[0] is FrameworkElement w && (string)w.Tag == "welcome") _list.Children.Clear();
             _list.Children.Add(Bubble(text, user: true));
             _input.Clear();
             try
@@ -382,6 +434,7 @@ namespace DynALisp.Assistant
 
         void NewChat()
         {
+            Refuse();
             Chat.Reset();
             _cur = null;
             _list.Children.Clear();
@@ -400,14 +453,44 @@ namespace DynALisp.Assistant
 
         void Welcome()
         {
+            var p = new StackPanel { Tag = "welcome" };
             var t = new TextBlock
             {
-                Text = "Ask about AutoCAD, AutoLISP or DynALisp. This first version answers questions: it does not read or change the drawing yet.",
+                Text = "Ask about AutoCAD, AutoLISP or DynALisp, or about the drawing: the Assistant reads it, its materials and assemblies, and changes it or runs a command once you allow it. Select objects before asking about them.",
                 TextWrapping = TextWrapping.Wrap,
                 Margin = new Thickness(0, 8, 0, 0),
             };
             t.SetResourceReference(TextBlock.ForegroundProperty, "Dyl.Muted");
-            _list.Children.Add(t);
+            p.Children.Add(t);
+            // the last conversation, to go on with it:
+            var last = Chat.Last();
+            if (last != null)
+            {
+                var resume = new Button { Content = "Resume last chat", HorizontalAlignment = HorizontalAlignment.Left, Margin = new Thickness(0, 10, 0, 0) };
+                var first = ((Json.Get(last, "messages") as List<object>) ?? new List<object>()).Select(x => Json.Text(x, "text")).FirstOrDefault(x => !string.IsNullOrEmpty(x)) ?? "";
+                if (first.Length > 80) first = first.Substring(0, 80) + "...";
+                var what = new TextBlock { Text = Json.Text(last, "saved") + ": " + first, TextWrapping = TextWrapping.Wrap, FontSize = 11.5, Margin = new Thickness(0, 4, 0, 0) };
+                what.SetResourceReference(TextBlock.ForegroundProperty, "Dyl.Muted");
+                resume.Click += (s, e) => ResumeLast(last);
+                p.Children.Add(resume);
+                p.Children.Add(what);
+            }
+            _list.Children.Add(p);
+        }
+
+        void ResumeLast(Dictionary<string, object> last)
+        {
+            if (Chat.Busy) return;
+            Refuse();
+            Chat.Resume(last);
+            _cur = null;
+            _list.Children.Clear();
+            foreach (var kv in Chat.Transcript) _list.Children.Add(Bubble(kv.Value, user: kv.Key == "user"));
+            int i = Array.FindIndex(Models, m => m.Value == Chat.Model);
+            if (i >= 0 && _model.SelectedIndex != i) _model.SelectedIndex = i;
+            _status.Text = "The last chat goes on.";
+            UpdateState();
+            End();
         }
 
         void UpdateState()
@@ -420,6 +503,97 @@ namespace DynALisp.Assistant
         }
 
         void End() => _scroll.ScrollToEnd();
+
+        // ---- the drawing ------------------------------------------------------------
+
+        static readonly Dictionary<string, string> Activity = new Dictionary<string, string>
+        {
+            ["drawing_info"] = "Reading the drawing", ["get_selection"] = "Reading the selection",
+            ["list_objects"] = "Listing objects", ["get_object"] = "Reading objects",
+            ["list_layers"] = "Reading the layers", ["list_blocks"] = "Reading the blocks",
+            ["create_entities"] = "Creating objects", ["modify_entities"] = "Changing objects",
+            ["erase_entities"] = "Erasing objects", ["set_layers"] = "Changing layers",
+            ["run_command"] = "Running a command",
+            ["get_materials"] = "Reading the materials", ["get_assembly"] = "Reading an assembly",
+            ["list_presets"] = "Reading the presets", ["capture_view"] = "Looking at the view",
+            ["dynalisp_action"] = "Running a tool of DynALisp", ["run_lisp"] = "Running AutoLISP",
+        };
+
+        void OnToolUse(string name)
+        {
+            _cur = null;
+            var t = new TextBlock
+            {
+                Text = (Activity.TryGetValue(name, out var a) ? a : name) + "...",
+                TextWrapping = TextWrapping.Wrap,
+                FontSize = 11.5,
+                Margin = new Thickness(0, 0, 0, 2),
+            };
+            t.SetResourceReference(TextBlock.ForegroundProperty, "Dyl.Muted");
+            _list.Children.Add(t);
+            _status.Text = t.Text;
+            End();
+        }
+
+        // The approval card: answer is called once, with "allow", "always" or "deny".
+        public void ShowCard(Tools.Card c, Action<string> answer)
+        {
+            _cur = null;
+            var p = new StackPanel();
+            p.Children.Add(new TextBlock { Text = c.Title, TextWrapping = TextWrapping.Wrap, FontWeight = FontWeights.SemiBold });
+            var where = new TextBlock { Text = "In " + c.Drawing + (c.Objects.Count > 0 ? ", highlighted in the drawing" : "") + ". One U undoes it.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 2, 0, 6) };
+            where.SetResourceReference(TextBlock.ForegroundProperty, "Dyl.Muted");
+            p.Children.Add(where);
+            if (!string.IsNullOrEmpty(c.Code)) p.Children.Add(Code(c.Code));
+            var row = new WrapPanel { Margin = new Thickness(0, 4, 0, 0) };
+            var allow = new Button { Content = "Allow", MinWidth = 64, Margin = new Thickness(0, 0, 6, 0) };
+            var always = new Button { Content = "Allow for this chat", Margin = new Thickness(0, 0, 6, 0) };
+            var deny = new Button { Content = "Deny", MinWidth = 64 };
+            row.Children.Add(allow);
+            if (c.AllowAlways) row.Children.Add(always);
+            row.Children.Add(deny);
+            p.Children.Add(row);
+            var card = new Border { Child = p, Padding = new Thickness(10, 8, 10, 8), Margin = new Thickness(0, 6, 0, 6), CornerRadius = new CornerRadius(6), BorderThickness = new Thickness(1) };
+            card.SetResourceReference(Border.BackgroundProperty, "Dyl.Surface");
+            card.SetResourceReference(Border.BorderBrushProperty, "Dyl.Border");
+            bool answered = false;
+            Action<string> done = null;
+            done = a =>
+            {
+                if (answered) return;
+                answered = true;
+                _pending.Remove(done);
+                p.Children.Remove(row);
+                var r = new TextBlock
+                {
+                    Text = a == "deny" ? "Denied." : a == "always" ? "Allowed for this chat." : a == "expired" ? "Not answered: refused." : "Allowed.",
+                    Margin = new Thickness(0, 2, 0, 0),
+                };
+                r.SetResourceReference(TextBlock.ForegroundProperty, "Dyl.Muted");
+                p.Children.Add(r);
+                _status.Text = a == "deny" || a == "expired" ? "" : "Changing the drawing...";
+                answer(a == "expired" ? "deny" : a);
+            };
+            allow.Click += (s, e) => done("allow");
+            always.Click += (s, e) => done("always");
+            deny.Click += (s, e) => done("deny");
+            _pending.Add(done);
+            _list.Children.Add(card);
+            _status.Text = "Waiting for your answer...";
+            End();
+            allow.Focus();
+        }
+
+        // The cards still waiting are refused: Stop, New chat, or the time is up.
+        void Refuse()
+        {
+            foreach (var d in _pending.ToList()) d("deny");
+        }
+
+        public void Expire()
+        {
+            foreach (var d in _pending.ToList()) d("expired");
+        }
 
         // ---- messages ---------------------------------------------------------------
 

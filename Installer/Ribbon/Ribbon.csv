@@ -1,6 +1,7 @@
 Panel;Stack;Command;Children;Name;Description;Selection
 Draw;;PST-QUICKDRAWGALLERY;@*qd:gallerygroup*=All|Phase|Section|Detail|Elevation|Wall|Floor|Ceiling|Roof|Finish|Structural|Site|Area|Annotation|Generic;Quick Draw;
 Draw;;DYL-QUICKSHAPE;*;;
+Draw;;DYL-MANAGER;;;
 Draw;1;DYL-QUICKDRAW;;Quick Draw Manager;
 Draw;1;DYL-MATERIALS;*;;
 Draw;1;DYL-HATCHPRESETS;;;
@@ -22,7 +23,6 @@ Layer Tools;>2;DYL-LAYERPENCOLORS;*;;
 Layer Tools;>2;DYL-LAYERCOLORWEIGHT;*;;
 Text;1;DYL-ADDPREFIXSUFFIX;;;
 Text;1;DYL-QUICKADDPREFIXSUFFIX;*;;
-Text;1;DYL-TEXTFIX;;;
 Text;>1;DYL-DICTIONARY;;;
 Text;>1;DYL-MULTILEADERLIST;;;
 Cleaning;1;DYL-COLORBYLAYER;*;;
@@ -47,7 +47,8 @@ Utilities;>1;DYL-BATCHINSERT;;;
 Utilities;>1;DYL-COUNTBYLAYERS;;;
 Utilities;>2;DYL-REBUILDPAT;*;;
 Utilities;>2;DYL-OPENFOLDER;;;
-Utilities;>2;DYL-ASSISTANT;;;
+Assistant;;DYL-ASSISTANT;;;
+Assistant;1;DYL-TEXTFIX;;;;1
 Analysis;;DYL-SIMULATION;*;;
 Troubleshooting;;DYL-DIAGNOSTICS;*;;
 DynALisp;;DYL-SETTINGS;;Settings;Opens the DynALisp settings: the language, the reactors, the overrides and the updates.

@@ -27,7 +27,7 @@
 ;; Opens a dialog to create and edit the hatch presets (pattern, scale and layer key of a hatch) that the materials share.
 
 (defun c:Dyl-HatchPresets ()
-  (Remote>>Dyl:HatchPresetDialog nil)
+  (Remote>>Dyl:Manager "HatchPresets")
   (princ)
 )
 
