@@ -428,24 +428,40 @@ namespace DynALisp.Windows
                 foreach (var g in _grows) Height(g, g.Nat);
                 Remeasure();
                 double dy = availH - _content.DesiredSize.Height;
-                var least = new HashSet<Grow>();
-                double Target(Grow g)
+                // again while it does not fit: a list beside a taller column changes nothing,
+                // the others above or below it take the rest
+                for (int pass = 0; pass < 6 && Math.Abs(dy) >= 1; pass++)
                 {
-                    if (least.Contains(g)) return g.Min;
-                    var stack = g.Stack.Where(shown.Contains).ToList();
-                    double taken = stack.Where(least.Contains).Sum(o => o.Min - o.Nat);
-                    double free = g.Nat + stack.Where(o => !least.Contains(o)).Sum(o => o.Nat);
-                    return g.Nat + (dy - taken) * (free > 0 ? g.Nat / free : 1);
+                    var from = shown.ToDictionary(g => g, g => g.E.Height);
+                    var least = new HashSet<Grow>();
+                    double Target(Grow g)
+                    {
+                        if (least.Contains(g)) return g.Min;
+                        var stack = g.Stack.Where(shown.Contains).ToList();
+                        double taken = stack.Where(least.Contains).Sum(o => o.Min - from[o]);
+                        double free = g.Nat + stack.Where(o => !least.Contains(o)).Sum(o => o.Nat);
+                        return from[g] + (dy - taken) * (free > 0 ? g.Nat / free : 1);
+                    }
+                    for (int k = 0; k < 6; k++)
+                    {
+                        var under = shown.Where(g => !least.Contains(g) && Target(g) < g.Min).ToList();
+                        if (under.Count == 0) break;
+                        foreach (var g in under) least.Add(g);
+                    }
+                    var heights = shown.Select(g => Math.Max(g.Min, Target(g))).ToList();
+                    if (!heights.Where((h, k) => Math.Abs(h - from[shown[k]]) > 0.5).Any()) break;
+                    double before = _content.DesiredSize.Height;
+                    for (int k = 0; k < shown.Count; k++) Height(shown[k], heights[k]);
+                    Remeasure();
+                    if (Math.Abs(_content.DesiredSize.Height - before) < 0.5)
+                    {
+                        // nothing changed: the lists hold no room, as they were
+                        foreach (var kv in from) Height(kv.Key, kv.Value);
+                        Remeasure();
+                        break;
+                    }
+                    dy = availH - _content.DesiredSize.Height;
                 }
-                for (int pass = 0; pass < 6; pass++)
-                {
-                    var under = shown.Where(g => !least.Contains(g) && Target(g) < g.Min).ToList();
-                    if (under.Count == 0) break;
-                    foreach (var g in under) least.Add(g);
-                }
-                var heights = shown.Select(g => Math.Max(g.Min, Target(g))).ToList();
-                for (int k = 0; k < shown.Count; k++) Height(shown[k], heights[k]);
-                Remeasure();
 
                 // the bars: only for what still does not fit
                 needV = _content.DesiredSize.Height > availH + 0.5;
