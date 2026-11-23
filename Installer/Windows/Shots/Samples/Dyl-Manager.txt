@@ -3,7 +3,7 @@
 # tabs Dyl:WinShow gives the window of the tab shown (tab/list, tab, tab/title, tab/place; see
 # Installer\Windows\Engine\Tabs.cs). key=value, key/list=item|item, key/vals=value|value, +key=
 # field\tfield a row of the table key; \t is a tab, {samples} this folder (Sample.pat).
-tab/list=Quick Draw|Assembly Presets|Materials|Hatch Presets
+tab/list=Quick Draw|Assembly Presets|Quick Shape|Materials|Hatch Presets
 tab=0
 tab/title=DynALisp - Manager
 tab/place=Dyl-Manager

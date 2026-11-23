@@ -48,6 +48,7 @@
 (setq *dyl:mgrtabs*
        '(("QuickDraw" "Quick Draw" "Dyl-QuickDraw.xaml" "Dynalisp\\Apps\\Draw\\Dyl-QuickDraw.lsp" Dyl:QuickDrawDialog Dyl:QuickDrawRun)
          ("Assemblies" "Assembly Presets" "Dyl-AssemblyPresets.xaml" "Dynalisp\\Apps\\Draw\\Dyl-QuickDraw.lsp" Dyl:QuickDrawAsmManager nil)
+         ("QuickShape" "Quick Shape" "Dyl-QuickShape.xaml" "Dynalisp\\Apps\\Draw\\Dyl-QuickShape.lsp" Dyl:QuickShapeDialog Dyl:QuickShapeRun)
          ("Materials" "Materials" "Dyl-Materials.xaml" "Dynalisp\\Apps\\Draw\\Dyl-Materials.lsp" Remote>>Dyl:ManagerMaterials nil)
          ("HatchPresets" "Hatch Presets" "Dyl-HatchPresets.xaml" "Dynalisp\\Apps\\Draw\\Dyl-HatchPresets.lsp" Remote>>Dyl:ManagerHatchPresets nil)
         )

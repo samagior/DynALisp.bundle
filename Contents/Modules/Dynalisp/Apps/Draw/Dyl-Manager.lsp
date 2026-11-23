@@ -19,12 +19,12 @@
 
 ;;  The Manager (its tabs, the window of each tab) is in Modules\Dynalisp\Remote\Dyl-Manager.lsp,
 ;;  loaded at startup for every App: the main commands of its tools (Dyl-QuickDraw,
-;;  Dyl-Materials, Dyl-HatchPresets) open it on their own tab, this one on the tab shown last.
+;;  Dyl-QuickShape, Dyl-Materials, Dyl-HatchPresets) open it on their own tab, this one on the tab shown last.
 
 ;;-------------------------=={ Commands }==------------------------;;
 
 ;; Manager
-;; Opens the Manager: the windows that set up the drawing tools (Quick Draw, Assembly Presets, Materials, Hatch Presets) as the tabs of one window.
+;; Opens the Manager: the windows that set up the drawing tools (Quick Draw, Assembly Presets, Quick Shape, Materials, Hatch Presets) as the tabs of one window.
 
 (defun c:Dyl-Manager ()
   (Remote>>Dyl:Manager nil)
