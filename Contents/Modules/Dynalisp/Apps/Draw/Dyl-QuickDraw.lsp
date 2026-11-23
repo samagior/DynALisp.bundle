@@ -3391,13 +3391,13 @@
   )
 )
 
-(defun Dyl:QuickDrawAsmLayers (v)
-  (cond ((nth 3 (Dyl:QuickDrawAsmRow v))) (""))
+(defun Dyl:QuickDrawAsmLayers (v / a)
+  (cond ((if (setq a (Dyl:QuickDrawAsmRow v)) (nth 3 a))) (""))
 )
 
 (defun Dyl:QuickDrawAsmLines (v / a)
   (setq a (Dyl:QuickDrawAsmRow v))
-  (list (Remote>>Dyl:MaterialLines (nth 4 a)) (Remote>>Dyl:MaterialLines (nth 5 a)))
+  (list (Remote>>Dyl:MaterialLines (if a (nth 4 a))) (Remote>>Dyl:MaterialLines (if a (nth 5 a))))
 )
 
 ;;  The presets of an older file with the layers of their assembly in their column 38 get an
@@ -3486,13 +3486,14 @@
 ;;  side, with its lines, see Dyl:QuickDrawGalleryLayers; "" without layers) and its
 ;;  description (see Dyl:QuickDrawLayersDesc):
 (defun Dyl:QuickDrawAsmShow (a / ls lst)
-  (setq ls  (cond ((nth 3 a)) (""))
+  ;;  (nth on nil fails in AutoCAD: a preset without an assembly gives nil)
+  (setq ls  (cond ((if a (nth 3 a))) (""))
         lst (Remote>>Dyl:MaterialLayers ls)
   )
   (list (Remote>>Dyl:MaterialLayersText ls)
         (Remote>>Dyl:MaterialNum (apply '+ (cons 0.0 (mapcar '(lambda (l) (cond ((distof (caddr l) 2)) (0.0))) lst))))
         (if lst (Dyl:QuickDrawGalleryLayers lst (list (Remote>>Dyl:MaterialLines (nth 4 a)) (Remote>>Dyl:MaterialLines (nth 5 a)))) "")
-        (Dyl:QuickDrawLayersDesc lst (nth 6 a))
+        (Dyl:QuickDrawLayersDesc lst (if a (nth 6 a)))
   )
 )
 
