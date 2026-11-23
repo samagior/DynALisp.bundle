@@ -31,11 +31,37 @@
 //     was drawn (0: too dense to be read); the materials of the regions. A text when the zone
 //     cannot be read (the message).
 //
+//     The climates of the climate zones in the zone follow, as a list (climate ...).
+//
+//   (Dyl:SimulationRun zone size known mats climates imperial metres)
+//     zone, size, known: as above; mats: a text "id|conductivity|resistance" for each material
+//     that has one of them (W/(m.K), m2.K/W, either one empty); climates: a text
+//     "id|temperature|humidity|rs|rscondensation" for each climate (C, %, m2.K/W, empty when
+//     not known); imperial: 1 for the labels in F, else 0; metres: the metres of a drawing
+//     unit (Remote>>Dyl:MaterialUnitMetres).
+//     Reads and checks the zone as Dyl:SimulationRead. With a problem (or a climate of the
+//     zone without a temperature), shows it as Dyl:SimulationRead and returns (check nil).
+//     Else solves the heat through the detail (Core\Thermal.cs) twice, with the surface
+//     resistances of the heat and with those of the condensation, shows its temperatures
+//     over the drawing (blue at the exterior, red at the interior), the line of the dew point
+//     of the interior air, the interior surfaces colder than it and the coldest one, and
+//     returns (check result): check the list of Dyl:SimulationRead, result a list of pairs
+//     (("Interior" . id) ("Exterior" . id) ("Ti" . C) ("Te" . C) ("Q" . W/m) ("L2D" . W/(m.K))
+//     ("Length" . m) ("Rsi" . m2.K/W) ("Tsi" . C) ("TsiAt" x y) ("TsiMaterial" . id)
+//     ("fRsi" . x) ("Dew" . C) ("BelowDew" . m) ("Isolated" . cells) ("Iterations" . n)),
+//     a value not known left out. A text when the zone cannot be read or solved.
+//
+//   (Dyl:SimulationProbe point)
+//     The result of the last run of the current drawing at point (WCS): (temperature material
+//     climate), temperature nil where the cell has none (a climate, a hole), nil outside it.
+//
 //   (Dyl:SimulationClear)  clears what the simulation shows over the current drawing; T.
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Autodesk.AutoCAD.DatabaseServices;
+using Autodesk.AutoCAD.Geometry;
 using Autodesk.AutoCAD.Runtime;
 using DynALisp.Simulation.Core;
 using Shape = DynALisp.Simulation.Core.Shape;
@@ -56,63 +82,15 @@ namespace DynALisp.Simulation
                 var a = Args(args);
                 if (a.Count < 5 || !(a[0] is ObjectId zoneId) || !(a[1] is double size))
                     return Text("Dyl:SimulationRead: (zone size known data climates) expected.");
-                var known = Set(a[2]);
-                var data = Set(a[3]);
-                var climates = Set(a[4]);
                 var doc = AcApp.DocumentManager.MdiActiveDocument;
-
                 using (var tr = doc.Database.TransactionManager.StartTransaction())
                 {
-                    var zoneEnt = tr.GetObject(zoneId, OpenMode.ForRead) as Entity;
-                    var zone = zoneEnt == null ? null : Reader.CurveShape(zoneEnt);
-                    if (zone == null) return Text("The simulation zone is not a closed curve.");
-                    var space = (BlockTableRecord)tr.GetObject(zoneEnt.OwnerId, OpenMode.ForRead);
-                    var srcs = Reader.Read(tr, space, zoneId, zone.Bounds);
-
-                    var regions = new List<Region>();
-                    foreach (var s in srcs) regions.Add(s.Region);
-                    Detail d;
-                    try { d = Detail.Read(zone, regions, size); }
-                    catch (ArgumentException ex) { tr.Commit(); return Text(ex.Message); }
-
-                    int nreg = 0, nomat = 0, unknown = 0, nodata = 0, badclim = 0;
-                    var bad = new List<Shape>();
-                    var mats = new SortedSet<string>(StringComparer.OrdinalIgnoreCase);
-                    for (int r = 0; r < regions.Count; r++)
-                    {
-                        if (d.CellsOf[r] == 0) continue;
-                        var reg = regions[r];
-                        bool isBad = false;
-                        if (reg.IsClimate)
-                        {
-                            if (!climates.Contains(reg.Climate)) { badclim++; isBad = true; }
-                        }
-                        else
-                        {
-                            nreg++;
-                            if (reg.Material.Length == 0) { nomat++; isBad = true; }
-                            else
-                            {
-                                mats.Add(reg.Material);
-                                if (!known.Contains(reg.Material)) { unknown++; isBad = true; }
-                                else if (!data.Contains(reg.Material)) { nodata++; isBad = true; }
-                            }
-                        }
-                        if (isBad) bad.Add(reg.Shape);
-                    }
-
-                    var zb = zone.Bounds;
-                    double w = Math.Max(zb.Width, zb.Height) / 400;
-                    bool grid = Show.Detail(doc, d, zone, bad, w);
+                    var ck = Check.Of(tr, zoneId, size, Set(a[2]), Set(a[3]), Set(a[4]), out string error);
                     tr.Commit();
-
+                    if (ck == null) return Text(error);
+                    ck.Show(doc);
                     var res = new ResultBuffer();
-                    foreach (var n in new long[] { d.Kind.Length - d.Count(CellKind.Outside), d.Grid.Nx, d.Grid.Ny, nreg, nomat, unknown, nodata,
-                                                   d.Holes.Count, d.Overlaps, badclim, d.Count(CellKind.Climate), grid ? 1 : 0 })
-                        res.Add(new TypedValue((int)LispDataType.Int32, (int)Math.Min(n, int.MaxValue)));
-                    res.Add(new TypedValue((int)LispDataType.ListBegin));
-                    foreach (var m in mats) res.Add(new TypedValue((int)LispDataType.Text, m));
-                    res.Add(new TypedValue((int)LispDataType.ListEnd));
+                    ck.Write(res);
                     return res;
                 }
             }
@@ -120,6 +98,126 @@ namespace DynALisp.Simulation
             {
                 return Text("Dyl:SimulationRead: " + ex.Message);
             }
+        }
+
+        [LispFunction("Dyl:SimulationRun")]
+        public ResultBuffer Run(ResultBuffer args)
+        {
+            try
+            {
+                var a = Args(args);
+                if (a.Count < 6 || !(a[0] is ObjectId zoneId) || !(a[1] is double size))
+                    return Text("Dyl:SimulationRun: (zone size known mats climates imperial metres) expected.");
+                var mats = Table(a[3]);
+                var clims = Table(a[4]);
+                bool imperial = a[5] is double imp && imp != 0;
+                var data = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                foreach (var m in mats) if (Num(m.Value, 0) > 0 || Num(m.Value, 1) > 0) data.Add(m.Key);
+                var climIds = new HashSet<string>(clims.Keys, StringComparer.OrdinalIgnoreCase);
+                var doc = AcApp.DocumentManager.MdiActiveDocument;
+                double metres = a.Count > 6 && a[6] is double mu && mu > 0 ? mu : Metres(doc.Database);
+
+                using (var tr = doc.Database.TransactionManager.StartTransaction())
+                {
+                    var ck = Check.Of(tr, zoneId, size, Set(a[2]), data, climIds, out string error);
+                    tr.Commit();
+                    if (ck == null) return Text(error);
+                    var res = new ResultBuffer();
+                    bool noTemp = false;
+                    foreach (var c in ck.Climates)
+                        if (clims.TryGetValue(c, out var row) && double.IsNaN(Num(row, 0))) noTemp = true;
+                    if (ck.Problems || noTemp)
+                    {
+                        ck.Show(doc);
+                        ck.Write(res);
+                        res.Add(new TypedValue((int)LispDataType.Nil));
+                        return res;
+                    }
+
+                    var d = ck.Detail;
+                    int nr = d.Regions.Count;
+                    double[] lambda = new double[nr], temp = new double[nr], rs = new double[nr], rsc = new double[nr], rh = new double[nr];
+                    bool same = true;
+                    for (int r = 0; r < nr; r++)
+                    {
+                        var reg = d.Regions[r];
+                        lambda[r] = temp[r] = rs[r] = rsc[r] = rh[r] = double.NaN;
+                        if (reg.IsClimate)
+                        {
+                            if (!clims.TryGetValue(reg.Climate, out var row)) continue;
+                            temp[r] = Num(row, 0);
+                            rh[r] = Num(row, 1);
+                            rs[r] = Num(row, 2);
+                            rsc[r] = Num(row, 3);
+                            if (double.IsNaN(rs[r])) rs[r] = 0;
+                            if (double.IsNaN(rsc[r])) rsc[r] = rs[r];
+                            if (rsc[r] != rs[r]) same = false;
+                        }
+                        else if (mats.TryGetValue(reg.Material, out var row))
+                        {
+                            lambda[r] = Num(row, 0);
+                            if (!(lambda[r] > 0)) lambda[r] = Thermal.Equivalent(reg.Shape, Num(row, 1), metres);
+                        }
+                    }
+
+                    var heat = Thermal.Solve(d, lambda, temp, rs, metres);
+                    var surf = same ? heat : Thermal.Solve(d, lambda, temp, rsc, metres);
+                    var sum = Summary.Of(heat, surf, temp, rh);
+                    var zb = ck.Zone.Bounds;
+                    Show.Field(doc, surf, sum, ck.Zone, imperial, Math.Max(zb.Width, zb.Height) / 400);
+
+                    ck.Write(res);
+                    res.Add(new TypedValue((int)LispDataType.ListBegin));
+                    Pair(res, "Interior", sum.Interior);
+                    Pair(res, "Exterior", sum.Exterior);
+                    Pair(res, "Ti", sum.Ti);
+                    Pair(res, "Te", sum.Te);
+                    Pair(res, "Q", sum.Q);
+                    Pair(res, "L2D", sum.L2D);
+                    Pair(res, "Length", sum.Length);
+                    Pair(res, "Rsi", sum.Rsi);
+                    Pair(res, "Tsi", sum.Tsi);
+                    if (!double.IsNaN(sum.Tsi))
+                    {
+                        res.Add(new TypedValue((int)LispDataType.ListBegin));
+                        res.Add(new TypedValue((int)LispDataType.Text, "TsiAt"));
+                        res.Add(new TypedValue((int)LispDataType.Double, sum.TsiAt.X));
+                        res.Add(new TypedValue((int)LispDataType.Double, sum.TsiAt.Y));
+                        res.Add(new TypedValue((int)LispDataType.ListEnd));
+                    }
+                    Pair(res, "TsiMaterial", sum.TsiMaterial);
+                    Pair(res, "fRsi", sum.FRsi);
+                    Pair(res, "Dew", sum.Dew);
+                    if (!double.IsNaN(sum.Dew)) Pair(res, "BelowDew", sum.BelowDew);
+                    Pair(res, "Isolated", heat.Isolated);
+                    Pair(res, "Iterations", heat.Iterations);
+                    res.Add(new TypedValue((int)LispDataType.ListEnd));
+                    return res;
+                }
+            }
+            catch (System.Exception ex)
+            {
+                return Text("Dyl:SimulationRun: " + ex.Message);
+            }
+        }
+
+        [LispFunction("Dyl:SimulationProbe")]
+        public ResultBuffer Probe(ResultBuffer args)
+        {
+            var a = Args(args);
+            var doc = AcApp.DocumentManager.MdiActiveDocument;
+            var last = Show.Last(doc);
+            if (last == null || a.Count < 1 || !(a[0] is Point3d pt)) return null;
+            var d = last.Detail;
+            int c = d.Grid.CellAt(new P(pt.X, pt.Y));
+            if (c < 0 || d.Kind[c] == CellKind.Outside) return null;
+            var res = new ResultBuffer();
+            double t = last.T[c];
+            res.Add(double.IsNaN(t) ? new TypedValue((int)LispDataType.Nil) : new TypedValue((int)LispDataType.Double, t));
+            var reg = d.Owner[c] >= 0 ? d.Regions[d.Owner[c]] : null;
+            res.Add(new TypedValue((int)LispDataType.Text, reg == null || reg.IsClimate ? "" : reg.Material));
+            res.Add(new TypedValue((int)LispDataType.Text, reg != null && reg.IsClimate ? reg.Climate : ""));
+            return res;
         }
 
         [LispFunction("Dyl:SimulationClear")]
@@ -130,6 +228,58 @@ namespace DynALisp.Simulation
         }
 
         static ResultBuffer Text(string s) => new ResultBuffer(new TypedValue((int)LispDataType.Text, s));
+
+        // A pair (key . value) of a result, left out when the value is not known:
+        static void Pair(ResultBuffer res, string key, object v)
+        {
+            if (v is double x && (double.IsNaN(x) || double.IsInfinity(x))) return;
+            if (v is string t && t.Length == 0) return;
+            res.Add(new TypedValue((int)LispDataType.ListBegin));
+            res.Add(new TypedValue((int)LispDataType.Text, key));
+            if (v is double dv) res.Add(new TypedValue((int)LispDataType.Double, dv));
+            else if (v is int iv) res.Add(new TypedValue((int)LispDataType.Int32, iv));
+            else res.Add(new TypedValue((int)LispDataType.Text, v.ToString()));
+            res.Add(new TypedValue((int)LispDataType.DottedPair));
+        }
+
+        // Texts "id|value|value..." by id (the values after the id):
+        static Dictionary<string, string[]> Table(object o)
+        {
+            var t = new Dictionary<string, string[]>(StringComparer.OrdinalIgnoreCase);
+            if (o is List<string> l)
+                foreach (var x in l)
+                {
+                    var f = x.Split('|');
+                    if (f[0].Length == 0) continue;
+                    var v = new string[f.Length - 1];
+                    Array.Copy(f, 1, v, 0, v.Length);
+                    t[f[0]] = v;
+                }
+            return t;
+        }
+
+        // The number of the field i of a row (a decimal comma read as a point), NaN when empty:
+        static double Num(string[] row, int i)
+        {
+            if (row == null || i >= row.Length) return double.NaN;
+            var s = row[i].Trim().Replace(',', '.');
+            return double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var v) ? v : double.NaN;
+        }
+
+        // The metres of a drawing unit when the Lisp gives none (INSUNITS, the same rule as
+        // Remote>>Dyl:MaterialUnitMetres: change both together):
+        static double Metres(Database db)
+        {
+            switch (db.Insunits)
+            {
+                case UnitsValue.Inches: return 0.0254;
+                case UnitsValue.Feet: return 0.3048;
+                case UnitsValue.Millimeters: return 0.001;
+                case UnitsValue.Centimeters: return 0.01;
+                case UnitsValue.Meters: return 1;
+                default: return db.Measurement == MeasurementValue.English ? 0.0254 : 0.001;
+            }
+        }
 
         // The arguments of a Lisp call: an ObjectId, a double (an integer read as one), a list of
         // texts (List<string>, nil an empty list), in their order:
@@ -157,6 +307,7 @@ namespace DynALisp.Simulation
                     case LispDataType.Int16: if (list == null) res.Add((double)(short)tv.Value); break;
                     case LispDataType.Int32: if (list == null) res.Add((double)(int)tv.Value); break;
                     case LispDataType.ObjectId: if (list == null) res.Add((ObjectId)tv.Value); break;
+                    case LispDataType.Point3d: if (list == null) res.Add((Point3d)tv.Value); break;
                 }
             }
             return res;
