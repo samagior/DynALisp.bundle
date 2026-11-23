@@ -30,7 +30,11 @@
 //     the width it has more goes to what holds them: the Width of their panels and the
 //     column of a Grid of a fixed width they are in (or the ColumnDefinition of that Grid with
 //     dyl:Win.Grow="1"), shared the same way by those side by side. It is never narrower
-//     than its content.
+//     than its content, but for what of it has a MinWidth below its Width (a column of a
+//     Grid, a panel): it gets narrower, down to that MinWidth, when the window is, the
+//     width missing taken from those side by side in proportion to what each can give. A
+//     fixed column with a MinWidth that holds no list (the settings beside the lists) gets
+//     narrower the same way, never wider.
 //   - It opens at the size of its content, but never larger than the work area of the
 //     screen of AutoCAD (its lists shorter), centered on the window that opened it and kept
 //     inside the screen.
@@ -80,9 +84,11 @@ namespace DynALisp.Windows
             public FrameworkElement E;
             public ColumnDefinition C;
             public Grid G;
-            public double Nat;
+            public double Nat, Min;
             public Rect Box;
             public readonly List<Wide> Side = new List<Wide>();
+            public bool Fixed;          // narrower only, never wider (no list in it)
+            public double Give => Nat - Min;
         }
 
         // What Distribute does, for Shots -fit (null in AutoCAD):
@@ -98,7 +104,7 @@ namespace DynALisp.Windows
         readonly FrameworkElement _content;
         readonly List<Grow> _grows = new List<Grow>();
         readonly List<Wide> _wides = new List<Wide>();
-        double _natW;
+        double _natW, _leastW;
         bool _ready, _busy;
         Size _lastFull, _lastView, _lastWant;
         int _runs, _runsSince;
@@ -202,11 +208,12 @@ namespace DynALisp.Windows
             void AddE(FrameworkElement e)
             {
                 if (Local(e, FrameworkElement.WidthProperty) && !double.IsNaN(e.Width) && seen.Add(e))
-                    _wides.Add(new Wide { E = e, Nat = e.Width, Box = BoxOf(e) });
+                    _wides.Add(new Wide { E = e, Nat = e.Width, Min = Least(e.Width, e.MinWidth), Box = BoxOf(e) });
             }
             void AddC(Grid g, ColumnDefinition c)
             {
-                if (c.Width.IsAbsolute && seen.Add(c)) _wides.Add(new Wide { C = c, G = g, Nat = c.Width.Value, Box = ColBox(g, c) });
+                if (c.Width.IsAbsolute && seen.Add(c))
+                    _wides.Add(new Wide { C = c, G = g, Nat = c.Width.Value, Min = Least(c.Width.Value, c.MinWidth), Box = ColBox(g, c) });
             }
             foreach (var gr in _grows)
             {
@@ -227,6 +234,27 @@ namespace DynALisp.Windows
                     child = p;
                 }
             }
+            // the other fixed columns with a MinWidth (a column of settings beside the
+            // lists): narrower with the window, never wider
+            void Cols(DependencyObject o)
+            {
+                if (o is Grid g)
+                    foreach (var c in g.ColumnDefinitions)
+                        if (c.Width.IsAbsolute && c.MinWidth > 0 && c.MinWidth < c.Width.Value && seen.Add(c))
+                            _wides.Add(new Wide { C = c, G = g, Nat = c.Width.Value, Min = c.MinWidth, Box = ColBox(g, c), Fixed = true });
+                foreach (var k in LogicalTreeHelper.GetChildren(o))
+                    if (k is DependencyObject d) Cols(d);
+            }
+            Cols(_content);
+        }
+
+        // The least width of what has a fixed width: its MinWidth when it is below it:
+        static double Least(double width, double min) => min > 0 && min < width ? min : width;
+
+        static void SetWidth(Wide t, double v)
+        {
+            if (t.C != null) { if (Math.Abs(t.C.Width.Value - v) > 0.5) t.C.Width = new GridLength(v); }
+            else if (Math.Abs(t.E.Width - v) > 0.5) t.E.Width = v;
         }
 
         static bool Over(double a0, double a1, double b0, double b1) => a0 < b1 - 0.5 && b0 < a1 - 0.5;
@@ -284,7 +312,16 @@ namespace DynALisp.Windows
             }
             Remeasure();
             var nat = _content.DesiredSize;
-            _natW = nat.Width;
+            _natW = _leastW = nat.Width;
+            if (_wides.Any(t => t.Give > 0.5))
+            {
+                // the least width: what has a MinWidth at it
+                foreach (var t in _wides) SetWidth(t, t.Min);
+                Remeasure();
+                _leastW = Math.Min(_natW, _content.DesiredSize.Width);
+                foreach (var t in _wides) SetWidth(t, t.Nat);
+                Remeasure();
+            }
             if (!Resizable) leastH = nat.Height;
 
             // the frame of the window (title bar, borders), the content being the client area:
@@ -320,7 +357,7 @@ namespace DynALisp.Windows
                 return;
             }
 
-            double minW = Math.Min(natW, wa.Width), minH = Math.Min(leastH + frameH, wa.Height);
+            double minW = Math.Min(_leastW + frameW, wa.Width), minH = Math.Min(leastH + frameH, wa.Height);
             double w = Clamp(saved?.Width ?? natW, minW, wa.Width);
             double h = Clamp(saved?.Height ?? natH, minH, wa.Height);
             double left = saved?.Left ?? cx - w / 2, top = saved?.Top ?? cy - h / 2;
@@ -408,17 +445,28 @@ namespace DynALisp.Windows
                 double hBarH = hBar ? full.Height - view.Height : SystemParameters.HorizontalScrollBarHeight;
                 double vBarW = vBar ? full.Width - view.Width : SystemParameters.VerticalScrollBarWidth;
 
-                // the width: never narrower than the content, a bar under it when it is:
+                // the width: never narrower than the content at its least (what has a MinWidth
+                // at it), a bar under it when it is:
                 bool needV = _sv.VerticalScrollBarVisibility == ScrollBarVisibility.Auto && vBar;
                 double availW = full.Width - (needV ? vBarW : 0);
-                bool needH = _natW > availW + 0.5;
-                double dx = Math.Max(0, availW - _natW);
+                bool needH = _leastW > availW + 0.5;
+                double dx = availW - _natW;
                 foreach (var t in _wides)
                 {
-                    double share = t.Nat / (t.Nat + t.Side.Sum(o => o.Nat));
-                    double v = t.Nat + dx * (double.IsNaN(share) ? 1 : share);
-                    if (t.C != null) { if (Math.Abs(t.C.Width.Value - v) > 0.5) t.C.Width = new GridLength(v); }
-                    else if (Math.Abs(t.E.Width - v) > 0.5) t.E.Width = v;
+                    double v;
+                    if (dx >= 0)
+                    {
+                        if (t.Fixed) { SetWidth(t, t.Nat); continue; }
+                        double share = t.Nat / (t.Nat + t.Side.Where(o => !o.Fixed).Sum(o => o.Nat));
+                        v = t.Nat + dx * (double.IsNaN(share) ? 1 : share);
+                    }
+                    else
+                    {
+                        // narrower: each gives in proportion to what it can give
+                        double can = t.Give + t.Side.Sum(o => o.Give);
+                        v = can > 0 ? Math.Max(t.Min, t.Nat + dx * t.Give / can) : t.Nat;
+                    }
+                    SetWidth(t, v);
                 }
 
                 // the height: the lists one above the other share it, those at their least
