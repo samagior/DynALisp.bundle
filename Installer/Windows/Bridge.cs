@@ -59,9 +59,9 @@ namespace DynALisp.Windows
         public void Initialize()
         {
             AppDomain.CurrentDomain.AssemblyResolve += Resolve;
-            // the picture of a window left between two tabs (Engine\Tabs.cs), when the Lisp
-            // showed no other window after it:
-            AcApp.Idle += (a, b) => { if (Cover.Shown) Cover.Close(); };
+            // the window of a tab left (Engine\Tabs.cs), when the Lisp showed no other window
+            // after it:
+            AcApp.Idle += (a, b) => { if (Modal.Kept) Modal.Close(); };
         }
 
         public void Terminate() { }
@@ -83,7 +83,7 @@ namespace DynALisp.Windows
                 var a = Lisp.Read(args);
                 string file = a.Count > 0 ? a[0] as string : null;
                 if (string.IsNullOrEmpty(file)) throw new ArgumentException("(Dyl:Window file values): no file given");
-                var s = new Session { ShowRoot = w => AcApp.ShowModalWindow(w), Dark = DarkTheme(), FitToScreen = true, Places = new Places() };
+                var s = new Session { ShowRoot = w => AcApp.ShowModalWindow(w), RootOwner = MainWindow(), Dark = DarkTheme(), FitToScreen = true, Places = new Places() };
                 if (a.Count > 1 && a[1] is Lisp.List vals) Give(s, vals);
                 int status = s.Show(file);
                 var rb = new ResultBuffer();
@@ -117,6 +117,13 @@ namespace DynALisp.Windows
                 try { AcApp.DocumentManager.MdiActiveDocument?.Editor.WriteMessage("\n--> Unable to show the window: " + Message(e)); } catch { }
                 return null;
             }
+        }
+
+        // The main window of AutoCAD (what a window with tabs is shown over):
+        static IntPtr MainWindow()
+        {
+            try { return AcApp.MainWindow.Handle; }
+            catch { return IntPtr.Zero; }
         }
 
         // The theme of AutoCAD: COLORTHEME 0 dark, 1 light:

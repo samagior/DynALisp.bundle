@@ -67,6 +67,10 @@ namespace DynALisp.Windows
         // Shows the first window (over AutoCAD); ShowDialog when null:
         public Func<Window, bool?> ShowRoot;
 
+        // The window a window with tabs is shown over (AutoCAD, Bridge.cs), modal and kept on
+        // the screen between two tabs (Modal, Tabs.cs); none: ShowRoot:
+        public IntPtr RootOwner;
+
         // The windows shown fit the screen, and those with lists can be resized (Fit.cs),
         // where they were left kept in Places (Bridge.cs; none: always at their size):
         public bool FitToScreen;
@@ -87,15 +91,18 @@ namespace DynALisp.Windows
             // a window of several tabs is kept at the one place, whatever its tab (Tabs.cs):
             string place = view.Window.Content is TabHost host ? host.Place : Path.GetFileNameWithoutExtension(path);
             if (FitToScreen) Fit.Attach(view.Window, place, Places);
-            // the picture of the window of the tab before, until this one is shown:
-            if (Cover.Shown) view.Window.ContentRendered += (a, b) => Cover.Close();
             if (owner != null)
             {
                 view.Window.Owner = owner;
                 view.Window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
                 view.Window.ShowDialog();
+                return view.Status;
             }
-            else if (ShowRoot != null) ShowRoot(view.Window);
+            // a window with tabs over the window of the tab left (Tabs.cs), any other window
+            // once it is gone:
+            if (RootOwner != IntPtr.Zero && view.Window.Content is TabHost) { Modal.Show(view.Window, RootOwner); return view.Status; }
+            if (Modal.Kept) Modal.Close();
+            if (ShowRoot != null) ShowRoot(view.Window);
             else view.Window.ShowDialog();
             return view.Status;
         }
@@ -769,6 +776,17 @@ namespace DynALisp.Windows
             before?.Invoke();
             // a Cancel button has closed it already (IsCancel):
             if (!_closed) Window.Close();
+            return true;
+        }
+
+        // Ends the window with status as CloseWith, but leaves it on the screen when it is
+        // shown by Modal (another tab picked, Tabs.cs), else closes it:
+        internal bool EndWith(int status, Action before = null)
+        {
+            if (status != 0 && !Checks()) return false;
+            Status = status;
+            before?.Invoke();
+            if (!_closed && !Modal.Keep(Window)) Window.Close();
             return true;
         }
 

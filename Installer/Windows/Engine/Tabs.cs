@@ -24,11 +24,11 @@
 //   ("tab/place" . "Dyl-Manager")               where the window is kept (Fit.cs, else that)
 //
 // Each tab is its own window file, run by its own Lisp: nothing calls the Lisp back while a
-// window is open, so another tab picked (a click, Ctrl+Tab, Ctrl+Shift+Tab) closes the window
+// window is open, so another tab picked (a click, Ctrl+Tab, Ctrl+Shift+Tab) ends the window
 // with Status (its values checked first, as OK), the tab picked in "tab", and the Lisp shows
 // the window of that tab. Every tab is kept at the one place and size (tab/place), and the
-// picture of the window is left on the screen until the next one is shown (Cover), so the
-// window does not seem to close between two tabs.
+// window of the tab left stays on the screen until the next one is drawn over it (Modal), so
+// the window never closes between two tabs.
 
 using System;
 using System.Collections.Generic;
@@ -39,7 +39,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace DynALisp.Windows
@@ -142,122 +141,185 @@ namespace DynALisp.Windows
             return tab;
         }
 
-        // Another tab picked: the window closes with Status (its values checked first, as
-        // OK; when one is not valid it stays on its tab), the picture of the window left on
-        // the screen until the window of the tab picked is shown:
+        // Another tab picked: the window ends with Status (its values checked first, as OK;
+        // when one is not valid it stays on its tab), and stays on the screen, its place
+        // saved, until the window of the tab picked is shown over it (Modal.Keep):
         static void Pick(View view, Session s, int cur, int index)
         {
             if (index == cur) return;
             s.Values.TryGetValue("tab", out string before);
             s.Values["tab"] = index.ToString(CultureInfo.InvariantCulture);
-            if (!view.CloseWith(Status, () => Cover.Show(view.Window)))
+            var host = view.Window.Content as TabHost;
+            if (!view.EndWith(Status, () => host?.Leaving?.Invoke()))
             {
                 if (before == null) s.Values.Remove("tab"); else s.Values["tab"] = before;
             }
         }
+
+        // The window of this tab is left (Fit.cs saves its place, so the next tab opens there):
+        internal Action Leaving;
     }
 
-    // The picture of a window left on the screen while the Lisp shows the next one (another
-    // tab): closed when the next window is shown (Session.Show), when AutoCAD is idle again
-    // (Bridge.cs: the Lisp showed no other window), or after a few seconds at most.
-    public static class Cover
+    // How a window with tabs is shown over AutoCAD: modal, as ShowDialog (the other windows
+    // of AutoCAD disabled until it is closed), but a window of a tab left is not closed: its
+    // modal loop ends, the Lisp gets its values (and saves them) while it stays on the
+    // screen, disabled, and the window of the next tab is shown over it, at the same place,
+    // without the animation of Windows; the window left is closed once the next one is drawn.
+    // When the Lisp shows no other window (an error, the Manager ended), the window left is
+    // closed when AutoCAD is idle again (Bridge.cs). So the window never seems to close
+    // between two tabs, and AutoCAD stays disabled the whole time.
+    public static class Modal
     {
-        static Window _cover;
-        static DispatcherTimer _timer;
+        // The windows of AutoCAD a window disabled, enabled again when it closes, unless it
+        // handed them to the window of the next tab (List null):
+        sealed class Disabled { public List<IntPtr> List; }
 
-        public static bool Shown => _cover != null;
+        static Window _kept;
+        static Disabled _disabled;
+        static IntPtr _owner;
+        static DispatcherFrame _frame;
+        static Window _shown;
+        static bool _keep;
 
-        internal static void Show(Window w)
+        public static bool Kept => _kept != null;
+
+        // Shows w over the window owner (AutoCAD) until it is closed, or ended by Keep:
+        internal static void Show(Window w, IntPtr owner)
         {
-            Close();
+            var old = _kept;
+            var disabled = new Disabled();
+            if (old != null)
+            {
+                // the windows of AutoCAD stay disabled (handed to this window); the window left
+                // is closed once this one is drawn:
+                disabled.List = _disabled?.List ?? new List<IntPtr>();
+                if (_disabled != null) _disabled.List = null;
+                // (and one enabled again meanwhile: a message of the Lisp, alert, enables
+                // AutoCAD as it closes)
+                disabled.List.AddRange(DisableThread());
+                _kept = null;
+                _disabled = null;
+                w.ContentRendered += (a, b) => CloseQuiet(old);
+                w.Closed += (a, b) => CloseQuiet(old);
+            }
+            else
+            {
+                disabled.List = DisableThread();
+                _owner = owner;
+            }
+            if (_owner != IntPtr.Zero) new WindowInteropHelper(w).Owner = _owner;
+            w.SourceInitialized += (a, b) => NoAnimation(w);
+            // the windows of AutoCAD enabled again before the window goes (so AutoCAD is
+            // active again, not another program), unless it is only left for another tab:
+            w.Closing += (a, b) => { if (!b.Cancel) Restore(disabled); };
+            var frame = new DispatcherFrame();
+            w.Closed += (a, b) => frame.Continue = false;
+            var outer = (_frame, _shown, _keep);
+            _frame = frame;
+            _shown = w;
+            _keep = false;
             try
             {
-                var hwnd = new WindowInteropHelper(w).Handle;
-                var src = PresentationSource.FromVisual(w);
-                if (hwnd == IntPtr.Zero || src?.CompositionTarget == null) return;
-                if (DwmGetWindowAttribute(hwnd, 9, out RECT r, Marshal.SizeOf(typeof(RECT))) != 0 && !GetWindowRect(hwnd, out r)) return;
-                int wd = r.Right - r.Left, ht = r.Bottom - r.Top;
-                if (wd <= 0 || ht <= 0) return;
-                var image = Capture(r.Left, r.Top, wd, ht);
-                if (image == null) return;
-                var m = src.CompositionTarget.TransformFromDevice;
-                var cover = new Window
-                {
-                    WindowStyle = WindowStyle.None,
-                    ResizeMode = ResizeMode.NoResize,
-                    ShowInTaskbar = false,
-                    ShowActivated = false,
-                    Focusable = false,
-                    IsHitTestVisible = false,
-                    WindowStartupLocation = WindowStartupLocation.Manual,
-                    Left = r.Left * m.M11,
-                    Top = r.Top * m.M22,
-                    Width = wd * m.M11,
-                    Height = ht * m.M22,
-                    Background = w.Background,
-                    Content = new Image { Source = image, Stretch = Stretch.Fill },
-                };
-                // above what the window was above (AutoCAD):
-                var owner = new WindowInteropHelper(w).Owner;
-                if (owner == IntPtr.Zero && w.Owner != null) owner = new WindowInteropHelper(w.Owner).Handle;
-                new WindowInteropHelper(cover).Owner = owner;
-                cover.Show();
-                // drawn before the window closes:
-                cover.Dispatcher.Invoke(DispatcherPriority.Render, new Action(() => { }));
-                _cover = cover;
-                _timer = new DispatcherTimer(DispatcherPriority.Background, cover.Dispatcher) { Interval = TimeSpan.FromSeconds(4) };
-                _timer.Tick += (a, b) => Close();
-                _timer.Start();
+                w.Show();
+                Dispatcher.PushFrame(frame);
             }
-            catch { Close(); }
-        }
-
-        public static void Close()
-        {
-            var c = _cover;
-            _cover = null;
-            if (_timer != null) { _timer.Stop(); _timer = null; }
-            if (c == null) return;
-            try { c.Close(); } catch { }
-        }
-
-        static BitmapSource Capture(int x, int y, int w, int h)
-        {
-            IntPtr screen = GetDC(IntPtr.Zero), mem = IntPtr.Zero, bmp = IntPtr.Zero, old = IntPtr.Zero;
-            try
+            catch
             {
-                mem = CreateCompatibleDC(screen);
-                bmp = CreateCompatibleBitmap(screen, w, h);
-                old = SelectObject(mem, bmp);
-                if (!BitBlt(mem, 0, 0, w, h, screen, x, y, 0x00CC0020 | 0x40000000)) return null;
-                SelectObject(mem, old);
-                old = IntPtr.Zero;
-                var image = Imaging.CreateBitmapSourceFromHBitmap(bmp, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-                image.Freeze();
-                return image;
+                if (old != null) CloseQuiet(old);
+                Restore(disabled);
+                throw;
             }
-            catch { return null; }
             finally
             {
-                if (old != IntPtr.Zero) SelectObject(mem, old);
-                if (bmp != IntPtr.Zero) DeleteObject(bmp);
-                if (mem != IntPtr.Zero) DeleteDC(mem);
-                ReleaseDC(IntPtr.Zero, screen);
+                bool keep = _keep && w.IsVisible;
+                (_frame, _shown, _keep) = outer;
+                if (keep)
+                {
+                    _kept = w;
+                    _disabled = disabled;
+                    // nothing clicked while the Lisp works:
+                    var h = new WindowInteropHelper(w).Handle;
+                    if (h != IntPtr.Zero) EnableWindow(h, false);
+                }
             }
         }
 
-        [StructLayout(LayoutKind.Sequential)]
-        struct RECT { public int Left, Top, Right, Bottom; }
+        // Ends the modal loop of w, its window left on the screen (another tab picked). False
+        // when w is not shown by Show:
+        internal static bool Keep(Window w)
+        {
+            if (_shown != w || _frame == null) return false;
+            _keep = true;
+            _frame.Continue = false;
+            return true;
+        }
 
-        [DllImport("dwmapi.dll")] static extern int DwmGetWindowAttribute(IntPtr hwnd, int attr, out RECT value, int size);
-        [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr hwnd, out RECT r);
-        [DllImport("user32.dll")] static extern IntPtr GetDC(IntPtr hwnd);
-        [DllImport("user32.dll")] static extern int ReleaseDC(IntPtr hwnd, IntPtr dc);
-        [DllImport("gdi32.dll")] static extern IntPtr CreateCompatibleDC(IntPtr dc);
-        [DllImport("gdi32.dll")] static extern IntPtr CreateCompatibleBitmap(IntPtr dc, int w, int h);
-        [DllImport("gdi32.dll")] static extern IntPtr SelectObject(IntPtr dc, IntPtr o);
-        [DllImport("gdi32.dll")] static extern bool BitBlt(IntPtr dst, int x, int y, int w, int h, IntPtr src, int sx, int sy, int rop);
-        [DllImport("gdi32.dll")] static extern bool DeleteObject(IntPtr o);
-        [DllImport("gdi32.dll")] static extern bool DeleteDC(IntPtr dc);
+        // The window left closed, the windows of AutoCAD enabled again (the Lisp showed no
+        // other window, or shows a window without tabs):
+        public static void Close()
+        {
+            var w = _kept;
+            var disabled = _disabled;
+            _kept = null;
+            _disabled = null;
+            Restore(disabled);
+            if (w == null) return;
+            CloseQuiet(w);
+            try { if (_owner != IntPtr.Zero) SetForegroundWindow(_owner); } catch { }
+        }
+
+        static void CloseQuiet(Window w)
+        {
+            try { w.Close(); } catch { }
+        }
+
+        // Every window of AutoCAD shown and enabled (its main window, its floating palettes)
+        // disabled, as ShowDialog does:
+        static List<IntPtr> DisableThread()
+        {
+            var list = new List<IntPtr>();
+            try
+            {
+                EnumThreadWindows(GetCurrentThreadId(), (h, l) =>
+                {
+                    if (IsWindowVisible(h) && IsWindowEnabled(h)) { EnableWindow(h, false); list.Add(h); }
+                    return true;
+                }, IntPtr.Zero);
+            }
+            catch { }
+            return list;
+        }
+
+        static void Restore(Disabled d)
+        {
+            var list = d?.List;
+            if (list == null) return;
+            d.List = null;
+            foreach (var h in list)
+                try { if (IsWindow(h)) EnableWindow(h, true); } catch { }
+        }
+
+        // No animation when the window opens and closes (DWMWA_TRANSITIONS_FORCEDISABLED):
+        static void NoAnimation(Window w)
+        {
+            try
+            {
+                var h = new WindowInteropHelper(w).Handle;
+                int on = 1;
+                if (h != IntPtr.Zero) DwmSetWindowAttribute(h, 3, ref on, sizeof(int));
+            }
+            catch { }
+        }
+
+        delegate bool EnumProc(IntPtr hwnd, IntPtr lParam);
+
+        [DllImport("user32.dll")] static extern bool EnumThreadWindows(uint thread, EnumProc proc, IntPtr lParam);
+        [DllImport("kernel32.dll")] static extern uint GetCurrentThreadId();
+        [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr hwnd);
+        [DllImport("user32.dll")] static extern bool IsWindowEnabled(IntPtr hwnd);
+        [DllImport("user32.dll")] static extern bool IsWindow(IntPtr hwnd);
+        [DllImport("user32.dll")] static extern bool EnableWindow(IntPtr hwnd, bool enable);
+        [DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr hwnd);
+        [DllImport("dwmapi.dll")] static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int value, int size);
     }
 }
