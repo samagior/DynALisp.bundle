@@ -2675,6 +2675,15 @@
   ;;; closes with *dyl:wintabcode* (90, Installer\Windows\Engine\Tabs.cs) and
   ;;; *dyl:wintab* is the index of the tab picked (nil else): the tool saves what it
   ;;; edits, as Save, and the Manager shows the window of that tab.
+  ;;;
+  ;;; With an event, (file titles index title place event), the window is modeless, so
+  ;;; the user draws while it is open: Dyl:Window shows it and returns nil at once (the
+  ;;; tool ends as on Cancel). A button that needs the Lisp (a tab, Save, Draw, an open
+  ;;; button) leaves the window open, disabled, and runs event (a Lisp expression) at
+  ;;; the command line: the tool runs again, and its Dyl:WinShow of that window gets the
+  ;;; button and the values of the window, as a modal window would give them. The
+  ;;; window it shows next replaces it in place; (Dyl:WindowDone) closes it when the
+  ;;; Lisp shows nothing more (see Remote>>Dyl:ManagerEvent).
   ;;; ============================================================================
 
   (setq *dyl:wintabcode* 90)
@@ -2733,6 +2742,7 @@
                               (cons "tab" (itoa (nth 2 *dyl:wintabs*)))
                               (cons "tab/title" (nth 3 *dyl:wintabs*))
                               (cons "tab/place" (nth 4 *dyl:wintabs*))
+                              (cons "tab/event" (cond ((nth 5 *dyl:wintabs*)) ("")))
                         )
             *dyl:wintab* nil
       )

@@ -67,10 +67,6 @@ namespace DynALisp.Windows
         // Shows the first window (over AutoCAD); ShowDialog when null:
         public Func<Window, bool?> ShowRoot;
 
-        // The window a window with tabs is shown over (AutoCAD, Bridge.cs), modal and kept on
-        // the screen between two tabs (Modal, Tabs.cs); none: ShowRoot:
-        public IntPtr RootOwner;
-
         // The windows shown fit the screen, and those with lists can be resized (Fit.cs),
         // where they were left kept in Places (Bridge.cs; none: always at their size):
         public bool FitToScreen;
@@ -98,10 +94,6 @@ namespace DynALisp.Windows
                 view.Window.ShowDialog();
                 return view.Status;
             }
-            // a window with tabs over the window of the tab left (Tabs.cs), any other window
-            // once it is gone:
-            if (RootOwner != IntPtr.Zero && view.Window.Content is TabHost) { Modal.Show(view.Window, RootOwner); return view.Status; }
-            if (Modal.Kept) Modal.Close();
             if (ShowRoot != null) ShowRoot(view.Window);
             else view.Window.ShowDialog();
             return view.Status;
@@ -497,6 +489,7 @@ namespace DynALisp.Windows
             string close = Win.GetClose(g);
             if (close != null) int.TryParse(close, NumberStyles.Integer, CultureInfo.InvariantCulture, out status);
             Status = status;
+            if (Intercept != null && Intercept(status)) return;
             if (!_closed) Window.Close();
         }
 
@@ -774,21 +767,17 @@ namespace DynALisp.Windows
             if (status != 0 && !Checks()) return false;
             Status = status;
             before?.Invoke();
+            // a window left open, its button given to the Lisp (the Manager, Modeless):
+            if (status != 0 && Intercept != null && Intercept(status)) return true;
             // a Cancel button has closed it already (IsCancel):
             if (!_closed) Window.Close();
             return true;
         }
 
-        // Ends the window with status as CloseWith, but leaves it on the screen when it is
-        // shown by Modal (another tab picked, Tabs.cs), else closes it:
-        internal bool EndWith(int status, Action before = null)
-        {
-            if (status != 0 && !Checks()) return false;
-            Status = status;
-            before?.Invoke();
-            if (!_closed && !Modal.Keep(Window)) Window.Close();
-            return true;
-        }
+        // A window that stays open when a button that needs the Lisp is clicked (a window
+        // without a modal loop, the Manager: Modeless, Tabs.cs): true when it took the button
+        // (the window is not closed):
+        internal Func<int, bool> Intercept;
 
         // The text boxes checked (Win.Check) before the window closes:
         bool Checks()
