@@ -1639,6 +1639,7 @@
     )
     (if (or force (Dyl:SuiteStale-p files old))
       (progn
+        (Dyl:StartupMark "Startup Suite read")
         (if (not *dyl:quiet*) (princ "\n...Indexing the Apps commands into StartupSuite.csv"))
         (setq recs (Dyl:SuiteBuild files
                                    old
@@ -1648,9 +1649,11 @@
         (if (not (Dyl:SuiteWrite recs))
           (princ (strcat "\n--> Unable to write : " (Dyl:UserFileW *dyl:suite) "\n--> File open in another program?"))
         )
+        ;; Indexed again at startup when an Apps file changed (after a git pull, an update):
+        (Dyl:StartupMark "Startup Suite indexed again (an Apps file changed)")
         (mapcar '(lambda (r) (list (nth 0 r) (nth 1 r) (nth 2 r) (nth 5 r))) recs)
       )
-      (cdr old)
+      (progn (Dyl:StartupMark "Startup Suite read") (cdr old))
     )
   )
 
@@ -3532,8 +3535,10 @@
           (cond 
             ;; File without command turned on: load it entirely
             ((member "" cmds)
+             (Dyl:StartupMark "Commands (Startup Suite)")
              (if (Dyl:LibsFor-p ful) (Dyl:LibsLoad))
              (load ful (strcat "\n--> Unable to load : " *fle "\n--> From : " *pth))
+             (Dyl:StartupMark "Apps files loaded whole (no command turned on)")
              (setq num (1+ num))
             )
             ;; A file of another module than Dynalisp: the libraries loaded with it (see
