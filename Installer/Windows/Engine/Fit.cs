@@ -42,6 +42,10 @@
 //     (maximized when it was), kept inside a screen: Places, saved by the plugin in one user
 //     setting (DynalispWindowPlaces). A window without lists keeps the size of its content
 //     (SizeToContent), at most the size of the screen.
+//   - A window of several tabs (the Manager, Tabs.cs) is one window: every tab opens at the
+//     size and the place of its tab/place, never made larger for a tab that needs more room
+//     (that tab scrolls) nor smaller for one that needs less; only the first one ever shown
+//     opens at the size of its content.
 //
 // The pictures of the docs (Shots\, Session.Open) do not go through here: they show the
 // window at the size of its file.
@@ -95,6 +99,8 @@ namespace DynALisp.Windows
         internal static Action<string> Trace;
 
         const double ListLeast = 100, GalleryLeast = 200, ListDefault = 240;
+        // the least size of a window of several tabs (its content, under the tabs):
+        const double TabsLeastW = 480, TabsLeastH = 240;
         static readonly Size Inf = new Size(double.PositiveInfinity, double.PositiveInfinity);
 
         readonly Window _w;
@@ -109,7 +115,8 @@ namespace DynALisp.Windows
         Size _lastFull, _lastView, _lastWant;
         int _runs, _runsSince;
 
-        bool Resizable => _grows.Count > 0;
+        // (a window of several tabs, the Manager, always: one size and one place for every tab)
+        bool Resizable => _grows.Count > 0 || _tabs != null;
 
         // Makes the window w (of the file name, without its extension) fit, before it is shown:
         // (a window of several tabs, Tabs.cs: the window of its tab, under its tabs, which
@@ -377,6 +384,14 @@ namespace DynALisp.Windows
             }
 
             double minW = Math.Min(_leastW + frameW, wa.Width), minH = Math.Min(leastH + frameH, wa.Height);
+            if (_tabs != null)
+            {
+                // One window whatever the tab: the size and the place it was left at, never
+                // made larger or smaller for the tab shown (what does not fit scrolls), so
+                // the next tab is drawn exactly over the one left:
+                minW = Math.Min(Math.Max(tabsW + frameW, TabsLeastW), wa.Width);
+                minH = Math.Min(frameH + TabsLeastH, wa.Height);
+            }
             double w = Clamp(saved?.Width ?? natW, minW, wa.Width);
             double h = Clamp(saved?.Height ?? natH, minH, wa.Height);
             double left = saved?.Left ?? cx - w / 2, top = saved?.Top ?? cy - h / 2;

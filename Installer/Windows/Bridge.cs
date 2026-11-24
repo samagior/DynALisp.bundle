@@ -69,7 +69,9 @@ namespace DynALisp.Windows
             // The windows with tabs (the Manager) are modeless (Engine\Tabs.cs): shown over
             // AutoCAD without a modal loop, and a button that needs the Lisp runs its event at
             // the command line of the current drawing (the command running cancelled first):
-            Modeless.ShowWindow = w => AcApp.ShowModelessWindow(w);
+            // (shown without the size and the place AutoCAD keeps for its own windows: Fit.cs
+            // places every window, a window of tabs the same way for every tab)
+            Modeless.ShowWindow = w => AcApp.ShowModelessWindow(Bridge.MainWindow(), w, false);
             Modeless.Run = Run;
         }
 
@@ -102,7 +104,7 @@ namespace DynALisp.Windows
                 var a = Lisp.Read(args);
                 string file = a.Count > 0 ? a[0] as string : null;
                 if (string.IsNullOrEmpty(file)) throw new ArgumentException("(Dyl:Window file values): no file given");
-                var s = new Session { ShowRoot = w => AcApp.ShowModalWindow(w), Dark = DarkTheme(), FitToScreen = true, Places = new Places() };
+                var s = new Session { ShowRoot = w => AcApp.ShowModalWindow(MainWindow(), w, false), Dark = DarkTheme(), FitToScreen = true, Places = new Places() };
                 if (a.Count > 1 && a[1] is Lisp.List vals) Give(s, vals);
                 // A window with tabs and its event: modeless (nil once shown), or the values
                 // of the button that ran its event:
@@ -118,6 +120,13 @@ namespace DynALisp.Windows
                 try { AcApp.DocumentManager.MdiActiveDocument?.Editor.WriteMessage("\n--> Unable to show the window: " + Message(e)); } catch { }
                 return null;
             }
+        }
+
+        // The main window of AutoCAD, the owner of the windows shown:
+        internal static IntPtr MainWindow()
+        {
+            try { return AcApp.MainWindow.Handle; }
+            catch { return IntPtr.Zero; }
         }
 
         // (Dyl:WindowDone): the Lisp is done with the button of a modeless window it took
