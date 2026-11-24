@@ -36,6 +36,13 @@
 // The window is the only thing running while it is open: no callback to the Lisp. A button
 // that must run Lisp (a command, another window of the Lisp) closes it with its number
 // (Win.Close), and the Lisp opens it again, as a DCL window does with done_dialog.
+//
+// A window with tabs given its event ("tab/event": the Manager) is modeless instead, so the
+// user can draw while it is open (Modeless of Engine\Tabs.cs): Dyl:Window shows it and
+// returns nil at once. A button that needs the Lisp leaves it open, disabled, and runs its
+// event at the command line; the Lisp shows the window again, and that call returns the
+// button and the values of the window (as a modal one would), then the window shown again
+// replaces it in place. (Dyl:WindowDone) closes it when the Lisp did not show it again.
 
 using System;
 using System.Collections;
@@ -59,9 +66,21 @@ namespace DynALisp.Windows
         public void Initialize()
         {
             AppDomain.CurrentDomain.AssemblyResolve += Resolve;
-            // the window of a tab left (Engine\Tabs.cs), when the Lisp showed no other window
-            // after it:
-            AcApp.Idle += (a, b) => { if (Modal.Kept) Modal.Close(); };
+            // The windows with tabs (the Manager) are modeless (Engine\Tabs.cs): shown over
+            // AutoCAD without a modal loop, and a button that needs the Lisp runs its event at
+            // the command line of the current drawing (the command running cancelled first):
+            Modeless.ShowWindow = w => AcApp.ShowModelessWindow(w);
+            Modeless.Run = Run;
+        }
+
+        static bool Run(string expr)
+        {
+            var doc = AcApp.DocumentManager.MdiActiveDocument;
+            if (doc == null) return false;
+            bool busy = false;
+            try { busy = Convert.ToInt32(AcApp.GetSystemVariable("CMDACTIVE")) != 0; } catch { }
+            doc.SendStringToExecute((busy ? "\x03\x03" : "") + expr + "\n", true, false, false);
+            return true;
         }
 
         public void Terminate() { }
@@ -83,34 +102,16 @@ namespace DynALisp.Windows
                 var a = Lisp.Read(args);
                 string file = a.Count > 0 ? a[0] as string : null;
                 if (string.IsNullOrEmpty(file)) throw new ArgumentException("(Dyl:Window file values): no file given");
-                var s = new Session { ShowRoot = w => AcApp.ShowModalWindow(w), RootOwner = MainWindow(), Dark = DarkTheme(), FitToScreen = true, Places = new Places() };
+                var s = new Session { ShowRoot = w => AcApp.ShowModalWindow(w), Dark = DarkTheme(), FitToScreen = true, Places = new Places() };
                 if (a.Count > 1 && a[1] is Lisp.List vals) Give(s, vals);
-                int status = s.Show(file);
-                var rb = new ResultBuffer();
-                rb.Add(new TypedValue((int)LispDataType.ListBegin));
-                rb.Add(new TypedValue((int)LispDataType.Int16, (short)status));
-                foreach (var kv in s.Values.Where(kv => kv.Key.IndexOf('/') < 0))
+                // A window with tabs and its event: modeless (nil once shown), or the values
+                // of the button that ran its event:
+                if (Modeless.Wants(s))
                 {
-                    rb.Add(new TypedValue((int)LispDataType.ListBegin));
-                    rb.Add(new TypedValue((int)LispDataType.Text, kv.Key));
-                    rb.Add(new TypedValue((int)LispDataType.Text, kv.Value ?? ""));
-                    rb.Add(new TypedValue((int)LispDataType.DottedPair));
+                    var got = Modeless.Request(s, file, out int st);
+                    return got == null ? null : Result(got, st);
                 }
-                foreach (var key in s.OutRows)
-                {
-                    if (!s.Rows.TryGetValue(key, out var rows)) continue;
-                    rb.Add(new TypedValue((int)LispDataType.ListBegin));
-                    rb.Add(new TypedValue((int)LispDataType.Text, key));
-                    foreach (var row in rows)
-                    {
-                        rb.Add(new TypedValue((int)LispDataType.ListBegin));
-                        foreach (var cell in row) rb.Add(new TypedValue((int)LispDataType.Text, cell ?? ""));
-                        rb.Add(new TypedValue((int)LispDataType.ListEnd));
-                    }
-                    rb.Add(new TypedValue((int)LispDataType.ListEnd));
-                }
-                rb.Add(new TypedValue((int)LispDataType.ListEnd));
-                return rb;
+                return Result(s, s.Show(file));
             }
             catch (System.Exception e)
             {
@@ -119,11 +120,43 @@ namespace DynALisp.Windows
             }
         }
 
-        // The main window of AutoCAD (what a window with tabs is shown over):
-        static IntPtr MainWindow()
+        // (Dyl:WindowDone): the Lisp is done with the button of a modeless window it took
+        // (Engine\Tabs.cs): the window is closed when the Lisp did not show it again.
+        [LispFunction("Dyl:WindowDone")]
+        public object Done(ResultBuffer args)
         {
-            try { return AcApp.MainWindow.Handle; }
-            catch { return IntPtr.Zero; }
+            try { Modeless.Done(); } catch { }
+            return null;
+        }
+
+        // (status (key . value) ... (table row ...) ...) of the window of s:
+        static ResultBuffer Result(Session s, int status)
+        {
+            var rb = new ResultBuffer();
+            rb.Add(new TypedValue((int)LispDataType.ListBegin));
+            rb.Add(new TypedValue((int)LispDataType.Int16, (short)status));
+            foreach (var kv in s.Values.Where(kv => kv.Key.IndexOf('/') < 0))
+            {
+                rb.Add(new TypedValue((int)LispDataType.ListBegin));
+                rb.Add(new TypedValue((int)LispDataType.Text, kv.Key));
+                rb.Add(new TypedValue((int)LispDataType.Text, kv.Value ?? ""));
+                rb.Add(new TypedValue((int)LispDataType.DottedPair));
+            }
+            foreach (var key in s.OutRows)
+            {
+                if (!s.Rows.TryGetValue(key, out var rows)) continue;
+                rb.Add(new TypedValue((int)LispDataType.ListBegin));
+                rb.Add(new TypedValue((int)LispDataType.Text, key));
+                foreach (var row in rows)
+                {
+                    rb.Add(new TypedValue((int)LispDataType.ListBegin));
+                    foreach (var cell in row) rb.Add(new TypedValue((int)LispDataType.Text, cell ?? ""));
+                    rb.Add(new TypedValue((int)LispDataType.ListEnd));
+                }
+                rb.Add(new TypedValue((int)LispDataType.ListEnd));
+            }
+            rb.Add(new TypedValue((int)LispDataType.ListEnd));
+            return rb;
         }
 
         // The theme of AutoCAD: COLORTHEME 0 dark, 1 light:

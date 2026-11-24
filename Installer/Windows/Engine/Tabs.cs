@@ -26,13 +26,14 @@
 // Each tab is its own window file, run by its own Lisp: nothing calls the Lisp back while a
 // window is open, so another tab picked (a click, Ctrl+Tab, Ctrl+Shift+Tab) ends the window
 // with Status (its values checked first, as OK), the tab picked in "tab", and the Lisp shows
-// the window of that tab. Every tab is kept at the one place and size (tab/place), and the
-// window of the tab left stays on the screen until the next one is drawn over it (Modal), so
-// the window never closes between two tabs.
+// the window of that tab. Every tab is kept at the one place and size (tab/place). The window
+// is modeless (Modeless below): AutoCAD stays free while it is open, and a button that needs
+// the Lisp runs it at the command line, the window staying on the screen.
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -97,6 +98,8 @@ namespace DynALisp.Windows
 
             w.Content = null;
             var host = new TabHost(strip, string.IsNullOrEmpty(place) ? "Dyl-Manager" : place) { Body = body };
+            host.Current = cur;
+            host.PickTab = k => Pick(view, s, cur, k);
             w.Content = host;
 
             // Ctrl+Tab, Ctrl+Shift+Tab (and Ctrl+Page Down / Up) show the next and the previous tab:
@@ -142,164 +145,214 @@ namespace DynALisp.Windows
         }
 
         // Another tab picked: the window ends with Status (its values checked first, as OK;
-        // when one is not valid it stays on its tab), and stays on the screen, its place
-        // saved, until the window of the tab picked is shown over it (Modal.Keep):
+        // when one is not valid it stays on its tab), the tab picked in "tab". A window shown
+        // by Modeless stays open, its button given to the Lisp; any other closes:
         static void Pick(View view, Session s, int cur, int index)
         {
             if (index == cur) return;
             s.Values.TryGetValue("tab", out string before);
             s.Values["tab"] = index.ToString(CultureInfo.InvariantCulture);
-            var host = view.Window.Content as TabHost;
-            if (!view.EndWith(Status, () => host?.Leaving?.Invoke()))
+            if (!view.CloseWith(Status))
             {
                 if (before == null) s.Values.Remove("tab"); else s.Values["tab"] = before;
             }
         }
 
+        // The tab shown, and the tab index picked as with a click (a command that opens the
+        // Manager on another tab while it is open, Modeless):
+        internal int Current;
+        internal Action<int> PickTab;
+
         // The window of this tab is left (Fit.cs saves its place, so the next tab opens there):
         internal Action Leaving;
     }
 
-    // How a window with tabs is shown over AutoCAD: modal, as ShowDialog (the other windows
-    // of AutoCAD disabled until it is closed), but a window of a tab left is not closed: its
-    // modal loop ends, the Lisp gets its values (and saves them) while it stays on the
-    // screen, disabled, and the window of the next tab is shown over it, at the same place,
-    // without the animation of Windows; the window left is closed once the next one is drawn.
-    // When the Lisp shows no other window (an error, the Manager ended), the window left is
-    // closed when AutoCAD is idle again (Bridge.cs). So the window never seems to close
-    // between two tabs, and AutoCAD stays disabled the whole time.
-    public static class Modal
+    // The Manager is modeless: the user draws while it is open. Nothing calls the Lisp back
+    // while a window is open, so each call of (Dyl:Window file values) on a window with tabs
+    // (the Lisp gives "tab/event", the expression that runs the tab again) is one step:
+    //
+    //   - no window open: the window is shown, without a modal loop, and the call returns nil
+    //     at once (the Lisp of the tab ends, the command ends: AutoCAD is free);
+    //   - a button that needs the Lisp clicked (another tab, Save, OK, Draw, an open button):
+    //     the window stays on the screen, disabled, and "tab/event" is run in the current
+    //     drawing (Run, Bridge.cs: at the command line, the command running cancelled first).
+    //     The Lisp of the tab runs again as it did when the window closed; its call of
+    //     Dyl:Window on that window gets the button and the values of the window at once;
+    //   - the Lisp shows a window with tabs again (the same tab on its new values, another
+    //     tab): it is shown over the window, at its place, without the animation of Windows,
+    //     and the window under it is closed once it is drawn; the call returns nil;
+    //   - the Lisp is done (Dyl:WindowDone, Remote>>Dyl:ManagerEvent): a window whose button
+    //     the Lisp took and did not show again is closed (OK, Save, Draw);
+    //   - asked again by a command while it is open: the tab asked is picked, as a click.
+    //
+    // Cancel, Escape and the close box close it with no Lisp. A sub-window opened by the
+    // window (Win.Open) or by the Lisp is modal, as before.
+    public static class Modeless
     {
-        // The windows of AutoCAD a window disabled, enabled again when it closes, unless it
-        // handed them to the window of the next tab (List null):
-        sealed class Disabled { public List<IntPtr> List; }
+        enum State { None, Open, Pending, Taken }
 
-        static Window _kept;
-        static Disabled _disabled;
-        static IntPtr _owner;
-        static DispatcherFrame _frame;
-        static Window _shown;
-        static bool _keep;
+        static State _state;
+        static View _view;
+        static Session _session;
+        static string _file;
+        static int _status;
+        static DispatcherTimer _timer;
 
-        public static bool Kept => _kept != null;
+        // Shows a window without a modal loop, over AutoCAD (Bridge.cs):
+        public static Action<Window> ShowWindow;
+        // Runs a Lisp expression in the current drawing (Bridge.cs); false when it cannot:
+        public static Func<string, bool> Run;
 
-        // Shows w over the window owner (AutoCAD) until it is closed, or ended by Keep:
-        internal static void Show(Window w, IntPtr owner)
+        public static bool Shown => _view != null;
+
+        // A window of the Lisp that is shown modeless: one with tabs and an expression to run
+        // it again:
+        public static bool Wants(Session s) =>
+            ShowWindow != null && Run != null && s.Lists.TryGetValue("tab", out var t) && t != null && t.Count > 0
+            && s.Values.TryGetValue("tab/event", out string e) && !string.IsNullOrEmpty(e);
+
+        // The call of the Lisp on the window file path with the values of s (see above): the
+        // session whose values answer it, with the button in status, or null (shown, nothing
+        // to give back):
+        public static Session Request(Session s, string path, out int status)
         {
-            var old = _kept;
-            var disabled = new Disabled();
-            if (old != null)
+            status = 0;
+            string full = Path.GetFullPath(path);
+            bool same = _view != null && string.Equals(_file, full, StringComparison.OrdinalIgnoreCase);
+            switch (_state)
             {
-                // the windows of AutoCAD stay disabled (handed to this window); the window left
-                // is closed once this one is drawn:
-                disabled.List = _disabled?.List ?? new List<IntPtr>();
-                if (_disabled != null) _disabled.List = null;
-                // (and one enabled again meanwhile: a message of the Lisp, alert, enables
-                // AutoCAD as it closes)
-                disabled.List.AddRange(DisableThread());
-                _kept = null;
-                _disabled = null;
-                w.ContentRendered += (a, b) => CloseQuiet(old);
-                w.Closed += (a, b) => CloseQuiet(old);
-            }
-            else
-            {
-                disabled.List = DisableThread();
-                _owner = owner;
-            }
-            if (_owner != IntPtr.Zero) new WindowInteropHelper(w).Owner = _owner;
-            w.SourceInitialized += (a, b) => NoAnimation(w);
-            // the windows of AutoCAD enabled again before the window goes (so AutoCAD is
-            // active again, not another program), unless it is only left for another tab:
-            w.Closing += (a, b) => { if (!b.Cancel) Restore(disabled); };
-            var frame = new DispatcherFrame();
-            w.Closed += (a, b) => frame.Continue = false;
-            var outer = (_frame, _shown, _keep);
-            _frame = frame;
-            _shown = w;
-            _keep = false;
-            try
-            {
-                w.Show();
-                Dispatcher.PushFrame(frame);
-            }
-            catch
-            {
-                if (old != null) CloseQuiet(old);
-                Restore(disabled);
-                throw;
-            }
-            finally
-            {
-                bool keep = _keep && w.IsVisible;
-                (_frame, _shown, _keep) = outer;
-                if (keep)
-                {
-                    _kept = w;
-                    _disabled = disabled;
-                    // nothing clicked while the Lisp works:
-                    var h = new WindowInteropHelper(w).Handle;
-                    if (h != IntPtr.Zero) EnableWindow(h, false);
-                }
+                case State.Pending when same:
+                    StopTimer();
+                    _state = State.Taken;
+                    status = _status;
+                    return _session;
+                case State.Open when _view != null:
+                    var host = _view.Window.Content as TabHost;
+                    int want = Index(s);
+                    if (host != null && want >= 0 && want != host.Current) host.PickTab?.Invoke(want);
+                    else Activate(_view.Window);
+                    return null;
+                default:
+                    Show(s, full);
+                    return null;
             }
         }
 
-        // Ends the modal loop of w, its window left on the screen (another tab picked). False
-        // when w is not shown by Show:
-        internal static bool Keep(Window w)
+        // The Lisp is done with the button it took: the window closed when it was not shown again:
+        public static void Done()
         {
-            if (_shown != w || _frame == null) return false;
-            _keep = true;
-            _frame.Continue = false;
+            if (_state == State.Taken && _view != null) Close(_view.Window);
+            else if (_state == State.Pending && _view != null) Free();
+        }
+
+        static int Index(Session s)
+        {
+            if (s.Values.TryGetValue("tab", out string v) && int.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i)) return i;
+            return -1;
+        }
+
+        // The window of path on the values of s, over the window shown (closed once it is drawn):
+        static void Show(Session s, string full)
+        {
+            StopTimer();
+            var old = _view;
+            // (its place saved first: the new one opens there)
+            (old?.Window.Content as TabHost)?.Leaving?.Invoke();
+            var view = s.Open(full);
+            var w = view.Window;
+            string place = w.Content is TabHost h ? h.Place : Path.GetFileNameWithoutExtension(full);
+            if (s.FitToScreen) Fit.Attach(w, place, s.Places);
+            view.Intercept = st => Clicked(view, st);
+            w.SourceInitialized += (a, b) => NoAnimation(w);
+            w.Closed += (a, b) =>
+            {
+                if (_view != view) return;
+                StopTimer();
+                _view = null;
+                _session = null;
+                _file = null;
+                _state = State.None;
+            };
+            _view = view;
+            _session = s;
+            _file = full;
+            _state = State.Open;
+            if (old != null)
+            {
+                w.ContentRendered += (a, b) => Close(old.Window);
+                w.Closed += (a, b) => Close(old.Window);
+            }
+            try { ShowWindow(w); }
+            catch
+            {
+                if (old != null) Close(old.Window);
+                throw;
+            }
+        }
+
+        // A button that needs the Lisp clicked in the window: it stays open, disabled, and the
+        // Lisp is run (false: not this window, closed as usual):
+        static bool Clicked(View view, int status)
+        {
+            if (view != _view) return false;
+            // (a click while the Lisp has the window: nothing)
+            if (_state != State.Open) return true;
+            if (!_session.Values.TryGetValue("tab/event", out string expr) || string.IsNullOrEmpty(expr)) return false;
+            _status = status;
+            _state = State.Pending;
+            Enable(view.Window, false);
+            bool sent;
+            try { sent = Run(expr); } catch { sent = false; }
+            if (!sent) { Free(); return true; }
+            // (the Lisp never ran it: no drawing, AutoCAD busy; the window is given back)
+            _timer = new DispatcherTimer(DispatcherPriority.Background, view.Window.Dispatcher) { Interval = TimeSpan.FromSeconds(30) };
+            _timer.Tick += (a, b) => { if (_state == State.Pending) Free(); else StopTimer(); };
+            _timer.Start();
             return true;
         }
 
-        // The window left closed, the windows of AutoCAD enabled again (the Lisp showed no
-        // other window, or shows a window without tabs):
-        public static void Close()
+        // The window given back to the user, its button dropped:
+        static void Free()
         {
-            var w = _kept;
-            var disabled = _disabled;
-            _kept = null;
-            _disabled = null;
-            Restore(disabled);
-            if (w == null) return;
-            CloseQuiet(w);
-            try { if (_owner != IntPtr.Zero) SetForegroundWindow(_owner); } catch { }
+            StopTimer();
+            _state = State.Open;
+            if (_view != null) { Enable(_view.Window, true); Activate(_view.Window); }
         }
 
-        static void CloseQuiet(Window w)
+        static void StopTimer()
+        {
+            if (_timer == null) return;
+            _timer.Stop();
+            _timer = null;
+        }
+
+        static void Close(Window w)
         {
             try { w.Close(); } catch { }
         }
 
-        // Every window of AutoCAD shown and enabled (its main window, its floating palettes)
-        // disabled, as ShowDialog does:
-        static List<IntPtr> DisableThread()
+        static void Activate(Window w)
         {
-            var list = new List<IntPtr>();
             try
             {
-                EnumThreadWindows(GetCurrentThreadId(), (h, l) =>
-                {
-                    if (IsWindowVisible(h) && IsWindowEnabled(h)) { EnableWindow(h, false); list.Add(h); }
-                    return true;
-                }, IntPtr.Zero);
+                if (w.WindowState == WindowState.Minimized) w.WindowState = WindowState.Normal;
+                w.Activate();
             }
             catch { }
-            return list;
         }
 
-        static void Restore(Disabled d)
+        static void Enable(Window w, bool on)
         {
-            var list = d?.List;
-            if (list == null) return;
-            d.List = null;
-            foreach (var h in list)
-                try { if (IsWindow(h)) EnableWindow(h, true); } catch { }
+            try
+            {
+                var h = new WindowInteropHelper(w).Handle;
+                if (h != IntPtr.Zero) EnableWindow(h, on);
+            }
+            catch { }
         }
 
-        // No animation when the window opens and closes (DWMWA_TRANSITIONS_FORCEDISABLED):
+        // No animation when the window opens and closes (DWMWA_TRANSITIONS_FORCEDISABLED), so
+        // a tab shown over another one does not seem to open:
         static void NoAnimation(Window w)
         {
             try
@@ -311,15 +364,7 @@ namespace DynALisp.Windows
             catch { }
         }
 
-        delegate bool EnumProc(IntPtr hwnd, IntPtr lParam);
-
-        [DllImport("user32.dll")] static extern bool EnumThreadWindows(uint thread, EnumProc proc, IntPtr lParam);
-        [DllImport("kernel32.dll")] static extern uint GetCurrentThreadId();
-        [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr hwnd);
-        [DllImport("user32.dll")] static extern bool IsWindowEnabled(IntPtr hwnd);
-        [DllImport("user32.dll")] static extern bool IsWindow(IntPtr hwnd);
         [DllImport("user32.dll")] static extern bool EnableWindow(IntPtr hwnd, bool enable);
-        [DllImport("user32.dll")] static extern bool SetForegroundWindow(IntPtr hwnd);
         [DllImport("dwmapi.dll")] static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int value, int size);
     }
 }
