@@ -54,8 +54,20 @@
 
 ;; Save
 ;; Runs the output prep steps checked for All saves in Dyl-Settings, then the native SAVE dialog.
+;;  The steps of the output prep before the native command cmd, caught: a step that fails
+;;  is said, any command it left running is cancelled, and the native command runs all the
+;;  same, so a drawing is always saved and plotted (an error stopped the save):
+(defun MAJ:PrepSafe (cmd / res)
+  (if (and MAJ:PrepFor (vl-catch-all-error-p (setq res (vl-catch-all-apply 'MAJ:PrepFor (list cmd)))))
+    (progn
+      (if (< 0 (logand 1 (getvar "CMDACTIVE"))) (vl-catch-all-apply 'command nil))
+      (princ (strcat "\n--> Output prep before " cmd " failed (" (vl-catch-all-error-message res) "): " cmd " runs without it."))
+    )
+  )
+)
+
 (defun c:SAVE ()
-  (if MAJ:PrepFor (MAJ:PrepFor "SAVE"))
+  (MAJ:PrepSafe "SAVE")
   (initdia)
   (vl-cmdf "_.SAVE")
   (princ)
@@ -64,7 +76,10 @@
 ;; Quick Save
 ;; Runs the output prep steps checked for All saves in Dyl-Settings, then the native QSAVE.
 (defun c:QSAVE ()
-  (if MAJ:PrepFor (MAJ:PrepFor "QSAVE"))
+  (MAJ:PrepSafe "QSAVE")
+  ;; a drawing never saved: QSAVE shows the Save As dialog (no dialog is shown to a
+  ;; command run by Lisp without initdia: it asked for the file name on the command line)
+  (if (= 0 (getvar "DWGTITLED")) (initdia))
   (vl-cmdf "_.QSAVE")
   (princ)
 )
@@ -72,7 +87,7 @@
 ;; Save As
 ;; Runs the output prep steps checked for All saves in Dyl-Settings, then the native SAVEAS dialog.
 (defun c:SAVEAS ()
-  (if MAJ:PrepFor (MAJ:PrepFor "SAVEAS"))
+  (MAJ:PrepSafe "SAVEAS")
   (initdia)
   (vl-cmdf "_.SAVEAS")
   (princ)
@@ -81,7 +96,8 @@
 ;; Save As Options
 ;; Runs the output prep steps checked for All saves in Dyl-Settings, then the native +SAVEAS (its prompts left to the user or menu macro).
 (defun c:+SAVEAS ()
-  (if MAJ:PrepFor (MAJ:PrepFor "+SAVEAS"))
+  (MAJ:PrepSafe "+SAVEAS")
+  (initdia)
   (vl-cmdf "_.+SAVEAS")
   (princ)
 )
@@ -89,7 +105,7 @@
 ;; Plot
 ;; Runs the output prep steps checked for All prints in Dyl-Settings, then the native PLOT dialog.
 (defun c:PLOT ()
-  (if MAJ:PrepFor (MAJ:PrepFor "PLOT"))
+  (MAJ:PrepSafe "PLOT")
   (initdia)
   (vl-cmdf "_.PLOT")
   (princ)
@@ -98,7 +114,7 @@
 ;; Publish
 ;; Runs the output prep steps checked for All prints in Dyl-Settings, then the native PUBLISH dialog.
 (defun c:PUBLISH ()
-  (if MAJ:PrepFor (MAJ:PrepFor "PUBLISH"))
+  (MAJ:PrepSafe "PUBLISH")
   (initdia)
   (vl-cmdf "_.PUBLISH")
   (princ)
@@ -107,7 +123,7 @@
 ;; Plot Preview
 ;; Runs the output prep steps checked for PREVIEW in Dyl-Settings, then the native PREVIEW.
 (defun c:PREVIEW ()
-  (if MAJ:PrepFor (MAJ:PrepFor "PREVIEW"))
+  (MAJ:PrepSafe "PREVIEW")
   (vl-cmdf "_.PREVIEW")
   (princ)
 )
@@ -115,7 +131,7 @@
 ;; Export PDF
 ;; Runs the output prep steps checked for All prints in Dyl-Settings, then the native EXPORTPDF dialog.
 (defun c:EXPORTPDF ()
-  (if MAJ:PrepFor (MAJ:PrepFor "EXPORTPDF"))
+  (MAJ:PrepSafe "EXPORTPDF")
   (initdia)
   (vl-cmdf "_.EXPORTPDF")
   (princ)
@@ -124,7 +140,7 @@
 ;; Export DWF
 ;; Runs the output prep steps checked for All prints in Dyl-Settings, then the native EXPORTDWF dialog.
 (defun c:EXPORTDWF ()
-  (if MAJ:PrepFor (MAJ:PrepFor "EXPORTDWF"))
+  (MAJ:PrepSafe "EXPORTDWF")
   (initdia)
   (vl-cmdf "_.EXPORTDWF")
   (princ)
@@ -133,7 +149,7 @@
 ;; Export DWFx
 ;; Runs the output prep steps checked for All prints in Dyl-Settings, then the native EXPORTDWFX dialog.
 (defun c:EXPORTDWFX ()
-  (if MAJ:PrepFor (MAJ:PrepFor "EXPORTDWFX"))
+  (MAJ:PrepSafe "EXPORTDWFX")
   (initdia)
   (vl-cmdf "_.EXPORTDWFX")
   (princ)
@@ -142,7 +158,7 @@
 ;; Regen
 ;; Runs the output prep steps checked for REGEN in Dyl-Settings (the draw order by default), then the native REGEN.
 (defun c:REGEN ()
-  (if MAJ:PrepFor (MAJ:PrepFor "REGEN"))
+  (MAJ:PrepSafe "REGEN")
   (vl-cmdf "_.REGEN")
   (princ)
 )

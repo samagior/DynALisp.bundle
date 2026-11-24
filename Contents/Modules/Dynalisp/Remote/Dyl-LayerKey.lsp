@@ -248,22 +248,41 @@
   )
 )
 
-;;  Read LayerKeys.csv. Default keys missing from the file are added with their default values:
-(defun Remote>>Dyl:LayerKeyRead (/ row lst)
-  (foreach x (Remote>>Dyl:CsvRead (Dyl:UserFile *lk:file*) 9)
-    (if (and (setq row (Remote>>Dyl:LayerKeyFix x)) (not (assoc (car row) lst)))
-      (setq lst (cons row lst))
+;;  Read LayerKeys.csv. Default keys missing from the file are added with their default values.
+;;  The keys read are kept (*lk:readcache*: (stamp . keys)) and given again while the file has
+;;  the same date and size: every App, the reactors of the objects added at the end of each
+;;  command and Remote>>Dyl:LayerKeyGet (one key) read the whole file each time:
+(defun Remote>>Dyl:LayerKeyRead (/ fle stm row lst miss)
+  (setq fle (Dyl:UserFile *lk:file*)
+        stm (list fle (vl-file-systime fle) (vl-file-size fle))
+  )
+  (if (and *lk:readcache* (equal stm (car *lk:readcache*)))
+    (cdr *lk:readcache*)
+    (progn
+      (foreach x (Remote>>Dyl:CsvRead fle 9)
+        (if (and (setq row (Remote>>Dyl:LayerKeyFix x)) (not (assoc (car row) lst)))
+          (setq lst (cons row lst))
+        )
+      )
+      (setq lst (reverse lst))
+      (foreach x *lk:defaults*
+        (if (not (assoc (car x) lst)) (setq miss (cons x miss)))
+      )
+      (setq lst            (append lst (reverse miss))
+            *lk:readcache* (cons stm lst)
+      )
+      lst
     )
   )
-  (setq lst (reverse lst))
-  (foreach x *lk:defaults*
-    (if (not (assoc (car x) lst)) (setq lst (append lst (list x))))
-  )
-  lst
 )
 
-;;  Write LayerKeys.csv (its user copy), returns T on success (nil if the file is open in Excel):
+;;  The keys read (Remote>>Dyl:LayerKeyRead), read again when DynALisp loads:
+(setq *lk:readcache* nil)
+
+;;  Write LayerKeys.csv (its user copy), returns T on success (nil if the file is open in Excel).
+;;  The keys kept are dropped, even when the date of the file did not change:
 (defun Remote>>Dyl:LayerKeyWrite (lst)
+  (setq *lk:readcache* nil)
   (Remote>>LM:writecsv (cons *lk:header* lst) (Dyl:UserFileW *lk:file*))
 )
 
