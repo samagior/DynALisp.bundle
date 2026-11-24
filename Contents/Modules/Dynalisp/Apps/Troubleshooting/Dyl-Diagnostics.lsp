@@ -309,6 +309,10 @@
 ;;  (Dyl:ClaudeInfo runs Claude Code twice, a second or two).
 ;;  Never the account or a token: whether it is signed in, and how, and whether the server of
 ;;  the tools of the drawing listens (its port, never its token).
+;;  A value of Dyl:ClaudeInfo, "" when missing (an older DynALisp.Assistant.dll, or
+;;  an empty text that reached the Lisp as nil):
+(defun dg:ci (key info) (cond ((cdr (assoc key info))) ("")))
+
 (defun dg:dyl-assistant (/ info v)
   (if (or c:Dyl-Assistant c:Dyl-TextFix)
     (progn
@@ -320,24 +324,24 @@
            (dg:bad "Dyl-Assistant or Dyl-TextFix is turned on, but DynALisp.Assistant.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)")
          )
         )
-        ((= "" (cdr (assoc "path" (setq info (Dyl:ClaudeInfo)))))
+        ((= "" (dg:ci "path" (setq info (Dyl:ClaudeInfo))))
          (dg:note "Claude Code is not installed: Dyl-Assistant offers to install it")
         )
         (T
-         (dg:kv "Claude Code" (cdr (assoc "path" info)))
-         (if (= "" (setq v (cdr (assoc "version" info))))
+         (dg:kv "Claude Code" (dg:ci "path" info))
+         (if (= "" (setq v (dg:ci "version" info)))
            (dg:bad "Claude Code does not run: install it again (Dyl-Assistant)")
            (dg:kv "Claude Code version" v)
          )
          (cond
            ((not (assoc "loggedIn" info)) (dg:note "Claude Code did not say whether it is signed in"))
            ((= "1" (cdr (assoc "loggedIn" info)))
-            (dg:kv "Signed in" (strcat "yes (" (cdr (assoc "authMethod" info)) ")"))
+            (dg:kv "Signed in" (strcat "yes (" (dg:ci "authMethod" info) ")"))
            )
            ((dg:note "Claude Code is not signed in: Sign in in the Assistant palette"))
          )
          ;;  the server of the tools of the drawing, started by the first message of the palette:
-         (if (/= "" (setq v (cdr (assoc "server" info))))
+         (if (/= "" (setq v (dg:ci "server" info)))
            (dg:kv "Drawing tools" (strcat "listening on 127.0.0.1:" v))
            (dg:kv "Drawing tools" "not started (the palette starts them with its first message)")
          )
@@ -349,7 +353,7 @@
         )
       )
       ;;  Claude Code bills ANTHROPIC_API_KEY instead of the subscription when it is set:
-      (if (= "1" (cdr (assoc "apiKey" info)))
+      (if (= "1" (dg:ci "apiKey" info))
         (dg:note "ANTHROPIC_API_KEY is set: Claude Code uses that API key (billed by the API), not the Claude subscription")
       )
     )
