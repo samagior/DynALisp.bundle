@@ -16,15 +16,20 @@
 //
 // A HatchTile shows a hatch as it plots: at its size on paper, 1:1 on the screen (a WPF
 // unit is 1/96 in), from the line families of its pattern in its .pat file (angle, origin,
-// offset, dashes). When fewer than about three repeats of the pattern fit in the tile (one
-// brick of an elevation), it zooms out just enough and shows the scale it uses in a corner
+// offset, dashes). A Drafting hatch is always drawn 1:1, never zoomed, so every Drafting
+// hatch is seen at the same scale and compared with the others (a pattern too large for
+// the tile shows a part of it, one too fine is grey). Only a Model hatch (a real size in
+// the model) is zoomed out when fewer than about three repeats of its pattern fit in the
+// tile (one brick of an elevation), just enough, the scale it uses shown in a corner
 // (1:100). Its Spec, given by the Lisp, is one band or the bands of an assembly side by
 // side, divided by "*", the fields of a band by "?":
 //
-//   P?width?pattern?file?ppu?angle?scale   a hatch: its pattern, the .pat file defining it,
+//   P?width?pattern?file?ppu?angle?scale?type
+//                                          a hatch: its pattern, the .pat file defining it,
 //                                          the inches on paper of one unit of the pattern,
 //                                          its angle (degrees), the drawing scale it is
-//                                          divided by (1 when it keeps its size on paper)
+//                                          divided by (1 when it keeps its size on paper),
+//                                          its type (Drafting, the default, or Model)
 //   F?width                                a solid fill
 //   S?width                                a space
 //   L?0                                    a line between two bands
@@ -139,7 +144,7 @@ namespace DynALisp.Windows
         public bool ShowScale { get => (bool)GetValue(ShowScaleProperty); set => SetValue(ShowScaleProperty, value); }
 
         internal const double Dpi = 96;       // WPF units an inch
-        internal const double Repeats = 3;    // repeats of a pattern at least, in the height of the tile
+        internal const double Repeats = 3;    // repeats of a Model pattern at least, in the height of the tile
         const int MaxLines = 20000;   // segments of a tile at most (a pattern too fine is grey)
         internal static readonly CultureInfo Inv = CultureInfo.InvariantCulture;
         internal static readonly double[] Steps = { 1, 2, 2.5, 4, 5, 8, 10, 16, 20, 25, 40, 50, 100, 200, 250, 500, 1000, 2000, 5000, 10000 };
@@ -148,6 +153,7 @@ namespace DynALisp.Windows
         {
             public string Kind = "X", Pattern, File;
             public double Width, Ppu = 1, Angle, Scale = 1;
+            public bool Model;                // a Model hatch: zoomed out to show its pattern
             public List<PatLine> Fams;
         }
 
@@ -169,6 +175,7 @@ namespace DynALisp.Windows
                     b.Ppu = Num(f, 4, 1);
                     b.Angle = Num(f, 5, 0);
                     b.Scale = Math.Max(1e-9, Num(f, 6, 1));
+                    b.Model = f.Length > 7 && string.Equals(f[7].Trim(), "Model", StringComparison.OrdinalIgnoreCase);
                     b.Fams = Pat.Read(b.File, b.Pattern);
                     if (b.Fams == null || b.Fams.Count == 0 || b.Ppu <= 0) b.Kind = "X";
                 }
@@ -188,9 +195,11 @@ namespace DynALisp.Windows
             dc.PushClip(new RectangleGeometry(r, Radius, Radius));
             dc.DrawRectangle(Fill, null, r);
 
-            // One zoom for the tile: the least that shows every pattern Repeats times:
+            // One zoom for the Model hatches of the tile: the least that shows each of their
+            // patterns Repeats times. A Drafting hatch is never zoomed: 1:1, as every other
+            // Drafting hatch, so their sizes compare:
             double zoom = 1, scale = 1;
-            foreach (var b in bands.Where(b => b.Kind == "P"))
+            foreach (var b in bands.Where(b => b.Kind == "P" && b.Model))
             {
                 double px = Pat.Repeat(b.Fams) * b.Ppu * Dpi;
                 zoom = Math.Max(zoom, px * Repeats / r.Height);
@@ -217,7 +226,7 @@ namespace DynALisp.Windows
                 double w = ws[i++] * fit;
                 var br = new Rect(x, 0, w, r.Height);
                 dc.PushClip(new RectangleGeometry(br));
-                Draw(dc, br, b, zoom, pen);
+                Draw(dc, br, b, b.Model ? zoom : 1, pen);
                 dc.Pop();
                 if (x > 0) dc.DrawLine(pen, new Point(x, 0), new Point(x, r.Height));
                 x += w;
@@ -317,7 +326,7 @@ namespace DynALisp.Windows
             ctx.LineTo(new Point(bx + ux * t1, by + uy * t1), true, false);
         }
 
-        // The scale of a tile zoomed out, in its bottom right corner:
+        // The scale of a tile zoomed out (its Model hatches), in its bottom right corner:
         internal void Label(DrawingContext dc, Rect r, string text)
         {
             var ft = LabelText(text);
