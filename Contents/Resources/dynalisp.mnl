@@ -655,6 +655,80 @@
     )
   )
 
+  ;;  The library modules: their Remote folder holds only subfunctions for the Apps of the
+  ;;  other modules (the 300 and more of Lee Mac, LM-Sub.lsp, those of gileCAD, GC-Sub.lsp,
+  ;;  11 500 lines), and is loaded on demand, once per drawing, the first time an App of a
+  ;;  module other than Dynalisp is loaded (Dyl:LibsLoad), never at startup: the Dynalisp
+  ;;  module keeps its own copy of the few it uses (Remote\Dyl-Basics.lsp):
+  (setq *dyl:libmods* '("LeeMac" "gileCAD"))
+
+  ;;  T when the path p starts with the folder dir (any case; never wcmatch, which reads the
+  ;;  characters of a path, a comma or a #, as a pattern):
+  (defun Dyl:PathIn-p (p dir)
+    (setq dir (strcat (vl-string-right-trim "\\" dir) "\\"))
+    (= (strcase (substr p 1 (strlen dir))) (strcase dir))
+  )
+
+  ;;  T when the folder dir is in a library module (*dyl:libmods*):
+  (defun Dyl:LibDir-p (dir)
+    (vl-some '(lambda (m) (Dyl:PathIn-p dir (strcat *dyl:module "\\" m))) *dyl:libmods*)
+  )
+
+  ;;  T when the Apps file pth (its path from the Modules folder, LeeMac\Apps\..., or its
+  ;;  full path, with \ or /) needs the libraries: a file of any module but Dynalisp:
+  (defun Dyl:LibsFor-p (pth)
+    (setq pth (vl-string-translate "/" "\\" pth))
+    (if (Dyl:PathIn-p pth *dyl:module) (setq pth (substr pth (+ 2 (strlen *dyl:module)))))
+    (not (Dyl:PathIn-p pth "Dynalisp"))
+  )
+
+  ;;  Load the Remote folders of the library modules in this drawing, once
+  ;;  (*dyl:libsloaded*, cleared by Dyl:load). Their times are kept apart from those of the
+  ;;  startup (*dyl:libtimes*), their errors with the others (*dyl:loaderrs*):
+  (defun Dyl:LibsLoad (/ scr old)
+    (if (not *dyl:libsloaded*)
+      (progn
+        (setq *dyl:libsloaded* T
+              scr              (getvar 'secureload)
+              old              *dyl:loadtimes*
+              *dyl:loadtimes*  nil
+        )
+        (setvar 'secureload 0)
+        (Dyl:LoadDirs (vl-remove-if-not 'Dyl:LibDir-p (Dyl:moddirs "Remote")))
+        (setvar 'secureload scr)
+        (setq *dyl:libtimes*  *dyl:loadtimes*
+              *dyl:loadtimes* old
+        )
+      )
+    )
+    T
+  )
+
+  ;;  Autoload the commands cmds ("LM-2DPROJECTION" ...) of the Apps file ful, as autoload
+  ;;  does, the libraries loaded first: a stub for each command not defined yet, which
+  ;;  loads the libraries and the file, then runs the command the file defined:
+  (defun Dyl:LibAutoload (ful cmds / sym)
+    (foreach cmd cmds
+      (setq sym (read (strcat "C:" cmd)))
+      (if (not (eval sym))
+        (eval (list 'defun sym nil (list 'Dyl:LibRun ful (strcat "C:" cmd))))
+      )
+    )
+  )
+
+  ;;  The stub of the command nam of the file ful (see Dyl:LibAutoload):
+  (defun Dyl:LibRun (ful nam / sym old)
+    (setq sym (read nam)
+          old (eval sym)
+    )
+    (Dyl:LibsLoad)
+    (cond
+      ((not (findfile ful)) (princ (strcat "\n--> Unable to load : " ful)) (princ))
+      ((progn (load ful) (eq old (eval sym))) (princ (strcat "\n--> " ful " does not define " nam)) (princ))
+      ((apply sym nil))
+    )
+  )
+
   ;;  Turn the DynALisp reactors on or off (Reactors in Dyl-Settings). On: the Reactor
   ;;  folders are loaded in this drawing, the other open drawings get their reactors when
   ;;  opened again (or with Dyl-Reload). Off: every DynALisp reactor of this drawing is
@@ -698,15 +772,18 @@
     (setvar 'secureload 0)
 
     ;; The load errors and times of this load only (Dyl-Reload loads again):
-    (setq *dyl:loaderrs*  nil
-          *dyl:loadtimes* nil
+    (setq *dyl:loaderrs*    nil
+          *dyl:loadtimes*   nil
+          *dyl:libsloaded*  nil
+          *dyl:libtimes*    nil
     )
 
-    ;; Recursively load all the Lisp file in each module Remote folder, then in each
-    ;; module Reactor folder (they can use the Remote functions) while the DynALisp
-    ;; reactors are on. Off, no Reactor folder is loaded and any DynALisp reactor
-    ;; left in the drawing (Dyl-Reload) is removed:
-    (Dyl:LoadDirs (Dyl:moddirs "Remote"))
+    ;; Recursively load all the Lisp file in each module Remote folder, but those of the
+    ;; library modules (loaded on demand, see Dyl:LibsLoad), then in each module Reactor
+    ;; folder (they can use the Remote functions) while the DynALisp reactors are on. Off,
+    ;; no Reactor folder is loaded and any DynALisp reactor left in the drawing
+    ;; (Dyl-Reload) is removed:
+    (Dyl:LoadDirs (vl-remove-if 'Dyl:LibDir-p (Dyl:moddirs "Remote")))
     (if (Dyl:ReactorsOn-p)
       (Dyl:LoadDirs (Dyl:moddirs "Reactor"))
       (Dyl:ReactorsStop)
@@ -1963,6 +2040,7 @@
   ;; Load the Apps file pth, so its functions are defined. Returns T when loaded:
   (defun Dyl:SuiteFileLoad (pth / ful)
     (setq ful (strcat *dyl:module "\\" pth))
+    (if (Dyl:LibsFor-p pth) (Dyl:LibsLoad))
     (and (findfile ful)
          (not (vl-catch-all-error-p (vl-catch-all-apply 'load (list ful))))
     )
@@ -3431,8 +3509,15 @@
           (cond 
             ;; File without command turned on: load it entirely
             ((member "" cmds)
+             (if (Dyl:LibsFor-p ful) (Dyl:LibsLoad))
              (load ful (strcat "\n--> Unable to load : " *fle "\n--> From : " *pth))
              (setq num (1+ num))
+            )
+            ;; A file of another module than Dynalisp: the libraries loaded with it (see
+            ;; Dyl:LibAutoload):
+            ((and cmds (Dyl:LibsFor-p ful))
+             (Dyl:LibAutoload ful cmds)
+             (setq num (+ num (length cmds)))
             )
             ;; Full path (avoids same-name files of other modules) with "/" since
             ;; autoload writes it into a string that is evaluated with (read):

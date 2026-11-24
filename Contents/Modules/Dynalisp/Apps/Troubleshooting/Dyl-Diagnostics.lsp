@@ -468,6 +468,18 @@
       )
     )
   )
+  ;;  The library modules (LeeMac, gileCAD), loaded only once an App of another module
+  ;;  than Dynalisp needs them (Dyl:LibsLoad of dynalisp.mnl):
+  (if *dyl:libmods*
+    (dg:kv "Library modules"
+           (strcat (Remote>>LM:lst->str *dyl:libmods* ", ")
+                   (if *dyl:libsloaded*
+                     (strcat ": loaded in this drawing, in " (itoa (apply '+ (mapcar 'cdr *dyl:libtimes*))) " ms")
+                     ": not loaded in this drawing yet (on demand)"
+                   )
+           )
+    )
+  )
 )
 
 (defun dg:dyl-modules (/ n)
