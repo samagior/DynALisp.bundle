@@ -465,3 +465,41 @@
     )
   )
 )
+
+;; ssget  -  Lee Mac
+;; A wrapper for the ssget function to permit the use of a custom selection prompt
+;; msg - [str] selection prompt
+;; arg - [lst] list of ssget arguments
+
+(defun LM:ssget ( msg arg / sel )
+    (princ msg)
+    (setvar 'nomutt 1)
+    (setq sel (vl-catch-all-apply 'ssget arg))
+    (setvar 'nomutt 0)
+    (if (not (vl-catch-all-error-p sel)) sel)
+)
+
+;; Start Undo  -  Lee Mac
+;; Opens an Undo Group.
+
+(defun LM:startundo ( doc )
+    (LM:endundo doc)
+    (vla-startundomark doc)
+)
+
+;; End Undo  -  Lee Mac
+;; Closes an Undo Group.
+
+(defun LM:endundo ( doc )
+    (while (= 8 (logand 8 (getvar 'undoctl)))
+        (vla-endundomark doc)
+    )
+)
+
+;; Active Document  -  Lee Mac
+;; Returns the VLA Active Document Object
+
+(defun LM:acdoc nil
+    (eval (list 'defun 'LM:acdoc 'nil (vla-get-activedocument (vlax-get-acad-object))))
+    (LM:acdoc)
+)
