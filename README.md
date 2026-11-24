@@ -112,7 +112,7 @@ DynALisp.bundle
 Each module has the same folders:
 
 - **Apps** - one Lisp file per tool, in a group folder (`Apps\Draw`, `Apps\Layer`...), indexed by `Dyl-Suite`.
-- **Remote** - shared code loaded at startup for every tool (subfunctions, settings readers).
+- **Remote** - shared code loaded at startup for every tool (subfunctions, settings readers); that of the library modules (LeeMac, gileCAD) is loaded on demand, before the first of their programs runs.
 - **Reactor** - every reactor, loaded only while the DynALisp reactors are on.
 - **Res** - the data files (CSV) and dialogs (DCL) of the module.
 - **Docs** - the User Guide, one page per tool: what it does and how to use it.
@@ -124,7 +124,7 @@ Add your own tools as a new module folder under `Contents\Modules`: it is loaded
 
 ## Development
 
-Open the folder in VS Code with `Dyl-VSCode` (it offers to install VS Code when missing). The workspace recommends the AutoLISP extension and adds two snippet files, `LM-LocalSub` and `LM-RemoteSub`, for the Lee Mac subfunctions: insert a subfunction as local code, or as a call to its `Remote>>` copy loaded at startup. `.vscode\lmsnippets.py` regenerates them from `LM-Sub.lsp`.
+Open the folder in VS Code with `Dyl-VSCode` (it offers to install VS Code when missing). The workspace recommends the AutoLISP extension and adds two snippet files, `LM-LocalSub` and `LM-RemoteSub`, for the Lee Mac subfunctions: insert a subfunction as local code, or as a call to its `Remote>>` copy, loaded before the first Lee Mac program runs. `.vscode\lmsnippets.py` regenerates them from `LM-Sub.lsp`.
 
 Before adding a tool, read [CONVENTIONS.md](CONVENTIONS.md): command naming (`Dyl-*` main command, `Pst-*` children, aliases), where files go, settings, reactors, user files and windows. After adding or renaming a command, run `Dyl-SuiteUpdate` to index it.
 

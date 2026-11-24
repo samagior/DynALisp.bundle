@@ -9,6 +9,8 @@ Each module is a folder of `Contents\Modules\<Module>` (Dynalisp, LeeMac...), wi
 - **Apps** - the commands of each tool, one Lisp file per tool, in a group folder (`Apps\Draw`, `Apps\Layer`...). Indexed by the Startup Suite (`Dyl-Suite`): turned on or off, with aliases and a docs page.
   - A file that uses the functions of an Apps file (Pick hatch of the Hatch Presets window, `rpat:rebuild-hatch` of `Dyl-RebuildPat.lsp`) checks it is turned on (`Dyl:SuiteFileOn-p`), asks to turn it on when it is off and turns it on (`Dyl:SuiteFileOn`), then loads it (`Dyl:SuiteFileLoad`) when its function is not defined yet. Never load an App that is turned off without asking.
 - **Remote** - code loaded at startup for every App: shared functions (`Remote>>` prefix), module paths, the readers and setters of the settings (e.g. `Remote>>Dyl:DrawOrderAutoSet`). Remote files load in alphabetical order: a file that loads before `Dyl-Paths.lsp` must fall back to `(strcat *dyl:dyl "\\Res")` instead of `*dyl:dylres`.
+  - The Remote folders of the **library modules** (`*dyl:libmods*`: LeeMac, gileCAD, over 11,000 lines of subfunctions) are **loaded on demand**, never at startup: once in a drawing (`Dyl:LibsLoad`), just before the first App of a module other than Dynalisp loads (its commands are stubs that load them, `Dyl:LibAutoload`; `Dyl:SuiteFileLoad` loads them too). The Remote of Dynalisp and of `MyTools` still load at startup.
+  - The Dynalisp module never needs a library module: a function of theirs that it uses is copied, unchanged and credited, into `Remote\Dyl-Basics.lsp` (`Remote>>LM:str->lst`, `Remote>>LM:csv->lst`...), and changed in both files together. Its Apps and Remote call only that copy, or a function of their own.
 - **Reactor** - every reactor (`Reactor>>` prefix), loaded after Remote only while the DynALisp reactors are on (see [Reactors](#reactors)).
 - **Res** - the data files (CSV) and dialogs (DCL) of the module, even when the code that uses them is in the core (e.g. `PrepSuite.csv`). Reached with `*dyl:dylres`.
 - **Docs** - the **User Guide** of the module: one page per Apps file, in the same group folder (`Docs\Draw\Dyl-QuickDraw.htm`), plus `index.htm`, its pictures in an `images` folder beside the pages.
@@ -21,7 +23,7 @@ Each module is a folder of `Contents\Modules\<Module>` (Dynalisp, LeeMac...), wi
 
 The **LeeMac** module is the **sample module**: in its docs index, its pages, the README and the core windows it is described as a sample that showcases what DynALisp does with existing AutoLISP programs (indexed in the Startup Suite, main and child commands, aliases, shared subfunctions, a docs page per program), and the model for a module of one's own. Its programs keep their author and licence.
 
-*Why: a module stays self-contained, and the core holds only what runs every module. The user decides which Apps are turned on, and an App turned on is only autoloaded: its functions are defined once one of its commands has run. The LeeMac module shows, with real programs, how any collection of AutoLISP code becomes a DynALisp module. In the docs, what runs every module is kept apart from the Apps, so a page found in a group folder is always the page of a program or of one of its windows, and a window is found under its program.*
+*Why: a module stays self-contained, and the core holds only what runs every module. A drawing that runs only the tools of Dynalisp never reads the libraries of the other modules, so it opens faster. The user decides which Apps are turned on, and an App turned on is only autoloaded: its functions are defined once one of its commands has run. The LeeMac module shows, with real programs, how any collection of AutoLISP code becomes a DynALisp module. In the docs, what runs every module is kept apart from the Apps, so a page found in a group folder is always the page of a program or of one of its windows, and a window is found under its program.*
 
 ## Commands
 
@@ -46,11 +48,11 @@ The **LeeMac** module is the **sample module**: in its docs index, its pages, th
 
 ### Redefining AutoCAD Commands
 
-- A command of AutoCAD that DynALisp replaces with a Lisp command of its own (the output prep of Command Optimizer: `QSAVE`, `SAVEAS`, `PLOT`...) is **given back first** when a drawing starts (`_.REDEFINE` at the top of `dyl:startup`), and undefined again only once that drawing has defined its Lisp command (`MAJ:Redefine`). UNDEFINE holds for the whole session, a Lisp command for one drawing only.
+- A command of AutoCAD that DynALisp replaces with a Lisp command of its own (the output prep of Command Optimizer: `QSAVE`, `SAVEAS`, `PLOT`...) is **never unknown**: UNDEFINE holds for the whole session, a Lisp command for one drawing only, so the commands undefined in the session are kept on the blackboard (`*maj:undefined*`), and a drawing that starts gives them an autoload of their Lisp file at once, at the top of `dyl:startup` (`MAJ:stubs`; given back with `_.REDEFINE` when the file is missing). A native command is undefined only with its Lisp command defined in that drawing (`MAJ:Redefine`), and only the commands whose state changes are run: none in a drawing opened after the first one.
 - What DynALisp runs before the native command never stops it: its steps are caught (`MAJ:PrepSafe`), a step that fails is said on the command line, the command it left running cancelled, and the native command runs all the same.
 - The native command is called with `initdia` when it shows a dialog, `QSAVE` too in a drawing never saved (`DWGTITLED` 0): called by Lisp without it, AutoCAD asks on the command line.
 
-*Why: a drawing whose startup stopped halfway (an error in a file just changed) said *Unknown command* to SAVE, and a new drawing could not be saved at all; an error in a prep step must never cost the user their work.*
+*Why: a drawing whose startup stopped halfway (an error in a file just changed) said *Unknown command* to SAVE, and a new drawing could not be saved at all; an error in a prep step must never cost the user their work. Giving the 11 commands back and undefining them again in every drawing took a third of a second at each startup.*
 
 ### Preset aliases
 
@@ -188,8 +190,9 @@ The alias of a Quick Draw preset tells how it draws: `PL-*` for a preset drawn w
 - **Saved settings** are a `DynALisp Settings <date>` folder: `DynALisp-Settings.txt` (the `Dynalisp*` user settings as `Name=Value` lines), `User\` and `Modules\MyTools\`. Export settings / Import settings of Dyl-UserFiles (`Dyl:SetsExport` / `Dyl:SetsImport`), the uninstall and the setup read and write the same format: change `dynalisp.mnl` and `Installer\DynALisp.iss` together. A setting that only means something on this computer (a stamp, a profile name, a path) goes in `*dyl:setslocal*` and `LocalSettings`, never saved.
 
 - A data file read again and again (the presets, the layer keys) is **kept in memory** with the date and size of its files (`*pst:readcache*`, `*lk:readcache*`), read again only when one changed, and dropped by every writer of DynALisp (`Remote>>Dyl:PresetWrite`, `Remote>>Dyl:LayerKeyWrite`, `Remote>>Dyl:GroupsWriteOf`). A cache never outlives a change it cannot see: a file changed by hand or by another drawing has another date or size.
+- A data file made from the code (the index of the Startup Suite, `StartupSuite.csv`) is made again only for the files changed since it was written: when an Apps file is newer, `Dyl:Suite` parses that file again and keeps the commands of the others from the index; `Dyl-SuiteUpdate` parses them all.
 
-*Why: the defaults stay in git, each user's edits stay out of it. A file of 860 assemblies parsed on each call made every tab of the Manager, and every object a reactor names, take seconds.*
+*Why: the defaults stay in git, each user's edits stay out of it. A file of 860 assemblies parsed on each call made every tab of the Manager, and every object a reactor names, take seconds; the 200 Apps files parsed again after each `git pull` added 2 s to the next drawing opened.*
 
 ## Project Files
 
@@ -358,7 +361,7 @@ Claude commits and pushes as the work goes, without being asked: each commit is 
 
 - What goes wrong is found with **`Dyl-Diagnostics`** (`Apps\Troubleshooting`): one section per part (DynALisp, AutoCAD, Conflicts, Startup Suite, Settings, Reactors, Drawing), each a `dg:s-*` function and a `Pst-Diagnostics*` child run alone, all of them in the full report.
 - A tool that adds a startup step, a reactor, a data file, a setting or a way to conflict with other programs **adds its check** to the section it belongs to, in the same change: a problem is a `dg:bad` line (`[!]`, listed again at the top of the report), what is only worth knowing a `dg:note`.
-- The startup keeps what it did for the report: its time, warnings and notes (`*dyl:startms*`, `*dyl:startwarn*`, `*dyl:startnote*`) and the Remote and Reactor files that failed to load and their time (`*dyl:loaderrs*`, `*dyl:loadtimes*`). A new startup step goes through `Dyl:StartupStep`, so its errors are kept.
+- The startup keeps what it did for the report: its time, warnings and notes (`*dyl:startms*`, `*dyl:startwarn*`, `*dyl:startnote*`), the time of each of its steps (`*dyl:steptimes*`, marked by `Dyl:StartupMark`: the time since the mark before) and the Remote and Reactor files that failed to load and their time (`*dyl:loaderrs*`, `*dyl:loadtimes*`). A new startup step goes through `Dyl:StartupStep`, so its errors and its time are kept.
 - A report is **written to a text file** of `%TEMP%` and opened in the text editor (`dg:write`, `dg:open`), never printed on the command line, which keeps only what to do next.
 - A report never holds the user's profile folder, user name or computer name (`dg:anon`), since it is sent in a **public** GitHub issue of the releases repository that the user opens, reads and submits; DynALisp never sends anything by itself. The drawing itself is never part of it.
 
