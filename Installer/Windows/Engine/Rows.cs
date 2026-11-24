@@ -824,7 +824,7 @@ namespace DynALisp.Windows
                             f[4] = (pw * th).ToString("R", CultureInfo.InvariantCulture);
                         // or by the band settings of the row (Scale by width, its width factor:
                         // the thickness x the factor drawing units, at the drawing scale):
-                        else if (f.Length == 7 && f[0] == "P" && c.Length > 12 && Cell(r, c[3]) == "1" && Cell(r, c[11]) == "1" && t.Unit > 0
+                        else if (f.Length >= 7 && f[0] == "P" && c.Length > 12 && Cell(r, c[3]) == "1" && Cell(r, c[11]) == "1" && t.Unit > 0
                             && double.TryParse(w, NumberStyles.Float, CultureInfo.InvariantCulture, out double tw) && tw > 0)
                         {
                             if (!double.TryParse(Cell(r, c[12]), NumberStyles.Float, CultureInfo.InvariantCulture, out double fc) || fc <= 0) fc = 1;

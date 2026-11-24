@@ -2744,10 +2744,12 @@
 
 ;;  A band of the preview of a tile (see Installer\Windows\Engine\Hatch.cs), w wide: kind
 ;;  "P" the hatch of the material mat (nil: missing, crossed out), "S" a space, "L" a line.
-;;  A hatch: "P?w?pattern?file?ppu?angle?scale", ppu the inches on paper of one unit of its
-;;  pattern: its scale in inches (a metric pattern: in mm), divided by the drawing scale
+;;  A hatch: "P?w?pattern?file?ppu?angle?scale?type", ppu the inches on paper of one unit of
+;;  its pattern: its scale in inches (a metric pattern: in mm), divided by the drawing scale
 ;;  unless it keeps its size on paper (annotative or adaptive scaling: a Drafting hatch
-;;  preset; a Model one never does), as it plots:
+;;  preset; a Model one never does), as it plots; type its type (*mt:types*): a Drafting
+;;  hatch is previewed 1:1, never zoomed, so every Drafting hatch is seen at the same scale,
+;;  a Model one zoomed out to show its pattern:
 (defun Remote>>Dyl:MaterialBand (kind mat w / pat u s ds)
   (setq w (Remote>>Dyl:MaterialNumP w 6))
   (cond
@@ -2766,6 +2768,7 @@
      (strcat "P?" w "?" pat "?" (cond ((cdr u)) ("")) "?" (Remote>>Dyl:MaterialNumP (/ s ds) 8)
              "?" (Remote>>Dyl:MaterialNumP (cond ((distof (nth 6 mat) 2)) (0.0)) 4)
              "?" (Remote>>Dyl:MaterialNumP ds 4)
+             "?" (if (= "Model" (nth 63 mat)) "Model" "Drafting")
      )
     )
   )
