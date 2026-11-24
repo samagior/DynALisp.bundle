@@ -1678,8 +1678,9 @@
 (defun Remote>>Dyl:PresetWinVals (err / spec)
   (setq spec (assoc 'spec pst:dlg))
   (append
-    (list (cons "pst/rows" (setq pst:sent   (Remote>>Dyl:PresetWinRows pst:lst)
-                                 pst:sentof pst:lst
+    ;;  (setq gives its last value: the rows, never the presets they were made from)
+    (list (cons "pst/rows" (setq pst:sentof pst:lst
+                                 pst:sent   (Remote>>Dyl:PresetWinRows pst:lst)
                            )
           )
           (cons "pst/defs" (Remote>>Dyl:PresetWinRows (Remote>>Dyl:PresetDlgDefs)))
