@@ -351,7 +351,8 @@ namespace DynALisp.Windows
         // no pattern a space, SOLID a fill, else its pattern, from the .pat file pst/pats gives
         // it ((PATTERN file metric) ...: "1" a metric pattern, its scale in mm), its scale in
         // inches on paper divided by the drawing scale pst/ds, unless it keeps its size on paper
-        // (annotative or adaptive scaling, never a Model hatch):
+        // (annotative or adaptive scaling, never a Model hatch), then its type (a Drafting
+        // hatch drawn 1:1, a Model one zoomed out to show its pattern):
         string HatchSpec(string[] r)
         {
             string pat = Cell(r, _hatchCols[0]).Trim().ToUpperInvariant();
@@ -366,7 +367,8 @@ namespace DynALisp.Windows
             return string.Join("?", "P", "1", pat, p != null ? Cell(p, 1) : "",
                                (s / ds).ToString("0.########", CultureInfo.InvariantCulture),
                                ang.ToString("0.####", CultureInfo.InvariantCulture),
-                               ds.ToString("0.####", CultureInfo.InvariantCulture));
+                               ds.ToString("0.####", CultureInfo.InvariantCulture),
+                               model ? "Model" : "Drafting");
         }
 
         // ---- Commands and aliases ----
