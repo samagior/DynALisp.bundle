@@ -454,6 +454,16 @@
   (dg:kv "Started" (if *dyl:started* "yes" "no"))
   (if (not *dyl:started*) (dg:bad "The DynALisp startup did not run in this drawing (S::STARTUP replaced?)"))
   (dg:kv "Time" (if *dyl:startms* (strcat (itoa *dyl:startms*) " ms") "not recorded"))
+  ;;  Each step of the startup, the slowest first (Dyl:StartupMark of dynalisp.mnl; the
+  ;;  clock of AutoCAD counts by about 16 ms):
+  (if *dyl:steptimes*
+    (progn
+      (dg:kv "Steps" "the slowest first (the clock counts by about 16 ms):")
+      (foreach s (vl-sort *dyl:steptimes* '(lambda (a b) (> (cdr a) (cdr b))))
+        (if (< 0 (cdr s)) (dg:item (strcat (itoa (cdr s)) " ms  " (car s))))
+      )
+    )
+  )
   (dg:kv "Commands / aliases" (strcat (dg:str *dyl:cmdcount*) " / " (dg:str *dyl:aliascount*)))
   (foreach w *dyl:startwarn* (dg:bad (strcat "Startup: " w)))
   (foreach n *dyl:startnote* (dg:note n))

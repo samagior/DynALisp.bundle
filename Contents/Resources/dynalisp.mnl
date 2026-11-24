@@ -25,13 +25,32 @@
   ;;  Kept for the diagnostics (Dyl-Diagnostics): *dyl:t0* when the startup began,
   ;;  *dyl:loaderrs* the Remote and Reactor files that failed to load ("file: error"),
   ;;  *dyl:loadtimes* the time each one took ((file . ms) ...), and at the summary
-  ;;  *dyl:startms*, *dyl:startwarn* and *dyl:startnote* (see Dyl:StartupSummary):
+  ;;  *dyl:startms*, *dyl:startwarn* and *dyl:startnote* (see Dyl:StartupSummary), and
+  ;;  *dyl:steptimes* the time of each step ((step . ms) ...), see Dyl:StartupMark:
   (setq *dyl:quiet*     T
         *dyl:warn*      nil
         *dyl:note*      nil
         *dyl:t0*        (getvar "MILLISECS")
+        *dyl:tmark*     *dyl:t0*
+        *dyl:steptimes* nil
         *dyl:loaderrs*  nil
         *dyl:loadtimes* nil
+  )
+
+  ;;  The time since the last mark, kept as the time of the step name (added up when a step
+  ;;  is marked twice), while the startup runs only: once it is summed up (*dyl:startms*),
+  ;;  a step run again (Dyl-Suite, Dyl-Reload) is not counted:
+  (defun Dyl:StartupMark (name / now old)
+    (if (not *dyl:startms*)
+      (progn
+        (setq now (getvar "MILLISECS"))
+        (if (setq old (assoc name *dyl:steptimes*))
+          (setq *dyl:steptimes* (subst (cons name (+ (cdr old) (- now *dyl:tmark*))) old *dyl:steptimes*))
+          (setq *dyl:steptimes* (cons (cons name (- now *dyl:tmark*)) *dyl:steptimes*))
+        )
+        (setq *dyl:tmark* now)
+      )
+    )
   )
 
   ;;  The commands the output prep redefines (Output region, Dyl-CmdOptimizer.lsp), by
@@ -67,6 +86,7 @@
       )
     )
   )
+  (Dyl:StartupMark "Output commands given back")
 
   ;;Default Autocad ActiveX variables:
   (setq *acad:obj (vlax-get-acad-object))
@@ -802,7 +822,9 @@
     (setvar 'secureload *scr)
     (princ)
   )
+  (Dyl:StartupMark "Core functions")
   (Dyl:load)
+  (Dyl:StartupMark "Remote and Reactor files")
 
 
 
@@ -3465,6 +3487,7 @@
 
   ;;  Autoload the commands turned on in StartupSuite.csv from each module Apps folder:
   (defun Dyl:autoload (/ ons itm key cmds ful num mods mod pos)
+    (Dyl:StartupMark "Core functions")
     ;; Commands turned on and aliases defined, for the startup summary:
     (setq *dyl:cmdcount*   0
           *dyl:aliascount* 0
@@ -3540,11 +3563,14 @@
         )
       )
     )
+    (Dyl:StartupMark "Commands (Startup Suite)")
     ;; Dynamic children (custom presets...), then the aliases of the commands now defined:
     (Dyl:DynApply)
+    (Dyl:StartupMark "Dynamic children")
     (if (and (< 0 (setq *dyl:aliascount* (Dyl:AliasApply))) (not *dyl:quiet*))
       (princ (strcat "\n..." (itoa *dyl:aliascount*) " command alias(es) defined"))
     )
+    (Dyl:StartupMark "Aliases")
     ;; Output commands turned on or off (Dyl-Suite, Dyl-Reload): native ones
     ;; undefined or restored to match (MAJ:Redefine is defined later at startup):
     (if MAJ:Redefine (MAJ:Redefine (MAJ:Redefine-p)))
@@ -3557,7 +3583,9 @@
   ;;  of the quiet startup; an error, or a status line with "-->" (what to do, e.g. run
   ;;  Dyl-SetFilePrefs), is kept for the summary (*dyl:warn*). name: the step, as printed:
   (defun Dyl:StartupStep (name f args / res pos)
+    (Dyl:StartupMark "Core functions")
     (setq res (vl-catch-all-apply f args))
+    (Dyl:StartupMark name)
     (cond
       ((vl-catch-all-error-p res)
        (setq *dyl:warn* (cons (strcat name ": " (vl-catch-all-error-message res)) *dyl:warn*))
@@ -4079,7 +4107,9 @@
     (setvar "NOMUTT" nmt)
     (setvar "CMDECHO" cme)
   )
+  (Dyl:StartupMark "Core functions")
   (if (MAJ:Redefine-p) (MAJ:Redefine T))
+  (Dyl:StartupMark "Output commands undefined")
   ;; MAJ:synced: the setting this drawing applied (see Dyl:SetSync, run by the settings reactor)
   (setq MAJ:synced (MAJ:Redefine-p))
 
@@ -4133,6 +4163,7 @@
     (if *dyl:warn* (princ (strcat "\n--> " (Remote>>LM:lst->str (reverse *dyl:warn*) " | "))))
     (princ "\n")
     ;; Kept for the diagnostics (Dyl-Diagnostics), the startup time with them:
+    (Dyl:StartupMark "Core functions")
     (setq *dyl:startms*   (if *dyl:t0* (- (getvar "MILLISECS") *dyl:t0*))
           *dyl:startwarn* (reverse *dyl:warn*)
           *dyl:startnote* (reverse *dyl:note*)
