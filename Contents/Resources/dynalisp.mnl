@@ -65,29 +65,6 @@
         MAJ:cmds   (apply 'append MAJ:groups)
   )
 
-  ;;  UNDEFINE is for the whole AutoCAD session, but the Lisp commands that replace the native
-  ;;  ones (QSAVE, SAVEAS, PLOT...) are defined in each drawing. Until this drawing has defined
-  ;;  them (Dyl:autoload) and undefined the native ones again (MAJ:Redefine, at the end of the
-  ;;  Output region), the native commands are restored: a drawing whose startup stops halfway
-  ;;  (an error in a file just changed) still saves and plots, where it said "Unknown command"
-  ;;  (a new drawing could not be saved). Silent, as MAJ:Redefine:
-  (if (= "1" (getenv "DynalispPrepRedefine"))
-    (progn
-      (setq *dyl:cme* (getvar "CMDECHO")
-            *dyl:nmt* (getvar "NOMUTT")
-      )
-      (setvar "CMDECHO" 0)
-      (setvar "NOMUTT" 1)
-      (foreach name MAJ:cmds (vl-catch-all-apply 'vl-cmdf (list "_.REDEFINE" name)))
-      (setvar "NOMUTT" *dyl:nmt*)
-      (setvar "CMDECHO" *dyl:cme*)
-      (setq *dyl:cme* nil
-            *dyl:nmt* nil
-      )
-    )
-  )
-  (Dyl:StartupMark "Output commands given back")
-
   ;;Default Autocad ActiveX variables:
   (setq *acad:obj (vlax-get-acad-object))
   (setq *acad:pref (vla-get-Preferences *acad:obj))
@@ -203,6 +180,43 @@
         *dyl:dyl      (strcat *dyl:module "\\Dynalisp") ;;        *dyl:docs          (strcat *dyl:res "\\Docs")
         *dyl:apps     (strcat *dyl:dyl "\\Apps") ;;  Res paths are defined by each module in its own Remote folder
          ;;  (see Modules\Dynalisp\Remote\Dyl-Paths.lsp)
+  )
+
+  ;;  UNDEFINE is for the whole AutoCAD session, but the Lisp commands that replace the native
+  ;;  ones (QSAVE, SAVEAS, PLOT...) are defined in each drawing. The commands undefined in this
+  ;;  session are kept on the blackboard, shared by every drawing as UNDEFINE is
+  ;;  (*maj:undefined*, written by MAJ:Redefine). Until this drawing has defined its own
+  ;;  (Dyl:autoload), they are given at once an autoload of Dyl-CmdOptimizer.lsp (MAJ:stubs):
+  ;;  a drawing whose startup stops halfway (an error in a file just changed) still saves and
+  ;;  plots, where it said "Unknown command" (a new drawing could not be saved). Without that
+  ;;  file, they are given back (REDEFINE). Nothing is undefined or given back again in each
+  ;;  drawing: 11 commands each way took a third of a second at every startup.
+  (setq MAJ:stubs nil
+        *dyl:opt* (strcat *dyl:apps "\\Output\\Dyl-CmdOptimizer.lsp")
+  )
+  (cond
+    ((not (listp (setq *dyl:undef* (vl-bb-ref '*maj:undefined*)))))
+    ((not *dyl:undef*))
+    ((findfile *dyl:opt*)
+     (autoload (vl-string-translate "\\" "/" *dyl:opt*) *dyl:undef*)
+     (setq MAJ:stubs (mapcar '(lambda (n) (cons n (eval (read (strcat "C:" n))))) *dyl:undef*))
+    )
+    (T
+     (setq *dyl:cme* (getvar "CMDECHO")
+           *dyl:nmt* (getvar "NOMUTT")
+     )
+     (setvar "CMDECHO" 0)
+     (setvar "NOMUTT" 1)
+     (foreach name MAJ:cmds (vl-catch-all-apply 'vl-cmdf (list "_.REDEFINE" name)))
+     (setvar "NOMUTT" *dyl:nmt*)
+     (setvar "CMDECHO" *dyl:cme*)
+     (vl-bb-set '*maj:undefined* nil)
+    )
+  )
+  (setq *dyl:opt*   nil
+        *dyl:undef* nil
+        *dyl:cme*   nil
+        *dyl:nmt*   nil
   )
 
 
@@ -3587,6 +3601,9 @@
              (setq num (+ num (length cmds)))
             )
           )
+          ;; A command turned on keeps the autoload given at the top of the startup (autoload
+          ;; does not define a command again): it is now defined by the Startup Suite.
+          (if MAJ:stubs (setq MAJ:stubs (vl-remove-if '(lambda (s) (member (car s) cmds)) MAJ:stubs)))
         )
       )
       (setq *dyl:cmdcount* (+ *dyl:cmdcount* num))
@@ -4105,9 +4122,18 @@
     )
   )
 
-  ;;; The commands of MAJ:cmds defined in this drawing (or their autoload stub):
-  (defun MAJ:CmdsOn ()
-    (vl-remove-if-not '(lambda (n) (eval (read (strcat "C:" n)))) MAJ:cmds)
+  ;;; The commands of MAJ:cmds defined in this drawing (or their autoload stub), but
+  ;;; those that have only the autoload given at the top of the startup (MAJ:stubs): a
+  ;;; command turned off in Dyl-Suite is not defined by Dyl:autoload.
+  (defun MAJ:CmdsOn (/ f)
+    (vl-remove-if-not
+      '(lambda (n)
+         (and (setq f (eval (read (strcat "C:" n))))
+              (not (eq f (cdr (assoc n MAJ:stubs))))
+         )
+       )
+      MAJ:cmds
+    )
   )
 
   ;;; Status line: "QSAVE, PLOT redefined (...)" or "... native (...)":
@@ -4128,25 +4154,52 @@
     )
   )
 
-  (defun MAJ:Redefine (on / cme nmt)
-    (if
-      (and on (not (vl-some '(lambda (x) (wcmatch (strcase x) "*ACPUBLISH.CRX")) (arx))))
-      (vl-catch-all-apply 'arxload (list "AcPublish.crx" nil))
+  ;;; Undefine the native commands of MAJ:cmds defined in this drawing when on, give
+  ;;; back the others. Only the commands whose state changes are run: the commands
+  ;;; undefined in this session are on the blackboard (*maj:undefined*, a list; any other
+  ;;; value: not known, every command run, see MAJ:RedefineAll). The autoloads given at
+  ;;; the top of the startup to a command not turned on are removed (MAJ:stubs).
+  (defun MAJ:Redefine (on / cme nmt was unk sym)
+    (setq on  (if on (MAJ:CmdsOn))
+          was (vl-bb-ref '*maj:undefined*)
+          unk (not (listp was))
     )
-    (setq cme (getvar "CMDECHO")
-          nmt (getvar "NOMUTT")
+    (foreach s MAJ:stubs
+      (if (and (not (member (car s) on)) (eq (cdr s) (eval (setq sym (read (strcat "C:" (car s)))))))
+        (set sym nil)
+      )
     )
-    (setvar "CMDECHO" 0)
-    (setvar "NOMUTT" 1)
-    (setq on (if on (MAJ:CmdsOn)))
-    (foreach name MAJ:cmds
-      (vl-catch-all-apply 'vl-cmdf (list (if (member name on) "_.UNDEFINE" "_.REDEFINE") name))
+    (setq MAJ:stubs nil)
+    (if (or unk (not (equal on (vl-remove-if-not '(lambda (n) (member n was)) MAJ:cmds))))
+      (progn
+        (if
+          (and on (not (vl-some '(lambda (x) (wcmatch (strcase x) "*ACPUBLISH.CRX")) (arx))))
+          (vl-catch-all-apply 'arxload (list "AcPublish.crx" nil))
+        )
+        (setq cme (getvar "CMDECHO")
+              nmt (getvar "NOMUTT")
+        )
+        (setvar "CMDECHO" 0)
+        (setvar "NOMUTT" 1)
+        (foreach name MAJ:cmds
+          (if (or unk (not (eq (if (member name on) T) (if (member name was) T))))
+            (vl-catch-all-apply 'vl-cmdf (list (if (member name on) "_.UNDEFINE" "_.REDEFINE") name))
+          )
+        )
+        (setvar "NOMUTT" nmt)
+        (setvar "CMDECHO" cme)
+        (vl-bb-set '*maj:undefined* on)
+      )
     )
-    (setvar "NOMUTT" nmt)
-    (setvar "CMDECHO" cme)
+  )
+  ;;; The same, every command run whatever the blackboard says (a command given back or
+  ;;; undefined by hand, by another program):
+  (defun MAJ:RedefineAll (on)
+    (vl-bb-set '*maj:undefined* 'UNKNOWN)
+    (MAJ:Redefine on)
   )
   (Dyl:StartupMark "Core functions")
-  (if (MAJ:Redefine-p) (MAJ:Redefine T))
+  (MAJ:Redefine (MAJ:Redefine-p))
   (Dyl:StartupMark "Output commands undefined")
   ;; MAJ:synced: the setting this drawing applied (see Dyl:SetSync, run by the settings reactor)
   (setq MAJ:synced (MAJ:Redefine-p))
@@ -4164,7 +4217,7 @@
   ;;; now, to the other open drawings when they become current (Dyl:SetSync).
   (defun MAJ:RedefineSet (on)
     (setenv "DynalispPrepRedefine" (if on "1" "0"))
-    (MAJ:Redefine on)
+    (MAJ:RedefineAll on)
     (setq MAJ:synced on)
     (princ (strcat "\n" (MAJ:Status) "."))
   )
@@ -4176,7 +4229,7 @@
   ;;; Utility commands
   ;;; ---------------------------------------------------------------------------
   (defun c:Dyl-RESTORECOMMANDS ()
-    (MAJ:Redefine nil)
+    (MAJ:RedefineAll nil)
     (princ "\n[PrepBeforeOutput] Native commands restored for this session.")
     (princ "\n[PrepBeforeOutput] Turn off the output prep in Dyl-Settings to keep them.")
     (princ)

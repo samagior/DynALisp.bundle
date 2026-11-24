@@ -48,11 +48,11 @@ The **LeeMac** module is the **sample module**: in its docs index, its pages, th
 
 ### Redefining AutoCAD Commands
 
-- A command of AutoCAD that DynALisp replaces with a Lisp command of its own (the output prep of Command Optimizer: `QSAVE`, `SAVEAS`, `PLOT`...) is **given back first** when a drawing starts (`_.REDEFINE` at the top of `dyl:startup`), and undefined again only once that drawing has defined its Lisp command (`MAJ:Redefine`). UNDEFINE holds for the whole session, a Lisp command for one drawing only.
+- A command of AutoCAD that DynALisp replaces with a Lisp command of its own (the output prep of Command Optimizer: `QSAVE`, `SAVEAS`, `PLOT`...) is **never unknown**: UNDEFINE holds for the whole session, a Lisp command for one drawing only, so the commands undefined in the session are kept on the blackboard (`*maj:undefined*`), and a drawing that starts gives them an autoload of their Lisp file at once, at the top of `dyl:startup` (`MAJ:stubs`; given back with `_.REDEFINE` when the file is missing). A native command is undefined only with its Lisp command defined in that drawing (`MAJ:Redefine`), and only the commands whose state changes are run: none in a drawing opened after the first one.
 - What DynALisp runs before the native command never stops it: its steps are caught (`MAJ:PrepSafe`), a step that fails is said on the command line, the command it left running cancelled, and the native command runs all the same.
 - The native command is called with `initdia` when it shows a dialog, `QSAVE` too in a drawing never saved (`DWGTITLED` 0): called by Lisp without it, AutoCAD asks on the command line.
 
-*Why: a drawing whose startup stopped halfway (an error in a file just changed) said *Unknown command* to SAVE, and a new drawing could not be saved at all; an error in a prep step must never cost the user their work.*
+*Why: a drawing whose startup stopped halfway (an error in a file just changed) said *Unknown command* to SAVE, and a new drawing could not be saved at all; an error in a prep step must never cost the user their work. Giving the 11 commands back and undefining them again in every drawing took a third of a second at each startup.*
 
 ### Preset aliases
 
