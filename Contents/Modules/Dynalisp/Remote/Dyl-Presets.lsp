@@ -164,18 +164,50 @@
 ;;  Read the presets of the tool key with the default presets defs of its App. Each row
 ;;  goes through the App function fix (values in upper case...), then the rows are
 ;;  cleaned (see above) and the default presets missing from the file are added with
-;;  their default values:
-(defun Remote>>Dyl:PresetRead (key defs fix / lst)
-  (setq lst (Remote>>Dyl:PresetClean key (mapcar fix (Remote>>Dyl:PresetCsv key)) defs))
-  (foreach x defs
-    (if (not (assoc (car x) lst)) (setq lst (append lst (list x))))
+;;  their default values. A read is kept (*pst:readcache*: ((key stamp . presets) ...)) and
+;;  given again while none of the data files it depends on changed (see
+;;  Remote>>Dyl:PresetStamps) and with the same fix and the same number of defaults: the 860
+;;  assemblies of the building code, read and cleaned again each time a preset window or a
+;;  tab of the Manager opened, took seconds:
+(defun Remote>>Dyl:PresetRead (key defs fix / stm hit lst miss)
+  (setq stm (list (Remote>>Dyl:PresetStamps) fix (length defs))
+        hit (assoc key *pst:readcache*)
   )
-  lst
+  (if (and hit (equal stm (cadr hit)))
+    (cddr hit)
+    (progn
+      (setq lst (Remote>>Dyl:PresetClean key (mapcar fix (Remote>>Dyl:PresetCsv key)) defs))
+      (foreach x defs
+        (if (not (assoc (car x) lst)) (setq miss (cons x miss)))
+      )
+      (setq lst              (append lst (reverse miss))
+            *pst:readcache*  (cons (cons key (cons stm lst)) (vl-remove hit *pst:readcache*))
+      )
+      lst
+    )
+  )
 )
 
+;;  The date and size of every data file a read of presets depends on: the presets of every
+;;  tool (the fix of Quick Draw reads the materials, that of the materials the hatch presets)
+;;  and the groups (a row gets the case of its group). The user copy of each, else the
+;;  default. Read again when one of them changes, in DynALisp or out of it (Excel):
+(defun Remote>>Dyl:PresetStamps ()
+  (mapcar '(lambda (f) (list f (vl-file-systime f) (vl-file-size f)))
+          (append (mapcar '(lambda (s) (Dyl:UserFile (Remote>>Dyl:PresetDefault (car s)))) *dyl:presetspecs*)
+                  (mapcar '(lambda (k) (Dyl:UserFile (Remote>>Dyl:GroupsFileOf (car k)))) *grp:kinds*)
+          )
+  )
+)
+
+;;  The presets read (Remote>>Dyl:PresetRead), read again when DynALisp loads:
+(setq *pst:readcache* nil)
+
 ;;  Write the presets file of the tool key, the new custom presets getting their id
-;;  first. Returns T on success (nil if the file is open in Excel):
+;;  first. Returns T on success (nil if the file is open in Excel). The reads kept are
+;;  dropped, even when the date of the file did not change (written in the same second):
 (defun Remote>>Dyl:PresetWrite (key lst)
+  (setq *pst:readcache* nil)
   (Remote>>LM:writecsv (cons (Remote>>Dyl:PresetProp key 'header) (Remote>>Dyl:PresetIds lst))
                        (Remote>>Dyl:PresetFileW key)
   )
@@ -1562,6 +1594,40 @@
   )
 )
 
+;;  The rows of the presets lst for the window (Remote>>Dyl:PresetWinRow). An App whose rows
+;;  depend only on its presets and on the context its wctx gives (the units of the drawing,
+;;  the defaults of its window: the assemblies of Quick Draw) keeps them (*pst:rowcache*: the
+;;  last ones, (key lst context rows) each) and gives them again for the same list of presets
+;;  (eq: the read kept, see Remote>>Dyl:PresetRead) in the same context. The 860 assemblies
+;;  and their 860 defaults, made into rows again each time their tab of the Manager opened,
+;;  took seconds:
+(defun Remote>>Dyl:PresetWinRows (lst / ctx hit rows)
+  (if (not (assoc 'wctx pst:dlg))
+    (mapcar 'Remote>>Dyl:PresetWinRow lst)
+    (progn
+      (setq ctx (Remote>>Dyl:PresetDlgCall 'wctx nil)
+            hit (vl-some '(lambda (c) (if (and (= pst:key (car c)) (eq lst (cadr c)) (equal ctx (caddr c))) c))
+                         *pst:rowcache*
+                )
+      )
+      (if hit
+        (cadddr hit)
+        (progn
+          (setq rows            (mapcar 'Remote>>Dyl:PresetWinRow lst)
+                *pst:rowcache*  (cons (list pst:key lst ctx rows)
+                                      (if *pst:rowcache* (Remote>>LM:sublst *pst:rowcache* 0 3))
+                                )
+          )
+          rows
+        )
+      )
+    )
+  )
+)
+
+;;  The rows kept (Remote>>Dyl:PresetWinRows), made again when DynALisp loads:
+(setq *pst:rowcache* nil)
+
 ;;  A preset got back: its first n columns (the columns of the file):
 (defun Remote>>Dyl:PresetWinCut (r n / res)
   (repeat n
@@ -1612,8 +1678,11 @@
 (defun Remote>>Dyl:PresetWinVals (err / spec)
   (setq spec (assoc 'spec pst:dlg))
   (append
-    (list (cons "pst/rows" (mapcar 'Remote>>Dyl:PresetWinRow pst:lst))
-          (cons "pst/defs" (mapcar 'Remote>>Dyl:PresetWinRow (Remote>>Dyl:PresetDlgDefs)))
+    (list (cons "pst/rows" (setq pst:sent   (Remote>>Dyl:PresetWinRows pst:lst)
+                                 pst:sentof pst:lst
+                           )
+          )
+          (cons "pst/defs" (Remote>>Dyl:PresetWinRows (Remote>>Dyl:PresetDlgDefs)))
           (list "pst/new" (Remote>>Dyl:PresetWinRow (cdr (assoc 'new pst:dlg))))
           (cons "pst/ncols" (itoa (cond ((cdr (assoc 'wncols pst:dlg))) ((Remote>>Dyl:PresetWinCols)))))
           (cons "pst/tiles" (Remote>>Dyl:PresetWinTiles))
@@ -1672,6 +1741,34 @@
   )
 )
 
+;;  The presets of the rows got back from the window, n columns each. A row as it was sent
+;;  (pst:sent, at the same place or with the same id) is the preset it was made from
+;;  (pst:sentof), as it was read: the wget of the App (the thicknesses of an assembly back to
+;;  millimetres...) runs only on the rows edited or added. So a preset not edited is never
+;;  rounded by the window, and a window left on presets as they were (another tab of the
+;;  Manager picked) finds nothing changed and saves nothing (Remote>>Dyl:PresetDialog):
+(defun Remote>>Dyl:PresetWinBack (rows n / sent orig ids)
+  (setq sent pst:sent
+        orig pst:sentof
+        ids  (mapcar '(lambda (s o) (list (car s) s o)) pst:sent pst:sentof)
+  )
+  (mapcar
+    '(lambda (r / s o hit)
+       (setq s    (car sent)
+             o    (car orig)
+             sent (cdr sent)
+             orig (cdr orig)
+       )
+       (cond
+         ((and o (equal r s)) o)
+         ((and (/= "" (car r)) (setq hit (assoc (car r) ids)) (equal r (cadr hit))) (caddr hit))
+         ((Remote>>Dyl:PresetWinCut (cond ((Remote>>Dyl:PresetDlgCall 'wget (list r))) (r)) n))
+       )
+     )
+    rows
+  )
+)
+
 ;;  The presets got back from the window res (Dyl:WinShow): the presets edited, the presets
 ;;  selected, the aliases, the filter, the sort and the Show group (the view choices: also on
 ;;  Cancel), its default when Set default was clicked:
@@ -1681,7 +1778,7 @@
   )
   ;;  (the table given back, even without rows: every preset deleted)
   (if (assoc "pst/rows" (cdr res))
-    (setq pst:lst (mapcar '(lambda (r) (Remote>>Dyl:PresetWinCut (cond ((Remote>>Dyl:PresetDlgCall 'wget (list r))) (r)) n)) rows)
+    (setq pst:lst (Remote>>Dyl:PresetWinBack rows n)
           ;;  (the aliases only from a window that has them: a tool without commands keeps
           ;;  every alias as it was)
           pst:als (if (Remote>>Dyl:PresetDlgCmds-p)
@@ -1782,12 +1879,14 @@
 ;;-------------------------=={ Dialog box }==------------------------;;
 
 ;;  Show the preset dialog of the tool pst:key with the App part pst:dlg (see above).
-;;  Draw and Save (OK for a tool without commands) write the presets file and the aliases.
+;;  Draw and Save (OK for a tool without commands) write the presets file and the aliases,
+;;  when they changed (*pst:written*: the key of the tool whose presets were written by the
+;;  last dialog, nil when nothing was).
 ;;  Returns the preset to draw (the preset selected on OK for a tool without commands), or
 ;;  nil on Save / Cancel:
 (defun Remote>>Dyl:PresetDialog (pst:key pst:dlg / dcl:sta pst:lst pst:lst0 pst:idx pst:sel pst:als0 pst:als
                                  pst:acmd pst:alst pst:grps pst:gren pst:mats pst:smats pst:matids sel pst:mgr pst:mgrs
-                                 pst:view pst:flt pst:srt pst:lines pst:shw pst:shwlst
+                                 pst:view pst:flt pst:srt pst:lines pst:shw pst:shwlst pst:sent pst:sentof
                                 )
   ;;  The sort of the list of this tool, kept for the session (*dyl:presetsort*):
   (setq pst:srt (cdr (assoc pst:key *dyl:presetsort*))
@@ -1834,19 +1933,28 @@
                              )
             ;;  The new custom presets get their id now, so the preset returned has it:
             pst:lst          (Remote>>Dyl:PresetIds pst:lst)
+            *pst:written*    nil
       )
-      (if (not (Remote>>Dyl:PresetWrite pst:key pst:lst))
-        (alert (strcat "\nError: the presets could not be saved to\n"
-                       (Remote>>Dyl:PresetFileW pst:key)
-                       "\n(is it open in Excel?)"
-               )
+      (cond
+        ;;  Nothing changed (another tab of the Manager picked, or Save, on the presets and
+        ;;  aliases as they were read): no file written, no command defined again. Writing
+        ;;  the 860 assemblies, then defining the commands and aliases again, made each tab
+        ;;  of the Manager take seconds:
+        ((and (equal pst:lst pst:lst0) (equal pst:als pst:als0)))
+        ((not (Remote>>Dyl:PresetWrite pst:key pst:lst))
+         (alert (strcat "\nError: the presets could not be saved to\n"
+                        (Remote>>Dyl:PresetFileW pst:key)
+                        "\n(is it open in Excel?)"
+                )
+         )
         )
-        (progn
-          (if (and (not (equal pst:als pst:als0)) (not (Dyl:AliasWrite pst:als)))
-            (alert (strcat "\nError: the aliases could not be saved to\n" (Dyl:UserFileW *dyl:alias) "\n(is it open in Excel?)"))
-          )
-          ;;  The commands of the custom presets and the aliases follow the files saved:
-          (if Dyl:DynApply (progn (Dyl:DynApply) (Dyl:AliasApply)))
+        (T
+         (setq *pst:written* pst:key)
+         (if (and (not (equal pst:als pst:als0)) (not (Dyl:AliasWrite pst:als)))
+           (alert (strcat "\nError: the aliases could not be saved to\n" (Dyl:UserFileW *dyl:alias) "\n(is it open in Excel?)"))
+         )
+         ;;  The commands of the custom presets and the aliases follow the files saved:
+         (if Dyl:DynApply (progn (Dyl:DynApply) (Dyl:AliasApply)))
         )
       )
       (if (or (= 1 dcl:sta) (not (Remote>>Dyl:PresetDlgCmds-p))) (nth pst:idx pst:lst))

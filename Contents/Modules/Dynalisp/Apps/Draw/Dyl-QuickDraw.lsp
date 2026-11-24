@@ -3879,6 +3879,14 @@
   )
 )
 
+;;  What the rows of the assemblies in the window depend on besides the assemblies themselves
+;;  (see Dyl:QuickDrawAsmExtra): the row Add starts from, the layer key of their lines, the
+;;  units of the drawing and the materials. The rows are made again when one of them changes
+;;  (Remote>>Dyl:PresetWinRows):
+(defun Dyl:QuickDrawAsmWinCtx ()
+  (list qa:def qa:bk (Dyl:QuickDrawAsmFactor) qa:mats)
+)
+
 ;;  The Assembly Presets window, opened from the Quick Draw window (its presets qd, its preset
 ;;  shown r), on the assembly of r; a new assembly has its Border lines and Dividing lines on.
 ;;  Returns the assembly selected on OK, saved, nil on Cancel:
@@ -3903,10 +3911,12 @@
                       '(rowcheck . Dyl:QuickDrawAsmCheck)
                       '(wprep . Dyl:QuickDrawAsmWinPrep)
                       '(wvals . Dyl:QuickDrawAsmWinVals)
+                      '(wctx . Dyl:QuickDrawAsmWinCtx)
                 )
               )
-        *qd:asmcache* nil
   )
+  ;;  The assemblies kept by Quick Draw are read again only when they were saved:
+  (if *pst:written* (setq *qd:asmcache* nil))
   res
 )
 

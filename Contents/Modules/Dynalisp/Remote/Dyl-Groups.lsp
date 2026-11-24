@@ -134,7 +134,7 @@
 ;;  cannot be written (open in Excel):
 (defun Remote>>Dyl:GroupsWriteOf (lst k)
   (if (Remote>>LM:writecsv (cons '("Group") (mapcar 'list lst)) (Dyl:UserFileW (Remote>>Dyl:GroupsFileOf k)))
-    (progn (setq *grp:cache* nil) t)
+    (progn (setq *grp:cache* nil *pst:readcache* nil) t)
   )
 )
 
@@ -149,7 +149,9 @@
 ;;  materials), saved now: each file as it is on disk (the user's copy, else the default),
 ;;  its other values kept. Returns the tools whose file could not be written:
 (defun Remote>>Dyl:GroupsRenameOf (pairs k / key rows new bad)
-  (setq k (car (Remote>>Dyl:GroupsKind k)))
+  (setq k               (car (Remote>>Dyl:GroupsKind k))
+        *pst:readcache* nil
+  )
   ;;  A materials file of DynALisp 1.1 and older is split first (its user copy is not read as
   ;;  it is, see Remote>>Dyl:PresetFile, and would be written over):
   (if Remote>>Dyl:MaterialMigrate (Remote>>Dyl:MaterialMigrate))
