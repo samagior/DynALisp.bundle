@@ -34,6 +34,40 @@
         *dyl:loadtimes* nil
   )
 
+  ;;  The commands the output prep redefines (Output region, Dyl-CmdOptimizer.lsp), by
+  ;;  group sharing the same steps: the saves, the prints (-PLOT and -PUBLISH are left out:
+  ;;  scripts and Lisp programs call them with (command "-PLOT" ...), which fails while they
+  ;;  are undefined), PREVIEW and REGEN:
+  (setq MAJ:groups '(("SAVE" "QSAVE" "SAVEAS" "+SAVEAS")
+                     ("PLOT" "PUBLISH" "EXPORTPDF" "EXPORTDWF" "EXPORTDWFX")
+                     ("PREVIEW")
+                     ("REGEN")
+                    )
+        MAJ:cmds   (apply 'append MAJ:groups)
+  )
+
+  ;;  UNDEFINE is for the whole AutoCAD session, but the Lisp commands that replace the native
+  ;;  ones (QSAVE, SAVEAS, PLOT...) are defined in each drawing. Until this drawing has defined
+  ;;  them (Dyl:autoload) and undefined the native ones again (MAJ:Redefine, at the end of the
+  ;;  Output region), the native commands are restored: a drawing whose startup stops halfway
+  ;;  (an error in a file just changed) still saves and plots, where it said "Unknown command"
+  ;;  (a new drawing could not be saved). Silent, as MAJ:Redefine:
+  (if (= "1" (getenv "DynalispPrepRedefine"))
+    (progn
+      (setq *dyl:cme* (getvar "CMDECHO")
+            *dyl:nmt* (getvar "NOMUTT")
+      )
+      (setvar "CMDECHO" 0)
+      (setvar "NOMUTT" 1)
+      (foreach name MAJ:cmds (vl-catch-all-apply 'vl-cmdf (list "_.REDEFINE" name)))
+      (setvar "NOMUTT" *dyl:nmt*)
+      (setvar "CMDECHO" *dyl:cme*)
+      (setq *dyl:cme* nil
+            *dyl:nmt* nil
+      )
+    )
+  )
+
   ;;Default Autocad ActiveX variables:
   (setq *acad:obj (vlax-get-acad-object))
   (setq *acad:pref (vla-get-Preferences *acad:obj))
@@ -3688,17 +3722,8 @@
                     ("DRAWORDERCLEAN" "Rebuild the draw order from scratch (while auto draw order is on)")
                     ("REGEN" "Regenerate the drawing (REGENALL)")
                    )
-        ;; The commands redefined, by group sharing the same steps: the saves, the
-        ;; prints (-PLOT and -PUBLISH are left out: scripts and Lisp programs call
-        ;; them with (command "-PLOT" ...), which fails while they are undefined),
-        ;; PREVIEW and REGEN:
-        MAJ:groups '(("SAVE" "QSAVE" "SAVEAS" "+SAVEAS")
-                     ("PLOT" "PUBLISH" "EXPORTPDF" "EXPORTDWF" "EXPORTDWFX")
-                     ("PREVIEW")
-                     ("REGEN")
-                    )
-        MAJ:cmds  (apply 'append MAJ:groups)
   )
+  ;;  (MAJ:groups and MAJ:cmds, the commands redefined, are set at the start of the startup)
 
   ;;; Column of PrepSuite.csv and of the Dyl-Settings grid giving the steps of
   ;;; cmd: the first command of its group (SAVE, PLOT, PREVIEW or REGEN):

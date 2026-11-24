@@ -44,6 +44,14 @@ The **LeeMac** module is the **sample module**: in its docs index, its pages, th
 
 *Why: a French (or any other) AutoCAD reads a bare name in its own language: `"undo"` is not one of its commands and `"y"` not one of its answers (it asks O/N), so the program stops there. `_` makes every AutoCAD read the English name, and `.` runs the built-in command even when a program redefined it (as Command Optimizer redefines QSAVE and PLOT).*
 
+### Redefining AutoCAD Commands
+
+- A command of AutoCAD that DynALisp replaces with a Lisp command of its own (the output prep of Command Optimizer: `QSAVE`, `SAVEAS`, `PLOT`...) is **given back first** when a drawing starts (`_.REDEFINE` at the top of `dyl:startup`), and undefined again only once that drawing has defined its Lisp command (`MAJ:Redefine`). UNDEFINE holds for the whole session, a Lisp command for one drawing only.
+- What DynALisp runs before the native command never stops it: its steps are caught (`MAJ:PrepSafe`), a step that fails is said on the command line, the command it left running cancelled, and the native command runs all the same.
+- The native command is called with `initdia` when it shows a dialog, `QSAVE` too in a drawing never saved (`DWGTITLED` 0): called by Lisp without it, AutoCAD asks on the command line.
+
+*Why: a drawing whose startup stopped halfway (an error in a file just changed) said *Unknown command* to SAVE, and a new drawing could not be saved at all; an error in a prep step must never cost the user their work.*
+
 ### Preset aliases
 
 The alias of a Quick Draw preset tells how it draws: `PL-*` for a preset drawn with a polyline, `QD-*` for one that asks its method when drawn (the default for now). Quick Shape presets use `QS-*`. Pick the prefix to match when a preset's method changes or a preset is added.
