@@ -1543,7 +1543,10 @@
   ;;; in an update) takes its value in the default file.
   ;;; Returns ((LOAD COMMAND FILE MODULE GROUP PATH NAME DESCRIPTION) ...).
   ;;; ---------------------------------------------------------------------------
-  (defun Dyl:SuiteBuild (files old dflt / bypth byfle als cmds cmd lst)
+  ;;; keep: the commands of the files not changed since the index was written,
+  ;;; (("PATH" (CMD NAME DESCRIPTION) ...) ...), taken as they are instead of
+  ;;; parsing the file again (see Dyl:Suite); nil parses every file.
+  (defun Dyl:SuiteBuild (files old dflt keep / bypth byfle als cmds cmd lst itm)
     ;; Previous values keyed by "PATH|COMMAND" and by "FILE|COMMAND", the ones of
     ;; old found first (added last):
     (foreach r (append (cdr dflt) (cdr old))
@@ -1553,7 +1556,7 @@
     )
     (setq als (Dyl:AliasRead))
     (foreach f files
-      (setq cmds (Dyl:SuiteParse (cadr f)))
+      (setq cmds (if (setq itm (assoc (strcase (car f)) keep)) (cdr itm) (Dyl:SuiteParse (cadr f))))
       (foreach itm (cond (cmds) ('(("" "" ""))))
         (setq cmd (car itm)
               lst (cons
@@ -1633,7 +1636,7 @@
   ;;; Update StartupSuite.csv when needed (or always if force is T) and return
   ;;; its rows: ((LOAD COMMAND FILE PATH) ...).
   ;;; ---------------------------------------------------------------------------
-  (defun Dyl:Suite (force / files old recs)
+  (defun Dyl:Suite (force / files old recs keep tim pth itm byp)
     (setq files (Dyl:SuiteFiles)
           old   (Dyl:SuiteRead)
     )
@@ -1641,9 +1644,33 @@
       (progn
         (Dyl:StartupMark "Startup Suite read")
         (if (not *dyl:quiet*) (princ "\n...Indexing the Apps commands into StartupSuite.csv"))
+        ;; Only the files changed since the index was written are parsed again (after a
+        ;; git pull, an update): the commands of the others are those of the index. Dyl-
+        ;; SuiteUpdate (force) parses them all:
+        (if (and (not force) (setq tim (Dyl:SuiteTime (Dyl:UserFile *dyl:suite))))
+          (progn
+           ;; The files not changed since, by PATH:
+           (foreach f files
+             (if (not (Dyl:SuiteNewer-p (Dyl:SuiteTime (cadr f)) tim))
+               (setq byp (cons (strcase (car f)) byp))
+             )
+           )
+           (foreach r (reverse (Dyl:SuiteRecsOf (Dyl:UserFile *dyl:suite)))
+            (setq pth (strcase (nth 5 r)))
+            (if (member pth byp)
+              (setq keep (if (setq itm (assoc pth keep))
+                           (subst (cons pth (cons (list (nth 1 r) (nth 6 r) (nth 7 r)) (cdr itm))) itm keep)
+                           (cons (list pth (list (nth 1 r) (nth 6 r) (nth 7 r))) keep)
+                         )
+              )
+            )
+           )
+          )
+        )
         (setq recs (Dyl:SuiteBuild files
                                    old
                                    (if (/= *dyl:suite (Dyl:UserFile *dyl:suite)) (Dyl:SuiteReadFile *dyl:suite))
+                                   keep
                    )
         )
         (if (not (Dyl:SuiteWrite recs))
@@ -1670,9 +1697,24 @@
   ;;; record format of Dyl:SuiteBuild / Dyl:SuiteWrite, or nil if the file is
   ;;; missing or not in the current format.
   ;;; ---------------------------------------------------------------------------
-  (defun Dyl:SuiteRecs (/ des str sep hdr idx lst) 
+  (defun Dyl:SuiteRecs (/ lst)
     (Dyl:Suite nil)
-    (if (setq des (open (Dyl:UserFile *dyl:suite) "r"))
+    (setq lst              (Dyl:SuiteRecsOf (Dyl:UserFile *dyl:suite))
+          *dyl:suitemains* nil
+    )
+    ;; PATH of the files with a Dyl-* or LM-* main command (see Dyl:SuiteChild-p):
+    (foreach r lst
+      (if (and (wcmatch (nth 1 r) "DYL`-*,LM`-*") (not (member (nth 5 r) *dyl:suitemains*)))
+        (setq *dyl:suitemains* (cons (nth 5 r) *dyl:suitemains*))
+      )
+    )
+    lst
+  )
+
+  ;;; The records of the index file fle, as they are (not updated first), nil if
+  ;;; it is missing or not in the current format:
+  (defun Dyl:SuiteRecsOf (fle / des str sep hdr idx lst)
+    (if (setq des (open fle "r"))
       (progn 
         (if (setq str (read-line des)) 
           (setq sep (cond 
@@ -1704,16 +1746,7 @@
         (close des)
       )
     )
-    (setq lst               (vl-remove-if '(lambda (r) (= "" (nth 5 r))) (reverse lst))
-          *dyl:suitemains*  nil
-    )
-    ;; PATH of the files with a Dyl-* or LM-* main command (see Dyl:SuiteChild-p):
-    (foreach r lst
-      (if (and (wcmatch (nth 1 r) "DYL`-*,LM`-*") (not (member (nth 5 r) *dyl:suitemains*)))
-        (setq *dyl:suitemains* (cons (nth 5 r) *dyl:suitemains*))
-      )
-    )
-    lst
+    (vl-remove-if '(lambda (r) (= "" (nth 5 r))) (reverse lst))
   )
 
   ;;; ---------------------------------------------------------------------------

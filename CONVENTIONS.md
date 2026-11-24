@@ -190,8 +190,9 @@ The alias of a Quick Draw preset tells how it draws: `PL-*` for a preset drawn w
 - **Saved settings** are a `DynALisp Settings <date>` folder: `DynALisp-Settings.txt` (the `Dynalisp*` user settings as `Name=Value` lines), `User\` and `Modules\MyTools\`. Export settings / Import settings of Dyl-UserFiles (`Dyl:SetsExport` / `Dyl:SetsImport`), the uninstall and the setup read and write the same format: change `dynalisp.mnl` and `Installer\DynALisp.iss` together. A setting that only means something on this computer (a stamp, a profile name, a path) goes in `*dyl:setslocal*` and `LocalSettings`, never saved.
 
 - A data file read again and again (the presets, the layer keys) is **kept in memory** with the date and size of its files (`*pst:readcache*`, `*lk:readcache*`), read again only when one changed, and dropped by every writer of DynALisp (`Remote>>Dyl:PresetWrite`, `Remote>>Dyl:LayerKeyWrite`, `Remote>>Dyl:GroupsWriteOf`). A cache never outlives a change it cannot see: a file changed by hand or by another drawing has another date or size.
+- A data file made from the code (the index of the Startup Suite, `StartupSuite.csv`) is made again only for the files changed since it was written: when an Apps file is newer, `Dyl:Suite` parses that file again and keeps the commands of the others from the index; `Dyl-SuiteUpdate` parses them all.
 
-*Why: the defaults stay in git, each user's edits stay out of it. A file of 860 assemblies parsed on each call made every tab of the Manager, and every object a reactor names, take seconds.*
+*Why: the defaults stay in git, each user's edits stay out of it. A file of 860 assemblies parsed on each call made every tab of the Manager, and every object a reactor names, take seconds; the 200 Apps files parsed again after each `git pull` added 2 s to the next drawing opened.*
 
 ## Project Files
 
