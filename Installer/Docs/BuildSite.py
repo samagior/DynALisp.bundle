@@ -16,7 +16,8 @@
 #                                   and a search box filtering the tools of every module
 #   <folder>\<Module>\...           the User Guide: Contents\Modules\<Module>\Docs
 #   <folder>\dev\index.html         the Developer home: README.md
-#   <folder>\dev\conventions.html   CONVENTIONS.md
+#   <folder>\dev\conventions.html   CONVENTIONS.md, the core of the conventions
+#   <folder>\dev\conventions\...    Conventions\<Topic>.md, the conventions of each larger topic
 #   <folder>\dev\<Module>\...       the Developer docs: Contents\Modules\<Module>\DevDocs
 #   <folder>\dev\licences\...       the licences the README links to
 #   <folder>\docs.css, images\, README.md, .nojekyll
@@ -63,6 +64,14 @@ MARKDOWN = [('README.md', 'dev/index.html', 'DynALisp for Developers'),
             ('CONVENTIONS.md', 'dev/conventions.html', 'DynALisp Conventions'),
             (os.path.join('Contents', 'Modules', 'LeeMac', 'LEE-MAC-LICENCE.md'), 'dev/licences/LEE-MAC-LICENCE.html',
              'Lee Mac Licence')]
+# The conventions of each larger topic, Conventions\<Topic>.md, titled by their first heading:
+CONVENTIONS = os.path.join(REPO, 'Conventions')
+for _name in sorted(os.listdir(CONVENTIONS)) if os.path.isdir(CONVENTIONS) else []:
+    if _name.lower().endswith('.md'):
+        with open(os.path.join(CONVENTIONS, _name), encoding='utf-8') as _f:
+            _h1 = re.match(r'#\s+(.*)', _f.readline())
+        MARKDOWN.append((os.path.join('Conventions', _name), 'dev/conventions/%s.html' % _name[:-3],
+                         '%s Conventions' % (_h1.group(1).strip() if _h1 else _name[:-3])))
 # Other files the pages link to, copied to the website:
 FILES = [(os.path.join('Contents', 'Resources', 'docs.css'), 'docs.css'),
          (os.path.join('Contents', 'Resources', 'Icons', 'dynalisp-banner-readme.svg'), 'images/dynalisp-banner.svg')]

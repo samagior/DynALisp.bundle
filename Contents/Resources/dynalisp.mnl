@@ -25,13 +25,32 @@
   ;;  Kept for the diagnostics (Dyl-Diagnostics): *dyl:t0* when the startup began,
   ;;  *dyl:loaderrs* the Remote and Reactor files that failed to load ("file: error"),
   ;;  *dyl:loadtimes* the time each one took ((file . ms) ...), and at the summary
-  ;;  *dyl:startms*, *dyl:startwarn* and *dyl:startnote* (see Dyl:StartupSummary):
+  ;;  *dyl:startms*, *dyl:startwarn* and *dyl:startnote* (see Dyl:StartupSummary), and
+  ;;  *dyl:steptimes* the time of each step ((step . ms) ...), see Dyl:StartupMark:
   (setq *dyl:quiet*     T
         *dyl:warn*      nil
         *dyl:note*      nil
         *dyl:t0*        (getvar "MILLISECS")
+        *dyl:tmark*     *dyl:t0*
+        *dyl:steptimes* nil
         *dyl:loaderrs*  nil
         *dyl:loadtimes* nil
+  )
+
+  ;;  The time since the last mark, kept as the time of the step name (added up when a step
+  ;;  is marked twice), while the startup runs only: once it is summed up (*dyl:startms*),
+  ;;  a step run again (Dyl-Suite, Dyl-Reload) is not counted:
+  (defun Dyl:StartupMark (name / now old)
+    (if (not *dyl:startms*)
+      (progn
+        (setq now (getvar "MILLISECS"))
+        (if (setq old (assoc name *dyl:steptimes*))
+          (setq *dyl:steptimes* (subst (cons name (+ (cdr old) (- now *dyl:tmark*))) old *dyl:steptimes*))
+          (setq *dyl:steptimes* (cons (cons name (- now *dyl:tmark*)) *dyl:steptimes*))
+        )
+        (setq *dyl:tmark* now)
+      )
+    )
   )
 
   ;;  The commands the output prep redefines (Output region, Dyl-CmdOptimizer.lsp), by
@@ -44,28 +63,6 @@
                      ("REGEN")
                     )
         MAJ:cmds   (apply 'append MAJ:groups)
-  )
-
-  ;;  UNDEFINE is for the whole AutoCAD session, but the Lisp commands that replace the native
-  ;;  ones (QSAVE, SAVEAS, PLOT...) are defined in each drawing. Until this drawing has defined
-  ;;  them (Dyl:autoload) and undefined the native ones again (MAJ:Redefine, at the end of the
-  ;;  Output region), the native commands are restored: a drawing whose startup stops halfway
-  ;;  (an error in a file just changed) still saves and plots, where it said "Unknown command"
-  ;;  (a new drawing could not be saved). Silent, as MAJ:Redefine:
-  (if (= "1" (getenv "DynalispPrepRedefine"))
-    (progn
-      (setq *dyl:cme* (getvar "CMDECHO")
-            *dyl:nmt* (getvar "NOMUTT")
-      )
-      (setvar "CMDECHO" 0)
-      (setvar "NOMUTT" 1)
-      (foreach name MAJ:cmds (vl-catch-all-apply 'vl-cmdf (list "_.REDEFINE" name)))
-      (setvar "NOMUTT" *dyl:nmt*)
-      (setvar "CMDECHO" *dyl:cme*)
-      (setq *dyl:cme* nil
-            *dyl:nmt* nil
-      )
-    )
   )
 
   ;;Default Autocad ActiveX variables:
@@ -183,6 +180,43 @@
         *dyl:dyl      (strcat *dyl:module "\\Dynalisp") ;;        *dyl:docs          (strcat *dyl:res "\\Docs")
         *dyl:apps     (strcat *dyl:dyl "\\Apps") ;;  Res paths are defined by each module in its own Remote folder
          ;;  (see Modules\Dynalisp\Remote\Dyl-Paths.lsp)
+  )
+
+  ;;  UNDEFINE is for the whole AutoCAD session, but the Lisp commands that replace the native
+  ;;  ones (QSAVE, SAVEAS, PLOT...) are defined in each drawing. The commands undefined in this
+  ;;  session are kept on the blackboard, shared by every drawing as UNDEFINE is
+  ;;  (*maj:undefined*, written by MAJ:Redefine). Until this drawing has defined its own
+  ;;  (Dyl:autoload), they are given at once an autoload of Dyl-CmdOptimizer.lsp (MAJ:stubs):
+  ;;  a drawing whose startup stops halfway (an error in a file just changed) still saves and
+  ;;  plots, where it said "Unknown command" (a new drawing could not be saved). Without that
+  ;;  file, they are given back (REDEFINE). Nothing is undefined or given back again in each
+  ;;  drawing: 11 commands each way took a third of a second at every startup.
+  (setq MAJ:stubs nil
+        *dyl:opt* (strcat *dyl:apps "\\Output\\Dyl-CmdOptimizer.lsp")
+  )
+  (cond
+    ((not (listp (setq *dyl:undef* (vl-bb-ref '*maj:undefined*)))))
+    ((not *dyl:undef*))
+    ((findfile *dyl:opt*)
+     (autoload (vl-string-translate "\\" "/" *dyl:opt*) *dyl:undef*)
+     (setq MAJ:stubs (mapcar '(lambda (n) (cons n (eval (read (strcat "C:" n))))) *dyl:undef*))
+    )
+    (T
+     (setq *dyl:cme* (getvar "CMDECHO")
+           *dyl:nmt* (getvar "NOMUTT")
+     )
+     (setvar "CMDECHO" 0)
+     (setvar "NOMUTT" 1)
+     (foreach name MAJ:cmds (vl-catch-all-apply 'vl-cmdf (list "_.REDEFINE" name)))
+     (setvar "NOMUTT" *dyl:nmt*)
+     (setvar "CMDECHO" *dyl:cme*)
+     (vl-bb-set '*maj:undefined* nil)
+    )
+  )
+  (setq *dyl:opt*   nil
+        *dyl:undef* nil
+        *dyl:cme*   nil
+        *dyl:nmt*   nil
   )
 
 
@@ -655,6 +689,80 @@
     )
   )
 
+  ;;  The library modules: their Remote folder holds only subfunctions for the Apps of the
+  ;;  other modules (the 300 and more of Lee Mac, LM-Sub.lsp, those of gileCAD, GC-Sub.lsp,
+  ;;  11 500 lines), and is loaded on demand, once per drawing, the first time an App of a
+  ;;  module other than Dynalisp is loaded (Dyl:LibsLoad), never at startup: the Dynalisp
+  ;;  module keeps its own copy of the few it uses (Remote\Dyl-Basics.lsp):
+  (setq *dyl:libmods* '("LeeMac" "gileCAD"))
+
+  ;;  T when the path p starts with the folder dir (any case; never wcmatch, which reads the
+  ;;  characters of a path, a comma or a #, as a pattern):
+  (defun Dyl:PathIn-p (p dir)
+    (setq dir (strcat (vl-string-right-trim "\\" dir) "\\"))
+    (= (strcase (substr p 1 (strlen dir))) (strcase dir))
+  )
+
+  ;;  T when the folder dir is in a library module (*dyl:libmods*):
+  (defun Dyl:LibDir-p (dir)
+    (vl-some '(lambda (m) (Dyl:PathIn-p dir (strcat *dyl:module "\\" m))) *dyl:libmods*)
+  )
+
+  ;;  T when the Apps file pth (its path from the Modules folder, LeeMac\Apps\..., or its
+  ;;  full path, with \ or /) needs the libraries: a file of any module but Dynalisp:
+  (defun Dyl:LibsFor-p (pth)
+    (setq pth (vl-string-translate "/" "\\" pth))
+    (if (Dyl:PathIn-p pth *dyl:module) (setq pth (substr pth (+ 2 (strlen *dyl:module)))))
+    (not (Dyl:PathIn-p pth "Dynalisp"))
+  )
+
+  ;;  Load the Remote folders of the library modules in this drawing, once
+  ;;  (*dyl:libsloaded*, cleared by Dyl:load). Their times are kept apart from those of the
+  ;;  startup (*dyl:libtimes*), their errors with the others (*dyl:loaderrs*):
+  (defun Dyl:LibsLoad (/ scr old)
+    (if (not *dyl:libsloaded*)
+      (progn
+        (setq *dyl:libsloaded* T
+              scr              (getvar 'secureload)
+              old              *dyl:loadtimes*
+              *dyl:loadtimes*  nil
+        )
+        (setvar 'secureload 0)
+        (Dyl:LoadDirs (vl-remove-if-not 'Dyl:LibDir-p (Dyl:moddirs "Remote")))
+        (setvar 'secureload scr)
+        (setq *dyl:libtimes*  *dyl:loadtimes*
+              *dyl:loadtimes* old
+        )
+      )
+    )
+    T
+  )
+
+  ;;  Autoload the commands cmds ("LM-2DPROJECTION" ...) of the Apps file ful, as autoload
+  ;;  does, the libraries loaded first: a stub for each command not defined yet, which
+  ;;  loads the libraries and the file, then runs the command the file defined:
+  (defun Dyl:LibAutoload (ful cmds / sym)
+    (foreach cmd cmds
+      (setq sym (read (strcat "C:" cmd)))
+      (if (not (eval sym))
+        (eval (list 'defun sym nil (list 'Dyl:LibRun ful (strcat "C:" cmd))))
+      )
+    )
+  )
+
+  ;;  The stub of the command nam of the file ful (see Dyl:LibAutoload):
+  (defun Dyl:LibRun (ful nam / sym old)
+    (setq sym (read nam)
+          old (eval sym)
+    )
+    (Dyl:LibsLoad)
+    (cond
+      ((not (findfile ful)) (princ (strcat "\n--> Unable to load : " ful)) (princ))
+      ((progn (load ful) (eq old (eval sym))) (princ (strcat "\n--> " ful " does not define " nam)) (princ))
+      ((apply sym nil))
+    )
+  )
+
   ;;  Turn the DynALisp reactors on or off (Reactors in Dyl-Settings). On: the Reactor
   ;;  folders are loaded in this drawing, the other open drawings get their reactors when
   ;;  opened again (or with Dyl-Reload). Off: every DynALisp reactor of this drawing is
@@ -698,15 +806,18 @@
     (setvar 'secureload 0)
 
     ;; The load errors and times of this load only (Dyl-Reload loads again):
-    (setq *dyl:loaderrs*  nil
-          *dyl:loadtimes* nil
+    (setq *dyl:loaderrs*    nil
+          *dyl:loadtimes*   nil
+          *dyl:libsloaded*  nil
+          *dyl:libtimes*    nil
     )
 
-    ;; Recursively load all the Lisp file in each module Remote folder, then in each
-    ;; module Reactor folder (they can use the Remote functions) while the DynALisp
-    ;; reactors are on. Off, no Reactor folder is loaded and any DynALisp reactor
-    ;; left in the drawing (Dyl-Reload) is removed:
-    (Dyl:LoadDirs (Dyl:moddirs "Remote"))
+    ;; Recursively load all the Lisp file in each module Remote folder, but those of the
+    ;; library modules (loaded on demand, see Dyl:LibsLoad), then in each module Reactor
+    ;; folder (they can use the Remote functions) while the DynALisp reactors are on. Off,
+    ;; no Reactor folder is loaded and any DynALisp reactor left in the drawing
+    ;; (Dyl-Reload) is removed:
+    (Dyl:LoadDirs (vl-remove-if 'Dyl:LibDir-p (Dyl:moddirs "Remote")))
     (if (Dyl:ReactorsOn-p)
       (Dyl:LoadDirs (Dyl:moddirs "Reactor"))
       (Dyl:ReactorsStop)
@@ -725,7 +836,9 @@
     (setvar 'secureload *scr)
     (princ)
   )
+  (Dyl:StartupMark "Core functions")
   (Dyl:load)
+  (Dyl:StartupMark "Remote and Reactor files")
 
 
 
@@ -1444,7 +1557,10 @@
   ;;; in an update) takes its value in the default file.
   ;;; Returns ((LOAD COMMAND FILE MODULE GROUP PATH NAME DESCRIPTION) ...).
   ;;; ---------------------------------------------------------------------------
-  (defun Dyl:SuiteBuild (files old dflt / bypth byfle als cmds cmd lst)
+  ;;; keep: the commands of the files not changed since the index was written,
+  ;;; (("PATH" (CMD NAME DESCRIPTION) ...) ...), taken as they are instead of
+  ;;; parsing the file again (see Dyl:Suite); nil parses every file.
+  (defun Dyl:SuiteBuild (files old dflt keep / bypth byfle als cmds cmd lst itm)
     ;; Previous values keyed by "PATH|COMMAND" and by "FILE|COMMAND", the ones of
     ;; old found first (added last):
     (foreach r (append (cdr dflt) (cdr old))
@@ -1454,7 +1570,7 @@
     )
     (setq als (Dyl:AliasRead))
     (foreach f files
-      (setq cmds (Dyl:SuiteParse (cadr f)))
+      (setq cmds (if (setq itm (assoc (strcase (car f)) keep)) (cdr itm) (Dyl:SuiteParse (cadr f))))
       (foreach itm (cond (cmds) ('(("" "" ""))))
         (setq cmd (car itm)
               lst (cons
@@ -1534,24 +1650,51 @@
   ;;; Update StartupSuite.csv when needed (or always if force is T) and return
   ;;; its rows: ((LOAD COMMAND FILE PATH) ...).
   ;;; ---------------------------------------------------------------------------
-  (defun Dyl:Suite (force / files old recs)
+  (defun Dyl:Suite (force / files old recs keep tim pth itm byp)
     (setq files (Dyl:SuiteFiles)
           old   (Dyl:SuiteRead)
     )
     (if (or force (Dyl:SuiteStale-p files old))
       (progn
+        (Dyl:StartupMark "Startup Suite read")
         (if (not *dyl:quiet*) (princ "\n...Indexing the Apps commands into StartupSuite.csv"))
+        ;; Only the files changed since the index was written are parsed again (after a
+        ;; git pull, an update): the commands of the others are those of the index. Dyl-
+        ;; SuiteUpdate (force) parses them all:
+        (if (and (not force) (setq tim (Dyl:SuiteTime (Dyl:UserFile *dyl:suite))))
+          (progn
+           ;; The files not changed since, by PATH:
+           (foreach f files
+             (if (not (Dyl:SuiteNewer-p (Dyl:SuiteTime (cadr f)) tim))
+               (setq byp (cons (strcase (car f)) byp))
+             )
+           )
+           (foreach r (reverse (Dyl:SuiteRecsOf (Dyl:UserFile *dyl:suite)))
+            (setq pth (strcase (nth 5 r)))
+            (if (member pth byp)
+              (setq keep (if (setq itm (assoc pth keep))
+                           (subst (cons pth (cons (list (nth 1 r) (nth 6 r) (nth 7 r)) (cdr itm))) itm keep)
+                           (cons (list pth (list (nth 1 r) (nth 6 r) (nth 7 r))) keep)
+                         )
+              )
+            )
+           )
+          )
+        )
         (setq recs (Dyl:SuiteBuild files
                                    old
                                    (if (/= *dyl:suite (Dyl:UserFile *dyl:suite)) (Dyl:SuiteReadFile *dyl:suite))
+                                   keep
                    )
         )
         (if (not (Dyl:SuiteWrite recs))
           (princ (strcat "\n--> Unable to write : " (Dyl:UserFileW *dyl:suite) "\n--> File open in another program?"))
         )
+        ;; Indexed again at startup when an Apps file changed (after a git pull, an update):
+        (Dyl:StartupMark "Startup Suite indexed again (an Apps file changed)")
         (mapcar '(lambda (r) (list (nth 0 r) (nth 1 r) (nth 2 r) (nth 5 r))) recs)
       )
-      (cdr old)
+      (progn (Dyl:StartupMark "Startup Suite read") (cdr old))
     )
   )
 
@@ -1568,9 +1711,24 @@
   ;;; record format of Dyl:SuiteBuild / Dyl:SuiteWrite, or nil if the file is
   ;;; missing or not in the current format.
   ;;; ---------------------------------------------------------------------------
-  (defun Dyl:SuiteRecs (/ des str sep hdr idx lst) 
+  (defun Dyl:SuiteRecs (/ lst)
     (Dyl:Suite nil)
-    (if (setq des (open (Dyl:UserFile *dyl:suite) "r"))
+    (setq lst              (Dyl:SuiteRecsOf (Dyl:UserFile *dyl:suite))
+          *dyl:suitemains* nil
+    )
+    ;; PATH of the files with a Dyl-* or LM-* main command (see Dyl:SuiteChild-p):
+    (foreach r lst
+      (if (and (wcmatch (nth 1 r) "DYL`-*,LM`-*") (not (member (nth 5 r) *dyl:suitemains*)))
+        (setq *dyl:suitemains* (cons (nth 5 r) *dyl:suitemains*))
+      )
+    )
+    lst
+  )
+
+  ;;; The records of the index file fle, as they are (not updated first), nil if
+  ;;; it is missing or not in the current format:
+  (defun Dyl:SuiteRecsOf (fle / des str sep hdr idx lst)
+    (if (setq des (open fle "r"))
       (progn 
         (if (setq str (read-line des)) 
           (setq sep (cond 
@@ -1602,16 +1760,7 @@
         (close des)
       )
     )
-    (setq lst               (vl-remove-if '(lambda (r) (= "" (nth 5 r))) (reverse lst))
-          *dyl:suitemains*  nil
-    )
-    ;; PATH of the files with a Dyl-* or LM-* main command (see Dyl:SuiteChild-p):
-    (foreach r lst
-      (if (and (wcmatch (nth 1 r) "DYL`-*,LM`-*") (not (member (nth 5 r) *dyl:suitemains*)))
-        (setq *dyl:suitemains* (cons (nth 5 r) *dyl:suitemains*))
-      )
-    )
-    lst
+    (vl-remove-if '(lambda (r) (= "" (nth 5 r))) (reverse lst))
   )
 
   ;;; ---------------------------------------------------------------------------
@@ -1963,6 +2112,7 @@
   ;; Load the Apps file pth, so its functions are defined. Returns T when loaded:
   (defun Dyl:SuiteFileLoad (pth / ful)
     (setq ful (strcat *dyl:module "\\" pth))
+    (if (Dyl:LibsFor-p pth) (Dyl:LibsLoad))
     (and (findfile ful)
          (not (vl-catch-all-error-p (vl-catch-all-apply 'load (list ful))))
     )
@@ -3413,6 +3563,7 @@
 
   ;;  Autoload the commands turned on in StartupSuite.csv from each module Apps folder:
   (defun Dyl:autoload (/ ons itm key cmds ful num mods mod pos)
+    (Dyl:StartupMark "Core functions")
     ;; Commands turned on and aliases defined, for the startup summary:
     (setq *dyl:cmdcount*   0
           *dyl:aliascount* 0
@@ -3457,8 +3608,17 @@
           (cond 
             ;; File without command turned on: load it entirely
             ((member "" cmds)
+             (Dyl:StartupMark "Commands (Startup Suite)")
+             (if (Dyl:LibsFor-p ful) (Dyl:LibsLoad))
              (load ful (strcat "\n--> Unable to load : " *fle "\n--> From : " *pth))
+             (Dyl:StartupMark "Apps files loaded whole (no command turned on)")
              (setq num (1+ num))
+            )
+            ;; A file of another module than Dynalisp: the libraries loaded with it (see
+            ;; Dyl:LibAutoload):
+            ((and cmds (Dyl:LibsFor-p ful))
+             (Dyl:LibAutoload ful cmds)
+             (setq num (+ num (length cmds)))
             )
             ;; Full path (avoids same-name files of other modules) with "/" since
             ;; autoload writes it into a string that is evaluated with (read):
@@ -3467,6 +3627,9 @@
              (setq num (+ num (length cmds)))
             )
           )
+          ;; A command turned on keeps the autoload given at the top of the startup (autoload
+          ;; does not define a command again): it is now defined by the Startup Suite.
+          (if MAJ:stubs (setq MAJ:stubs (vl-remove-if '(lambda (s) (member (car s) cmds)) MAJ:stubs)))
         )
       )
       (setq *dyl:cmdcount* (+ *dyl:cmdcount* num))
@@ -3481,11 +3644,14 @@
         )
       )
     )
+    (Dyl:StartupMark "Commands (Startup Suite)")
     ;; Dynamic children (custom presets...), then the aliases of the commands now defined:
     (Dyl:DynApply)
+    (Dyl:StartupMark "Dynamic children")
     (if (and (< 0 (setq *dyl:aliascount* (Dyl:AliasApply))) (not *dyl:quiet*))
       (princ (strcat "\n..." (itoa *dyl:aliascount*) " command alias(es) defined"))
     )
+    (Dyl:StartupMark "Aliases")
     ;; Output commands turned on or off (Dyl-Suite, Dyl-Reload): native ones
     ;; undefined or restored to match (MAJ:Redefine is defined later at startup):
     (if MAJ:Redefine (MAJ:Redefine (MAJ:Redefine-p)))
@@ -3498,7 +3664,9 @@
   ;;  of the quiet startup; an error, or a status line with "-->" (what to do, e.g. run
   ;;  Dyl-SetFilePrefs), is kept for the summary (*dyl:warn*). name: the step, as printed:
   (defun Dyl:StartupStep (name f args / res pos)
+    (Dyl:StartupMark "Core functions")
     (setq res (vl-catch-all-apply f args))
+    (Dyl:StartupMark name)
     (cond
       ((vl-catch-all-error-p res)
        (setq *dyl:warn* (cons (strcat name ": " (vl-catch-all-error-message res)) *dyl:warn*))
@@ -3980,9 +4148,18 @@
     )
   )
 
-  ;;; The commands of MAJ:cmds defined in this drawing (or their autoload stub):
-  (defun MAJ:CmdsOn ()
-    (vl-remove-if-not '(lambda (n) (eval (read (strcat "C:" n)))) MAJ:cmds)
+  ;;; The commands of MAJ:cmds defined in this drawing (or their autoload stub), but
+  ;;; those that have only the autoload given at the top of the startup (MAJ:stubs): a
+  ;;; command turned off in Dyl-Suite is not defined by Dyl:autoload.
+  (defun MAJ:CmdsOn (/ f)
+    (vl-remove-if-not
+      '(lambda (n)
+         (and (setq f (eval (read (strcat "C:" n))))
+              (not (eq f (cdr (assoc n MAJ:stubs))))
+         )
+       )
+      MAJ:cmds
+    )
   )
 
   ;;; Status line: "QSAVE, PLOT redefined (...)" or "... native (...)":
@@ -4003,24 +4180,53 @@
     )
   )
 
-  (defun MAJ:Redefine (on / cme nmt)
-    (if
-      (and on (not (vl-some '(lambda (x) (wcmatch (strcase x) "*ACPUBLISH.CRX")) (arx))))
-      (vl-catch-all-apply 'arxload (list "AcPublish.crx" nil))
+  ;;; Undefine the native commands of MAJ:cmds defined in this drawing when on, give
+  ;;; back the others. Only the commands whose state changes are run: the commands
+  ;;; undefined in this session are on the blackboard (*maj:undefined*, a list; any other
+  ;;; value: not known, every command run, see MAJ:RedefineAll). The autoloads given at
+  ;;; the top of the startup to a command not turned on are removed (MAJ:stubs).
+  (defun MAJ:Redefine (on / cme nmt was unk sym)
+    (setq on  (if on (MAJ:CmdsOn))
+          was (vl-bb-ref '*maj:undefined*)
+          unk (not (listp was))
     )
-    (setq cme (getvar "CMDECHO")
-          nmt (getvar "NOMUTT")
+    (foreach s MAJ:stubs
+      (if (and (not (member (car s) on)) (eq (cdr s) (eval (setq sym (read (strcat "C:" (car s)))))))
+        (set sym nil)
+      )
     )
-    (setvar "CMDECHO" 0)
-    (setvar "NOMUTT" 1)
-    (setq on (if on (MAJ:CmdsOn)))
-    (foreach name MAJ:cmds
-      (vl-catch-all-apply 'vl-cmdf (list (if (member name on) "_.UNDEFINE" "_.REDEFINE") name))
+    (setq MAJ:stubs nil)
+    (if (or unk (not (equal on (vl-remove-if-not '(lambda (n) (member n was)) MAJ:cmds))))
+      (progn
+        (if
+          (and on (not (vl-some '(lambda (x) (wcmatch (strcase x) "*ACPUBLISH.CRX")) (arx))))
+          (vl-catch-all-apply 'arxload (list "AcPublish.crx" nil))
+        )
+        (setq cme (getvar "CMDECHO")
+              nmt (getvar "NOMUTT")
+        )
+        (setvar "CMDECHO" 0)
+        (setvar "NOMUTT" 1)
+        (foreach name MAJ:cmds
+          (if (or unk (not (eq (if (member name on) T) (if (member name was) T))))
+            (vl-catch-all-apply 'vl-cmdf (list (if (member name on) "_.UNDEFINE" "_.REDEFINE") name))
+          )
+        )
+        (setvar "NOMUTT" nmt)
+        (setvar "CMDECHO" cme)
+        (vl-bb-set '*maj:undefined* on)
+      )
     )
-    (setvar "NOMUTT" nmt)
-    (setvar "CMDECHO" cme)
   )
-  (if (MAJ:Redefine-p) (MAJ:Redefine T))
+  ;;; The same, every command run whatever the blackboard says (a command given back or
+  ;;; undefined by hand, by another program):
+  (defun MAJ:RedefineAll (on)
+    (vl-bb-set '*maj:undefined* 'UNKNOWN)
+    (MAJ:Redefine on)
+  )
+  (Dyl:StartupMark "Core functions")
+  (MAJ:Redefine (MAJ:Redefine-p))
+  (Dyl:StartupMark "Output commands undefined")
   ;; MAJ:synced: the setting this drawing applied (see Dyl:SetSync, run by the settings reactor)
   (setq MAJ:synced (MAJ:Redefine-p))
 
@@ -4037,7 +4243,7 @@
   ;;; now, to the other open drawings when they become current (Dyl:SetSync).
   (defun MAJ:RedefineSet (on)
     (setenv "DynalispPrepRedefine" (if on "1" "0"))
-    (MAJ:Redefine on)
+    (MAJ:RedefineAll on)
     (setq MAJ:synced on)
     (princ (strcat "\n" (MAJ:Status) "."))
   )
@@ -4049,7 +4255,7 @@
   ;;; Utility commands
   ;;; ---------------------------------------------------------------------------
   (defun c:Dyl-RESTORECOMMANDS ()
-    (MAJ:Redefine nil)
+    (MAJ:RedefineAll nil)
     (princ "\n[PrepBeforeOutput] Native commands restored for this session.")
     (princ "\n[PrepBeforeOutput] Turn off the output prep in Dyl-Settings to keep them.")
     (princ)
@@ -4074,6 +4280,7 @@
     (if *dyl:warn* (princ (strcat "\n--> " (Remote>>LM:lst->str (reverse *dyl:warn*) " | "))))
     (princ "\n")
     ;; Kept for the diagnostics (Dyl-Diagnostics), the startup time with them:
+    (Dyl:StartupMark "Core functions")
     (setq *dyl:startms*   (if *dyl:t0* (- (getvar "MILLISECS") *dyl:t0*))
           *dyl:startwarn* (reverse *dyl:warn*)
           *dyl:startnote* (reverse *dyl:note*)

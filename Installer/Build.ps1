@@ -7,7 +7,7 @@
 # its "## <version>" section (its notes are written to Releases\build\notes.md, the
 # notes of the GitHub release). The setup holds the files git knows (committed or new,
 # never the ignored ones: User, MyTools...), without the dev files (Installer,
-# .github, .vscode, CLAUDE.md, CONVENTIONS.md) and without the Docs (User Guide) and
+# .github, .vscode, CLAUDE.md, CONVENTIONS.md, Conventions) and without the Docs (User Guide) and
 # DevDocs (Developer docs) folders of each module: the docs open on the website (Resources\DocsPages.txt, the list of its pages,
 # is installed), and a git clone has them to edit: Installer\Docs\BuildDocs.py --check
 # must find that list up to date. Needs git, Python 3 and Inno Setup 6.
@@ -59,7 +59,7 @@ if (-not $Iscc) { throw 'Inno Setup 6 not found (https://jrsoftware.org/isinfo.p
 if (Test-Path -LiteralPath $build) { Remove-Item -LiteralPath $build -Recurse -Force }
 New-Item -ItemType Directory -Force -Path $stage | Out-Null
 [Console]::OutputEncoding = [Text.Encoding]::UTF8
-$devOnly = '^(\.github|\.vscode|Installer|Releases)/|^Contents/Modules/[^/]+/(Docs|DevDocs)/|^(\.gitignore|\.gitattributes|CLAUDE\.md|CONVENTIONS\.md)$'
+$devOnly = '^(\.github|\.vscode|Installer|Releases|Conventions)/|^Contents/Modules/[^/]+/(Docs|DevDocs)/|^(\.gitignore|\.gitattributes|CLAUDE\.md|CONVENTIONS\.md)$'
 $files = git -C $repo -c core.quotepath=false ls-files --cached --others --exclude-standard
 if ($LASTEXITCODE -ne 0) { throw 'git ls-files failed.' }
 $count = 0

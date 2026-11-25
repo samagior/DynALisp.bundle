@@ -70,7 +70,7 @@
 ;;-------------------------=={ Phases }==------------------------;;
 
 ;;  Phases of Phase.csv: ((code description) ...), *ph:defaults* when the file is missing
-;;  (or at startup, while LM-Sub.lsp that parses the CSV lines is not loaded yet). The
+;;  (or while Remote>>LM:csv->lst, of Dyl-Basics.lsp, is not defined yet). The
 ;;  description is in the language of the AutoCAD installed (Dyl:LangAcad, as the ribbon),
 ;;  not the Language of Dyl-Settings (the docs), when the file has its column
 ;;  (Description.fr), the English one (Description, 6th column) otherwise. The file is read
