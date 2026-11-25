@@ -62,3 +62,11 @@ Installer/Simulation/Core/bin/
 Installer/Simulation/Core/obj/
 Installer/Simulation/Tests/bin/
 Installer/Simulation/Tests/obj/
+# Build output of the core plugin (Installer\Core, its DLLs committed in Contents\Resources),
+# of its data library and of its tests:
+Installer/Core/bin/
+Installer/Core/obj/
+Installer/Core/Data/bin/
+Installer/Core/Data/obj/
+Installer/Core/Tests/bin/
+Installer/Core/Tests/obj/

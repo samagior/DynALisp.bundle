@@ -203,13 +203,49 @@
 ;;  The presets read (Remote>>Dyl:PresetRead), read again when DynALisp loads:
 (setq *pst:readcache* nil)
 
+;;  What is made from the data files the same way in every drawing and is slow to make (the
+;;  860 assemblies read and fixed, what Quick Draw shows of them) is kept for the whole session
+;;  on the blackboard, under name: (key . value). f is applied to args only when what it is
+;;  made from differs from the key kept: key (what the caller adds: the units of the drawing...)
+;;  with Remote>>Dyl:SessionStamps. A drawing opened after the first one gets it without making
+;;  it (vl-bb-ref gives a copy of it):
+(defun Remote>>Dyl:SessionKept (name key f args / bb v)
+  (setq key (cons (Remote>>Dyl:SessionStamps) key)
+        bb  (vl-bb-ref name)
+  )
+  (if (and bb (equal key (car bb)))
+    (cdr bb)
+    (progn
+      (setq v (apply f args))
+      (vl-bb-set name (cons key v))
+      v
+    )
+  )
+)
+
+;;  What every drawing reads alike: the date and size of every presets file and groups file
+;;  (Remote>>Dyl:PresetStamps: the presets, the assemblies, the materials, the hatch presets),
+;;  the count of the data files written by DynALisp in the session (*dyl:datawrites*, see
+;;  Remote>>Dyl:CsvWrite: a file written twice in the same second at the same size), and the
+;;  date of the defaults of the presets (read with a user copy: the default assemblies) and of
+;;  the files of the code that makes what is kept (both changed by a git pull in the session):
+(defun Remote>>Dyl:SessionStamps ()
+  (list (Remote>>Dyl:PresetStamps)
+        (vl-bb-ref '*dyl:datawrites*)
+        (mapcar '(lambda (s) (vl-file-systime (Remote>>Dyl:PresetDefault (car s)))) *dyl:presetspecs*)
+        (mapcar '(lambda (f) (vl-file-systime (strcat *dyl:dyl f)))
+                '("\\Apps\\Draw\\Dyl-QuickDraw.lsp" "\\Remote\\Dyl-Materials.lsp" "\\Remote\\Dyl-Presets.lsp" "\\Remote\\Dyl-Groups.lsp")
+        )
+  )
+)
+
 ;;  Write the presets file of the tool key, the new custom presets getting their id
 ;;  first. Returns T on success (nil if the file is open in Excel). The reads kept are
 ;;  dropped, even when the date of the file did not change (written in the same second):
 (defun Remote>>Dyl:PresetWrite (key lst)
   (setq *pst:readcache* nil)
-  (Remote>>LM:writecsv (cons (Remote>>Dyl:PresetProp key 'header) (Remote>>Dyl:PresetIds lst))
-                       (Remote>>Dyl:PresetFileW key)
+  (Remote>>Dyl:CsvWrite (cons (Remote>>Dyl:PresetProp key 'header) (Remote>>Dyl:PresetIds lst))
+                        (Remote>>Dyl:PresetFileW key)
   )
 )
 
@@ -1680,12 +1716,12 @@
         ;;  The rows sent, and the presets they were made from, kept (see
         ;;  Remote>>Dyl:PresetWinTaken):
         pst:sentof    pst:lst
-        pst:sent      (Remote>>Dyl:PresetWinRows pst:lst)
+        pst:sent      (Remote>>Dyl:ManagerTimed "Rows of the presets" 'Remote>>Dyl:PresetWinRows (list pst:lst))
         *pst:winsent* (list pst:key (cdr (assoc 'window pst:dlg)) pst:sentof pst:sent)
   )
   (append
     (list (cons "pst/rows" pst:sent)
-          (cons "pst/defs" (Remote>>Dyl:PresetWinRows (Remote>>Dyl:PresetDlgDefs)))
+          (cons "pst/defs" (Remote>>Dyl:ManagerTimed "Rows of the defaults" 'Remote>>Dyl:PresetWinRows (list (Remote>>Dyl:PresetDlgDefs))))
           (list "pst/new" (Remote>>Dyl:PresetWinRow (cdr (assoc 'new pst:dlg))))
           (cons "pst/ncols" (itoa (cond ((cdr (assoc 'wncols pst:dlg))) ((Remote>>Dyl:PresetWinCols)))))
           (cons "pst/tiles" (Remote>>Dyl:PresetWinTiles))
@@ -1704,7 +1740,7 @@
             (cons "pst/base" (Remote>>Dyl:PresetProp pst:key 'base))
             (cons "pst/cmd" (Remote>>Dyl:PresetProp pst:key 'cmd))
             (cons "pst/als" (mapcar '(lambda (p) (list (car p) (cdr p))) pst:als))
-            (cons "pst/taken" (Remote>>Dyl:PresetWinTaken))
+            (cons "pst/taken" (Remote>>Dyl:ManagerTimed "Commands taken" 'Remote>>Dyl:PresetWinTaken nil))
             (cons "pst/prefix" (cond ((cdr (assoc 'wprefix pst:dlg))) ("")))
       )
     )
@@ -1713,7 +1749,7 @@
             (cons "pst/matnoun" (cond ((cdr (assoc 'matnoun pst:dlg))) ("material")))
             (cons "pst/matfree" (if (cdr (assoc 'matfree pst:dlg)) "1" "0"))
             (cons "pst/mats"
-                  (mapcar '(lambda (m / s)
+                  (Remote>>Dyl:ManagerTimed "Materials list" 'mapcar (list '(lambda (m / s)
                              (append (list (car m) (nth 1 m) (nth 2 m)
                                            (cond ((Remote>>Dyl:PresetDlgCall 'mspec (list m))) ("X?1"))
                                            (strcase (nth 3 m))
@@ -1725,7 +1761,7 @@
                              )
                            )
                           pst:mats
-                  )
+                  ))
             )
       )
     )
@@ -1735,12 +1771,12 @@
     ;;  The material Group list ((matgroups . T), mgr in Presets.cs): the groups of the
     ;;  materials:
     (if (and (Remote>>Dyl:PresetDlgMat) (cdr (assoc 'matgroups pst:dlg)))
-      (list (cons "mgr/list" (Remote>>Dyl:PresetDlgMatGrps)))
+      (list (cons "mgr/list" (Remote>>Dyl:ManagerTimed "Materials list" 'Remote>>Dyl:PresetDlgMatGrps nil)))
     )
     (if spec (list (cons "pst/spec" (itoa (cadr spec))) (cons "pst/specby" (cddr spec))))
     (if (assoc 'outline pst:dlg) (list (cons "pst/outline" (cdr (assoc 'outline pst:dlg)))))
     (if (assoc 'blank pst:dlg) (list (cons "pst/blank" (cdr (assoc 'blank pst:dlg)))))
-    (Remote>>Dyl:PresetDlgCall 'wvals nil)
+    (Remote>>Dyl:ManagerTimed "Window lists of the tool (wvals)" 'Remote>>Dyl:PresetDlgCall '(wvals nil))
   )
 )
 
@@ -1862,11 +1898,14 @@
       (setq taken    (eq 'taken pst:prep)
             pst:prep T
       )
-      (Remote>>Dyl:PresetDlgGroupsSync)
-      (setq pst:grps (Remote>>Dyl:PresetDlgGrps))
-      (if (Remote>>Dyl:PresetDlgMat) (Remote>>Dyl:PresetDlgMatsRead) (setq pst:mats nil pst:smats nil))
-      (Remote>>Dyl:PresetDlgCall 'wprep nil)
-      (if taken (Remote>>Dyl:PresetWinRows pst:sentof))
+      (Remote>>Dyl:ManagerTimed "Groups" 'Remote>>Dyl:PresetDlgGroupsSync nil)
+      (setq pst:grps (Remote>>Dyl:ManagerTimed "Groups" 'Remote>>Dyl:PresetDlgGrps nil))
+      (if (Remote>>Dyl:PresetDlgMat)
+        (Remote>>Dyl:ManagerTimed "Materials read" 'Remote>>Dyl:PresetDlgMatsRead nil)
+        (setq pst:mats nil pst:smats nil)
+      )
+      (Remote>>Dyl:ManagerTimed "Window prep of the tool (wprep)" 'Remote>>Dyl:PresetDlgCall '(wprep nil))
+      (if taken (Remote>>Dyl:ManagerTimed "Rows of the presets" 'Remote>>Dyl:PresetWinRows (list pst:sentof)))
     )
   )
 )
@@ -1909,7 +1948,7 @@
     (if (not (and (not err) (setq res (Remote>>Dyl:PresetWinTaken))))
       (progn
         (Remote>>Dyl:PresetWinPrep)
-        (setq res (Dyl:WinShow (cdr (assoc 'window pst:dlg)) (Remote>>Dyl:PresetWinVals err)))
+        (setq res (Remote>>Dyl:ManagerTimed "Window shown" 'Dyl:WinShow (list (cdr (assoc 'window pst:dlg)) (Remote>>Dyl:PresetWinVals err))))
       )
     )
     (setq err nil
@@ -1947,7 +1986,7 @@
         pst:srt (if (member pst:srt (Remote>>Dyl:PresetDlgSorts)) pst:srt "Name")
         pst:flt ""
   )
-  (setq pst:lst  (Remote>>Dyl:PresetRead pst:key (Remote>>Dyl:PresetDlgDefs) (cdr (assoc 'fix pst:dlg)))
+  (setq pst:lst  (Remote>>Dyl:ManagerTimed "Presets read" 'Remote>>Dyl:PresetRead (list pst:key (Remote>>Dyl:PresetDlgDefs) (cdr (assoc 'fix pst:dlg))))
         sel      (cdr (assoc 'select pst:dlg))
         ;;  (0 when there is no preset yet: New adds the first one)
         pst:idx  (max 0
@@ -1961,7 +2000,7 @@
                  )
         pst:sel  (list pst:idx)
         pst:lst0 pst:lst
-        pst:als0 (Dyl:AliasRead)
+        pst:als0 (Remote>>Dyl:ManagerTimed "Aliases read" 'Dyl:AliasRead nil)
         pst:als  pst:als0
         pst:gren (length *grp:renames*)
   )

@@ -1,0 +1,21 @@
+<!--
+  DynALisp.Core.Data - the data files of DynALisp read once per session, without AutoCAD.
+
+    dotnet test Installer\Core\Tests
+
+  A library of its own, with no reference to AutoCAD: it is compiled into the plugin
+  (Installer\Core\DynALisp.Core.csproj, which includes its files) and tested alone
+  (Installer\Core\Tests), on any computer, by the Core workflow.
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>DynALisp.Core.Data</AssemblyName>
+    <RootNamespace>DynALisp.Core.Data</RootNamespace>
+    <Nullable>disable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+</Project>

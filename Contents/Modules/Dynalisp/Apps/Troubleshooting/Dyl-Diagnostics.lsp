@@ -409,6 +409,25 @@
   (if (not Dyl:Window)
     (dg:bad (strcat "The windows of DynALisp cannot open: " (dg:dll "DynALisp.Windows.dll") " is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
   )
+  ;;  The data files (layer keys, materials, presets, assemblies...) are read once per session
+  ;;  by DynALisp.Core.dll (Dyl:Data, Installer\Core), shared by every drawing; without it,
+  ;;  each drawing reads them again in Lisp (Remote>>Dyl:CsvReadLisp):
+  (if Dyl:Data
+    (if Dyl:DataInfo
+      ((lambda (i)
+         (dg:kv "Data files"
+                (strcat (itoa (cdr (assoc "Files" i))) " kept for the session, "
+                        (itoa (cdr (assoc "Reads" i))) " read(s) in "
+                        (rtos (cdr (assoc "ReadMs" i)) 2 1) " ms, "
+                        (itoa (cdr (assoc "Hits" i))) " given again unread (" (dg:dll "DynALisp.Core.dll") ")"
+                )
+         )
+       )
+        (Dyl:DataInfo)
+      )
+    )
+    (dg:bad (strcat "Each drawing reads the data files again, slower: " (dg:dll "DynALisp.Core.dll") " is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
+  )
   ;;  The simulation of a 2D detail (Dyl-Simulation) reads the detail with
   ;;  DynALisp.Simulation.dll:
   (if (not Dyl:SimulationRead)
@@ -475,6 +494,23 @@
         (setq lst (cdr lst))
       )
     )
+  )
+  ;;  The last opening of the Manager in this drawing (a tab shown, another tab picked...),
+  ;;  each of its steps the slowest first (Remote>>Dyl:ManagerTimed of Remote\Dyl-Manager.lsp),
+  ;;  the rest the Lisp between them:
+  (if *dyl:mgrtotal*
+    (progn
+      (setq tot (apply '+ (mapcar 'cdr *dyl:mgrtimes*)))
+      (dg:kv "Manager, last opening"
+             (strcat (itoa (cadr *dyl:mgrtotal*)) " ms (tab " (dg:str (car *dyl:mgrtotal*)) "), the slowest first:")
+      )
+      (foreach s (vl-sort (cons (cons "the Lisp between these steps" (- (cadr *dyl:mgrtotal*) tot)) *dyl:mgrtimes*)
+                          '(lambda (a b) (> (cdr a) (cdr b)))
+                 )
+        (if (< 0 (cdr s)) (dg:item (strcat (itoa (cdr s)) " ms  " (car s))))
+      )
+    )
+    (dg:kv "Manager" "not opened in this drawing yet")
   )
   ;;  The library modules (LeeMac, gileCAD), loaded only once an App of another module
   ;;  than Dynalisp needs them (Dyl:LibsLoad of dynalisp.mnl):

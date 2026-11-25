@@ -167,8 +167,11 @@
 ;;  The names of the header (the first line) of the CSV file fle, divided by its separator as
 ;;  in Remote>>Dyl:CsvRead, nil when it cannot be read:
 (defun Remote>>Dyl:CsvHead (fle / des str)
-  (if (and fle (setq des (open fle "r")))
-    (progn
+  (cond
+    ((not fle) nil)
+    ;;  Read once per session by DynALisp.Core.dll (Installer\Core) when it is loaded:
+    (Dyl:DataHead (Dyl:DataHead fle))
+    ((setq des (open fle "r"))
       (setq str (read-line des))
       (close des)
       (if str
@@ -188,10 +191,20 @@
 ;;  n cells trimmed of spaces. The separator (";", tab or ",") is detected from the
 ;;  header row, so the files written by Remote>>LM:writecsv are read back on any
 ;;  Windows list separator setting.
+;;  When DynALisp.Core.dll (Installer\Core) is loaded, the file is read by it, once per
+;;  session of AutoCAD for every drawing, and read again only when it changed (Dyl:Data,
+;;  the same rows); without it, it is read here.
 ;;  Arguments: fle - full path of the CSV file, n - number of cells per row
 ;;  Returns nil when the file does not exist
 
-(defun Remote>>Dyl:CsvRead (fle n / des str sep idx row lst)
+(defun Remote>>Dyl:CsvRead (fle n)
+  (if Dyl:Data
+    (Dyl:Data fle n)
+    (Remote>>Dyl:CsvReadLisp fle n)
+  )
+)
+
+(defun Remote>>Dyl:CsvReadLisp (fle n / des str sep idx row lst)
   (repeat n (setq idx (cons (setq n (1- n)) idx)))
   (if (setq des (open fle "r"))
     (progn
@@ -218,6 +231,22 @@
     )
   )
   (reverse lst)
+)
+
+
+;;  Write the rows lst (the header first) to the CSV file csv (Remote>>LM:writecsv), and tell
+;;  DynALisp.Core.dll to read it again (Dyl:DataDrop): a file written twice within the same
+;;  tick of the clock, at the same size, would have the same date. Every data file read with
+;;  Remote>>Dyl:CsvRead is written with it. Returns T on success, nil when the file cannot be
+;;  written (open in Excel):
+
+(defun Remote>>Dyl:CsvWrite (lst csv / ok)
+  (setq ok (Remote>>LM:writecsv lst csv))
+  (if Dyl:DataDrop (Dyl:DataDrop csv))
+  ;;  Counted for the session, on the blackboard: what a drawing keeps for every drawing (the
+  ;;  assemblies shown by Quick Draw, Dyl:QuickDrawAsmShows) is made again after a write:
+  (vl-bb-set '*dyl:datawrites* (1+ (cond ((vl-bb-ref '*dyl:datawrites*)) (0))))
+  ok
 )
 
 

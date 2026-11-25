@@ -11,6 +11,36 @@
          R25.1) and for .NET 10 (Contents\Resources\Net10\<Name>.dll, AutoCAD 2027 and later,
          R26.0: AutoCAD 2027 is not binary compatible with 2025 and 2026). -->
 
+    <!-- The core of DynALisp in .NET (Installer\Core): the data files read once per session
+         and shared by every drawing, given to the Lisp side by (Dyl:Data ...). Listed first,
+         before the CUIx: Remote>>Dyl:CsvRead calls it from the first drawing, and reads the file
+         itself while it is not loaded. -->
+    <Components Description="Core">
+        <RuntimeRequirements
+            OS="Win64"
+            Platform="AutoCAD|AutoCAD*"
+            SeriesMin="R25.0"
+            SeriesMax="R25.1"
+        />
+        <ComponentEntry
+            AppName="DynALisp core"
+            ModuleName="./Contents/Resources/DynALisp.Core.dll"
+            LoadOnAutoCADStartup="True"
+        />
+    </Components>
+    <Components Description="Core (.NET 10)">
+        <RuntimeRequirements
+            OS="Win64"
+            Platform="AutoCAD|AutoCAD*"
+            SeriesMin="R26.0"
+        />
+        <ComponentEntry
+            AppName="DynALisp core (.NET 10)"
+            ModuleName="./Contents/Resources/Net10/DynALisp.Core.dll"
+            LoadOnAutoCADStartup="True"
+        />
+    </Components>
+
     <!-- The live drop-downs and the translation of the ribbon (Installer\Ribbon\Plugin),
          listed before the CUIx. It reads the settings it needs at startup itself and asks the
          Lisp side for the state of the drawing when AutoCAD is idle, so it never depends on a

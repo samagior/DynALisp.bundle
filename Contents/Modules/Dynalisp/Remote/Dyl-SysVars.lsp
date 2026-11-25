@@ -127,7 +127,7 @@
 ;;  Save rows ((variable value) ...) as the protected variables. T on success, nil when the
 ;;  file cannot be written:
 (defun Remote>>Dyl:SysVarKeepWrite (rows)
-  (Remote>>LM:writecsv (cons *sv:header* rows) (Dyl:UserFileW (Remote>>Dyl:SysVarKeepFile)))
+  (Remote>>Dyl:CsvWrite (cons *sv:header* rows) (Dyl:UserFileW (Remote>>Dyl:SysVarKeepFile)))
 )
 
 ;;-------------------------=={ Values }==------------------------;;

@@ -633,7 +633,7 @@
     (if (not (member (strcase n) names)) (vl-file-delete (Remote>>Dyl:SysVarFile n)))
   )
   (foreach s sv:sets
-    (if (not (Remote>>LM:writecsv (cons *sv:header* (cdr s)) (Remote>>Dyl:SysVarFile (car s))))
+    (if (not (Remote>>Dyl:CsvWrite (cons *sv:header* (cdr s)) (Remote>>Dyl:SysVarFile (car s))))
       (setq err (cons (car s) err))
     )
   )

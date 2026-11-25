@@ -82,6 +82,8 @@ Dynalisp/Output/Dyl-Revisions.fr.htm
 Dynalisp/Output/Dyl-Revisions.htm
 Dynalisp/Plugins/CleanStartup.fr.htm
 Dynalisp/Plugins/CleanStartup.htm
+Dynalisp/Plugins/Core.fr.htm
+Dynalisp/Plugins/Core.htm
 Dynalisp/Plugins/Ribbon.fr.htm
 Dynalisp/Plugins/Ribbon.htm
 Dynalisp/Plugins/Windows.fr.htm

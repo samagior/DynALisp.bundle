@@ -1,0 +1,36 @@
+# Core: tests the reading of the data files (Installer\Core\Data, without AutoCAD) and builds the
+# core plugin (Installer\Core), on each push that changes them. The DLLs of the plugin are built
+# by hand and committed (Contents\Resources): this workflow only checks that the code builds and
+# that the tests pass.
+name: Core
+
+on:
+  push:
+    paths:
+      - 'Installer/Core/**'
+      - 'Contents/Modules/Dynalisp/Res/**.csv'
+      - '.github/workflows/core.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # The plugin is built for .NET 8 (AutoCAD 2025, 2026) and .NET 10 (AutoCAD 2027); the
+      # tests run on .NET 8:
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
+      - name: Test the reading of the data files
+        run: dotnet test Installer/Core/Tests
+
+      - name: Build the plugin
+        run: dotnet build Installer/Core -c Debug
