@@ -1680,12 +1680,12 @@
         ;;  The rows sent, and the presets they were made from, kept (see
         ;;  Remote>>Dyl:PresetWinTaken):
         pst:sentof    pst:lst
-        pst:sent      (Remote>>Dyl:PresetWinRows pst:lst)
+        pst:sent      (Remote>>Dyl:ManagerTimed "Rows of the presets" 'Remote>>Dyl:PresetWinRows (list pst:lst))
         *pst:winsent* (list pst:key (cdr (assoc 'window pst:dlg)) pst:sentof pst:sent)
   )
   (append
     (list (cons "pst/rows" pst:sent)
-          (cons "pst/defs" (Remote>>Dyl:PresetWinRows (Remote>>Dyl:PresetDlgDefs)))
+          (cons "pst/defs" (Remote>>Dyl:ManagerTimed "Rows of the defaults" 'Remote>>Dyl:PresetWinRows (list (Remote>>Dyl:PresetDlgDefs))))
           (list "pst/new" (Remote>>Dyl:PresetWinRow (cdr (assoc 'new pst:dlg))))
           (cons "pst/ncols" (itoa (cond ((cdr (assoc 'wncols pst:dlg))) ((Remote>>Dyl:PresetWinCols)))))
           (cons "pst/tiles" (Remote>>Dyl:PresetWinTiles))
@@ -1704,7 +1704,7 @@
             (cons "pst/base" (Remote>>Dyl:PresetProp pst:key 'base))
             (cons "pst/cmd" (Remote>>Dyl:PresetProp pst:key 'cmd))
             (cons "pst/als" (mapcar '(lambda (p) (list (car p) (cdr p))) pst:als))
-            (cons "pst/taken" (Remote>>Dyl:PresetWinTaken))
+            (cons "pst/taken" (Remote>>Dyl:ManagerTimed "Commands taken" 'Remote>>Dyl:PresetWinTaken nil))
             (cons "pst/prefix" (cond ((cdr (assoc 'wprefix pst:dlg))) ("")))
       )
     )
@@ -1713,7 +1713,7 @@
             (cons "pst/matnoun" (cond ((cdr (assoc 'matnoun pst:dlg))) ("material")))
             (cons "pst/matfree" (if (cdr (assoc 'matfree pst:dlg)) "1" "0"))
             (cons "pst/mats"
-                  (mapcar '(lambda (m / s)
+                  (Remote>>Dyl:ManagerTimed "Materials list" 'mapcar (list '(lambda (m / s)
                              (append (list (car m) (nth 1 m) (nth 2 m)
                                            (cond ((Remote>>Dyl:PresetDlgCall 'mspec (list m))) ("X?1"))
                                            (strcase (nth 3 m))
@@ -1725,7 +1725,7 @@
                              )
                            )
                           pst:mats
-                  )
+                  ))
             )
       )
     )
@@ -1735,12 +1735,12 @@
     ;;  The material Group list ((matgroups . T), mgr in Presets.cs): the groups of the
     ;;  materials:
     (if (and (Remote>>Dyl:PresetDlgMat) (cdr (assoc 'matgroups pst:dlg)))
-      (list (cons "mgr/list" (Remote>>Dyl:PresetDlgMatGrps)))
+      (list (cons "mgr/list" (Remote>>Dyl:ManagerTimed "Materials list" 'Remote>>Dyl:PresetDlgMatGrps nil)))
     )
     (if spec (list (cons "pst/spec" (itoa (cadr spec))) (cons "pst/specby" (cddr spec))))
     (if (assoc 'outline pst:dlg) (list (cons "pst/outline" (cdr (assoc 'outline pst:dlg)))))
     (if (assoc 'blank pst:dlg) (list (cons "pst/blank" (cdr (assoc 'blank pst:dlg)))))
-    (Remote>>Dyl:PresetDlgCall 'wvals nil)
+    (Remote>>Dyl:ManagerTimed "Window lists of the tool (wvals)" 'Remote>>Dyl:PresetDlgCall '(wvals nil))
   )
 )
 
@@ -1862,11 +1862,14 @@
       (setq taken    (eq 'taken pst:prep)
             pst:prep T
       )
-      (Remote>>Dyl:PresetDlgGroupsSync)
-      (setq pst:grps (Remote>>Dyl:PresetDlgGrps))
-      (if (Remote>>Dyl:PresetDlgMat) (Remote>>Dyl:PresetDlgMatsRead) (setq pst:mats nil pst:smats nil))
-      (Remote>>Dyl:PresetDlgCall 'wprep nil)
-      (if taken (Remote>>Dyl:PresetWinRows pst:sentof))
+      (Remote>>Dyl:ManagerTimed "Groups" 'Remote>>Dyl:PresetDlgGroupsSync nil)
+      (setq pst:grps (Remote>>Dyl:ManagerTimed "Groups" 'Remote>>Dyl:PresetDlgGrps nil))
+      (if (Remote>>Dyl:PresetDlgMat)
+        (Remote>>Dyl:ManagerTimed "Materials read" 'Remote>>Dyl:PresetDlgMatsRead nil)
+        (setq pst:mats nil pst:smats nil)
+      )
+      (Remote>>Dyl:ManagerTimed "Window prep of the tool (wprep)" 'Remote>>Dyl:PresetDlgCall '(wprep nil))
+      (if taken (Remote>>Dyl:ManagerTimed "Rows of the presets" 'Remote>>Dyl:PresetWinRows (list pst:sentof)))
     )
   )
 )
@@ -1909,7 +1912,7 @@
     (if (not (and (not err) (setq res (Remote>>Dyl:PresetWinTaken))))
       (progn
         (Remote>>Dyl:PresetWinPrep)
-        (setq res (Dyl:WinShow (cdr (assoc 'window pst:dlg)) (Remote>>Dyl:PresetWinVals err)))
+        (setq res (Remote>>Dyl:ManagerTimed "Window shown" 'Dyl:WinShow (list (cdr (assoc 'window pst:dlg)) (Remote>>Dyl:PresetWinVals err))))
       )
     )
     (setq err nil
@@ -1947,7 +1950,7 @@
         pst:srt (if (member pst:srt (Remote>>Dyl:PresetDlgSorts)) pst:srt "Name")
         pst:flt ""
   )
-  (setq pst:lst  (Remote>>Dyl:PresetRead pst:key (Remote>>Dyl:PresetDlgDefs) (cdr (assoc 'fix pst:dlg)))
+  (setq pst:lst  (Remote>>Dyl:ManagerTimed "Presets read" 'Remote>>Dyl:PresetRead (list pst:key (Remote>>Dyl:PresetDlgDefs) (cdr (assoc 'fix pst:dlg))))
         sel      (cdr (assoc 'select pst:dlg))
         ;;  (0 when there is no preset yet: New adds the first one)
         pst:idx  (max 0
@@ -1961,7 +1964,7 @@
                  )
         pst:sel  (list pst:idx)
         pst:lst0 pst:lst
-        pst:als0 (Dyl:AliasRead)
+        pst:als0 (Remote>>Dyl:ManagerTimed "Aliases read" 'Dyl:AliasRead nil)
         pst:als  pst:als0
         pst:gren (length *grp:renames*)
   )

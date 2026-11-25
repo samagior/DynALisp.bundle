@@ -74,11 +74,38 @@
   (vl-remove-if-not '(lambda (tab) (or (= key (car tab)) (Dyl:SuiteFileOn-p (nth 3 tab)))) *dyl:mgrtabs*)
 )
 
+;;  The time of each step of the last opening of the Manager in this drawing (a tab shown,
+;;  another tab picked, Save...), for Dyl-Diagnostics: *dyl:mgrtimes* ((step . ms) ...), each
+;;  step its own time, without the steps timed inside it; *dyl:mgrtotal* (tab ms), the whole
+;;  of it. Remote>>Dyl:ManagerTimed applies f to args and adds its time to the step name,
+;;  while the Manager runs (*dyl:mgrtiming*); out of it, it only applies f. A step is timed
+;;  where it is called, so the window of a tool shown out of the Manager times nothing:
+(defun Remote>>Dyl:ManagerTimed (name f args / in t0 dt r p)
+  (if (not *dyl:mgrtiming*)
+    (apply f args)
+    (progn
+      (setq in             *dyl:mgrinner*
+            *dyl:mgrinner* 0
+            t0             (getvar "MILLISECS")
+            r              (apply f args)
+            dt             (- (getvar "MILLISECS") t0)
+            p              (assoc name *dyl:mgrtimes*)
+            *dyl:mgrtimes* (if p
+                             (subst (cons name (+ (cdr p) (- dt *dyl:mgrinner*))) p *dyl:mgrtimes*)
+                             (cons (cons name (- dt *dyl:mgrinner*)) *dyl:mgrtimes*)
+                           )
+            *dyl:mgrinner* (+ in dt)
+      )
+      r
+    )
+  )
+)
+
 ;;  The window of the tool of tab (its App loaded first, once). Returns what to draw, nil
 ;;  when the window was closed otherwise, or could not be shown:
 (defun Remote>>Dyl:ManagerShow (tab / f)
   (setq f (nth 4 tab))
-  (if (not (eval f)) (Dyl:SuiteFileLoad (nth 3 tab)))
+  (if (not (eval f)) (Remote>>Dyl:ManagerTimed (strcat (nth 1 tab) ": its App loaded") 'Dyl:SuiteFileLoad (list (nth 3 tab))))
   (if (eval f)
     (apply f nil)
     (progn (princ (strcat "\n--> " (nth 1 tab) ": " (nth 3 tab) " could not be loaded.")) nil)
@@ -90,7 +117,12 @@
 ;;  The window is modeless (see the top of this file): this call shows it and returns nil,
 ;;  and each button that needs the Lisp runs Remote>>Dyl:ManagerEvent, which runs it again
 ;;  on the tab of the window (*dyl:mgrevent*):
-(defun Remote>>Dyl:Manager (key / *dyl:wintabs* *dyl:wintab* tabs i tab res r)
+(defun Remote>>Dyl:Manager (key / *dyl:wintabs* *dyl:wintab* *dyl:mgrtiming* tabs i tab res r t0)
+  (setq *dyl:mgrtiming* T
+        *dyl:mgrtimes*  nil
+        *dyl:mgrinner*  0
+        t0              (getvar "MILLISECS")
+  )
   (setq key  (cond (key) (*dyl:mgrlast*))
         tabs (Remote>>Dyl:ManagerTabs key)
         i    (cond ((vl-position (assoc (cond (*dyl:mgrevent*) (key)) tabs) tabs)) (0))
@@ -107,6 +139,7 @@
           i             *dyl:wintab*
     )
   )
+  (setq *dyl:mgrtotal* (list (car tab) (- (getvar "MILLISECS") t0)))
   (cond
     ((not (and res tab (nth 5 tab))))
     ;;  Draw clicked in the modeless window: closed while drawing, then shown again on its tab

@@ -495,6 +495,23 @@
       )
     )
   )
+  ;;  The last opening of the Manager in this drawing (a tab shown, another tab picked...),
+  ;;  each of its steps the slowest first (Remote>>Dyl:ManagerTimed of Remote\Dyl-Manager.lsp),
+  ;;  the rest the Lisp between them:
+  (if *dyl:mgrtotal*
+    (progn
+      (setq tot (apply '+ (mapcar 'cdr *dyl:mgrtimes*)))
+      (dg:kv "Manager, last opening"
+             (strcat (itoa (cadr *dyl:mgrtotal*)) " ms (tab " (dg:str (car *dyl:mgrtotal*)) "), the slowest first:")
+      )
+      (foreach s (vl-sort (cons (cons "the Lisp between these steps" (- (cadr *dyl:mgrtotal*) tot)) *dyl:mgrtimes*)
+                          '(lambda (a b) (> (cdr a) (cdr b)))
+                 )
+        (if (< 0 (cdr s)) (dg:item (strcat (itoa (cdr s)) " ms  " (car s))))
+      )
+    )
+    (dg:kv "Manager" "not opened in this drawing yet")
+  )
   ;;  The library modules (LeeMac, gileCAD), loaded only once an App of another module
   ;;  than Dynalisp needs them (Dyl:LibsLoad of dynalisp.mnl):
   (if *dyl:libmods*
