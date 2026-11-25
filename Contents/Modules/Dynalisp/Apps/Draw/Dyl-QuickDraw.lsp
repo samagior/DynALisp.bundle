@@ -2808,32 +2808,71 @@
   (Remote>>Dyl:MaterialDlgKeys nil (mapcar '(lambda (r) (nth *qd:border* r)) (append *qd:defaults* pst:lst)))
 )
 
+;;  The assembly presets (Dyl:QuickDrawAsmRead) sorted by group and name (Dyl:QuickDrawNatKey),
+;;  kept with the read they were sorted from (*qd:asmsorted*: (read . sorted)): sorted again
+;;  only once they were read again. Each name made into its key once, not at each comparison:
+;;  the 860 assemblies of the building code, sorted at each Quick Draw window, took seconds:
+(defun Dyl:QuickDrawAsmSorted (/ all)
+  (setq all (Dyl:QuickDrawAsmRead))
+  (if (not (and *qd:asmsorted* (eq all (car *qd:asmsorted*))))
+    (setq *qd:asmsorted* (cons all
+                               (mapcar '(lambda (i) (nth i all))
+                                       (vl-sort-i (mapcar '(lambda (a) (Dyl:QuickDrawNatKey (strcat (nth 1 a) "\t" (nth 2 a)))) all) '<)
+                               )
+                         )
+    )
+  )
+  (cdr *qd:asmsorted*)
+)
+
+;;  What the Quick Draw window shows of each assembly preset of the list asms
+;;  (Dyl:QuickDrawAsmSorted), as pst/follow/rows: ((id what-it-shows...) ...) (see
+;;  Dyl:QuickDrawAsmShow). Kept (*qd:asmshows*: (asms context rows)) and made again only for
+;;  another list, or when what they are made from changed: the materials and their data (the
+;;  hatch of each layer, the description), the drawing scale and units (the previews, the
+;;  thicknesses). Made at each Quick Draw window, the 860 assemblies took seconds:
+(defun Dyl:QuickDrawAsmShows (asms / ctx)
+  (setq ctx (list pst:mats qd:mrows
+                  (mapcar 'getvar '("CANNOSCALEVALUE" "MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "DIMZIN" "UNITMODE"))
+            )
+  )
+  (if (not (and *qd:asmshows* (eq asms (car *qd:asmshows*)) (equal ctx (cadr *qd:asmshows*))))
+    (setq *qd:asmshows* (list asms ctx (mapcar '(lambda (a) (cons (car a) (Dyl:QuickDrawAsmShow a))) asms)))
+  )
+  (caddr *qd:asmshows*)
+)
+
+;;  Both made again when DynALisp loads:
+(setq *qd:asmsorted* nil
+      *qd:asmshows*  nil
+)
+
 ;;  The lists of the window: the labels of their items (key/list) and the values they store
 ;;  (key/vals): the methods, the justifications (the line drawn), the assembly presets (by
 ;;  name; one a preset has that no longer exists marked missing) with what the window shows of
 ;;  each one (pst/follow: the columns 55, 57, 58 and 59, see Dyl:QuickDrawWinExtra), the layer
 ;;  keys (marked when they are not defined), the lineweights, the views:
-(defun Dyl:QuickDrawWinVals (/ lks asms ids)
+(defun Dyl:QuickDrawWinVals (/ lks asms ids miss ups)
   (setq lks  (Remote>>Dyl:LayerKeyRead)
-        asms (vl-sort (Dyl:QuickDrawAsmRead)
-                      '(lambda (a b) (< (Dyl:QuickDrawNatKey (strcat (nth 1 a) "\t" (nth 2 a))) (Dyl:QuickDrawNatKey (strcat (nth 1 b) "\t" (nth 2 b)))))
-             )
+        asms (Dyl:QuickDrawAsmSorted)
         ids  (mapcar 'car asms)
+        ups  (mapcar 'strcase ids)
   )
   (foreach r pst:lst
     (if (and (/= "" (nth *qd:layerscol* r))
              (not (vl-string-search ":" (nth *qd:layerscol* r)))
-             (not (member (strcase (nth *qd:layerscol* r)) (mapcar 'strcase ids)))
+             (not (member (strcase (nth *qd:layerscol* r)) ups))
         )
       (setq ids  (append ids (list (nth *qd:layerscol* r)))
-            asms (append asms (list (list (nth *qd:layerscol* r) "" (strcat (nth *qd:layerscol* r) "   (missing assembly)") "")))
+            ups  (cons (strcase (nth *qd:layerscol* r)) ups)
+            miss (append miss (list (list (nth *qd:layerscol* r) "" (strcat (nth *qd:layerscol* r) "   (missing assembly)") "")))
       )
     )
   )
-  (list (cons "mak/list" (mapcar 'caddr asms))
+  (list (cons "mak/list" (mapcar 'caddr (append asms miss)))
         (cons "mak/vals" ids)
         (cons "pst/follow" "38:55,57,58,59")
-        (cons "pst/follow/rows" (mapcar '(lambda (a) (cons (car a) (Dyl:QuickDrawAsmShow a))) asms))
+        (cons "pst/follow/rows" (append (Dyl:QuickDrawAsmShows asms) (mapcar '(lambda (a) (cons (car a) (Dyl:QuickDrawAsmShow a))) miss)))
         (cons "mth/list" (mapcar 'cadr (cons '("" "Ask when drawn") *mt:methods*)))
         (cons "mth/vals" (cons "" (mapcar 'car *mt:methods*)))
         (cons "mjs/list" (mapcar 'cadr *mt:justify*))
@@ -3414,8 +3453,13 @@
   (Dyl:QuickDrawAsmScale row (/ 1.0 (Dyl:QuickDrawAsmFactor)) 4)
 )
 
-(defun Dyl:QuickDrawAsmGet (id)
-  (vl-some '(lambda (a) (if (= (strcase id) (strcase (car a))) a)) (Dyl:QuickDrawAsmRead))
+(defun Dyl:QuickDrawAsmGet (id / all u)
+  (setq all (Dyl:QuickDrawAsmRead))
+  ;;  (the id as it is written found at once, else in any case:)
+  (cond
+    ((assoc id all))
+    ((setq u (strcase id)) (vl-some '(lambda (a) (if (= u (strcase (car a))) a)) all))
+  )
 )
 
 ;;  A row of the assemblies file (id group name layers border-lines dividing-lines exterior
@@ -3771,7 +3815,7 @@
 ;;  (qa:def: a layer of the first material, 10 thick; its band settings off, the defaults; its
 ;;  border off, on that key, overriding nothing; its hatch on, on the key of its material,
 ;;  overriding nothing):
-(defun Dyl:QuickDrawAsmWinPrep (/ mats ls)
+(defun Dyl:QuickDrawAsmWinPrep (/ mats ls ups)
   (setq mats    (mapcar '(lambda (m) (list (car m) (nth 2 m) m (Remote>>Dyl:GroupCaseOf (nth 1 m) "Material"))) (Remote>>Dyl:MaterialRead))
         qa:grps (Remote>>Dyl:GroupsOf "Material")
   )
@@ -3790,12 +3834,16 @@
     )
   )
   (setq ls (apply 'append (mapcar '(lambda (a) (Remote>>Dyl:MaterialLayers (nth 3 a))) pst:lst)))
-  ;;  (the materials of the layers and of their framing:)
+  ;;  (the materials of the layers and of their framing; their ids in upper case made once,
+  ;;  not for each layer of the 860 assemblies:)
+  (setq ups (mapcar '(lambda (m) (strcase (car m))) qa:mats))
   (foreach id (append (mapcar 'cadr (vl-remove-if-not '(lambda (l) (= "P" (car l))) ls))
                       (vl-remove 'nil (mapcar '(lambda (l) (car (nth 8 l))) ls))
               )
-    (if (not (vl-some '(lambda (m) (= (strcase id) (strcase (car m)))) qa:mats))
-      (setq qa:mats (append qa:mats (list (list id (strcat id "   (missing material)") nil ""))))
+    (if (not (member (strcase id) ups))
+      (setq qa:mats (append qa:mats (list (list id (strcat id "   (missing material)") nil "")))
+            ups     (cons (strcase id) ups)
+      )
     )
   )
   (Remote>>Dyl:MaterialDlgKeys nil
@@ -3978,9 +4026,12 @@
 
 ;;  The material id of a Hatch layer of an assembly (any case), nil when it no longer exists:
 ;;  among the materials read by the window (pst:mats) or the gallery (qg:mats), else read:
-(defun Dyl:QuickDrawGalleryMat (id)
+(defun Dyl:QuickDrawGalleryMat (id / mats u)
+  (setq mats (cond (pst:mats) (qg:mats)))
+  ;;  (the id as it is written found at once, else in any case:)
   (cond
-    ((vl-some '(lambda (m) (if (= (strcase id) (strcase (car m))) m)) (cond (pst:mats) (qg:mats))))
+    ((assoc id mats))
+    ((progn (setq u (strcase id)) (vl-some '(lambda (m) (if (= u (strcase (car m))) m)) mats)))
     ((Remote>>Dyl:MaterialGet id))
   )
 )

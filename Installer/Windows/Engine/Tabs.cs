@@ -216,16 +216,11 @@ namespace DynALisp.Windows
         // to give back):
         public static Session Request(Session s, string path, out int status)
         {
-            status = 0;
+            var got = Take(path, out status);
+            if (got != null) return got;
             string full = Path.GetFullPath(path);
-            bool same = _view != null && string.Equals(_file, full, StringComparison.OrdinalIgnoreCase);
             switch (_state)
             {
-                case State.Pending when same:
-                    StopTimer();
-                    _state = State.Taken;
-                    status = _status;
-                    return _session;
                 case State.Open when _view != null:
                     var host = _view.Window.Content as TabHost;
                     int want = Index(s);
@@ -236,6 +231,22 @@ namespace DynALisp.Windows
                     Show(s, full);
                     return null;
             }
+        }
+
+        // The button clicked in the window of path, waiting for the Lisp its event ran: the
+        // session whose values answer it, with the button in status, now taken; null when the
+        // window of path waits for nothing. The Lisp of a tool asks it first (Dyl:WindowTake),
+        // so a tool run again by a click does not make again all the values of a window it
+        // would not show (Dyl:WinTaken of dynalisp.mnl):
+        public static Session Take(string path, out int status)
+        {
+            status = 0;
+            if (_state != State.Pending || _view == null || string.IsNullOrEmpty(path)) return null;
+            if (!string.Equals(_file, Path.GetFullPath(path), StringComparison.OrdinalIgnoreCase)) return null;
+            StopTimer();
+            _state = State.Taken;
+            status = _status;
+            return _session;
         }
 
         // The Lisp is done with the button it took: the window closed when it was not shown again:

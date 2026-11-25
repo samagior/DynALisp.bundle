@@ -43,6 +43,7 @@
 // event at the command line; the Lisp shows the window again, and that call returns the
 // button and the values of the window (as a modal one would), then the window shown again
 // replaces it in place. (Dyl:WindowDone) closes it when the Lisp did not show it again.
+// (Dyl:WindowTake file) gives that button before the Lisp makes the values of the window.
 
 using System;
 using System.Collections;
@@ -127,6 +128,24 @@ namespace DynALisp.Windows
         {
             try { return AcApp.MainWindow.Handle; }
             catch { return IntPtr.Zero; }
+        }
+
+        // (Dyl:WindowTake file): the button clicked in the modeless window of file and the
+        // values of the window, as Dyl:Window gives them, when the Lisp its event ran asks for
+        // them (Engine\Tabs.cs); nil when that window waits for nothing. Asked before the
+        // values of the window are made (Dyl:WinTaken of dynalisp.mnl), it spares a tool run
+        // again by a click making every value of a window it will not show.
+        [LispFunction("Dyl:WindowTake")]
+        public object Take(ResultBuffer args)
+        {
+            try
+            {
+                var a = Lisp.Read(args);
+                string file = a.Count > 0 ? a[0] as string : null;
+                var got = Modeless.Take(file, out int st);
+                return got == null ? null : Result(got, st);
+            }
+            catch { return null; }
         }
 
         // (Dyl:WindowDone): the Lisp is done with the button of a modeless window it took
