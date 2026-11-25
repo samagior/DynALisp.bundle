@@ -4,6 +4,26 @@ The changes of each version of DynALisp, newest first. Dyl-Info shows them befor
 update, and once after it. Each version is a `## <version> - <date>` heading (the
 AppVersion of PackageContents.xml), then one short line per change.
 
+## 2.0 - 2026-11-25
+
+- DynALisp 2.0 needs AutoCAD 2025 or later; for AutoCAD 2015 to 2024, keep DynALisp 1.x (1.2), which gets fixes only.
+- AutoCAD 2027: the plugins (windows, ribbon, clean startup, Assistant, simulation) have their .NET 10 build, which AutoCAD 2027 needs.
+- The setup refuses a computer without AutoCAD 2025 or later, and says where to get 1.x.
+- Dyl-Diagnostics: says which build of the plugins AutoCAD loads, and the path of a plugin not loaded.
+
+## 1.2 - 2026-11-25
+
+- The last version for AutoCAD 2015 to 2024: it gets fixes only. DynALisp 2.0 needs AutoCAD 2025 or later.
+- An AutoCAD older than 2025 is offered the updates of 1.x only.
+- Manager: the preset windows as tabs of one window, fast to switch, open while you draw.
+- Simulation of a 2D detail: heat, vapour, condensation and monthly balance (ISO 10211, 6946, 13788).
+- Assistant (Dyl-Assistant): ask Claude about the drawing, change it once you approve; Text Fix through Claude Code.
+- Materials: Assign, Match and Show; code assemblies with their fire and sound ratings.
+- Hatch Presets window in WPF; Drafting hatch previews always at 1:1.
+- Windows fitted to the screen and resizable.
+- A drawing starts in about 0.4 s: the LeeMac and gileCAD libraries load when first needed.
+- Fixed: SAVE and SAVEAS could say Unknown command; Make Layers and Batch Insert.
+
 ## 1.1 - 2026-11-20
 
 - Docs website: every Open Docs button opens https://samagior.github.io/DynALisp.docs/; the setup no longer installs the docs.
