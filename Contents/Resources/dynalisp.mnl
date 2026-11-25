@@ -3098,14 +3098,43 @@
   ;;; Latest version: (VERSION PAGE-URL SETUP-URL NOTES-URL) of the latest release of
   ;;; the releases repository, nil if it cannot be read. PAGE-URL: the release page,
   ;;; SETUP-URL: its setup, NOTES-URL: its CHANGELOG.md (each nil when the release has none):
+  ;;; DynALisp 2.0 and later need AutoCAD 2025 (R25.0): an older AutoCAD is offered the
+  ;;; latest release of 1.x only (Dyl:InfoLatestOf), never a version it cannot run.
   (defun Dyl:InfoLatest (/ jsn ver)
-    (if
-      (setq ver (Dyl:InfoAfter (setq jsn (Dyl:InfoHttp (strcat "https://api.github.com/repos/" *dyl:relrepo* "/releases/latest")))
-                               "\"tag_name\""
-                )
+    (cond
+      ((< (atof (getvar "ACADVER")) 25.0) (Dyl:InfoLatestOf 1))
+      ((setq ver (Dyl:InfoAfter (setq jsn (Dyl:InfoHttp (strcat "https://api.github.com/repos/" *dyl:relrepo* "/releases/latest")))
+                                "\"tag_name\""
+                 )
+       )
+       (list ver (strcat *dyl:releases* "/latest") (Dyl:InfoAsset jsn "*.EXE") (Dyl:InfoAsset jsn "*/CHANGELOG.MD"))
       )
-      (list ver (strcat *dyl:releases* "/latest") (Dyl:InfoAsset jsn "*.EXE") (Dyl:InfoAsset jsn "*/CHANGELOG.MD"))
     )
+  )
+
+  ;;; Latest version of major version maj (1 for 1.x), as Dyl:InfoLatest, nil if it cannot
+  ;;; be read or has none: the newest release of the releases list (newest first) whose tag
+  ;;; starts with maj, prereleases skipped. The text of a release runs from its "tag_name"
+  ;;; to the next one, its assets with it:
+  (defun Dyl:InfoLatestOf (maj / jsn mrk pos nxt seg ver pre res)
+    (setq jsn (Dyl:InfoHttp (strcat "https://api.github.com/repos/" *dyl:relrepo* "/releases?per_page=30"))
+          mrk "\"tag_name\""
+          pos (if jsn (vl-string-search mrk jsn))
+    )
+    (while (and pos (not res))
+      (setq nxt (vl-string-search mrk jsn (1+ pos))
+            seg (if nxt (substr jsn (1+ pos) (- nxt pos)) (substr jsn (1+ pos)))
+            ver (Dyl:InfoAfter seg mrk)
+            pos nxt
+      )
+      (if (and ver
+               (= maj (car (Dyl:InfoVer ver)))
+               (not (and (setq pre (vl-string-search "\"prerelease\"" seg)) (wcmatch (substr seg (+ pre 13) 8) "*true*")))
+          )
+        (setq res (list ver (strcat *dyl:releases* "/tag/" ver) (Dyl:InfoAsset seg "*.EXE") (Dyl:InfoAsset seg "*/CHANGELOG.MD")))
+      )
+    )
+    res
   )
 
   ;;; Check the latest version: *dyl:latest* is (VERSION PAGE-URL SETUP-URL NOTES-URL), or
