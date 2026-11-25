@@ -20,7 +20,9 @@ DynALisp is an open source AutoCAD plugin and development platform written in Au
 
 ## Requirements
 
-- AutoCAD 2015 (R20.0) or later, on Windows (64-bit): the windows of DynALisp are shown by its .NET plugin. AutoCAD LT has no AutoLISP interpreter (see [CADSTA](https://www.cadsta.com/)).
+- AutoCAD 2025 (R25.0) or later, on Windows (64-bit): the windows of DynALisp are shown by its .NET plugins, built for .NET 8 (AutoCAD 2025 and 2026) and .NET 10 (AutoCAD 2027 and later). AutoCAD LT has no AutoLISP interpreter (see [CADSTA](https://www.cadsta.com/)).
+- For AutoCAD 2015 to 2024: DynALisp 1.x, the last version for them (fixes only, branch `release/1.x`), from the [releases](https://github.com/samagior/DynALisp.release/releases).
+- To build the .NET plugins (`Installer\*`): the .NET 10 SDK, which builds both versions.
 - To edit the code: [Visual Studio Code](https://code.visualstudio.com/) with the [AutoCAD AutoLISP Extension](https://marketplace.visualstudio.com/items?itemName=Autodesk.autolispext).
 
 ## Installation

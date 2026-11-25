@@ -2796,7 +2796,7 @@
   ;;; Windows
   ;;; ----------------------------------------------------------------------------
   ;;; The windows of DynALisp are WPF windows shown by DynALisp.Windows.dll
-  ;;; (Installer\Windows, AutoCAD 2015 and later). Each one is a .xaml file of the
+  ;;; (Installer\Windows). Each one is a .xaml file of the
   ;;; Res folder of its module, read when it is shown, as a .dcl file: its controls
   ;;; are named by their key (x:Name), and it says what they do itself (greyed out
   ;;; while a checkbox is off, its sub-windows, its Open Docs page: the dyl:Win.*
@@ -2934,7 +2934,7 @@
   (defun Dyl:WinShowFile (file vals / path res)
     (cond
       ((not Dyl:Window)
-       (princ (strcat "\n--> This window needs DynALisp.Windows.dll (AutoCAD 2015 or later, not blocked by SECURELOAD): " file))
+       (princ (strcat "\n--> This window needs DynALisp.Windows.dll (not blocked by SECURELOAD): " file))
        nil
       )
       ((not (setq path (Dyl:WinFile file)))
@@ -4296,8 +4296,7 @@
   ;;; Clean startup (Overrides in Dyl-Settings, DynalispCleanStartup, off by default): once
   ;;; AutoCAD has started, the lines it printed while starting are removed from the command
   ;;; line, but the drawing created, the lines of DynALisp and the errors. Done by
-  ;;; Resources\DynALisp.Startup.dll (source in Installer\Startup, AutoCAD 2015 and
-  ;;; later), which defines Dyl:CleanStartup; applies from the next startup:
+  ;;; Resources\DynALisp.Startup.dll (source in Installer\Startup), which defines Dyl:CleanStartup; applies from the next startup:
   (defun Dyl:CleanStartupOn-p () (= "1" (getenv "DynalispCleanStartup")))
   (defun Dyl:CleanStartupSet (on)
     (setenv "DynalispCleanStartup" (if on "1" "0"))
@@ -4553,7 +4552,7 @@
       (Dyl:WinOff '("lku" "lkk") (not Remote>>Dyl:LayerKeyMatchSet))
       ;; Automatic updates: greyed out for a git clone (updated with git pull):
       (if (Dyl:InfoGit-p) (cons '("aud" . "Git clone: update it with git pull.") (Dyl:WinOff "aup" T)))
-      ;; Allow Lisp: without the plugin of the Assistant (AutoCAD 2015, not loaded):
+      ;; Allow Lisp: without the plugin of the Assistant (not loaded):
       (Dyl:WinOff "asl" (not Dyl:AssistantShow))
       ;; The sub-windows:
       (Dyl:SetDefsVals)

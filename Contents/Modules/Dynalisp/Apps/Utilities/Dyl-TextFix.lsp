@@ -31,7 +31,7 @@
 ;;;                 menu) or asks for a selection if nothing is selected.
 ;;;
 ;;; Requirements :
-;;;   - DynALisp.Assistant.dll (AutoCAD 2016 or later): (Dyl:ClaudeRun ...).
+;;;   - DynALisp.Assistant.dll: (Dyl:ClaudeRun ...).
 ;;;   - Claude Code installed and signed in with the user's own Claude
 ;;;     account (Dyl-Assistant installs it and signs it in): no API key.
 ;;;
@@ -448,7 +448,7 @@
 
   (cond
     ((not Dyl:ClaudeRun)
-     (princ "\n--> Text Fix needs DynALisp.Assistant.dll (AutoCAD 2016 or later, not blocked by SECURELOAD).")
+     (princ "\n--> Text Fix needs DynALisp.Assistant.dll (not blocked by SECURELOAD).")
     )
 
     ((not (setq ss (ctf:get-selection)))
