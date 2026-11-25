@@ -203,6 +203,42 @@
 ;;  The presets read (Remote>>Dyl:PresetRead), read again when DynALisp loads:
 (setq *pst:readcache* nil)
 
+;;  What is made from the data files the same way in every drawing and is slow to make (the
+;;  860 assemblies read and fixed, what Quick Draw shows of them) is kept for the whole session
+;;  on the blackboard, under name: (key . value). f is applied to args only when what it is
+;;  made from differs from the key kept: key (what the caller adds: the units of the drawing...)
+;;  with Remote>>Dyl:SessionStamps. A drawing opened after the first one gets it without making
+;;  it (vl-bb-ref gives a copy of it):
+(defun Remote>>Dyl:SessionKept (name key f args / bb v)
+  (setq key (cons (Remote>>Dyl:SessionStamps) key)
+        bb  (vl-bb-ref name)
+  )
+  (if (and bb (equal key (car bb)))
+    (cdr bb)
+    (progn
+      (setq v (apply f args))
+      (vl-bb-set name (cons key v))
+      v
+    )
+  )
+)
+
+;;  What every drawing reads alike: the date and size of every presets file and groups file
+;;  (Remote>>Dyl:PresetStamps: the presets, the assemblies, the materials, the hatch presets),
+;;  the count of the data files written by DynALisp in the session (*dyl:datawrites*, see
+;;  Remote>>Dyl:CsvWrite: a file written twice in the same second at the same size), and the
+;;  date of the defaults of the presets (read with a user copy: the default assemblies) and of
+;;  the files of the code that makes what is kept (both changed by a git pull in the session):
+(defun Remote>>Dyl:SessionStamps ()
+  (list (Remote>>Dyl:PresetStamps)
+        (vl-bb-ref '*dyl:datawrites*)
+        (mapcar '(lambda (s) (vl-file-systime (Remote>>Dyl:PresetDefault (car s)))) *dyl:presetspecs*)
+        (mapcar '(lambda (f) (vl-file-systime (strcat *dyl:dyl f)))
+                '("\\Apps\\Draw\\Dyl-QuickDraw.lsp" "\\Remote\\Dyl-Materials.lsp" "\\Remote\\Dyl-Presets.lsp" "\\Remote\\Dyl-Groups.lsp")
+        )
+  )
+)
+
 ;;  Write the presets file of the tool key, the new custom presets getting their id
 ;;  first. Returns T on success (nil if the file is open in Excel). The reads kept are
 ;;  dropped, even when the date of the file did not change (written in the same second):

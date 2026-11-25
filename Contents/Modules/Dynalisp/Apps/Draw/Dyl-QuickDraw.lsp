@@ -2830,40 +2830,24 @@
 ;;  Dyl:QuickDrawAsmShow). Kept (*qd:asmshows*: (asms context rows)) and made again only for
 ;;  another list, or when what they are made from changed: the materials and their data (the
 ;;  hatch of each layer, the description), the drawing scale and units (the previews, the
-;;  thicknesses). Made at each Quick Draw window, the 860 assemblies took seconds.
-;;  They are kept for the whole session too, on the blackboard (*qd:asmshowsbb*: (key rows)),
-;;  so a drawing opened after the first one gets them without making them (1.2 s in each new
-;;  drawing): key holds what they are made from that every drawing reads alike, the date and
-;;  size of every presets file and groups file (Remote>>Dyl:PresetStamps: the assemblies, the
-;;  materials, the hatch presets), the count of the data files written by DynALisp in the
-;;  session (*dyl:datawrites*, see Remote>>Dyl:CsvWrite: a file written twice in the same
-;;  second at the same size), the scale and units of the drawing, and the date of the files of
-;;  the code that makes them:
-(defun Dyl:QuickDrawAsmShows (asms / ctx key bb)
+;;  thicknesses). Made at each Quick Draw window, the 860 assemblies took seconds. Kept for
+;;  the whole session too (*qd:asmshowsbb*, Remote>>Dyl:SessionKept, with the scale and units
+;;  of the drawing): made in each new drawing, they took 1.2 s:
+(defun Dyl:QuickDrawAsmShows (asms / ctx)
   (setq ctx (list pst:mats qd:mrows
                   (mapcar 'getvar '("CANNOSCALEVALUE" "MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "DIMZIN" "UNITMODE"))
             )
   )
   (if (not (and *qd:asmshows* (eq asms (car *qd:asmshows*)) (equal ctx (cadr *qd:asmshows*))))
-    (setq key            (list (Remote>>Dyl:PresetStamps) (vl-bb-ref '*dyl:datawrites*) (caddr ctx) (length asms)
-                               ;;  (and the code that makes them, changed by a git pull in the
-                               ;;  session:)
-                               (mapcar '(lambda (f) (vl-file-systime (strcat *dyl:dyl f)))
-                                       '("\\Apps\\Draw\\Dyl-QuickDraw.lsp" "\\Remote\\Dyl-Materials.lsp")
-                               )
-                         )
-          bb             (vl-bb-ref '*qd:asmshowsbb*)
-          *qd:asmshows*  (list asms
-                               ctx
-                               (if (and bb (equal key (car bb)))
-                                 (cadr bb)
-                                 (progn
-                                   (setq bb (mapcar '(lambda (a) (cons (car a) (Dyl:QuickDrawAsmShow a))) asms))
-                                   (vl-bb-set '*qd:asmshowsbb* (list key bb))
-                                   bb
-                                 )
-                               )
-                         )
+    (setq *qd:asmshows*
+           (list asms
+                 ctx
+                 (Remote>>Dyl:SessionKept '*qd:asmshowsbb*
+                                          (list (caddr ctx) (length asms))
+                                          'mapcar
+                                          (list '(lambda (a) (cons (car a) (Dyl:QuickDrawAsmShow a))) asms)
+                 )
+           )
     )
   )
   (caddr *qd:asmshows*)
@@ -3406,15 +3390,23 @@
   (setq f (Remote>>Dyl:PresetFile "QuickDrawAssembly")
         s (list f (vl-file-systime f) (Dyl:QuickDrawAsmFactor))
   )
+  ;;  Kept for the whole session too (*qd:asmreadbb*, Remote>>Dyl:SessionKept, with the
+  ;;  units of the drawing): read and fixed in each new drawing, the 860 assemblies took 1.3 s
+  ;;  of the first Quick Draw window (and the materials read them):
   (if (not (and *qd:asmcache* (equal s (car *qd:asmcache*))))
     (setq *qd:asmcache* (cons s
-                              (mapcar 'Dyl:QuickDrawAsmToDwg
-                                      (Remote>>Dyl:PresetRead "QuickDrawAssembly" (Dyl:QuickDrawAsmDefs) 'Dyl:QuickDrawAsmFix)
-                              )
+                              (Remote>>Dyl:SessionKept '*qd:asmreadbb* (cdr s) 'Dyl:QuickDrawAsmReadAll nil)
                         )
     )
   )
   (cdr *qd:asmcache*)
+)
+
+;;  The assemblies read, fixed and in the units of the drawing (see Dyl:QuickDrawAsmRead):
+(defun Dyl:QuickDrawAsmReadAll ()
+  (mapcar 'Dyl:QuickDrawAsmToDwg
+          (Remote>>Dyl:PresetRead "QuickDrawAssembly" (Dyl:QuickDrawAsmDefs) 'Dyl:QuickDrawAsmFix)
+  )
 )
 
 ;;  The default assemblies (as-*, Res\QuickDrawAssemblies.csv as shipped, never its user copy):
