@@ -1676,13 +1676,15 @@
 ;;  The values of the window: the presets, the state of the list, the aliases, the hatch
 ;;  presets, the values of the App. err: a message to show (nil: none):
 (defun Remote>>Dyl:PresetWinVals (err / spec)
-  (setq spec (assoc 'spec pst:dlg))
+  (setq spec          (assoc 'spec pst:dlg)
+        ;;  The rows sent, and the presets they were made from, kept (see
+        ;;  Remote>>Dyl:PresetWinTaken):
+        pst:sentof    pst:lst
+        pst:sent      (Remote>>Dyl:PresetWinRows pst:lst)
+        *pst:winsent* (list pst:key (cdr (assoc 'window pst:dlg)) pst:sentof pst:sent)
+  )
   (append
-    ;;  (setq gives its last value: the rows, never the presets they were made from)
-    (list (cons "pst/rows" (setq pst:sentof pst:lst
-                                 pst:sent   (Remote>>Dyl:PresetWinRows pst:lst)
-                           )
-          )
+    (list (cons "pst/rows" pst:sent)
           (cons "pst/defs" (Remote>>Dyl:PresetWinRows (Remote>>Dyl:PresetDlgDefs)))
           (list "pst/new" (Remote>>Dyl:PresetWinRow (cdr (assoc 'new pst:dlg))))
           (cons "pst/ncols" (itoa (cond ((cdr (assoc 'wncols pst:dlg))) ((Remote>>Dyl:PresetWinCols)))))
@@ -1763,7 +1765,7 @@
        (cond
          ((and o (equal r s)) o)
          ((and (/= "" (car r)) (setq hit (assoc (car r) ids)) (equal r (cadr hit))) (caddr hit))
-         ((Remote>>Dyl:PresetWinCut (cond ((Remote>>Dyl:PresetDlgCall 'wget (list r))) (r)) n))
+         ((progn (Remote>>Dyl:PresetWinPrep) (Remote>>Dyl:PresetWinCut (cond ((Remote>>Dyl:PresetDlgCall 'wget (list r))) (r)) n)))
        )
      )
     rows
@@ -1813,7 +1815,7 @@
          (vl-some
            '(lambda (r)
               (setq i (1+ i))
-              (if (not (member r pst:lst0))
+              (if (and (not (member r pst:lst0)) (progn (Remote>>Dyl:PresetWinPrep) T))
                 (vl-some
                   '(lambda (x / m)
                      (if (setq m (if (= 'rowcheck x)
@@ -1846,20 +1848,71 @@
   msg
 )
 
+;;  What the window is made from, before it is shown (each time: the groups, the materials
+;;  and what the App reads may have been edited in a window opened from it), once per window
+;;  shown (pst:prep): the groups renamed since the window was shown (here or in a window
+;;  opened from it), the groups of the Group list, the materials, then the wprep of the App.
+;;  A window of the Manager whose button was taken before its values were made (see
+;;  Remote>>Dyl:PresetWin) has it only when the Lisp needs it: a preset edited to get back
+;;  (wget), to check, an open button; with its rows made again then, for what the wrow of the
+;;  App keeps of the values shown (the values of a material in an imperial drawing):
+(defun Remote>>Dyl:PresetWinPrep (/ taken)
+  (if (not (eq T pst:prep))
+    (progn
+      (setq taken    (eq 'taken pst:prep)
+            pst:prep T
+      )
+      (Remote>>Dyl:PresetDlgGroupsSync)
+      (setq pst:grps (Remote>>Dyl:PresetDlgGrps))
+      (if (Remote>>Dyl:PresetDlgMat) (Remote>>Dyl:PresetDlgMatsRead) (setq pst:mats nil pst:smats nil))
+      (Remote>>Dyl:PresetDlgCall 'wprep nil)
+      (if taken (Remote>>Dyl:PresetWinRows pst:sentof))
+    )
+  )
+)
+
+;;  The rows last sent to a window: (key window presets rows), see Remote>>Dyl:PresetWinVals.
+;;  The window of the Manager keeps them while it is open, so a tool run again by one of its
+;;  buttons gets the presets back from them without making them again:
+(setq *pst:winsent* nil)
+
+;;  The button of the window of the Manager that ran the tool again, and its values, taken
+;;  before any value is made (Dyl:WinTaken): the rows it was sent are those kept
+;;  (*pst:winsent*), nil when there is no such button or they are not kept (the window is
+;;  made and shown as usual):
+(defun Remote>>Dyl:PresetWinTaken (/ w res)
+  (setq w (cdr (assoc 'window pst:dlg)))
+  (if (and (= pst:key (car *pst:winsent*))
+           (= (strcase (vl-filename-base w)) (strcase (vl-filename-base (cadr *pst:winsent*))))
+           (setq res (Dyl:WinTaken w))
+      )
+    (progn
+      (setq pst:sentof (caddr *pst:winsent*)
+            pst:sent   (cadddr *pst:winsent*)
+            pst:prep   'taken
+      )
+      res
+    )
+  )
+)
+
 ;;  Show the window of the tool, again after each code >= 3 (see Remote>>Dyl:PresetDlgCode)
 ;;  and after a value not valid (see Remote>>Dyl:PresetWinCheck). Returns the status it was
-;;  closed with (1 Draw, 2 Save, 0 Cancel, nil: not shown, see Dyl:WinShow):
-(defun Remote>>Dyl:PresetWin (/ sta res err)
+;;  closed with (1 Draw, 2 Save, 0 Cancel, nil: not shown, see Dyl:WinShow).
+;;  A window of the Manager is modeless: a tool run again by one of its buttons takes that
+;;  button first, and makes the values of its window only when it shows it again. Made for
+;;  nothing at each click (the tab left, Save), the values of the Quick Draw tab took seconds:
+(defun Remote>>Dyl:PresetWin (/ sta res err pst:prep)
   (setq sta 3)
   (while (and sta (<= 3 sta))
-    ;;  The groups renamed since the window was shown (here or in a window opened from it),
-    ;;  the groups of the Group list, the materials (they may have been edited):
-    (Remote>>Dyl:PresetDlgGroupsSync)
-    (setq pst:grps (Remote>>Dyl:PresetDlgGrps))
-    (if (Remote>>Dyl:PresetDlgMat) (Remote>>Dyl:PresetDlgMatsRead) (setq pst:mats nil pst:smats nil))
-    (Remote>>Dyl:PresetDlgCall 'wprep nil)
-    (setq res (Dyl:WinShow (cdr (assoc 'window pst:dlg)) (Remote>>Dyl:PresetWinVals err))
-          err nil
+    (setq pst:prep nil)
+    (if (not (and (not err) (setq res (Remote>>Dyl:PresetWinTaken))))
+      (progn
+        (Remote>>Dyl:PresetWinPrep)
+        (setq res (Dyl:WinShow (cdr (assoc 'window pst:dlg)) (Remote>>Dyl:PresetWinVals err)))
+      )
+    )
+    (setq err nil
           sta (car res)
     )
     (if res (Remote>>Dyl:PresetWinGet res))
@@ -1871,7 +1924,7 @@
       ;;  Another tab of the Manager picked (Remote\Dyl-Manager.lsp): saved, as Save, and
       ;;  the Manager shows the window of that tab:
       ((= *dyl:wintabcode* sta) (setq sta 2))
-      ((<= 3 sta) (setq sta (Remote>>Dyl:PresetDlgCode sta)))
+      ((<= 3 sta) (Remote>>Dyl:PresetWinPrep) (setq sta (Remote>>Dyl:PresetDlgCode sta)))
     )
   )
   sta

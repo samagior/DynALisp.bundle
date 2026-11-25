@@ -2833,7 +2833,8 @@
   ;;; the command line: the tool runs again, and its Dyl:WinShow of that window gets the
   ;;; button and the values of the window, as a modal window would give them. The
   ;;; window it shows next replaces it in place; (Dyl:WindowDone) closes it when the
-  ;;; Lisp shows nothing more (see Remote>>Dyl:ManagerEvent).
+  ;;; Lisp shows nothing more (see Remote>>Dyl:ManagerEvent). (Dyl:WinTaken file) gives
+  ;;; that button before the tool makes the values of its window, which it may not show.
   ;;; ============================================================================
 
   (setq *dyl:wintabcode* 90)
@@ -2885,9 +2886,36 @@
     res
   )
 
+  ;;  T when file is the window of the tab shown (see *dyl:wintabs* above):
+  (defun Dyl:WinTab-p (file)
+    (and *dyl:wintabs* (= (strcase (vl-filename-base file)) (strcase (vl-filename-base (car *dyl:wintabs*)))))
+  )
+
+  ;;  The tab picked when the window of the tabs res closed with *dyl:wintabcode*:
+  (defun Dyl:WinTabPicked (res)
+    (setq *dyl:wintab* (if (= *dyl:wintabcode* (car res)) (atoi (cond ((Dyl:WinGet res "tab")) ("0")))))
+  )
+
+  ;;  The button clicked in the modeless window of file and its values, as Dyl:WinShow gives
+  ;;  them, when this call of the Lisp was run by its event (see above); nil else, and the
+  ;;  window is shown as usual. A tool asks for it before it makes the values of its window
+  ;;  (Remote>>Dyl:PresetWin): run again by a click, it makes none of the values of a
+  ;;  window it would not show (the 860 assemblies of the Quick Draw tab took seconds):
+  (defun Dyl:WinTaken (file / path res)
+    (if (and Dyl:WindowTake
+             (Dyl:WinTab-p file)
+             (nth 5 *dyl:wintabs*)
+             (setq path (Dyl:WinFile file))
+             (not (vl-catch-all-error-p (setq res (vl-catch-all-apply 'Dyl:WindowTake (list path)))))
+             res
+        )
+      (progn (Dyl:WinTabPicked res) res)
+    )
+  )
+
   (defun Dyl:WinShow (file vals / path res tabs)
     ;;  The tabs, when file is the window of the tab shown (see *dyl:wintabs* above):
-    (if (and *dyl:wintabs* (= (strcase (vl-filename-base file)) (strcase (vl-filename-base (car *dyl:wintabs*)))))
+    (if (Dyl:WinTab-p file)
       (setq tabs        (list (cons "tab/list" (nth 1 *dyl:wintabs*))
                               (cons "tab" (itoa (nth 2 *dyl:wintabs*)))
                               (cons "tab/title" (nth 3 *dyl:wintabs*))
@@ -2898,9 +2926,7 @@
       )
     )
     (setq res (Dyl:WinShowFile file (append vals tabs)))
-    (if (and tabs (= *dyl:wintabcode* (car res)))
-      (setq *dyl:wintab* (atoi (cond ((Dyl:WinGet res "tab")) ("0"))))
-    )
+    (if tabs (Dyl:WinTabPicked res))
     res
   )
 
