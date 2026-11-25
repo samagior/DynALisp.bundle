@@ -173,7 +173,7 @@
 
 ;;  Save the climates rows; T when saved:
 (defun Dyl:SimClimatesWrite (rows)
-  (Remote>>LM:writecsv (cons *sim:climhead* rows) (Dyl:UserFileW (Dyl:SimClimFile)))
+  (Remote>>Dyl:CsvWrite (cons *sim:climhead* rows) (Dyl:UserFileW (Dyl:SimClimFile)))
 )
 
 ;;  A number of a text (a decimal comma read as a point), nil for an empty text:

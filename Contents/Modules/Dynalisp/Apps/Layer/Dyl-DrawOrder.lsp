@@ -179,7 +179,7 @@
     (if (not (member n (mapcar 'car sets))) (vl-file-delete (Remote>>Dyl:DrawOrderPresetFile n)))
   )
   (foreach s sets
-    (if (not (Remote>>LM:writecsv (cons *ldo:header* (cdr s)) (Remote>>Dyl:DrawOrderPresetFile (car s))))
+    (if (not (Remote>>Dyl:CsvWrite (cons *ldo:header* (cdr s)) (Remote>>Dyl:DrawOrderPresetFile (car s))))
       (setq err (cons (car s) err))
     )
   )

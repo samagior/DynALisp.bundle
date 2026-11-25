@@ -409,6 +409,25 @@
   (if (not Dyl:Window)
     (dg:bad (strcat "The windows of DynALisp cannot open: " (dg:dll "DynALisp.Windows.dll") " is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
   )
+  ;;  The data files (layer keys, materials, presets, assemblies...) are read once per session
+  ;;  by DynALisp.Core.dll (Dyl:Data, Installer\Core), shared by every drawing; without it,
+  ;;  each drawing reads them again in Lisp (Remote>>Dyl:CsvReadLisp):
+  (if Dyl:Data
+    (if Dyl:DataInfo
+      ((lambda (i)
+         (dg:kv "Data files"
+                (strcat (itoa (cdr (assoc "Files" i))) " kept for the session, "
+                        (itoa (cdr (assoc "Reads" i))) " read(s) in "
+                        (rtos (cdr (assoc "ReadMs" i)) 2 1) " ms, "
+                        (itoa (cdr (assoc "Hits" i))) " given again unread (" (dg:dll "DynALisp.Core.dll") ")"
+                )
+         )
+       )
+        (Dyl:DataInfo)
+      )
+    )
+    (dg:bad (strcat "Each drawing reads the data files again, slower: " (dg:dll "DynALisp.Core.dll") " is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
+  )
   ;;  The simulation of a 2D detail (Dyl-Simulation) reads the detail with
   ;;  DynALisp.Simulation.dll:
   (if (not Dyl:SimulationRead)

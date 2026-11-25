@@ -133,7 +133,7 @@
 ;;  Save the groups lst of the kind k (the user's copy of its file). Returns T, nil when it
 ;;  cannot be written (open in Excel):
 (defun Remote>>Dyl:GroupsWriteOf (lst k)
-  (if (Remote>>LM:writecsv (cons '("Group") (mapcar 'list lst)) (Dyl:UserFileW (Remote>>Dyl:GroupsFileOf k)))
+  (if (Remote>>Dyl:CsvWrite (cons '("Group") (mapcar 'list lst)) (Dyl:UserFileW (Remote>>Dyl:GroupsFileOf k)))
     (progn (setq *grp:cache* nil *pst:readcache* nil) t)
   )
 )
@@ -161,7 +161,7 @@
           new  (mapcar '(lambda (r) (cons (car r) (cons (Remote>>Dyl:GroupRenamed (nth 1 r) pairs) (cddr r)))) rows)
     )
     (if (and (not (equal rows new))
-             (not (Remote>>LM:writecsv (cons (Remote>>Dyl:PresetProp key 'header) new) (Remote>>Dyl:PresetFileW key)))
+             (not (Remote>>Dyl:CsvWrite (cons (Remote>>Dyl:PresetProp key 'header) new) (Remote>>Dyl:PresetFileW key)))
         )
       (setq bad (cons (Remote>>Dyl:PresetProp key 'title) bad))
     )

@@ -208,8 +208,8 @@
 ;;  dropped, even when the date of the file did not change (written in the same second):
 (defun Remote>>Dyl:PresetWrite (key lst)
   (setq *pst:readcache* nil)
-  (Remote>>LM:writecsv (cons (Remote>>Dyl:PresetProp key 'header) (Remote>>Dyl:PresetIds lst))
-                       (Remote>>Dyl:PresetFileW key)
+  (Remote>>Dyl:CsvWrite (cons (Remote>>Dyl:PresetProp key 'header) (Remote>>Dyl:PresetIds lst))
+                        (Remote>>Dyl:PresetFileW key)
   )
 )
 

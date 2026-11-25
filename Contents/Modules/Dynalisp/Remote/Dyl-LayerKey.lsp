@@ -283,7 +283,7 @@
 ;;  The keys kept are dropped, even when the date of the file did not change:
 (defun Remote>>Dyl:LayerKeyWrite (lst)
   (setq *lk:readcache* nil)
-  (Remote>>LM:writecsv (cons *lk:header* lst) (Dyl:UserFileW *lk:file*))
+  (Remote>>Dyl:CsvWrite (cons *lk:header* lst) (Dyl:UserFileW *lk:file*))
 )
 
 ;;  T when the key rec is an AEC layer override (see above):
@@ -775,7 +775,7 @@
 ;;  Write the keys of the kinds lst (its user copy), T on success (nil if the file is open
 ;;  in Excel):
 (defun Remote>>Dyl:ObjectKeysWrite (lst)
-  (Remote>>LM:writecsv (cons *olk:header* lst) (Dyl:UserFileW *olk:file*))
+  (Remote>>Dyl:CsvWrite (cons *olk:header* lst) (Dyl:UserFileW *olk:file*))
 )
 
 ;;  The kind of an object of the entity type typ made by the command cmd (upper case): its
