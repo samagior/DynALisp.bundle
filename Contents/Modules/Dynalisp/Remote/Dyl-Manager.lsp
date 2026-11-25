@@ -124,7 +124,7 @@
         t0              (getvar "MILLISECS")
   )
   (setq key  (cond (key) (*dyl:mgrlast*))
-        tabs (Remote>>Dyl:ManagerTabs key)
+        tabs (Remote>>Dyl:ManagerTimed "Tabs of the Manager" 'Remote>>Dyl:ManagerTabs (list key))
         i    (cond ((vl-position (assoc (cond (*dyl:mgrevent*) (key)) tabs) tabs)) (0))
   )
   (while (and i (setq tab (nth i tabs)))

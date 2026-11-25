@@ -2959,7 +2959,12 @@
           '(wprep . Dyl:QuickDrawWinPrep)
           '(wvals . Dyl:QuickDrawWinVals)
           ;;  A new preset: the defaults of a new preset for its behaviors:
-          (cons 'new (Dyl:QuickDrawFix (Dyl:QuickDrawOverride (Dyl:QuickDrawPad '("" "" "New preset" "mt-Brick" "")) T nil)))
+          (cons 'new
+                (Remote>>Dyl:ManagerTimed "Quick Draw: new preset"
+                                          'Dyl:QuickDrawFix
+                                          (list (Dyl:QuickDrawOverride (Dyl:QuickDrawPad '("" "" "New preset" "mt-Brick" "")) T nil))
+                )
+          )
           '(check . Dyl:QuickDrawDlgCheck)
           '(rowcheck . Dyl:QuickDrawDlgRowCheck)
           '(status . Dyl:QuickDrawDlgStatus)
@@ -3630,8 +3635,9 @@
       (setq asms (Remote>>Dyl:PresetIds asms))
       (if (or (not new) (Remote>>Dyl:PresetWrite "QuickDrawAssembly" asms))
         (progn
-          (setq *qd:asmcache* nil
-                rows          (mapcar '(lambda (r / x)
+          ;;  (the assemblies kept read again only when some were added:)
+          (if new (setq *qd:asmcache* nil))
+          (setq rows          (mapcar '(lambda (r / x)
                                          (setq l (nth *qd:layerscol* r))
                                          (if (and (vl-string-search ":" l)
                                                   (setq x (vl-some '(lambda (y) (if (= (cdr (assoc l olds)) (nth 3 y)) y)) asms))
