@@ -19,8 +19,8 @@
 ;; Assistant
 ;; Shows the Assistant palette: a conversation with Claude, through Claude Code, the command
 ;; line of Anthropic, installed by the user and signed in with their own Claude account (no
-;; API key). The palette is DynALisp.Assistant.dll (Installer\Assistant, AutoCAD 2016 and
-;; later): (Dyl:AssistantShow docs prompt), docs the page its Open Docs button opens, prompt
+;; API key). The palette is DynALisp.Assistant.dll (Installer\Assistant):
+;; (Dyl:AssistantShow docs prompt), docs the page its Open Docs button opens, prompt
 ;; the instructions added to those of Claude Code (Res\Assistant\Prompt.txt, or its User
 ;; copy). Claude reads the active drawing through the tools of the plugin, and changes it or
 ;; runs an AutoCAD command once the user allows it in the palette (one U undoes each change).
@@ -28,7 +28,7 @@
 (defun c:Dyl-Assistant (/ page prompt)
   (cond
     ((not Dyl:AssistantShow)
-     (princ "\n--> The Assistant needs DynALisp.Assistant.dll (AutoCAD 2016 or later, not blocked by SECURELOAD).")
+     (princ "\n--> The Assistant needs DynALisp.Assistant.dll (not blocked by SECURELOAD).")
     )
     (T
      (setq page   (Dyl:DocsPage "Utilities\\Dyl-Assistant.htm")

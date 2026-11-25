@@ -53,6 +53,22 @@
     )
   )
 
+  ;;  (apply f args) for a window a step shows the user (What's new): the time it stays
+  ;;  open is the user reading it, not the startup, so it is left out of the startup time
+  ;;  and of the time of its step (*dyl:t0* and *dyl:tmark* moved on by as much):
+  (defun Dyl:StartupWait (f args / t1 res)
+    (setq t1  (getvar "MILLISECS")
+          res (apply f args)
+          t1  (- (getvar "MILLISECS") t1)
+    )
+    (if (not *dyl:startms*)
+      (setq *dyl:t0*    (if *dyl:t0* (+ *dyl:t0* t1))
+            *dyl:tmark* (if *dyl:tmark* (+ *dyl:tmark* t1))
+      )
+    )
+    res
+  )
+
   ;;  The commands the output prep redefines (Output region, Dyl-CmdOptimizer.lsp), by
   ;;  group sharing the same steps: the saves, the prints (-PLOT and -PUBLISH are left out:
   ;;  scripts and Lisp programs call them with (command "-PLOT" ...), which fails while they
@@ -2382,6 +2398,41 @@
 
   ;#region Docs
 
+  ;;; Language of DynALisp (Environment in Dyl-Settings, DynalispLanguage): the language
+  ;;; its docs open in, and nothing else. Not the Language of the File Preferences,
+  ;;; which sets the content folders and the dictionaries of the drawings. Until it is
+  ;;; set, the language of the AutoCAD installed (the lcid that ends its product key,
+  ;;; ...\ACAD-A101:40C), English when DynALisp is not in that language yet. The ribbon
+  ;;; and the phases are always in the language of the AutoCAD installed (Dyl:LangAcad),
+  ;;; whatever this setting. Each language: (key code lcid), the key also its name in the
+  ;;; window (the windows are in English); code is the suffix of its docs pages (Page.fr.htm).
+  ;;; Defined here, before the startup steps: the What's new window of the first startup
+  ;;; after an update opens in the docs language (Dyl:DocsLang):
+  (setq *dyl:langs* '(("English" "en" "409") ("French" "fr" "40C")))
+
+  ;;  The key of the language of the AutoCAD installed, English when it is not one of
+  ;;  *dyl:langs*:
+  (defun Dyl:LangDefault (/ key)
+    (setq key (strcase (vlax-product-key)))
+    (cond
+      ((car (vl-some '(lambda (l) (if (wcmatch key (strcat "*:" (caddr l))) l)) *dyl:langs*)))
+      ("English")
+    )
+  )
+
+  ;;  The key of the language of DynALisp ("English", "French"):
+  (defun Dyl:Lang (/ key)
+    (if (assoc (setq key (getenv "DynalispLanguage")) *dyl:langs*) key (Dyl:LangDefault))
+  )
+
+  ;;  Its code ("en", "fr"):
+  (defun Dyl:LangCode () (cadr (assoc (Dyl:Lang) *dyl:langs*)))
+
+  ;;  The code of the language of the AutoCAD installed ("en", "fr"), English when
+  ;;  DynALisp is not in it: the language of the ribbon and of the phases (Phase.csv),
+  ;;  never changed by the Language setting:
+  (defun Dyl:LangAcad () (cadr (assoc (Dyl:LangDefault) *dyl:langs*)))
+
   ;;; ---------------------------------------------------------------------------
   ;;; The docs website. The docs are published on GitHub Pages (*dyl:docsweb*, the
   ;;; public repository samagior/DynALisp.docs, built by Installer\Docs\BuildSite.py
@@ -2650,7 +2701,7 @@
   ;;; ---------------------------------------------------------------------------
   ;;; Languages of the docs. A page is in English (Page.htm) and may have a copy in
   ;;; another language beside it (Page.fr.htm). The language opened is the language
-  ;;; of DynALisp (Language in Dyl-Settings, Dyl:Lang in the Settings region),
+  ;;; of DynALisp (Language in Dyl-Settings, Dyl:Lang above),
   ;;; English when the page has no copy in it. Every docs page is opened through
   ;;; Dyl:SuiteDlgShell, which calls Dyl:DocsTarget. The pages link to each other in
   ;;; their own language and have an EN / FR switch at their top right
@@ -2796,7 +2847,7 @@
   ;;; Windows
   ;;; ----------------------------------------------------------------------------
   ;;; The windows of DynALisp are WPF windows shown by DynALisp.Windows.dll
-  ;;; (Installer\Windows, AutoCAD 2015 and later). Each one is a .xaml file of the
+  ;;; (Installer\Windows). Each one is a .xaml file of the
   ;;; Res folder of its module, read when it is shown, as a .dcl file: its controls
   ;;; are named by their key (x:Name), and it says what they do itself (greyed out
   ;;; while a checkbox is off, its sub-windows, its Open Docs page: the dyl:Win.*
@@ -2934,7 +2985,7 @@
   (defun Dyl:WinShowFile (file vals / path res)
     (cond
       ((not Dyl:Window)
-       (princ (strcat "\n--> This window needs DynALisp.Windows.dll (AutoCAD 2015 or later, not blocked by SECURELOAD): " file))
+       (princ (strcat "\n--> This window needs DynALisp.Windows.dll (not blocked by SECURELOAD): " file))
        nil
       )
       ((not (setq path (Dyl:WinFile file)))
@@ -3433,10 +3484,12 @@
     (if (and old (/= "" old) (/= "?" cur) (Dyl:InfoNewer-p (Dyl:InfoVer cur) (Dyl:InfoVer old)))
       (progn
         (if (= 0 (logand 4 (getvar "CMDACTIVE")))
-          (Dyl:InfoNotesDlg (strcat "DynALisp is updated: changes from version " old " to " cur ":")
-                            (Dyl:InfoNotes (Dyl:InfoLines (findfile (strcat *dyl:repo "\\CHANGELOG.md"))) old cur)
-                            "Dyl-Info shows them again (What's new)."
-                            nil
+          (Dyl:StartupWait 'Dyl:InfoNotesDlg
+                           (list (strcat "DynALisp is updated: changes from version " old " to " cur ":")
+                                 (Dyl:InfoNotes (Dyl:InfoLines (findfile (strcat *dyl:repo "\\CHANGELOG.md"))) old cur)
+                                 "Dyl-Info shows them again (What's new)."
+                                 nil
+                           )
           )
         )
         (strcat "DynALisp updated to " cur " (Dyl-Info: What's new).")
@@ -4296,8 +4349,8 @@
   ;;; Clean startup (Overrides in Dyl-Settings, DynalispCleanStartup, off by default): once
   ;;; AutoCAD has started, the lines it printed while starting are removed from the command
   ;;; line, but the drawing created, the lines of DynALisp and the errors. Done by
-  ;;; Resources\DynALisp.Startup.dll (source in Installer\Startup, AutoCAD 2015 and
-  ;;; later), which defines Dyl:CleanStartup; applies from the next startup:
+  ;;; Resources\DynALisp.Startup.dll (source in Installer\Startup), which defines
+  ;;; Dyl:CleanStartup; applies from the next startup:
   (defun Dyl:CleanStartupOn-p () (= "1" (getenv "DynalispCleanStartup")))
   (defun Dyl:CleanStartupSet (on)
     (setenv "DynalispCleanStartup" (if on "1" "0"))
@@ -4311,48 +4364,14 @@
     )
   )
 
-  ;;; Language of DynALisp (Environment in Dyl-Settings, DynalispLanguage): the language
-  ;;; its docs open in, and nothing else. Not the Language of the File Preferences,
-  ;;; which sets the content folders and the dictionaries of the drawings. Until it is
-  ;;; set, the language of the AutoCAD installed (the lcid that ends its product key,
-  ;;; ...\ACAD-A101:40C), English when DynALisp is not in that language yet. The ribbon
-  ;;; and the phases are always in the language of the AutoCAD installed (Dyl:LangAcad),
-  ;;; whatever this setting. Each language: (key code lcid), the key also its name in the
-  ;;; window (the windows are in English); code is the suffix of its docs pages (Page.fr.htm):
-  (setq *dyl:langs* '(("English" "en" "409") ("French" "fr" "40C")))
-
-  ;;  The key of the language of the AutoCAD installed, English when it is not one of
-  ;;  *dyl:langs*:
-  (defun Dyl:LangDefault (/ key)
-    (setq key (strcase (vlax-product-key)))
-    (cond
-      ((car (vl-some '(lambda (l) (if (wcmatch key (strcat "*:" (caddr l))) l)) *dyl:langs*)))
-      ("English")
-    )
-  )
-
-  ;;  The key of the language of DynALisp ("English", "French"):
-  (defun Dyl:Lang (/ key)
-    (if (assoc (setq key (getenv "DynalispLanguage")) *dyl:langs*) key (Dyl:LangDefault))
-  )
-
-  ;;  Its code ("en", "fr"):
-  (defun Dyl:LangCode () (cadr (assoc (Dyl:Lang) *dyl:langs*)))
-
-  ;;  The code of the language of the AutoCAD installed ("en", "fr"), English when
-  ;;  DynALisp is not in it: the language of the ribbon and of the phases (Phase.csv),
-  ;;  never changed by the Language setting:
-  (defun Dyl:LangAcad () (cadr (assoc (Dyl:LangDefault) *dyl:langs*)))
-
   (defun Dyl:LangSet (key)
     (setenv "DynalispLanguage" key)
     (princ (strcat "\nLanguage of DynALisp: " key ". The docs open in it from now on."))
   )
 
   ;;  The ribbon in the language of the AutoCAD installed: given to DynALisp.Ribbon.dll
-  ;;  (AutoCAD 2025 and later, Installer\Ribbon\Plugin\Translations.cs), which puts the
-  ;;  texts of Resources\DynALisp.Ribbon.<code>.csv on the tab; in an older AutoCAD, the
-  ;;  ribbon stays in English. When DynALisp loads; the plugin also reads the lcid of the
+  ;;  (Installer\Ribbon\Plugin\Translations.cs), which puts the texts of
+  ;;  Resources\DynALisp.Ribbon.<code>.csv on the tab. When DynALisp loads; the plugin also reads the lcid of the
   ;;  AutoCAD installed itself when it starts (T.Start), with the rule of Dyl:LangAcad, so
   ;;  it never depends on this call:
   (defun Dyl:LangRibbon ()
@@ -4553,7 +4572,7 @@
       (Dyl:WinOff '("lku" "lkk") (not Remote>>Dyl:LayerKeyMatchSet))
       ;; Automatic updates: greyed out for a git clone (updated with git pull):
       (if (Dyl:InfoGit-p) (cons '("aud" . "Git clone: update it with git pull.") (Dyl:WinOff "aup" T)))
-      ;; Allow Lisp: without the plugin of the Assistant (AutoCAD 2015, not loaded):
+      ;; Allow Lisp: without the plugin of the Assistant (not loaded):
       (Dyl:WinOff "asl" (not Dyl:AssistantShow))
       ;; The sub-windows:
       (Dyl:SetDefsVals)

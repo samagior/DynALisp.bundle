@@ -3,15 +3,19 @@
 
     dotnet build Installer\Ribbon\Plugin -c Release
 
-  Builds Contents\Resources\DynALisp.Ribbon.dll (committed, loaded by PackageContents.xml).
-  Close AutoCAD first: it keeps the DLL open. Needs the .NET 8 SDK; the AutoCAD references
-  come from the AutoCAD.NET package of AutoCAD 2025 (the oldest version that runs .NET 8),
-  so the DLL loads in AutoCAD 2025 and every later version.
+  Builds the same code twice, both committed and loaded by PackageContents.xml:
+    - net8.0-windows: Contents\Resources\DynALisp.Ribbon.dll, AutoCAD 2025 and 2026 (.NET 8),
+      with the references of AutoCAD 2025;
+    - net10.0-windows: Contents\Resources\Net10\DynALisp.Ribbon.dll, AutoCAD 2027 and later
+      (.NET 10), with the references of AutoCAD 2027: AutoCAD 2027 is not binary compatible
+      with 2025 and 2026.
+  Close AutoCAD first: it keeps the DLLs open. Needs the .NET 10 SDK, which builds both (on
+  Linux, add -p:EnableWindowsTargeting=true).
 -->
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
+    <TargetFrameworks>net8.0-windows;net10.0-windows</TargetFrameworks>
     <UseWPF>true</UseWPF>
     <OutputType>Library</OutputType>
     <AssemblyName>DynALisp.Ribbon</AssemblyName>
@@ -29,15 +33,22 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
   </PropertyGroup>
 
-  <ItemGroup>
-    <!-- Compile only: AutoCAD gives its own assemblies at run time. -->
+  <!-- Compile only: AutoCAD gives its own assemblies at run time. -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
     <PackageReference Include="AutoCAD.NET" Version="25.0.1" ExcludeAssets="runtime" PrivateAssets="all" />
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-windows'">
+    <PackageReference Include="AutoCAD.NET" Version="26.0.0" ExcludeAssets="runtime" PrivateAssets="all" />
+  </ItemGroup>
 
-  <!-- The DLL goes where PackageContents.xml loads it: -->
-  <Target Name="CopyToResources" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
-    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(MSBuildThisFileDirectory)..\..\..\Contents\Resources" />
-    <Message Importance="high" Text="Copied $(TargetFileName) to Contents\Resources" />
+  <!-- The DLLs go where PackageContents.xml loads them: -->
+  <Target Name="CopyToResources" AfterTargets="Build" Condition="'$(Configuration)' == 'Release' and '$(TargetFramework)' != ''">
+    <PropertyGroup>
+      <ResourcesDir>$(MSBuildThisFileDirectory)..\..\..\Contents\Resources</ResourcesDir>
+      <ResourcesDir Condition="'$(TargetFramework)' == 'net10.0-windows'">$(ResourcesDir)\Net10</ResourcesDir>
+    </PropertyGroup>
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ResourcesDir)" />
+    <Message Importance="high" Text="Copied $(TargetFileName) ($(TargetFramework)) to $(ResourcesDir)" />
   </Target>
 
 </Project>

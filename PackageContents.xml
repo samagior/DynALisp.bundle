@@ -1,20 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ApplicationPackage
     SchemaVersion="1.0"
-    AppVersion="1.1"
+    AppVersion="2.0"
     ProductCode="[C481FFC8-87C5-4BB3-8529-5CA7B41EB8E6]"
 >
 
-    <!-- The live drop-downs and the translation of the ribbon (.NET 8: AutoCAD 2025 and
-         later, Installer\Ribbon\Plugin), listed before the CUIx. It reads the settings it needs
-         at startup itself and asks the Lisp side for the state of the drawing when AutoCAD is
-         idle, so it never depends on a Lisp call made while DynALisp loads. -->
+    <!-- DynALisp 2.0 runs in AutoCAD 2025 and later (1.x, branch release/1.x, is the version
+         for AutoCAD 2015 to 2024). Each .NET plugin is one project built twice, a component
+         each: for .NET 8 (Contents\Resources\<Name>.dll, AutoCAD 2025 and 2026, R25.0 and
+         R25.1) and for .NET 10 (Contents\Resources\Net10\<Name>.dll, AutoCAD 2027 and later,
+         R26.0: AutoCAD 2027 is not binary compatible with 2025 and 2026). -->
 
+    <!-- The live drop-downs and the translation of the ribbon (Installer\Ribbon\Plugin),
+         listed before the CUIx. It reads the settings it needs at startup itself and asks the
+         Lisp side for the state of the drawing when AutoCAD is idle, so it never depends on a
+         Lisp call made while DynALisp loads. -->
     <Components Description="Ribbon drop-downs">
         <RuntimeRequirements
             OS="Win64"
             Platform="AutoCAD|AutoCAD*"
             SeriesMin="R25.0"
+            SeriesMax="R25.1"
         />
         <ComponentEntry
             AppName="DynALisp ribbon drop-downs"
@@ -22,14 +28,26 @@
             LoadOnAutoCADStartup="True"
         />
     </Components>
+    <Components Description="Ribbon drop-downs (.NET 10)">
+        <RuntimeRequirements
+            OS="Win64"
+            Platform="AutoCAD|AutoCAD*"
+            SeriesMin="R26.0"
+        />
+        <ComponentEntry
+            AppName="DynALisp ribbon drop-downs (.NET 10)"
+            ModuleName="./Contents/Resources/Net10/DynALisp.Ribbon.dll"
+            LoadOnAutoCADStartup="True"
+        />
+    </Components>
 
-    <!-- Clean startup of Dyl-Settings (Installer\Startup), the same code built for .NET 8
-         (AutoCAD 2025 and later) and .NET Framework 4.8 (AutoCAD 2015 to 2024): -->
+    <!-- Clean startup of Dyl-Settings (Installer\Startup): -->
     <Components Description="Clean startup">
         <RuntimeRequirements
             OS="Win64"
             Platform="AutoCAD|AutoCAD*"
             SeriesMin="R25.0"
+            SeriesMax="R25.1"
         />
         <ComponentEntry
             AppName="DynALisp clean startup"
@@ -37,28 +55,27 @@
             LoadOnAutoCADStartup="True"
         />
     </Components>
-    <Components Description="Clean startup (.NET Framework)">
+    <Components Description="Clean startup (.NET 10)">
         <RuntimeRequirements
             OS="Win64"
             Platform="AutoCAD|AutoCAD*"
-            SeriesMin="R20.0"
-            SeriesMax="R24.3"
+            SeriesMin="R26.0"
         />
         <ComponentEntry
-            AppName="DynALisp clean startup (.NET Framework)"
-            ModuleName="./Contents/Resources/Net48/DynALisp.Startup.dll"
+            AppName="DynALisp clean startup (.NET 10)"
+            ModuleName="./Contents/Resources/Net10/DynALisp.Startup.dll"
             LoadOnAutoCADStartup="True"
         />
     </Components>
 
     <!-- The windows of DynALisp (Installer\Windows): WPF windows described by the .xaml files
-         of the Res folders, shown from Lisp by (Dyl:Window file values). The same code built
-         for .NET 8 (AutoCAD 2025 and later) and .NET Framework 4.8 (AutoCAD 2015 to 2024): -->
+         of the Res folders, shown from Lisp by (Dyl:Window file values). -->
     <Components Description="Windows">
         <RuntimeRequirements
             OS="Win64"
             Platform="AutoCAD|AutoCAD*"
             SeriesMin="R25.0"
+            SeriesMax="R25.1"
         />
         <ComponentEntry
             AppName="DynALisp windows"
@@ -66,28 +83,27 @@
             LoadOnAutoCADStartup="True"
         />
     </Components>
-    <Components Description="Windows (.NET Framework)">
+    <Components Description="Windows (.NET 10)">
         <RuntimeRequirements
             OS="Win64"
             Platform="AutoCAD|AutoCAD*"
-            SeriesMin="R20.0"
-            SeriesMax="R24.3"
+            SeriesMin="R26.0"
         />
         <ComponentEntry
-            AppName="DynALisp windows (.NET Framework)"
-            ModuleName="./Contents/Resources/Net48/DynALisp.Windows.dll"
+            AppName="DynALisp windows (.NET 10)"
+            ModuleName="./Contents/Resources/Net10/DynALisp.Windows.dll"
             LoadOnAutoCADStartup="True"
         />
     </Components>
 
     <!-- The Assistant (Installer\Assistant): the palette of Dyl-Assistant and the requests of
-         (Dyl:ClaudeRun ...), through Claude Code. The same code built for .NET 8 (AutoCAD 2025
-         and later) and .NET Framework 4.8 (AutoCAD 2016 to 2024: not 2015, see CONVENTIONS.md): -->
+         (Dyl:ClaudeRun ...), through Claude Code. -->
     <Components Description="Assistant">
         <RuntimeRequirements
             OS="Win64"
             Platform="AutoCAD|AutoCAD*"
             SeriesMin="R25.0"
+            SeriesMax="R25.1"
         />
         <ComponentEntry
             AppName="DynALisp assistant"
@@ -95,28 +111,28 @@
             LoadOnAutoCADStartup="True"
         />
     </Components>
-    <Components Description="Assistant (.NET Framework)">
+    <Components Description="Assistant (.NET 10)">
         <RuntimeRequirements
             OS="Win64"
             Platform="AutoCAD|AutoCAD*"
-            SeriesMin="R20.1"
-            SeriesMax="R24.3"
+            SeriesMin="R26.0"
         />
         <ComponentEntry
-            AppName="DynALisp assistant (.NET Framework)"
-            ModuleName="./Contents/Resources/Net48/DynALisp.Assistant.dll"
+            AppName="DynALisp assistant (.NET 10)"
+            ModuleName="./Contents/Resources/Net10/DynALisp.Assistant.dll"
             LoadOnAutoCADStartup="True"
         />
     </Components>
+
     <!-- The simulation of a 2D detail (Installer\Simulation, Dyl-Simulation): reads the detail
          of a zone in the drawing and shows its grid, its problems and its results over it, from
-         Lisp by (Dyl:SimulationRead ...). The same code built for .NET 8 (AutoCAD 2025 and
-         later) and .NET Framework 4.8 (AutoCAD 2015 to 2024): -->
+         Lisp by (Dyl:SimulationRead ...). -->
     <Components Description="Simulation">
         <RuntimeRequirements
             OS="Win64"
             Platform="AutoCAD|AutoCAD*"
             SeriesMin="R25.0"
+            SeriesMax="R25.1"
         />
         <ComponentEntry
             AppName="DynALisp simulation"
@@ -124,25 +140,24 @@
             LoadOnAutoCADStartup="True"
         />
     </Components>
-    <Components Description="Simulation (.NET Framework)">
+    <Components Description="Simulation (.NET 10)">
         <RuntimeRequirements
             OS="Win64"
             Platform="AutoCAD|AutoCAD*"
-            SeriesMin="R20.0"
-            SeriesMax="R24.3"
+            SeriesMin="R26.0"
         />
         <ComponentEntry
-            AppName="DynALisp simulation (.NET Framework)"
-            ModuleName="./Contents/Resources/Net48/DynALisp.Simulation.dll"
+            AppName="DynALisp simulation (.NET 10)"
+            ModuleName="./Contents/Resources/Net10/DynALisp.Simulation.dll"
             LoadOnAutoCADStartup="True"
         />
     </Components>
 
     <Components>
         <RuntimeRequirements
-            OS="Win32|Win64"
+            OS="Win64"
             Platform="AutoCAD|AutoCAD*"
-            SeriesMin="R20.0"
+            SeriesMin="R25.0"
             SupportPath="./Contents/Resources"
         />
         <ComponentEntry

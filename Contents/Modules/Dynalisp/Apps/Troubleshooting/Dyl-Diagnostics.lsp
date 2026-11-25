@@ -303,7 +303,7 @@
   (dg:try 'dg:dyl-assistant)
 )
 
-;;  The Assistant (Dyl-Assistant, DynALisp.Assistant.dll, AutoCAD 2016 and later) and Text
+;;  The Assistant (Dyl-Assistant, DynALisp.Assistant.dll) and Text
 ;;  Fix (Dyl-TextFix, through Dyl:ClaudeRun) run Claude Code, installed and signed in by the
 ;;  user: checked only when one of their commands is turned on in the Startup Suite
 ;;  (Dyl:ClaudeInfo runs Claude Code twice, a second or two).
@@ -319,10 +319,7 @@
       (dg:sub "Assistant")
       (cond
         ((not Dyl:ClaudeInfo)
-         (if (< (atof (getvar "ACADVER")) 20.1)
-           (dg:bad "Dyl-Assistant or Dyl-TextFix is turned on, but they need AutoCAD 2016 or later")
-           (dg:bad "Dyl-Assistant or Dyl-TextFix is turned on, but DynALisp.Assistant.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)")
-         )
+         (dg:bad (strcat "Dyl-Assistant or Dyl-TextFix is turned on, but " (dg:dll "DynALisp.Assistant.dll") " is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
         )
         ((= "" (dg:ci "path" (setq info (Dyl:ClaudeInfo))))
          (dg:note "Claude Code is not installed: Dyl-Assistant offers to install it")
@@ -360,6 +357,13 @@
   )
 )
 
+;;  T in AutoCAD 2027 and later (R26.0), which loads the .NET 10 build of the plugins:
+(defun dg:net10-p () (>= (atof (getvar "ACADVER")) 26.0))
+
+;;  The path of a plugin AutoCAD loads, for the report: Resources\Net10\<name> in AutoCAD
+;;  2027 and later, Resources\<name> in 2025 and 2026 (PackageContents.xml):
+(defun dg:dll (name) (strcat "Resources\\" (if (dg:net10-p) "Net10\\" "") name))
+
 (defun dg:dyl-install (/ git ver lst res)
   (setq ver (Dyl:InfoVersion))
   (dg:kv "Version" ver)
@@ -386,39 +390,29 @@
            (strcat (Dyl:Lang) (if (getenv "DynalispLanguage") "" " (not set: the language of AutoCAD)"))
     )
   )
+  ;;  DynALisp 2.0 runs in AutoCAD 2025 and later (1.x in an older one), with the .NET 8
+  ;;  plugins in AutoCAD 2025 and 2026 and the .NET 10 ones (Net10) from 2027 (dg:dll):
+  (if (< (atof (getvar "ACADVER")) 25.0)
+    (dg:bad "DynALisp 2.0 needs AutoCAD 2025 or later: install DynALisp 1.x in this AutoCAD")
+    (dg:kv "Plugins" (if (dg:net10-p) ".NET 10 (Resources\\Net10, AutoCAD 2027 and later)" ".NET 8 (Resources, AutoCAD 2025 and 2026)"))
+  )
   ;;  The ribbon, in the language of the AutoCAD installed (Dyl:LangDefault, its key), is
-  ;;  translated by DynALisp.Ribbon.dll (AutoCAD 2025 and later; English in an older one):
+  ;;  translated by DynALisp.Ribbon.dll:
   (if Dyl:LangDefault
-    (dg:kv "Ribbon language"
-           (if (< (atof (getvar "ACADVER")) 25.0)
-             "English (AutoCAD older than 2025)"
-             (strcat (Dyl:LangDefault) " (the language of AutoCAD)")
-           )
-    )
+    (dg:kv "Ribbon language" (strcat (Dyl:LangDefault) " (the language of AutoCAD)"))
   )
   (if (and Dyl:LangAcad (/= "en" (Dyl:LangAcad)) (not Dyl:RibbonLang))
-    (if (< (atof (getvar "ACADVER")) 25.0)
-      (dg:note "The ribbon stays in English: DynALisp.Ribbon.dll needs AutoCAD 2025 or later")
-      (dg:bad "The ribbon stays in English: DynALisp.Ribbon.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)")
-    )
+    (dg:bad (strcat "The ribbon stays in English: " (dg:dll "DynALisp.Ribbon.dll") " is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
   )
-  ;;  The windows of DynALisp (Dyl-Settings...) are shown by DynALisp.Windows.dll (AutoCAD
-  ;;  2015 and later, the Windows region of dynalisp.mnl):
-  (cond
-    (Dyl:Window)
-    ((< (atof (getvar "ACADVER")) 20.0)
-     (dg:bad "The windows of DynALisp cannot open: DynALisp.Windows.dll needs AutoCAD 2015 or later")
-    )
-    ((dg:bad "The windows of DynALisp cannot open: DynALisp.Windows.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
+  ;;  The windows of DynALisp (Dyl-Settings...) are shown by DynALisp.Windows.dll (the
+  ;;  Windows region of dynalisp.mnl):
+  (if (not Dyl:Window)
+    (dg:bad (strcat "The windows of DynALisp cannot open: " (dg:dll "DynALisp.Windows.dll") " is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
   )
   ;;  The simulation of a 2D detail (Dyl-Simulation) reads the detail with
-  ;;  DynALisp.Simulation.dll (AutoCAD 2015 and later):
-  (cond
-    (Dyl:SimulationRead)
-    ((< (atof (getvar "ACADVER")) 20.0)
-     (dg:note "The simulation of a 2D detail cannot read a zone: DynALisp.Simulation.dll needs AutoCAD 2015 or later")
-    )
-    ((dg:bad "The simulation of a 2D detail cannot read a zone: DynALisp.Simulation.dll is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
+  ;;  DynALisp.Simulation.dll:
+  (if (not Dyl:SimulationRead)
+    (dg:bad (strcat "The simulation of a 2D detail cannot read a zone: " (dg:dll "DynALisp.Simulation.dll") " is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
   )
   (if (not (vl-some '(lambda (r) (= (strcase r) (strcase (vl-filename-directory *dyl:repo))))
                     (dg:pluginroots)

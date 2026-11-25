@@ -226,6 +226,25 @@ begin
         end;
 end;
 
+// T when an AutoCAD 2025 or later (R25.0 and later: DynALisp 2.0 runs in no older one) is
+// installed, for this user (a release key of HKCU, made when it first started) or for the
+// computer (HKLM):
+function HasAcad2025(): Boolean;
+var
+  Releases: TArrayOfString;
+  I: Integer;
+begin
+  Result := False;
+  if RegGetSubkeyNames(HKCU, AcadKey, Releases) then
+    for I := 0 to GetArrayLength(Releases) - 1 do
+      if CompareText(Releases[I], 'R25.0') >= 0 then
+        Result := True;
+  if not Result and IsWin64 and RegGetSubkeyNames(HKLM64, AcadKey, Releases) then
+    for I := 0 to GetArrayLength(Releases) - 1 do
+      if CompareText(Releases[I], 'R25.0') >= 0 then
+        Result := True;
+end;
+
 // T when Name is a Dynalisp* user setting:
 function IsDynalispSetting(Name: String): Boolean;
 begin
@@ -299,11 +318,19 @@ begin
   end;
 end;
 
-// Before anything is changed: never over a git clone, and AutoCAD closed (its
-// files, the ribbon, are in use while it runs):
+// Before anything is changed: never over a git clone, only with an AutoCAD 2025 or later
+// (DynALisp 1.x is the version for AutoCAD 2015 to 2024), and AutoCAD closed (its files,
+// the ribbon, are in use while it runs):
 function PrepareToInstall(var NeedsRestart: Boolean): String;
 begin
   Result := '';
+  if not HasAcad2025() then
+  begin
+    Result := 'DynALisp {#AppVersion} needs AutoCAD 2025 or later, and none was found on this computer.' + #13#10#13#10 +
+              'For AutoCAD 2015 to 2024, install DynALisp 1.x:' + #13#10 +
+              'https://github.com/samagior/DynALisp.release/releases';
+    Exit;
+  end;
   if DirExists(ExpandConstant('{app}\.git')) then
   begin
     Result := 'This DynALisp folder is a git clone:' + #13#10 + ExpandConstant('{app}') + #13#10#13#10 +

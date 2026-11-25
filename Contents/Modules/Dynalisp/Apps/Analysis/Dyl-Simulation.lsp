@@ -515,7 +515,7 @@
 (defun Dyl:SimCheck (z / grid m res rep)
   (cond
     ((not Dyl:SimulationRead)
-     (setq rep "The check needs DynALisp.Simulation.dll (AutoCAD 2015 or later, not blocked by SECURELOAD).")
+     (setq rep "The check needs DynALisp.Simulation.dll (not blocked by SECURELOAD).")
     )
     (T
      (setq grid (Dyl:SimZoneGrid z)
@@ -650,7 +650,7 @@
   (setq imp (Remote>>Dyl:MaterialImperial-p))
   (cond
     ((not Dyl:SimulationRun)
-     (setq rep "Play needs DynALisp.Simulation.dll (AutoCAD 2015 or later, not blocked by SECURELOAD).")
+     (setq rep "Play needs DynALisp.Simulation.dll (not blocked by SECURELOAD).")
     )
     (T
      (setq grid (Dyl:SimZoneGrid z)
@@ -785,7 +785,7 @@
   (setq imp (Remote>>Dyl:MaterialImperial-p))
   (cond
     ((not Dyl:SimulationMonthly)
-     (setq rep "The monthly balance needs DynALisp.Simulation.dll (AutoCAD 2015 or later, not blocked by SECURELOAD).")
+     (setq rep "The monthly balance needs DynALisp.Simulation.dll (not blocked by SECURELOAD).")
     )
     (T
      (setq grid (Dyl:SimZoneGrid z)

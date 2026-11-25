@@ -14,9 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
-// A small reader and writer, the same in .NET 8 and .NET Framework 4.8 (which has no
-// System.Text.Json): an object is a Dictionary<string, object>, an array a List<object>, a
-// number a double, then string, bool and null.
+// A small reader and writer of its own, with no dependency: an object is a
+// Dictionary<string, object>, an array a List<object>, a number a double, then string, bool and null.
 
 using System;
 using System.Collections;

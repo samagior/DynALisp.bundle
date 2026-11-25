@@ -22,6 +22,13 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # The plugin is built for .NET 8 (AutoCAD 2025, 2026) and .NET 10 (AutoCAD 2027):
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+            10.0.x
+
       - name: Build the plugin
         shell: pwsh
         run: dotnet build Installer/Windows -c Debug

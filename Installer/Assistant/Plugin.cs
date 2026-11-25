@@ -31,7 +31,7 @@
 //                                   not found; server, the port of the server of the tools of
 //                                   the drawing, empty until the palette starts a conversation.
 //
-// The Lisp checks (if Dyl:ClaudeRun ...) first: the plugin loads in AutoCAD 2016 and later.
+// The Lisp checks (if Dyl:ClaudeRun ...) first: the plugin loads in AutoCAD 2025 and later.
 
 using System;
 using System.Collections.Generic;
