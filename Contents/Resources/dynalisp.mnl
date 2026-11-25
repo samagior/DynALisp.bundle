@@ -53,6 +53,22 @@
     )
   )
 
+  ;;  (apply f args) for a window a step shows the user (What's new): the time it stays
+  ;;  open is the user reading it, not the startup, so it is left out of the startup time
+  ;;  and of the time of its step (*dyl:t0* and *dyl:tmark* moved on by as much):
+  (defun Dyl:StartupWait (f args / t1 res)
+    (setq t1  (getvar "MILLISECS")
+          res (apply f args)
+          t1  (- (getvar "MILLISECS") t1)
+    )
+    (if (not *dyl:startms*)
+      (setq *dyl:t0*    (if *dyl:t0* (+ *dyl:t0* t1))
+            *dyl:tmark* (if *dyl:tmark* (+ *dyl:tmark* t1))
+      )
+    )
+    res
+  )
+
   ;;  The commands the output prep redefines (Output region, Dyl-CmdOptimizer.lsp), by
   ;;  group sharing the same steps: the saves, the prints (-PLOT and -PUBLISH are left out:
   ;;  scripts and Lisp programs call them with (command "-PLOT" ...), which fails while they
@@ -2382,6 +2398,41 @@
 
   ;#region Docs
 
+  ;;; Language of DynALisp (Environment in Dyl-Settings, DynalispLanguage): the language
+  ;;; its docs open in, and nothing else. Not the Language of the File Preferences,
+  ;;; which sets the content folders and the dictionaries of the drawings. Until it is
+  ;;; set, the language of the AutoCAD installed (the lcid that ends its product key,
+  ;;; ...\ACAD-A101:40C), English when DynALisp is not in that language yet. The ribbon
+  ;;; and the phases are always in the language of the AutoCAD installed (Dyl:LangAcad),
+  ;;; whatever this setting. Each language: (key code lcid), the key also its name in the
+  ;;; window (the windows are in English); code is the suffix of its docs pages (Page.fr.htm).
+  ;;; Defined here, before the startup steps: the What's new window of the first startup
+  ;;; after an update opens in the docs language (Dyl:DocsLang):
+  (setq *dyl:langs* '(("English" "en" "409") ("French" "fr" "40C")))
+
+  ;;  The key of the language of the AutoCAD installed, English when it is not one of
+  ;;  *dyl:langs*:
+  (defun Dyl:LangDefault (/ key)
+    (setq key (strcase (vlax-product-key)))
+    (cond
+      ((car (vl-some '(lambda (l) (if (wcmatch key (strcat "*:" (caddr l))) l)) *dyl:langs*)))
+      ("English")
+    )
+  )
+
+  ;;  The key of the language of DynALisp ("English", "French"):
+  (defun Dyl:Lang (/ key)
+    (if (assoc (setq key (getenv "DynalispLanguage")) *dyl:langs*) key (Dyl:LangDefault))
+  )
+
+  ;;  Its code ("en", "fr"):
+  (defun Dyl:LangCode () (cadr (assoc (Dyl:Lang) *dyl:langs*)))
+
+  ;;  The code of the language of the AutoCAD installed ("en", "fr"), English when
+  ;;  DynALisp is not in it: the language of the ribbon and of the phases (Phase.csv),
+  ;;  never changed by the Language setting:
+  (defun Dyl:LangAcad () (cadr (assoc (Dyl:LangDefault) *dyl:langs*)))
+
   ;;; ---------------------------------------------------------------------------
   ;;; The docs website. The docs are published on GitHub Pages (*dyl:docsweb*, the
   ;;; public repository samagior/DynALisp.docs, built by Installer\Docs\BuildSite.py
@@ -2650,7 +2701,7 @@
   ;;; ---------------------------------------------------------------------------
   ;;; Languages of the docs. A page is in English (Page.htm) and may have a copy in
   ;;; another language beside it (Page.fr.htm). The language opened is the language
-  ;;; of DynALisp (Language in Dyl-Settings, Dyl:Lang in the Settings region),
+  ;;; of DynALisp (Language in Dyl-Settings, Dyl:Lang above),
   ;;; English when the page has no copy in it. Every docs page is opened through
   ;;; Dyl:SuiteDlgShell, which calls Dyl:DocsTarget. The pages link to each other in
   ;;; their own language and have an EN / FR switch at their top right
@@ -3098,14 +3149,43 @@
   ;;; Latest version: (VERSION PAGE-URL SETUP-URL NOTES-URL) of the latest release of
   ;;; the releases repository, nil if it cannot be read. PAGE-URL: the release page,
   ;;; SETUP-URL: its setup, NOTES-URL: its CHANGELOG.md (each nil when the release has none):
+  ;;; DynALisp 2.0 and later need AutoCAD 2025 (R25.0): an older AutoCAD is offered the
+  ;;; latest release of 1.x only (Dyl:InfoLatestOf), never a version it cannot run.
   (defun Dyl:InfoLatest (/ jsn ver)
-    (if
-      (setq ver (Dyl:InfoAfter (setq jsn (Dyl:InfoHttp (strcat "https://api.github.com/repos/" *dyl:relrepo* "/releases/latest")))
-                               "\"tag_name\""
-                )
+    (cond
+      ((< (atof (getvar "ACADVER")) 25.0) (Dyl:InfoLatestOf 1))
+      ((setq ver (Dyl:InfoAfter (setq jsn (Dyl:InfoHttp (strcat "https://api.github.com/repos/" *dyl:relrepo* "/releases/latest")))
+                                "\"tag_name\""
+                 )
+       )
+       (list ver (strcat *dyl:releases* "/latest") (Dyl:InfoAsset jsn "*.EXE") (Dyl:InfoAsset jsn "*/CHANGELOG.MD"))
       )
-      (list ver (strcat *dyl:releases* "/latest") (Dyl:InfoAsset jsn "*.EXE") (Dyl:InfoAsset jsn "*/CHANGELOG.MD"))
     )
+  )
+
+  ;;; Latest version of major version maj (1 for 1.x), as Dyl:InfoLatest, nil if it cannot
+  ;;; be read or has none: the newest release of the releases list (newest first) whose tag
+  ;;; starts with maj, prereleases skipped. The text of a release runs from its "tag_name"
+  ;;; to the next one, its assets with it:
+  (defun Dyl:InfoLatestOf (maj / jsn mrk pos nxt seg ver pre res)
+    (setq jsn (Dyl:InfoHttp (strcat "https://api.github.com/repos/" *dyl:relrepo* "/releases?per_page=30"))
+          mrk "\"tag_name\""
+          pos (if jsn (vl-string-search mrk jsn))
+    )
+    (while (and pos (not res))
+      (setq nxt (vl-string-search mrk jsn (1+ pos))
+            seg (if nxt (substr jsn (1+ pos) (- nxt pos)) (substr jsn (1+ pos)))
+            ver (Dyl:InfoAfter seg mrk)
+            pos nxt
+      )
+      (if (and ver
+               (= maj (car (Dyl:InfoVer ver)))
+               (not (and (setq pre (vl-string-search "\"prerelease\"" seg)) (wcmatch (substr seg (+ pre 13) 8) "*true*")))
+          )
+        (setq res (list ver (strcat *dyl:releases* "/tag/" ver) (Dyl:InfoAsset seg "*.EXE") (Dyl:InfoAsset seg "*/CHANGELOG.MD")))
+      )
+    )
+    res
   )
 
   ;;; Check the latest version: *dyl:latest* is (VERSION PAGE-URL SETUP-URL NOTES-URL), or
@@ -3433,10 +3513,12 @@
     (if (and old (/= "" old) (/= "?" cur) (Dyl:InfoNewer-p (Dyl:InfoVer cur) (Dyl:InfoVer old)))
       (progn
         (if (= 0 (logand 4 (getvar "CMDACTIVE")))
-          (Dyl:InfoNotesDlg (strcat "DynALisp is updated: changes from version " old " to " cur ":")
-                            (Dyl:InfoNotes (Dyl:InfoLines (findfile (strcat *dyl:repo "\\CHANGELOG.md"))) old cur)
-                            "Dyl-Info shows them again (What's new)."
-                            nil
+          (Dyl:StartupWait 'Dyl:InfoNotesDlg
+                           (list (strcat "DynALisp is updated: changes from version " old " to " cur ":")
+                                 (Dyl:InfoNotes (Dyl:InfoLines (findfile (strcat *dyl:repo "\\CHANGELOG.md"))) old cur)
+                                 "Dyl-Info shows them again (What's new)."
+                                 nil
+                           )
           )
         )
         (strcat "DynALisp updated to " cur " (Dyl-Info: What's new).")
@@ -4310,39 +4392,6 @@
            )
     )
   )
-
-  ;;; Language of DynALisp (Environment in Dyl-Settings, DynalispLanguage): the language
-  ;;; its docs open in, and nothing else. Not the Language of the File Preferences,
-  ;;; which sets the content folders and the dictionaries of the drawings. Until it is
-  ;;; set, the language of the AutoCAD installed (the lcid that ends its product key,
-  ;;; ...\ACAD-A101:40C), English when DynALisp is not in that language yet. The ribbon
-  ;;; and the phases are always in the language of the AutoCAD installed (Dyl:LangAcad),
-  ;;; whatever this setting. Each language: (key code lcid), the key also its name in the
-  ;;; window (the windows are in English); code is the suffix of its docs pages (Page.fr.htm):
-  (setq *dyl:langs* '(("English" "en" "409") ("French" "fr" "40C")))
-
-  ;;  The key of the language of the AutoCAD installed, English when it is not one of
-  ;;  *dyl:langs*:
-  (defun Dyl:LangDefault (/ key)
-    (setq key (strcase (vlax-product-key)))
-    (cond
-      ((car (vl-some '(lambda (l) (if (wcmatch key (strcat "*:" (caddr l))) l)) *dyl:langs*)))
-      ("English")
-    )
-  )
-
-  ;;  The key of the language of DynALisp ("English", "French"):
-  (defun Dyl:Lang (/ key)
-    (if (assoc (setq key (getenv "DynalispLanguage")) *dyl:langs*) key (Dyl:LangDefault))
-  )
-
-  ;;  Its code ("en", "fr"):
-  (defun Dyl:LangCode () (cadr (assoc (Dyl:Lang) *dyl:langs*)))
-
-  ;;  The code of the language of the AutoCAD installed ("en", "fr"), English when
-  ;;  DynALisp is not in it: the language of the ribbon and of the phases (Phase.csv),
-  ;;  never changed by the Language setting:
-  (defun Dyl:LangAcad () (cadr (assoc (Dyl:LangDefault) *dyl:langs*)))
 
   (defun Dyl:LangSet (key)
     (setenv "DynalispLanguage" key)
