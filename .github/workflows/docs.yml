@@ -29,6 +29,7 @@ on:
       - 'Contents/Resources/Icons/dynalisp-banner-readme.svg'
       - 'README.md'
       - 'CONVENTIONS.md'
+      - 'Conventions/**'
       - 'Contents/Resources/docs.css'
       - 'Contents/Resources/DocsPages.txt'
       - 'Installer/Docs/**'
