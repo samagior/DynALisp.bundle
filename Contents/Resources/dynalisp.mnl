@@ -1152,6 +1152,46 @@
     (setq str (strcase (vl-string-trim " " (cond (str) ("")))))
     (if (wcmatch str "C:*") (substr str 3) str)
   )
+  ;; The CSV file fle (StartupSuite.csv, Aliases.csv): (header row ...), the header in
+  ;; the keys of Dyl:SuiteKey, each row as Remote>>LM:csv->lst divides it with the
+  ;; separator of the header (";", else a tab, else ","), the blank lines left out; nil
+  ;; when the file does not exist. Read by DynALisp.Core.dll while it is loaded
+  ;; (Dyl:Data: divided once for the session, not in each drawing that opens; each
+  ;; cell trimmed of its spaces, each row of the length of the header), else here:
+  (defun Dyl:SuiteCsv (fle / des str sep hdr lst)
+    (cond
+      ((and Dyl:Data Dyl:DataHead)
+       (if (setq hdr (Dyl:DataHead fle))
+         (cons (mapcar 'Dyl:SuiteKey hdr) (Dyl:Data fle (length hdr)))
+       )
+      )
+      ((setq des (open fle "r"))
+       (if (setq str (read-line des))
+         (setq sep (cond
+                     ((vl-string-search ";" str) ";")
+                     ((vl-string-search "\t" str) "\t")
+                     (",")
+                   )
+               hdr (mapcar 'Dyl:SuiteKey (Remote>>LM:csv->lst str sep 0))
+         )
+       )
+       (while (setq str (read-line des))
+         (if (/= "" (vl-string-trim " \t" str))
+           (setq lst (cons (Remote>>LM:csv->lst str sep 0) lst))
+         )
+       )
+       (close des)
+       (cons hdr (reverse lst))
+      )
+    )
+  )
+  ;; A CSV file of the Startup Suite written by Remote>>LM:writecsv (ok its result): the
+  ;; rows DynALisp.Core.dll kept are dropped, so it reads the file again even when its date
+  ;; did not move (see Dyl:SuiteCsv). Returns ok:
+  (defun Dyl:SuiteCsvDone (ok fle)
+    (if Dyl:DataDrop (Dyl:DataDrop fle))
+    ok
+  )
 
   ;;; ---------------------------------------------------------------------------
   ;;; Command aliases, saved in Resources\Aliases.csv and edited in Dyl-Suite:
@@ -1177,40 +1217,19 @@
 
   ;; Read Aliases.csv: ((ALIAS . COMMAND) ...) in file order, upper case without
   ;; "C:". Invalid or repeated aliases are skipped. A missing file means no alias.
-  (defun Dyl:AliasRead (/ des str sep hdr ial icm row ali cmd lst)
-    (if (setq des (open (Dyl:UserFile *dyl:alias) "r"))
-      (progn
-        (if (setq str (read-line des))
-          (setq sep (cond
-                      ((vl-string-search ";" str) ";")
-                      ((vl-string-search "\t" str) "\t")
-                      (",")
-                    )
-                hdr (mapcar 'Dyl:SuiteKey (Remote>>LM:csv->lst str sep 0))
-                ial (vl-position "ALIAS" hdr)
-                icm (vl-position "COMMAND" hdr)
-          )
+  (defun Dyl:AliasRead (/ csv ial icm ali cmd lst)
+    (setq csv (Dyl:SuiteCsv (Dyl:UserFile *dyl:alias))
+          ial (vl-position "ALIAS" (car csv))
+          icm (vl-position "COMMAND" (car csv))
+    )
+    (if (and ial icm)
+      (foreach row (cdr csv)
+        (setq ali (Dyl:SuiteCmd (nth ial row))
+              cmd (Dyl:SuiteCmd (nth icm row))
         )
-        (if (and ial icm)
-          (while (setq str (read-line des))
-            (if (/= "" (vl-string-trim " \t" str))
-              (setq row (Remote>>LM:csv->lst str sep 0)
-                    ali (Dyl:SuiteCmd (nth ial row))
-                    cmd (Dyl:SuiteCmd (nth icm row))
-                    lst (if
-                          (and (Dyl:AliasName-p ali)
-                               (/= "" cmd)
-                               (/= ali cmd)
-                               (not (assoc ali lst))
-                          )
-                          (cons (cons ali cmd) lst)
-                          lst
-                        )
-              )
-            )
-          )
+        (if (and (Dyl:AliasName-p ali) (/= "" cmd) (/= ali cmd) (not (assoc ali lst)))
+          (setq lst (cons (cons ali cmd) lst))
         )
-        (close des)
       )
     )
     (reverse lst)
@@ -1219,15 +1238,18 @@
   ;; Write Aliases.csv from a list in the Dyl:AliasRead format, sorted by command
   ;; then alias. Returns T on success, nil if the file cannot be written:
   (defun Dyl:AliasWrite (lst)
-    (Remote>>LM:writecsv
-      (cons '("Alias" "Command")
-            (mapcar '(lambda (p) (list (strcat "C:" (car p)) (strcat "C:" (cdr p))))
-                    (vl-sort lst
-                             '(lambda (a b)
-                                (if (= (cdr a) (cdr b)) (< (car a) (car b)) (< (cdr a) (cdr b)))
-                              )
-                    )
-            )
+    (Dyl:SuiteCsvDone
+      (Remote>>LM:writecsv
+        (cons '("Alias" "Command")
+              (mapcar '(lambda (p) (list (strcat "C:" (car p)) (strcat "C:" (cdr p))))
+                      (vl-sort lst
+                               '(lambda (a b)
+                                  (if (= (cdr a) (cdr b)) (< (car a) (car b)) (< (cdr a) (cdr b)))
+                                )
+                      )
+              )
+        )
+        (Dyl:UserFileW *dyl:alias)
       )
       (Dyl:UserFileW *dyl:alias)
     )
@@ -1474,26 +1496,10 @@
   (defun Dyl:SuiteRead () (Dyl:SuiteReadFile (Dyl:UserFile *dyl:suite)))
 
   ;;; Same as Dyl:SuiteRead for the file fle (the default file, or the user copy):
-  (defun Dyl:SuiteReadFile (fle / des str sep hdr lst ild icm ifl ipt)
-    (if (setq des (open fle "r"))
-      (progn 
-        (if (setq str (read-line des)) 
-          (setq sep (cond 
-                      ((vl-string-search ";" str) ";")
-                      ((vl-string-search "\t" str) "\t")
-                      (",")
-                    )
-                hdr (mapcar 'Dyl:SuiteKey (Remote>>LM:csv->lst str sep 0))
-          )
-        )
-        (while (setq str (read-line des)) 
-          (if (/= "" (vl-string-trim " \t" str)) 
-            (setq lst (cons (Remote>>LM:csv->lst str sep 0) lst))
-          )
-        )
-        (close des)
-        (setq lst (reverse lst))
-      )
+  (defun Dyl:SuiteReadFile (fle / csv hdr lst ild icm ifl ipt)
+    (setq csv (Dyl:SuiteCsv fle)
+          hdr (car csv)
+          lst (cdr csv)
     )
     (cond 
       ((and (setq ild (vl-position "LOAD" hdr)) 
@@ -1640,23 +1646,26 @@
         )
       )
     )
-    (Remote>>LM:writecsv 
-      (cons '("Load" "Command" "Name" "Description" "File" "Module" "Group" "Duplicate" "Path") 
-            (mapcar 
-              '(lambda (r) 
-                 (list (nth 0 r) 
-                       (if (= "" (nth 1 r)) "" (strcat "C:" (nth 1 r)))
-                       (nth 6 r)
-                       (nth 7 r)
-                       (nth 2 r)
-                       (nth 3 r)
-                       (nth 4 r)
-                       (if (> (cond ((cdr (assoc (nth 1 r) cnt))) (0)) 1) "Yes" "")
-                       (nth 5 r)
+    (Dyl:SuiteCsvDone
+      (Remote>>LM:writecsv 
+        (cons '("Load" "Command" "Name" "Description" "File" "Module" "Group" "Duplicate" "Path") 
+              (mapcar 
+                '(lambda (r) 
+                   (list (nth 0 r) 
+                         (if (= "" (nth 1 r)) "" (strcat "C:" (nth 1 r)))
+                         (nth 6 r)
+                         (nth 7 r)
+                         (nth 2 r)
+                         (nth 3 r)
+                         (nth 4 r)
+                         (if (> (cond ((cdr (assoc (nth 1 r) cnt))) (0)) 1) "Yes" "")
+                         (nth 5 r)
+                   )
                  )
-               )
-              recs
-            )
+                recs
+              )
+        )
+        (Dyl:UserFileW *dyl:suite)
       )
       (Dyl:UserFileW *dyl:suite)
     )
@@ -1743,37 +1752,17 @@
 
   ;;; The records of the index file fle, as they are (not updated first), nil if
   ;;; it is missing or not in the current format:
-  (defun Dyl:SuiteRecsOf (fle / des str sep hdr idx lst)
-    (if (setq des (open fle "r"))
-      (progn 
-        (if (setq str (read-line des)) 
-          (setq sep (cond 
-                      ((vl-string-search ";" str) ";")
-                      ((vl-string-search "\t" str) "\t")
-                      (",")
-                    )
-                hdr (mapcar 'Dyl:SuiteKey (Remote>>LM:csv->lst str sep 0))
-                idx (mapcar '(lambda (k) (vl-position k hdr)) 
-                            '("LOAD" "COMMAND" "FILE" "MODULE" "GROUP" "PATH" "NAME" "DESCRIPTION")
-                    )
-          )
-        )
-        (if (vl-every 'numberp idx) 
-          (while (setq str (read-line des)) 
-            (if (/= "" (vl-string-trim " \t" str)) 
-              (setq str (Remote>>LM:csv->lst str sep 0)
-                    str (mapcar '(lambda (i) (cond ((nth i str)) (""))) idx)
-                    lst (cons 
-                          (cons (Dyl:SuiteBit (car str)) 
-                                (cons (Dyl:SuiteCmd (cadr str)) (cddr str))
-                          )
-                          lst
-                        )
+  (defun Dyl:SuiteRecsOf (fle / csv idx lst)
+    (setq csv (Dyl:SuiteCsv fle)
+          idx (mapcar '(lambda (k) (vl-position k (car csv)))
+                      '("LOAD" "COMMAND" "FILE" "MODULE" "GROUP" "PATH" "NAME" "DESCRIPTION")
               )
-            )
-          )
+    )
+    (if (vl-every 'numberp idx)
+      (foreach str (cdr csv)
+        (setq str (mapcar '(lambda (i) (cond ((nth i str)) (""))) idx)
+              lst (cons (cons (Dyl:SuiteBit (car str)) (cons (Dyl:SuiteCmd (cadr str)) (cddr str))) lst)
         )
-        (close des)
       )
     )
     (vl-remove-if '(lambda (r) (= "" (nth 5 r))) (reverse lst))

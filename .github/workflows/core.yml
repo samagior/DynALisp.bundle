@@ -9,6 +9,7 @@ on:
     paths:
       - 'Installer/Core/**'
       - 'Contents/Modules/Dynalisp/Res/**.csv'
+      - 'Contents/Resources/*.csv'
       - '.github/workflows/core.yml'
   workflow_dispatch:
 
