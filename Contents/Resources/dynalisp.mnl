@@ -53,6 +53,22 @@
     )
   )
 
+  ;;  (apply f args) for a window a step shows the user (What's new): the time it stays
+  ;;  open is the user reading it, not the startup, so it is left out of the startup time
+  ;;  and of the time of its step (*dyl:t0* and *dyl:tmark* moved on by as much):
+  (defun Dyl:StartupWait (f args / t1 res)
+    (setq t1  (getvar "MILLISECS")
+          res (apply f args)
+          t1  (- (getvar "MILLISECS") t1)
+    )
+    (if (not *dyl:startms*)
+      (setq *dyl:t0*    (if *dyl:t0* (+ *dyl:t0* t1))
+            *dyl:tmark* (if *dyl:tmark* (+ *dyl:tmark* t1))
+      )
+    )
+    res
+  )
+
   ;;  The commands the output prep redefines (Output region, Dyl-CmdOptimizer.lsp), by
   ;;  group sharing the same steps: the saves, the prints (-PLOT and -PUBLISH are left out:
   ;;  scripts and Lisp programs call them with (command "-PLOT" ...), which fails while they
@@ -3497,10 +3513,12 @@
     (if (and old (/= "" old) (/= "?" cur) (Dyl:InfoNewer-p (Dyl:InfoVer cur) (Dyl:InfoVer old)))
       (progn
         (if (= 0 (logand 4 (getvar "CMDACTIVE")))
-          (Dyl:InfoNotesDlg (strcat "DynALisp is updated: changes from version " old " to " cur ":")
-                            (Dyl:InfoNotes (Dyl:InfoLines (findfile (strcat *dyl:repo "\\CHANGELOG.md"))) old cur)
-                            "Dyl-Info shows them again (What's new)."
-                            nil
+          (Dyl:StartupWait 'Dyl:InfoNotesDlg
+                           (list (strcat "DynALisp is updated: changes from version " old " to " cur ":")
+                                 (Dyl:InfoNotes (Dyl:InfoLines (findfile (strcat *dyl:repo "\\CHANGELOG.md"))) old cur)
+                                 "Dyl-Info shows them again (What's new)."
+                                 nil
+                           )
           )
         )
         (strcat "DynALisp updated to " cur " (Dyl-Info: What's new).")
