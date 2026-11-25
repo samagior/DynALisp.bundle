@@ -129,7 +129,8 @@ The rest: [Conventions/ProjectFiles.md](Conventions/ProjectFiles.md), read befor
 ## Versions And Updates
 
 - The version is the `AppVersion` of `PackageContents.xml`, and only there; raise it with its `CHANGELOG.md` section, in a commit of its own.
-- A .NET plugin is built for .NET 8 and for .NET Framework 4.8, both committed; the Lisp checks its function is defined before using it.
+- DynALisp 2.0 runs in AutoCAD 2025 and later; 1.x, for AutoCAD 2015 to 2024, lives on the branch `release/1.x` (fixes only).
+- A .NET plugin is built for .NET 8 (AutoCAD 2025 and 2026) and for .NET 10 (AutoCAD 2027 and later, `Net10`), both committed; the Lisp checks its function is defined before using it.
 
 The rest: [Conventions/VersionsAndUpdates.md](Conventions/VersionsAndUpdates.md), read before changing the version, a release, the setup or the uninstall, or a .NET plugin.
 

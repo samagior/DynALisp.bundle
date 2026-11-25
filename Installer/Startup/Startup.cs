@@ -24,9 +24,9 @@
 //
 // AutoCAD has no API for this: the lines are blanked in the list the command line shows
 // (CommandLineViewModel.HistoryCollection of AcWindows.dll, a view of the native history,
-// found by reflection; the same in AutoCAD 2015, 2026 and 2027), the lines kept moved to
+// found by reflection; the same in AutoCAD 2015 to 2027), the lines kept moved to
 // its end. In a version where it is not found, or is not a list, nothing is done. Built for
-// .NET 8 (AutoCAD 2025 and later) and .NET Framework 4.8 (AutoCAD 2015 to 2024), see
+// .NET 8 (AutoCAD 2025 and 2026) and .NET 10 (AutoCAD 2027 and later), see
 // DynALisp.Startup.csproj.
 
 using System;
@@ -72,7 +72,7 @@ namespace DynALisp.Startup
         public void Terminate() { }
 
         // (Dyl:CleanStartup): T, the plugin is loaded. Dyl-Settings greys out Clean startup
-        // when it is not defined (an AutoCAD older than 2015).
+        // when it is not defined (the plugin not loaded).
         [LispFunction("Dyl:CleanStartup")]
         public static object CleanStartup(ResultBuffer args) => true;
 

@@ -167,11 +167,7 @@ namespace DynALisp.Assistant
             try
             {
                 if (p == null || p.HasExited) return;
-#if NET
                 p.Kill(true);
-#else
-                p.Kill();
-#endif
             }
             catch { }
         }
