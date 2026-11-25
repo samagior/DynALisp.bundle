@@ -139,8 +139,9 @@ Claude commits and pushes as the work goes, without being asked: each commit is 
 
 - **Branches**: `main` always loads in AutoCAD, since git clones `git pull` it and releases are tagged from it.
   - Work of several steps (a new tool, a rename across files, a window rebuilt) goes on a branch made from `main` before its first edit: `feature/<name>`, `fix/<name>` or `refactor/<name>`, in lower case with hyphens (`feature/object-layer-keys`).
-  - A change of one step (a small fix, a docs page, a convention) can go straight on `main`.
+  - A change of one step (a small fix, a docs page, a convention) can go straight on `main`, or on the work branch already open for the batch.
   - A branch is merged into `main` with `git merge --no-ff` once the user has tried it in AutoCAD and asks for it, then deleted. Work found on `main` at the start of a session that is not committed is committed first, or moved to its branch, before anything new.
+- **Batches**: the changes of a period of work go together on one work branch, committed step by step, and are tried in AutoCAD **once**, together, by the user: then the branch is merged as one pull request. A fix found while trying them goes on the same branch, never in a merge of its own; a new batch starts from `main` once the last one is merged.
 - **Staging**: stage by path, only the files of the step (`git add <paths>`), never `git add -A` or `git add .`. Check `git status` before each commit:
   - A file the user changed that is not part of the step is left out, and named in the reply.
   - A file made by AutoCAD or a tool (a crash report, a `__pycache__`, a backup) is never committed: it goes in `.gitignore`.
@@ -150,7 +151,7 @@ Claude commits and pushes as the work goes, without being asked: each commit is 
   - The message is a short summary line in the imperative (*Add Object Layer Keys*, 72 characters at most), a blank line, then, when it helps, short lines on what changed and why; plain ASCII; it ends with the `Co-Authored-By` line.
 - **Never**: force push, rebase or amend a commit already pushed, skip the hooks, or commit to `main` work that does not load yet. A version raised (`AppVersion` and its `CHANGELOG.md` section) is one commit of its own; the `v<version>` tag is pushed only when the user asks for the release.
 
-*Why: `main` is what every git clone runs and what every release is built from, so it must always work; a commit pushed at once is never lost with the computer or the session it was made in, while merging and tagging, which change what users get, stay the user's call; small commits by path keep each change easy to review and undo, keep the user's own edits and the files made by AutoCAD out of them, and let git follow a file through its renames.*
+*Why: `main` is what every git clone runs and what every release is built from, so it must always work; a commit pushed at once is never lost with the computer or the session it was made in, while merging and tagging, which change what users get, stay the user's call; small commits by path keep each change easy to review and undo, keep the user's own edits and the files made by AutoCAD out of them, and let git follow a file through its renames; each merge is a `git pull`, an index of the Startup Suite made again and a test in AutoCAD for the user, so changes tried and merged in batches cost that once, not after every fix.*
 
 ## Ribbon
 
