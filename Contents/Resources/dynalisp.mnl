@@ -1496,25 +1496,34 @@
   (defun Dyl:SuiteRead () (Dyl:SuiteReadFile (Dyl:UserFile *dyl:suite)))
 
   ;;; Same as Dyl:SuiteRead for the file fle (the default file, or the user copy):
-  (defun Dyl:SuiteReadFile (fle / csv hdr lst ild icm ifl ipt)
-    (setq csv (Dyl:SuiteCsv fle)
-          hdr (car csv)
-          lst (cdr csv)
+  (defun Dyl:SuiteReadFile (fle / net hdr lst idx)
+    ;; With the core, the header first, then only the columns read (Dyl:DataCols: the
+    ;; names and descriptions, most of the 150 KB of the index, left in .NET):
+    (if (and Dyl:DataCols (setq hdr (Dyl:DataHead fle)))
+      (setq net T
+            hdr (mapcar 'Dyl:SuiteKey hdr)
+      )
+      (setq lst (Dyl:SuiteCsv fle)
+            hdr (car lst)
+            lst (cdr lst)
+      )
     )
-    (cond 
-      ((and (setq ild (vl-position "LOAD" hdr)) 
-            (setq icm (vl-position "COMMAND" hdr))
-            (setq ifl (vl-position "FILE" hdr))
-            (setq ipt (vl-position "PATH" hdr))
+    (setq idx (mapcar '(lambda (k) (vl-position k hdr)) '("LOAD" "COMMAND" "FILE" "PATH")))
+    (cond
+      ((vl-every 'numberp idx)
+       (setq lst (if net
+                   (Dyl:DataCols fle (nth 0 idx) (nth 1 idx) (nth 2 idx) (nth 3 idx))
+                   (mapcar '(lambda (r) (mapcar '(lambda (i) (nth i r)) idx)) lst)
+                 )
        )
-       (cons (if (vl-position "DESCRIPTION" hdr) 'INDEX 'INDEX0) 
-             (vl-remove-if '(lambda (r) (= "" (nth 3 r))) 
-                           (mapcar 
-                             '(lambda (r) 
-                                (list (Dyl:SuiteBit (nth ild r)) 
-                                      (Dyl:SuiteCmd (nth icm r))
-                                      (cond ((nth ifl r)) (""))
-                                      (cond ((nth ipt r)) (""))
+       (cons (if (vl-position "DESCRIPTION" hdr) 'INDEX 'INDEX0)
+             (vl-remove-if '(lambda (r) (= "" (nth 3 r)))
+                           (mapcar
+                             '(lambda (r)
+                                (list (Dyl:SuiteBit (nth 0 r))
+                                      (Dyl:SuiteCmd (nth 1 r))
+                                      (cond ((nth 2 r)) (""))
+                                      (cond ((nth 3 r)) (""))
                                 )
                               )
                              lst
@@ -1522,9 +1531,10 @@
              )
        )
       )
-      ((and (setq ifl (vl-position "APPLICATION" hdr)) (setq ild (vl-position "LOAD" hdr)))
-       (cons 'LEGACY 
-             (mapcar '(lambda (r) (list (Dyl:SuiteBit (nth ild r)) "*" (cond ((nth ifl r)) ("")) "")) 
+      ((and (setq idx (list (vl-position "LOAD" hdr) (vl-position "APPLICATION" hdr))) (vl-every 'numberp idx))
+       (if net (setq lst (Dyl:Data fle (length hdr))))
+       (cons 'LEGACY
+             (mapcar '(lambda (r) (list (Dyl:SuiteBit (nth (car idx) r)) "*" (cond ((nth (cadr idx) r)) ("")) ""))
                      lst
              )
        )
@@ -1676,12 +1686,14 @@
   ;;; its rows: ((LOAD COMMAND FILE PATH) ...).
   ;;; ---------------------------------------------------------------------------
   (defun Dyl:Suite (force / files old recs keep tim pth itm byp)
-    (setq files (Dyl:SuiteFiles)
-          old   (Dyl:SuiteRead)
-    )
+    ;; (each part timed at startup, for Pst-DiagnosticsDynalisp:)
+    (setq files (Dyl:SuiteFiles))
+    (Dyl:StartupMark "Startup Suite: Apps files listed")
+    (setq old (Dyl:SuiteRead))
+    (Dyl:StartupMark "Startup Suite: index read")
     (if (or force (Dyl:SuiteStale-p files old))
       (progn
-        (Dyl:StartupMark "Startup Suite read")
+        (Dyl:StartupMark "Startup Suite: index checked")
         (if (not *dyl:quiet*) (princ "\n...Indexing the Apps commands into StartupSuite.csv"))
         ;; Only the files changed since the index was written are parsed again (after a
         ;; git pull, an update): the commands of the others are those of the index. Dyl-
@@ -1719,7 +1731,7 @@
         (Dyl:StartupMark "Startup Suite indexed again (an Apps file changed)")
         (mapcar '(lambda (r) (list (nth 0 r) (nth 1 r) (nth 2 r) (nth 5 r))) recs)
       )
-      (progn (Dyl:StartupMark "Startup Suite read") (cdr old))
+      (progn (Dyl:StartupMark "Startup Suite: index checked") (cdr old))
     )
   )
 
