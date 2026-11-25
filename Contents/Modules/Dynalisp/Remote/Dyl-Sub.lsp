@@ -243,6 +243,9 @@
 (defun Remote>>Dyl:CsvWrite (lst csv / ok)
   (setq ok (Remote>>LM:writecsv lst csv))
   (if Dyl:DataDrop (Dyl:DataDrop csv))
+  ;;  Counted for the session, on the blackboard: what a drawing keeps for every drawing (the
+  ;;  assemblies shown by Quick Draw, Dyl:QuickDrawAsmShows) is made again after a write:
+  (vl-bb-set '*dyl:datawrites* (1+ (cond ((vl-bb-ref '*dyl:datawrites*)) (0))))
   ok
 )
 
