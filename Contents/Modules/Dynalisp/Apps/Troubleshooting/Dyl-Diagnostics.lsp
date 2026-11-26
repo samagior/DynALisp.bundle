@@ -632,6 +632,42 @@
   (dg:try 'dg:cf-pgp)
   (dg:try 'dg:cf-aliases)
   (dg:try 'dg:cf-reactors)
+  (dg:try 'dg:cf-display)
+)
+
+;;  The display settings of Dyl-Settings (Remote\Dyl-EnvColor.lsp) while Display is on:
+;;  a Theme the active system variable profile sets otherwise (each startup would set
+;;  COLORTHEME twice), and the colors chosen that another program changed since:
+(defun dg:cf-display (/ pref pro cth thm)
+  (if (and Remote>>Dyl:DisplayOn-p (Remote>>Dyl:DisplayOn-p))
+    (progn
+      (setq pref (Remote>>Dyl:DisplayPref))
+      (if (and (setq thm (caddr pref))
+               Remote>>Dyl:SysVarOn-p
+               (Remote>>Dyl:SysVarOn-p)
+               (setq pro (Remote>>Dyl:SysVarProfile))
+               (setq cth (cadr (assoc "COLORTHEME" (Remote>>Dyl:SysVarRead pro))))
+               (/= (atoi cth) (cdr (assoc thm *ec:themes*)))
+          )
+        (dg:bad (strcat "Display sets the theme " thm " but the system variable profile " pro
+                        " sets COLORTHEME to " cth ": remove COLORTHEME from the profile or set Theme to (Not set)"
+                )
+        )
+      )
+      (mapcar '(lambda (name ctx what / cur)
+                 (if (and name (/= name (setq cur (if (= ctx 'theme) (Remote>>Dyl:Theme) (Remote>>Dyl:Background ctx)))))
+                   (dg:note (strcat "Display: " what " " name " chosen, now " (cond (cur) ("another color"))
+                                    " (set again when a drawing opens)"
+                            )
+                   )
+                 )
+               )
+              pref
+              '(model layout theme)
+              '("model space" "layouts" "theme")
+      )
+    )
+  )
 )
 
 ;;  The Lisp files AutoCAD loads besides DynALisp: acad.lsp, acaddoc.lsp, the AutoCAD
