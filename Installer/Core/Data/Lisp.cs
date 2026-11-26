@@ -63,6 +63,39 @@ namespace DynALisp.Core.Data
             return i == s.Length;
         }
 
+        // (distof s 2): the number of a text in decimal units, null (nil) for a text that is not
+        // one: digits with a point (".5", "5." too), a sign before them, an exponent after them;
+        // no space around them, no comma:
+        public static double? Distof(string s)
+        {
+            if (s == null || !System.Text.RegularExpressions.Regex.IsMatch(s, @"^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$"))
+                return null;
+            return double.TryParse(s, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var v)
+                ? v : (double?)null;
+        }
+
+        // (rtos v 2 n): v with n decimals, the zeros of DIMZIN suppressed (4 the zero before the
+        // point, 8 the zeros after the last digit):
+        public static string Rtos(double v, int n, int dimzin)
+        {
+            string s = v.ToString("F" + Math.Max(0, n), System.Globalization.CultureInfo.InvariantCulture);
+            if ((dimzin & 8) != 0 && s.Contains('.')) s = s.TrimEnd('0').TrimEnd('.');
+            if ((dimzin & 4) != 0)
+            {
+                if (s.StartsWith("0.")) s = s.Substring(1);
+                else if (s.StartsWith("-0.")) s = "-" + s.Substring(2);
+            }
+            return s;
+        }
+
+        // (Remote>>Dyl:MaterialNumP v n): v with n decimals at most, without its trailing zeros
+        // (50.0 -> "50", 2.5 -> "2.5"):
+        public static string NumP(double v, int n, int dimzin)
+        {
+            string s = Rtos(v, n, dimzin);
+            return s.Contains('.') ? s.TrimEnd('0').TrimEnd('.') : s;
+        }
+
         // (Remote>>Dyl:ListSubst row i v): a copy of row with its cell i made v (unchanged when
         // it has no cell i):
         public static string[] Subst(string[] row, int i, string v)

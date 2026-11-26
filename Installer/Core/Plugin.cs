@@ -38,6 +38,18 @@
 //     Forgets the file at path (every file without path): its writers call it, so a file
 //     written twice in the same instant is read again all the same. T.
 //
+//   (Dyl:AsmDefs contents)
+//     The default assemblies of Quick Draw, fixed, as Dyl:QuickDrawAsmDefs gives them (the
+//     bundle whose Contents folder is contents, *dyl:contents): ((id group name ...) ...); nil
+//     for none.
+//
+//   (Dyl:AsmRead contents factor dimzin)
+//     The assemblies read and fixed, the defaults missing added, their thicknesses in
+//     millimetres in the units of the drawing (factor: the drawing units in a millimetre,
+//     Dyl:QuickDrawAsmFactor; dimzin: DIMZIN, which rtos follows), as
+//     Dyl:QuickDrawAsmReadAll gives them; nil when the Lisp reads them itself (a layer of an
+//     older file made of a Quick Draw preset, see Data\Assemblies.cs) or there are none.
+//
 //   (Dyl:DataInfo)
 //     What the plugin did in this session, for Dyl-Diagnostics: (("Files" . n) ("Reads" . n)
 //     ("Hits" . n) ("ReadMs" . ms)), the files kept, the reads of a file, the calls given a
@@ -59,7 +71,8 @@ namespace DynALisp.Core
     {
         // The files read in the encoding of (open file "r") of AutoLISP: the ANSI code page of
         // Windows (MBCS), the one the Lisp side reads and writes them in:
-        static readonly Store store = new Store(Ansi());
+        static readonly Encoding ansi = Ansi();
+        static readonly Store store = new Store(ansi);
 
         [DllImport("kernel32.dll")]
         static extern int GetACP();
@@ -142,6 +155,49 @@ namespace DynALisp.Core
             return true;
         }
 
+        // The bundles read, by their Contents folder (the witness points the Lisp at others):
+        static readonly Dictionary<string, Bundle> bundles = new Dictionary<string, Bundle>(StringComparer.OrdinalIgnoreCase);
+
+        static Bundle BundleOf(object contents)
+        {
+            if (!(contents is string c) || c == "") return null;
+            if (!bundles.TryGetValue(c, out var b)) bundles[c] = b = new Bundle(c, ",", ansi, store);
+            return b;
+        }
+
+        [LispFunction("Dyl:AsmDefs")]
+        public ResultBuffer AsmDefs(ResultBuffer args)
+        {
+            var a = Args(args);
+            var b = BundleOf(a.Count > 0 ? a[0] : null);
+            return b == null ? null : Rows(Assemblies.Defs(b));
+        }
+
+        [LispFunction("Dyl:AsmRead")]
+        public ResultBuffer AsmRead(ResultBuffer args)
+        {
+            var a = Args(args);
+            var b = BundleOf(a.Count > 0 ? a[0] : null);
+            if (b == null || a.Count < 3 || !(Real(a[1]) is double f)) return null;
+            return Rows(Assemblies.Read(b, f, Int(a[2])));
+        }
+
+        // A list of rows as the Lisp gets it, nil for none:
+        static ResultBuffer Rows(List<string[]> rows)
+        {
+            if (rows == null || rows.Count == 0) return null;
+            var rb = new List<TypedValue>(rows.Count * 17 + 2);
+            rb.Add(new TypedValue((int)LispDataType.ListBegin));
+            foreach (var row in rows)
+            {
+                rb.Add(new TypedValue((int)LispDataType.ListBegin));
+                foreach (var cell in row) rb.Add(new TypedValue((int)LispDataType.Text, cell ?? ""));
+                rb.Add(new TypedValue((int)LispDataType.ListEnd));
+            }
+            rb.Add(new TypedValue((int)LispDataType.ListEnd));
+            return Result(rb);
+        }
+
         [LispFunction("Dyl:DataInfo")]
         public ResultBuffer DataInfo(ResultBuffer args)
         {
@@ -182,6 +238,17 @@ namespace DynALisp.Core
             foreach (TypedValue tv in args)
                 res.Add((LispDataType)tv.TypeCode == LispDataType.Nil ? null : tv.Value);
             return res;
+        }
+
+        static double? Real(object o)
+        {
+            switch (o)
+            {
+                case short s: return s;
+                case int i: return i;
+                case double d: return d;
+                default: return null;
+            }
         }
 
         static int Int(object o)

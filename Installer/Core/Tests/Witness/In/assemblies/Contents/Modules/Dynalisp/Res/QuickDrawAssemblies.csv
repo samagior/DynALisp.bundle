@@ -1,0 +1,7 @@
+Id;Group;Name;Layers;BorderLines;DividingLines;Exterior;Units;Description;FireRating;FireRatingNLB;STC;IIC;Family;FamilyDescription
+as-T1a;Wall;T1a;P:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~23|P:mt-Gypsum:12.7;1~MED;1~THIN;First;mm;Test a;45;;34;;T1;Wood Studs, 1-1 Gypsum
+as-T1b;Wall;T1b;P:mt-Gypsum:15.9|P:mt-Void:89::::1:mt-WoodFrame~23|P:mt-Gypsum:15.9;1~MED;1~THIN;First;mm;Test b;60;;32;;T1;Wood Studs, 1-1 Gypsum
+as-T2;floor;T2;P:mt-Concrete:0.5|P:mt-Gypsum:2.675;1~med;;last;MM;Odd;;;;;;
+xx-Bad;Wall;Bad;P:mt-A:1;;;;;;;;;;;
+as-T3;Wall;T3;;;;;;;;;;;;
+AS-T4;Section;T4;P:mt-Brick:90|S::25|P:mt-Block:190;1~thick;0~thin;First;mm;;;;;;T4;
