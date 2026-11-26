@@ -47,6 +47,13 @@
 ;;  the "Paper background" setting of the profile, which Options does not show: user
 ;;  profile settings, so they apply to every drawing.
 ;;
+;;  File tabs (DynalispFileTabColors): Project or Sheet set, a band of colour on the file
+;;  tab of each drawing of a project (the first folder holding a .apj from the folder of the
+;;  drawing up, as Remote>>Dyl:RevProject) or of a sheet set (a .dst, as Dyl-OpenFolder), the
+;;  same colour for every drawing of a project: done by DynALisp.Ribbon.dll
+;;  (Installer\Ribbon\Plugin\FileTabs.cs), an experiment too, which reads these settings
+;;  itself and again when (Dyl:RibbonFileTabs) is called.
+;;
 ;;  Use in an App:
 ;;    (Remote>>Dyl:Background 'model)          -> "DynALisp", "Black", "Default" or
 ;;                                                "White", nil for any other color
@@ -87,6 +94,7 @@
                    ("DynalispColorTheme" theme)
                    ("DynalispRibbonColors" ribbon)
                    ("DynalispPaletteColors" palettes)
+                   ("DynalispFileTabColors" tabs)
                   )
 )
 
@@ -97,11 +105,12 @@
   (if (and (setq v (getenv "Paper background")) (/= "" v)) (atoi v))
 )
 
-;;  Names of the choices of a context (model, layout, theme, ribbon or palettes):
+;;  Names of the choices of a context (model, layout, theme, ribbon, palettes or tabs):
 (defun Remote>>Dyl:DisplayNames (ctx)
   (cond
     ((member ctx '(ribbon palettes)) '("DynALisp"))
     ((mapcar 'car (if (= ctx 'theme) *ec:themes* (cddr (assoc ctx *ec:colors*)))))
+    ((= ctx 'tabs) '("Project" "Sheet set"))
   )
 )
 
@@ -174,7 +183,7 @@
 )
 
 ;;  The display settings chosen, in the order of *ec:prefs*: (MODEL LAYOUT THEME RIBBON
-;;  PALETTES), each a name, nil when it is not set:
+;;  PALETTES TABS), each a name, nil when it is not set:
 (defun Remote>>Dyl:DisplayPref ()
   (mapcar '(lambda (p / name)
              (setq name (getenv (car p)))
@@ -210,6 +219,9 @@
              )
              ((= ctx 'palettes)
               (setq done (cons (strcat "palettes " (if Dyl:RibbonSkin (Dyl:RibbonSkin "Palettes") "plugin not loaded")) done))
+             )
+             ((= ctx 'tabs)
+              (setq done (cons (strcat "file tabs " (if Dyl:RibbonFileTabs (Dyl:RibbonFileTabs) "plugin not loaded")) done))
              )
              ((= name (if (= ctx 'theme) (Remote>>Dyl:Theme) (Remote>>Dyl:Background ctx)))
               (setq done (cons (strcat what name) done))

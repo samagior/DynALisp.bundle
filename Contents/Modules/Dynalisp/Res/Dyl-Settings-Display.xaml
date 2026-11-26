@@ -19,7 +19,8 @@
   Dyl-Settings.xaml), on its values: OK keeps them, saved with the other settings by Save.
   The display settings applied in every drawing while Display is on (Remote\Dyl-EnvColor.lsp):
   the model space background, the paper of the layouts, the theme of AutoCAD and the colours
-  of its ribbon and palettes (DynALisp.Ribbon.dll, an experiment), first item of each: not set, the current
+  of its ribbon and palettes (DynALisp.Ribbon.dll, an experiment) and the band of colour of the
+  file tabs by project or sheet set (the same plugin), first item of each: not set, the current
   value kept. More display settings go in this box, one row
   each (*dyl:setdisplay*, Dyl:SetDisplayVals, Dyl:SetWinGet).
 -->
@@ -47,9 +48,13 @@
           <ComboBox x:Name="rbn" DockPanel.Dock="Right" Width="180"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Ribbon"/>
         </DockPanel>
-        <DockPanel>
+        <DockPanel Margin="0,0,0,6">
           <ComboBox x:Name="pal" DockPanel.Dock="Right" Width="180"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Palettes"/>
+        </DockPanel>
+        <DockPanel>
+          <ComboBox x:Name="ftb" DockPanel.Dock="Right" Width="180"/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="File tabs"/>
         </DockPanel>
       </StackPanel>
     </GroupBox>
