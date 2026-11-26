@@ -23,10 +23,10 @@
 //     (AdUi25.dll...), by their full C++ names, which say their exact arguments: a function
 //     whose name is not exactly the one expected is never called, and nothing is done;
 //   - the theme manager, from an exported function that returns it and takes nothing;
-//   - the names of the themes, among the words with "Theme" in the read-only data of those
-//     modules, of AcPal and of acad.exe, each asked of the manager with HasTheme (a lookup,
-//     it creates nothing).
-// Each dark theme found has its colours (elements 8 to 199: kPaletteBackground to the frame
+//   - the names of the themes, among the words (UTF-16 and ASCII) in the read-only data of
+//     every module of the AutoCAD folder, each asked of the manager with HasTheme (a lookup,
+//     it creates nothing): a palette may draw with a theme of its own (Properties).
+// Each dark theme found (IsDark, or a dark kPaletteBackground) has its colours (elements 8 to 199: kPaletteBackground to the frame
 // colours, the fonts before them left as they are) put through Skin.Map with SetColor, which
 // tells the palettes to draw again; what each was is kept, to give it back. AutoCAD sets them
 // again when its theme changes: a colour found changed is filtered again.
@@ -74,6 +74,13 @@ namespace DynALisp.Ribbon
         static SetColorFn _setColor;
         static IsDarkFn _isDark;
         static List<string> _names;
+        // What the search saw, for (Dyl:RibbonSkin "Native"): the words, the modules, the time,
+        // and the module each theme name was found in.
+        static int _words, _modules;
+        static long _ms;
+        static readonly Dictionary<string, string> Where = new(StringComparer.Ordinal);
+        // Each theme found, as it was the last time the palettes were put in the dark:
+        static readonly List<string> Seen = new();
 
         // The themes changed: their pointer, and (element, colour it had, colour given).
         sealed class Done
@@ -100,11 +107,16 @@ namespace DynALisp.Ribbon
                 if (!Find()) return;
                 if (Changed.Count > 0 && !Reset()) return;   // still as they were left
                 Undo();
+                Seen.Clear();
                 foreach (var name in _names)
                 {
                     IntPtr theme = _getTheme(_manager, name);
-                    if (theme == IntPtr.Zero) continue;
-                    if (_isDark(theme) == 0) { _release(_manager, theme); continue; }
+                    if (theme == IntPtr.Zero) { Seen.Add(name + ": no theme"); continue; }
+                    uint bg = _getColor(theme, First);
+                    bool dark = _isDark(theme) != 0;
+                    string seen = name + " (" + Where.GetValueOrDefault(name, "?") + "): " + (dark ? "dark" : "light")
+                        + ", background " + Hex(bg);
+                    if (!dark && Skin.Lightness(FromRef(bg)) >= 0.5) { Seen.Add(seen + ", left as it is"); _release(_manager, theme); continue; }
                     var d = new Done { Theme = theme, Name = name };
                     for (int el = First; el <= Last; el++)
                     {
@@ -114,11 +126,26 @@ namespace DynALisp.Ribbon
                         _setColor(theme, el, now);
                         d.Colours.Add((el, was, now));
                     }
+                    Seen.Add(seen + ", " + d.Colours.Count + " colours changed");
                     Changed.Add(d);
                 }
             }
             catch (System.Exception ex) { _fail = ex.Message; Host.Log("native palettes: " + ex.Message); }
         }
+
+        // What was found and done, one line each, for (Dyl:RibbonSkin "Native"):
+        public static List<string> Report()
+        {
+            var r = new List<string>();
+            if (!_looked) { r.Add("not searched yet (the palettes off, or AutoCAD not dark)"); return r; }
+            r.Add(_words + " words in " + _modules + " modules, " + _ms + " ms");
+            if (_fail != null) r.Add("not found: " + _fail);
+            if (_names != null) r.Add(_names.Count + " themes: " + string.Join(", ", _names));
+            r.AddRange(Seen);
+            return r;
+        }
+
+        static string Hex(uint c) => "#" + (c & 0xFF).ToString("X2") + ((c >> 8) & 0xFF).ToString("X2") + ((c >> 16) & 0xFF).ToString("X2");
 
         // True when AutoCAD set a colour again since (its theme changed): filtered again.
         static bool Reset()
@@ -157,14 +184,17 @@ namespace DynALisp.Ribbon
         {
             if (_looked) return _fail == null;
             _looked = true;
+            var clock = Stopwatch.StartNew();
             var exports = new Dictionary<string, IntPtr>();
             var modules = new List<ProcessModule>();
             var others = new List<ProcessModule>();
-            foreach (ProcessModule m in Process.GetCurrentProcess().Modules)
+            var proc = Process.GetCurrentProcess();
+            string home = System.IO.Path.GetDirectoryName(proc.MainModule.FileName) + System.IO.Path.DirectorySeparatorChar;
+            foreach (ProcessModule m in proc.Modules)
             {
                 string n = m.ModuleName;
                 if (n.StartsWith("adui", StringComparison.OrdinalIgnoreCase)) modules.Add(m);
-                else if (n.StartsWith("acpal", StringComparison.OrdinalIgnoreCase) || n.Equals("acad.exe", StringComparison.OrdinalIgnoreCase)) others.Add(m);
+                else if (m.FileName.StartsWith(home, StringComparison.OrdinalIgnoreCase)) others.Add(m);
             }
             if (modules.Count == 0) { _fail = "no AdUi module"; return false; }
             foreach (var m in modules) Exports(m.BaseAddress, exports);
@@ -185,9 +215,20 @@ namespace DynALisp.Ribbon
             _manager = Marshal.GetDelegateForFunctionPointer<GetManagerFn>(getter[0])();
             if (_manager == IntPtr.Zero) { _fail = "no theme manager"; return false; }
 
-            var words = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var m in modules.Concat(others)) Words(m.BaseAddress, words);
-            _names = words.Where(w => _hasTheme(_manager, w) != 0).ToList();
+            var words = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (var m in modules.Concat(others))
+            {
+                try { Words(m.BaseAddress, m.ModuleName, words); _modules++; } catch { }
+            }
+            _words = words.Count;
+            _names = new List<string>();
+            foreach (var (w, mod) in words)
+            {
+                if (_hasTheme(_manager, w) == 0) continue;
+                _names.Add(w);
+                Where[w] = mod;
+            }
+            _ms = clock.ElapsedMilliseconds;
             if (_names.Count == 0) { _fail = "no theme name among " + words.Count + " words"; return false; }
             return true;
         }
@@ -214,9 +255,9 @@ namespace DynALisp.Ribbon
             }
         }
 
-        // The words with "Theme" in the read-only data of a module (.rdata), in UTF-16: the
-        // names the themes may have.
-        static void Words(IntPtr b, HashSet<string> into)
+        // The words in the read-only data of a module (.rdata), in UTF-16 and in ASCII: the
+        // names the themes may have, with the module they were found in.
+        static void Words(IntPtr b, string module, Dictionary<string, string> into)
         {
             int pe = Marshal.ReadInt32(b, 0x3C);
             int sections = Marshal.ReadInt16(b, pe + 6);
@@ -231,20 +272,32 @@ namespace DynALisp.Ribbon
                 var data = new byte[size];
                 Marshal.Copy(b + at, data, 0, size);
                 var cur = new StringBuilder();
-                for (int i = 0; i + 1 < size; i += 2)
+                for (int i = 0; i + 1 < size; i += 2)                    // UTF-16
                 {
                     char c = (char)(data[i] | (data[i + 1] << 8));
-                    if (char.IsLetterOrDigit(c) || c == '_' || c == ' ') { cur.Append(c); continue; }
-                    if (c == '\0') Take(cur.ToString(), into);
+                    if (Part(c)) { cur.Append(c); continue; }
+                    if (c == '\0') Take(cur.ToString(), module, into);
+                    cur.Clear();
+                }
+                cur.Clear();
+                for (int i = 0; i < size; i++)                           // ASCII
+                {
+                    char c = (char)data[i];
+                    if (c < 128 && Part(c)) { cur.Append(c); continue; }
+                    if (c == '\0') Take(cur.ToString(), module, into);
                     cur.Clear();
                 }
             }
         }
 
-        static void Take(string w, HashSet<string> into)
+        static bool Part(char c) => char.IsLetterOrDigit(c) || c == '_' || c == ' ' || c == '.' || c == '-';
+
+        const int MaxWords = 400000;
+
+        static void Take(string w, string module, Dictionary<string, string> into)
         {
-            if (w.Length >= 4 && w.Length <= 48 && w.IndexOf("Theme", StringComparison.OrdinalIgnoreCase) >= 0 && into.Count < 2000)
-                into.Add(w);
+            if (w.Length >= 3 && w.Length <= 40 && char.IsLetter(w[0]) && into.Count < MaxWords)
+                into.TryAdd(w, module);
         }
     }
 }

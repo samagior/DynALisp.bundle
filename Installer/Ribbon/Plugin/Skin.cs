@@ -66,6 +66,13 @@ namespace DynALisp.Ribbon
             {
                 Skin.Read();
                 string which = args?.AsArray().Select(v => v.Value as string).FirstOrDefault(v => v != null);
+                if (string.Equals(which, "Native", StringComparison.OrdinalIgnoreCase))
+                {
+                    // What was found of the native palettes, one string each (a diagnostic):
+                    var rb = new ResultBuffer();
+                    foreach (var line in NativeThemes.Report()) rb.Add(new TypedValue((int)LispDataType.Text, line));
+                    return rb;
+                }
                 if (!string.Equals(which, "Palettes", StringComparison.OrdinalIgnoreCase)) return Skin.Ribbon.Status();
                 string st = Skin.Palettes.Status();
                 return Skin.Palettes.Wanted && Skin.Dark() ? st + "; " + NativeThemes.Status() : st;
@@ -337,6 +344,8 @@ namespace DynALisp.Ribbon
             if (l < Light) l *= Darker;
             return FromHsl(c.A, Hue, Math.Min(Math.Max(s, 0.10), MaxSat), l);
         }
+
+        public static double Lightness(Color c) { ToHsl(c, out _, out _, out double l); return l; }
 
         static void ToHsl(Color c, out double h, out double s, out double l)
         {
