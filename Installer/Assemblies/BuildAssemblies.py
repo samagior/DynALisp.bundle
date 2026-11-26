@@ -6,7 +6,8 @@ The rows of the tables are in Walls.txt and Floors.txt beside this script (their
 tables give them: ratings, STC, IIC); this script builds the layers of each one from them (the
 materials of Res/Materials.csv), its description and its family: the rows of a table that differ only by
 their boards, their insulation or their spacing (B6a to B6e) are the variants of one family (B6), whose
-short description holds only what all of them share. Run it after a change to those files:
+short description holds only what all of them share, in a few words (Steel Studs 152,
+2-2 Gypsum: the boards on each face). Run it after a change to those files:
 
     python Installer/Assemblies/BuildAssemblies.py
 
@@ -114,113 +115,74 @@ def rc_layer(fill=False):
     return layer(ABS if fill else RC, "13")
 
 
-def gypsum(spec):
-    """The short text of a face: '2x12.7X' -> ['2 layers of 12.7 mm Type X gypsum board', 'gypsum board']."""
-    if spec in ("-", ""):
-        return [""]
-    t = board_text(spec)
-    return [t, "gypsum-sand plaster" if spec.endswith("P") and "+" not in spec else "gypsum board"]
+def layers(spec):
+    """The number of boards of a face: '2x12.7X' -> 2, '1x12.7X+1x12.7X' -> 2, '-' -> 0."""
+    if spec in ("-", "", "sheathing", "osb", "gypsheath", "veneer"):
+        return 0
+    return sum(int(p.split("x")[0]) for p in spec.split("+"))
 
 
 def wall_parts(r):
-    """The parts of the short description of a wall, each a list of texts from the most precise to the most
-    general: the family keeps, for each part, the most precise text all its variants share."""
+    """The parts of the short description of a wall (Steel Studs 152, 2-2 Gypsum), each a list of
+    texts from the most precise to the most general: the family keeps, for each part, the most
+    precise text all its variants share, and leaves out a part they do not share."""
     i, kind, studs, ab, rc, s1, s2 = r[:7]
-    sp = spacing_text(studs) if studs in PCT else ""
     if kind == "W":
-        core = [f"38x89 wood studs at {sp} o.c.", "38x89 wood studs"]
+        core = ["Wood Studs"]
     elif kind == "ST":
-        core = ["two rows of 38x89 wood studs, staggered on a 38x140 plate"]
+        core = ["Staggered Wood Studs"]
     elif kind == "DP":
-        core = ["two rows of 38x89 wood studs on separate plates"]
+        core = ["Double Wood Studs"]
     elif kind in ("EW", "EW140"):
-        d = "140" if kind == "EW140" else "89"
-        core = [f"exterior wall, 38x{d} wood studs at {sp} o.c.", f"exterior wall, 38x{d} wood studs", "exterior wall, wood studs"]
+        core = ["Exterior Wood Studs"]
     elif kind.startswith("SN"):
-        core = [f"non-load-bearing steel studs 31x{kind[2:]}", "non-load-bearing steel studs"]
+        core = [f"Steel Studs {kind[2:]}", "Steel Studs"]
     elif kind == "SL":
-        core = ["load-bearing steel studs 41x92"]
+        core = ["Load-Bearing Steel Studs"]
     elif kind == "SL2":
-        core = ["two rows of load-bearing steel studs 41x92, cross-braced"]
+        core = ["Double Load-Bearing Steel Studs"]
     else:
-        core = [f"{kind[1:]} mm concrete block", "concrete block"]
+        core = [f"Concrete Block {kind[1:]}", "Concrete Block"]
+    # what fills an exterior wall (its families differ by it), the furring of a block wall:
+    fill = [{"rw": "Rock Wool", "gf": "Glass Fibre", "cel": "Cellulose"}.get(ab, "")] if kind.startswith("EW") else [""]
     if kind.startswith("B"):
-        fill = {"strap1": "38x38 wood strapping on one side", "strap2": "38x38 wood strapping on each side, filled with absorptive material",
-                "steel65": "65 mm steel studs on each side, filled with absorptive material",
-                "wood64": "38x64 wood studs on each side, filled with absorptive material",
-                "zbar": "50 mm metal Z-bars on each side, filled with absorptive material"}.get(studs, "")
-        absorb = [fill]
-    elif ab in ("89", "65", "150", "140g", "89g"):
-        t = ab.rstrip("g")
-        what = "glass fibre" if ab.endswith("g") else "absorptive material"
-        absorb = [f"{t} mm {what} in the cavity", f"{what} in the cavity"]
-    else:
-        absorb = [{"both": "absorptive material in each row", "rwboth": "rock or slag fibre insulation in each row",
-                   "rw89": "rock or slag fibre insulation", "cel89": "dry-blown cellulose fibre insulation",
-                   "rw": "rock or slag fibre insulation", "gf": "glass fibre insulation",
-                   "cel": "dry-blown cellulose fibre insulation", "one": "absorptive material in one row",
-                   "0": "no absorptive material"}.get(ab, "")]
-    if rc == "-":
-        chan = [""]
-    elif rc.startswith("2@"):
-        chan = [f"resilient metal channels at {spacing_text(rc[2:])} o.c. on each side", "resilient metal channels on each side"]
-    else:
-        chan = [f"resilient metal channels at {spacing_text(rc)} o.c. on one side", "resilient metal channels on one side"]
-    if s2 in ("sheathing", "osb", "gypsheath", "veneer"):
-        out = {"sheathing": "sheathing and cladding", "osb": "OSB or plywood sheathing and cladding",
-               "gypsheath": "gypsum sheathing and cladding", "veneer": "sheathing and a masonry veneer"}[s2]
-        faces = [f"{board_text(s1)} inside, {out} outside", f"gypsum board inside, {out} outside", "gypsum board inside, cladding outside"]
-    elif s2.endswith("+osb"):
-        faces = [f"{board_text(s1)} on the channels, 12.7 mm OSB and {board_text(s2[:-4])} on the other side", "gypsum board on each side"]
+        fill = [{"strap1": "Strapping 1 Side", "strap2": "Strapping", "steel65": "Steel Studs",
+                 "wood64": "Wood Studs", "zbar": "Z-Bars"}.get(studs, "")]
+    chan = [""] if rc == "-" else ["RC 2 Sides"] if rc.startswith("2@") else ["RC"]
+    if kind.startswith("EW"):
+        faces = [""]
     elif s1 == "-" and s2 == "-":
-        faces = ["bare, painted on both sides"]
-    elif s2 == "-":
-        faces = [f"{board_text(s1)} on one side only", "gypsum board on one side only"]
-    elif s1 == s2:
-        faces = [f"{board_text(s1)} on each side", gypsum(s1)[1] + " on each side"]
+        faces = ["Bare"]
+    elif s2.endswith("+osb"):
+        faces = [f"{layers(s1)}-{layers(s2[:-4])} Gypsum + OSB"]
     else:
-        faces = [f"{board_text(s1)} on one side, {board_text(s2)} on the other", "gypsum board on each side"]
-    return [core, absorb, chan, faces]
+        faces = [f"{layers(s1)}-{layers(s2)} Gypsum"]
+    return [core, fill, chan, faces]
 
 
 def floor_parts(r):
-    """The parts of the short description of a floor, as wall_parts."""
+    """The parts of the short description of a floor (Wood Joists, RC, 2 Gypsum), as wall_parts."""
     i, top, sub, kind, sp, ab, sup, ceil = r[:8]
-    slab = {"SLAB90": ["90 mm reinforced concrete slab", "concrete slab"],
-            "SLAB130": ["130 mm reinforced concrete slab", "concrete slab"],
-            "HOLLOW200": ["200 mm precast hollow core slab", "concrete slab"],
-            "DECK150": ["150 mm composite concrete slab on a steel deck", "concrete slab"],
-            "OWSJ50": ["open web steel joists with a 50 mm concrete deck", "steel joists with a concrete deck"],
-            "CSJ65": ["composite steel joists with 65 mm of concrete", "steel joists with a concrete deck"]}
+    slab = {"SLAB90": ["Concrete Slab"], "SLAB130": ["Concrete Slab"], "HOLLOW200": ["Hollow Core Slab", "Concrete Slab"],
+            "DECK150": ["Concrete on Steel Deck", "Concrete Slab"],
+            "OWSJ50": ["Open Web Steel Joists", "Steel Joists"], "CSJ65": ["Composite Steel Joists", "Steel Joists"]}
     if kind in slab:
-        top, frame, absorb = [""], slab[kind], [""]
+        top, frame = [""], slab[kind]
     else:
-        what = JOISTS[kind][1]
-        what = what[0].lower() + what[1:]
-        at = f"not more than {sp[:-3]} mm o.c." if sp.endswith("max") else f"{sp} mm o.c."
-        top = [{"GC25": "25 mm gypsum-concrete topping", "C38": "38 mm concrete topping"}.get(top, "")]
-        if top == [""] and r[1].startswith("C50D"):
-            top = [f"50 mm concrete on a steel deck with {r[1][4:]} mm ribs", "50 mm concrete on a steel deck"]
-        sub = [{"15.5": "15.5 mm plywood or OSB subfloor", "11+15.5": "subfloor of 11 mm and 15.5 mm plywood or OSB",
-                "15.5+15.5": "subfloor of 2 layers of 15.5 mm plywood or OSB"}.get(sub, "")]
-        frame = [f"{what} at {at}", what] + (["wood joists or I-joists"] if kind in ("WJ", "WS", "WI") else [])
-        top = [top[0] + (", " + sub[0] if top[0] and sub[0] else sub[0])] + ([top[1] + (", " + sub[0] if sub[0] else "")] if len(top) > 1 else [])
-        absorb = [{"abs": "absorptive material in the cavity", "0": "no absorptive material"}.get(ab, "")]
-    if sup.startswith("RC"):
-        hold = [f"resilient metal channels at {sup[2:].replace('/', ' or ')} mm o.c.", "resilient metal channels"]
-    elif sup.startswith("SF"):
-        hold = [f"steel furring channels at {sup[2:].replace('/', ' or ')} mm o.c.", "steel furring channels"]
-    elif sup.startswith("FC"):
-        hold = ["furring channels wired to the joists"]
-    elif sup == "DRC":
-        hold = ["gypsum board on the framing and on resilient metal channels"]
-    else:
-        hold = [""]
-    if sup == "DRC" or ceil == "-":
+        top = [{"GC25": "Gypsum Concrete", "C38": "Concrete Topping"}.get(top, "Concrete on Steel Deck" if top.startswith("C50D") else "")]
+        if sub in ("11+15.5", "15.5+15.5"):
+            top = [(top[0] + ", " if top[0] else "") + "Double Subfloor"]
+        frame = {"WJ": ["Wood Joists"], "WS": ["Wood Joists"], "WI": ["Wood I-Joists", "Wood Joists"], "TR": ["Wood Trusses"],
+                 "SC": ["Steel Joists"], "RT": ["Roof Trusses"], "MS": ["Membrane"]}[kind]
+    hold = ["RC"] if sup.startswith("RC") else ["Furring"] if sup.startswith(("SF", "FC")) else [""]
+    if sup == "DRC":
+        a, b = ceil.split("+")
+        board = [f"{layers(a)} Gypsum + RC + {layers(b)} Gypsum"]
+    elif ceil == "-":
         board = [""]
     else:
-        board = [f"ceiling of {board_text(ceil)}", "ceiling of gypsum board"]
-    return [top, frame, absorb, hold, board]
+        board = [f"{layers(ceil)} Gypsum"]
+    return [top, frame, hold, board]
 
 
 def family(name):
@@ -237,10 +199,7 @@ def family_text(parts):
                 if t:
                     out.append(t)
                 break
-    if not out:
-        return ""
-    s = ", ".join(out)
-    return s[0].upper() + s[1:] + "."
+    return ", ".join(out)
 
 
 def wall(r):

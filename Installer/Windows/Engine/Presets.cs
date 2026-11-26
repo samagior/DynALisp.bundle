@@ -751,9 +751,11 @@ namespace DynALisp.Windows
             if (_pcn != null)
             {
                 int m = Listed(false).Count;
-                int all = Fam ? _rows.Select((r, i) => FamOf(i)).Distinct(Ic).Count() : _rows.Count;
-                _pcn.Text = _shw.Length == 0 && Filter.Length == 0 ? (Fam ? all + " families, " + _rows.Count + " " + _noun : all + " " + _noun)
-                          : m == 0 ? "No match"
+                int all = _rows.Count;
+                // with families (the assemblies), no count: only No match
+                _pcn.Text = m == 0 && (_shw.Length > 0 || Filter.Length > 0) ? "No match"
+                          : Fam ? ""
+                          : _shw.Length == 0 && Filter.Length == 0 ? all + " " + _noun
                           : m + " of " + all;
             }
         }
@@ -910,7 +912,7 @@ namespace DynALisp.Windows
             _s.Values["pst/solid"] = Solid(r) ? "1" : "0";
             _s.Values["pst.many"] = SelCount > 1 ? "1" : "0";
             if (_prm != null)
-                _prm.Text = SelCount > 1 ? SelCount + (Fam ? " families" : " " + _noun) + " selected"
+                _prm.Text = SelCount > 1 ? SelCount + " " + _noun + " selected"
                           : d == null ? (_defs.Count == 0 ? "" : "Custom " + One)
                           : Same(r, d) ? "Default " + One
                           : "Default " + One + ", modified";
@@ -1057,7 +1059,7 @@ namespace DynALisp.Windows
                 if (val.Length == 0) return "The name cannot be empty.";
                 var fs = SelFams;
                 if (Enumerable.Range(0, _rows.Count).Any(i => !fs.Contains(FamOf(i), Ic) && Ic.Equals(FamOf(i), val)))
-                    return "Another family is already named \"" + val + "\".";
+                    return "Another " + One + " is already named \"" + val + "\".";
                 return null;
             }
             if (f.Key == "grp" && val.Length == 0) return "The group cannot be empty.";
@@ -1243,8 +1245,8 @@ namespace DynALisp.Windows
             var sel = _sel.ToList();
             if (sel.Count == 0 || sel.Any(j => Def(_rows[j]) != null)) return;
             string msg = Fam
-                ? (SelCount > 1 ? "Delete the " + SelCount + " custom families selected and their variants?"
-                   : "Delete the custom family \"" + FamOf(_idx) + "\"" + (sel.Count > 1 ? " and its " + sel.Count + " variants" : "") + "?")
+                ? (SelCount > 1 ? "Delete the " + SelCount + " custom " + _noun + " selected and their variants?"
+                   : "Delete the custom " + One + " \"" + FamOf(_idx) + "\"" + (sel.Count > 1 ? " and its " + sel.Count + " variants" : "") + "?")
                 : sel.Count > 1
                 ? "Delete the " + sel.Count + " custom " + _noun + " selected" + (_cmds ? " and their aliases" : "") + "?"
                 : "Delete the custom preset \"" + Cell(Row, NameCol) + "\"" + (_alst.Count > 0 ? " and its aliases" : "") + "?";

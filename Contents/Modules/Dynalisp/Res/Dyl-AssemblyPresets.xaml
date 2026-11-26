@@ -119,7 +119,7 @@
             <ColumnDefinition Width="*"/>
           </Grid.ColumnDefinitions>
           <TextBlock Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Group"/>
-          <TextBlock Grid.Column="1" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Family"/>
+          <TextBlock Grid.Column="1" Style="{DynamicResource Dyl.Sub}" Margin="0" Text="Name"/>
           <TextBlock x:Name="pcn" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" FontSize="11.5" Foreground="{DynamicResource Dyl.Muted}"/>
         </Grid>
         <!-- the buttons as wide as the column, narrower with it: -->
@@ -165,7 +165,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
           </Grid.RowDefinitions>
-          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Family"/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Name"/>
           <DockPanel Grid.Column="1" Style="{StaticResource Row}">
             <TextBox x:Name="fam" MaxLength="64"/>
           </DockPanel>
