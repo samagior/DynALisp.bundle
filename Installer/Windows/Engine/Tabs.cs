@@ -288,51 +288,56 @@ namespace DynALisp.Windows
             _session = s;
             _file = full;
             _state = State.Open;
-            if (old != null)
+            // Shown hidden (cloaked by Windows, drawn but not shown) until its layout has
+            // settled, then shown at once: neither its first frames (white, then placed by
+            // Fit.cs, its lists given their heights, its previews drawn) are seen when the
+            // Manager opens, nor, over the window of the tab left, that window losing its title
+            // bar (the next one is not active until then, and the one left closes in the same
+            // moment). Shown at once, the Manager opened white and the new tab blinked over the
+            // old one; shown at its first frame, the tabs of many fields and previews (Quick
+            // Draw, Materials...) still blinked as their layout went on over the next frames:
+            if (old != null) w.ShowActivated = false;
+            bool swapped = false, rendered = false;
+            // (settled: no layout for 80 ms after its first frame, then nothing left for the
+            // dispatcher to do; never left hidden: shown 1.5 s after it is made whatever happens)
+            var settle = new DispatcherTimer(DispatcherPriority.Background, w.Dispatcher) { Interval = TimeSpan.FromMilliseconds(80) };
+            var late = new DispatcherTimer(DispatcherPriority.Normal, w.Dispatcher) { Interval = TimeSpan.FromMilliseconds(1500) };
+            void Swap()
             {
-                // Over the window shown: made hidden (cloaked by Windows, drawn but not shown)
-                // and not active, so neither its first frames (empty, then placed by Fit.cs,
-                // its lists given their heights, its previews drawn) nor the window under it
-                // losing its title bar are seen; shown once its layout has settled, the window
-                // under it closed in the same moment. Shown at once, the new window blinked
-                // over the old one at each tab picked; shown at its first frame, the tabs of
-                // many fields and previews (Quick Draw, Materials...) still blinked as their
-                // layout went on over the next frames:
-                w.ShowActivated = false;
-                bool swapped = false, rendered = false;
-                // (settled: no layout for 80 ms after its first frame, then nothing left for
-                // the dispatcher to do; never left hidden: shown 1.5 s after it is made
-                // whatever happens)
-                var settle = new DispatcherTimer(DispatcherPriority.Background, w.Dispatcher) { Interval = TimeSpan.FromMilliseconds(80) };
-                var late = new DispatcherTimer(DispatcherPriority.Normal, w.Dispatcher) { Interval = TimeSpan.FromMilliseconds(1500) };
-                void Swap()
+                if (swapped) return;
+                swapped = true;
+                late.Stop();
+                settle.Stop();
+                w.LayoutUpdated -= Again;
+                Cloak(w, false);
+                if (old != null)
                 {
-                    if (swapped) return;
-                    swapped = true;
-                    late.Stop();
-                    settle.Stop();
-                    w.LayoutUpdated -= Again;
-                    Cloak(w, false);
                     Activate(w);
                     Close(old.Window);
                 }
-                settle.Tick += (a, b) =>
-                {
-                    settle.Stop();
-                    w.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, (Action)Swap);
-                };
-                void Again(object a, EventArgs b)
-                {
-                    if (!rendered || swapped) return;
-                    settle.Stop();
-                    settle.Start();
-                }
-                w.LayoutUpdated += Again;
-                w.ContentRendered += (a, b) => { rendered = true; settle.Start(); };
-                late.Tick += (a, b) => { late.Stop(); Swap(); };
-                w.SourceInitialized += (a, b) => { Cloak(w, true); late.Start(); };
-                w.Closed += (a, b) => { late.Stop(); settle.Stop(); w.LayoutUpdated -= Again; Close(old.Window); };
             }
+            settle.Tick += (a, b) =>
+            {
+                settle.Stop();
+                w.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, (Action)Swap);
+            };
+            void Again(object a, EventArgs b)
+            {
+                if (!rendered || swapped) return;
+                settle.Stop();
+                settle.Start();
+            }
+            w.LayoutUpdated += Again;
+            w.ContentRendered += (a, b) => { rendered = true; settle.Start(); };
+            late.Tick += (a, b) => { late.Stop(); Swap(); };
+            w.SourceInitialized += (a, b) => { Cloak(w, true); late.Start(); };
+            w.Closed += (a, b) =>
+            {
+                late.Stop();
+                settle.Stop();
+                w.LayoutUpdated -= Again;
+                if (old != null) Close(old.Window);
+            };
             try { ShowWindow(w); }
             catch
             {
