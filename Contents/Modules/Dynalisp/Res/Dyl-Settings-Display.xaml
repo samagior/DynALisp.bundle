@@ -18,10 +18,10 @@
   Opened over the Settings window by the open button of Display (dyl:Win.Open of
   Dyl-Settings.xaml), on its values: OK keeps them, saved with the other settings by Save.
   The display settings applied in every drawing while Display is on (Remote\Dyl-EnvColor.lsp):
-  the model space background, the paper of the layouts, the theme of AutoCAD and the colours
-  of its ribbon and palettes (DynALisp.Ribbon.dll, an experiment), first item of each: not set, the current
-  value kept. More display settings go in this box, one row
-  each (*dyl:setdisplay*, Dyl:SetDisplayVals, Dyl:SetWinGet).
+  the look of the interface (its ribbon and palettes by DynALisp.Ribbon.dll, an experiment, its
+  model space and layouts), then the model space background and the paper of the layouts in
+  place of those of the interface, first item of each: not set. More display settings go in
+  this box, one row each (*dyl:setdisplay*, Dyl:SetDisplayVals, Dyl:SetWinGet).
 -->
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -32,24 +32,16 @@
       <StackPanel>
         <TextBlock Style="{DynamicResource Dyl.Desc}" Text="Applied in every drawing."/>
         <DockPanel Margin="0,0,0,6">
+          <ComboBox x:Name="ifc" DockPanel.Dock="Right" Width="180"/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Interface"/>
+        </DockPanel>
+        <DockPanel Margin="0,0,0,6">
           <ComboBox x:Name="bkg" DockPanel.Dock="Right" Width="180"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Model space"/>
         </DockPanel>
-        <DockPanel Margin="0,0,0,6">
+        <DockPanel>
           <ComboBox x:Name="lbk" DockPanel.Dock="Right" Width="180"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Layouts"/>
-        </DockPanel>
-        <DockPanel Margin="0,0,0,6">
-          <ComboBox x:Name="thm" DockPanel.Dock="Right" Width="180"/>
-          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Theme"/>
-        </DockPanel>
-        <DockPanel Margin="0,0,0,6">
-          <ComboBox x:Name="rbn" DockPanel.Dock="Right" Width="180"/>
-          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Ribbon"/>
-        </DockPanel>
-        <DockPanel>
-          <ComboBox x:Name="pal" DockPanel.Dock="Right" Width="180"/>
-          <TextBlock Style="{DynamicResource Dyl.Label}" Text="Palettes"/>
         </DockPanel>
       </StackPanel>
     </GroupBox>

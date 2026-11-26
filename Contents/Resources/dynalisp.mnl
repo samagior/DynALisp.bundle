@@ -4434,14 +4434,12 @@
   ;;;     opened (see Modules\Dynalisp\Remote\Dyl-SysVars.lsp)
   ;;;   - Display (Overrides, DynalispDisplayOn) and its open button, the display
   ;;;     window (Dyl-Settings-Display.xaml, greyed out while Display is off): the display
-  ;;;     settings applied in every drawing opened while Display is on: the model space
-  ;;;     background, the paper of the layouts (each with its crosshair) and the theme
-  ;;;     of AutoCAD (the layouts also the background around the paper), and the colours
-  ;;;     of the ribbon and the palettes (an experiment of DynALisp.Ribbon.dll, Skin.cs), each one (Not
-  ;;;     set) or a name: DynALisp (the dark of the DynALisp windows), Black, Default,
-  ;;;     White, Dark, Light (DynalispBackground,
-  ;;;     DynalispLayoutBackground, DynalispColorTheme, DynalispRibbonColors,
-  ;;;     DynalispPaletteColors, see
+  ;;;     settings applied in every drawing opened while Display is on: the look of the
+  ;;;     interface (DynALisp or DynALisp Neutral: the ribbon and the palettes by
+  ;;;     DynALisp.Ribbon.dll, Skin.cs, an experiment, and the model space and the layouts),
+  ;;;     then the model space background and the paper of the layouts in place of those
+  ;;;     of the interface (Black, Default, White), each one (Not set) or a name
+  ;;;     (DynalispInterface, DynalispBackground, DynalispLayoutBackground, see
   ;;;     Modules\Dynalisp\Remote\Dyl-EnvColor.lsp). st:bkg holds them, in the order of
   ;;;     *ec:prefs*; more display settings go in that window (Dyl:SetDisplayVals) and
   ;;;     in that list
@@ -4524,10 +4522,10 @@
 
   ;;; The popups of the display window, in the order of *ec:prefs* (Remote file
   ;;; Dyl-EnvColor.lsp): (KEY CONTEXT):
-  (setq *dyl:setdisplay* '(("bkg" model) ("lbk" layout) ("thm" theme) ("rbn" ribbon) ("pal" palettes)))
+  (setq *dyl:setdisplay* '(("ifc" interface) ("bkg" model) ("lbk" layout)))
 
   ;;; Items of a popup of the display window: nil, shown as (Not set), then the names
-  ;;; of the choices of its context (model, layout or theme):
+  ;;; of the choices of its context (interface, model or layout):
   (defun Dyl:SetBkgs (ctx)
     (cons nil (if Remote>>Dyl:DisplayNames (Remote>>Dyl:DisplayNames ctx)))
   )
@@ -4670,8 +4668,8 @@
     (cons (and Remote>>Dyl:SetupOn-p (Remote>>Dyl:SetupOn-p) T) (Dyl:SetDefsRead))
   )
 
-  ;;; Display window (Res\Dyl-Settings-Display.xaml): the model space, the layouts and
-  ;;; the theme, first item of each: not set (the current value kept). More display
+  ;;; Display window (Res\Dyl-Settings-Display.xaml): the interface, the model space and
+  ;;; the layouts, first item of each: not set. More display
   ;;; settings: give and read their values here too (*dyl:setdisplay*):
   (defun Dyl:SetDisplayVals ()
     (append
@@ -4687,8 +4685,6 @@
              )
       )
       (Dyl:WinOff (mapcar 'car *dyl:setdisplay*) (not Remote>>Dyl:DisplayPrefSet))
-      ;; The ribbon, by its plugin (DynALisp.Ribbon.dll):
-      (Dyl:WinOff '("rbn" "pal") (not Dyl:RibbonSkin))
     )
   )
 

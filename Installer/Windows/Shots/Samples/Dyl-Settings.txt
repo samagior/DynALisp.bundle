@@ -30,16 +30,12 @@ gmt=0
 gpi=1
 gpm=25
 # Display:
-bkg/list=(Not set)|DynALisp|DynALisp Neutral|Black|Default|White
-bkg=1
-lbk/list=(Not set)|DynALisp|DynALisp Neutral|Black|Default
-lbk=1
-thm/list=(Not set)|Dark|Light
-thm=1
-rbn/list=(Not set)|DynALisp|DynALisp Neutral
-rbn=1
-pal/list=(Not set)|DynALisp|DynALisp Neutral
-pal=1
+ifc/list=(Not set)|DynALisp|DynALisp Neutral
+ifc=1
+bkg/list=(Not set)|Black|Default|White
+bkg=0
+lbk/list=(Not set)|White|Black
+lbk=0
 # File Preferences:
 pcl/list=NBS CAWS (Global)|CSI MasterFormat (US)|OmniClass
 pcl=1
