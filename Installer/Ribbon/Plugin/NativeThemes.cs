@@ -243,6 +243,19 @@ namespace DynALisp.Ribbon
             return r;
         }
 
+        // The elements of the themes changed that had one of these colours (COLORREF), for
+        // (Dyl:RibbonSkin "Hosted"): which theme draws what kept the colours of AutoCAD.
+        public static List<string> Holding(uint[] refs)
+        {
+            var r = new List<string>();
+            foreach (var d in Changed)
+                foreach (var (el, was, now) in d.Colours)
+                    if (refs.Contains(was))
+                        r.Add(d.Name + " element " + el + ": " + Hex(was) + " given " + Hex(now) + (_getColor != null ? ", now " + Hex(_getColor(d.Theme, el)) : ""));
+            if (r.Count == 0) r.Add("none: no theme changed had them");
+            return r;
+        }
+
         static string Hex(uint c) => "#" + (c & 0xFF).ToString("X2") + ((c >> 8) & 0xFF).ToString("X2") + ((c >> 16) & 0xFF).ToString("X2");
 
         static void Back(Done d)

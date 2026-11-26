@@ -44,6 +44,9 @@ using System.Windows.Data;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Threading;
+using System.ComponentModel;
+using System.Collections.Specialized;
 using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
 
 namespace DynALisp.Ribbon
@@ -85,8 +88,9 @@ namespace DynALisp.Ribbon
 
         public static string Status() =>
             _fail != null ? "hosted themes: " + _fail
-            : Themes.Count == 0 ? "hosted themes: none found"
-            : "hosted themes " + string.Join(", ", Themes.Values.Select(f => f.Theme.GetType().Name + (f.Frozen ? " (frozen)" : " (" + f.Kept.Count + ")")));
+            : (Themes.Count == 0 ? "hosted themes: none found"
+            : "hosted themes " + string.Join(", ", Themes.Values.Select(f => f.Theme.GetType().Name + (f.Frozen ? " (frozen)" : " (" + f.Kept.Count + ")"))))
+            + "; " + TabWas.Count + " tabs, " + TabWas.Values.Count(w => w.Count > 0) + " recoloured";
 
         // Run by Skin.OnIdle (once a second at most).
         public static void Apply(bool on, Look look)
@@ -169,6 +173,7 @@ namespace DynALisp.Ribbon
                 var d = stack.Pop();
                 nodes++;
                 string where = top + " > " + d.GetType().Name;
+                Tabs(d);
                 foreach (var (type, dp) in Colours)
                 {
                     if (!type.IsInstanceOfType(d)) continue;
@@ -260,8 +265,87 @@ namespace DynALisp.Ribbon
             }
         }
 
+        // ---- the tabs ----
+
+        // The file tabs and the layout tabs (SwitchContentControl of AcWindows.dll) get their
+        // colour from the code of AutoCAD, as a local value of Background, set again as their
+        // state changes (current, under the mouse): each colour it sets is put in the look at
+        // once (a ValueChanged handler), what it set kept to give it back. The lists of tabs
+        // (SwitchItemsControl) are watched, so a tab added (a drawing opened) is found at once.
+        static readonly DependencyProperty[] TabColours = { Control.BackgroundProperty, Control.BorderBrushProperty };
+        static readonly Dictionary<Control, Dictionary<DependencyProperty, Brush>> TabWas = new(ReferenceEqualityComparer.Instance);
+        static readonly HashSet<Brush> TabGiven = new(ReferenceEqualityComparer.Instance);
+        static readonly HashSet<ItemsControl> Lists = new(ReferenceEqualityComparer.Instance);
+        static bool _fixing;
+
+        static void Tabs(DependencyObject d)
+        {
+            string n = d.GetType().Name;
+            if (d is Control c && n == "SwitchContentControl" && !TabWas.ContainsKey(c))
+            {
+                TabWas[c] = new Dictionary<DependencyProperty, Brush>();
+                foreach (var dp in TabColours)
+                    DependencyPropertyDescriptor.FromProperty(dp, typeof(Control))?.AddValueChanged(c, OnTab);
+                Fix(c);
+            }
+            else if (d is ItemsControl ic && n == "SwitchItemsControl" && Lists.Add(ic))
+                ((INotifyCollectionChanged)ic.Items).CollectionChanged += OnList;
+        }
+
+        static void OnTab(object sender, EventArgs e) { if (sender is Control c) Fix(c); }
+
+        static void OnList(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var ic = Lists.FirstOrDefault(l => ReferenceEquals(l.Items, sender));
+            if (ic == null) return;
+            // Once the new tabs are made:
+            ic.Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() =>
+            {
+                if (!_on) return;
+                int nodes = 0;
+                Visit(ic, "tabs", (th, where) => { }, ref nodes);
+            }));
+        }
+
+        static void Fix(Control c)
+        {
+            if (!_on || _fixing || !TabWas.TryGetValue(c, out var was)) return;
+            foreach (var dp in TabColours)
+            {
+                if (DependencyPropertyHelper.GetValueSource(c, dp).BaseValueSource != BaseValueSource.Local) continue;
+                if (c.ReadLocalValue(dp) is not SolidColorBrush b || TabGiven.Contains(b)) continue;
+                var m = Skin.Map(b.Color, _look);
+                if (m == b.Color) continue;
+                var nb = new SolidColorBrush(m) { Opacity = b.Opacity };
+                nb.Freeze();
+                TabGiven.Add(nb);
+                was[dp] = b;
+                _fixing = true;
+                try { c.SetValue(dp, nb); } catch { }
+                finally { _fixing = false; }
+            }
+        }
+
+        static void TabsBack()
+        {
+            foreach (var (c, was) in TabWas)
+            {
+                foreach (var dp in TabColours)
+                {
+                    DependencyPropertyDescriptor.FromProperty(dp, typeof(Control))?.RemoveValueChanged(c, OnTab);
+                    if (was.TryGetValue(dp, out var b) && c.ReadLocalValue(dp) is Brush now && TabGiven.Contains(now))
+                        try { c.SetValue(dp, b); } catch { }
+                }
+            }
+            TabWas.Clear();
+            TabGiven.Clear();
+            foreach (var ic in Lists) ((INotifyCollectionChanged)ic.Items).CollectionChanged -= OnList;
+            Lists.Clear();
+        }
+
         static void Undo()
         {
+            TabsBack();
             foreach (var f in Themes.Values)
                 foreach (var (node, prop, was) in Enumerable.Reverse(f.Kept))
                     try { prop.SetValue(node, was); } catch { }
@@ -333,7 +417,41 @@ namespace DynALisp.Ribbon
             r.Add("");
             r.Add("Windows of AutoCAD with pixels in a blue-grey of AutoCAD on the screen (class, size, pixels, WPF):");
             try { Pixels(r); } catch (System.Exception ex) { r.Add("  " + ex.Message); }
+            r.Add("");
+            r.Add("Native themes: elements that had a blue-grey of the title bar, the tabs or the lists of AutoCAD:");
+            try { r.AddRange(NativeThemes.Holding(new uint[] { 0x332922, 0x53443B, 0x6E5A4E, 0x3B302A, 0x40342E }).Select(l => "  " + l)); }
+            catch (System.Exception ex) { r.Add("  " + ex.Message); }
+            r.Add("");
+            r.Add("Functions exported about the application frame or title bar (module: name):");
+            try { Frame(r); } catch (System.Exception ex) { r.Add("  " + ex.Message); }
+            r.Add("");
+            r.Add("Web pages:");
+            try { r.AddRange(WebPages.Report().Select(l => "  " + l)); } catch (System.Exception ex) { r.Add("  " + ex.Message); }
             return r;
+        }
+
+        // The functions exported by the modules of AutoCAD whose name speaks of the frame
+        // (AdImpApplicationFrame draws the title bar in C++) and of its colours:
+        static void Frame(List<string> r)
+        {
+            int n = 0;
+            foreach (ProcessModule m in Process.GetCurrentProcess().Modules)
+            {
+                var into = new Dictionary<string, IntPtr>();
+                try
+                {
+                    NativeThemes.Exports(m.BaseAddress, into, x =>
+                        (x.Contains("ApplicationFrame") || x.Contains("AppFrame") || x.Contains("TitleBar") || x.Contains("ImpFrame"))
+                        && (x.Contains("Color") || x.Contains("Colour") || x.Contains("Theme") || x.Contains("Brush") || x.Contains("Background") || x.Contains("Refresh") || x.Contains("Redraw") || x.Contains("Update")));
+                }
+                catch { continue; }
+                foreach (var k in into.Keys.OrderBy(k => k))
+                {
+                    if (n++ >= 150) { r.Add("  ..."); return; }
+                    r.Add("  " + m.ModuleName + ": " + k);
+                }
+            }
+            if (n == 0) r.Add("  none");
         }
 
         static string Trim(string path)
