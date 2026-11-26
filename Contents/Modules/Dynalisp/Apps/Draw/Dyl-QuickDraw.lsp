@@ -3415,7 +3415,8 @@
 ;;  Dyl:QuickDrawAsmFixLayer):
 (defun Dyl:QuickDrawAsmReadAll ()
   (cond
-    ((and Dyl:AsmRead (Dyl:AsmRead *dyl:contents (Dyl:QuickDrawAsmFactor) (getvar "DIMZIN"))))
+    ;;  (if, never and: and gives T, not the rows)
+    ((if Dyl:AsmRead (Dyl:AsmRead *dyl:contents (Dyl:QuickDrawAsmFactor) (getvar "DIMZIN"))))
     ((mapcar 'Dyl:QuickDrawAsmToDwg
              (Remote>>Dyl:PresetRead "QuickDrawAssembly" (Dyl:QuickDrawAsmDefs) 'Dyl:QuickDrawAsmFix)
      )
@@ -3432,7 +3433,7 @@
   (if (not *qd:asmdefs*)
     (setq *qd:asmdefs*
            (cond
-             ((and Dyl:AsmDefs (Dyl:AsmDefs *dyl:contents)))
+             ((if Dyl:AsmDefs (Dyl:AsmDefs *dyl:contents)))
              ((vl-remove-if-not
                 '(lambda (r) (wcmatch (strcase (car r)) (Remote>>Dyl:PresetProp "QuickDrawAssembly" 'default)))
                 (mapcar 'Dyl:QuickDrawAsmFix
