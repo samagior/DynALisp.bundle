@@ -29,8 +29,9 @@
 // (Installer\Windows\Engine\Session.cs) and get darker, the light ones (the texts) take their
 // hue, the saturated ones (the blue of what is picked) and the icons stay as they are.
 //
-// The theme is changed in place when AutoCAD left it unfrozen (its controls follow at once),
-// or as a copy made current when it is frozen. Turned off, the colours it had are given back.
+// The theme is put in a copy made current, so AutoCAD tells every part drawn from it (the
+// title bar keeps its own copy of the colours, read when a theme is made current); changed in
+// place when AutoCAD takes the copy back twice, and it is not frozen. Turned off, the colours it had are given back.
 // Everything is done when AutoCAD is idle with no command running (Host.OnIdle), at most once
 // a second; anything not found (another version of AdWindows) leaves the ribbon as it is and
 // says why in (Dyl:RibbonSkin).
@@ -40,7 +41,7 @@
 // plugin loads, and again when the Lisp side calls (Dyl:RibbonSkin) after the settings are
 // saved; the former Palettes and Ribbon settings (DynalispPaletteColors, DynalispRibbonColors)
 // are read in its place while it is not set. The WPF parts with a theme of their own (the
-// file tabs) and the title bar follow by Hosted.cs.
+// file tabs) follow by Hosted.cs.
 
 using System;
 using System.Collections.Generic;
@@ -139,6 +140,10 @@ namespace DynALisp.Ribbon
         public int Again;
         bool _gaveUp;
         const int Limit = 5;
+        // A copy of the theme made current even when it is not frozen, until AutoCAD made
+        // another one current CopyTries times:
+        public bool Copy = true;
+        const int CopyTries = 2;
 
         public bool Busy => Wanted || _inPlace != null || _copy != null;
 
@@ -184,7 +189,11 @@ namespace DynALisp.Ribbon
                 Undo();
                 if (same) cur = Current();
                 if (Again > Limit) { _gaveUp = true; Host.Log(Name + " colours: given up, " + Again + " themes made current"); return; }
-                if (Skin.Unfrozen(cur))
+                // A copy made current when it may be: AutoCAD tells every part drawn from the
+                // theme that it changed (the title bar of AutoCAD keeps its own copy of the
+                // colours, read when a theme is made current); in place when AutoCAD made
+                // another theme current again too often (it takes the copy back).
+                if (Skin.Unfrozen(cur) && !(Copy && Again < CopyTries))
                 {
                     _count = Skin.Filter(cur, _changed, Look);
                     _inPlace = cur;
@@ -326,7 +335,7 @@ namespace DynALisp.Ribbon
             NativeThemes.Apply(Palettes.Wanted && Dark(), Palettes.Look);
             // The web pages (Start), by a script in their browser:
             WebPages.Apply(Palettes.Wanted && Dark(), Palettes.Look);
-            // The WPF parts with a theme of their own (the file tabs), and the title bar:
+            // The WPF parts with a theme of their own (the file tabs):
             Hosted.Apply(Palettes.Wanted && Dark(), Palettes.Look);
         }
 

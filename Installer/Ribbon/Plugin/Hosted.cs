@@ -28,9 +28,8 @@
 //
 // The windows are walked again when their set changes (checked every 2 s); nothing is done
 // while the interface is off or AutoCAD is light. (Dyl:RibbonSkin "Hosted") writes a report
-// to %TEMP%\DynALisp-Hosted.txt: the themes found, what still shows a blue-grey of AutoCAD (each
-// WPF element and its source, each native window and how many of its pixels), and the colour
-// of the title bar.
+// to %TEMP%\DynALisp-Hosted.txt: the themes found and what still shows a blue-grey of AutoCAD
+// (each WPF element and its source, each native window and how many of its pixels).
 
 using System;
 using System.Collections.Generic;
@@ -73,12 +72,16 @@ namespace DynALisp.Ribbon
         static string _fail;
         const int Every = 2000, Limit = 3, MaxNodes = 60000;
 
-        // The colour properties whose binding source may be a theme:
-        static readonly DependencyProperty[] Colours = {
-            Control.BackgroundProperty, Control.BorderBrushProperty, Control.ForegroundProperty,
-            Border.BackgroundProperty, Border.BorderBrushProperty, Panel.BackgroundProperty,
-            TextBlock.BackgroundProperty, TextBlock.ForegroundProperty,
-            Shape.FillProperty, Shape.StrokeProperty };
+        // The colour properties whose binding source may be a theme, with the type that has
+        // each (Control.BackgroundProperty is the one of Panel, added to Control: its
+        // OwnerType says Panel, so it cannot tell which elements have it):
+        static readonly (Type Type, DependencyProperty Prop)[] Colours = {
+            (typeof(Control), Control.BackgroundProperty), (typeof(Control), Control.BorderBrushProperty),
+            (typeof(Control), Control.ForegroundProperty),
+            (typeof(Border), Border.BackgroundProperty), (typeof(Border), Border.BorderBrushProperty),
+            (typeof(Panel), Panel.BackgroundProperty),
+            (typeof(TextBlock), TextBlock.BackgroundProperty), (typeof(TextBlock), TextBlock.ForegroundProperty),
+            (typeof(Shape), Shape.FillProperty), (typeof(Shape), Shape.StrokeProperty) };
 
         public static string Status() =>
             _fail != null ? "hosted themes: " + _fail
@@ -94,7 +97,6 @@ namespace DynALisp.Ribbon
                 {
                     if (_on) Undo();
                     _on = false;
-                    Caption(false);
                     return;
                 }
                 if (_on && look != _look) Undo();
@@ -112,7 +114,6 @@ namespace DynALisp.Ribbon
                     Walk();
                 }
                 Keep();
-                Caption(true);
             }
             catch (System.Exception ex) { _fail = ex.Message; Host.Log("hosted themes: " + ex.Message); }
         }
@@ -168,9 +169,9 @@ namespace DynALisp.Ribbon
                 var d = stack.Pop();
                 nodes++;
                 string where = top + " > " + d.GetType().Name;
-                foreach (var dp in Colours)
+                foreach (var (type, dp) in Colours)
                 {
-                    if (!dp.OwnerType.IsInstanceOfType(d)) continue;
+                    if (!type.IsInstanceOfType(d)) continue;
                     foreach (var src in BindingSources(d, dp))
                         if (IsTheme(src)) found(src, where + "." + dp.Name);
                 }
@@ -269,38 +270,6 @@ namespace DynALisp.Ribbon
             _sources = -1;
         }
 
-        // ---- the title bar ----
-
-        [DllImport("dwmapi.dll")] static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref uint value, int size);
-        [DllImport("dwmapi.dll")] static extern int DwmGetWindowAttribute(IntPtr hwnd, int attr, out uint value, int size);
-        const int CaptionColor = 35, BorderColor = 34;
-        const uint Default = 0xFFFFFFFF;
-        // The title bar of AutoCAD's dark theme (#222933), when Windows draws it (Windows 11):
-        static readonly Color AcadCaption = Color.FromRgb(0x22, 0x29, 0x33);
-        static uint _caption;
-
-        static void Caption(bool on)
-        {
-            IntPtr h;
-            try { h = AcApp.MainWindow.Handle; } catch { return; }
-            if (h == IntPtr.Zero) return;
-            uint want = Default;
-            if (on)
-            {
-                var c = Skin.Map(AcadCaption, _look);
-                want = (uint)(c.R | c.G << 8 | c.B << 16);
-            }
-            if (want == _caption) return;
-            if (!on && _caption == 0) return;
-            try
-            {
-                DwmSetWindowAttribute(h, CaptionColor, ref want, 4);
-                DwmSetWindowAttribute(h, BorderColor, ref want, 4);
-            }
-            catch { }
-            _caption = on ? want : 0;
-        }
-
         // ---- the report ----
 
         // A blue-grey of AutoCAD's dark theme (#222933, #2A303B, #3B4453, #4E5A6E: 215 to 220
@@ -322,13 +291,6 @@ namespace DynALisp.Ribbon
             foreach (var f in Themes.Values)
                 r.Add("  theme " + f.Theme.GetType().FullName + (f.Frozen ? " FROZEN" : ", " + f.Kept.Count + " colours, filtered again " + f.Again) + " - at " + f.Where);
             r.Add("");
-            try
-            {
-                IntPtr h = AcApp.MainWindow.Handle;
-                int hr = DwmGetWindowAttribute(h, CaptionColor, out uint cap, 4);
-                r.Add("title bar: DWM caption colour " + (hr == 0 ? "#" + (cap & 0xFF).ToString("X2") + (cap >> 8 & 0xFF).ToString("X2") + (cap >> 16 & 0xFF).ToString("X2") + " (" + cap.ToString("X") + ")" : "not read (0x" + hr.ToString("X") + ")") + ", set by DynALisp: " + _caption.ToString("X"));
-            }
-            catch (System.Exception ex) { r.Add("title bar: " + ex.Message); }
             r.Add("");
             r.Add("WPF elements drawn in a blue-grey of AutoCAD (type path, property, colour, where the colour comes from):");
             int count = 0;
@@ -342,9 +304,9 @@ namespace DynALisp.Ribbon
                 while (stack.Count > 0 && nodes++ < MaxNodes && count < 400)
                 {
                     var (d, path) = stack.Pop();
-                    foreach (var dp in Colours)
+                    foreach (var (type, dp) in Colours)
                     {
-                        if (!dp.OwnerType.IsInstanceOfType(d)) continue;
+                        if (!type.IsInstanceOfType(d)) continue;
                         object v;
                         try { v = d.GetValue(dp); } catch { continue; }
                         Color? c = v is SolidColorBrush sb ? sb.Color : v is GradientBrush gb && gb.GradientStops.Count > 0 ? gb.GradientStops[0].Color : null;
