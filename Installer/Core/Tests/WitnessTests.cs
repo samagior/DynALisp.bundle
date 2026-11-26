@@ -162,6 +162,7 @@ namespace DynALisp.Core.Tests
             foreach (var c in als.Select(p => p.Value).Distinct())
                 o.Put(Line(new[] { c }.Concat(Aliases.Of(c, als))));
             Assembly(b, o);
+            Material(b, o);
             foreach (var key in Keys)
                 o.Put("#" + key + " write" + Us + Cell(Presets.Write(b, Presets.Spec(key), reads[key])));
             o.Put("#groups write" + Us + Cell(Groups.Write(b, Groups.Of(b, null), null)));
@@ -192,10 +193,44 @@ namespace DynALisp.Core.Tests
                 }
         }
 
-        const string LispRead = "assemblies lisp";
+        // The hatch presets and the materials of the case (wt:materials); a case read by the
+        // Lisp (Materials.HatchDefs, RowDefs or Both give null: a default file missing, a
+        // material of an older file in the group Section) has a line #materials lisp in place of
+        // its rows:
+        static void Material(Bundle b, Out o)
+        {
+            bool old = Materials.OldP(b);
+            o.Put("#materials old" + Us + Cell(old));
+            var lines = new Out();
+            foreach (var dz in new[] { 0, 4 })
+            {
+                var hd = Materials.HatchDefs(b, dz);
+                var md = Materials.RowDefs(b);
+                var both = old ? null : Materials.Both(b, dz);
+                if (hd == null || md == null || (!old && both == null))
+                {
+                    o.Sec(MatLisp);
+                    return;
+                }
+                lines.Rows("materials hatch defs " + dz, hd);
+                lines.Rows("materials defs " + dz, md);
+                if (old) continue;
+                lines.Rows("materials hatch read " + dz, both.Value.Hatches);
+                lines.Rows("materials read " + dz, both.Value.Rows);
+            }
+            o.Lines.AddRange(lines.Lines);
+        }
 
-        // The cases whose assemblies the Lisp reads, the C# giving null:
-        static readonly string[] ReadByLisp = { "assemblies-preset" };
+        const string LispRead = "assemblies lisp", MatLisp = "materials lisp";
+
+        // The cases whose assemblies or materials the Lisp reads, the C# giving null: the
+        // marker, the cases, the sections of the Lisp then left out (those of its prefix, but
+        // the one kept):
+        static readonly (string Mark, string[] Cases, string Prefix, string Kept)[] ReadByLisp =
+        {
+            (LispRead, new[] { "assemblies-preset" }, "assemblies ", "assemblies defs"),
+            (MatLisp, new[] { "assemblies", "assemblies-preset", "empty", "materials-section" }, "materials ", "materials old"),
+        };
 
         // ----- the witness of the Lisp -----
 
@@ -305,13 +340,14 @@ namespace DynALisp.Core.Tests
                     var witness = Path.Combine(LispDir, name);
                     Assert.True(Directory.Exists(witness), "No witness of the case " + name + ": run Witness.lsp again.");
                     var lines = ReadLines(Path.Combine(witness, "Witness.txt"));
-                    Assert.Equal(ReadByLisp.Contains(name), cs.Contains("#" + LispRead));
-                    if (cs.Contains("#" + LispRead))
+                    foreach (var (mark, cases, prefix, kept) in ReadByLisp)
                     {
-                        // (the rows read by the Lisp alone left out, the defaults still compared:)
-                        var keep = Sections(lines).Where(x => !(x.Key.StartsWith("assemblies ") && x.Key != "assemblies defs"));
+                        Assert.True(cases.Contains(name) == cs.Contains("#" + mark), name + ": #" + mark + (cases.Contains(name) ? " expected" : " not expected"));
+                        if (!cs.Contains("#" + mark)) continue;
+                        // (the rows read by the Lisp alone left out, the one kept still compared:)
+                        var keep = Sections(lines).Where(x => !(x.Key.StartsWith(prefix) && x.Key != kept));
                         lines = keep.SelectMany(x => new[] { "#" + x.Key }.Concat(x.Value)).ToList();
-                        cs = cs.Where(l => l != "#" + LispRead).ToList();
+                        cs = cs.Where(l => l != "#" + mark).ToList();
                     }
                     Same(name, lines, cs);
                     // The files written, byte for byte:

@@ -1,0 +1,1 @@
+Hatch presets and materials: every fix of a row (scale set for another drawing scale, Model, bands, behaviors, older values), user rows, groups in any case.

@@ -1,0 +1,260 @@
+#casematerials
+#QuickShape fileContents\Modules\Dynalisp\Res\QuickShape.csv
+#QuickShape head
+
+#QuickShape csv
+#QuickShape defs
+#QuickShape clean
+#QuickShape read
+#QuickShape commands
+#QuickDrawAssembly fileContents\Modules\Dynalisp\Res\QuickDrawAssemblies.csv
+#QuickDrawAssembly head
+
+#QuickDrawAssembly csv
+#QuickDrawAssembly defs
+#QuickDrawAssembly clean
+#QuickDrawAssembly read
+#QuickDrawAssembly commands
+#QuickDraw fileContents\Modules\Dynalisp\Res\QuickDraw.csv
+#QuickDraw head
+
+#QuickDraw csv
+#QuickDraw defs
+#QuickDraw clean
+#QuickDraw read
+#QuickDraw commands
+#Material fileUser\Modules\Dynalisp\Res\Materials.csv
+#Material head
+IdGroupNameCutSurfaceConductivityDensityResistancePermeabilityPermeance
+#Material csv
+mt-ACONCRETEConcrete A changedhp-Thirdhp-A1,75
+cu-WallmasonryWallcu-Mine0.51800
+GenericNew material
+mt-AConcreteAgainhp-A
+mt-GoneOtherNot a defaulthp-A11111
+#Material defs
+mt-AconcreteConcrete Ahp-A2,524001.15
+mt-BBétonBéton Bhp-Scaledhp-Model-10abc1e31/2
+mt-CinsulationInsulation Chp-Gone0.04302.5
+mt-ShortMasonryShorthp-Short
+#Material clean
+mt-ACONCRETEConcrete A changedhp-Thirdhp-A1,75
+cu-WallmasonryWallcu-Mine0.51800
+cu-NewMaterialGenericNew material
+mt-GoneOtherNot a defaulthp-A11111
+#Material read
+mt-ACONCRETEConcrete A changedhp-Thirdhp-A1,75
+cu-WallmasonryWallcu-Mine0.51800
+cu-NewMaterialGenericNew material
+cu-NotADefaultOtherNot a defaulthp-A11111
+mt-BBétonBéton Bhp-Scaledhp-Model-10abc1e31/2
+mt-CinsulationInsulation Chp-Gone0.04302.5
+mt-ShortMasonryShorthp-Short
+#Material commands
+
+
+
+
+
+
+
+#HatchPreset fileUser\Modules\Dynalisp\Res\HatchPresets.csv
+#HatchPreset head
+IdGroupNamePatternScaleScaleMetricAngleOutlineKeyHatchKeyAnnotativeScaleDrawingScaleRefBorderColorOnBorderColorBorderLinetypeOnBorderLinetypeBorderLtScaleOnBorderLtScaleBorderLineweightOnBorderLineweightBorderTransparencyOnBorderTransparencyHatchColorOnHatchColorBackgroundOnBackgroundHatchLineweightOnHatchLineweightHatchTransparencyOnHatchTransparencyAssociativeNoBorderBehindBorderMethodWidthJustifySidesScaleWidthWidthFactorOriginOnLineOriginOffsetExistingBackgroundOnExistingBackgroundShrinkGapShrinkGapOnShrinkGapMetricOriginAlongHatchLinetypeOnHatchLinetypeHatchLtScaleOnHatchLtScaleEndsEndExtensionEndAngleCornersMiterLimitLapThroughJointsHatchFollowsAssemblyOnAssemblyEndsOnCornersOnType
+#HatchPreset csv
+hp-ASECTIONPlain changedANSI37315THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+cu-MinewallMineansi3810MEDHATCH112070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+WallNew oneSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-ASectionAgainANSI3110MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-ModelElevationModel shortBRICK50THINHATCH111
+xx-OddGenericOdd idANSI3110MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#HatchPreset defs
+hp-AsectionPlainansi31110thinhatch101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-ScaledSectionScaledANSI3220MEDHATCH014070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-ThirdSectionThirdANSI3310MEDHATCH013070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-NotScaledSectionNot scaledANSI3420MEDHATCH004070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-ModelElevationModelBRICK10.66670THINHATCH111070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0model
+hp-ShortGenericShortSOLID0FINEHATCH1
+hp-TwelveGenericTwelveSOLIDabc50FINEg-ds-anno-std-text11
+hp-OldWallOld bandsANSI350,50G-DS-ANNO-STD-DIMSHATCHyes1100dashed0102505000254013050200linear100, 150left2000000abc0253-1051,50hidden01extended-2100lapped0.5secondxORIGIN1P:mt-A:10|S::5|L:thin:Drafting
+hp-BandsWallDefault bandsANSI3610MEDHATCH101070CONTINUOUS01025050070254013050100Pick0Right0801.50-302532.50700CONTINUOUS01SQUARE45.0Mitered4.00firstinterruptedLine0as-WallDrafting
+hp-AngledWallAngledANSI3710MEDHATCH101070CONTINUOUS01025050070254013050100POLYGON10,abcstructural301000253000CONTINUOUS01Angled-80Round1FirstInterruptedLine0Drafting
+hp-VoidSectionVoid1.01.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#HatchPreset clean
+hp-ASECTIONPlain changedANSI37315THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+cu-MinewallMineansi3810MEDHATCH112070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+cu-NewOneWallNew oneSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-ModelElevationModel shortBRICK50THINHATCH111
+cu-OddIdGenericOdd idANSI3110MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#HatchPreset read
+hp-ASECTIONPlain changedANSI37315THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+cu-MinewallMineansi3810MEDHATCH112070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+cu-NewOneWallNew oneSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-ModelElevationModel shortBRICK50THINHATCH111
+cu-OddIdGenericOdd idANSI3110MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-ScaledSectionScaledANSI3220MEDHATCH014070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-ThirdSectionThirdANSI3310MEDHATCH013070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-NotScaledSectionNot scaledANSI3420MEDHATCH004070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-ShortGenericShortSOLID0FINEHATCH1
+hp-TwelveGenericTwelveSOLIDabc50FINEg-ds-anno-std-text11
+hp-OldWallOld bandsANSI350,50G-DS-ANNO-STD-DIMSHATCHyes1100dashed0102505000254013050200linear100, 150left2000000abc0253-1051,50hidden01extended-2100lapped0.5secondxORIGIN1P:mt-A:10|S::5|L:thin:Drafting
+hp-BandsWallDefault bandsANSI3610MEDHATCH101070CONTINUOUS01025050070254013050100Pick0Right0801.50-302532.50700CONTINUOUS01SQUARE45.0Mitered4.00firstinterruptedLine0as-WallDrafting
+hp-AngledWallAngledANSI3710MEDHATCH101070CONTINUOUS01025050070254013050100POLYGON10,abcstructural301000253000CONTINUOUS01Angled-80Round1FirstInterruptedLine0Drafting
+hp-VoidSectionVoid1.01.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#HatchPreset commands
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#groups preset
+Section
+Elevation
+Wall
+Generic
+#groups material
+Concrete
+Masonry
+Insulation
+BÉTON
+#groups defaults preset
+Section
+Elevation
+Wall
+Generic
+#groups defaults material
+Concrete
+Masonry
+Insulation
+BÉTON
+#groups case
+wallWallwall
+SECTIONSectionSECTION
+concreteconcreteConcrete
+INSULATIONINSULATIONInsulation
+Modular brick 2Modular brick 2Modular brick 2
+concrete-blockconcrete-blockconcrete-block
+cMU 8"cMU 8"cMU 8"
+béton cellulairebéton cellulairebéton cellulaire
+a1ba1ba1b
+---------
+ÉQUIPE étéÉQUIPE étéÉQUIPE été
+straßestraßestraße
+Q-BQ-BQ-B
+QAQAQA
+Q_CQ_CQ_C
+Q1Q1Q1
+q-bq-bq-b
+qaqaqa
+ZetaZetaZeta
+alphaalphaalpha
+#aliases read
+#aliases of
+#assemblies defs
+#assemblies read
+#assemblies inch 0
+#assemblies inch 0 back
+#assemblies metre 0
+#assemblies metre 0 back
+#assemblies inch 8
+#assemblies inch 8 back
+#assemblies metre 8
+#assemblies metre 8 back
+#materials old
+#materials hatch defs 0
+hp-ASectionPlainANSI3110THINHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ScaledSectionScaledANSI320.50MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ThirdSectionThirdANSI330.3333330MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-NotScaledSectionNot scaledANSI3420MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ModelElevationModelBRICK10.66670THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Model
+hp-ShortGenericShortSOLID10FINEHATCH101070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-TwelveGenericTwelveSOLID10FINEHATCH111070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-OldWallOld bandsANSI3510HATCHHATCH011070DASHED01025050070254013050000Linear100, 150Edge010002535000HIDDEN01Extended45Lapped4SecondInterruptedOrigin1P:mt-A:10|S::5|L:THIN:11Drafting
+hp-BandsWallDefault bandsANSI3610MEDHATCH101070CONTINUOUS01025050070254013050100PickEdge0801.50-302532.5000CONTINUOUS01Square45.0Mitered4.00FirstInterruptedLine0as-Wall00Drafting
+hp-AngledWallAngledANSI3710MEDHATCH101070CONTINUOUS01025050070254013050100PolygonStructural301000253000CONTINUOUS01Angled-80Round1FirstInterruptedLine011Drafting
+hp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#materials defs 0
+mt-AConcreteConcrete Ahp-A2.524001.15
+mt-BBÉTONBéton Bhp-Scaledhp-Model1e31/2
+mt-CInsulationInsulation Chp-Gone0.04302.5
+mt-ShortMasonryShorthp-Short
+#materials hatch read 0
+hp-ASectionPlain changedANSI37315THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+cu-MineWallMineANSI380.50MEDHATCH111070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+cu-NewOneWallNew oneSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ModelElevationModel shortBRICK50THINHATCH111070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+cu-OddIdGenericOdd idANSI3110MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ScaledSectionScaledANSI320.50MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ThirdSectionThirdANSI330.3333330MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-NotScaledSectionNot scaledANSI3420MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ShortGenericShortSOLID10FINEHATCH101070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-TwelveGenericTwelveSOLID10FINEHATCH111070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-OldWallOld bandsANSI3510HATCHHATCH011070DASHED01025050070254013050000Linear100, 150Edge010002535000HIDDEN01Extended45Lapped4SecondInterruptedOrigin1P:mt-A:10|S::5|L:THIN:11Drafting
+hp-BandsWallDefault bandsANSI3610MEDHATCH101070CONTINUOUS01025050070254013050100PickEdge0801.50-302532.5000CONTINUOUS01Square45.0Mitered4.00FirstInterruptedLine0as-Wall00Drafting
+hp-AngledWallAngledANSI3710MEDHATCH101070CONTINUOUS01025050070254013050100PolygonStructural301000253000CONTINUOUS01Angled-80Round1FirstInterruptedLine011Drafting
+hp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#materials read 0
+mt-AConcreteConcrete A changedhp-Thirdhp-A1.75
+cu-WallMasonryWallcu-Mine0.51800
+cu-NewMaterialGenericNew material
+cu-NotADefaultOtherNot a defaulthp-A11111
+mt-BBÉTONBéton Bhp-Scaledhp-Model1e31/2
+mt-CInsulationInsulation Chp-Gone0.04302.5
+mt-ShortMasonryShorthp-Short
+#materials hatch defs 4
+hp-ASectionPlainANSI3110THINHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ScaledSectionScaledANSI32.50MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ThirdSectionThirdANSI33.3333330MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-NotScaledSectionNot scaledANSI3420MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ModelElevationModelBRICK10.66670THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Model
+hp-ShortGenericShortSOLID10FINEHATCH101070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-TwelveGenericTwelveSOLID10FINEHATCH111070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-OldWallOld bandsANSI3510HATCHHATCH011070DASHED01025050070254013050000Linear100, 150Edge010002535000HIDDEN01Extended45Lapped4SecondInterruptedOrigin1P:mt-A:10|S::5|L:THIN:11Drafting
+hp-BandsWallDefault bandsANSI3610MEDHATCH101070CONTINUOUS01025050070254013050100PickEdge0801.50-302532.5000CONTINUOUS01Square45.0Mitered4.00FirstInterruptedLine0as-Wall00Drafting
+hp-AngledWallAngledANSI3710MEDHATCH101070CONTINUOUS01025050070254013050100PolygonStructural301000253000CONTINUOUS01Angled-80Round1FirstInterruptedLine011Drafting
+hp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#materials defs 4
+mt-AConcreteConcrete Ahp-A2.524001.15
+mt-BBÉTONBéton Bhp-Scaledhp-Model1e31/2
+mt-CInsulationInsulation Chp-Gone0.04302.5
+mt-ShortMasonryShorthp-Short
+#materials hatch read 4
+hp-ASectionPlain changedANSI37315THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+cu-MineWallMineANSI38.50MEDHATCH111070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+cu-NewOneWallNew oneSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ModelElevationModel shortBRICK50THINHATCH111070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+cu-OddIdGenericOdd idANSI3110MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ScaledSectionScaledANSI32.50MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ThirdSectionThirdANSI33.3333330MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-NotScaledSectionNot scaledANSI3420MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ShortGenericShortSOLID10FINEHATCH101070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-TwelveGenericTwelveSOLID10FINEHATCH111070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-OldWallOld bandsANSI3510HATCHHATCH011070DASHED01025050070254013050000Linear100, 150Edge010002535000HIDDEN01Extended45Lapped4SecondInterruptedOrigin1P:mt-A:10|S::5|L:THIN:11Drafting
+hp-BandsWallDefault bandsANSI3610MEDHATCH101070CONTINUOUS01025050070254013050100PickEdge0801.50-302532.5000CONTINUOUS01Square45.0Mitered4.00FirstInterruptedLine0as-Wall00Drafting
+hp-AngledWallAngledANSI3710MEDHATCH101070CONTINUOUS01025050070254013050100PolygonStructural301000253000CONTINUOUS01Angled-80Round1FirstInterruptedLine011Drafting
+hp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#materials read 4
+mt-AConcreteConcrete A changedhp-Thirdhp-A1.75
+cu-WallMasonryWallcu-Mine0.51800
+cu-NewMaterialGenericNew material
+cu-NotADefaultOtherNot a defaulthp-A11111
+mt-BBÉTONBéton Bhp-Scaledhp-Model1e31/2
+mt-CInsulationInsulation Chp-Gone0.04302.5
+mt-ShortMasonryShorthp-Short
+#QuickShape writeT
+#QuickDrawAssembly writeT
+#QuickDraw writeT
+#Material writeT
+#HatchPreset writeT
+#groups writeT
+#groups material writeT
+#aliases writeT

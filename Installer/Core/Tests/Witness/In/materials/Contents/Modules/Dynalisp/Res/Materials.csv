@@ -1,0 +1,6 @@
+Id;Group;Name;Cut;Surface;Conductivity;Density;Resistance;Permeability;Permeance
+mt-A;concrete;Concrete A;hp-A;;2,5;2400;;1.15;
+mt-B;Béton;Béton B;hp-Scaled;hp-Model;-1;0;abc;1e3;1/2
+mt-C;insulation;Insulation C;hp-Gone;;0.04;  30 ;2.5;;
+mt-Short;Masonry;Short;hp-Short
+mt-NoName;Masonry;;hp-A;;1;;;;

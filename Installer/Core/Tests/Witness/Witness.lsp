@@ -32,8 +32,8 @@
 ;;  settings or the files of DynALisp is read or changed: each case is a copy of its folder in
 ;;  %TEMP%, the Lisp pointed at it for a moment (*dyl:contents, *dyl:user, *dyl:dylres,
 ;;  *dyl:res, *dyl:alias) and given back its own folders after, the reads kept dropped. The
-;;  files are read by the Lisp itself (Dyl:Data, Dyl:DataHead, Dyl:AsmDefs and Dyl:AsmRead of
-;;  the Core hidden meanwhile), so the C# is compared with the Lisp, never with itself.
+;;  files are read by the Lisp itself (Dyl:Data, Dyl:DataHead, Dyl:AsmDefs, Dyl:AsmRead,
+;;  Dyl:HatchDefs, Dyl:MatDefs and Dyl:MatBoth of the Core hidden meanwhile), so the C# is compared with the Lisp, never with itself.
 ;;
 ;;  What is written, each line its cells divided by (chr 31), nil as (chr 30), a section by a
 ;;  line #name (UTF-8):
@@ -45,7 +45,8 @@
 ;;    <case>\Witness.txt   for each preset tool: its file, header, rows, defaults, rows
 ;;                  cleaned, presets read and their commands; the groups and their case; the
 ;;                  aliases; the assemblies (defaults, read and fixed, in the units of
-;;                  wt:factors and back); then whether each one was written
+;;                  wt:factors and back); the hatch presets and the materials (defaults,
+;;                  read and fixed); then whether each one was written
 ;;    <case>\User\  the files written (Remote>>Dyl:PresetWrite, Remote>>Dyl:GroupsWriteOf,
 ;;                  Dyl:AliasWrite), as they are on disk
 
@@ -218,6 +219,34 @@
   (setq *qd:asmdefs* nil *qd:asmcache* nil *pst:readcache* nil *mt:defcache* nil *hp:defcache* nil)
 )
 
+;;  The hatch presets and the materials of the case (Remote\Dyl-Materials.lsp): whether its
+;;  materials file is one of DynALisp 1.1 (split by the Lisp alone, never here), then with
+;;  DIMZIN 0 and 4 the defaults fixed and both read, fixed and cleaned:
+(defun wt:materials (/ old b)
+  (setq *pst:readcache* nil
+        *mt:defcache*   nil
+        *hp:defcache*   nil
+        *mt:oldstamp*   nil
+        old             (Remote>>Dyl:MaterialOld-p)
+  )
+  (wt:put (strcat "#materials old" (chr 31) (wt:cell old)))
+  (foreach dz '(0 4)
+    (setvar "DIMZIN" dz)
+    (setq *pst:readcache* nil *mt:defcache* nil *hp:defcache* nil)
+    (wt:rows (strcat "materials hatch defs " (itoa dz)) (Remote>>Dyl:HatchPresetDefs))
+    (wt:rows (strcat "materials defs " (itoa dz)) (Remote>>Dyl:MaterialRowDefs))
+    (if (not old)
+      (progn
+        (setq b (Remote>>Dyl:MaterialBoth))
+        (wt:rows (strcat "materials hatch read " (itoa dz)) (car b))
+        (wt:rows (strcat "materials read " (itoa dz)) (cadr b))
+      )
+    )
+  )
+  (setvar "DIMZIN" wt:dimzin)
+  (setq *pst:readcache* nil *mt:defcache* nil *hp:defcache* nil *mt:oldstamp* nil)
+)
+
 ;;  The groups of the case, and the case of the names of the probes in them:
 (defun wt:groups ()
   (wt:rows "groups preset" (mapcar 'list (Remote>>Dyl:GroupsOf nil)))
@@ -263,6 +292,7 @@
   (wt:groups)
   (wt:aliases)
   (wt:assemblies)
+  (wt:materials)
   (foreach key wt:keys
     (wt:put (strcat "#" key " write" (chr 31) (wt:cell (Remote>>Dyl:PresetWrite key (cdr (assoc key wt:reads))))))
   )
@@ -311,7 +341,9 @@
   (setq wt:in     (strcat *dyl:repo "\\Installer\\Core\\Tests\\Witness\\In")
         wt:outdir (strcat (getenv "TEMP") "\\DynALisp Witness " (menucmd "M=$(edtime,$(getvar,date),YYYYMODD-HHMMSS)"))
         wt:work   (strcat wt:outdir " work")
-        saved     (list *dyl:contents *dyl:user *dyl:dylres *dyl:res *dyl:alias Dyl:Data Dyl:DataHead Dyl:AsmDefs Dyl:AsmRead)
+        saved     (list *dyl:contents *dyl:user *dyl:dylres *dyl:res *dyl:alias Dyl:Data Dyl:DataHead Dyl:AsmDefs Dyl:AsmRead
+                        Dyl:HatchDefs Dyl:MatDefs Dyl:MatBoth
+                  )
         wt:dimzin (getvar "DIMZIN")
   )
   ;;  (the assemblies are read by Quick Draw, loaded before the folders are pointed at a case;
@@ -327,11 +359,14 @@
      (princ "\nWitness: Quick Draw is turned off in the Startup Suite (Dyl-Suite): turn it on, the assemblies are read through it.")
     )
     (T
-      (setq Dyl:Data     nil
-            Dyl:DataHead nil
-            Dyl:AsmDefs  nil
-            Dyl:AsmRead  nil
-            err          (vl-catch-all-apply 'wt:all (list (if (nth 5 saved) T)))
+      (setq Dyl:Data      nil
+            Dyl:DataHead  nil
+            Dyl:AsmDefs   nil
+            Dyl:AsmRead   nil
+            Dyl:HatchDefs nil
+            Dyl:MatDefs   nil
+            Dyl:MatBoth   nil
+            err           (vl-catch-all-apply 'wt:all (list (if (nth 5 saved) T)))
       )
       ;;  The folders and functions of DynALisp given back, the reads of the cases dropped:
       (setvar "DIMZIN" wt:dimzin)
@@ -344,6 +379,9 @@
             Dyl:DataHead    (nth 6 saved)
             Dyl:AsmDefs     (nth 7 saved)
             Dyl:AsmRead     (nth 8 saved)
+            Dyl:HatchDefs   (nth 9 saved)
+            Dyl:MatDefs     (nth 10 saved)
+            Dyl:MatBoth     (nth 11 saved)
             *pst:readcache* nil
             *grp:cache*     nil
             *mt:oldstamp*   nil

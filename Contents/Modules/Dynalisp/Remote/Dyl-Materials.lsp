@@ -1127,13 +1127,21 @@
 
 ;;  The default hatch presets (Res\HatchPresets.csv; *hp:defaults* when it cannot be read):
 (defun Remote>>Dyl:HatchPresetDefs ()
-  (Remote>>Dyl:MaterialDefsOf "HatchPreset" 'Remote>>Dyl:MaterialFix '*hp:defcache* *hp:defaults*)
+  (cond
+    ;;  (read by DynALisp.Core when it is loaded, see Installer\Core\Data\Materials.cs; nil
+    ;;  when the Lisp reads them:)
+    ((if Dyl:HatchDefs (Dyl:HatchDefs *dyl:contents (getvar "DIMZIN"))))
+    ((Remote>>Dyl:MaterialDefsOf "HatchPreset" 'Remote>>Dyl:MaterialFix '*hp:defcache* *hp:defaults*))
+  )
 )
 
 ;;  The default materials, their rows of Res\Materials.csv (*mt:defaults* when it cannot be
 ;;  read):
 (defun Remote>>Dyl:MaterialRowDefs ()
-  (Remote>>Dyl:MaterialDefsOf "Material" 'Remote>>Dyl:MaterialRowFix '*mt:defcache* *mt:defaults*)
+  (cond
+    ((if Dyl:MatDefs (Dyl:MatDefs *dyl:contents)))
+    ((Remote>>Dyl:MaterialDefsOf "Material" 'Remote>>Dyl:MaterialRowFix '*mt:defcache* *mt:defaults*))
+  )
 )
 
 ;;  The default materials joined to the default hatch presets (see Remote>>Dyl:MaterialJoin):
@@ -1296,6 +1304,9 @@
 (defun Remote>>Dyl:MaterialBoth ()
   (cond
     ((Remote>>Dyl:MaterialMigrate))
+    ;;  (read by DynALisp.Core when it is loaded, see Installer\Core\Data\Materials.cs; nil
+    ;;  when the Lisp reads them:)
+    ((if Dyl:MatBoth (Dyl:MatBoth *dyl:contents (getvar "DIMZIN"))))
     ((list (Remote>>Dyl:PresetRead "HatchPreset" (Remote>>Dyl:HatchPresetDefs) 'Remote>>Dyl:MaterialFix)
            (Remote>>Dyl:PresetRead "Material" (Remote>>Dyl:MaterialRowDefs) 'Remote>>Dyl:MaterialRowFix)
      )
