@@ -20,11 +20,11 @@
 // do not fit), each a WindowData; a drawing is a DrawingWindowData, whose Doc is its Document.
 // No API gives them: the control is found among the WPF windows of AutoCAD by the name of its
 // type, the items read by the names of their properties. Each tab of a drawing of a project
-// gets a band of the colour of its project across its top (the tabs of the list, down their
-// left side), drawn over it by an adorner, which changes nothing of the control, nor its size;
-// where the tab has no adorner layer, its first border takes the colour instead. Anything not
-// found (another version of AcWindows) leaves the tabs as they are and is said by
-// (Dyl:RibbonFileTabs).
+// gets a thin bar of the colour of its project just left of its title, slanted as the side of
+// the tab (the tabs of the list: down their left side), always shown: an element of DynALisp
+// added over the grid of the tab (or an adorner), which changes nothing of the control, nor its
+// size, nor any element of its template. Anything not found (another version of AcWindows)
+// leaves the tabs as they are and is said by (Dyl:RibbonFileTabs).
 //
 // The project of a drawing is found from the folder of the drawing up, as the Lisp side finds it:
 //   - Project: the first folder holding a .apj (Project Navigator of AutoCAD Architecture),
@@ -102,13 +102,11 @@ namespace DynALisp.Ribbon
         };
         static readonly Brush[] Brushes = Palette.Select(c => { var b = new SolidColorBrush(c); b.Freeze(); return (Brush)b; }).ToArray();
 
-        const double Thick = 3;        // the band, in pixels
 
         // "Project" or "Sheet set", null while off:
         public static string Mode;
         static string _fail;
         static int _tabs, _colours;
-        static bool _border;           // a tab coloured by its border (no adorner layer)
         static bool _hidden;           // the file tabs not shown (FILETABSTATE 0)
         static bool _due = true;
         static bool _waiting = true;   // the mode changed, not applied yet
@@ -149,7 +147,7 @@ namespace DynALisp.Ribbon
             if (_fail != null) return "not found: " + _fail;
             if (_waiting) return Mode + " (on the next idle)";
             if (_hidden) return Mode + " (the file tabs are hidden: FILETAB shows them)";
-            return Mode + " (" + _tabs + " tabs, " + _colours + " colours" + (_border ? ", by their border" : "") + ")";
+            return Mode + " (" + _tabs + " tabs, " + _colours + " colours)";
         }
 
         // AutoCAD idle: the bands shown again, twice a second at most (the tabs change with no
@@ -310,7 +308,7 @@ namespace DynALisp.Ribbon
             _hidden = Mode != null && Hidden();
             var ctl = Mode == null || _hidden ? null : Control();
             var keep = new HashSet<FrameworkElement>(ReferenceEqualityComparer.Instance);
-            _tabs = 0; _colours = 0; _border = false;
+            _tabs = 0; _colours = 0;
             if (_hidden) _fail = null;
             else if (Mode != null && ctl == null) _fail = "the file tabs of AutoCAD";
             if (ctl != null)
@@ -352,32 +350,48 @@ namespace DynALisp.Ribbon
         {
             if (Shown.TryGetValue(tab, out var band))
             {
-                if (band.Attached()) { band.Set(fill, side); _border |= band.ByBorder; return true; }
+                if (band.Attached()) { band.Set(fill, side); return true; }
                 band.Remove();
                 Shown.Remove(tab);
             }
             band = Band.On(tab, fill, side);
             if (band == null) return false;
             Shown[tab] = band;
-            _border |= band.ByBorder;
             return true;
         }
 
-        // The band of a tab: an adorner drawn over it, or its first border in the colour.
+        // The band of a tab, in this order:
+        //   - an element of DynALisp (Overlay) added over the content of the first grid of the tab
+        //     that is always shown (not a part shown only under the mouse): the band stays
+        //     whatever the mouse does, and takes no room;
+        //   - else an adorner over the tab (Strip), when the tab has an adorner layer above it;
+        //   - else none: never an element of the template recoloured (the first border of the tab
+        //     of AutoCAD 2027 is its close button, shown only under the mouse).
         sealed class Band
         {
             readonly FrameworkElement _tab;
+            Overlay _over;
+            Grid _grid;
             Strip _strip;
             AdornerLayer _layer;
-            Border _bd;
-            object _wasBrush, _wasThick;
-            public bool ByBorder => _bd != null;
+            public string How => _over != null ? "grid" : _strip != null ? "adorner" : "-";
 
             Band(FrameworkElement tab) { _tab = tab; }
 
             public static Band On(FrameworkElement tab, Brush fill, bool side)
             {
                 var b = new Band(tab);
+                var grid = HostGrid(tab);
+                if (grid != null)
+                {
+                    b._grid = grid;
+                    b._over = new Overlay(tab) { Fill = fill, Side = side };
+                    Grid.SetRowSpan(b._over, Math.Max(1, grid.RowDefinitions.Count));
+                    Grid.SetColumnSpan(b._over, Math.Max(1, grid.ColumnDefinitions.Count));
+                    Panel.SetZIndex(b._over, 10000);
+                    grid.Children.Add(b._over);
+                    return b;
+                }
                 var layer = AdornerLayer.GetAdornerLayer(tab);
                 if (layer != null)
                 {
@@ -386,22 +400,34 @@ namespace DynALisp.Ribbon
                     layer.Add(b._strip);
                     return b;
                 }
-                // No adorner layer above the tab: its first border takes the colour.
-                if (Find(tab, v => v is Border, 0) is Border bd)
+                return null;
+            }
+
+            // The first grid of the tab (from the tab down) as wide as the tab nearly, always
+            // shown: it and every element between it and the tab visible and opaque (a part of
+            // the template shown only under the mouse is hidden or transparent otherwise).
+            static Grid HostGrid(FrameworkElement tab)
+            {
+                var queue = new Queue<(DependencyObject, int)>();
+                queue.Enqueue((tab, 0));
+                while (queue.Count > 0)
                 {
-                    b._bd = bd;
-                    b._wasBrush = bd.ReadLocalValue(Border.BorderBrushProperty);
-                    b._wasThick = bd.ReadLocalValue(Border.BorderThicknessProperty);
-                    b.Set(fill, side);
-                    return b;
+                    var (node, depth) = queue.Dequeue();
+                    if (node is UIElement u && (u.Visibility != System.Windows.Visibility.Visible || u.Opacity < 0.99)) continue;
+                    if (node is Grid g && g.ActualWidth >= tab.ActualWidth * 0.8 && g.ActualHeight >= tab.ActualHeight * 0.6) return g;
+                    if (depth >= 8 || !(node is Visual)) continue;
+                    int n = VisualTreeHelper.GetChildrenCount(node);
+                    for (int i = 0; i < n; i++) queue.Enqueue((VisualTreeHelper.GetChild(node, i), depth + 1));
                 }
                 return null;
             }
 
-            // Still on its tab (the tab bar made again takes another adorner layer):
+            // Still on its tab (the tab made again from its template, the tab bar again):
             public bool Attached()
             {
-                if (_bd != null) return PresentationSource.FromVisual(_bd) != null && IsAncestor(_tab, _bd);
+                if (_over != null)
+                    return ReferenceEquals(VisualTreeHelper.GetParent(_over), _grid) && IsAncestor(_tab, _grid)
+                           && PresentationSource.FromVisual(_over) != null;
                 return _layer != null && ReferenceEquals(AdornerLayer.GetAdornerLayer(_tab), _layer)
                        && (_layer.GetAdorners(_tab)?.Contains(_strip) ?? false);
             }
@@ -413,42 +439,130 @@ namespace DynALisp.Ribbon
                 return false;
             }
 
+            // The colour, and the band drawn again (the text of the tab may have moved):
             public void Set(Brush fill, bool side)
             {
-                if (_strip != null)
-                {
-                    if (!ReferenceEquals(_strip.Fill, fill) || _strip.Side != side)
-                    {
-                        _strip.Fill = fill;
-                        _strip.Side = side;
-                        _strip.InvalidateVisual();
-                    }
-                    return;
-                }
-                if (_bd == null) return;
-                var th = side ? new Thickness(Thick, 0, 0, 0) : new Thickness(0, Thick, 0, 0);
-                if (!ReferenceEquals(_bd.BorderBrush, fill)) _bd.BorderBrush = fill;
-                if (_bd.BorderThickness != th) _bd.BorderThickness = th;
+                if (_over != null) { _over.Fill = fill; _over.Side = side; _over.InvalidateVisual(); return; }
+                if (_strip != null) { _strip.Fill = fill; _strip.Side = side; _strip.InvalidateVisual(); }
             }
 
-            // Gone, and the border given back what it had:
             public void Remove()
             {
+                try { if (_over != null) _grid?.Children.Remove(_over); } catch { }
                 try { if (_strip != null) _layer?.Remove(_strip); } catch { }
-                if (_bd == null) return;
-                try
-                {
-                    if (_wasBrush == DependencyProperty.UnsetValue) _bd.ClearValue(Border.BorderBrushProperty);
-                    else _bd.BorderBrush = _wasBrush as Brush;
-                    if (_wasThick == DependencyProperty.UnsetValue) _bd.ClearValue(Border.BorderThicknessProperty);
-                    else if (_wasThick is Thickness t) _bd.BorderThickness = t;
-                }
-                catch { }
             }
         }
 
-        // The band itself: across the top of a tab, or down the left side of a tab of the list.
+        // The band, drawn on an element over the tab (on): a thin bar just left of the title of
+        // the tab, slanted as the left side of the tab (the first shape of the tab whose left
+        // edge leans), from its top to its bottom; down the left side of a tab of the list.
         // Never hit by the mouse, so the tab is clicked, dragged and closed as before.
+        static void Draw(DrawingContext dc, FrameworkElement on, FrameworkElement tab, Brush fill, bool side)
+        {
+            var size = on.RenderSize;
+            if (fill == null || size.Width <= 0 || size.Height <= 0) return;
+            if (side) { dc.DrawRectangle(fill, null, new Rect(0, 0, Math.Min(Wide, size.Width), size.Height)); return; }
+            var (xt, xb, yt, yb) = LeftEdge(on, tab, size);
+            double tx = TextLeft(on, tab);
+            // The slant of the side (its x at the top less its x at the bottom), the bar put just
+            // left of the title with it: the side found may be the one at the right of the tab.
+            double lean = xt - xb;
+            double top = double.IsNaN(tx) ? Math.Max(xt, xb) + 4 : tx - Gap - Wide;
+            double bot = top - lean;
+            var g = new StreamGeometry();
+            using (var c = g.Open())
+            {
+                c.BeginFigure(new Point(bot, yb), true, true);
+                c.LineTo(new Point(bot + Wide, yb), false, false);
+                c.LineTo(new Point(top + Wide, yt), false, false);
+                c.LineTo(new Point(top, yt), false, false);
+            }
+            g.Freeze();
+            dc.DrawGeometry(fill, null, g);
+        }
+
+        const double Wide = 2;         // the band, in pixels
+        const double Gap = 4;          // between the band and the title
+
+        // A side of the tab in the coordinates of on: (x at the top, x at the bottom, top, bottom).
+        // The tab of AutoCAD 2027 is a grid of a Rectangle (its body) and Paths 10 px wide (the
+        // slanted separators of the tabs, / ): the side is the leftmost leaning edge of its
+        // shapes as tall as the tab nearly; a straight side (x the same) when none leans.
+        public static (double, double, double, double) LeftEdge(FrameworkElement on, FrameworkElement tab, Size size)
+        {
+            (double, double, double, double)? best = null;
+            try
+            {
+                foreach (var sh in Below(tab).OfType<System.Windows.Shapes.Shape>())
+                {
+                    if (sh.Visibility != System.Windows.Visibility.Visible || sh.ActualHeight < size.Height * 0.6) continue;
+                    var geo = sh.RenderedGeometry?.GetFlattenedPathGeometry();
+                    if (geo == null || geo.IsEmpty()) continue;
+                    var to = sh.TransformToVisual(on);
+                    var pts = new List<Point>();
+                    foreach (var f in geo.Figures)
+                    {
+                        pts.Add(to.Transform(f.StartPoint));
+                        foreach (var seg in f.Segments)
+                            if (seg is PolyLineSegment pl) foreach (var pt in pl.Points) pts.Add(to.Transform(pt));
+                            else if (seg is LineSegment ls) pts.Add(to.Transform(ls.Point));
+                    }
+                    if (pts.Count < 2) continue;
+                    double top = pts.Min(q => q.Y), bot = pts.Max(q => q.Y);
+                    if (bot - top < size.Height * 0.6) continue;
+                    double xt = pts.Where(q => q.Y - top < 1.5).Min(q => q.X);
+                    double xb = pts.Where(q => bot - q.Y < 1.5).Min(q => q.X);
+                    if (Math.Abs(xt - xb) < 1) continue;
+                    if (best == null || Math.Min(xt, xb) < Math.Min(best.Value.Item1, best.Value.Item2))
+                        best = (xt, xb, top, bot);
+                }
+            }
+            catch { }
+            return best ?? (0, 0, 0, size.Height);
+        }
+
+        // The left of the title of the tab in the coordinates of on, NaN when it has none:
+        public static double TextLeft(FrameworkElement on, FrameworkElement tab)
+        {
+            try
+            {
+                foreach (var v in Below(tab))
+                    if (v is TextBlock t && t.IsVisible && !string.IsNullOrWhiteSpace(t.Text) && t.ActualWidth > 0)
+                        return t.TransformToVisual(on).Transform(new Point(0, 0)).X;
+            }
+            catch { }
+            return double.NaN;
+        }
+
+        // The elements of the tab, from the tab down (never the bands of DynALisp):
+        static IEnumerable<DependencyObject> Below(DependencyObject node)
+        {
+            if (node == null || node is Overlay) yield break;
+            yield return node;
+            if (!(node is Visual)) yield break;
+            int n = VisualTreeHelper.GetChildrenCount(node);
+            for (int i = 0; i < n; i++)
+                foreach (var d in Below(VisualTreeHelper.GetChild(node, i))) yield return d;
+        }
+
+        // The band as an element of the tab:
+        sealed class Overlay : FrameworkElement
+        {
+            public Brush Fill;
+            public bool Side;
+            readonly FrameworkElement _tab;
+            public Overlay(FrameworkElement tab)
+            {
+                _tab = tab;
+                IsHitTestVisible = false;
+                Focusable = false;
+                HorizontalAlignment = HorizontalAlignment.Stretch;
+                VerticalAlignment = VerticalAlignment.Stretch;
+            }
+            protected override void OnRender(DrawingContext dc) => Draw(dc, this, _tab, Fill, Side);
+        }
+
+        // The band as an adorner of the tab:
         sealed class Strip : Adorner
         {
             public Brush Fill;
@@ -460,13 +574,7 @@ namespace DynALisp.Ribbon
                 IsClipEnabled = true;
             }
 
-            protected override void OnRender(DrawingContext dc)
-            {
-                var s = AdornedElement.RenderSize;
-                if (Fill == null || s.Width <= 0 || s.Height <= 0) return;
-                dc.DrawRectangle(Fill, null, Side ? new Rect(0, 0, Math.Min(Thick, s.Width), s.Height)
-                                                  : new Rect(0, 0, s.Width, Math.Min(Thick, s.Height)));
-            }
+            protected override void OnRender(DrawingContext dc) => Draw(dc, this, (FrameworkElement)AdornedElement, Fill, Side);
         }
 
         // ---- the diagnostic ----
@@ -507,7 +615,9 @@ namespace DynALisp.Ribbon
                               ", drawing: " + (doc != null ? Safe(() => doc.Name) : "-") +
                               ", project: " + (doc != null && Mode != null ? (ProjectOf(doc) ?? "-") : "-") +
                               ", tab: " + (tab == null ? "-" : tab.GetType().Name + " " + Size(tab) +
-                                           (AdornerLayer.GetAdornerLayer(tab) != null ? ", adorner layer" : ", no adorner layer")));
+                                           (AdornerLayer.GetAdornerLayer(tab) != null ? ", adorner layer" : ", no adorner layer") +
+                                           (Shown.TryGetValue(tab, out var bd) ? ", band: " + bd.How : "") +
+                                           ", side " + Edge(tab) + ", title at " + Math.Round(TextLeft(tab, tab), 1)));
                 }
             }
             lines.Add("");
@@ -526,6 +636,12 @@ namespace DynALisp.Ribbon
             if (!(node is Visual)) return;
             int n = VisualTreeHelper.GetChildrenCount(node);
             for (int i = 0; i < n; i++) Tree(VisualTreeHelper.GetChild(node, i), depth + 1, lines);
+        }
+
+        static string Edge(FrameworkElement tab)
+        {
+            var (xt, xb, yt, yb) = LeftEdge(tab, tab, tab.RenderSize);
+            return "(" + Math.Round(xb, 1) + "," + Math.Round(yb, 1) + ")-(" + Math.Round(xt, 1) + "," + Math.Round(yt, 1) + ")";
         }
 
         static string Size(FrameworkElement e) => Math.Round(e.ActualWidth) + "x" + Math.Round(e.ActualHeight);
