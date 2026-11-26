@@ -35,6 +35,9 @@
 ;;      DynALisp windows while AutoCAD is in its dark theme, an experiment that Autodesk
 ;;      does not support: done by DynALisp.Ribbon.dll (Installer\Ribbon\Plugin\Skin.cs),
 ;;      which reads these settings itself and again when (Dyl:RibbonSkin) is called.
+;;    - Palettes (DynalispPaletteColors): DynALisp, the same for the palettes of AutoCAD
+;;      (Properties...), its status bar, file tabs and command line, by the same plugin
+;;      ((Dyl:RibbonSkin "Palettes") says what it does with them).
 ;;  Each background comes with a crosshair color that stays readable on it. DynALisp is
 ;;  the dark of the DynALisp windows (Installer\Windows\Engine\Session.cs, Theme): the
 ;;  model space and the background around the paper a little darker than their title
@@ -78,11 +81,12 @@
 (setq *ec:themes* '(("Dark" . 0) ("Light" . 1)))
 
 ;;  The display settings, in this order: (KEY CONTEXT), CONTEXT a context of
-;;  *ec:colors*, theme or ribbon:
+;;  *ec:colors*, theme, ribbon or palettes:
 (setq *ec:prefs* '(("DynalispBackground" model)
                    ("DynalispLayoutBackground" layout)
                    ("DynalispColorTheme" theme)
                    ("DynalispRibbonColors" ribbon)
+                   ("DynalispPaletteColors" palettes)
                   )
 )
 
@@ -93,10 +97,10 @@
   (if (and (setq v (getenv "Paper background")) (/= "" v)) (atoi v))
 )
 
-;;  Names of the choices of a context (model, layout, theme or ribbon):
+;;  Names of the choices of a context (model, layout, theme, ribbon or palettes):
 (defun Remote>>Dyl:DisplayNames (ctx)
   (cond
-    ((= ctx 'ribbon) '("DynALisp"))
+    ((member ctx '(ribbon palettes)) '("DynALisp"))
     ((mapcar 'car (if (= ctx 'theme) *ec:themes* (cddr (assoc ctx *ec:colors*)))))
   )
 )
@@ -169,8 +173,8 @@
   (ec:ribbon)
 )
 
-;;  The display settings chosen, in the order of *ec:prefs*: (MODEL LAYOUT THEME RIBBON),
-;;  each a name, nil when it is not set:
+;;  The display settings chosen, in the order of *ec:prefs*: (MODEL LAYOUT THEME RIBBON
+;;  PALETTES), each a name, nil when it is not set:
 (defun Remote>>Dyl:DisplayPref ()
   (mapcar '(lambda (p / name)
              (setq name (getenv (car p)))
@@ -203,6 +207,9 @@
              ((not name))
              ((= ctx 'ribbon)
               (setq done (cons (strcat "ribbon " (cond (rbn) ("plugin not loaded"))) done))
+             )
+             ((= ctx 'palettes)
+              (setq done (cons (strcat "palettes " (if Dyl:RibbonSkin (Dyl:RibbonSkin "Palettes") "plugin not loaded")) done))
              )
              ((= name (if (= ctx 'theme) (Remote>>Dyl:Theme) (Remote>>Dyl:Background ctx)))
               (setq done (cons (strcat what name) done))

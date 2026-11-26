@@ -669,14 +669,20 @@
       )
       ;; The ribbon in the colours of DynALisp, by DynALisp.Ribbon.dll (Skin.cs, an
       ;; experiment): what it does, a problem when it cannot:
-      (if (cadddr pref)
-        (cond
-          ((not Dyl:RibbonSkin) (dg:bad "Display: Ribbon is DynALisp but DynALisp.Ribbon.dll is not loaded"))
-          ((wcmatch (setq thm (Dyl:RibbonSkin)) "not found*,error*")
-           (dg:bad (strcat "Display: the ribbon colours cannot be set, " thm " (another version of AutoCAD?)"))
-          )
-          ((dg:note (strcat "Display: ribbon colours " thm)))
-        )
+      (mapcar '(lambda (name what arg)
+                 (if name
+                   (cond
+                     ((not Dyl:RibbonSkin) (dg:bad (strcat "Display: " what " is DynALisp but DynALisp.Ribbon.dll is not loaded")))
+                     ((wcmatch (setq thm (if arg (Dyl:RibbonSkin arg) (Dyl:RibbonSkin))) "not found*,error*")
+                      (dg:bad (strcat "Display: the " what " colours cannot be set, " thm " (another version of AutoCAD?)"))
+                     )
+                     ((dg:note (strcat "Display: " what " colours " thm)))
+                   )
+                 )
+               )
+              (cdddr pref)
+              '("ribbon" "palettes")
+              '(nil "Palettes")
       )
     )
   )

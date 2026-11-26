@@ -38,6 +38,8 @@ thm/list=(Not set)|Dark|Light
 thm=1
 rbn/list=(Not set)|DynALisp
 rbn=1
+pal/list=(Not set)|DynALisp
+pal=1
 # File Preferences:
 pcl/list=NBS CAWS (Global)|CSI MasterFormat (US)|OmniClass
 pcl=1

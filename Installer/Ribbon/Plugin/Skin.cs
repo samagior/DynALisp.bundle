@@ -1,4 +1,4 @@
-// Skin.cs - DynALisp.Ribbon: the ribbon of AutoCAD in the dark of the DynALisp windows (experiment)
+// Skin.cs - DynALisp.Ribbon: the ribbon and palettes of AutoCAD in the dark of DynALisp (experiment)
 // Copyright (C) 2026  Samuel Martineau
 //
 // This program is free software: you can redistribute it and/or modify
@@ -15,12 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // EXPERIMENT, not supported by Autodesk. AutoCAD lets a user pick only its Dark or Light theme
-// (COLORTHEME). Its ribbon (AdWindows.dll) takes its colours from a theme object,
-// ComponentManager.CurrentTheme (Autodesk.Internal.Windows.Theme): the brushes of the ribbon,
-// its tabs and panels (Ribbon, Ribbon.MainTab), the application menu and the frame, which the
-// controls of the ribbon are bound to (CurrentTheme.Ribbon.TabBarBackground...). While the
-// skin is on and AutoCAD is in its dark theme, every colour of that theme goes through a
-// filter (Map): the greys and blue-greys of the surfaces take the hue of the DynALisp windows
+// (COLORTHEME). Its interface takes its colours from two theme objects, each a target here:
+//   - Ribbon: ComponentManager.CurrentTheme (AdWindows.dll, Autodesk.Internal.Windows.Theme):
+//     the brushes of the ribbon, its tabs and panels (Ribbon, Ribbon.MainTab), the application
+//     menu and the frame, which the controls of the ribbon are bound to.
+//   - Palettes: PaletteSettings.CurrentTheme of ThemeManager (AdUiPalettes.dll,
+//     Autodesk.Windows.Palettes.PaletteTheme): the colours of the palettes (Properties, the
+//     tool palettes...: PaletteContainerBackgroundColor, PropertyInspector*...), and of the
+//     status bar, the file tabs, the command line and the menus.
+// While a target is on and AutoCAD is in its dark theme, every colour of its theme goes through
+// a filter (Map): the greys and blue-greys of the surfaces take the hue of the DynALisp windows
 // (Installer\Windows\Engine\Session.cs) and get darker, the light ones (the texts) take their
 // hue, the saturated ones (the blue of what is picked) and the icons stay as they are.
 //
@@ -30,9 +34,9 @@
 // a second; anything not found (another version of AdWindows) leaves the ribbon as it is and
 // says why in (Dyl:RibbonSkin).
 //
-// On while Display is on in Dyl-Settings (DynalispDisplayOn) and its Ribbon is DynALisp
-// (DynalispRibbonColors), read here from the registry when the plugin loads, and again when
-// the Lisp side calls (Dyl:RibbonSkin) after the settings are saved.
+// On while Display is on in Dyl-Settings (DynalispDisplayOn) and its Ribbon (DynalispRibbonColors)
+// or Palettes (DynalispPaletteColors) is DynALisp, read here from the registry when the plugin
+// loads, and again when the Lisp side calls (Dyl:RibbonSkin) after the settings are saved.
 
 using System;
 using System.Collections.Generic;
@@ -50,14 +54,109 @@ namespace DynALisp.Ribbon
     // The Lisp function of the skin (see LangCommands: a static class cannot hold it).
     public class SkinCommands
     {
-        // (Dyl:RibbonSkin): reads the settings again, applies or removes the skin the next time
-        // AutoCAD is idle, and returns what it does: "DynALisp", "off", "waiting for the dark
-        // theme", "not found: ..." (Dyl-Settings, Dyl-Diagnostics).
+        // (Dyl:RibbonSkin ["Palettes"]): reads the settings again, applies or removes the skin
+        // the next time AutoCAD is idle, and returns what it does with the ribbon (or the
+        // palettes): "DynALisp (57 colours)", "off", "waiting for the dark theme", "not found:
+        // ..." (Dyl-Settings, Dyl-Diagnostics).
         [LispFunction("Dyl:RibbonSkin")]
         public static object RibbonSkin(ResultBuffer args)
         {
-            try { Skin.Read(); return Skin.Status(); }
+            try
+            {
+                Skin.Read();
+                string which = args?.AsArray().Select(v => v.Value as string).FirstOrDefault(v => v != null);
+                return (string.Equals(which, "Palettes", StringComparison.OrdinalIgnoreCase) ? Skin.Palettes : Skin.Ribbon).Status();
+            }
             catch (System.Exception ex) { return "error: " + ex.Message; }
+        }
+    }
+
+    // One theme object of AutoCAD put in the colours of DynALisp: how to get it and make
+    // another one current, the setting that turns it on, and what it changed.
+    public sealed class SkinTarget
+    {
+        public readonly string Name, Setting;
+        readonly Func<object> _get;
+        readonly Action<object> _set;
+        public SkinTarget(string name, string setting, Func<object> get, Action<object> set)
+        {
+            Name = name; Setting = setting; _get = get; _set = set;
+        }
+
+        public bool Wanted;
+        string _fail;
+        // The theme changed in place: (object, property, value it had), to give them back.
+        readonly List<(object Node, PropertyInfo Prop, object Was)> _changed = new();
+        object _inPlace;        // the theme changed in place
+        object _copy, _orig;    // the copy made current, and the theme it was made from
+        int _count;             // the colours changed
+
+        public bool Busy => Wanted || _inPlace != null || _copy != null;
+
+        public string Status()
+        {
+            if (!Wanted) return "off";
+            if (_fail != null) return "not found: " + _fail;
+            if (!Skin.Dark()) return "waiting for the dark theme";
+            if (_inPlace != null) return "DynALisp (" + _count + " colours)";
+            if (_copy != null) return "DynALisp (" + _count + " colours, copy of the theme)";
+            return "DynALisp (on the next idle)";
+        }
+
+        object Current()
+        {
+            try { return _get(); }
+            catch (System.Exception ex) { _fail = ex.Message; return null; }
+        }
+
+        public void Apply()
+        {
+            try { Run(); }
+            catch (System.Exception ex) { _fail = ex.Message; Host.Log(Name + " colours: " + ex.Message); }
+        }
+
+        void Run()
+        {
+            object cur = Current();
+            if (cur == null) { _fail ??= Name + " theme"; return; }
+            _fail = null;
+            if (Wanted && Skin.Dark())
+            {
+                if (ReferenceEquals(cur, _inPlace) || ReferenceEquals(cur, _copy)) return;
+                // Another theme made current by AutoCAD: the former one given back first.
+                Undo();
+                if (Skin.Unfrozen(cur))
+                {
+                    _count = Skin.Filter(cur, _changed);
+                    _inPlace = cur;
+                }
+                else
+                {
+                    var copy = ((Freezable)cur).Clone();
+                    _count = Skin.Filter(copy, null);
+                    _orig = cur;
+                    _copy = copy;
+                    _set(copy);
+                }
+            }
+            else Undo();
+        }
+
+        // The colours given back: the theme changed in place, or the theme the copy was made
+        // from made current again (when AutoCAD has not made another one current since).
+        void Undo()
+        {
+            foreach (var (node, prop, was) in Enumerable.Reverse(_changed))
+                try { prop.SetValue(node, was); } catch { }
+            _changed.Clear();
+            _inPlace = null;
+            if (_copy != null)
+            {
+                if (ReferenceEquals(Current(), _copy)) _set(_orig);
+                _copy = null;
+                _orig = null;
+            }
+            _count = 0;
         }
     }
 
@@ -72,16 +171,18 @@ namespace DynALisp.Ribbon
         // A colour lighter than this is a text or a light line: it only takes the hue.
         const double Light = 0.6;
 
-        public static bool Wanted { get; private set; }
+        public static readonly SkinTarget Ribbon = new SkinTarget("ribbon", "DynalispRibbonColors",
+            () => ComponentManager.CurrentTheme,
+            t => ComponentManager.CurrentTheme = (Autodesk.Internal.Windows.Theme)t);
+
+        public static readonly SkinTarget Palettes = new SkinTarget("palettes", "DynalispPaletteColors",
+            () => Autodesk.Windows.Themes.ThemeManager.PaletteSettings.CurrentTheme,
+            t => Autodesk.Windows.Themes.ThemeManager.PaletteSettings.CurrentTheme = (Autodesk.Windows.Palettes.PaletteTheme)t);
+
+        static readonly SkinTarget[] Targets = { Ribbon, Palettes };
+
         static bool _due = true;
         static int _next = Environment.TickCount;
-        static string _fail;
-
-        // The theme changed in place: (object, property, value it had), to give them back.
-        static readonly List<(object Node, PropertyInfo Prop, object Was)> Changed = new();
-        static object _inPlace;        // the theme changed in place
-        static object _copy, _orig;    // the copy made current, and the theme it was made from
-        static int _count;             // the colours changed
 
         public static void Start()
         {
@@ -95,7 +196,8 @@ namespace DynALisp.Ribbon
         // The settings, from the registry (setenv / getenv: FixedProfile\General):
         public static void Read()
         {
-            Wanted = Env("DynalispDisplayOn") == "1" && Env("DynalispRibbonColors") == "DynALisp";
+            bool on = Env("DynalispDisplayOn") == "1";
+            foreach (var t in Targets) t.Wanted = on && Env(t.Setting) == "DynALisp";
             _due = true;
             _next = Environment.TickCount;
         }
@@ -111,82 +213,22 @@ namespace DynALisp.Ribbon
             catch { return null; }
         }
 
-        static bool Dark()
+        public static bool Dark()
         {
             try { return Convert.ToInt32(AcApp.GetSystemVariable("COLORTHEME")) == 0; }
             catch { return true; }
-        }
-
-        public static string Status()
-        {
-            if (!Wanted) return "off";
-            if (_fail != null) return "not found: " + _fail;
-            if (!Dark()) return "waiting for the dark theme";
-            if (_inPlace != null) return "DynALisp (" + _count + " colours)";
-            if (_copy != null) return "DynALisp (" + _count + " colours, copy of the theme)";
-            return "DynALisp (on the next idle)";
         }
 
         // Run by Host.OnIdle: the skin put on, kept on (AutoCAD makes another theme current when
         // COLORTHEME changes or the ribbon is made again) or taken off, once a second at most.
         public static void OnIdle()
         {
-            if (!_due && !Wanted && _inPlace == null && _copy == null) return;
+            if (!_due && !Targets.Any(t => t.Busy)) return;
             if (Environment.TickCount - _next < 0) return;
             _next = Environment.TickCount + 1000;
             _due = false;
-            try { Apply(); }
-            catch (System.Exception ex) { _fail = ex.Message; Host.Log("ribbon colours: " + ex.Message); }
+            foreach (var t in Targets) t.Apply();
         }
-
-        static void Apply()
-        {
-            object cur = Current();
-            if (cur == null) { _fail = "ComponentManager.CurrentTheme"; return; }
-            _fail = null;
-            bool on = Wanted && Dark();
-            if (on)
-            {
-                if (ReferenceEquals(cur, _inPlace) || ReferenceEquals(cur, _copy)) return;
-                // Another theme made current by AutoCAD: the former one given back first.
-                Undo();
-                if (Unfrozen(cur))
-                {
-                    _count = Filter(cur, true);
-                    _inPlace = cur;
-                }
-                else
-                {
-                    var copy = ((Freezable)cur).Clone();
-                    _count = Filter(copy, false);
-                    _orig = cur;
-                    _copy = copy;
-                    SetCurrent(copy);
-                }
-            }
-            else Undo();
-        }
-
-        // The colours given back: the theme changed in place, or the theme the copy was made from
-        // made current again (when AutoCAD has not made another one current since).
-        static void Undo()
-        {
-            foreach (var (node, prop, was) in Enumerable.Reverse(Changed))
-                try { prop.SetValue(node, was); } catch { }
-            Changed.Clear();
-            _inPlace = null;
-            if (_copy != null)
-            {
-                if (ReferenceEquals(Current(), _copy)) SetCurrent(_orig);
-                _copy = null;
-                _orig = null;
-            }
-            _count = 0;
-        }
-
-        static object Current() => ComponentManager.CurrentTheme;
-
-        static void SetCurrent(object theme) => ComponentManager.CurrentTheme = (Autodesk.Internal.Windows.Theme)theme;
 
         // ---- the walk of the theme ----
 
@@ -200,7 +242,7 @@ namespace DynALisp.Ribbon
             node.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.CanRead && p.GetIndexParameters().Length == 0);
 
-        static bool Unfrozen(object theme)
+        public static bool Unfrozen(object theme)
         {
             var seen = new HashSet<object>(ReferenceEqualityComparer.Instance);
             return Unfrozen(theme, seen);
@@ -220,15 +262,15 @@ namespace DynALisp.Ribbon
             return true;
         }
 
-        // Every colour of the theme through Map; keep: remember what it was (in place). Returns
-        // how many were changed.
-        static int Filter(object theme, bool keep)
+        // Every colour of the theme through Map; keep (in place): where to remember what it was.
+        // Returns how many were changed.
+        public static int Filter(object theme, List<(object, PropertyInfo, object)> keep)
         {
             var seen = new HashSet<object>(ReferenceEqualityComparer.Instance);
             return Filter(theme, keep, seen);
         }
 
-        static int Filter(object node, bool keep, HashSet<object> seen)
+        static int Filter(object node, List<(object, PropertyInfo, object)> keep, HashSet<object> seen)
         {
             if (node == null || !seen.Add(node)) return 0;
             int n = 0;
@@ -244,7 +286,7 @@ namespace DynALisp.Ribbon
                 try
                 {
                     p.SetValue(node, nv);
-                    if (keep) Changed.Add((node, p, v));
+                    keep?.Add((node, p, v));
                     n++;
                 }
                 catch { }

@@ -4437,10 +4437,11 @@
   ;;;     settings applied in every drawing opened while Display is on: the model space
   ;;;     background, the paper of the layouts (each with its crosshair) and the theme
   ;;;     of AutoCAD (the layouts also the background around the paper), and the colours
-  ;;;     of the ribbon (an experiment of DynALisp.Ribbon.dll, Skin.cs), each one (Not
+  ;;;     of the ribbon and the palettes (an experiment of DynALisp.Ribbon.dll, Skin.cs), each one (Not
   ;;;     set) or a name: DynALisp (the dark of the DynALisp windows), Black, Default,
   ;;;     White, Dark, Light (DynalispBackground,
-  ;;;     DynalispLayoutBackground, DynalispColorTheme, DynalispRibbonColors, see
+  ;;;     DynalispLayoutBackground, DynalispColorTheme, DynalispRibbonColors,
+  ;;;     DynalispPaletteColors, see
   ;;;     Modules\Dynalisp\Remote\Dyl-EnvColor.lsp). st:bkg holds them, in the order of
   ;;;     *ec:prefs*; more display settings go in that window (Dyl:SetDisplayVals) and
   ;;;     in that list
@@ -4523,7 +4524,7 @@
 
   ;;; The popups of the display window, in the order of *ec:prefs* (Remote file
   ;;; Dyl-EnvColor.lsp): (KEY CONTEXT):
-  (setq *dyl:setdisplay* '(("bkg" model) ("lbk" layout) ("thm" theme) ("rbn" ribbon)))
+  (setq *dyl:setdisplay* '(("bkg" model) ("lbk" layout) ("thm" theme) ("rbn" ribbon) ("pal" palettes)))
 
   ;;; Items of a popup of the display window: nil, shown as (Not set), then the names
   ;;; of the choices of its context (model, layout or theme):
@@ -4687,7 +4688,7 @@
       )
       (Dyl:WinOff (mapcar 'car *dyl:setdisplay*) (not Remote>>Dyl:DisplayPrefSet))
       ;; The ribbon, by its plugin (DynALisp.Ribbon.dll):
-      (Dyl:WinOff "rbn" (not Dyl:RibbonSkin))
+      (Dyl:WinOff '("rbn" "pal") (not Dyl:RibbonSkin))
     )
   )
 
