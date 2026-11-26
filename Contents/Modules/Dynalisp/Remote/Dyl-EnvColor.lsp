@@ -31,6 +31,13 @@
 ;;      default).
 ;;    - Theme (DynalispColorTheme): the theme of AutoCAD (COLORTHEME), Dark or Light,
 ;;      which the DynALisp windows follow too.
+;;    - Ribbon (DynalispRibbonColors): DynALisp, the ribbon of AutoCAD in the dark of the
+;;      DynALisp windows while AutoCAD is in its dark theme, an experiment that Autodesk
+;;      does not support: done by DynALisp.Ribbon.dll (Installer\Ribbon\Plugin\Skin.cs),
+;;      which reads these settings itself and again when (Dyl:RibbonSkin) is called.
+;;    - Palettes (DynalispPaletteColors): DynALisp, the same for the palettes of AutoCAD
+;;      (Properties...), its status bar, file tabs and command line, by the same plugin
+;;      ((Dyl:RibbonSkin "Palettes") says what it does with them).
 ;;  Each background comes with a crosshair color that stays readable on it. DynALisp is
 ;;  the dark of the DynALisp windows (Installer\Windows\Engine\Session.cs, Theme): the
 ;;  model space and the background around the paper a little darker than their title
@@ -74,10 +81,12 @@
 (setq *ec:themes* '(("Dark" . 0) ("Light" . 1)))
 
 ;;  The display settings, in this order: (KEY CONTEXT), CONTEXT a context of
-;;  *ec:colors* or theme:
+;;  *ec:colors*, theme, ribbon or palettes:
 (setq *ec:prefs* '(("DynalispBackground" model)
                    ("DynalispLayoutBackground" layout)
                    ("DynalispColorTheme" theme)
+                   ("DynalispRibbonColors" ribbon)
+                   ("DynalispPaletteColors" palettes)
                   )
 )
 
@@ -88,9 +97,18 @@
   (if (and (setq v (getenv "Paper background")) (/= "" v)) (atoi v))
 )
 
-;;  Names of the choices of a context (model, layout or theme):
+;;  Names of the choices of a context (model, layout, theme, ribbon or palettes):
 (defun Remote>>Dyl:DisplayNames (ctx)
-  (mapcar 'car (if (= ctx 'theme) *ec:themes* (cddr (assoc ctx *ec:colors*))))
+  (cond
+    ((member ctx '(ribbon palettes)) '("DynALisp"))
+    ((mapcar 'car (if (= ctx 'theme) *ec:themes* (cddr (assoc ctx *ec:colors*)))))
+  )
+)
+
+;;  The ribbon plugin told that the settings changed: what it does with the ribbon
+;;  ("DynALisp", "off"...), nil when it is not loaded:
+(defun ec:ribbon ()
+  (if Dyl:RibbonSkin (Dyl:RibbonSkin))
 )
 
 ;;  Name of the current background of a context (model or layout), nil when it is not
@@ -152,10 +170,11 @@
 ;;  Turn the display settings on or off:
 (defun Remote>>Dyl:DisplayOnSet (on)
   (setenv "DynalispDisplayOn" (if on "1" "0"))
+  (ec:ribbon)
 )
 
-;;  The display settings chosen, in the order of *ec:prefs*: (MODEL LAYOUT THEME), each
-;;  a name, nil when it is not set:
+;;  The display settings chosen, in the order of *ec:prefs*: (MODEL LAYOUT THEME RIBBON
+;;  PALETTES), each a name, nil when it is not set:
 (defun Remote>>Dyl:DisplayPref ()
   (mapcar '(lambda (p / name)
              (setq name (getenv (car p)))
@@ -169,11 +188,14 @@
 ;;  current value kept):
 (defun Remote>>Dyl:DisplayPrefSet (lst)
   (mapcar '(lambda (p name) (setenv (car p) (cond (name) ("")))) *ec:prefs* lst)
+  (ec:ribbon)
 )
 
-;;  Apply the display settings chosen while they are on: each one set when it differs.
-;;  Returns a status line, nil when no display setting is chosen:
-(defun Remote>>Dyl:DisplayApply (/ done)
+;;  Apply the display settings chosen while they are on: each one set when it differs,
+;;  the ribbon by its plugin. Returns a status line, nil when no display setting is
+;;  chosen:
+(defun Remote>>Dyl:DisplayApply (/ done rbn)
+  (setq rbn (ec:ribbon))
   (if (Remote>>Dyl:DisplayOn-p)
     (progn
       (mapcar
@@ -183,6 +205,12 @@
            )
            (cond
              ((not name))
+             ((= ctx 'ribbon)
+              (setq done (cons (strcat "ribbon " (cond (rbn) ("plugin not loaded"))) done))
+             )
+             ((= ctx 'palettes)
+              (setq done (cons (strcat "palettes " (if Dyl:RibbonSkin (Dyl:RibbonSkin "Palettes") "plugin not loaded")) done))
+             )
              ((= name (if (= ctx 'theme) (Remote>>Dyl:Theme) (Remote>>Dyl:Background ctx)))
               (setq done (cons (strcat what name) done))
              )

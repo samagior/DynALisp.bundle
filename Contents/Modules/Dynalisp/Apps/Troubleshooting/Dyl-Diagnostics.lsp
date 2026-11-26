@@ -637,7 +637,8 @@
 
 ;;  The display settings of Dyl-Settings (Remote\Dyl-EnvColor.lsp) while Display is on:
 ;;  a Theme the active system variable profile sets otherwise (each startup would set
-;;  COLORTHEME twice), and the colors chosen that another program changed since:
+;;  COLORTHEME twice), the colors chosen that another program changed since, and the
+;;  colours of the ribbon (DynALisp.Ribbon.dll):
 (defun dg:cf-display (/ pref pro cth thm)
   (if (and Remote>>Dyl:DisplayOn-p (Remote>>Dyl:DisplayOn-p))
     (progn
@@ -665,6 +666,23 @@
               pref
               '(model layout theme)
               '("model space" "layouts" "theme")
+      )
+      ;; The ribbon in the colours of DynALisp, by DynALisp.Ribbon.dll (Skin.cs, an
+      ;; experiment): what it does, a problem when it cannot:
+      (mapcar '(lambda (name what arg)
+                 (if name
+                   (cond
+                     ((not Dyl:RibbonSkin) (dg:bad (strcat "Display: " what " is DynALisp but DynALisp.Ribbon.dll is not loaded")))
+                     ((wcmatch (setq thm (if arg (Dyl:RibbonSkin arg) (Dyl:RibbonSkin))) "not found*,error*")
+                      (dg:bad (strcat "Display: the " what " colours cannot be set, " thm " (another version of AutoCAD?)"))
+                     )
+                     ((dg:note (strcat "Display: " what " colours " thm)))
+                   )
+                 )
+               )
+              (cdddr pref)
+              '("ribbon" "palettes")
+              '(nil "Palettes")
       )
     )
   )

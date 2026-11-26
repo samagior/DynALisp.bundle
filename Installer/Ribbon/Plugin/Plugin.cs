@@ -35,6 +35,7 @@ using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
 [assembly: CommandClass(typeof(DynALisp.Ribbon.PhaseCombos))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.TransferCombos))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.LangCommands))]
+[assembly: CommandClass(typeof(DynALisp.Ribbon.SkinCommands))]
 
 namespace DynALisp.Ribbon
 {
@@ -51,6 +52,9 @@ namespace DynALisp.Ribbon
                 Host.Start();
             }
             catch (System.Exception ex) { Host.Log(ex.Message); }
+            // The colours of the ribbon (Skin.cs, an experiment), apart: it never stops the rest.
+            try { Skin.Start(); }
+            catch (System.Exception ex) { Host.Log("ribbon colours: " + ex.Message); }
         }
 
         public void Terminate() { }
@@ -142,6 +146,9 @@ namespace DynALisp.Ribbon
         // (the startup commands of AutoCAD Architecture, a Lisp expression...):
         static void OnIdle(object sender, EventArgs e)
         {
+            // The colours change no part of the ribbon: they need no quiet, and are not kept
+            // waiting by the startup of the drawings.
+            Skin.OnIdle();
             if (!Quiet()) return;
             if (_dirty && Environment.TickCount - _nextTry >= 0)
             {
