@@ -35,6 +35,7 @@ using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
 [assembly: CommandClass(typeof(DynALisp.Ribbon.PhaseCombos))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.TransferCombos))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.LangCommands))]
+[assembly: CommandClass(typeof(DynALisp.Ribbon.SkinCommands))]
 
 namespace DynALisp.Ribbon
 {
@@ -51,6 +52,9 @@ namespace DynALisp.Ribbon
                 Host.Start();
             }
             catch (System.Exception ex) { Host.Log(ex.Message); }
+            // The colours of the ribbon (Skin.cs, an experiment), apart: it never stops the rest.
+            try { Skin.Start(); }
+            catch (System.Exception ex) { Host.Log("ribbon colours: " + ex.Message); }
         }
 
         public void Terminate() { }
@@ -162,6 +166,7 @@ namespace DynALisp.Ribbon
                 try { T.Apply(); } catch (System.Exception ex) { Log(ex.Message); }
             }
             PhaseCombos.AskOnIdle();
+            Skin.OnIdle();
         }
 
         static int _nextLang = Environment.TickCount;
