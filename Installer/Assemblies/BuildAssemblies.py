@@ -4,7 +4,10 @@ Contents/Modules/Dynalisp/Res/QuickDrawAssemblies.csv, their thicknesses in mill
 
 The rows of the tables are in Walls.txt and Floors.txt beside this script (their values as the
 tables give them: ratings, STC, IIC); this script builds the layers of each one from them (the
-materials of Res/Materials.csv) and its description. Run it after a change to those files:
+materials of Res/Materials.csv), its description and its family: the rows of a table that differ only by
+their boards, their insulation or their spacing (B6a to B6e) are the variants of one family (B6), whose
+short description holds only what all of them share, in a few words (Steel Studs 152,
+2-2 Gypsum: the boards on each face). Run it after a change to those files:
 
     python Installer/Assemblies/BuildAssemblies.py
 
@@ -110,6 +113,93 @@ def spacing_text(s):
 
 def rc_layer(fill=False):
     return layer(ABS if fill else RC, "13")
+
+
+def layers(spec):
+    """The number of boards of a face: '2x12.7X' -> 2, '1x12.7X+1x12.7X' -> 2, '-' -> 0."""
+    if spec in ("-", "", "sheathing", "osb", "gypsheath", "veneer"):
+        return 0
+    return sum(int(p.split("x")[0]) for p in spec.split("+"))
+
+
+def wall_parts(r):
+    """The parts of the short description of a wall (Steel Studs 152, 2-2 Gypsum), each a list of
+    texts from the most precise to the most general: the family keeps, for each part, the most
+    precise text all its variants share, and leaves out a part they do not share."""
+    i, kind, studs, ab, rc, s1, s2 = r[:7]
+    if kind == "W":
+        core = ["Wood Studs"]
+    elif kind == "ST":
+        core = ["Staggered Wood Studs"]
+    elif kind == "DP":
+        core = ["Double Wood Studs"]
+    elif kind in ("EW", "EW140"):
+        core = ["Exterior Wood Studs"]
+    elif kind.startswith("SN"):
+        core = [f"Steel Studs {kind[2:]}", "Steel Studs"]
+    elif kind == "SL":
+        core = ["Load-Bearing Steel Studs"]
+    elif kind == "SL2":
+        core = ["Double Load-Bearing Steel Studs"]
+    else:
+        core = [f"Concrete Block {kind[1:]}", "Concrete Block"]
+    # what fills an exterior wall (its families differ by it), the furring of a block wall:
+    fill = [{"rw": "Rock Wool", "gf": "Glass Fibre", "cel": "Cellulose"}.get(ab, "")] if kind.startswith("EW") else [""]
+    if kind.startswith("B"):
+        fill = [{"strap1": "Strapping 1 Side", "strap2": "Strapping", "steel65": "Steel Studs",
+                 "wood64": "Wood Studs", "zbar": "Z-Bars"}.get(studs, "")]
+    chan = [""] if rc == "-" else ["RC 2 Sides"] if rc.startswith("2@") else ["RC"]
+    if kind.startswith("EW"):
+        faces = [""]
+    elif s1 == "-" and s2 == "-":
+        faces = ["Bare"]
+    elif s2.endswith("+osb"):
+        faces = [f"{layers(s1)}-{layers(s2[:-4])} Gypsum + OSB"]
+    else:
+        faces = [f"{layers(s1)}-{layers(s2)} Gypsum"]
+    return [core, fill, chan, faces]
+
+
+def floor_parts(r):
+    """The parts of the short description of a floor (Wood Joists, RC, 2 Gypsum), as wall_parts."""
+    i, top, sub, kind, sp, ab, sup, ceil = r[:8]
+    slab = {"SLAB90": ["Concrete Slab"], "SLAB130": ["Concrete Slab"], "HOLLOW200": ["Hollow Core Slab", "Concrete Slab"],
+            "DECK150": ["Concrete on Steel Deck", "Concrete Slab"],
+            "OWSJ50": ["Open Web Steel Joists", "Steel Joists"], "CSJ65": ["Composite Steel Joists", "Steel Joists"]}
+    if kind in slab:
+        top, frame = [""], slab[kind]
+    else:
+        top = [{"GC25": "Gypsum Concrete", "C38": "Concrete Topping"}.get(top, "Concrete on Steel Deck" if top.startswith("C50D") else "")]
+        if sub in ("11+15.5", "15.5+15.5"):
+            top = [(top[0] + ", " if top[0] else "") + "Double Subfloor"]
+        frame = {"WJ": ["Wood Joists"], "WS": ["Wood Joists"], "WI": ["Wood I-Joists", "Wood Joists"], "TR": ["Wood Trusses"],
+                 "SC": ["Steel Joists"], "RT": ["Roof Trusses"], "MS": ["Membrane"]}[kind]
+    hold = ["RC"] if sup.startswith("RC") else ["Furring"] if sup.startswith(("SF", "FC")) else [""]
+    if sup == "DRC":
+        a, b = ceil.split("+")
+        board = [f"{layers(a)} Gypsum + RC + {layers(b)} Gypsum"]
+    elif ceil == "-":
+        board = [""]
+    else:
+        board = [f"{layers(ceil)} Gypsum"]
+    return [top, frame, hold, board]
+
+
+def family(name):
+    """B6a -> B6: a name without the letters that end it."""
+    return re.sub(r"[a-z]+$", "", name) or name
+
+
+def family_text(parts):
+    """The short description of a family: for each part, the most precise text all the variants share."""
+    out = []
+    for k in range(len(parts[0])):
+        for t in parts[0][k]:
+            if all(t in p[k] for p in parts):
+                if t:
+                    out.append(t)
+                break
+    return ", ".join(out)
 
 
 def wall(r):
@@ -332,8 +422,15 @@ def csv(v):
 
 if __name__ == "__main__":
     head = ["Id", "Group", "Name", "Layers", "BorderLines", "DividingLines", "Exterior", "Units",
-            "Description", "FireRating", "FireRatingNLB", "STC", "IIC"]
+            "Description", "FireRating", "FireRatingNLB", "STC", "IIC", "Family", "FamilyDescription"]
     all_rows = rows("Walls.txt", wall) + rows("Floors.txt", floor)
+    parts = {r[0]: r[1] for r in rows("Walls.txt", lambda f: (f[0], wall_parts(f))) + rows("Floors.txt", lambda f: (f[0], floor_parts(f)))}
+    fams = {}
+    for r in all_rows:
+        fams.setdefault(family(r[2]), []).append(parts[r[2]])
+    for r in all_rows:
+        f = family(r[2])
+        r += [f, family_text(fams[f])]
     ids = [r[0] for r in all_rows]
     assert len(ids) == len(set(ids)), "repeated id"
     if len(sys.argv) > 1 and sys.argv[1].startswith("-"):

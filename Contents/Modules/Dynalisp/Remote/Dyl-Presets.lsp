@@ -1615,6 +1615,11 @@
 ;;            Win.RowsIn in Installer\Windows\Engine\Rows.cs, put back in its column of the file>)
 ;;    (rowcheck . <function: preset changed -> error message, nil when it is valid: a check of
 ;;                the whole preset, after that of its values>)
+;;    (family . "13,14")                ; the presets are the variants of families: the column
+;;                                      ; of the name of their family and of its short
+;;                                      ; description, listed once a family (pst/family)
+;;    (famcols . "6,16-39")             ; the other columns given to every variant of a family
+;;    (famlabel . "9:min,11:STC")       ; what the list of the variants shows after a name
 ;;
 ;;  The values given are those of Presets.cs (pst/rows...). Before the presets are saved,
 ;;  the values of every preset changed are checked again by the check function of the App,
@@ -1778,6 +1783,12 @@
     )
     (if spec (list (cons "pst/spec" (itoa (cadr spec))) (cons "pst/specby" (cddr spec))))
     (if (assoc 'outline pst:dlg) (list (cons "pst/outline" (cdr (assoc 'outline pst:dlg)))))
+    (if (assoc 'family pst:dlg)
+      (list (cons "pst/family" (cdr (assoc 'family pst:dlg)))
+            (cons "pst/famcols" (cond ((cdr (assoc 'famcols pst:dlg))) ("")))
+            (cons "pst/famlabel" (cond ((cdr (assoc 'famlabel pst:dlg))) ("")))
+      )
+    )
     (if (assoc 'blank pst:dlg) (list (cons "pst/blank" (cdr (assoc 'blank pst:dlg)))))
     (Remote>>Dyl:ManagerTimed "Window lists of the tool (wvals)" 'Remote>>Dyl:PresetDlgCall '(wvals nil))
   )

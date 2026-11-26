@@ -3487,7 +3487,8 @@
 )
 
 ;;  A row of the assemblies file (id group name layers border-lines dividing-lines exterior
-;;  units description load-bearing-rating non-load-bearing-rating stc iic): its units "mm" or
+;;  units description load-bearing-rating non-load-bearing-rating stc iic family
+;;  family-description): its units "mm" or
 ;;  "" (the units of the drawing), its ratings as they are written (whole numbers checked by
 ;;  the window, see Dyl:QuickDrawAsmCheck),
 ;;  its group as in the groups, its exterior side First (its first layer, the default) or
@@ -3499,9 +3500,22 @@
 ;;  material, of its thickness, without a border of its own; a Line layer is no longer a
 ;;  layer: when the row has no lines of that kind, the first Line layer on a face (no layer
 ;;  with a thickness before it, or none after it) gives its layer key to the Border lines,
-;;  the first one between two layers its key to the Dividing lines:
-(defun Dyl:QuickDrawAsmFix (row / mats ls bl dl bk dk i new)
-  (while (< (length row) 13) (setq row (append row (list ""))))
+;;  the first one between two layers its key to the Dividing lines. Its family (column 13)
+;;  and the short description of its family (14): in a file written before the families,
+;;  those of the default assembly of its id (as-*, *qd:asmdefs*, read before the file: see
+;;  Dyl:QuickDrawAsmRead), else its name alone (a family of one variant):
+(defun Dyl:QuickDrawAsmFix (row / mats ls bl dl bk dk i new d)
+  (while (< (length row) 15) (setq row (append row (list ""))))
+  (if (= "" (nth 13 row))
+    (progn
+      (setq d (if (and *qd:asmdefs* (/= "" (car row)))
+                (vl-some '(lambda (a) (if (= (strcase (car row)) (strcase (car a))) a)) *qd:asmdefs*)
+              )
+            row (Remote>>Dyl:ListSubst row 13 (if d (nth 13 d) (nth 2 row)))
+      )
+      (if (and d (= "" (nth 14 row))) (setq row (Remote>>Dyl:ListSubst row 14 (nth 14 d))))
+    )
+  )
   ;;  Its exterior side: its first layer (an older file), or its last one:
   (setq row (Remote>>Dyl:ListSubst row 6 (if (= "LAST" (strcase (nth 6 row))) "Last" "First")))
   ;;  Its units: millimetres, or those of the drawing (an older file):
@@ -3711,11 +3725,11 @@
   )
 )
 
-;;  The columns the window adds to an assembly r (after its 13 columns): its layers as rows
-;;  (13, their thicknesses in the units of the drawing, see Dyl:QuickDrawAsmToDwg), its Border
-;;  lines (14 to 25: on, layer key, the properties they override, see
-;;  Remote>>Dyl:MaterialLines; edited in the Border Settings window) and its Dividing lines (26
-;;  to 37, the same), on the layer
+;;  The columns the window adds to an assembly r (after its 15 columns): its layers as rows
+;;  (15, their thicknesses in the units of the drawing, see Dyl:QuickDrawAsmToDwg), its Border
+;;  lines (16 to 27: on, layer key, the properties they override, see
+;;  Remote>>Dyl:MaterialLines; edited in the Border Settings window) and its Dividing lines (28
+;;  to 39, the same), on the layer
 ;;  key of the border of the Quick Draw preset when they have none (qa:bk). Rows got back
 ;;  that were not valid are kept as they were edited (its column 3 holds them, see
 ;;  Dyl:QuickDrawAsmWinGet):
@@ -3741,22 +3755,22 @@
   )
 )
 
-;;  An assembly got back from the window: its layers from its rows (column 13, see
+;;  An assembly got back from the window: its layers from its rows (column 15, see
 ;;  Dyl:QuickDrawLayersOf), back in millimetres for an assembly in millimetres (see
 ;;  Dyl:QuickDrawAsmFromDwg), or its rows themselves in its column 3 when one is not valid (said
 ;;  by Dyl:QuickDrawAsmCheck, the window shown again on them); its lines from their columns
-;;  (their layer key and linetype in upper case); its ratings trimmed:
+;;  (their layer key and linetype in upper case); its ratings, its family and its description trimmed:
 (defun Dyl:QuickDrawAsmWinGet (r / out)
-  (setq out (Dyl:QuickDrawLayersOf (Dyl:QuickDrawAsmDecode (cond ((nth 13 r)) (""))) qa:def)
+  (setq out (Dyl:QuickDrawLayersOf (Dyl:QuickDrawAsmDecode (cond ((nth 15 r)) (""))) qa:def)
         r   (Dyl:QuickDrawAsmFromDwg
-              (Remote>>Dyl:ListSubst r 3 (if (cadr out) (nth 13 r) (Remote>>Dyl:MaterialLayersStr (car out))))
+              (Remote>>Dyl:ListSubst r 3 (if (cadr out) (nth 15 r) (Remote>>Dyl:MaterialLayersStr (car out))))
             )
   )
-  (foreach i '(8 9 10 11 12)
+  (foreach i '(8 9 10 11 12 13 14)
     (if (nth i r) (setq r (Remote>>Dyl:ListSubst r i (vl-string-trim " " (nth i r)))))
   )
-  (if (nth 37 r)
-    (foreach x '((4 14) (5 26))
+  (if (nth 39 r)
+    (foreach x '((4 16) (5 28))
       (setq r (Remote>>Dyl:ListSubst r
                                      (car x)
                                      (Remote>>Dyl:MaterialLinesStr
@@ -3974,11 +3988,17 @@
                       '(groups . T)
                       '(noun . "assemblies")
                       '(window . "Dyl-AssemblyPresets.xaml")
-                      '(wtiles . "aex:6,ads:8,afl:9,afn:10,ast:11,aii:12,abl:14,adl:26")
+                      '(wtiles . "aex:6,ads:8,afl:9,afn:10,ast:11,aii:12,fam:13,fds:14,abl:16,adl:28")
                       ;;  (a default assembly whose layers only changed is changed too:)
-                      '(wncols . 14)
+                      '(wncols . 16)
+                      ;;  The variants of a family listed once (B6 for B6a to B6e), their
+                      ;;  group, exterior and lines the same, the variant picked in the
+                      ;;  Layers box by its name and ratings:
+                      '(family . "13,14")
+                      '(famcols . "6,16-39")
+                      '(famlabel . "9:min,10:NLB:min,11:STC,12:IIC")
                       (cons 'select (if (and r (not (or (= "" (nth *qd:layerscol* r)) (vl-string-search ":" (nth *qd:layerscol* r))))) (nth *qd:layerscol* r)))
-                      '(new "" "Wall" "New assembly" "" "1~" "1~" "First" "" "" "" "" "" "")
+                      '(new "" "Wall" "New assembly" "" "1~" "1~" "First" "" "" "" "" "" "" "New assembly" "")
                       '(extra . Dyl:QuickDrawAsmExtra)
                       '(wget . Dyl:QuickDrawAsmWinGet)
                       '(rowcheck . Dyl:QuickDrawAsmCheck)
