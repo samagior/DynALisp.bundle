@@ -1,0 +1,8 @@
+Id;Group;Name;Cut;Surface;Conductivity;Density;Resistance;Permeability;Permeance
+mt-A;CONCRETE;Concrete A changed;hp-Third;hp-A;1,75;;;;
+cu-Wall;masonry;Wall;cu-Mine;;0.5;1800;;;
+cu-NewMaterial;Generic;New material;;;;;;;
+cu-NotADefault;Other;Not a default;hp-A;;1;1;1;1;1
+mt-B;Béton;Béton B;hp-Scaled;hp-Model;-1;0;abc;1e3;1/2
+mt-C;insulation;Insulation C;hp-Gone;;0.04;30;2.5;;
+mt-Short;Masonry;Short;hp-Short;;;;;;

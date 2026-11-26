@@ -108,6 +108,7 @@ namespace DynALisp.Core.Data
         // a row set for another drawing scale is written with rtos):
         public static string[] Fix(string[] row, int dimzin, Func<string, string> groupCase)
         {
+            // (a copy: the rows read are shared, never changed)
             var r = new List<string>(row);
             while (r.Count < 12) r.Add("");
             while (r.Count < 64) r.Add(Extra[r.Count - 12]);
@@ -164,7 +165,8 @@ namespace DynALisp.Core.Data
         // than 0 (a decimal comma read as a point), else "". Not for a row NeedsLisp:
         public static string[] RowFix(Bundle b, string[] row)
         {
-            row = Csv.Fit(row, 10);
+            // (a copy: the rows read are shared, never changed)
+            row = (string[])Csv.Fit(row, 10).Clone();
             row[1] = Groups.CaseOf(b, row[1], "Material");
             foreach (var i in new[] { 5, 6, 7, 8, 9 })
             {

@@ -101,6 +101,11 @@ namespace DynALisp.Core.Tests
             var r = Materials.RowFix(b, new[] { "mt-A", "concrete", "A", "hp-A", "", "2,5", "-1", "0", "abc", "1/2" });
             Assert.Equal(new[] { "mt-A", "Concrete", "A", "hp-A", "", "2.5", "", "", "", "1/2" }, r);
             Assert.Equal(10, Materials.RowFix(b, new[] { "mt-A", "G", "A" }).Length);
+            // the row read is never changed (the rows read are shared):
+            var raw = new[] { "mt-A", "concrete", "A", "hp-A", "", "2,5", "", "", "", "" };
+            Materials.RowFix(b, raw);
+            Assert.Equal("concrete", raw[1]);
+            Assert.Equal("2,5", raw[5]);
             Assert.True(Materials.NeedsLisp(new[] { "mt-A", "section" }, Groups.Of(b, "Material")));
             Assert.False(Materials.NeedsLisp(new[] { "mt-A", "Section" }, new[] { "SECTION" }.ToList()));
         }

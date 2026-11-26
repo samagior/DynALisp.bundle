@@ -257,6 +257,21 @@ as-W1b
 #assemblies metre 8 back
 as-W1a
 as-W1b
+#materials oldT
+#materials hatch defs 0
+hp-BrickMasonryBrickANSI311001070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-VoidGenericVoid1001070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-NoneGenericNone1001070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#materials defs 0
+mt-BrickMasonryBrickhp-Brick0.8
+mt-AirAirAir space
+#materials hatch defs 4
+hp-BrickMasonryBrickANSI311001070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-VoidGenericVoid1001070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-NoneGenericNone1001070CONTINUOUS01025050070254013050000Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#materials defs 4
+mt-BrickMasonryBrickhp-Brick0.8
+mt-AirAirAir space
 #QuickShape writeT
 #QuickDrawAssembly writeT
 #QuickDraw writeT
