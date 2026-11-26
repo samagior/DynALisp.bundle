@@ -24,26 +24,29 @@
 ;;  run by dynalisp.mnl); off, the display preferences are left as they are.
 ;;
 ;;  Each display setting is a name, "" or missing: not set, the current value kept:
-;;    - Model space (DynalispBackground): the model space background, DynALisp, Black,
-;;      Default (blue-grey, the AutoCAD default) or White.
+;;    - Model space (DynalispBackground): the model space background, DynALisp, DynALisp
+;;      Neutral, Black, Default (blue-grey, the AutoCAD default) or White.
 ;;    - Layouts (DynalispLayoutBackground): the paper of the layouts and the background
-;;      around it, DynALisp, Black or Default (white paper on light grey, the AutoCAD
+;;      around it, DynALisp, DynALisp Neutral, Black or Default (white paper on light grey, the AutoCAD
 ;;      default).
 ;;    - Theme (DynalispColorTheme): the theme of AutoCAD (COLORTHEME), Dark or Light,
 ;;      which the DynALisp windows follow too.
-;;    - Ribbon (DynalispRibbonColors): DynALisp, the ribbon of AutoCAD in the dark of the
+;;    - Ribbon (DynalispRibbonColors): DynALisp or DynALisp Neutral, the ribbon of AutoCAD in the dark of the
 ;;      DynALisp windows while AutoCAD is in its dark theme, an experiment that Autodesk
 ;;      does not support: done by DynALisp.Ribbon.dll (Installer\Ribbon\Plugin\Skin.cs),
 ;;      which reads these settings itself and again when (Dyl:RibbonSkin) is called.
-;;    - Palettes (DynalispPaletteColors): DynALisp, the same for the palettes of AutoCAD
+;;    - Palettes (DynalispPaletteColors): DynALisp or DynALisp Neutral, the same for the palettes of AutoCAD
 ;;      (Properties...), its status bar, file tabs and command line, by the same plugin
 ;;      ((Dyl:RibbonSkin "Palettes") says what it does with them).
 ;;  Each background comes with a crosshair color that stays readable on it. DynALisp is
 ;;  the dark of the DynALisp windows (Installer\Windows\Engine\Session.cs, Theme): the
 ;;  model space and the background around the paper a little darker than their title
 ;;  bar (#181B20), dark without being black, the paper in the color of their background
-;;  (#252A32), the crosshairs in the color of their text (#E6EAF0). The colors are the
-;;  display preferences (Options > Display > Colors), the background around the paper
+;;  (#252A32), the crosshairs in the color of their text (#E6EAF0). DynALisp Neutral is
+;;  its variant in a neutral grey, darker: the model space and the background around the
+;;  paper almost black (#121212), the paper a little lighter (#1E1E1E), the crosshairs
+;;  light grey (#E6E6E6), the ribbon and the palettes in greys without hue. The colors
+;;  are the display preferences (Options > Display > Colors), the background around the paper
 ;;  the "Paper background" setting of the profile, which Options does not show: user
 ;;  profile settings, so they apply to every drawing.
 ;;
@@ -65,12 +68,14 @@
 (setq *ec:colors*
        '((model (graphicswinmodelbackgrndcolor modelcrosshaircolor)
                 ("DynALisp" 2104088 15788774) ; RGB 24,27,32 / 230,234,240
+                ("DynALisp Neutral" 1184274 15132390) ; RGB 18,18,18 / 230,230,230
                 ("Black" 0 16777215)
                 ("Default" 3155999 16777215) ; RGB 33,40,48
                 ("White" 16777215 0)
          )
          (layout (graphicswinlayoutbackgrndcolor layoutcrosshaircolor)
                  ("DynALisp" 3287589 15788774 2104088) ; RGB 37,42,50 / 230,234,240 / 24,27,32
+                 ("DynALisp Neutral" 1973790 15132390 1184274) ; RGB 30,30,30 / 230,230,230 / 18,18,18
                  ("Black" 0 16777215 3355443) ; around: RGB 51,51,51
                  ("Default" 16777215 0 12566463) ; around: RGB 191,191,191
          )
@@ -100,7 +105,7 @@
 ;;  Names of the choices of a context (model, layout, theme, ribbon or palettes):
 (defun Remote>>Dyl:DisplayNames (ctx)
   (cond
-    ((member ctx '(ribbon palettes)) '("DynALisp"))
+    ((member ctx '(ribbon palettes)) '("DynALisp" "DynALisp Neutral"))
     ((mapcar 'car (if (= ctx 'theme) *ec:themes* (cddr (assoc ctx *ec:colors*)))))
   )
 )

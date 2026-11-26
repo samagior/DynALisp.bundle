@@ -134,8 +134,12 @@ namespace DynALisp.Ribbon
 
         // Run by Skin.OnIdle: on (the palettes wanted, AutoCAD dark) or off. A theme made later
         // (PropertyPalette, when Properties first opens) is found at the next call.
-        public static void Apply(bool on)
+        static Look _look = Look.DynALisp;
+
+        public static void Apply(bool on, Look look)
         {
+            // Another look chosen: the themes given back, then put in the new one.
+            if (look != _look) { try { Undo(); } catch { } _look = look; }
             try
             {
                 if (!on) { Undo(); return; }
@@ -203,7 +207,7 @@ namespace DynALisp.Ribbon
                     continue;
                 }
                 if (Key(cur)) continue;
-                uint now = ToRef(Skin.Map(FromRef(cur)));
+                uint now = ToRef(Skin.Map(FromRef(cur), _look));
                 if (now == cur) continue;
                 _setColor(d.Theme, el, now);
                 Given.Add(now);

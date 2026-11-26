@@ -113,6 +113,9 @@ namespace DynALisp.Ribbon
         }
 
         public bool Wanted;
+        // The look chosen (DynALisp or DynALisp Neutral), and the one the theme was put in:
+        public Look Look = Look.DynALisp;
+        Look _applied;
         string _fail;
         // The theme changed in place: (object, property, value it had), to give them back.
         readonly List<(object Node, PropertyInfo Prop, object Was)> _changed = new();
@@ -133,9 +136,9 @@ namespace DynALisp.Ribbon
             if (_gaveUp) return "given up: AutoCAD made " + Again + " other themes current";
             if (_fail != null) return "not found: " + _fail;
             if (!Skin.Dark()) return "waiting for the dark theme";
-            if (_inPlace != null) return "DynALisp (" + _count + " colours)";
-            if (_copy != null) return "DynALisp (" + _count + " colours, copy of the theme)";
-            return "DynALisp (on the next idle)";
+            if (_inPlace != null) return Look.Name + " (" + _count + " colours)";
+            if (_copy != null) return Look.Name + " (" + _count + " colours, copy of the theme)";
+            return Look.Name + " (on the next idle)";
         }
 
         object Current()
@@ -157,20 +160,25 @@ namespace DynALisp.Ribbon
             _fail = null;
             if (Wanted && Skin.Dark())
             {
-                if (_gaveUp || ReferenceEquals(cur, _inPlace) || ReferenceEquals(cur, _copy)) return;
-                // Another theme made current by AutoCAD: the former one given back first.
-                if (_inPlace != null || _copy != null) Again++;
+                bool same = ReferenceEquals(cur, _inPlace) || ReferenceEquals(cur, _copy);
+                if (_gaveUp || same && _applied == Look) return;
+                // Another theme made current by AutoCAD (or another look chosen): the former
+                // one given back first.
+                if (!same && (_inPlace != null || _copy != null)) Again++;
                 Undo();
+                if (same) cur = Current();
                 if (Again > Limit) { _gaveUp = true; Host.Log(Name + " colours: given up, " + Again + " themes made current"); return; }
                 if (Skin.Unfrozen(cur))
                 {
-                    _count = Skin.Filter(cur, _changed);
+                    _count = Skin.Filter(cur, _changed, Look);
                     _inPlace = cur;
+                    _applied = Look;
                 }
                 else
                 {
                     var copy = ((Freezable)cur).Clone();
-                    _count = Skin.Filter(copy, null);
+                    _count = Skin.Filter(copy, null, Look);
+                    _applied = Look;
                     _orig = cur;
                     _copy = copy;
                     _set(copy);
@@ -197,12 +205,33 @@ namespace DynALisp.Ribbon
         }
     }
 
+    // A look the greys of AutoCAD are put in: the value of the setting (Ribbon, Palettes), the
+    // hue and saturation the greys take, and how much darker the surfaces get.
+    public sealed class Look
+    {
+        public readonly string Name;
+        public readonly double Hue, MinSat, MaxSat, Darker;
+        Look(string name, double hue, double minSat, double maxSat, double darker)
+        {
+            Name = name; Hue = hue; MinSat = minSat; MaxSat = maxSat; Darker = darker;
+        }
+
+        // The greys of the DynALisp windows (#252A32, #313844: 217 degrees, 10 to 16 %):
+        // AutoCAD's dark panels (a lightness of about 28 %) come near the cards of the windows
+        // (#313844, 23 %).
+        public static readonly Look DynALisp = new Look("DynALisp", 217, 0.10, 0.16, 0.78);
+        // Its variant in a neutral grey, darker: no hue, the panels near 17 % (#2C2C2C), beside
+        // a model space almost black (#121212).
+        public static readonly Look Neutral = new Look("DynALisp Neutral", 0, 0, 0, 0.62);
+
+        static readonly Look[] All = { DynALisp, Neutral };
+
+        // The look of a value of the setting, null for any other (not set, off):
+        public static Look Of(string name) => All.FirstOrDefault(l => l.Name == name);
+    }
+
     public static class Skin
     {
-        // The hue and the most saturation of the greys of the DynALisp windows (#252A32, #313844:
-        // 217 degrees, 15 %), and how much darker the surfaces get: AutoCAD's dark panels (a
-        // lightness of about 28 %) come near the cards of the windows (#313844, 23 %).
-        const double Hue = 217, MaxSat = 0.16, Darker = 0.78;
         // A colour more saturated than this is a colour, not a grey: it stays.
         const double Grey = 0.35;
         // A colour lighter than this is a text or a light line: it only takes the hue.
@@ -237,7 +266,12 @@ namespace DynALisp.Ribbon
         public static void Read()
         {
             bool on = Env("DynalispDisplayOn") == "1";
-            foreach (var t in Targets) t.Wanted = on && Env(t.Setting) == "DynALisp";
+            foreach (var t in Targets)
+            {
+                var look = Look.Of(Env(t.Setting));
+                t.Wanted = on && look != null;
+                if (look != null) t.Look = look;
+            }
             _due = true;
             _next = Environment.TickCount;
         }
@@ -269,9 +303,9 @@ namespace DynALisp.Ribbon
             _due = false;
             foreach (var t in Targets) t.Apply();
             // The palettes written in C++ (Properties), by their native themes:
-            NativeThemes.Apply(Palettes.Wanted && Dark());
+            NativeThemes.Apply(Palettes.Wanted && Dark(), Palettes.Look);
             // The web pages (Start), by a script in their browser:
-            WebPages.Apply(Palettes.Wanted && Dark());
+            WebPages.Apply(Palettes.Wanted && Dark(), Palettes.Look);
         }
 
         // ---- the walk of the theme ----
@@ -308,10 +342,16 @@ namespace DynALisp.Ribbon
 
         // Every colour of the theme through Map; keep (in place): where to remember what it was.
         // Returns how many were changed.
-        public static int Filter(object theme, List<(object, PropertyInfo, object)> keep)
+        // The look the filter puts the colours in, while a theme is filtered:
+        static Look _look = Look.DynALisp;
+
+        public static int Filter(object theme, List<(object, PropertyInfo, object)> keep, Look look)
         {
             var seen = new HashSet<object>(ReferenceEqualityComparer.Instance);
-            return Filter(theme, keep, seen);
+            var was = _look;
+            _look = look;
+            try { return Filter(theme, keep, seen); }
+            finally { _look = was; }
         }
 
         static int Filter(object node, List<(object, PropertyInfo, object)> keep, HashSet<object> seen)
@@ -368,13 +408,15 @@ namespace DynALisp.Ribbon
 
         // A colour of AutoCAD's dark theme in the dark of the DynALisp windows: a grey (not
         // saturated) takes their hue; a dark one gets darker; a saturated one stays.
-        public static Color Map(Color c)
+        public static Color Map(Color c) => Map(c, _look);
+
+        public static Color Map(Color c, Look look)
         {
             if (c.A == 0) return c;
             ToHsl(c, out double h, out double s, out double l);
             if (s > Grey && l > 0.08 && l < 0.92) return c;
-            if (l < Light) l *= Darker;
-            return FromHsl(c.A, Hue, Math.Min(Math.Max(s, 0.10), MaxSat), l);
+            if (l < Light) l *= look.Darker;
+            return FromHsl(c.A, look.Hue, Math.Min(Math.Max(s, look.MinSat), look.MaxSat), l);
         }
 
         public static double Lightness(Color c) { ToHsl(c, out _, out _, out double l); return l; }

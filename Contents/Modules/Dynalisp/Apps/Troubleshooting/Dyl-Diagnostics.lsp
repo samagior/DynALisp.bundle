@@ -672,7 +672,7 @@
       (mapcar '(lambda (name what arg)
                  (if name
                    (cond
-                     ((not Dyl:RibbonSkin) (dg:bad (strcat "Display: " what " is DynALisp but DynALisp.Ribbon.dll is not loaded")))
+                     ((not Dyl:RibbonSkin) (dg:bad (strcat "Display: " what " is " name " but DynALisp.Ribbon.dll is not loaded")))
                      ((wcmatch (setq thm (if arg (Dyl:RibbonSkin arg) (Dyl:RibbonSkin))) "not found*,error*")
                       (dg:bad (strcat "Display: the " what " colours cannot be set, " thm " (another version of AutoCAD?)"))
                      )
