@@ -1,0 +1,6 @@
+Id,Group,Name,Material,Method
+qd-Wall,Wall,Wall,mt-Brick,Linear
+QD-WALL,Wall,Wall upper,mt-Brick,Linear
+qd-Wall,Wall,Wall twice,mt-Brick,Linear
+qd-,Wall,Bare prefix,mt-Brick,Linear
+cu-Mine,Wall,Mine,,Linear

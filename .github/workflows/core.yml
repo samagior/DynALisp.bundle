@@ -1,4 +1,5 @@
-# Core: tests the reading of the data files (Installer\Core\Data, without AutoCAD) and builds the
+# Core: tests the reading of the data files and the presets (Installer\Core\Data, without AutoCAD,
+# against the witness files of Installer\Core\Tests\Witness) and builds the
 # core plugin (Installer\Core), on each push that changes them. The DLLs of the plugin are built
 # by hand and committed (Contents\Resources): this workflow only checks that the code builds and
 # that the tests pass.
@@ -10,6 +11,12 @@ on:
       - 'Installer/Core/**'
       - 'Contents/Modules/Dynalisp/Res/**.csv'
       - 'Contents/Resources/*.csv'
+      # (the specs of the presets and the groups, checked against the C#:)
+      - 'Contents/Modules/Dynalisp/Remote/Dyl-Materials.lsp'
+      - 'Contents/Modules/Dynalisp/Remote/Dyl-QuickDrawPresets.lsp'
+      - 'Contents/Modules/Dynalisp/Remote/Dyl-QuickShapePresets.lsp'
+      - 'Contents/Modules/Dynalisp/Remote/Dyl-Groups.lsp'
+      - '.gitattributes'
       - '.github/workflows/core.yml'
   workflow_dispatch:
 

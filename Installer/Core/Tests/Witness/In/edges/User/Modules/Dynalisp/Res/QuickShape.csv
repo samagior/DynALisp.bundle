@@ -1,0 +1,19 @@
+Id,Group,Name,Material,Shape,Scale,OutlineKey
+qs-Brick,wall,Brick mine,mt-Brick,Square,1.5
+cu-Mine,Wall,Mine,mt-Brick
+cu-Mine,Wall,Mine again,mt-Brick
+CU-MINE,Wall,Mine upper,mt-Brick
+qs-Brick,Wall,Brick twice,mt-Brick
+xx-Odd,Wall,Odd,mt-Brick
+cu-,Wall,Short,mt-Brick
+,Wall,  spaced name  ,mt-Brick
+,Wall,Béton cellulaire,mt-Brick
+,Wall,Mine,mt-Brick
+,Wall,#,mt-Brick
+,Wall,#,mt-Brick
+qs-NoMat,Wall,No mat,
+qs-Gone,Wall,Gone default,mt-X
+"quoted, id",Wall,"Name, with ""quotes""",mt-Brick
+   	 
+cu-Long,Wall,Long,mt-Brick,a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t
+cu-Semi;x,Wall,Semi;colon,mt-Brick

@@ -133,7 +133,7 @@ The rest: [Conventions/ProjectFiles.md](Conventions/ProjectFiles.md), read befor
 - The version is the `AppVersion` of `PackageContents.xml`, and only there; raise it with its `CHANGELOG.md` section, in a commit of its own.
 - DynALisp 2.0 runs in AutoCAD 2025 and later; 1.x, for AutoCAD 2015 to 2024, lives on the branch `release/1.x` (fixes only).
 - A .NET plugin is built for .NET 8 (AutoCAD 2025 and 2026) and for .NET 10 (AutoCAD 2027 and later, `Net10`), both committed; the Lisp checks its function is defined before using it.
-- The core of DynALisp in .NET (`Installer\Core`, `DynALisp.Core.dll`) takes over from Lisp one step at a time; each of its functions gives what the Lisp code it replaces gives, and that code stays for when it is not loaded.
+- The core of DynALisp in .NET (`Installer\Core`, `DynALisp.Core.dll`) takes over from Lisp one step at a time; each of its functions gives what the Lisp code it replaces gives (checked against witness files taken in AutoCAD, `Installer\Core\Tests\Witness`), and that code stays for when it is not loaded, except the windows of the Manager, whose Lisp goes once their tab is in .NET.
 
 The rest: [Conventions/VersionsAndUpdates.md](Conventions/VersionsAndUpdates.md), read before changing the version, a release, the setup or the uninstall, or a .NET plugin.
 
