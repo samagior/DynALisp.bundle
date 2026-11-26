@@ -36,6 +36,7 @@ using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
 [assembly: CommandClass(typeof(DynALisp.Ribbon.TransferCombos))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.LangCommands))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.SkinCommands))]
+[assembly: CommandClass(typeof(DynALisp.Ribbon.FileTabCommands))]
 
 namespace DynALisp.Ribbon
 {
@@ -55,6 +56,9 @@ namespace DynALisp.Ribbon
             // The colours of the ribbon (Skin.cs, an experiment), apart: it never stops the rest.
             try { Skin.Start(); }
             catch (System.Exception ex) { Host.Log("ribbon colours: " + ex.Message); }
+            // The bands of the file tabs (FileTabs.cs, an experiment), apart too:
+            try { FileTabs.Start(); }
+            catch (System.Exception ex) { Host.Log("file tabs: " + ex.Message); }
         }
 
         public void Terminate() { }
@@ -149,6 +153,7 @@ namespace DynALisp.Ribbon
             // The colours change no part of the ribbon: they need no quiet, and are not kept
             // waiting by the startup of the drawings.
             Skin.OnIdle();
+            FileTabs.OnIdle();
             if (!Quiet()) return;
             if (_dirty && Environment.TickCount - _nextTry >= 0)
             {

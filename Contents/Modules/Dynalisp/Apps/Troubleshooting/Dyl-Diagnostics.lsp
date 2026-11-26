@@ -638,7 +638,7 @@
 ;;  The display settings of Dyl-Settings (Remote\Dyl-EnvColor.lsp) while Display is on:
 ;;  a Theme the active system variable profile sets otherwise (each startup would set
 ;;  COLORTHEME twice), the colors chosen that another program changed since, and the
-;;  colours of the ribbon (DynALisp.Ribbon.dll):
+;;  colours of the ribbon and the file tabs (DynALisp.Ribbon.dll):
 (defun dg:cf-display (/ pref pro cth thm)
   (if (and Remote>>Dyl:DisplayOn-p (Remote>>Dyl:DisplayOn-p))
     (progn
@@ -683,6 +683,21 @@
               (cdddr pref)
               '("ribbon" "palettes")
               '(nil "Palettes")
+      )
+      ;; The band of colour of the file tabs, by the same plugin (FileTabs.cs, an experiment):
+      (if (nth 5 pref)
+        (cond
+          ((not Dyl:RibbonFileTabs)
+           (dg:bad (strcat "Display: File tabs is " (nth 5 pref) " but DynALisp.Ribbon.dll is not loaded"))
+          )
+          ((wcmatch (setq thm (Dyl:RibbonFileTabs)) "not found*,error*")
+           (dg:bad (strcat "Display: the file tabs cannot be coloured, " thm
+                           " (another version of AutoCAD? (Dyl:RibbonFileTabs \"Tree\") writes what it finds)"
+                   )
+           )
+          )
+          ((dg:note (strcat "Display: file tabs " thm)))
+        )
       )
     )
   )
