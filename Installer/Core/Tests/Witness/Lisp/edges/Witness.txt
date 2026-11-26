@@ -77,16 +77,16 @@ Pst-QuickShapeBlock
 #QuickDrawAssembly head
 IdGroupNameLayersBorderLines
 #QuickDrawAssembly csv
-as-W1aWallW1amt-Brick,90;mt-Air,251
-as-W1bWallW1b
+as-W1aWallW1amt-Brick,90;mt-Air,251
+as-W1bWallW1b
 #QuickDrawAssembly defs
-as-W1aWallW1amt-Brick,90;mt-Air,251
-as-W1bWallW1b
+as-W1aWallW1amt-Brick,90;mt-Air,251
+as-W1bWallW1b
 #QuickDrawAssembly clean
-as-W1aWallW1amt-Brick,90;mt-Air,251
+as-W1aWallW1amt-Brick,90;mt-Air,251
 #QuickDrawAssembly read
-as-W1aWallW1amt-Brick,90;mt-Air,251
-as-W1bWallW1b
+as-W1aWallW1amt-Brick,90;mt-Air,251
+as-W1bWallW1b
 #QuickDrawAssembly commands
 
 
