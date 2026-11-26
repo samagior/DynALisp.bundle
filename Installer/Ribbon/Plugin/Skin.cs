@@ -66,6 +66,12 @@ namespace DynALisp.Ribbon
             {
                 Skin.Read();
                 string which = args?.AsArray().Select(v => v.Value as string).FirstOrDefault(v => v != null);
+                if (string.Equals(which, "Web", StringComparison.OrdinalIgnoreCase))
+                {
+                    var wb = new ResultBuffer();
+                    foreach (var line in WebPages.Report()) wb.Add(new TypedValue((int)LispDataType.Text, line));
+                    return wb;
+                }
                 if (string.Equals(which, "Native", StringComparison.OrdinalIgnoreCase))
                 {
                     // What was found of the native palettes, one string each (a diagnostic);
@@ -256,6 +262,8 @@ namespace DynALisp.Ribbon
             foreach (var t in Targets) t.Apply();
             // The palettes written in C++ (Properties), by their native themes:
             NativeThemes.Apply(Palettes.Wanted && Dark());
+            // The web pages (Start), by a script in their browser:
+            WebPages.Apply(Palettes.Wanted && Dark());
         }
 
         // ---- the walk of the theme ----
