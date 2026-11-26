@@ -1,0 +1,1 @@
+Materials of an older file: a default material in the group Section, given its group by the Lisp (*mt:defaults*).

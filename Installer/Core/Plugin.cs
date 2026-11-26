@@ -50,6 +50,20 @@
 //     Dyl:QuickDrawAsmReadAll gives them; nil when the Lisp reads them itself (a layer of an
 //     older file made of a Quick Draw preset, see Data\Assemblies.cs) or there are none.
 //
+//   (Dyl:HatchDefs contents dimzin)
+//     The default hatch presets fixed, as Remote>>Dyl:HatchPresetDefs gives them (dimzin:
+//     DIMZIN, which rtos follows); nil when the Lisp reads them itself (the default file
+//     missing, see Data\Materials.cs).
+//
+//   (Dyl:MatDefs contents)
+//     The default materials fixed, as Remote>>Dyl:MaterialRowDefs gives them; nil as
+//     Dyl:HatchDefs.
+//
+//   (Dyl:MatBoth contents dimzin)
+//     The hatch presets and the materials read and fixed, the defaults missing added, as
+//     Remote>>Dyl:MaterialBoth gives them: (hatch-presets materials); nil when the Lisp reads
+//     them itself (a materials file of DynALisp 1.1 to split, see Data\Materials.cs).
+//
 //   (Dyl:DataInfo)
 //     What the plugin did in this session, for Dyl-Diagnostics: (("Files" . n) ("Reads" . n)
 //     ("Hits" . n) ("ReadMs" . ms)), the files kept, the reads of a file, the calls given a
@@ -182,11 +196,55 @@ namespace DynALisp.Core
             return Rows(Assemblies.Read(b, f, Int(a[2])));
         }
 
+        [LispFunction("Dyl:HatchDefs")]
+        public ResultBuffer HatchDefs(ResultBuffer args)
+        {
+            var a = Args(args);
+            var b = BundleOf(a.Count > 0 ? a[0] : null);
+            return b == null || a.Count < 2 ? null : Rows(Materials.HatchDefs(b, Int(a[1])));
+        }
+
+        [LispFunction("Dyl:MatDefs")]
+        public ResultBuffer MatDefs(ResultBuffer args)
+        {
+            var a = Args(args);
+            var b = BundleOf(a.Count > 0 ? a[0] : null);
+            return b == null ? null : Rows(Materials.RowDefs(b));
+        }
+
+        [LispFunction("Dyl:MatBoth")]
+        public ResultBuffer MatBoth(ResultBuffer args)
+        {
+            var a = Args(args);
+            var b = BundleOf(a.Count > 0 ? a[0] : null);
+            var both = b == null || a.Count < 2 ? null : Materials.Both(b, Int(a[1]));
+            if (both == null) return null;
+            var (hps, mats) = both.Value;
+            var rb = new List<TypedValue>((hps.Count + mats.Count) * 66 + 6);
+            rb.Add(new TypedValue((int)LispDataType.ListBegin));
+            AddRows(rb, hps);
+            AddRows(rb, mats);
+            rb.Add(new TypedValue((int)LispDataType.ListEnd));
+            return Result(rb);
+        }
+
         // A list of rows as the Lisp gets it, nil for none:
         static ResultBuffer Rows(List<string[]> rows)
         {
             if (rows == null || rows.Count == 0) return null;
             var rb = new List<TypedValue>(rows.Count * 17 + 2);
+            AddRows(rb, rows);
+            return Result(rb);
+        }
+
+        // The rows added to rb as one list (nil for none):
+        static void AddRows(List<TypedValue> rb, List<string[]> rows)
+        {
+            if (rows == null || rows.Count == 0)
+            {
+                rb.Add(new TypedValue((int)LispDataType.Nil));
+                return;
+            }
             rb.Add(new TypedValue((int)LispDataType.ListBegin));
             foreach (var row in rows)
             {
@@ -195,7 +253,6 @@ namespace DynALisp.Core
                 rb.Add(new TypedValue((int)LispDataType.ListEnd));
             }
             rb.Add(new TypedValue((int)LispDataType.ListEnd));
-            return Result(rb);
         }
 
         [LispFunction("Dyl:DataInfo")]
