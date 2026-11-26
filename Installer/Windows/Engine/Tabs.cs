@@ -290,8 +290,27 @@ namespace DynALisp.Windows
             _state = State.Open;
             if (old != null)
             {
-                w.ContentRendered += (a, b) => Close(old.Window);
-                w.Closed += (a, b) => Close(old.Window);
+                // Over the window shown: made hidden (cloaked by Windows, drawn but not shown)
+                // and not active, so neither its first frames (empty, then placed by Fit.cs)
+                // nor the window under it losing its title bar are seen; shown once drawn, the
+                // window under it closed in the same moment. Shown at once, the new window
+                // blinked over the old one at each tab picked:
+                w.ShowActivated = false;
+                bool swapped = false;
+                void Swap()
+                {
+                    if (swapped) return;
+                    swapped = true;
+                    Cloak(w, false);
+                    Activate(w);
+                    Close(old.Window);
+                }
+                w.ContentRendered += (a, b) => w.Dispatcher.BeginInvoke(DispatcherPriority.Background, (Action)Swap);
+                // (never left hidden: shown 0.6 s after it is made whatever happens)
+                var late = new DispatcherTimer(DispatcherPriority.Normal, w.Dispatcher) { Interval = TimeSpan.FromMilliseconds(600) };
+                late.Tick += (a, b) => { late.Stop(); Swap(); };
+                w.SourceInitialized += (a, b) => { Cloak(w, true); late.Start(); };
+                w.Closed += (a, b) => { late.Stop(); Close(old.Window); };
             }
             try { ShowWindow(w); }
             catch
@@ -358,6 +377,20 @@ namespace DynALisp.Windows
             {
                 var h = new WindowInteropHelper(w).Handle;
                 if (h != IntPtr.Zero) EnableWindow(h, on);
+            }
+            catch { }
+        }
+
+        // A window hidden (true) or shown again by Windows (DWMWA_CLOAK, Windows 8 and later):
+        // drawn all the same, so it can be shown once its first frame is there. Nothing in
+        // an older Windows (the window is shown as before):
+        static void Cloak(Window w, bool on)
+        {
+            try
+            {
+                var h = new WindowInteropHelper(w).Handle;
+                int v = on ? 1 : 0;
+                if (h != IntPtr.Zero) DwmSetWindowAttribute(h, 13, ref v, sizeof(int));
             }
             catch { }
         }
