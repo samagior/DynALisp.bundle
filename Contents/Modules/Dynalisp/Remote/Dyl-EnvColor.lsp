@@ -1,4 +1,4 @@
-;; Dyl-EnvColor - Dynalisp model space background color
+;; Dyl-EnvColor - Dynalisp display colors: backgrounds, crosshairs, theme
 ;; Copyright (C) 2026  Samuel Martineau
 ;;
 ;; This program is free software: you can redistribute it and/or modify
@@ -23,57 +23,108 @@
 ;;  each drawing opened applies the display settings chosen (Remote>>Dyl:DisplayApply,
 ;;  run by dynalisp.mnl); off, the display preferences are left as they are.
 ;;
-;;  The model space background color (DynalispBackground, "" or missing: not set, the
-;;  current color kept): Black, Default (blue-grey) or White, each with a crosshair
-;;  color that stays readable on it. The colors are the display preferences (Options >
-;;  Display > Colors, model space context): user profile settings, so they apply to
-;;  every drawing. The layout (paper space) background is left as it is.
+;;  Each display setting is a name, "" or missing: not set, the current value kept:
+;;    - Model space (DynalispBackground): the model space background, DynALisp, Black,
+;;      Default (blue-grey, the AutoCAD default) or White.
+;;    - Layouts (DynalispLayoutBackground): the paper of the layouts, DynALisp, Black or
+;;      White (the AutoCAD default).
+;;    - Theme (DynalispColorTheme): the theme of AutoCAD (COLORTHEME), Dark or Light,
+;;      which the DynALisp windows follow too.
+;;  Each background comes with a crosshair color that stays readable on it. DynALisp is
+;;  the dark of the DynALisp windows (Installer\Windows\Engine\Session.cs, Theme): the
+;;  model space in the color of their title bar (#1E2229), the darkest, the paper in
+;;  the color of their background (#252A32), the crosshairs in the color of their text
+;;  (#E6EAF0). The colors are the display preferences (Options > Display > Colors):
+;;  user profile settings, so they apply to every drawing.
 ;;
 ;;  Use in an App:
-;;    (Remote>>Dyl:Background)              -> "Black", "Default" or "White",
-;;                                             nil for any other color
-;;    (Remote>>Dyl:BackgroundSet "White")   -> sets the background and crosshair
-;;    (Remote>>Dyl:DisplayApply)            -> applies the display settings, returns a status line
+;;    (Remote>>Dyl:Background 'model)          -> "DynALisp", "Black", "Default" or
+;;                                                "White", nil for any other color
+;;    (Remote>>Dyl:BackgroundSet 'layout "White") -> sets the paper and its crosshair
+;;    (Remote>>Dyl:Theme)                      -> "Dark" or "Light"
+;;    (Remote>>Dyl:ThemeSet "Dark")            -> sets COLORTHEME
+;;    (Remote>>Dyl:DisplayApply)               -> applies the display settings, returns
+;;                                                a status line
 
 (vl-load-com)
 
-;;  (NAME BACKGROUND CROSSHAIR), colors as OLE values: R + G*256 + B*65536
-(setq *ec:colors* '(("Black" 0 16777215)
-                    ("Default" 3155999 16777215) ; RGB 33,40,48
-                    ("White" 16777215 0)
-                   )
+;;  The backgrounds of each context: (CONTEXT (BACKGROUND-PROP CROSSHAIR-PROP)
+;;  (NAME BACKGROUND CROSSHAIR) ...), colors as OLE values: R + G*256 + B*65536.
+(setq *ec:colors*
+       '((model (graphicswinmodelbackgrndcolor modelcrosshaircolor)
+                ("DynALisp" 2695710 15788774) ; RGB 30,34,41 / 230,234,240
+                ("Black" 0 16777215)
+                ("Default" 3155999 16777215) ; RGB 33,40,48
+                ("White" 16777215 0)
+         )
+         (layout (graphicswinlayoutbackgrndcolor layoutcrosshaircolor)
+                 ("DynALisp" 3287589 15788774) ; RGB 37,42,50 / 230,234,240
+                 ("Black" 0 16777215)
+                 ("White" 16777215 0)
+         )
+        )
+)
+
+;;  The themes of AutoCAD: (NAME . COLORTHEME)
+(setq *ec:themes* '(("Dark" . 0) ("Light" . 1)))
+
+;;  The display settings, in this order: (KEY CONTEXT), CONTEXT a context of
+;;  *ec:colors* or theme:
+(setq *ec:prefs* '(("DynalispBackground" model)
+                   ("DynalispLayoutBackground" layout)
+                   ("DynalispColorTheme" theme)
+                  )
 )
 
 (defun ec:display () (vla-get-display (vla-get-preferences (vlax-get-acad-object))))
 
-;;  Name of the current model space background color, nil when it is not one of
-;;  *ec:colors*:
-(defun Remote>>Dyl:Background (/ c)
+;;  Names of the choices of a context (model, layout or theme):
+(defun Remote>>Dyl:DisplayNames (ctx)
+  (mapcar 'car (if (= ctx 'theme) *ec:themes* (cddr (assoc ctx *ec:colors*))))
+)
+
+;;  Name of the current background of a context (model or layout), nil when it is not
+;;  one of *ec:colors*:
+(defun Remote>>Dyl:Background (ctx / e c)
   (if
-    (not (vl-catch-all-error-p
-           (setq c (vl-catch-all-apply
-                     '(lambda ()
-                        (vlax-variant-value
-                          (vlax-variant-change-type (vla-get-graphicswinmodelbackgrndcolor (ec:display)) vlax-vblong)
+    (and (setq e (assoc ctx *ec:colors*))
+         (not (vl-catch-all-error-p
+                (setq c (vl-catch-all-apply
+                          '(lambda ()
+                             (vlax-variant-value
+                               (vlax-variant-change-type (vlax-get-property (ec:display) (car (cadr e))) vlax-vblong)
+                             )
+                           )
                         )
-                      )
-                   )
-           )
+                )
+              )
          )
     )
-    (car (vl-some '(lambda (e) (if (= c (cadr e)) e)) *ec:colors*))
+    (car (vl-some '(lambda (b) (if (= c (cadr b)) b)) (cddr e)))
   )
 )
 
-;;  Set the model space background color and its crosshair color (name of
+;;  Set the background of a context (model or layout) and its crosshair color (name of
 ;;  *ec:colors*):
-(defun Remote>>Dyl:BackgroundSet (name / e)
-  (if (setq e (assoc name *ec:colors*))
+(defun Remote>>Dyl:BackgroundSet (ctx name / e b)
+  (if (and (setq e (assoc ctx *ec:colors*)) (setq b (assoc name (cddr e))))
     (progn
-      (vlax-put-property (ec:display) 'graphicswinmodelbackgrndcolor (cadr e))
-      (vlax-put-property (ec:display) 'modelcrosshaircolor (caddr e))
+      (vlax-put-property (ec:display) (car (cadr e)) (cadr b))
+      (vlax-put-property (ec:display) (cadr (cadr e)) (caddr b))
       name
     )
+  )
+)
+
+;;  Name of the current theme of AutoCAD (COLORTHEME), nil when it is unknown:
+(defun Remote>>Dyl:Theme ()
+  (car (vl-some '(lambda (e) (if (= (getvar "COLORTHEME") (cdr e)) e)) *ec:themes*))
+)
+
+;;  Set the theme of AutoCAD (name of *ec:themes*):
+(defun Remote>>Dyl:ThemeSet (name / e)
+  (if (setq e (assoc name *ec:themes*))
+    (progn (setvar "COLORTHEME" (cdr e)) name)
   )
 )
 
@@ -89,25 +140,51 @@
   (setenv "DynalispDisplayOn" (if on "1" "0"))
 )
 
-;;  Background color chosen (name of *ec:colors*), nil when it is not set:
-(defun Remote>>Dyl:BackgroundPref (/ name)
-  (setq name (getenv "DynalispBackground"))
-  (if (assoc name *ec:colors*) name)
+;;  The display settings chosen, in the order of *ec:prefs*: (MODEL LAYOUT THEME), each
+;;  a name, nil when it is not set:
+(defun Remote>>Dyl:DisplayPref ()
+  (mapcar '(lambda (p / name)
+             (setq name (getenv (car p)))
+             (if (member name (Remote>>Dyl:DisplayNames (cadr p))) name)
+           )
+          *ec:prefs*
+  )
 )
 
-;;  Choose the background color (nil: not set, the current color kept):
-(defun Remote>>Dyl:BackgroundPrefSet (name)
-  (setenv "DynalispBackground" (cond (name) ("")))
+;;  Choose the display settings, a list in the order of *ec:prefs* (nil: not set, the
+;;  current value kept):
+(defun Remote>>Dyl:DisplayPrefSet (lst)
+  (mapcar '(lambda (p name) (setenv (car p) (cond (name) ("")))) *ec:prefs* lst)
 )
 
-;;  Apply the display settings chosen while they are on: the background set when it
-;;  differs. Returns a status line, nil when no display setting is chosen:
-(defun Remote>>Dyl:DisplayApply (/ bkg)
-  (cond
-    ((not (Remote>>Dyl:DisplayOn-p)) "off (see Dyl-Settings)")
-    ((not (setq bkg (Remote>>Dyl:BackgroundPref))) nil)
-    ((= bkg (Remote>>Dyl:Background)) (strcat "background " bkg))
-    ((Remote>>Dyl:BackgroundSet bkg) (strcat "background set to " bkg))
+;;  Apply the display settings chosen while they are on: each one set when it differs.
+;;  Returns a status line, nil when no display setting is chosen:
+(defun Remote>>Dyl:DisplayApply (/ done)
+  (if (Remote>>Dyl:DisplayOn-p)
+    (progn
+      (mapcar
+        '(lambda (p name / ctx what)
+           (setq ctx  (cadr p)
+                 what (cdr (assoc ctx '((model . "model space ") (layout . "layouts ") (theme . "theme "))))
+           )
+           (cond
+             ((not name))
+             ((= name (if (= ctx 'theme) (Remote>>Dyl:Theme) (Remote>>Dyl:Background ctx)))
+              (setq done (cons (strcat what name) done))
+             )
+             ((if (= ctx 'theme) (Remote>>Dyl:ThemeSet name) (Remote>>Dyl:BackgroundSet ctx name))
+              (setq done (cons (strcat what "set to " name) done))
+             )
+           )
+         )
+        *ec:prefs*
+        (Remote>>Dyl:DisplayPref)
+      )
+      (if done
+        (apply 'strcat (cons (car (reverse done)) (mapcar '(lambda (s) (strcat ", " s)) (cdr (reverse done)))))
+      )
+    )
+    "off (see Dyl-Settings)"
   )
 )
 
