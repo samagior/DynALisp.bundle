@@ -187,6 +187,7 @@ PST-DIAGNOSTICSSETTINGS;Diagnostics Paramètres;Liste les paramètres DynALisp e
 PST-DIAGNOSTICSREACTORS;Diagnostics Réacteurs;Compare les réacteurs DynALisp du dessin à leurs paramètres et liste chaque réacteur.
 PST-DIAGNOSTICSREACTOREVENTS;Diagnostics Événements des réacteurs;Compte les événements que le dessin envoie aux réacteurs entre deux exécutions, pour trouver ce qui ralentit AutoCAD.
 PST-DIAGNOSTICSDRAWING;Diagnostics Dessin;Rapporte les unités, les espaces, les tables d'ordre de tracé, les calques, les xréfs et les objets du dessin, et son temps de régénération.
+PST-DIAGNOSTICSWITNESS;Diagnostics Témoins;Prend les fichiers témoins du cœur .NET : ce que le Lisp donne de ses fichiers de test, compressés pour les envoyer. Dans un clone git seulement.
 DYL-SETTINGS;Paramètres;Ouvre les paramètres de DynALisp : la langue, les réacteurs, les dérogations et les mises à jour.
 DYL-SUITE;Suite;Active ou désactive chaque commande, modifie ses alias et ouvre ses docs.
 DYL-USERFILES;Fichiers utilisateur;Liste vos copies des fichiers de données, les réinitialise, et exporte ou importe vos paramètres.

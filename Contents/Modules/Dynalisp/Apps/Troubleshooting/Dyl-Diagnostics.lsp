@@ -1585,6 +1585,21 @@
   (princ)
 )
 
+;;-------------------------=={ Witness }==------------------------;;
+
+;;  The witness files of DynALisp.Core (Installer\Core\Tests\Witness\Witness.lsp, see its
+;;  header): the Lisp code the C# of the core replaces run on the test files of the git clone,
+;;  what it gives zipped in %TEMP% and shown in the Explorer, to be added to the tests. Only a
+;;  git clone has the Installer folder (the setup does not install it):
+(defun dg:witness (/ f)
+  (setq f (strcat *dyl:repo "\\Installer\\Core\\Tests\\Witness\\Witness.lsp"))
+  (if (findfile f)
+    (load f)
+    (princ "\nDiagnostics Witness: no Installer\\Core\\Tests\\Witness\\Witness.lsp here: only a git clone of DynALisp has it.")
+  )
+  (princ)
+)
+
 ;;-------------------------=={ Commands }==------------------------;;
 
 ;; Diagnostics
@@ -1631,5 +1646,10 @@
 ;; Reports the units, spaces, draw order tables, layers, xrefs and objects of the drawing, and its regen time.
 
 (defun c:Pst-DiagnosticsDrawing () (dg:one "Drawing"))
+
+;; Diagnostics Witness
+;; Takes the witness files of the .NET core: what the Lisp gives from its test files, zipped to send. In a git clone only.
+
+(defun c:Pst-DiagnosticsWitness () (dg:witness))
 
 (princ)
