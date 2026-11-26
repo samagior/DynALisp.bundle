@@ -1,0 +1,237 @@
+#caseedges
+#QuickShape fileUser\Modules\Dynalisp\Res\QuickShape.csv
+#QuickShape head
+IdGroupNameMaterialShapeScaleOutlineKey
+#QuickShape csv
+qs-BrickwallBrick minemt-BrickSquare1.5
+cu-MineWallMinemt-Brick
+cu-MineWallMine againmt-Brick
+CU-MINEWallMine uppermt-Brick
+qs-BrickWallBrick twicemt-Brick
+xx-OddWallOddmt-Brick
+cu-WallShortmt-Brick
+Wallspaced namemt-Brick
+WallBéton cellulairemt-Brick
+WallMinemt-Brick
+Wall#mt-Brick
+Wall#mt-Brick
+qs-NoMatWallNo mat
+qs-GoneWallGone defaultmt-X
+quoted, idWallName, with "quotes"mt-Brick
+cu-LongWallLongmt-Brickabcdefghijklmn
+cu-Semi;xWallSemi;colonmt-Brick
+#QuickShape defs
+qs-BrickWallBrickmt-BrickSquare1
+qs-BlockWallBlockmt-BlockRect2
+#QuickShape clean
+qs-BrickwallBrick minemt-BrickSquare1.5
+cu-MineWallMinemt-Brick
+cu-MineAgainWallMine againmt-Brick
+CU-MINEWallMine uppermt-Brick
+cu-OddWallOddmt-Brick
+cu-ShortWallShortmt-Brick
+cu-SpacedNameWallspaced namemt-Brick
+cu-BTonCellulaireWallBéton cellulairemt-Brick
+cu-Mine2WallMinemt-Brick
+cu-PresetWall#mt-Brick
+cu-Preset2Wall#mt-Brick
+qs-GoneWallGone defaultmt-X
+cu-NameWithQuotesWallName, with "quotes"mt-Brick
+cu-LongWallLongmt-Brickabcdefghijklmn
+cu-Semi;xWallSemi;colonmt-Brick
+#QuickShape read
+qs-BrickwallBrick minemt-BrickSquare1.5
+cu-MineWallMinemt-Brick
+cu-MineAgainWallMine againmt-Brick
+CU-MINEWallMine uppermt-Brick
+cu-OddWallOddmt-Brick
+cu-ShortWallShortmt-Brick
+cu-SpacedNameWallspaced namemt-Brick
+cu-BTonCellulaireWallBéton cellulairemt-Brick
+cu-Mine2WallMinemt-Brick
+cu-PresetWall#mt-Brick
+cu-Preset2Wall#mt-Brick
+cu-GoneDefaultWallGone defaultmt-X
+cu-NameWithQuotesWallName, with "quotes"mt-Brick
+cu-LongWallLongmt-Brickabcdefghijklmn
+cu-Semi;xWallSemi;colonmt-Brick
+qs-BlockWallBlockmt-BlockRect2
+#QuickShape commands
+Pst-QuickShapeBrick
+Pst-QuickShapeCustomMine
+Pst-QuickShapeCustomMineAgain
+Pst-QuickShapeCustomMINE
+Pst-QuickShapeCustomOdd
+Pst-QuickShapeCustomShort
+Pst-QuickShapeCustomSpacedName
+Pst-QuickShapeCustomBTonCellulaire
+Pst-QuickShapeCustomMine2
+Pst-QuickShapeCustomPreset
+Pst-QuickShapeCustomPreset2
+Pst-QuickShapeCustomGoneDefault
+Pst-QuickShapeCustomNameWithQuotes
+Pst-QuickShapeCustomLong
+Pst-QuickShapeCustomSemi;x
+Pst-QuickShapeBlock
+#QuickDrawAssembly fileContents\Modules\Dynalisp\Res\QuickDrawAssemblies.csv
+#QuickDrawAssembly head
+IdGroupNameLayersBorderLines
+#QuickDrawAssembly csv
+as-W1aWallW1amt-Brick,90;mt-Air,251
+as-W1bWallW1b
+#QuickDrawAssembly defs
+as-W1aWallW1amt-Brick,90;mt-Air,251
+as-W1bWallW1b
+#QuickDrawAssembly clean
+as-W1aWallW1amt-Brick,90;mt-Air,251
+#QuickDrawAssembly read
+as-W1aWallW1amt-Brick,90;mt-Air,251
+as-W1bWallW1b
+#QuickDrawAssembly commands
+
+
+#QuickDraw fileUser\Modules\Dynalisp\Res\QuickDraw.csv
+#QuickDraw head
+IdGroupNameMaterialMethod
+#QuickDraw csv
+qd-WallWallWallmt-BrickLinear
+QD-WALLWallWall uppermt-BrickLinear
+qd-WallWallWall twicemt-BrickLinear
+qd-WallBare prefixmt-BrickLinear
+cu-MineWallMineLinear
+#QuickDraw defs
+#QuickDraw clean
+qd-WallWallWallmt-BrickLinear
+QD-WALLWallWall uppermt-BrickLinear
+qd-WallBare prefixmt-BrickLinear
+#QuickDraw read
+qd-WallWallWallmt-BrickLinear
+QD-WALLWallWall uppermt-BrickLinear
+qd-WallBare prefixmt-BrickLinear
+#QuickDraw commands
+Pst-QuickDrawWall
+Pst-QuickDrawWALL
+Pst-QuickDraw
+#Material fileContents\Modules\Dynalisp\Res\Materials.csv
+#Material head
+IdGroupNameCutSurfaceConductivity
+#Material csv
+mt-BrickMasonryBrickhp-Brick0,8
+mt-AirAirAir space
+#Material defs
+mt-BrickMasonryBrickhp-Brick0,8
+mt-AirAirAir space
+#Material clean
+mt-BrickMasonryBrickhp-Brick0,8
+mt-AirAirAir space
+#Material read
+mt-BrickMasonryBrickhp-Brick0,8
+mt-AirAirAir space
+#Material commands
+
+
+#HatchPreset fileUser\Modules\Dynalisp\Res\HatchPresets.csv
+#HatchPreset head
+IdGroupNamePatternScale
+#HatchPreset csv
+hp-BrickMasonryBrickANSI312
+hp-VoidGenericVoid
+GenericNew void
+GenericOdd "quoteAR-CONC1
+hp-BrickMasonryBrick; againANSI321
+#HatchPreset defs
+hp-BrickMasonryBrickANSI311
+hp-VoidGenericVoid
+hp-NoneGenericNone
+#HatchPreset clean
+hp-BrickMasonryBrickANSI312
+hp-VoidGenericVoid
+cu-NewVoidGenericNew void
+cu-OddQuoteGenericOdd "quoteAR-CONC1
+#HatchPreset read
+hp-BrickMasonryBrickANSI312
+hp-VoidGenericVoid
+cu-NewVoidGenericNew void
+cu-OddQuoteGenericOdd "quoteAR-CONC1
+hp-NoneGenericNone
+#HatchPreset commands
+
+
+
+
+
+#groups preset
+wall
+Équipe
+Section
+New;Group
+#groups material
+Concrete
+Masonry
+Metal
+Wood
+Board
+Insulation
+Finish
+Roofing
+Site
+Air
+Phase
+Generic
+#groups defaults preset
+Wall
+Section
+#groups defaults material
+Concrete
+Masonry
+Metal
+Wood
+Board
+Insulation
+Finish
+Roofing
+Site
+Air
+Phase
+Generic
+#groups case
+wallwallwall
+SECTIONSectionSECTION
+concreteconcreteConcrete
+INSULATIONINSULATIONInsulation
+Modular brick 2Modular brick 2Modular brick 2
+concrete-blockconcrete-blockconcrete-block
+cMU 8"cMU 8"cMU 8"
+béton cellulairebéton cellulairebéton cellulaire
+a1ba1ba1b
+---------
+ÉQUIPE étéÉQUIPE étéÉQUIPE été
+straßestraßestraße
+Q-BQ-BQ-B
+QAQAQA
+Q_CQ_CQ_C
+Q1Q1Q1
+q-bq-bq-b
+qaqaqa
+ZetaZetaZeta
+alphaalphaalpha
+#aliases read
+QD-BPST-QUICKDRAWB
+QD-APST-QUICKDRAWA
+Q_CPST-QUICKDRAWA
+Q1PST-QUICKDRAWA
+Q-BPST-QUICKDRAWA
+QAPST-QUICKDRAWA
+ZPST-QUICKDRAW-B
+#aliases of
+PST-QUICKDRAWBQD-B
+PST-QUICKDRAWAQ-BQ_CQ1QAQD-A
+PST-QUICKDRAW-BZ
+#QuickShape writeT
+#QuickDrawAssembly writeT
+#QuickDraw writeT
+#Material writeT
+#HatchPreset writeT
+#groups writeT
+#groups material writeT
+#aliases writeT

@@ -1,0 +1,7 @@
+Id;Group;Name;Material;Shape;Scale;OutlineKey;BorderColorOn;BorderColor;BorderLinetypeOn;BorderLinetype;BorderLtScaleOn;BorderLtScale;BorderLineweightOn;BorderLineweight;BorderTransparencyOn;BorderTransparency;View
+qs-Stud2x4;Section;Stud 2x4;mt-WoodFrame;Shapes|Stud-2x4;1;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;
+qs-Stud2x6;Section;Stud 2x6;mt-WoodFrame;Shapes|Stud-2x6;1;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;
+qs-Stud2x8;Section;Stud 2x8;mt-WoodFrame;Shapes|Stud-2x8;1;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;
+qs-BrickModular;Section;Brick Modular;mt-Brick;Shapes|Brick-Modular;1;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;
+qs-CMU8;Section;CMU 8 in;mt-CMU;Shapes|CMU-8;1;WIDE;0;7;0;CONTINUOUS;0;1;0;25;0;50;
+qs-HSS4x4;Section;HSS 4x4x1/4;mt-Steel;Shapes|HSS-4x4-0.25;1;MED;0;7;0;CONTINUOUS;0;1;0;25;0;50;

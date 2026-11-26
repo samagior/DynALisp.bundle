@@ -79,8 +79,27 @@ namespace DynALisp.Core.Data
             return b.Write(rows, b.UserFileW(File(b)));
         }
 
-        // (Dyl:AliasesOf cmd lst): the aliases of the command cmd, sorted (acad_strlsort):
+        // (Dyl:AliasesOf cmd lst): the aliases of the command cmd, sorted as acad_strlsort sorts
+        // them (Order):
         public static List<string> Of(string cmd, IEnumerable<KeyValuePair<string, string>> lst) =>
-            lst.Where(p => p.Value == cmd).Select(p => p.Key).OrderBy(a => a, StringComparer.Ordinal).ToList();
+            lst.Where(p => p.Value == cmd).Select(p => p.Key).OrderBy(a => a, Order).ToList();
+
+        // The order acad_strlsort gives names of commands (capitals, digits, "-" and "_"), as the
+        // witness shows it (Tests\Witness\Lisp\Probes.txt): the order of the words of Windows,
+        // not that of the codes of the characters: "-" first, then "_", the digits, the letters,
+        // a name before the longer ones it begins (Q-B, Q_C, Q1, QA, QD-A):
+        public static readonly IComparer<string> Order = Comparer<string>.Create((a, b) =>
+        {
+            int n = Math.Min(a.Length, b.Length);
+            for (int i = 0; i < n; i++)
+            {
+                int c = Rank(a[i]).CompareTo(Rank(b[i]));
+                if (c != 0) return c;
+            }
+            return a.Length.CompareTo(b.Length);
+        });
+
+        static int Rank(char c) =>
+            c == '-' ? 0 : c == '_' ? 1 : c >= '0' && c <= '9' ? 2 + c - '0' : c >= 'A' && c <= 'Z' ? 12 + c - 'A' : 100 + c;
     }
 }

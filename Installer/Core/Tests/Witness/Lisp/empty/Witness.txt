@@ -1,0 +1,128 @@
+#caseempty
+#QuickShape fileContents\Modules\Dynalisp\Res\QuickShape.csv
+#QuickShape head
+
+#QuickShape csv
+#QuickShape defs
+#QuickShape clean
+#QuickShape read
+#QuickShape commands
+#QuickDrawAssembly fileContents\Modules\Dynalisp\Res\QuickDrawAssemblies.csv
+#QuickDrawAssembly head
+
+#QuickDrawAssembly csv
+#QuickDrawAssembly defs
+#QuickDrawAssembly clean
+#QuickDrawAssembly read
+#QuickDrawAssembly commands
+#QuickDraw fileContents\Modules\Dynalisp\Res\QuickDraw.csv
+#QuickDraw head
+
+#QuickDraw csv
+#QuickDraw defs
+#QuickDraw clean
+#QuickDraw read
+#QuickDraw commands
+#Material fileContents\Modules\Dynalisp\Res\Materials.csv
+#Material head
+
+#Material csv
+#Material defs
+#Material clean
+#Material read
+#Material commands
+#HatchPreset fileContents\Modules\Dynalisp\Res\HatchPresets.csv
+#HatchPreset head
+
+#HatchPreset csv
+#HatchPreset defs
+#HatchPreset clean
+#HatchPreset read
+#HatchPreset commands
+#groups preset
+Floor
+Wall
+Ceiling
+Roof
+Finish
+Structural
+Site
+Elevation
+Section
+Detail
+Annotation
+Phase
+Area
+Generic
+#groups material
+Concrete
+Masonry
+Metal
+Wood
+Board
+Insulation
+Finish
+Roofing
+Site
+Air
+Phase
+Generic
+#groups defaults preset
+Floor
+Wall
+Ceiling
+Roof
+Finish
+Structural
+Site
+Elevation
+Section
+Detail
+Annotation
+Phase
+Area
+Generic
+#groups defaults material
+Concrete
+Masonry
+Metal
+Wood
+Board
+Insulation
+Finish
+Roofing
+Site
+Air
+Phase
+Generic
+#groups case
+wallWallwall
+SECTIONSectionSECTION
+concreteconcreteConcrete
+INSULATIONINSULATIONInsulation
+Modular brick 2Modular brick 2Modular brick 2
+concrete-blockconcrete-blockconcrete-block
+cMU 8"cMU 8"cMU 8"
+béton cellulairebéton cellulairebéton cellulaire
+a1ba1ba1b
+---------
+ÉQUIPE étéÉQUIPE étéÉQUIPE été
+straßestraßestraße
+Q-BQ-BQ-B
+QAQAQA
+Q_CQ_CQ_C
+Q1Q1Q1
+q-bq-bq-b
+qaqaqa
+ZetaZetaZeta
+alphaalphaalpha
+#aliases read
+#aliases of
+#QuickShape writeT
+#QuickDrawAssembly writeT
+#QuickDraw writeT
+#Material writeT
+#HatchPreset writeT
+#groups writeT
+#groups material writeT
+#aliases writeT

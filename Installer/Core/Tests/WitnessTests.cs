@@ -87,9 +87,17 @@ namespace DynALisp.Core.Tests
             o.Sec("less");
             foreach (var a in names)
                 foreach (var b in names) o.Put(Line(new[] { a, b, Cell(string.CompareOrdinal(a, b) < 0) }));
-            o.Rows("strlsort", new[] { names.OrderBy(x => x, StringComparer.Ordinal) });
             o.Rows("sort", new[] { names.OrderBy(x => x, StringComparer.Ordinal) });
             return o.Lines;
+        }
+
+        // acad_strlsort follows the order of the words of Windows (its language, its accents):
+        // the C# follows it only for the names of commands (Aliases.Order), so only they are
+        // compared, as the witness sorts them (its section strlsort):
+        static void Strlsort(List<string> lisp, List<string> names)
+        {
+            var sorted = Sections(lisp)["strlsort"][0].Split(Us).Where(Aliases.NameOk).ToList();
+            Assert.Equal(sorted, names.Where(Aliases.NameOk).OrderBy(x => x, Aliases.Order).ToList());
         }
 
         // <case>\Witness.txt, the case copied to root (its files written there):
@@ -220,7 +228,12 @@ namespace DynALisp.Core.Tests
                 return;
             }
             var enc = CodePage(Info()["codepage"]);
-            Same("Probes", ReadLines(Path.Combine(LispDir, "Probes.txt")), Probes(Names(enc)));
+            var lisp = ReadLines(Path.Combine(LispDir, "Probes.txt"));
+            var names = Names(enc);
+            var sections = Sections(lisp);
+            sections.Remove("strlsort");
+            Same("Probes", sections.SelectMany(x => new[] { "#" + x.Key }.Concat(x.Value)).ToList(), Probes(names));
+            Strlsort(lisp, names);
         }
 
         [Fact]
