@@ -4,7 +4,9 @@ Contents/Modules/Dynalisp/Res/QuickDrawAssemblies.csv, their thicknesses in mill
 
 The rows of the tables are in Walls.txt and Floors.txt beside this script (their values as the
 tables give them: ratings, STC, IIC); this script builds the layers of each one from them (the
-materials of Res/Materials.csv) and its description. Run it after a change to those files:
+materials of Res/Materials.csv), its description and its family: the rows of a table that differ only by
+their boards, their insulation or their spacing (B6a to B6e) are the variants of one family (B6), whose
+short description holds only what all of them share. Run it after a change to those files:
 
     python Installer/Assemblies/BuildAssemblies.py
 
@@ -110,6 +112,135 @@ def spacing_text(s):
 
 def rc_layer(fill=False):
     return layer(ABS if fill else RC, "13")
+
+
+def gypsum(spec):
+    """The short text of a face: '2x12.7X' -> ['2 layers of 12.7 mm Type X gypsum board', 'gypsum board']."""
+    if spec in ("-", ""):
+        return [""]
+    t = board_text(spec)
+    return [t, "gypsum-sand plaster" if spec.endswith("P") and "+" not in spec else "gypsum board"]
+
+
+def wall_parts(r):
+    """The parts of the short description of a wall, each a list of texts from the most precise to the most
+    general: the family keeps, for each part, the most precise text all its variants share."""
+    i, kind, studs, ab, rc, s1, s2 = r[:7]
+    sp = spacing_text(studs) if studs in PCT else ""
+    if kind == "W":
+        core = [f"38x89 wood studs at {sp} o.c.", "38x89 wood studs"]
+    elif kind == "ST":
+        core = ["two rows of 38x89 wood studs, staggered on a 38x140 plate"]
+    elif kind == "DP":
+        core = ["two rows of 38x89 wood studs on separate plates"]
+    elif kind in ("EW", "EW140"):
+        d = "140" if kind == "EW140" else "89"
+        core = [f"exterior wall, 38x{d} wood studs at {sp} o.c.", f"exterior wall, 38x{d} wood studs", "exterior wall, wood studs"]
+    elif kind.startswith("SN"):
+        core = [f"non-load-bearing steel studs 31x{kind[2:]}", "non-load-bearing steel studs"]
+    elif kind == "SL":
+        core = ["load-bearing steel studs 41x92"]
+    elif kind == "SL2":
+        core = ["two rows of load-bearing steel studs 41x92, cross-braced"]
+    else:
+        core = [f"{kind[1:]} mm concrete block", "concrete block"]
+    if kind.startswith("B"):
+        fill = {"strap1": "38x38 wood strapping on one side", "strap2": "38x38 wood strapping on each side, filled with absorptive material",
+                "steel65": "65 mm steel studs on each side, filled with absorptive material",
+                "wood64": "38x64 wood studs on each side, filled with absorptive material",
+                "zbar": "50 mm metal Z-bars on each side, filled with absorptive material"}.get(studs, "")
+        absorb = [fill]
+    elif ab in ("89", "65", "150", "140g", "89g"):
+        t = ab.rstrip("g")
+        what = "glass fibre" if ab.endswith("g") else "absorptive material"
+        absorb = [f"{t} mm {what} in the cavity", f"{what} in the cavity"]
+    else:
+        absorb = [{"both": "absorptive material in each row", "rwboth": "rock or slag fibre insulation in each row",
+                   "rw89": "rock or slag fibre insulation", "cel89": "dry-blown cellulose fibre insulation",
+                   "rw": "rock or slag fibre insulation", "gf": "glass fibre insulation",
+                   "cel": "dry-blown cellulose fibre insulation", "one": "absorptive material in one row",
+                   "0": "no absorptive material"}.get(ab, "")]
+    if rc == "-":
+        chan = [""]
+    elif rc.startswith("2@"):
+        chan = [f"resilient metal channels at {spacing_text(rc[2:])} o.c. on each side", "resilient metal channels on each side"]
+    else:
+        chan = [f"resilient metal channels at {spacing_text(rc)} o.c. on one side", "resilient metal channels on one side"]
+    if s2 in ("sheathing", "osb", "gypsheath", "veneer"):
+        out = {"sheathing": "sheathing and cladding", "osb": "OSB or plywood sheathing and cladding",
+               "gypsheath": "gypsum sheathing and cladding", "veneer": "sheathing and a masonry veneer"}[s2]
+        faces = [f"{board_text(s1)} inside, {out} outside", f"gypsum board inside, {out} outside", "gypsum board inside, cladding outside"]
+    elif s2.endswith("+osb"):
+        faces = [f"{board_text(s1)} on the channels, 12.7 mm OSB and {board_text(s2[:-4])} on the other side", "gypsum board on each side"]
+    elif s1 == "-" and s2 == "-":
+        faces = ["bare, painted on both sides"]
+    elif s2 == "-":
+        faces = [f"{board_text(s1)} on one side only", "gypsum board on one side only"]
+    elif s1 == s2:
+        faces = [f"{board_text(s1)} on each side", gypsum(s1)[1] + " on each side"]
+    else:
+        faces = [f"{board_text(s1)} on one side, {board_text(s2)} on the other", "gypsum board on each side"]
+    return [core, absorb, chan, faces]
+
+
+def floor_parts(r):
+    """The parts of the short description of a floor, as wall_parts."""
+    i, top, sub, kind, sp, ab, sup, ceil = r[:8]
+    slab = {"SLAB90": ["90 mm reinforced concrete slab", "concrete slab"],
+            "SLAB130": ["130 mm reinforced concrete slab", "concrete slab"],
+            "HOLLOW200": ["200 mm precast hollow core slab", "concrete slab"],
+            "DECK150": ["150 mm composite concrete slab on a steel deck", "concrete slab"],
+            "OWSJ50": ["open web steel joists with a 50 mm concrete deck", "steel joists with a concrete deck"],
+            "CSJ65": ["composite steel joists with 65 mm of concrete", "steel joists with a concrete deck"]}
+    if kind in slab:
+        top, frame, absorb = [""], slab[kind], [""]
+    else:
+        what = JOISTS[kind][1]
+        what = what[0].lower() + what[1:]
+        at = f"not more than {sp[:-3]} mm o.c." if sp.endswith("max") else f"{sp} mm o.c."
+        top = [{"GC25": "25 mm gypsum-concrete topping", "C38": "38 mm concrete topping"}.get(top, "")]
+        if top == [""] and r[1].startswith("C50D"):
+            top = [f"50 mm concrete on a steel deck with {r[1][4:]} mm ribs", "50 mm concrete on a steel deck"]
+        sub = [{"15.5": "15.5 mm plywood or OSB subfloor", "11+15.5": "subfloor of 11 mm and 15.5 mm plywood or OSB",
+                "15.5+15.5": "subfloor of 2 layers of 15.5 mm plywood or OSB"}.get(sub, "")]
+        frame = [f"{what} at {at}", what] + (["wood joists or I-joists"] if kind in ("WJ", "WS", "WI") else [])
+        top = [top[0] + (", " + sub[0] if top[0] and sub[0] else sub[0])] + ([top[1] + (", " + sub[0] if sub[0] else "")] if len(top) > 1 else [])
+        absorb = [{"abs": "absorptive material in the cavity", "0": "no absorptive material"}.get(ab, "")]
+    if sup.startswith("RC"):
+        hold = [f"resilient metal channels at {sup[2:].replace('/', ' or ')} mm o.c.", "resilient metal channels"]
+    elif sup.startswith("SF"):
+        hold = [f"steel furring channels at {sup[2:].replace('/', ' or ')} mm o.c.", "steel furring channels"]
+    elif sup.startswith("FC"):
+        hold = ["furring channels wired to the joists"]
+    elif sup == "DRC":
+        hold = ["gypsum board on the framing and on resilient metal channels"]
+    else:
+        hold = [""]
+    if sup == "DRC" or ceil == "-":
+        board = [""]
+    else:
+        board = [f"ceiling of {board_text(ceil)}", "ceiling of gypsum board"]
+    return [top, frame, absorb, hold, board]
+
+
+def family(name):
+    """B6a -> B6: a name without the letters that end it."""
+    return re.sub(r"[a-z]+$", "", name) or name
+
+
+def family_text(parts):
+    """The short description of a family: for each part, the most precise text all the variants share."""
+    out = []
+    for k in range(len(parts[0])):
+        for t in parts[0][k]:
+            if all(t in p[k] for p in parts):
+                if t:
+                    out.append(t)
+                break
+    if not out:
+        return ""
+    s = ", ".join(out)
+    return s[0].upper() + s[1:] + "."
 
 
 def wall(r):
@@ -332,8 +463,15 @@ def csv(v):
 
 if __name__ == "__main__":
     head = ["Id", "Group", "Name", "Layers", "BorderLines", "DividingLines", "Exterior", "Units",
-            "Description", "FireRating", "FireRatingNLB", "STC", "IIC"]
+            "Description", "FireRating", "FireRatingNLB", "STC", "IIC", "Family", "FamilyDescription"]
     all_rows = rows("Walls.txt", wall) + rows("Floors.txt", floor)
+    parts = {r[0]: r[1] for r in rows("Walls.txt", lambda f: (f[0], wall_parts(f))) + rows("Floors.txt", lambda f: (f[0], floor_parts(f)))}
+    fams = {}
+    for r in all_rows:
+        fams.setdefault(family(r[2]), []).append(parts[r[2]])
+    for r in all_rows:
+        f = family(r[2])
+        r += [f, family_text(fams[f])]
     ids = [r[0] for r in all_rows]
     assert len(ids) == len(set(ids)), "repeated id"
     if len(sys.argv) > 1 and sys.argv[1].startswith("-"):

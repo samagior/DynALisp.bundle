@@ -3487,7 +3487,8 @@
 )
 
 ;;  A row of the assemblies file (id group name layers border-lines dividing-lines exterior
-;;  units description load-bearing-rating non-load-bearing-rating stc iic): its units "mm" or
+;;  units description load-bearing-rating non-load-bearing-rating stc iic family
+;;  family-description): its units "mm" or
 ;;  "" (the units of the drawing), its ratings as they are written (whole numbers checked by
 ;;  the window, see Dyl:QuickDrawAsmCheck),
 ;;  its group as in the groups, its exterior side First (its first layer, the default) or
@@ -3499,9 +3500,22 @@
 ;;  material, of its thickness, without a border of its own; a Line layer is no longer a
 ;;  layer: when the row has no lines of that kind, the first Line layer on a face (no layer
 ;;  with a thickness before it, or none after it) gives its layer key to the Border lines,
-;;  the first one between two layers its key to the Dividing lines:
-(defun Dyl:QuickDrawAsmFix (row / mats ls bl dl bk dk i new)
-  (while (< (length row) 13) (setq row (append row (list ""))))
+;;  the first one between two layers its key to the Dividing lines. Its family (column 13)
+;;  and the short description of its family (14): in a file written before the families,
+;;  those of the default assembly of its id (as-*, *qd:asmdefs*, read before the file: see
+;;  Dyl:QuickDrawAsmRead), else its name alone (a family of one variant):
+(defun Dyl:QuickDrawAsmFix (row / mats ls bl dl bk dk i new d)
+  (while (< (length row) 15) (setq row (append row (list ""))))
+  (if (= "" (nth 13 row))
+    (progn
+      (setq d (if (and *qd:asmdefs* (/= "" (car row)))
+                (vl-some '(lambda (a) (if (= (strcase (car row)) (strcase (car a))) a)) *qd:asmdefs*)
+              )
+            row (Remote>>Dyl:ListSubst row 13 (if d (nth 13 d) (nth 2 row)))
+      )
+      (if (and d (= "" (nth 14 row))) (setq row (Remote>>Dyl:ListSubst row 14 (nth 14 d))))
+    )
+  )
   ;;  Its exterior side: its first layer (an older file), or its last one:
   (setq row (Remote>>Dyl:ListSubst row 6 (if (= "LAST" (strcase (nth 6 row))) "Last" "First")))
   ;;  Its units: millimetres, or those of the drawing (an older file):

@@ -90,7 +90,7 @@ namespace DynALisp.Core.Data
         {
             Key = "QuickDrawAssembly", File = "QuickDrawAssemblies.csv", Default = "AS-*", Title = "Assembly Presets",
             Header = Cols("Id", "Group", "Name", "Layers", "BorderLines", "DividingLines", "Exterior", "Units", "Description",
-                          "FireRating", "FireRatingNLB", "STC", "IIC"),
+                          "FireRating", "FireRatingNLB", "STC", "IIC", "Family", "FamilyDescription"),
         };
 
         public static readonly PresetSpec QuickShape = new PresetSpec

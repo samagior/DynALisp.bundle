@@ -86,13 +86,16 @@
 ;;  minutes (load-bearing, non-load-bearing), its sound transmission class (STC) and its
 ;;  impact insulation class (IIC). The default assemblies (as-*) are the typical assemblies of
 ;;  the building code (NBC 2020 Tables 9.10.3.1.-A and -B), named by their number (W1a, F4c...),
-;;  their thicknesses in millimetres:
+;;  their thicknesses in millimetres. Last, its family and the short description of the
+;;  family: the variants of one assembly (B6a to B6e, which differ by their boards, their
+;;  insulation or their spacing) are one family (B6), listed once in the window, the variants
+;;  picked under it (see Dyl:QuickDrawAsmFix):
 (setq *dyl:presetspecs*
   (cons
     '("QuickDrawAssembly"
       (file . "QuickDrawAssemblies.csv")
       (header "Id" "Group" "Name" "Layers" "BorderLines" "DividingLines" "Exterior" "Units" "Description" "FireRating"
-              "FireRatingNLB" "STC" "IIC"
+              "FireRatingNLB" "STC" "IIC" "Family" "FamilyDescription"
       )
       (default . "AS-*")
       (title . "Assembly Presets")
