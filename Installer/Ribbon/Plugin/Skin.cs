@@ -35,9 +35,12 @@
 // a second; anything not found (another version of AdWindows) leaves the ribbon as it is and
 // says why in (Dyl:RibbonSkin).
 //
-// On while Display is on in Dyl-Settings (DynalispDisplayOn) and its Ribbon (DynalispRibbonColors)
-// or Palettes (DynalispPaletteColors) is DynALisp, read here from the registry when the plugin
-// loads, and again when the Lisp side calls (Dyl:RibbonSkin) after the settings are saved.
+// On while Display is on in Dyl-Settings (DynalispDisplayOn) and its Interface
+// (DynalispInterface) is DynALisp or DynALisp Neutral, read here from the registry when the
+// plugin loads, and again when the Lisp side calls (Dyl:RibbonSkin) after the settings are
+// saved; the former Palettes and Ribbon settings (DynalispPaletteColors, DynalispRibbonColors)
+// are read in its place while it is not set. The WPF parts with a theme of their own (the
+// file tabs) and the title bar follow by Hosted.cs.
 
 using System;
 using System.Collections.Generic;
@@ -79,6 +82,14 @@ namespace DynALisp.Ribbon
                     }
                     foreach (var line in WebPages.Report()) wb.Add(new TypedValue((int)LispDataType.Text, line));
                     return wb;
+                }
+                if (string.Equals(which, "Hosted", StringComparison.OrdinalIgnoreCase))
+                {
+                    // What still shows the blue-greys of AutoCAD, long, in a text file of %TEMP%:
+                    string file = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "DynALisp-Hosted.txt");
+                    var lines = Hosted.Report();
+                    System.IO.File.WriteAllLines(file, lines);
+                    return file + " (" + lines.Count + " lines)";
                 }
                 if (string.Equals(which, "Native", StringComparison.OrdinalIgnoreCase))
                 {
@@ -129,6 +140,10 @@ namespace DynALisp.Ribbon
         const int Limit = 5;
 
         public bool Busy => Wanted || _inPlace != null || _copy != null;
+
+        // The themes this target changed or made current, and the one a copy was made from
+        // (Hosted.cs leaves them to it):
+        public IEnumerable<object> Themes() => new[] { _inPlace, _copy, _orig, Current() }.Where(t => t != null);
 
         public string Status()
         {
@@ -266,9 +281,13 @@ namespace DynALisp.Ribbon
         public static void Read()
         {
             bool on = Env("DynalispDisplayOn") == "1";
+            // The Interface of Display (DynalispInterface) colours them all; before it, the
+            // Ribbon and the Palettes were each a setting of their own (still read, until saved).
+            string ifc = new[] { "DynalispInterface", Palettes.Setting, Ribbon.Setting }
+                .Select(Env).FirstOrDefault(v => !string.IsNullOrEmpty(v));
             foreach (var t in Targets)
             {
-                var look = Look.Of(Env(t.Setting));
+                var look = Look.Of(ifc);
                 t.Wanted = on && look != null;
                 if (look != null) t.Look = look;
             }
@@ -306,6 +325,8 @@ namespace DynALisp.Ribbon
             NativeThemes.Apply(Palettes.Wanted && Dark(), Palettes.Look);
             // The web pages (Start), by a script in their browser:
             WebPages.Apply(Palettes.Wanted && Dark(), Palettes.Look);
+            // The WPF parts with a theme of their own (the file tabs), and the title bar:
+            Hosted.Apply(Palettes.Wanted && Dark(), Palettes.Look);
         }
 
         // ---- the walk of the theme ----
@@ -319,6 +340,18 @@ namespace DynALisp.Ribbon
         static IEnumerable<PropertyInfo> Props(object node) =>
             node.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.CanRead && p.GetIndexParameters().Length == 0);
+
+        // The theme and every part of it, for Hosted.cs: they are filtered here, never there.
+        public static void Parts(object node, HashSet<object> into)
+        {
+            if (node == null || !into.Add(node)) return;
+            foreach (var p in Props(node))
+            {
+                object v;
+                try { v = p.GetValue(node); } catch { continue; }
+                if (v is Freezable && IsPart(v.GetType())) Parts(v, into);
+            }
+        }
 
         public static bool Unfrozen(object theme)
         {
@@ -421,7 +454,7 @@ namespace DynALisp.Ribbon
 
         public static double Lightness(Color c) { ToHsl(c, out _, out _, out double l); return l; }
 
-        static void ToHsl(Color c, out double h, out double s, out double l)
+        internal static void ToHsl(Color c, out double h, out double s, out double l)
         {
             double r = c.R / 255.0, g = c.G / 255.0, b = c.B / 255.0;
             double max = Math.Max(r, Math.Max(g, b)), min = Math.Min(r, Math.Min(g, b));
