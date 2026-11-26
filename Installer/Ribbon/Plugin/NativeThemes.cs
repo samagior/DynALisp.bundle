@@ -29,7 +29,9 @@
 //     the words (UTF-16 and ASCII) in the read-only data of every module of the AutoCAD folder.
 // Each dark theme found (IsDark, or a dark kPaletteBackground) has its colours (elements 8 to
 // 199: kPaletteBackground to the frame colours, the fonts before them left as they are) put
-// through Skin.Map with SetColor, which tells the palettes to draw again; what each was is kept,
+// through Skin.Map with SetColor, between SuspendModifiedNotifications and
+// ResumeModifiedNotifications, then SendModifiedNotification tells the palettes to draw again
+// once (each SetColor alone redraws them: they flickered); what each was is kept,
 // to give it back. Several names may give the same theme, and themes may share their colours:
 // a theme is filtered once, and a colour already given is never filtered again (Skin.Map
 // darkens each time, so the colours would flip between the two). AutoCAD sets them again when
@@ -57,6 +59,11 @@ namespace DynALisp.Ribbon
         const string NameGetColor = "?GetColor@CAdUiTheme@@QEBAKW4AdUiThemeElement@@@Z";
         const string NameSetColor = "?SetColor@CAdUiTheme@@QEAAHW4AdUiThemeElement@@K@Z";
         const string NameIsDark = "?IsDark@CAdUiTheme@@QEBA_NXZ";
+        // Not needed, used when there: the colours of a theme set together, with one
+        // notification (one SetColor is one redraw of every palette of the theme: they flickered).
+        const string NameSuspend = "?SuspendModifiedNotifications@CAdUiTheme@@QEAAXXZ";
+        const string NameResume = "?ResumeModifiedNotifications@CAdUiTheme@@QEAAXXZ";
+        const string NameSend = "?SendModifiedNotification@CAdUiTheme@@QEBAXXZ";
         // A function that returns the manager: ?<name>@@YAPEAVCAdUiThemeManager@@XZ
         const string ManagerSuffix = "@@YAPEAVCAdUiThemeManager@@XZ";
 
@@ -67,6 +74,7 @@ namespace DynALisp.Ribbon
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)] delegate uint GetColorFn(IntPtr self, int element);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)] delegate int SetColorFn(IntPtr self, int element, uint color);
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)] delegate byte IsDarkFn(IntPtr self);
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall)] delegate void ThemeFn(IntPtr self);
 
         static bool _looked;
         static string _fail;
@@ -77,6 +85,7 @@ namespace DynALisp.Ribbon
         static GetColorFn _getColor;
         static SetColorFn _setColor;
         static IsDarkFn _isDark;
+        static ThemeFn _suspend, _resume, _send;
         static List<string> _names = new();
         static bool _searched;
         // What the search saw, for (Dyl:RibbonSkin "Native"): the words, the modules, the time,
@@ -167,7 +176,18 @@ namespace DynALisp.Ribbon
         // Puts the colours of a theme through Skin.Map, those it has now: a colour already given
         // is left (the theme shares it, or was filtered already), and so is a key colour (black
         // or almost, which a palette may use as its transparent colour).
-        static void Filter(Done d)
+        static void Filter(Done d) => Quiet(d.Theme, () => FilterAll(d));
+
+        // The colours of a theme changed with its notifications suspended, then one sent:
+        static void Quiet(IntPtr theme, Action change)
+        {
+            if (_suspend == null) { change(); return; }
+            _suspend(theme);
+            try { change(); }
+            finally { _resume(theme); _send(theme); }
+        }
+
+        static void FilterAll(Done d)
         {
             var was = d.Colours.ToDictionary(c => c.El);
             d.Colours.Clear();
@@ -191,8 +211,7 @@ namespace DynALisp.Ribbon
         // A theme AutoCAD keeps setting again: its colours given back, and left alone.
         static void GiveUp(Done d)
         {
-            foreach (var (el, was, now) in d.Colours)
-                if (_getColor(d.Theme, el) == now) _setColor(d.Theme, el, was);
+            Quiet(d.Theme, () => Back(d));
             d.Colours.Clear();
             d.GaveUp = true;
             Host.Log("native palettes: " + d.Name + " given up, set again " + d.Again + " times");
@@ -208,6 +227,7 @@ namespace DynALisp.Ribbon
             r.Add(_searched ? _words + " words in " + _modules + " modules, " + _ms + " ms" : "the names known (\"Search\" to search every module)");
             if (_fail != null) r.Add("not found: " + _fail);
             if (_names != null) r.Add(_names.Count + " themes: " + string.Join(", ", _names));
+            if (_suspend == null) r.Add("no SuspendModifiedNotifications: one redraw per colour");
             r.AddRange(Seen);
             foreach (var d in Changed.Where(d => d.Again > 0))
                 r.Add(d.Name + ": set again by AutoCAD " + d.Again + " times (element " + d.LastEl + ": given " + Hex(d.LastGiven)
@@ -217,6 +237,12 @@ namespace DynALisp.Ribbon
         }
 
         static string Hex(uint c) => "#" + (c & 0xFF).ToString("X2") + ((c >> 8) & 0xFF).ToString("X2") + ((c >> 16) & 0xFF).ToString("X2");
+
+        static void Back(Done d)
+        {
+            foreach (var (el, was, now) in d.Colours)
+                if (_getColor(d.Theme, el) == now) _setColor(d.Theme, el, was);
+        }
 
         static void Undo()
         {
@@ -228,8 +254,7 @@ namespace DynALisp.Ribbon
                 var d = Changed[i];
                 try
                 {
-                    foreach (var (el, was, now) in d.Colours)
-                        if (_getColor(d.Theme, el) == now) _setColor(d.Theme, el, was);
+                    if (d.Colours.Count > 0) Quiet(d.Theme, () => Back(d));
                     _release(_manager, d.Theme);
                 }
                 catch { }
@@ -269,6 +294,12 @@ namespace DynALisp.Ribbon
             _getColor = Marshal.GetDelegateForFunctionPointer<GetColorFn>(F(NameGetColor));
             _setColor = Marshal.GetDelegateForFunctionPointer<SetColorFn>(F(NameSetColor));
             _isDark = Marshal.GetDelegateForFunctionPointer<IsDarkFn>(F(NameIsDark));
+            if (F(NameSuspend) != IntPtr.Zero && F(NameResume) != IntPtr.Zero && F(NameSend) != IntPtr.Zero)
+            {
+                _suspend = Marshal.GetDelegateForFunctionPointer<ThemeFn>(F(NameSuspend));
+                _resume = Marshal.GetDelegateForFunctionPointer<ThemeFn>(F(NameResume));
+                _send = Marshal.GetDelegateForFunctionPointer<ThemeFn>(F(NameSend));
+            }
             _manager = Marshal.GetDelegateForFunctionPointer<GetManagerFn>(getter[0])();
             if (_manager == IntPtr.Zero) { _fail = "no theme manager"; return false; }
 
