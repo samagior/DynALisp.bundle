@@ -1030,6 +1030,7 @@ namespace DynALisp.Windows
             stack.Children.Add(text);
             stack.Children.Add(buttons);
             w.Content = stack;
+            Reveal.Attach(w);
             return w.ShowDialog() == true;
         }
 

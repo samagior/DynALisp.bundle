@@ -288,11 +288,13 @@ namespace DynALisp.Windows
             _session = s;
             _file = full;
             _state = State.Open;
-            if (old != null)
-            {
-                w.ContentRendered += (a, b) => Close(old.Window);
-                w.Closed += (a, b) => Close(old.Window);
-            }
+            // Shown hidden until it is drawn (Reveal.cs), so the Manager never opens white; over
+            // the window of the tab left, not active until then (that window would lose its
+            // title bar), and that window closed in the moment it is shown: no blank window and
+            // no blink between two tabs:
+            if (old != null) w.ShowActivated = false;
+            Reveal.Attach(w, old == null ? (Action)null : () => { Activate(w); Close(old.Window); });
+            if (old != null) w.Closed += (a, b) => Close(old.Window);
             try { ShowWindow(w); }
             catch
             {

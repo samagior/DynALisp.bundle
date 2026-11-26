@@ -167,6 +167,7 @@ The rest: [Conventions/Ribbon.md](Conventions/Ribbon.md), read before changing t
 
 - A new window is a WPF `.xaml` file of the `Res` folder of its module, without code, shown with `Dyl:WinShow`, never a `.dcl`; its picture in the docs is drawn by `Installer\Windows\Shots` (a row of `Shots.csv`).
 - Every window has an **Open Docs** button and its docs page; windows are minimal, their labels short, never explained in parentheses.
+- A window is never seen before it is drawn (no white window): it is shown hidden until its layout has settled (`Engine\Reveal.cs`), as `Session.Show` and the Manager do for every window.
 
 The rest: [Conventions/Windows.md](Conventions/Windows.md), read before changing a window (WPF or DCL), its picture in the docs or the Manager.
 
