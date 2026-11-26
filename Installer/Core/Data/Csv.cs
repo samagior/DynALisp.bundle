@@ -24,7 +24,15 @@
 //     step for step, its odd cases too (an unbalanced quote);
 //   - each cell is trimmed of its spaces; a line of spaces and tabs only is left out;
 //   - the header is the first line, an UTF-8 byte order mark left out of it.
+// A file written here is the file Remote>>LM:writecsv (Remote\Dyl-Basics.lsp, Lee Mac) writes
+// from the same rows, byte for byte (Tests\Witness):
+//   - each row a line, its cells joined by the list separator of Windows (sList, the plugin
+//     gives it; "," without one), a cell that holds it or a quote put between quotes, its
+//     quotes doubled (Remote>>LM:lst->csv, Remote>>LM:csv-addquotes);
+//   - each line ended as write-line ends it, a carriage return and a line feed, the file in
+//     the encoding of (open file "w"), the ANSI code page of Windows, without byte order mark.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -52,7 +60,7 @@ namespace DynALisp.Core.Data
                     text = sr.ReadToEnd();
             }
             catch (IOException) { return null; }
-            catch (System.UnauthorizedAccessException) { return null; }
+            catch (UnauthorizedAccessException) { return null; }
             return Parse(text);
         }
 
@@ -143,6 +151,53 @@ namespace DynALisp.Core.Data
 
         // Remote>>LM:csv-replacequotes: each "" made ", from the left:
         static string Unquote(string s) => s.Replace("\"\"", "\"");
+
+        // The end of a line written by write-line:
+        public const string LineEnd = "\r\n";
+
+        // (Remote>>LM:csv-addquotes cell sep): between quotes, its quotes doubled, when it holds
+        // a character of the separator or a quote ((wcmatch cell "*[`<sep>\"]*")):
+        public static string Quote(string cell, string sep)
+        {
+            if (cell.IndexOfAny((sep + "\"").ToCharArray()) < 0) return cell;
+            return "\"" + cell.Replace("\"", "\"\"") + "\"";
+        }
+
+        // (Remote>>LM:lst->csv row sep): the line of a row:
+        public static string Line(IList<string> row, string sep)
+        {
+            var sb = new StringBuilder();
+            for (int i = 0; i < row.Count; i++)
+            {
+                if (i > 0) sb.Append(sep);
+                sb.Append(Quote(row[i] ?? "", sep));
+            }
+            return sb.ToString();
+        }
+
+        // The text of a file of these rows (header first), as Remote>>LM:writecsv writes it:
+        public static string Text(IEnumerable<IList<string>> rows, string sep)
+        {
+            var sb = new StringBuilder();
+            foreach (var row in rows) sb.Append(Line(row, sep)).Append(LineEnd);
+            return sb.ToString();
+        }
+
+        // Write these rows (header first) to the file at path in the encoding enc, as
+        // Remote>>LM:writecsv: true once written, false when it cannot be opened (open in Excel,
+        // its folder missing):
+        public static bool WriteFile(string path, IEnumerable<IList<string>> rows, string sep, Encoding enc)
+        {
+            try
+            {
+                var bytes = enc.GetBytes(Text(rows, sep));
+                using (var fs = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+                    fs.Write(bytes, 0, bytes.Length);
+                return true;
+            }
+            catch (IOException) { return false; }
+            catch (UnauthorizedAccessException) { return false; }
+        }
 
         // The cells of a row cut or padded with "" to n, as Remote>>Dyl:CsvRead gives them:
         public static string[] Fit(string[] row, int n)
