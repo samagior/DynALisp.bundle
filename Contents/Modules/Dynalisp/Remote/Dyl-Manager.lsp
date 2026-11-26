@@ -69,9 +69,15 @@
 ;;  The tab shown last during the session:
 (if (not *dyl:mgrlast*) (setq *dyl:mgrlast* "QuickDraw"))
 
-;;  The tabs of the Manager opened on the tab key: those of the Apps turned on, and key:
-(defun Remote>>Dyl:ManagerTabs (key)
-  (vl-remove-if-not '(lambda (tab) (or (= key (car tab)) (Dyl:SuiteFileOn-p (nth 3 tab)))) *dyl:mgrtabs*)
+;;  The tabs of the Manager opened on the tab key: those of the Apps turned on, and key.
+;;  The index of the Startup Suite read once for all the tabs, as the startup of the drawing
+;;  checked it (Dyl:SuiteFileOn-p for each tab listed the Apps files and checked the index
+;;  each time: 170 ms at each opening):
+(defun Remote>>Dyl:ManagerTabs (key / on)
+  (foreach r (cdr (Dyl:SuiteRead))
+    (if (= "1" (car r)) (setq on (cons (strcase (nth 3 r)) on)))
+  )
+  (vl-remove-if-not '(lambda (tab) (or (= key (car tab)) (member (strcase (nth 3 tab)) on))) *dyl:mgrtabs*)
 )
 
 ;;  The time of each step of the last opening of the Manager in this drawing (a tab shown,
