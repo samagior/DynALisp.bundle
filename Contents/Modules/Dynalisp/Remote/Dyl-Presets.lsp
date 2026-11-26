@@ -176,15 +176,34 @@
   (if (and hit (equal stm (cadr hit)))
     (cddr hit)
     (progn
-      (setq lst (Remote>>Dyl:PresetClean key (mapcar fix (Remote>>Dyl:PresetCsv key)) defs))
-      (foreach x defs
-        (if (not (assoc (car x) lst)) (setq miss (cons x miss)))
+      (if (not (setq lst (Remote>>Dyl:PresetReadCore key defs fix)))
+        (progn
+          (setq lst (Remote>>Dyl:PresetClean key (mapcar fix (Remote>>Dyl:PresetCsv key)) defs))
+          (foreach x defs
+            (if (not (assoc (car x) lst)) (setq miss (cons x miss)))
+          )
+          (setq lst (append lst (reverse miss)))
+        )
       )
-      (setq lst              (append lst (reverse miss))
-            *pst:readcache*  (cons (cons key (cons stm lst)) (vl-remove hit *pst:readcache*))
-      )
+      (setq *pst:readcache* (cons (cons key (cons stm lst)) (vl-remove hit *pst:readcache*)))
       lst
     )
+  )
+)
+
+;;  The same read by DynALisp.Core when it is loaded, the same rows (checked by the witness
+;;  files): the assemblies of Quick Draw read with their own fix and defaults (Dyl:AsmRead, in
+;;  millimetres as they are written: the factor 1.0). nil for any other read, or when the Lisp
+;;  reads them (see Installer\Core\Data\Assemblies.cs). The 860 assemblies fixed and cleaned in
+;;  Lisp took a second in each drawing the Assembly Presets tab opened in:
+(defun Remote>>Dyl:PresetReadCore (key defs fix)
+  (if (and (= "QuickDrawAssembly" key)
+           (eq 'Dyl:QuickDrawAsmFix fix)
+           Dyl:AsmRead
+           Dyl:QuickDrawAsmDefs
+           (equal defs (Dyl:QuickDrawAsmDefs))
+      )
+    (Dyl:AsmRead *dyl:contents 1.0 (getvar "DIMZIN"))
   )
 )
 
