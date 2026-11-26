@@ -124,7 +124,7 @@ namespace DynALisp.Core.Tests
         }
 
         // <case>\Witness.txt, the case copied to root (its files written there):
-        static List<string> Case(string name, string root, string sep, Encoding enc, List<string> names)
+        static List<string> Case(string name, string root, string sep, Encoding enc, List<string> names, List<string> lisp = null)
         {
             Copy(Path.Combine(In, name), root);
             Directory.CreateDirectory(Path.Combine(root, "Contents", "Modules", "Dynalisp", "Res"));
@@ -163,6 +163,7 @@ namespace DynALisp.Core.Tests
                 o.Put(Line(new[] { c }.Concat(Aliases.Of(c, als))));
             Assembly(b, o);
             Material(b, o);
+            Show(b, o, lisp);
             foreach (var key in Keys)
                 o.Put("#" + key + " write" + Us + Cell(Presets.Write(b, Presets.Spec(key), reads[key])));
             o.Put("#groups write" + Us + Cell(Groups.Write(b, Groups.Of(b, null), null)));
@@ -221,7 +222,45 @@ namespace DynALisp.Core.Tests
             o.Lines.AddRange(lines.Lines);
         }
 
-        const string LispRead = "assemblies lisp", MatLisp = "materials lisp";
+        // The setups of the drawing of Witness.lsp (wt:setups): MEASUREMENT, INSUNITS, LUNITS,
+        // LUPREC and DIMZIN:
+        static readonly (string Name, int[] Vars)[] Setups = { ("metric", new[] { 1, 4, 2, 4, 0 }), ("imperial", new[] { 0, 1, 2, 3, 8 }) };
+
+        // The units of a pattern in the witness (wt:pat), never those of the computer:
+        static (string, string)? Pat(string p) =>
+            p.Contains("ISO") || p.StartsWith("AR-") ? ("Metric", "C:\\Pat\\" + p + ".pat")
+            : p.StartsWith("NO") ? null
+            : ("Imperial", "C:\\Pat\\acad.pat");
+
+        // What the Quick Draw window shows of each assembly of the case (wt:shows), at the drawing
+        // scale the witness had (its line #shows scale; 1:50 without a witness), the newlines of
+        // a description as (char)29; a case the Lisp makes (Shows.All gives null) has a line
+        // #shows lisp in place of its rows:
+        static void Show(Bundle b, Out o, List<string> lisp)
+        {
+            string scale = "0.020000000000000";
+            if (lisp != null && Sections(lisp).TryGetValue("shows scale", out var sc) && sc.Count > 0) scale = sc[0];
+            o.Put("#shows scale" + Us + scale);
+            var lines = new Out();
+            foreach (var (name, v) in Setups)
+            {
+                var u = new Units
+                {
+                    CannoScale = Lisp.Distof(scale), Measurement = v[0], Insunits = v[1], Lunits = v[2], Luprec = v[3], Dimzin = v[4],
+                };
+                var pats = Shows.Patterns(b, u);
+                var rows = pats == null ? null : Shows.All(b, u, pats.ToDictionary(p => p, p => Pat(p), StringComparer.Ordinal));
+                if (rows == null)
+                {
+                    o.Sec(ShowLisp);
+                    return;
+                }
+                lines.Rows("shows " + name, rows.Select(r => r.Select(c => c.Replace('\n', (char)29))));
+            }
+            o.Lines.AddRange(lines.Lines);
+        }
+
+        const string LispRead = "assemblies lisp", MatLisp = "materials lisp", ShowLisp = "shows lisp";
 
         // The cases whose assemblies or materials the Lisp reads, the C# giving null: the
         // marker, the cases, the sections of the Lisp then left out (those of its prefix, but
@@ -230,6 +269,7 @@ namespace DynALisp.Core.Tests
         {
             (LispRead, new[] { "assemblies-preset" }, "assemblies ", "assemblies defs"),
             (MatLisp, new[] { "assemblies", "assemblies-preset", "empty", "materials-section" }, "materials ", "materials old"),
+            (ShowLisp, new[] { "assemblies", "assemblies-preset", "edges", "empty", "materials-section" }, "shows ", "shows scale"),
         };
 
         // ----- the witness of the Lisp -----
@@ -335,11 +375,11 @@ namespace DynALisp.Core.Tests
                 foreach (var dir in Directory.GetDirectories(In).OrderBy(d => d, StringComparer.Ordinal))
                 {
                     string name = Path.GetFileName(dir), root = Path.Combine(work, name);
-                    var cs = Case(name, root, info["sep"], enc, names);
-                    if (!lisp) continue;
                     var witness = Path.Combine(LispDir, name);
-                    Assert.True(Directory.Exists(witness), "No witness of the case " + name + ": run Witness.lsp again.");
-                    var lines = ReadLines(Path.Combine(witness, "Witness.txt"));
+                    if (lisp) Assert.True(Directory.Exists(witness), "No witness of the case " + name + ": run Witness.lsp again.");
+                    var lines = lisp ? ReadLines(Path.Combine(witness, "Witness.txt")) : null;
+                    var cs = Case(name, root, info["sep"], enc, names, lines);
+                    if (!lisp) continue;
                     foreach (var (mark, cases, prefix, kept) in ReadByLisp)
                     {
                         Assert.True(cases.Contains(name) == cs.Contains("#" + mark), name + ": #" + mark + (cases.Contains(name) ? " expected" : " not expected"));

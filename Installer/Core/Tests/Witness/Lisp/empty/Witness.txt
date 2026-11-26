@@ -761,6 +761,9 @@ mt-HollowCoreSlabConcreteHollow Core Slabhp-Concrete
 mt-GypsumConcreteConcreteGypsum Concretehp-LightweightConcrete
 mt-SteelDeckMetalSteel Deckhp-Steel
 mt-VoidAirVoidhp-Void
+#shows scale0.020000000000000
+#shows metric
+#shows imperial
 #QuickShape writeT
 #QuickDrawAssembly writeT
 #QuickDraw writeT

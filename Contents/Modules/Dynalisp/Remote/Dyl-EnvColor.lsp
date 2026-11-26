@@ -50,6 +50,13 @@
 ;;  paper the "Paper background" setting of the profile, which Options does not show:
 ;;  user profile settings, so they apply to every drawing.
 ;;
+;;    - File tabs (DynalispFileTabColors): Project or Sheet set, a band of colour on the
+;;      file tab of each drawing of a project (the first folder holding a .apj from the
+;;      folder of the drawing up, as Remote>>Dyl:RevProject) or of a sheet set (a .dst, as
+;;      Dyl-OpenFolder), the same colour for every drawing of a project: done by
+;;      DynALisp.Ribbon.dll (Installer\Ribbon\Plugin\FileTabs.cs), an experiment too, which
+;;      reads these settings itself and again when (Dyl:RibbonFileTabs) is called.
+;;
 ;;  The former settings Ribbon and Palettes (DynalispRibbonColors, DynalispPaletteColors)
 ;;  are read as the Interface while it is not set, and Theme (DynalispColorTheme) is no
 ;;  longer applied.
@@ -91,6 +98,7 @@
 (setq *ec:prefs* '(("DynalispInterface" interface)
                    ("DynalispBackground" model)
                    ("DynalispLayoutBackground" layout)
+                   ("DynalispFileTabColors" tabs)
                   )
 )
 
@@ -114,9 +122,12 @@
   )
 )
 
-;;  Names of the choices of a context (interface, model or layout):
+;;  Names of the choices of a context (interface, model, layout or tabs):
 (defun Remote>>Dyl:DisplayNames (ctx)
-  (mapcar 'car (if (= ctx 'interface) *ec:looks* (cddr (assoc ctx *ec:colors*))))
+  (cond
+    ((= ctx 'tabs) '("Project" "Sheet set"))
+    ((mapcar 'car (if (= ctx 'interface) *ec:looks* (cddr (assoc ctx *ec:colors*)))))
+  )
 )
 
 ;;  The ribbon plugin told that the settings changed: what it does with the ribbon
@@ -181,7 +192,7 @@
   (ec:ribbon)
 )
 
-;;  The display settings chosen, in the order of *ec:prefs*: (INTERFACE MODEL LAYOUT),
+;;  The display settings chosen, in the order of *ec:prefs*: (INTERFACE MODEL LAYOUT TABS),
 ;;  each a name, nil when it is not set. The Interface not set is the former Palettes
 ;;  or Ribbon setting:
 (defun Remote>>Dyl:DisplayPref ()
@@ -239,6 +250,9 @@
            (setq done (cons (strcat (cdr c) "set to " (car (Remote>>Dyl:DisplayWant (car c)))) done))
           )
         )
+      )
+      (if (cadddr (Remote>>Dyl:DisplayPref))
+        (setq done (cons (strcat "file tabs " (if Dyl:RibbonFileTabs (Dyl:RibbonFileTabs) "plugin not loaded")) done))
       )
       (if done
         (apply 'strcat (cons (car (reverse done)) (mapcar '(lambda (s) (strcat ", " s)) (cdr (reverse done)))))

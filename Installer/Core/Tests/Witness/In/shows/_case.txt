@@ -1,0 +1,1 @@
+What the Quick Draw window shows of each assembly: framing, load-bearing, variable and low permeance layers, borders and lines, missing materials, patterns of every kind, ratings, inches and millimetres.

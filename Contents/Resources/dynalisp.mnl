@@ -4438,8 +4438,10 @@
   ;;;     interface (DynALisp or DynALisp Neutral: the ribbon and the palettes by
   ;;;     DynALisp.Ribbon.dll, Skin.cs, an experiment, and the model space and the layouts),
   ;;;     then the model space background and the paper of the layouts in place of those
-  ;;;     of the interface (Black, Default, White), each one (Not set) or a name
-  ;;;     (DynalispInterface, DynalispBackground, DynalispLayoutBackground, see
+  ;;;     of the interface (Black, Default, White), and the band of colour of the file
+  ;;;     tabs (Project or Sheet set, FileTabs.cs of the same plugin), each one (Not set)
+  ;;;     or a name (DynalispInterface, DynalispBackground, DynalispLayoutBackground,
+  ;;;     DynalispFileTabColors, see
   ;;;     Modules\Dynalisp\Remote\Dyl-EnvColor.lsp). st:bkg holds them, in the order of
   ;;;     *ec:prefs*; more display settings go in that window (Dyl:SetDisplayVals) and
   ;;;     in that list
@@ -4522,7 +4524,7 @@
 
   ;;; The popups of the display window, in the order of *ec:prefs* (Remote file
   ;;; Dyl-EnvColor.lsp): (KEY CONTEXT):
-  (setq *dyl:setdisplay* '(("ifc" interface) ("bkg" model) ("lbk" layout)))
+  (setq *dyl:setdisplay* '(("ifc" interface) ("bkg" model) ("lbk" layout) ("ftb" tabs)))
 
   ;;; Items of a popup of the display window: nil, shown as (Not set), then the names
   ;;; of the choices of its context (interface, model or layout):
@@ -4685,6 +4687,8 @@
              )
       )
       (Dyl:WinOff (mapcar 'car *dyl:setdisplay*) (not Remote>>Dyl:DisplayPrefSet))
+      ;; The file tabs, by the plugin (DynALisp.Ribbon.dll, FileTabs.cs):
+      (Dyl:WinOff '("ftb") (not Dyl:RibbonFileTabs))
     )
   )
 

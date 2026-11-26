@@ -68,6 +68,7 @@ namespace DynALisp.Ribbon
             try
             {
                 Skin.Read();
+                FileTabs.Read();
                 string which = args?.AsArray().Select(v => v.Value as string).FirstOrDefault(v => v != null);
                 if (string.Equals(which, "Web", StringComparison.OrdinalIgnoreCase))
                 {

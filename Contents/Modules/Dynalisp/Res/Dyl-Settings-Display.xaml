@@ -20,7 +20,8 @@
   The display settings applied in every drawing while Display is on (Remote\Dyl-EnvColor.lsp):
   the look of the interface (its ribbon and palettes by DynALisp.Ribbon.dll, an experiment, its
   model space and layouts), then the model space background and the paper of the layouts in
-  place of those of the interface, first item of each: not set. More display settings go in
+  place of those of the interface, and the band of colour of the file tabs by project or sheet
+  set (the same plugin), first item of each: not set. More display settings go in
   this box, one row each (*dyl:setdisplay*, Dyl:SetDisplayVals, Dyl:SetWinGet).
 -->
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -39,9 +40,13 @@
           <ComboBox x:Name="bkg" DockPanel.Dock="Right" Width="180"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Model space"/>
         </DockPanel>
-        <DockPanel>
+        <DockPanel Margin="0,0,0,6">
           <ComboBox x:Name="lbk" DockPanel.Dock="Right" Width="180"/>
           <TextBlock Style="{DynamicResource Dyl.Label}" Text="Layouts"/>
+        </DockPanel>
+        <DockPanel>
+          <ComboBox x:Name="ftb" DockPanel.Dock="Right" Width="180"/>
+          <TextBlock Style="{DynamicResource Dyl.Label}" Text="File tabs"/>
         </DockPanel>
       </StackPanel>
     </GroupBox>

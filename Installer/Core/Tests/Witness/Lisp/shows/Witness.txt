@@ -1,0 +1,411 @@
+#caseshows
+#QuickShape fileContents\Modules\Dynalisp\Res\QuickShape.csv
+#QuickShape head
+
+#QuickShape csv
+#QuickShape defs
+#QuickShape clean
+#QuickShape read
+#QuickShape commands
+#QuickDrawAssembly fileContents\Modules\Dynalisp\Res\QuickDrawAssemblies.csv
+#QuickDrawAssembly head
+IdGroupNameLayersBorderLinesDividingLinesExteriorUnitsDescriptionFireRatingFireRatingNLBSTCIICFamilyFamilyDescription
+#QuickDrawAssembly csv
+as-AWallStud wallP:mt-Gyp:12.7|P:mt-Ins:89::::1:mt-Stud~23|P:mt-Gyp:12.71~THIN1~THINFirstmmWood studs 400 o.c.4550AWood Studs 89
+as-BWallConcrete wallP:mt-Conc:200:::1~MED:1|P:mt-Air:25:~0|P:mt-Ins:50::::::1:1|P:mt-Gone:10|P:mt-Brick:901~MED0~LastmmCast in place60905550B
+cu-CFloorInch floorP:mt-Brick:3.625|P:mt-Air:1|P:mt-Iso:0.50~1~THINFirst120abcC
+as-EFloorUnknown ratioP:mt-NoData:10:::::::1|P:mt-Ins:50|P:mt-Steel:1.51~THIN1~THINLastmm3045E
+as-FWallFraming missingP:mt-Ins:140::::1:mt-Gone~20|P:mt-Gyp:15.9:~1~1~3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-gyp:15.90~0~FirstmmF
+as-GWallLow perm firstP:mt-Gyp:12.7:::::::1|P:mt-Ins:89|P:mt-Conc:100|P:mt-Gone2:51~THIN1~THINFirstmm45G
+as-HWallBandsP:mt-Ins:38:::1~THIN|P:mt-Ins:38:::1~THIN|P:mt-Gyp:12.71~THIN1~THINFirstmmH
+#QuickDrawAssembly defs
+as-AWallStud wallP:mt-Gyp:12.7|P:mt-Ins:89::::1:mt-Stud~23|P:mt-Gyp:12.71~THIN1~THINFirstmmWood studs 400 o.c.4550AWood Studs 89
+as-BWallConcrete wallP:mt-Conc:200:::1~MED:1|P:mt-Air:25:~0|P:mt-Ins:50::::::1:1|P:mt-Gone:10|P:mt-Brick:901~MED0~LastmmCast in place60905550B
+cu-CFloorInch floorP:mt-Brick:3.625|P:mt-Air:1|P:mt-Iso:0.50~1~THINFirst120abcC
+as-EFloorUnknown ratioP:mt-NoData:10:::::::1|P:mt-Ins:50|P:mt-Steel:1.51~THIN1~THINLastmm3045E
+as-FWallFraming missingP:mt-Ins:140::::1:mt-Gone~20|P:mt-Gyp:15.9:~1~1~3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-gyp:15.90~0~FirstmmF
+as-GWallLow perm firstP:mt-Gyp:12.7:::::::1|P:mt-Ins:89|P:mt-Conc:100|P:mt-Gone2:51~THIN1~THINFirstmm45G
+as-HWallBandsP:mt-Ins:38:::1~THIN|P:mt-Ins:38:::1~THIN|P:mt-Gyp:12.71~THIN1~THINFirstmmH
+#QuickDrawAssembly clean
+as-AWallStud wallP:mt-Gyp:12.7|P:mt-Ins:89::::1:mt-Stud~23|P:mt-Gyp:12.71~THIN1~THINFirstmmWood studs 400 o.c.4550AWood Studs 89
+as-BWallConcrete wallP:mt-Conc:200:::1~MED:1|P:mt-Air:25:~0|P:mt-Ins:50::::::1:1|P:mt-Gone:10|P:mt-Brick:901~MED0~LastmmCast in place60905550B
+cu-CFloorInch floorP:mt-Brick:3.625|P:mt-Air:1|P:mt-Iso:0.50~1~THINFirst120abcC
+as-EFloorUnknown ratioP:mt-NoData:10:::::::1|P:mt-Ins:50|P:mt-Steel:1.51~THIN1~THINLastmm3045E
+as-FWallFraming missingP:mt-Ins:140::::1:mt-Gone~20|P:mt-Gyp:15.9:~1~1~3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-gyp:15.90~0~FirstmmF
+as-GWallLow perm firstP:mt-Gyp:12.7:::::::1|P:mt-Ins:89|P:mt-Conc:100|P:mt-Gone2:51~THIN1~THINFirstmm45G
+as-HWallBandsP:mt-Ins:38:::1~THIN|P:mt-Ins:38:::1~THIN|P:mt-Gyp:12.71~THIN1~THINFirstmmH
+#QuickDrawAssembly read
+as-AWallStud wallP:mt-Gyp:12.7|P:mt-Ins:89::::1:mt-Stud~23|P:mt-Gyp:12.71~THIN1~THINFirstmmWood studs 400 o.c.4550AWood Studs 89
+as-BWallConcrete wallP:mt-Conc:200:::1~MED:1|P:mt-Air:25:~0|P:mt-Ins:50::::::1:1|P:mt-Gone:10|P:mt-Brick:901~MED0~LastmmCast in place60905550B
+cu-CFloorInch floorP:mt-Brick:3.625|P:mt-Air:1|P:mt-Iso:0.50~1~THINFirst120abcC
+as-EFloorUnknown ratioP:mt-NoData:10:::::::1|P:mt-Ins:50|P:mt-Steel:1.51~THIN1~THINLastmm3045E
+as-FWallFraming missingP:mt-Ins:140::::1:mt-Gone~20|P:mt-Gyp:15.9:~1~1~3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-gyp:15.90~0~FirstmmF
+as-GWallLow perm firstP:mt-Gyp:12.7:::::::1|P:mt-Ins:89|P:mt-Conc:100|P:mt-Gone2:51~THIN1~THINFirstmm45G
+as-HWallBandsP:mt-Ins:38:::1~THIN|P:mt-Ins:38:::1~THIN|P:mt-Gyp:12.71~THIN1~THINFirstmmH
+#QuickDrawAssembly commands
+
+
+
+
+
+
+
+#QuickDraw fileContents\Modules\Dynalisp\Res\QuickDraw.csv
+#QuickDraw head
+
+#QuickDraw csv
+#QuickDraw defs
+#QuickDraw clean
+#QuickDraw read
+#QuickDraw commands
+#Material fileContents\Modules\Dynalisp\Res\Materials.csv
+#Material head
+IdGroupNameCutSurfaceConductivityDensityResistancePermeabilityPermeance
+#Material csv
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+mt-ConcConcreteConcretehp-Conc2.52400
+mt-AirAirAir Spacehp-Void0.17
+mt-BrickMasonryBrickhp-Brick1.2862400
+mt-NoDataGenericNo datahp-NoFile
+mt-SteelMetalSteelhp-Solid507850
+mt-IsoGenericIso boardhp-Iso1200,03
+mt-Gone2GenericGone hatchhp-Gone11
+#Material defs
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+mt-ConcConcreteConcretehp-Conc2.52400
+mt-AirAirAir Spacehp-Void0.17
+mt-BrickMasonryBrickhp-Brick1.2862400
+mt-NoDataGenericNo datahp-NoFile
+mt-SteelMetalSteelhp-Solid507850
+mt-IsoGenericIso boardhp-Iso1200,03
+mt-Gone2GenericGone hatchhp-Gone11
+#Material clean
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+mt-ConcConcreteConcretehp-Conc2.52400
+mt-AirAirAir Spacehp-Void0.17
+mt-BrickMasonryBrickhp-Brick1.2862400
+mt-NoDataGenericNo datahp-NoFile
+mt-SteelMetalSteelhp-Solid507850
+mt-IsoGenericIso boardhp-Iso1200,03
+mt-Gone2GenericGone hatchhp-Gone11
+#Material read
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+mt-ConcConcreteConcretehp-Conc2.52400
+mt-AirAirAir Spacehp-Void0.17
+mt-BrickMasonryBrickhp-Brick1.2862400
+mt-NoDataGenericNo datahp-NoFile
+mt-SteelMetalSteelhp-Solid507850
+mt-IsoGenericIso boardhp-Iso1200,03
+mt-Gone2GenericGone hatchhp-Gone11
+#Material commands
+
+
+
+
+
+
+
+
+
+
+#HatchPreset fileContents\Modules\Dynalisp\Res\HatchPresets.csv
+#HatchPreset head
+IdGroupNamePatternScaleScaleMetricAngleOutlineKeyHatchKeyAnnotativeScaleDrawingScaleRefBorderColorOnBorderColorBorderLinetypeOnBorderLinetypeBorderLtScaleOnBorderLtScaleBorderLineweightOnBorderLineweightBorderTransparencyOnBorderTransparencyHatchColorOnHatchColorBackgroundOnBackgroundHatchLineweightOnHatchLineweightHatchTransparencyOnHatchTransparencyAssociativeNoBorderBehindBorderMethodWidthJustifySidesScaleWidthWidthFactorOriginOnLineOriginOffsetExistingBackgroundOnExistingBackgroundShrinkGapShrinkGapOnShrinkGapMetricOriginAlongHatchLinetypeOnHatchLinetypeHatchLtScaleOnHatchLtScaleEndsEndExtensionEndAngleCornersMiterLimitLapThroughJointsHatchFollowsAssemblyOnAssemblyEndsOnCornersOnType
+#HatchPreset csv
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-ConcSectionConcreteAR-CONC222.5WIDEHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-BrickElevationBrickbrick10.66670THINHATCH111070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Model
+hp-NoFileSectionNo fileNOPAT390MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-SolidSectionSolidSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-IsoSectionIsoISO02W1001.50MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#HatchPreset defs
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-ConcSectionConcreteAR-CONC222.5WIDEHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-BrickElevationBrickbrick10.66670THINHATCH111070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Model
+hp-NoFileSectionNo fileNOPAT390MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-SolidSectionSolidSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-IsoSectionIsoISO02W1001.50MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#HatchPreset clean
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-ConcSectionConcreteAR-CONC222.5WIDEHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-BrickElevationBrickbrick10.66670THINHATCH111070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Model
+hp-NoFileSectionNo fileNOPAT390MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-SolidSectionSolidSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-IsoSectionIsoISO02W1001.50MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#HatchPreset read
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-ConcSectionConcreteAR-CONC222.5WIDEHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-BrickElevationBrickbrick10.66670THINHATCH111070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Model
+hp-NoFileSectionNo fileNOPAT390MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-SolidSectionSolidSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+hp-IsoSectionIsoISO02W1001.50MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#HatchPreset commands
+
+
+
+
+
+
+
+
+
+#groups preset
+Section
+Elevation
+Wall
+Floor
+#groups material
+Board
+Insulation
+Wood
+Concrete
+Air
+Masonry
+Metal
+Generic
+#groups defaults preset
+Section
+Elevation
+Wall
+Floor
+#groups defaults material
+Board
+Insulation
+Wood
+Concrete
+Air
+Masonry
+Metal
+Generic
+#groups case
+wallWallwall
+SECTIONSectionSECTION
+concreteconcreteConcrete
+INSULATIONINSULATIONInsulation
+Modular brick 2Modular brick 2Modular brick 2
+concrete-blockconcrete-blockconcrete-block
+cMU 8"cMU 8"cMU 8"
+béton cellulairebéton cellulairebéton cellulaire
+a1ba1ba1b
+---------
+ÉQUIPE étéÉQUIPE étéÉQUIPE été
+straßestraßestraße
+Q-BQ-BQ-B
+QAQAQA
+Q_CQ_CQ_C
+Q1Q1Q1
+q-bq-bq-b
+qaqaqa
+ZetaZetaZeta
+alphaalphaalpha
+#aliases read
+#aliases of
+#assemblies defs
+as-AWallStud wallP:mt-Gyp:12.7|P:mt-Ins:89::::1:mt-Stud~23|P:mt-Gyp:12.71~THIN1~THINFirstmmWood studs 400 o.c.4550AWood Studs 89
+as-BWallConcrete wallP:mt-Conc:200:::1~MED:1|P:mt-Air:25|P:mt-Ins:50::::::1:1|P:mt-Gone:10|P:mt-Brick:901~MED0~LastmmCast in place60905550B
+as-EFloorUnknown ratioP:mt-NoData:10:::::::1|P:mt-Ins:50|P:mt-Steel:1.51~THIN1~THINLastmm3045E
+as-FWallFraming missingP:mt-Ins:140::::1:mt-Gone~20|P:mt-Gyp:15.9:~1~1~3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-gyp:15.90~0~FirstmmF
+as-GWallLow perm firstP:mt-Gyp:12.7:::::::1|P:mt-Ins:89|P:mt-Conc:100|P:mt-Gone2:51~THIN1~THINFirstmm45G
+as-HWallBandsP:mt-Ins:38:::1~THIN|P:mt-Ins:38:::1~THIN|P:mt-Gyp:12.71~THIN1~THINFirstmmH
+#assemblies read
+as-AWallStud wallP:mt-Gyp:12.7|P:mt-Ins:89::::1:mt-Stud~23|P:mt-Gyp:12.71~THIN1~THINFirstmmWood studs 400 o.c.4550AWood Studs 89
+as-BWallConcrete wallP:mt-Conc:200:::1~MED:1|P:mt-Air:25|P:mt-Ins:50::::::1:1|P:mt-Gone:10|P:mt-Brick:901~MED0~LastmmCast in place60905550B
+cu-CFloorInch floorP:mt-Brick:3.625|P:mt-Air:1|P:mt-Iso:0.50~1~THINFirst120abcC
+as-EFloorUnknown ratioP:mt-NoData:10:::::::1|P:mt-Ins:50|P:mt-Steel:1.51~THIN1~THINLastmm3045E
+as-FWallFraming missingP:mt-Ins:140::::1:mt-Gone~20|P:mt-Gyp:15.9:~1~1~3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-gyp:15.90~0~FirstmmF
+as-GWallLow perm firstP:mt-Gyp:12.7:::::::1|P:mt-Ins:89|P:mt-Conc:100|P:mt-Gone2:51~THIN1~THINFirstmm45G
+as-HWallBandsP:mt-Ins:38:::1~THIN|P:mt-Ins:38:::1~THIN|P:mt-Gyp:12.71~THIN1~THINFirstmmH
+#assemblies inch 0
+as-AP:mt-Gyp:0.5|P:mt-Ins:3.50393701::::1:mt-Stud~23|P:mt-Gyp:0.5
+as-BP:mt-Conc:7.87401575:::1~MED:1|P:mt-Air:0.98425197|P:mt-Ins:1.96850394::::::1:1|P:mt-Gone:0.39370079|P:mt-Brick:3.54330709
+cu-CP:mt-Brick:3.625|P:mt-Air:1|P:mt-Iso:0.5
+as-EP:mt-NoData:0.39370079:::::::1|P:mt-Ins:1.96850394|P:mt-Steel:0.05905512
+as-FP:mt-Ins:5.51181102::::1:mt-Gone~20|P:mt-Gyp:0.62598425:~1~1~3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-gyp:0.62598425
+as-GP:mt-Gyp:0.5:::::::1|P:mt-Ins:3.50393701|P:mt-Conc:3.93700787|P:mt-Gone2:0.19685039
+as-HP:mt-Ins:1.49606299:::1~THIN|P:mt-Ins:1.49606299:::1~THIN|P:mt-Gyp:0.5
+#assemblies inch 0 back
+as-AP:mt-Gyp:12.7|P:mt-Ins:89::::1:mt-Stud~23|P:mt-Gyp:12.7
+as-BP:mt-Conc:200:::1~MED:1|P:mt-Air:25|P:mt-Ins:50::::::1:1|P:mt-Gone:10|P:mt-Brick:90
+cu-CP:mt-Brick:3.625|P:mt-Air:1|P:mt-Iso:0.5
+as-EP:mt-NoData:10:::::::1|P:mt-Ins:50|P:mt-Steel:1.5
+as-FP:mt-Ins:140::::1:mt-Gone~20|P:mt-Gyp:15.9:~1~1~3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-gyp:15.9
+as-GP:mt-Gyp:12.7:::::::1|P:mt-Ins:89|P:mt-Conc:100|P:mt-Gone2:5
+as-HP:mt-Ins:38:::1~THIN|P:mt-Ins:38:::1~THIN|P:mt-Gyp:12.7
+#assemblies metre 0
+as-AP:mt-Gyp:0.0127|P:mt-Ins:0.089::::1:mt-Stud~23|P:mt-Gyp:0.0127
+as-BP:mt-Conc:0.2:::1~MED:1|P:mt-Air:0.025|P:mt-Ins:0.05::::::1:1|P:mt-Gone:0.01|P:mt-Brick:0.09
+cu-CP:mt-Brick:3.625|P:mt-Air:1|P:mt-Iso:0.5
+as-EP:mt-NoData:0.01:::::::1|P:mt-Ins:0.05|P:mt-Steel:0.0015
+as-FP:mt-Ins:0.14::::1:mt-Gone~20|P:mt-Gyp:0.0159:~1~1~3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-gyp:0.0159
+as-GP:mt-Gyp:0.0127:::::::1|P:mt-Ins:0.089|P:mt-Conc:0.1|P:mt-Gone2:0.005
+as-HP:mt-Ins:0.038:::1~THIN|P:mt-Ins:0.038:::1~THIN|P:mt-Gyp:0.0127
+#assemblies metre 0 back
+as-AP:mt-Gyp:12.7|P:mt-Ins:89::::1:mt-Stud~23|P:mt-Gyp:12.7
+as-BP:mt-Conc:200:::1~MED:1|P:mt-Air:25|P:mt-Ins:50::::::1:1|P:mt-Gone:10|P:mt-Brick:90
+cu-CP:mt-Brick:3.625|P:mt-Air:1|P:mt-Iso:0.5
+as-EP:mt-NoData:10:::::::1|P:mt-Ins:50|P:mt-Steel:1.5
+as-FP:mt-Ins:140::::1:mt-Gone~20|P:mt-Gyp:15.9:~1~1~3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-gyp:15.9
+as-GP:mt-Gyp:12.7:::::::1|P:mt-Ins:89|P:mt-Conc:100|P:mt-Gone2:5
+as-HP:mt-Ins:38:::1~THIN|P:mt-Ins:38:::1~THIN|P:mt-Gyp:12.7
+#assemblies inch 8
+as-AP:mt-Gyp:0.5|P:mt-Ins:3.50393701::::1:mt-Stud~23|P:mt-Gyp:0.5
+as-BP:mt-Conc:7.87401575:::1~MED:1|P:mt-Air:0.98425197|P:mt-Ins:1.96850394::::::1:1|P:mt-Gone:0.39370079|P:mt-Brick:3.54330709
+cu-CP:mt-Brick:3.625|P:mt-Air:1|P:mt-Iso:0.5
+as-EP:mt-NoData:0.39370079:::::::1|P:mt-Ins:1.96850394|P:mt-Steel:0.05905512
+as-FP:mt-Ins:5.51181102::::1:mt-Gone~20|P:mt-Gyp:0.62598425:~1~1~3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-gyp:0.62598425
+as-GP:mt-Gyp:0.5:::::::1|P:mt-Ins:3.50393701|P:mt-Conc:3.93700787|P:mt-Gone2:0.19685039
+as-HP:mt-Ins:1.49606299:::1~THIN|P:mt-Ins:1.49606299:::1~THIN|P:mt-Gyp:0.5
+#assemblies inch 8 back
+as-AP:mt-Gyp:12.7|P:mt-Ins:89::::1:mt-Stud~23|P:mt-Gyp:12.7
+as-BP:mt-Conc:200:::1~MED:1|P:mt-Air:25|P:mt-Ins:50::::::1:1|P:mt-Gone:10|P:mt-Brick:90
+cu-CP:mt-Brick:3.625|P:mt-Air:1|P:mt-Iso:0.5
+as-EP:mt-NoData:10:::::::1|P:mt-Ins:50|P:mt-Steel:1.5
+as-FP:mt-Ins:140::::1:mt-Gone~20|P:mt-Gyp:15.9:~1~1~3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-gyp:15.9
+as-GP:mt-Gyp:12.7:::::::1|P:mt-Ins:89|P:mt-Conc:100|P:mt-Gone2:5
+as-HP:mt-Ins:38:::1~THIN|P:mt-Ins:38:::1~THIN|P:mt-Gyp:12.7
+#assemblies metre 8
+as-AP:mt-Gyp:0.0127|P:mt-Ins:0.089::::1:mt-Stud~23|P:mt-Gyp:0.0127
+as-BP:mt-Conc:0.2:::1~MED:1|P:mt-Air:0.025|P:mt-Ins:0.05::::::1:1|P:mt-Gone:0.01|P:mt-Brick:0.09
+cu-CP:mt-Brick:3.625|P:mt-Air:1|P:mt-Iso:0.5
+as-EP:mt-NoData:0.01:::::::1|P:mt-Ins:0.05|P:mt-Steel:0.0015
+as-FP:mt-Ins:0.14::::1:mt-Gone~20|P:mt-Gyp:0.0159:~1~1~3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-gyp:0.0159
+as-GP:mt-Gyp:0.0127:::::::1|P:mt-Ins:0.089|P:mt-Conc:0.1|P:mt-Gone2:0.005
+as-HP:mt-Ins:0.038:::1~THIN|P:mt-Ins:0.038:::1~THIN|P:mt-Gyp:0.0127
+#assemblies metre 8 back
+as-AP:mt-Gyp:12.7|P:mt-Ins:89::::1:mt-Stud~23|P:mt-Gyp:12.7
+as-BP:mt-Conc:200:::1~MED:1|P:mt-Air:25|P:mt-Ins:50::::::1:1|P:mt-Gone:10|P:mt-Brick:90
+cu-CP:mt-Brick:3.625|P:mt-Air:1|P:mt-Iso:0.5
+as-EP:mt-NoData:10:::::::1|P:mt-Ins:50|P:mt-Steel:1.5
+as-FP:mt-Ins:140::::1:mt-Gone~20|P:mt-Gyp:15.9:~1~1~3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-gyp:15.9
+as-GP:mt-Gyp:12.7:::::::1|P:mt-Ins:89|P:mt-Conc:100|P:mt-Gone2:5
+as-HP:mt-Ins:38:::1~THIN|P:mt-Ins:38:::1~THIN|P:mt-Gyp:12.7
+#materials old
+#materials hatch defs 0
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ConcSectionConcreteAR-CONC222.5WIDEHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-BrickElevationBrickBRICK10.66670THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Model
+hp-NoFileSectionNo fileNOPAT390MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-SolidSectionSolidSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-IsoSectionIsoISO02W1001.50MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#materials defs 0
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+mt-ConcConcreteConcretehp-Conc2.52400
+mt-AirAirAir Spacehp-Void0.17
+mt-BrickMasonryBrickhp-Brick1.2862400
+mt-NoDataGenericNo datahp-NoFile
+mt-SteelMetalSteelhp-Solid507850
+mt-IsoGenericIso boardhp-Iso1200.03
+mt-Gone2GenericGone hatchhp-Gone11
+#materials hatch read 0
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ConcSectionConcreteAR-CONC222.5WIDEHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-BrickElevationBrickBRICK10.66670THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Model
+hp-NoFileSectionNo fileNOPAT390MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-SolidSectionSolidSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-IsoSectionIsoISO02W1001.50MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#materials read 0
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+mt-ConcConcreteConcretehp-Conc2.52400
+mt-AirAirAir Spacehp-Void0.17
+mt-BrickMasonryBrickhp-Brick1.2862400
+mt-NoDataGenericNo datahp-NoFile
+mt-SteelMetalSteelhp-Solid507850
+mt-IsoGenericIso boardhp-Iso1200.03
+mt-Gone2GenericGone hatchhp-Gone11
+#materials hatch defs 4
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ConcSectionConcreteAR-CONC222.5WIDEHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-BrickElevationBrickBRICK10.66670THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Model
+hp-NoFileSectionNo fileNOPAT390MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-SolidSectionSolidSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-IsoSectionIsoISO02W1001.50MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#materials defs 4
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+mt-ConcConcreteConcretehp-Conc2.52400
+mt-AirAirAir Spacehp-Void0.17
+mt-BrickMasonryBrickhp-Brick1.2862400
+mt-NoDataGenericNo datahp-NoFile
+mt-SteelMetalSteelhp-Solid507850
+mt-IsoGenericIso boardhp-Iso1200.03
+mt-Gone2GenericGone hatchhp-Gone11
+#materials hatch read 4
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-ConcSectionConcreteAR-CONC222.5WIDEHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-BrickElevationBrickBRICK10.66670THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Model
+hp-NoFileSectionNo fileNOPAT390MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-SolidSectionSolidSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-IsoSectionIsoISO02W1001.50MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#materials read 4
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+mt-ConcConcreteConcretehp-Conc2.52400
+mt-AirAirAir Spacehp-Void0.17
+mt-BrickMasonryBrickhp-Brick1.2862400
+mt-NoDataGenericNo datahp-NoFile
+mt-SteelMetalSteelhp-Solid507850
+mt-IsoGenericIso boardhp-Iso1200.03
+mt-Gone2GenericGone hatchhp-Gone11
+#shows scale0.020000000000000
+#shows metric
+as-A3 layers114.4O*P?12.7?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?Drafting*L?0*P?89?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*L?0*P?12.7?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingTotal thickness  114.4000Gypsum Board  12.7000Mineral Wool + Wood Stud 23%  89.0000  (load-bearing)Gypsum Board  12.7000Thermal resistance  RSI 1.683Mass  32.61 kg/m2Continuous layers  RSI 0.1588Fire-resistance rating 45 min, STC 50Wood studs 400 o.c.
+as-B5 layers375O*P?200?AR-CONC?C:\Pat\AR-CONC.pat?0.07874016?22.5?1?Drafting*L?0*S?25*P?50?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*X?10*P?90?BRICK?C:\Pat\acad.pat?0.213334?0?50?ModelTotal thickness  375.0000Concrete  200.0000  (load-bearing)Air Space  25.0000Mineral Wool  50.0000  (variable)  (low permeance)mt-Gone  10.0000Brick  90.0000Thermal resistance  RSI 1.57  (1 layer unknown)Mass  697.5 kg/m2  (2 layers unknown)Low permeance ratio  unknownFire-resistance rating 1 h, non-load-bearing 1.5 h, STC 55, IIC 50Cast in place
+cu-C3 layers5.125P?3.625?BRICK?C:\Pat\acad.pat?0.213334?0?50?Model*L?0*S?1*L?0*P?0.5?ISO02W100?C:\Pat\ISO02W100.pat?0.0011811?0?50?DraftingTotal thickness  5.1250Brick  3.6250Air Space  1.0000Iso board  0.5000Thermal resistance  RSI 0.2028Mass  8.76 kg/m2  (1 layer unknown)Fire-resistance rating 2 h, non-load-bearing 0 min
+as-E3 layers61.5O*P?10?NOPAT??3?90?1?Drafting*L?0*P?50?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*L?0*F?1.5Total thickness  61.5000No data  10.0000  (low permeance)Mineral Wool  50.0000Steel  1.5000Thermal resistance  RSI 1.25  (1 layer unknown)Mass  13.28 kg/m2  (1 layer unknown)Low permeance ratio  unknownFire-resistance rating 30 min, IIC 45
+as-F3 layers171.8P?140?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*P?15.9?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?Drafting*P?15.9?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingTotal thickness  171.8000Mineral Wool + mt-Gone 20%  140.0000  (load-bearing)Gypsum Board  15.9000Gypsum Board  15.9000Thermal resistance  RSI 0.1988  (1 layer unknown)Mass  25.44 kg/m2  (1 layer unknown)Continuous layers  RSI 0.1988
+as-G4 layers206.7O*P?12.7?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?Drafting*L?0*P?89?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*L?0*P?100?AR-CONC?C:\Pat\AR-CONC.pat?0.07874016?22.5?1?Drafting*L?0*S?5Total thickness  206.7000Gypsum Board  12.7000  (low permeance)Mineral Wool  89.0000Concrete  100.0000Gone hatch  5.0000Thermal resistance  RSI 2.349Mass  252.8 kg/m2Low permeance ratio  0.03Fire-resistance rating, non-load-bearing 45 min
+as-H3 layers88.7O*P?38?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*L?0*P?38?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*L?0*P?12.7?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingTotal thickness  88.7000Mineral Wool  38.0000Mineral Wool  38.0000Gypsum Board  12.7000Thermal resistance  RSI 1.979Mass  12.44 kg/m2
+#shows imperial
+as-A3 layers4.5039O*P?0.5?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?Drafting*L?0*P?3.503937?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*L?0*P?0.5?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingTotal thickness  4.504Gypsum Board  0.5Mineral Wool + Wood Stud 23%  3.504  (load-bearing)Gypsum Board  0.5Thermal resistance  R 9.555Mass  6.679 lb/ft2Continuous layers  R 0.9014Fire-resistance rating 45 min, STC 50Wood studs 400 o.c.
+as-B5 layers14.7638O*P?7.874016?AR-CONC?C:\Pat\AR-CONC.pat?0.07874016?22.5?1?Drafting*L?0*S?0.984252*P?1.968504?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*X?0.393701*P?3.543307?BRICK?C:\Pat\acad.pat?0.213334?0?50?ModelTotal thickness  14.764Concrete  7.874  (load-bearing)Air Space  0.984Mineral Wool  1.969  (variable)  (low permeance)mt-Gone  0.394Brick  3.543Thermal resistance  R 8.915  (1 layer unknown)Mass  142.9 lb/ft2  (2 layers unknown)Low permeance ratio  unknownFire-resistance rating 1 h, non-load-bearing 1.5 h, STC 55, IIC 50Cast in place
+cu-C3 layers5.125P?3.625?BRICK?C:\Pat\acad.pat?0.213334?0?50?Model*L?0*S?1*L?0*P?0.5?ISO02W100?C:\Pat\ISO02W100.pat?0.0011811?0?50?DraftingTotal thickness  5.125Brick  3.625Air Space  1Iso board  0.5Thermal resistance  R 1.542Mass  45.57 lb/ft2  (1 layer unknown)Fire-resistance rating 2 h, non-load-bearing 0 min
+as-E3 layers2.4213O*P?0.393701?NOPAT??3?90?1?Drafting*L?0*P?1.968504?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*L?0*F?0.059055Total thickness  2.421No data  0.394  (low permeance)Mineral Wool  1.969Steel  0.059Thermal resistance  R 7.098  (1 layer unknown)Mass  2.719 lb/ft2  (1 layer unknown)Low permeance ratio  unknownFire-resistance rating 30 min, IIC 45
+as-F3 layers6.7638P?5.511811?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*P?0.625984?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?Drafting*P?0.625984?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingTotal thickness  6.764Mineral Wool + mt-Gone 20%  5.512  (load-bearing)Gypsum Board  0.626Gypsum Board  0.626Thermal resistance  R 1.129  (1 layer unknown)Mass  5.211 lb/ft2  (1 layer unknown)Continuous layers  R 1.129
+as-G4 layers8.1378O*P?0.5?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?Drafting*L?0*P?3.503937?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*L?0*P?3.937008?AR-CONC?C:\Pat\AR-CONC.pat?0.07874016?22.5?1?Drafting*L?0*S?0.19685Total thickness  8.138Gypsum Board  0.5  (low permeance)Mineral Wool  3.504Concrete  3.937Gone hatch  0.197Thermal resistance  R 13.34Mass  51.78 lb/ft2Low permeance ratio  0.03Fire-resistance rating, non-load-bearing 45 min
+as-H3 layers3.4921O*P?1.496063?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*L?0*P?1.496063?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*L?0*P?0.5?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingTotal thickness  3.492Mineral Wool  1.496Mineral Wool  1.496Gypsum Board  0.5Thermal resistance  R 11.24Mass  2.548 lb/ft2
+#QuickShape writeT
+#QuickDrawAssembly writeT
+#QuickDraw writeT
+#Material writeT
+#HatchPreset writeT
+#groups writeT
+#groups material writeT
+#aliases writeT

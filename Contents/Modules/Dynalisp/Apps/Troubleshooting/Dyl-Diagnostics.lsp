@@ -637,7 +637,8 @@
 
 ;;  The display settings of Dyl-Settings (Remote\Dyl-EnvColor.lsp) while Display is on:
 ;;  a model space or layouts whose colors another program changed since, and the colours
-;;  of the interface (DynALisp.Ribbon.dll), which apply only in the dark theme of AutoCAD:
+;;  of the interface and the band of the file tabs (DynALisp.Ribbon.dll), the interface
+;;  only in the dark theme of AutoCAD:
 (defun dg:cf-display (/ pref st)
   (if (and Remote>>Dyl:DisplayOn-p (Remote>>Dyl:DisplayOn-p))
     (progn
@@ -668,6 +669,21 @@
              )
            )
           )
+        )
+      )
+      ;; The band of colour of the file tabs, by the same plugin (FileTabs.cs, an experiment):
+      (if (cadddr pref)
+        (cond
+          ((not Dyl:RibbonFileTabs)
+           (dg:bad (strcat "Display: File tabs is " (cadddr pref) " but DynALisp.Ribbon.dll is not loaded"))
+          )
+          ((wcmatch (setq st (Dyl:RibbonFileTabs)) "not found*,error*")
+           (dg:bad (strcat "Display: the file tabs cannot be coloured, " st
+                           " (another version of AutoCAD? (Dyl:RibbonFileTabs \"Tree\") writes what it finds)"
+                   )
+           )
+          )
+          ((dg:note (strcat "Display: file tabs " st)))
         )
       )
     )
