@@ -33,7 +33,8 @@
 ;;  %TEMP%, the Lisp pointed at it for a moment (*dyl:contents, *dyl:user, *dyl:dylres,
 ;;  *dyl:res, *dyl:alias) and given back its own folders after, the reads kept dropped. The
 ;;  files are read by the Lisp itself (Dyl:Data, Dyl:DataHead, Dyl:AsmDefs, Dyl:AsmRead,
-;;  Dyl:HatchDefs, Dyl:MatDefs and Dyl:MatBoth of the Core hidden meanwhile), so the C# is compared with the Lisp, never with itself.
+;;  Dyl:HatchDefs, Dyl:MatDefs, Dyl:MatBoth, Dyl:AsmPats and Dyl:AsmShows of the Core hidden
+;;  meanwhile), so the C# is compared with the Lisp, never with itself.
 ;;
 ;;  What is written, each line its cells divided by (chr 31), nil as (chr 30), a section by a
 ;;  line #name (UTF-8):
@@ -46,7 +47,8 @@
 ;;                  cleaned, presets read and their commands; the groups and their case; the
 ;;                  aliases; the assemblies (defaults, read and fixed, in the units of
 ;;                  wt:factors and back); the hatch presets and the materials (defaults,
-;;                  read and fixed); then whether each one was written
+;;                  read and fixed); what the Quick Draw window shows of each assembly (in
+;;                  each drawing of wt:setups); then whether each one was written
 ;;    <case>\User\  the files written (Remote>>Dyl:PresetWrite, Remote>>Dyl:GroupsWriteOf,
 ;;                  Dyl:AliasWrite), as they are on disk
 
@@ -247,6 +249,63 @@
   (setq *pst:readcache* nil *mt:defcache* nil *hp:defcache* nil *mt:oldstamp* nil)
 )
 
+;;  The drawings what the Quick Draw window shows is made for: (name MEASUREMENT INSUNITS
+;;  LUNITS LUPREC DIMZIN), set for a moment:
+(setq wt:setups '(("metric" 1 4 2 4 0) ("imperial" 0 1 2 3 8)))
+
+;;  The units of the pattern p (upper case) in the witness, as Remote>>Dyl:MaterialPatUnits
+;;  gives them, never those of the .pat files of this computer (its folders): Metric for a name
+;;  with ISO or starting with AR-, none for a name starting with NO, else Imperial:
+(defun wt:pat (p)
+  (cond
+    ((wcmatch p "*ISO*,AR-*") (cons "Metric" (strcat "C:\\Pat\\" p ".pat")))
+    ((wcmatch p "NO*") nil)
+    ((cons "Imperial" "C:\\Pat\\acad.pat"))
+  )
+)
+
+;;  A text with its newlines as (chr 29), so it holds on one line:
+(defun wt:nl (x) (if (= 'STR (type x)) (vl-string-translate "\n" (chr 29) x) x))
+
+;;  What the Quick Draw window shows of each assembly of the case (Dyl:QuickDrawAsmShow), read
+;;  as the window reads them (pst:mats, qd:mrows), in each drawing of wt:setups, at the drawing
+;;  scale 1:50 (its value written first: the scale list of the drawing may not have it); not
+;;  for a materials file of DynALisp 1.1 (split by the Lisp alone):
+(defun wt:shows (/ saved pst:mats qd:mrows)
+  (setq saved (mapcar 'getvar '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "CANNOSCALE")))
+  (vl-catch-all-apply 'setvar '("CANNOSCALE" "1:50"))
+  (setvar "DIMZIN" 0)
+  (wt:put (strcat "#shows scale" (chr 31) (wt:cell (wt:num (getvar "CANNOSCALEVALUE")))))
+  (setq *mt:oldstamp* nil)
+  (if (Remote>>Dyl:MaterialOld-p)
+    (wt:sec "shows lisp")
+    (foreach s wt:setups
+      (mapcar 'setvar '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "DIMZIN") (cdr s))
+      (setq *pst:readcache* nil
+            *mt:defcache*   nil
+            *hp:defcache*   nil
+            *qd:asmdefs*    nil
+            *qd:asmcache*   nil
+            *mt:patunits*   nil
+            pst:mats        (Remote>>Dyl:MaterialRead)
+            qd:mrows        (cadr (Remote>>Dyl:MaterialBoth))
+      )
+      (foreach h (car (Remote>>Dyl:MaterialBoth))
+        (setq *mt:patunits* (cons (cons (strcat (strcase (nth 3 h)) "|" (itoa (getvar "MEASUREMENT"))) (wt:pat (strcase (nth 3 h))))
+                                  *mt:patunits*
+                            )
+        )
+      )
+      (wt:rows (strcat "shows " (car s))
+               (mapcar '(lambda (a) (mapcar 'wt:nl (cons (car a) (Dyl:QuickDrawAsmShow a)))) (Dyl:QuickDrawAsmReadAll))
+      )
+    )
+  )
+  (mapcar '(lambda (v x) (vl-catch-all-apply 'setvar (list v x))) '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "CANNOSCALE") saved)
+  (setvar "DIMZIN" wt:dimzin)
+  (setq *pst:readcache* nil *mt:defcache* nil *hp:defcache* nil *qd:asmdefs* nil *qd:asmcache* nil *mt:patunits* nil *mt:oldstamp* nil)
+)
+
 ;;  The groups of the case, and the case of the names of the probes in them:
 (defun wt:groups ()
   (wt:rows "groups preset" (mapcar 'list (Remote>>Dyl:GroupsOf nil)))
@@ -293,6 +352,7 @@
   (wt:aliases)
   (wt:assemblies)
   (wt:materials)
+  (wt:shows)
   (foreach key wt:keys
     (wt:put (strcat "#" key " write" (chr 31) (wt:cell (Remote>>Dyl:PresetWrite key (cdr (assoc key wt:reads))))))
   )
@@ -342,7 +402,7 @@
         wt:outdir (strcat (getenv "TEMP") "\\DynALisp Witness " (menucmd "M=$(edtime,$(getvar,date),YYYYMODD-HHMMSS)"))
         wt:work   (strcat wt:outdir " work")
         saved     (list *dyl:contents *dyl:user *dyl:dylres *dyl:res *dyl:alias Dyl:Data Dyl:DataHead Dyl:AsmDefs Dyl:AsmRead
-                        Dyl:HatchDefs Dyl:MatDefs Dyl:MatBoth
+                        Dyl:HatchDefs Dyl:MatDefs Dyl:MatBoth Dyl:AsmPats Dyl:AsmShows
                   )
         wt:dimzin (getvar "DIMZIN")
   )
@@ -366,6 +426,8 @@
             Dyl:HatchDefs nil
             Dyl:MatDefs   nil
             Dyl:MatBoth   nil
+            Dyl:AsmPats   nil
+            Dyl:AsmShows  nil
             err           (vl-catch-all-apply 'wt:all (list (if (nth 5 saved) T)))
       )
       ;;  The folders and functions of DynALisp given back, the reads of the cases dropped:
@@ -382,6 +444,9 @@
             Dyl:HatchDefs   (nth 9 saved)
             Dyl:MatDefs     (nth 10 saved)
             Dyl:MatBoth     (nth 11 saved)
+            Dyl:AsmPats     (nth 12 saved)
+            Dyl:AsmShows    (nth 13 saved)
+            *mt:patunits*   nil
             *pst:readcache* nil
             *grp:cache*     nil
             *mt:oldstamp*   nil

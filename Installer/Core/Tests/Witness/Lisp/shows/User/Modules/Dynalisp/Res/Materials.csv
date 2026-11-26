@@ -1,0 +1,11 @@
+Id;Group;Name;Cut;Surface;Conductivity;Density;Resistance;Permeability;Permeance
+mt-Gyp;Board;Gypsum Board;hp-Gyp;;0.16;800;;;
+mt-Ins;Insulation;Mineral Wool;hp-Ins;;0.04;30;;;
+mt-Stud;Wood;Wood Stud;hp-Wood;;0.12;500;;;
+mt-Conc;Concrete;Concrete;hp-Conc;;2.5;2400;;;
+mt-Air;Air;Air Space;hp-Void;;;;0.17;;
+mt-Brick;Masonry;Brick;hp-Brick;;1.286;2400;;;
+mt-NoData;Generic;No data;hp-NoFile;;;;;;
+mt-Steel;Metal;Steel;hp-Solid;;50;7850;;;
+mt-Iso;Generic;Iso board;hp-Iso;;;120;0,03;;
+mt-Gone2;Generic;Gone hatch;hp-Gone;;1;1;;;

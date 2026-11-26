@@ -467,6 +467,39 @@ hp-VoidSectionVoid1.01.00THINHATCH001070CONTINUOUS01025050
 #materials read 4
 mt-BrickMasonryBrick0.81900
 cu-MineInsulationMine0.04
+#shows scale0.020000000000000
+#shows metric
+as-T1a2 layers101.7O*X?12.7*L?0*X?89Total thickness  101.7000mt-Gypsum  12.7000mt-Mineral + mt-WoodFrame 23%  89.0000  (load-bearing)Thermal resistance  RSI 0  (2 layers unknown)Mass  0 kg/m2  (2 layers unknown)Continuous layers  RSI 0  (1 layer unknown)Fire-resistance rating 45 min, STC 34Changed
+cu-Old3 layers165O*S?90*L?0*X?25*L?0*S?50Total thickness  165.0000Brick  90.0000mt-Void  25.0000Mine  50.0000Thermal resistance  RSI 1.363  (1 layer unknown)Mass  171 kg/m2  (2 layers unknown)Old wall
+cu-Lines2 layers180O*S?90*S?90Total thickness  180.0000Brick  90.0000Brick  90.0000Thermal resistance  RSI 0.225Mass  342 kg/m2
+cu-Band4 layers25X?10*X?5*X?7*X?3Total thickness  25.0000mt-A  10.0000mt-B  5.0000mt-C  7.0000mt-D  3.0000Thermal resistance  RSI 0  (4 layers unknown)Mass  0 kg/m2  (4 layers unknown)
+cu-Border3 layers30O*X?10*L?0*X?10*L?0*X?10Total thickness  30.0000mt-A  10.0000mt-B  10.0000mt-C  10.0000Thermal resistance  RSI 0  (3 layers unknown)Mass  0 kg/m2  (3 layers unknown)
+cu-Hatch4 layers40X?10*X?10*S?10*X?10Total thickness  40.0000mt-A  10.0000mt-A  10.0000mt-A  10.0000mt-A  10.0000Thermal resistance  RSI 0  (4 layers unknown)Mass  0 kg/m2  (4 layers unknown)
+cu-Frame8 layers1055.5X?10*X?10*X?10*X?10*X?10*X?1000*X?0.5*X?5Total thickness  1055.5000mt-A + mt-Wood 23,5%  10.0000mt-A  10.0000mt-A  10.0000mt-A  10.0000mt-A  10.0000  (variable)  (low permeance)mt-A  1000.0000mt-A  0.5000mt-A  5.0000Thermal resistance  RSI 0  (8 layers unknown)Mass  0 kg/m2  (8 layers unknown)Continuous layers  RSI 0  (7 layers unknown)Low permeance ratio  unknown
+cu-NoId1 layer10X?10Total thickness  10.0000mt-A  10.0000Thermal resistance  RSI 0  (1 layer unknown)Mass  0 kg/m2  (1 layer unknown)
+cu-Units5 layers123475.3655X?15.9*X?0.001*X?123456.789*X?2.675*X?0.0005Total thickness  123475.3655mt-A  15.9000mt-A  0.0010mt-A  123456.7890mt-A  2.6750mt-A  0.0005Thermal resistance  RSI 0  (5 layers unknown)Mass  0 kg/m2  (5 layers unknown)
+cu-Drawing1 layer15.9X?15.9Total thickness  15.9000mt-A  15.9000Thermal resistance  RSI 0  (1 layer unknown)Mass  0 kg/m2  (1 layer unknown)
+cu-Ratings1 layer15.9X?15.9Total thickness  15.9000mt-A  15.9000Thermal resistance  RSI 0  (1 layer unknown)Mass  0 kg/m2  (1 layer unknown)Fire-resistance rating 45 min, non-load-bearing 30 min, STC 50, IIC 55Desc
+as-T1b3 layers120.8O*X?15.9*L?0*X?89*L?0*X?15.9Total thickness  120.8000mt-Gypsum  15.9000mt-Void + mt-WoodFrame 23%  89.0000  (load-bearing)mt-Gypsum  15.9000Thermal resistance  RSI 0  (3 layers unknown)Mass  0 kg/m2  (3 layers unknown)Continuous layers  RSI 0  (2 layers unknown)Fire-resistance rating 1 h, STC 32Test b
+as-T22 layers3.175O*X?0.5*X?2.675Total thickness  3.1750mt-Concrete  0.5000mt-Gypsum  2.6750Thermal resistance  RSI 0  (2 layers unknown)Mass  0 kg/m2  (2 layers unknown)Odd
+as-T3No layers0
+AS-T43 layers305O*S?90*X?25*X?190Total thickness  305.0000Brick  90.0000mt-Void  25.0000mt-Block  190.0000Thermal resistance  RSI 0.1125  (2 layers unknown)Mass  171 kg/m2  (2 layers unknown)
+#shows imperial
+as-T1a2 layers4.0039O*X?0.5*L?0*X?3.503937Total thickness  4.004mt-Gypsum  0.5mt-Mineral + mt-WoodFrame 23%  3.504  (load-bearing)Thermal resistance  R 0  (2 layers unknown)Mass  0 lb/ft2  (2 layers unknown)Continuous layers  R 0  (1 layer unknown)Fire-resistance rating 45 min, STC 34Changed
+cu-Old3 layers165O*S?90*L?0*X?25*L?0*S?50Total thickness  165Brick  90mt-Void  25Mine  50Thermal resistance  R 196.5  (1 layer unknown)Mass  889.6 lb/ft2  (2 layers unknown)Old wall
+cu-Lines2 layers180O*S?90*S?90Total thickness  180Brick  90Brick  90Thermal resistance  R 32.45Mass  1779 lb/ft2
+cu-Band4 layers0.9843X?0.393701*X?0.19685*X?0.275591*X?0.11811Total thickness  0.984mt-A  0.394mt-B  0.197mt-C  0.276mt-D  0.118Thermal resistance  R 0  (4 layers unknown)Mass  0 lb/ft2  (4 layers unknown)
+cu-Border3 layers30O*X?10*L?0*X?10*L?0*X?10Total thickness  30mt-A  10mt-B  10mt-C  10Thermal resistance  R 0  (3 layers unknown)Mass  0 lb/ft2  (3 layers unknown)
+cu-Hatch4 layers1.5748X?0.393701*X?0.393701*S?0.393701*X?0.393701Total thickness  1.575mt-A  0.394mt-A  0.394mt-A  0.394mt-A  0.394Thermal resistance  R 0  (4 layers unknown)Mass  0 lb/ft2  (4 layers unknown)
+cu-Frame8 layers41.5551X?0.393701*X?0.393701*X?0.393701*X?0.393701*X?0.393701*X?39.370079*X?0.019685*X?0.19685Total thickness  41.555mt-A + mt-Wood 23,5%  0.394mt-A  0.394mt-A  0.394mt-A  0.394mt-A  0.394  (variable)  (low permeance)mt-A  39.37mt-A  0.02mt-A  0.197Thermal resistance  R 0  (8 layers unknown)Mass  0 lb/ft2  (8 layers unknown)Continuous layers  R 0  (7 layers unknown)Low permeance ratio  unknown
+cu-NoId1 layer10X?10Total thickness  10mt-A  10Thermal resistance  R 0  (1 layer unknown)Mass  0 lb/ft2  (1 layer unknown)
+cu-Units5 layers4861.2349X?0.625984*X?0.000039*X?4860.503504*X?0.105315*X?0.00002Total thickness  4861.235mt-A  0.626mt-A  0mt-A  4860.504mt-A  0.105mt-A  0Thermal resistance  R 0  (5 layers unknown)Mass  0 lb/ft2  (5 layers unknown)
+cu-Drawing1 layer15.9X?15.9Total thickness  15.9mt-A  15.9Thermal resistance  R 0  (1 layer unknown)Mass  0 lb/ft2  (1 layer unknown)
+cu-Ratings1 layer0.626X?0.625984Total thickness  0.626mt-A  0.626Thermal resistance  R 0  (1 layer unknown)Mass  0 lb/ft2  (1 layer unknown)Fire-resistance rating 45 min, non-load-bearing 30 min, STC 50, IIC 55Desc
+as-T1b3 layers4.7559O*X?0.625984*L?0*X?3.503937*L?0*X?0.625984Total thickness  4.756mt-Gypsum  0.626mt-Void + mt-WoodFrame 23%  3.504  (load-bearing)mt-Gypsum  0.626Thermal resistance  R 0  (3 layers unknown)Mass  0 lb/ft2  (3 layers unknown)Continuous layers  R 0  (2 layers unknown)Fire-resistance rating 1 h, STC 32Test b
+as-T22 layers0.125O*X?0.019685*X?0.105315Total thickness  0.125mt-Concrete  0.02mt-Gypsum  0.105Thermal resistance  R 0  (2 layers unknown)Mass  0 lb/ft2  (2 layers unknown)Odd
+as-T3No layers0
+AS-T43 layers12.0079O*S?3.543307*X?0.984252*X?7.480315Total thickness  12.008Brick  3.543mt-Void  0.984mt-Block  7.48Thermal resistance  R 0.6388  (2 layers unknown)Mass  35.02 lb/ft2  (2 layers unknown)
 #QuickShape writeT
 #QuickDrawAssembly writeT
 #QuickDraw writeT

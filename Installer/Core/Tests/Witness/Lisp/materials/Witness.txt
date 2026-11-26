@@ -250,6 +250,9 @@ cu-NotADefaultOtherNot a defaulthp-A11111
 mt-BBÉTONBéton Bhp-Scaledhp-Model1e31/2
 mt-CInsulationInsulation Chp-Gone0.04302.5
 mt-ShortMasonryShorthp-Short
+#shows scale0.020000000000000
+#shows metric
+#shows imperial
 #QuickShape writeT
 #QuickDrawAssembly writeT
 #QuickDraw writeT

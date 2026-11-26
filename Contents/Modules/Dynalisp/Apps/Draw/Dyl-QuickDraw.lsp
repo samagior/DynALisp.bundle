@@ -2809,20 +2809,18 @@
 )
 
 ;;  The assembly presets (Dyl:QuickDrawAsmRead) sorted by group and name (Dyl:QuickDrawNatKey),
-;;  kept with the read they were sorted from (*qd:asmsorted*: (read . sorted)): sorted again
+;;  kept with the read they were sorted from and the place of each one in it (*qd:asmsorted*:
+;;  (read sorted places), see Dyl:QuickDrawAsmShowsCore): sorted again
 ;;  only once they were read again. Each name made into its key once, not at each comparison:
 ;;  the 860 assemblies of the building code, sorted at each Quick Draw window, took seconds:
-(defun Dyl:QuickDrawAsmSorted (/ all)
+(defun Dyl:QuickDrawAsmSorted (/ all idx)
   (setq all (Dyl:QuickDrawAsmRead))
   (if (not (and *qd:asmsorted* (eq all (car *qd:asmsorted*))))
-    (setq *qd:asmsorted* (cons all
-                               (mapcar '(lambda (i) (nth i all))
-                                       (vl-sort-i (mapcar '(lambda (a) (Dyl:QuickDrawNatKey (strcat (nth 1 a) "\t" (nth 2 a)))) all) '<)
-                               )
-                         )
+    (setq idx            (vl-sort-i (mapcar '(lambda (a) (Dyl:QuickDrawNatKey (strcat (nth 1 a) "\t" (nth 2 a)))) all) '<)
+          *qd:asmsorted* (list all (mapcar '(lambda (i) (nth i all)) idx) idx)
     )
   )
-  (cdr *qd:asmsorted*)
+  (cadr *qd:asmsorted*)
 )
 
 ;;  What the Quick Draw window shows of each assembly preset of the list asms
@@ -2842,15 +2840,55 @@
     (setq *qd:asmshows*
            (list asms
                  ctx
-                 (Remote>>Dyl:SessionKept '*qd:asmshowsbb*
-                                          (list (caddr ctx) (length asms))
-                                          'mapcar
-                                          (list '(lambda (a) (cons (car a) (Dyl:QuickDrawAsmShow a))) asms)
+                 (cond
+                   ((Remote>>Dyl:ManagerTimed "Quick Draw: assemblies shown by the Core" 'Dyl:QuickDrawAsmShowsCore (list asms)))
+                   ((Remote>>Dyl:SessionKept '*qd:asmshowsbb*
+                                             (list (caddr ctx) (length asms))
+                                             'mapcar
+                                             (list '(lambda (a) (cons (car a) (Dyl:QuickDrawAsmShow a))) asms)
+                    )
+                   )
                  )
            )
     )
   )
   (caddr *qd:asmshows*)
+)
+
+;;  The same made by DynALisp.Core when it is loaded (Installer\Core\Data\Shows.cs, kept by it
+;;  for the session), for the assemblies sorted from those it read (*qd:asmsorted*): its rows,
+;;  in the order the assemblies were read, put in the order of asms, the units of each pattern
+;;  given by the Lisp (Remote>>Dyl:MaterialPatUnits, found on the support path of AutoCAD); nil
+;;  when the Lisp makes them (the plugin not loaded, units that are not decimal, an assembly or
+;;  a material the Lisp reads, an assembly of another list):
+(defun Dyl:QuickDrawAsmShowsCore (asms / vars pats rows res)
+  (if (and Dyl:AsmShows
+           Dyl:AsmPats
+           (eq asms (cadr *qd:asmsorted*))
+           (setq vars (cons *dyl:contents (mapcar 'getvar '("CANNOSCALEVALUE" "MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "DIMZIN")))
+                 pats (apply 'Dyl:AsmPats vars)
+           )
+           (setq rows (apply 'Dyl:AsmShows
+                             (append vars
+                                     (apply 'append
+                                            (mapcar '(lambda (p / u)
+                                                       (setq u (Remote>>Dyl:MaterialPatUnits p))
+                                                       (list p (cond ((car u)) ("")) (cond ((cdr u)) ("")))
+                                                     )
+                                                    pats
+                                            )
+                                     )
+                             )
+                      )
+           )
+           (= (length rows) (length asms))
+      )
+    (progn
+      (setq res (mapcar '(lambda (i) (nth i rows)) (caddr *qd:asmsorted*)))
+      ;;  (each row the one of its assembly, else made by the Lisp:)
+      (if (vl-every '(lambda (a r) (= (car a) (car r))) asms res) res)
+    )
+  )
 )
 
 ;;  Both made again when DynALisp loads:
