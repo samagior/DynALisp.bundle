@@ -68,6 +68,19 @@
 //               the assembly preset of a Quick Draw preset), the columns 44, 45 and 46 of the
 //               presets selected take the values of its row in pst/follow/rows ((value v44
 //               v45 v46) ...: its width, its preview, its description), "" when it has none
+//   pst/family  "13,14": the presets are the variants of families (the assemblies: B6a to
+//               B6e are the family B6), the column of the name of their family and of its
+//               short description. The list shows each family once (its first variant by
+//               name, its number of variants), the variant shown is picked in the list var
+//               (a ComboBox: its name, then the values of pst/famlabel, "9:min,11:STC": a
+//               column, then the word written before its value, min: minutes written as
+//               the building code writes them) under it, New variant (vnw) adds a copy of it
+//               named after the family with the next letter (B6f), Delete variant (vdl) deletes
+//               it. The family fields (fam its name, unique among the families) and the
+//               columns of pst/famcols ("1,6,13,14,16-39": its group, its lines...) are given to
+//               every variant of the families selected; the others to the variant shown, or to
+//               every variant of the families selected while several are. New and Copy add a
+//               family of one variant
 //   pst/title   the name of the tool, pst/noun what the presets are called ("presets")
 //   key/list, key/vals  the labels and the stored values of a list of the values
 //   grp/list    the groups
@@ -103,12 +116,14 @@ namespace DynALisp.Windows
     // An item of the list of the presets, shown by the ItemTemplate of the list:
     public sealed class PresetItem : INotifyPropertyChanged
     {
-        string _spec, _group, _name, _aliases;
+        string _spec, _group, _name, _aliases, _count;
         public int Index { get; internal set; }
         public string Spec { get => _spec; set => Set(ref _spec, value, "Spec"); }
         public string Group { get => _group; set => Set(ref _group, value, "Group"); }
         public string Name { get => _name; set => Set(ref _name, value, "Name"); }
         public string Aliases { get => _aliases; set => Set(ref _aliases, value, "Aliases"); }
+        // its number of variants (pst/family), "" for a family of one:
+        public string Count { get => _count; set => Set(ref _count, value, "Count"); }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -152,6 +167,9 @@ namespace DynALisp.Windows
         readonly int[] _hatchCols = new int[0];
         readonly List<string[]> _pats;
         readonly double _ds = 1.0;
+        readonly int _famCol = -1, _famDescCol = -1;
+        readonly HashSet<int> _famCols = new HashSet<int>();
+        readonly List<KeyValuePair<int, string>> _famLabel = new List<KeyValuePair<int, string>>();
 
         int _idx;
         List<int> _sel = new List<int>();
@@ -162,10 +180,12 @@ namespace DynALisp.Windows
         List<string> _shws = new List<string>();
         List<string> _mgrs = new List<string>();
         string _mgrVal = "";
+        List<int> _vars = new List<int>();
+        List<string> _varLabels = new List<string>();
 
         readonly ListBox _list, _alsList;
         readonly TextBox _flt, _aln;
-        readonly ComboBox _srt, _shg, _mat, _mgr;
+        readonly ComboBox _srt, _shg, _mat, _mgr, _var;
         readonly TextBlock _pcn, _prm, _src, _ams;
         readonly HatchTile _mpv;
 
@@ -210,6 +230,29 @@ namespace DynALisp.Windows
             _hatchCols = (Val("pst/hatch") ?? "").Split(',').Select(x => Int(x.Trim(), -1)).ToArray();
             if (_hatchCols.Length != 6 || _hatchCols.Any(c => c < 0)) _hatchCols = new int[0];
             _pats = Table("pst/pats");
+            // The families (pst/family), the columns given to all their variants (pst/famcols:
+            // "1,6,13-14"), the label of a variant (pst/famlabel):
+            var fm = (Val("pst/family") ?? "").Split(',');
+            _famCol = Int(fm[0], -1);
+            if (fm.Length > 1) _famDescCol = Int(fm[1], -1);
+            if (_famCol >= 0)
+            {
+                _famCols.Add(GroupCol);
+                _famCols.Add(_famCol);
+                if (_famDescCol >= 0) _famCols.Add(_famDescCol);
+                foreach (var x in (Val("pst/famcols") ?? "").Split(','))
+                {
+                    var ab = x.Split('-');
+                    int a = Int(ab[0], -1), z = ab.Length > 1 ? Int(ab[1], -1) : a;
+                    for (int c = a; a >= 0 && c <= z; c++) _famCols.Add(c);
+                }
+                foreach (var x in (Val("pst/famlabel") ?? "").Split(','))
+                {
+                    int cut = x.IndexOf(':');
+                    int col = Int(cut < 0 ? x : x.Substring(0, cut), -1);
+                    if (col >= 0) _famLabel.Add(new KeyValuePair<int, string>(col, cut < 0 ? "" : x.Substring(cut + 1)));
+                }
+            }
             if (double.TryParse(Val("pst/ds"), NumberStyles.Float, CultureInfo.InvariantCulture, out double ds) && ds > 0) _ds = ds;
 
             _list = (ListBox)v.Find("lst");
@@ -234,6 +277,7 @@ namespace DynALisp.Windows
             _src = v.Find("src") as TextBlock;
             _ams = v.Find("ams") as TextBlock;
             _mpv = v.Find("mpv") as HatchTile;
+            _var = Fam ? v.Find("var") as ComboBox : null;
 
             // The controls of the values, by their key (pst/tiles):
             foreach (var part in (Val("pst/tiles") ?? "").Split(','))
@@ -265,6 +309,7 @@ namespace DynALisp.Windows
             _idx = Math.Max(0, Math.Min(_rows.Count - 1, Int(Val("pst.idx"), 0)));
             _sel = (Val("pst.sel") ?? "").Split(' ').Select(x => Int(x, -1)).Where(i => i >= 0 && i < _rows.Count).Distinct().ToList();
             if (!_sel.Contains(_idx)) _sel = new List<int> { _idx };
+            FamSel();
             _shw = Val("pst.shw") ?? "";
         }
 
@@ -288,7 +333,184 @@ namespace DynALisp.Windows
 
         void PutAll(int col, string val, bool one = false)
         {
-            foreach (int j in one ? new List<int> { _idx } : _sel) _rows[j] = Put(_rows[j], col, val);
+            foreach (int j in one ? new List<int> { _idx } : Targets(col)) _rows[j] = Put(_rows[j], col, val);
+        }
+
+        // ---- Families (pst/family) ----
+
+        bool Fam => _famCol >= 0;
+
+        // The family of the preset i (its name when it has none), or the preset itself:
+        string FamOf(int i)
+        {
+            if (!Fam) return i.ToString(CultureInfo.InvariantCulture);
+            string f = Cell(_rows[i], _famCol);
+            return f.Length > 0 ? f : Cell(_rows[i], NameCol);
+        }
+
+        // The variants of the family f, by name ("B6a" before "B6b", "W2" before "W10"):
+        List<int> Variants(string f) =>
+            Enumerable.Range(0, _rows.Count).Where(i => Ic.Equals(FamOf(i), f))
+                      .OrderBy(i => Natural(Cell(_rows[i], NameCol)), StringComparer.Ordinal).ThenBy(i => i).ToList();
+
+        List<string> SelFams => _sel.Select(FamOf).Distinct(Ic).ToList();
+
+        // How many are selected: the families, or the presets:
+        int SelCount => Fam ? SelFams.Count : _sel.Count;
+
+        // The presets selected are every variant of the families selected:
+        void FamSel()
+        {
+            if (!Fam || _rows.Count == 0) return;
+            var fs = SelFams;
+            if (!fs.Contains(FamOf(_idx), Ic)) fs.Add(FamOf(_idx));
+            _sel = Enumerable.Range(0, _rows.Count).Where(i => fs.Contains(FamOf(i), Ic)).ToList();
+        }
+
+        // The presets a value of the column col is given to: with families, every variant of
+        // the families selected for a column of the family (pst/famcols), else the variant
+        // shown while one family is selected:
+        IEnumerable<int> Targets(int col)
+        {
+            if (!Fam || _famCols.Contains(col) || SelCount > 1) return _sel;
+            return new List<int> { _idx };
+        }
+
+        // "W10b" -> "W0000000010b": the numbers of a name sorted as numbers:
+        static string Natural(string s)
+        {
+            var sb = new System.Text.StringBuilder();
+            string u = (s ?? "").ToUpperInvariant();
+            for (int i = 0; i < u.Length;)
+            {
+                if (char.IsDigit(u[i]))
+                {
+                    int j = i;
+                    while (j < u.Length && char.IsDigit(u[j])) j++;
+                    sb.Append(u.Substring(i, j - i).TrimStart('0').PadLeft(10, '0'));
+                    i = j;
+                }
+                else sb.Append(u[i++]);
+            }
+            return sb.ToString();
+        }
+
+        // A rating in minutes as the building code writes it: "45" -> "45 min", "90" -> "1.5 h":
+        static string Minutes(string v)
+        {
+            if (!int.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out int n)) return v;
+            return n >= 60 && n % 30 == 0 ? (n / 60.0).ToString("0.#", CultureInfo.InvariantCulture) + " h" : n + " min";
+        }
+
+        // What the list var shows of the variant r: its name, then its values of pst/famlabel
+        // ("9:min,10:NLB:min,11:STC": a column, the word written before its value, min for
+        // minutes), each one but a value the same as that of the column before it:
+        string VarLabel(string[] r)
+        {
+            var parts = new List<string>();
+            string before = null;
+            foreach (var p in _famLabel)
+            {
+                string v = Cell(r, p.Key).Trim();
+                bool same = v == before;
+                before = v;
+                if (v.Length == 0 || same) continue;
+                var w = p.Value.Split(':');
+                string word = string.Join(" ", w.Where(x => x != "min" && x.Length > 0));
+                if (w.Contains("min")) v = Minutes(v);
+                parts.Add(word.Length > 0 ? word + " " + v : v);
+            }
+            string n = Cell(r, NameCol);
+            return parts.Count == 0 ? n : n + "   " + string.Join(", ", parts);
+        }
+
+        // The list var: the variants of the family shown, the one shown picked:
+        void VarFill()
+        {
+            if (_var == null) return;
+            _vars = _rows.Count == 0 ? new List<int>() : Variants(FamOf(_idx));
+            var labels = _vars.Select(i => VarLabel(_rows[i])).ToList();
+            _v.Quiet(() =>
+            {
+                if (!labels.SequenceEqual(_varLabels)) { _varLabels = labels; _var.ItemsSource = _varLabels; }
+                _var.SelectedIndex = _vars.IndexOf(_idx);
+            });
+            _s.Values["var"] = _vars.IndexOf(_idx).ToString(CultureInfo.InvariantCulture);
+        }
+
+        // Another variant picked: the one shown (the value shown valid first):
+        void VarPicked()
+        {
+            int i = _var.SelectedIndex;
+            if (i < 0 || i >= _vars.Count || _vars[i] == _idx) return;
+            if (!Check()) { VarFill(); return; }
+            _idx = _vars[i];
+            FamSel();
+            Show();
+        }
+
+        // The name of a new variant of the family f: f and the first letter no preset has
+        // (B6 -> B6f; "Wall 2" -> "Wall 2 b"):
+        string NextVariant(string f)
+        {
+            string sep = f.Length > 0 && char.IsDigit(f[f.Length - 1]) ? "" : " ";
+            for (char c = 'a'; c <= 'z'; c++)
+            {
+                string n = f + sep + c;
+                if (!_rows.Any(r => Ic.Equals(Cell(r, NameCol), n))) return n;
+            }
+            return Unique(f + sep + "z", -1);
+        }
+
+        // New variant: a copy of the variant shown, after it, its name selected:
+        void VariantAdd()
+        {
+            if (_rows.Count == 0 || SelCount > 1) return;
+            string f = FamOf(_idx);
+            var r = (string[])Row.Clone();
+            r = Put(r, 0, "");
+            r = Put(r, _famCol, f);
+            r = Put(r, NameCol, NextVariant(f));
+            _idx++;
+            _rows.Insert(_idx, r);
+            _sel = new List<int> { _idx };
+            FamSel();
+            Show();
+            Focus("nam");
+        }
+
+        // Delete variant: a custom variant of a family that has others:
+        void VariantDelete()
+        {
+            if (_rows.Count == 0 || SelCount > 1 || Def(Row) != null) return;
+            string f = FamOf(_idx);
+            var vs = Variants(f);
+            if (vs.Count < 2 || !Ask("Delete the variant \"" + Cell(Row, NameCol) + "\"?")) return;
+            int k = vs.IndexOf(_idx);
+            int next = vs[k > 0 ? k - 1 : 1];
+            _rows.RemoveAt(_idx);
+            _idx = next > _idx ? next - 1 : next;
+            _sel = new List<int> { _idx };
+            FamSel();
+            Show();
+        }
+
+        // A family name not taken by another family than those of skip (" (2)"...):
+        string UniqueFam(string name, ICollection<int> skip)
+        {
+            string n = name;
+            for (int i = 2; Enumerable.Range(0, _rows.Count).Any(j => !skip.Contains(j) && Ic.Equals(FamOf(j), n)); i++)
+                n = name + " (" + i.ToString(CultureInfo.InvariantCulture) + ")";
+            return n;
+        }
+
+        void Focus(string key)
+        {
+            if (_v.Find(key) is TextBox t)
+            {
+                t.Focus();
+                t.SelectAll();
+            }
         }
 
         string[] Row => _rows.Count > 0 ? _rows[_idx] : new string[0];
@@ -306,7 +528,8 @@ namespace DynALisp.Windows
 
         // The keys the editor fills itself (not the view):
         public bool Owns(string key) =>
-            key == "lst" || key == "als" || key == "shg" || key == "mat" || key == "mgr" || key == "mpv" || _fields.Any(f => f.Key == key);
+            key == "lst" || key == "als" || key == "shg" || key == "mat" || key == "mgr" || key == "mpv" || (key == "var" && _var != null)
+            || _fields.Any(f => f.Key == key);
 
         // ---- Values and rules ----
 
@@ -443,13 +666,37 @@ namespace DynALisp.Windows
         string SortKey(int i)
         {
             var r = _rows[i];
+            if (Fam) return (Sort == "Group" ? Cell(r, GroupCol).ToUpperInvariant() + "\t" : "") + Natural(FamOf(i));
             return (Sort == "Group" ? Cell(r, GroupCol) + "\t" + Cell(r, NameCol) : Cell(r, NameCol)).ToUpperInvariant();
+        }
+
+        // With families, a family listed when one of its variants is, or its name or its
+        // short description matches: its first variant (by name) stands for it:
+        List<int> ListedFams(bool pin)
+        {
+            string f = Filter, shown = _rows.Count > 0 ? FamOf(_idx) : null;
+            bool has(string s) => (s ?? "").IndexOf(f, StringComparison.OrdinalIgnoreCase) >= 0;
+            var l = new List<int>();
+            foreach (var g in Enumerable.Range(0, _rows.Count).GroupBy(FamOf, Ic))
+            {
+                var vs = g.OrderBy(i => Natural(Cell(_rows[i], NameCol)), StringComparer.Ordinal).ThenBy(i => i).ToList();
+                bool pinned = pin && Ic.Equals(g.Key, shown);
+                bool fits = InShow(_rows[vs[0]]) && (f.Length == 0 || has(g.Key) || has(Cell(_rows[vs[0]], _famDescCol)) || vs.Any(i => Match(_rows[i], f)));
+                if (pinned || fits) l.Add(vs[0]);
+            }
+            l.Sort((a, b) =>
+            {
+                int c = string.CompareOrdinal(SortKey(a), SortKey(b));
+                return c != 0 ? c : a.CompareTo(b);
+            });
+            return l;
         }
 
         // The presets listed: those of the Show group and of the filter, and the one shown
         // when pin is true (the fields shown are those of a line of the list), sorted:
         List<int> Listed(bool pin)
         {
+            if (Fam) return ListedFams(pin);
             string f = Filter;
             var l = Enumerable.Range(0, _rows.Count).Where(i => (pin && i == _idx) || (InShow(_rows[i]) && Match(_rows[i], f))).ToList();
             l.Sort((a, b) =>
@@ -468,8 +715,9 @@ namespace DynALisp.Windows
                 Index = i,
                 Spec = Spec(r),
                 Group = Cell(r, GroupCol),
-                Name = Cell(r, NameCol),
+                Name = Fam ? FamOf(i) : Cell(r, NameCol),
                 Aliases = string.Join(", ", AliasesOf(Command(Cell(r, 0)))),
+                Count = Fam && Variants(FamOf(i)) is List<int> vs && vs.Count > 1 ? vs.Count.ToString(CultureInfo.InvariantCulture) : "",
             };
         }
 
@@ -490,21 +738,23 @@ namespace DynALisp.Windows
                     foreach (var it in _items)
                     {
                         var n = Item(it.Index);
-                        it.Spec = n.Spec; it.Group = n.Group; it.Name = n.Name; it.Aliases = n.Aliases;
+                        it.Spec = n.Spec; it.Group = n.Group; it.Name = n.Name; it.Aliases = n.Aliases; it.Count = n.Count;
                     }
                 }
                 _list.SelectedItems.Clear();
-                foreach (var it in _items.Where(x => _sel.Contains(x.Index))) _list.SelectedItems.Add(it);
-                var shown = _items.FirstOrDefault(x => x.Index == _idx);
+                var fams = Fam ? SelFams : null;
+                foreach (var it in _items.Where(x => Fam ? fams.Contains(FamOf(x.Index), Ic) : _sel.Contains(x.Index))) _list.SelectedItems.Add(it);
+                var shown = _items.FirstOrDefault(x => Fam ? Ic.Equals(FamOf(x.Index), FamOf(_idx)) : x.Index == _idx);
                 if (shown != null) _list.ScrollIntoView(shown);
             });
             ShowFill();
             if (_pcn != null)
             {
                 int m = Listed(false).Count;
-                _pcn.Text = _shw.Length == 0 && Filter.Length == 0 ? _rows.Count + " " + _noun
+                int all = Fam ? _rows.Select((r, i) => FamOf(i)).Distinct(Ic).Count() : _rows.Count;
+                _pcn.Text = _shw.Length == 0 && Filter.Length == 0 ? (Fam ? all + " families, " + _rows.Count + " " + _noun : all + " " + _noun)
                           : m == 0 ? "No match"
-                          : m + " of " + _rows.Count;
+                          : m + " of " + all;
             }
         }
 
@@ -658,15 +908,16 @@ namespace DynALisp.Windows
             var d = _defs.FirstOrDefault(x => x.Length > 0 && x[0] == Cell(r, 0));
             var sel = _sel.Select(j => _rows[j]).ToList();
             _s.Values["pst/solid"] = Solid(r) ? "1" : "0";
-            _s.Values["pst.many"] = sel.Count > 1 ? "1" : "0";
+            _s.Values["pst.many"] = SelCount > 1 ? "1" : "0";
             if (_prm != null)
-                _prm.Text = sel.Count > 1 ? sel.Count + " " + _noun + " selected"
+                _prm.Text = SelCount > 1 ? SelCount + (Fam ? " families" : " " + _noun) + " selected"
                           : d == null ? (_defs.Count == 0 ? "" : "Custom " + One)
                           : Same(r, d) ? "Default " + One
                           : "Default " + One + ", modified";
             if (_src != null)
                 _src.Text = !_cmds ? "" : Cell(r, 0).Length == 0 ? "Gets its command once saved or given an alias." : "Command: " + Command(Cell(r, 0));
             if (_mpv != null) _mpv.Spec = Spec(r);
+            VarFill();
             List();
             Out();
         }
@@ -692,7 +943,14 @@ namespace DynALisp.Windows
         public void Refresh()
         {
             var sel = _sel.Select(j => _rows[j]).ToList();
-            bool one = sel.Count <= 1;
+            bool one = SelCount <= 1;
+            if (Fam)
+            {
+                Enable("fam", one);
+                Enable("var", one);
+                Enable("vnw", one && _rows.Count > 0);
+                Enable("vdl", one && _rows.Count > 0 && Def(Row) == null && Variants(FamOf(_idx)).Count > 1);
+            }
             Enable("nam", one);
             Enable("cpy", one);
             Enable("del", sel.Count > 0 && sel.All(r => Def(r) == null));
@@ -729,6 +987,7 @@ namespace DynALisp.Windows
             if (key == "shg") { ShowPicked(); return; }
             if (key == "als") { AliasPicked(); return; }
             if (key == "mgr" && _mgr != null) { MgrPicked(); return; }
+            if (key == "var" && _var != null) { VarPicked(); return; }
             var f = _fields.FirstOrDefault(x => x.Key == key);
             if (f != null) FieldChanged(f);
         }
@@ -763,6 +1022,7 @@ namespace DynALisp.Windows
             if (_bad == f.Key) { _bad = null; _v.Error(""); }
             string old = Cell(r, f.Col);
             PutAll(f.Col, val, f.Key == "nam");
+            if (Fam && f.Col == _famCol) { Show(); return; }
             // The columns that follow it (pst/follow), shown again:
             if (f.Col == _followCol && _followCol >= 0)
             {
@@ -790,6 +1050,14 @@ namespace DynALisp.Windows
             {
                 if (val.Length == 0) return "The name cannot be empty.";
                 if (_rows.Where((r, i) => i != _idx).Any(r => Ic.Equals(Cell(r, NameCol), val))) return "Another preset is already named \"" + val + "\".";
+                return null;
+            }
+            if (Fam && f.Col == _famCol)
+            {
+                if (val.Length == 0) return "The name cannot be empty.";
+                var fs = SelFams;
+                if (Enumerable.Range(0, _rows.Count).Any(i => !fs.Contains(FamOf(i), Ic) && Ic.Equals(FamOf(i), val)))
+                    return "Another family is already named \"" + val + "\".";
                 return null;
             }
             if (f.Key == "grp" && val.Length == 0) return "The group cannot be empty.";
@@ -826,6 +1094,17 @@ namespace DynALisp.Windows
         {
             var l = _items.Where(it => _list.SelectedItems.Contains(it)).Select(it => it.Index).ToList();
             if (l.Count == 0 || !Check()) { List(); return; }
+            if (Fam)
+            {
+                var fs = l.Select(FamOf).Distinct(Ic).ToList();
+                var now = SelFams;
+                if (fs.Count == now.Count && fs.All(x => now.Contains(x, Ic))) return;
+                if (!fs.Contains(FamOf(_idx), Ic)) _idx = l[0];
+                _sel = l;
+                FamSel();
+                Show();
+                return;
+            }
             if (l.SequenceEqual(_sel)) return;
             _sel = l;
             if (!_sel.Contains(_idx)) _idx = _sel[0];
@@ -839,7 +1118,8 @@ namespace DynALisp.Windows
             if (_bad == null)
             {
                 var m = Listed(false);
-                if (m.Count > 0 && !m.Contains(_idx)) { _idx = m[0]; _sel = new List<int> { _idx }; Show(); return; }
+                bool listed = Fam ? m.Any(i => Ic.Equals(FamOf(i), FamOf(_idx))) : m.Contains(_idx);
+                if (m.Count > 0 && !listed) { _idx = m[0]; _sel = new List<int> { _idx }; FamSel(); Show(); return; }
             }
             List();
             Out();
@@ -864,6 +1144,8 @@ namespace DynALisp.Windows
                 case "rst": Reset(); return true;
                 case "all": ResetAll(); return true;
                 case "shd": ShowDefault(); return true;
+                case "vnw" when Fam: if (Check()) VariantAdd(); return true;
+                case "vdl" when Fam: if (Check()) VariantDelete(); return true;
                 case "aad": AliasAdd(); return true;
                 case "aren": AliasRename(); return true;
                 case "adel": AliasRemove(); return true;
@@ -909,7 +1191,7 @@ namespace DynALisp.Windows
                     _s.Values.TryGetValue(m.Key, out string v);
                     if (_s.Lists.TryGetValue(m.Key + "/vals", out var vals))
                         v = int.TryParse(v, NumberStyles.Integer, CultureInfo.InvariantCulture, out int j) && j >= 0 && j < vals.Count ? vals[j] : Cell(Row, m.Value);
-                    foreach (int i in _sel)
+                    foreach (int i in Targets(m.Value).ToList())
                     {
                         var r = _rows[i];
                         if (rules.All(rule => View.Holds(rule, k => RowGet(r, k) ?? _v.Stored(k)))) _rows[i] = Put(r, m.Value, (v ?? "").Trim());
@@ -926,6 +1208,7 @@ namespace DynALisp.Windows
             return Put(r, GroupCol, Cell(Row, GroupCol));
         }
 
+        // A copy of the preset shown (with families: of its variant shown, a family of its own):
         string[] CopyRow()
         {
             var r = (string[])Row.Clone();
@@ -946,22 +1229,23 @@ namespace DynALisp.Windows
         void Add(string[] r)
         {
             r = Put(r, NameCol, Unique(Cell(r, NameCol), -1));
+            // a family of one variant, named after it:
+            if (Fam) r = Put(r, _famCol, UniqueFam(Cell(r, NameCol), new int[0]));
             _idx = Math.Min(_idx + 1, _rows.Count);
             _rows.Insert(_idx, r);
             _sel = new List<int> { _idx };
             Show();
-            if (_v.Find("nam") is TextBox nam)
-            {
-                nam.Focus();
-                nam.SelectAll();
-            }
+            Focus(Fam ? "fam" : "nam");
         }
 
         void Delete()
         {
             var sel = _sel.ToList();
             if (sel.Count == 0 || sel.Any(j => Def(_rows[j]) != null)) return;
-            string msg = sel.Count > 1
+            string msg = Fam
+                ? (SelCount > 1 ? "Delete the " + SelCount + " custom families selected and their variants?"
+                   : "Delete the custom family \"" + FamOf(_idx) + "\"" + (sel.Count > 1 ? " and its " + sel.Count + " variants" : "") + "?")
+                : sel.Count > 1
                 ? "Delete the " + sel.Count + " custom " + _noun + " selected" + (_cmds ? " and their aliases" : "") + "?"
                 : "Delete the custom preset \"" + Cell(Row, NameCol) + "\"" + (_alst.Count > 0 ? " and its aliases" : "") + "?";
             if (!Ask(msg)) return;
@@ -975,6 +1259,7 @@ namespace DynALisp.Windows
             if (_rows.Count == 0) { _items.Clear(); _idx = 0; _sel = new List<int>(); Show(); Out(); return; }
             _idx = Math.Min(sel.Min(), _rows.Count - 1);
             _sel = new List<int> { _idx };
+            FamSel();
             Show();
         }
 
