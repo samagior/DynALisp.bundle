@@ -500,6 +500,124 @@ as-T1b3 layers4.7559O*X?0.625984*L?0*X?3.503937*L?0*X?0.625984Total thicknes
 as-T22 layers0.125O*X?0.019685*X?0.105315Total thickness  0.125mt-Concrete  0.02mt-Gypsum  0.105Thermal resistance  R 0  (2 layers unknown)Mass  0 lb/ft2  (2 layers unknown)Odd
 as-T3No layers0
 AS-T43 layers12.0079O*S?3.543307*X?0.984252*X?7.480315Total thickness  12.008Brick  3.543mt-Void  0.984mt-Block  7.48Thermal resistance  R 0.6388  (2 layers unknown)Mass  35.02 lb/ft2  (2 layers unknown)
+#asmwin mats metric
+mt-BrickBrickmt-BrickMasonry
+cu-MineMinecu-MineInsulation
+mt-Gypsummt-Gypsum   (missing material)
+mt-Mineralmt-Mineral   (missing material)
+mt-Voidmt-Void   (missing material)
+mt-Amt-A   (missing material)
+mt-Bmt-B   (missing material)
+mt-Cmt-C   (missing material)
+mt-Dmt-D   (missing material)
+mt-Concretemt-Concrete   (missing material)
+mt-Blockmt-Block   (missing material)
+mt-WoodFramemt-WoodFrame   (missing material)
+mt-Woodmt-Wood   (missing material)
+#asmwin groups metric
+Masonry
+Insulation
+#asmwin keys metric
+HK
+K
+THIN
+MED
+THICK
+A
+X
+B
+#asmwin data metric
+mt-Brick0.00125 01.9
+cu-Mine0.025 0
+mt-Gypsum
+mt-Mineral
+mt-Void
+mt-A
+mt-B
+mt-C
+mt-D
+mt-Concrete
+mt-Block
+mt-WoodFrame
+mt-Wood
+#asmwin bk metricA
+#asmwin def metric
+Pmt-Brick10A0LineSquare45Mitered4FirstInterrupted0A0070CONTINUOUS010250501070CONTINUOUS0102505001000Masonry00
+#asmwin rows metric
+as-T1aP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+cu-BandP	mt-A	10		A	Line	Edge	a	b	c	d	e	f	g	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-B	5		A	1	2	3	4	5	6	7	8	9	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-C	7		A	1	2	3	4	5	6	7	8	9	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	10	11	12	13	14				0	0P	mt-D	3		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-BorderP	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	1	THIN	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-B	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	1	K	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-C	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01A071DASHED010250500B070CONTINUOUS01025050
+cu-HatchP	mt-A	10	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	10	K	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	7	0	X	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	10	K	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	1	1,5	0	X	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-FrameP	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-Wood	23,5	0	0P	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				1	1P	mt-A	1e3		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	5.		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-NoIdP	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-UnitsP	mt-A	15.9		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.001		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	123456.789		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	2.675		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.0005		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-DrawingP	mt-A	15.9		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-RatingsP	mt-A	15.9		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+as-T1bP	mt-Gypsum	15.9		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Void	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	0P	mt-Gypsum	15.9		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+as-T2P	mt-Concrete	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Gypsum	2.675		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01MED070CONTINUOUS010250500A070CONTINUOUS01025050
+as-T30A070CONTINUOUS010250500A070CONTINUOUS01025050
+AS-T4P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Block	190		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01THICK070CONTINUOUS010250500THIN070CONTINUOUS01025050
+#asmwin mats imperial
+mt-BrickBrickmt-BrickMasonry
+cu-MineMinecu-MineInsulation
+mt-Gypsummt-Gypsum   (missing material)
+mt-Mineralmt-Mineral   (missing material)
+mt-Voidmt-Void   (missing material)
+mt-Amt-A   (missing material)
+mt-Bmt-B   (missing material)
+mt-Cmt-C   (missing material)
+mt-Dmt-D   (missing material)
+mt-Concretemt-Concrete   (missing material)
+mt-Blockmt-Block   (missing material)
+mt-WoodFramemt-WoodFrame   (missing material)
+mt-Woodmt-Wood   (missing material)
+#asmwin groups imperial
+Masonry
+Insulation
+#asmwin keys imperial
+HK
+K
+THIN
+MED
+THICK
+A
+X
+B
+#asmwin data imperial
+mt-Brick0.1802848503 09.884424986
+cu-Mine3.605697005 0
+mt-Gypsum
+mt-Mineral
+mt-Void
+mt-A
+mt-B
+mt-C
+mt-D
+mt-Concrete
+mt-Block
+mt-WoodFrame
+mt-Wood
+#asmwin bk imperialA
+#asmwin def imperial
+Pmt-Brick10A0LineSquare45Mitered4FirstInterrupted0A0070CONTINUOUS010250501070CONTINUOUS0102505001000Masonry00
+#asmwin rows imperial
+as-T1aP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+cu-BandP	mt-A	0.39370079		A	Line	Edge	a	b	c	d	e	f	g	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-B	0.19685039		A	1	2	3	4	5	6	7	8	9	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-C	0.27559055		A	1	2	3	4	5	6	7	8	9	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	10	11	12	13	14				0	0P	mt-D	0.11811024		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-BorderP	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	1	THIN	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-B	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	1	K	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-C	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01A071DASHED010250500B070CONTINUOUS01025050
+cu-HatchP	mt-A	0.39370079	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.39370079		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.39370079	K	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	7	0	X	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.39370079	K	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	1	1,5	0	X	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-FrameP	mt-A	0.39370079		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-Wood	23,5	0	0P	mt-A	0.39370079		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.39370079		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.39370079		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.39370079		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				1	1P	mt-A	39.37007874		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.01968504		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.19685039		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-NoIdP	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-UnitsP	mt-A	0.62598425		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.00003937		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	4860.50350394		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.10531496		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.00001969		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-DrawingP	mt-A	15.9		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-RatingsP	mt-A	0.62598425		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+as-T1bP	mt-Gypsum	0.62598425		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Void	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	0P	mt-Gypsum	0.62598425		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+as-T2P	mt-Concrete	0.01968504		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Gypsum	0.10531496		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01MED070CONTINUOUS010250500A070CONTINUOUS01025050
+as-T30A070CONTINUOUS010250500A070CONTINUOUS01025050
+AS-T4P	mt-Brick	3.54330709		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	0.98425197		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Block	7.48031496		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01THICK070CONTINUOUS010250500THIN070CONTINUOUS01025050
 #QuickShape writeT
 #QuickDrawAssembly writeT
 #QuickDraw writeT
