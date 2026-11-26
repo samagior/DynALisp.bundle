@@ -774,6 +774,11 @@ mt-HollowCoreSlabConcreteHollow Core Slabhp-Concrete
 mt-GypsumConcreteConcreteGypsum Concretehp-LightweightConcrete
 mt-SteelDeckMetalSteel Deckhp-Steel
 mt-VoidAirVoidhp-Void
+#shows scale0.020000000000000
+#shows metric
+cu-Preset2 layers110P?20?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?Drafting*P?90?ANSI31?C:\Pat\acad.pat?1?0?1?DraftingTotal thickness  110.0000Plaster  20.0000Brick  90.0000Thermal resistance  RSI 0.06998  (1 layer unknown)Mass  216 kg/m2  (1 layer unknown)
+#shows imperial
+cu-Preset2 layers110P?20?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?Drafting*P?90?ANSI31?C:\Pat\acad.pat?1?0?1?DraftingTotal thickness  110Plaster  20Brick  90Thermal resistance  R 10.09  (1 layer unknown)Mass  1124 lb/ft2  (1 layer unknown)
 #QuickShape writeT
 #QuickDrawAssembly writeT
 #QuickDraw writeT
