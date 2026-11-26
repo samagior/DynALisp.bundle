@@ -90,7 +90,8 @@ namespace DynALisp.Ribbon
             _fail != null ? "hosted themes: " + _fail
             : (Themes.Count == 0 ? "hosted themes: none found"
             : "hosted themes " + string.Join(", ", Themes.Values.Select(f => f.Theme.GetType().Name + (f.Frozen ? " (frozen)" : " (" + f.Kept.Count + ")"))))
-            + "; " + TabWas.Count + " tabs, " + TabWas.Values.Count(w => w.Count > 0) + " recoloured";
+            + "; " + Tabbed.Count + " tabs, " + TabShapes.Count + " shapes recoloured"
+            + (_tabTypes.Count > 0 ? " (Background: " + string.Join(", ", _tabTypes) + ")" : "");
 
         // Run by Skin.OnIdle (once a second at most).
         public static void Apply(bool on, Look look)
@@ -268,24 +269,27 @@ namespace DynALisp.Ribbon
         // ---- the tabs ----
 
         // The file tabs and the layout tabs (SwitchContentControl of AcWindows.dll) get their
-        // colour from the code of AutoCAD, as a local value of Background, set again as their
-        // state changes (current, under the mouse): each colour it sets is put in the look at
-        // once (a ValueChanged handler), what it set kept to give it back. The lists of tabs
+        // colour from the code of AutoCAD, in their Background (a value or a binding of its
+        // own, set again as their state changes: current, under the mouse), which the shapes
+        // of their template (a Rectangle, the Paths of the slanted sides) are bound to. Those
+        // shapes are given the colour of Background in the look, again each time Background
+        // changes (a ValueChanged handler); Background itself is left to AutoCAD, and the
+        // shapes get their binding back when it is turned off. The lists of tabs
         // (SwitchItemsControl) are watched, so a tab added (a drawing opened) is found at once.
-        static readonly DependencyProperty[] TabColours = { Control.BackgroundProperty, Control.BorderBrushProperty };
-        static readonly Dictionary<Control, Dictionary<DependencyProperty, Brush>> TabWas = new(ReferenceEqualityComparer.Instance);
-        static readonly HashSet<Brush> TabGiven = new(ReferenceEqualityComparer.Instance);
+        static readonly HashSet<Control> Tabbed = new(ReferenceEqualityComparer.Instance);
+        static readonly HashSet<Shape> TabShapes = new(ReferenceEqualityComparer.Instance);
+        static readonly Dictionary<Brush, Brush> TabMapped = new(ReferenceEqualityComparer.Instance);
         static readonly HashSet<ItemsControl> Lists = new(ReferenceEqualityComparer.Instance);
-        static bool _fixing;
+        static readonly HashSet<string> _tabTypes = new();
+        static int _tabFixed;
 
         static void Tabs(DependencyObject d)
         {
             string n = d.GetType().Name;
-            if (d is Control c && n == "SwitchContentControl" && !TabWas.ContainsKey(c))
+            if (d is Control c && n == "SwitchContentControl" && Tabbed.Add(c))
             {
-                TabWas[c] = new Dictionary<DependencyProperty, Brush>();
-                foreach (var dp in TabColours)
-                    DependencyPropertyDescriptor.FromProperty(dp, typeof(Control))?.AddValueChanged(c, OnTab);
+                DependencyPropertyDescriptor.FromProperty(Control.BackgroundProperty, typeof(Control))?.AddValueChanged(c, OnTab);
+                c.Loaded += OnTabLoaded;
                 Fix(c);
             }
             else if (d is ItemsControl ic && n == "SwitchItemsControl" && Lists.Add(ic))
@@ -293,6 +297,7 @@ namespace DynALisp.Ribbon
         }
 
         static void OnTab(object sender, EventArgs e) { if (sender is Control c) Fix(c); }
+        static void OnTabLoaded(object sender, RoutedEventArgs e) { if (sender is Control c) Fix(c); }
 
         static void OnList(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -307,38 +312,87 @@ namespace DynALisp.Ribbon
             }));
         }
 
+        // The shapes of the template of a tab bound to its Background, or given its colour:
+        static IEnumerable<Shape> Shapes(Control c)
+        {
+            var stack = new Stack<(DependencyObject, int)>();
+            stack.Push((c, 0));
+            while (stack.Count > 0)
+            {
+                var (d, depth) = stack.Pop();
+                if (d is Shape sh && !ReferenceEquals(d, c))
+                {
+                    var be = BindingOperations.GetBindingExpression(sh, Shape.FillProperty);
+                    if (TabShapes.Contains(sh) || be?.ParentBinding?.Path?.Path == "Background" && (be.ResolvedSource == null || ReferenceEquals(be.ResolvedSource, c)))
+                        yield return sh;
+                }
+                // Not into the content (the name of the drawing, its close button):
+                if (depth >= 4 || d is ContentPresenter) continue;
+                int k = 0;
+                try { k = d is Visual ? VisualTreeHelper.GetChildrenCount(d) : 0; } catch { }
+                for (int i = 0; i < k; i++) stack.Push((VisualTreeHelper.GetChild(d, i), depth + 1));
+            }
+        }
+
         static void Fix(Control c)
         {
-            if (!_on || _fixing || !TabWas.TryGetValue(c, out var was)) return;
-            foreach (var dp in TabColours)
+            if (!_on || !Tabbed.Contains(c)) return;
+            var bg = c.Background;
+            if (bg != null) _tabTypes.Add(bg.GetType().Name + " " + c.ReadLocalValue(Control.BackgroundProperty)?.GetType().Name);
+            Brush m = null;
+            if (bg != null && !TabMapped.TryGetValue(bg, out m))
             {
-                if (DependencyPropertyHelper.GetValueSource(c, dp).BaseValueSource != BaseValueSource.Local) continue;
-                if (c.ReadLocalValue(dp) is not SolidColorBrush b || TabGiven.Contains(b)) continue;
-                var m = Skin.Map(b.Color, _look);
-                if (m == b.Color) continue;
-                var nb = new SolidColorBrush(m) { Opacity = b.Opacity };
-                nb.Freeze();
-                TabGiven.Add(nb);
-                was[dp] = b;
-                _fixing = true;
-                try { c.SetValue(dp, nb); } catch { }
-                finally { _fixing = false; }
+                m = MapTab(bg) ?? bg;
+                TabMapped[bg] = m;
+            }
+            foreach (var sh in Shapes(c).ToList())
+            {
+                if (m == null) continue;
+                if (!ReferenceEquals(sh.Fill, m)) sh.SetValue(Shape.FillProperty, m);
+                if (TabShapes.Add(sh)) _tabFixed++;
+            }
+        }
+
+        // A brush of a tab in the look (a plain colour or a gradient), null when it stays:
+        static Brush MapTab(Brush b)
+        {
+            switch (b)
+            {
+                case SolidColorBrush sc:
+                    var m = Skin.Map(sc.Color, _look);
+                    if (m == sc.Color) return null;
+                    var ns = new SolidColorBrush(m) { Opacity = sc.Opacity };
+                    ns.Freeze();
+                    return ns;
+                case GradientBrush g:
+                    var ng = g.Clone();
+                    bool any = false;
+                    foreach (var st in ng.GradientStops)
+                    {
+                        var mm = Skin.Map(st.Color, _look);
+                        if (mm != st.Color) { st.Color = mm; any = true; }
+                    }
+                    if (!any) return null;
+                    ng.Freeze();
+                    return ng;
+                default:
+                    return null;
             }
         }
 
         static void TabsBack()
         {
-            foreach (var (c, was) in TabWas)
+            foreach (var c in Tabbed)
             {
-                foreach (var dp in TabColours)
-                {
-                    DependencyPropertyDescriptor.FromProperty(dp, typeof(Control))?.RemoveValueChanged(c, OnTab);
-                    if (was.TryGetValue(dp, out var b) && c.ReadLocalValue(dp) is Brush now && TabGiven.Contains(now))
-                        try { c.SetValue(dp, b); } catch { }
-                }
+                DependencyPropertyDescriptor.FromProperty(Control.BackgroundProperty, typeof(Control))?.RemoveValueChanged(c, OnTab);
+                c.Loaded -= OnTabLoaded;
             }
-            TabWas.Clear();
-            TabGiven.Clear();
+            // The shapes bound to Background again (their style gives the binding back):
+            foreach (var sh in TabShapes) try { sh.ClearValue(Shape.FillProperty); } catch { }
+            Tabbed.Clear();
+            TabShapes.Clear();
+            TabMapped.Clear();
+            _tabFixed = 0;
             foreach (var ic in Lists) ((INotifyCollectionChanged)ic.Items).CollectionChanged -= OnList;
             Lists.Clear();
         }
@@ -422,7 +476,7 @@ namespace DynALisp.Ribbon
             try { r.AddRange(NativeThemes.Holding(new uint[] { 0x332922, 0x53443B, 0x6E5A4E, 0x3B302A, 0x40342E }).Select(l => "  " + l)); }
             catch (System.Exception ex) { r.Add("  " + ex.Message); }
             r.Add("");
-            r.Add("Functions exported about the application frame or title bar (module: name):");
+            r.Add("Functions exported about the colour theme of AutoCAD, and by AdApplicationFrame.dll (module: name):");
             try { Frame(r); } catch (System.Exception ex) { r.Add("  " + ex.Message); }
             r.Add("");
             r.Add("Web pages:");
@@ -440,14 +494,16 @@ namespace DynALisp.Ribbon
                 var into = new Dictionary<string, IntPtr>();
                 try
                 {
-                    NativeThemes.Exports(m.BaseAddress, into, x =>
-                        (x.Contains("ApplicationFrame") || x.Contains("AppFrame") || x.Contains("TitleBar") || x.Contains("ImpFrame"))
-                        && (x.Contains("Color") || x.Contains("Colour") || x.Contains("Theme") || x.Contains("Brush") || x.Contains("Background") || x.Contains("Refresh") || x.Contains("Redraw") || x.Contains("Update")));
+                    bool frame = m.ModuleName.StartsWith("AdApplicationFrame", StringComparison.OrdinalIgnoreCase)
+                        || m.ModuleName.StartsWith("AdImp", StringComparison.OrdinalIgnoreCase);
+                    NativeThemes.Exports(m.BaseAddress, into, x => frame
+                        || x.Contains("ColorTheme") || x.Contains("ColourTheme") || x.Contains("ThemeColor")
+                        || (x.Contains("ApplicationFrame") || x.Contains("TitleBar")) && (x.Contains("Color") || x.Contains("Theme")));
                 }
                 catch { continue; }
                 foreach (var k in into.Keys.OrderBy(k => k))
                 {
-                    if (n++ >= 150) { r.Add("  ..."); return; }
+                    if (n++ >= 500) { r.Add("  ..."); return; }
                     r.Add("  " + m.ModuleName + ": " + k);
                 }
             }
