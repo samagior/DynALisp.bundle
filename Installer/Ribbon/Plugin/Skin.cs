@@ -20,9 +20,10 @@
 //     the brushes of the ribbon, its tabs and panels (Ribbon, Ribbon.MainTab), the application
 //     menu and the frame, which the controls of the ribbon are bound to.
 //   - Palettes: PaletteSettings.CurrentTheme of ThemeManager (AdUiPalettes.dll,
-//     Autodesk.Windows.Palettes.PaletteTheme): the colours of the palettes (Properties, the
-//     tool palettes...: PaletteContainerBackgroundColor, PropertyInspector*...), and of the
-//     status bar, the file tabs, the command line and the menus.
+//     Autodesk.Windows.Palettes.PaletteTheme): the colours of the palettes made in WPF (Layer
+//     Properties, QuickCalc...), and of the status bar, the file tabs, the command line and the
+//     menus; with them, the native themes of the palettes written in C++ (Properties), found
+//     in AutoCAD by NativeThemes.cs.
 // While a target is on and AutoCAD is in its dark theme, every colour of its theme goes through
 // a filter (Map): the greys and blue-greys of the surfaces take the hue of the DynALisp windows
 // (Installer\Windows\Engine\Session.cs) and get darker, the light ones (the texts) take their
@@ -65,7 +66,9 @@ namespace DynALisp.Ribbon
             {
                 Skin.Read();
                 string which = args?.AsArray().Select(v => v.Value as string).FirstOrDefault(v => v != null);
-                return (string.Equals(which, "Palettes", StringComparison.OrdinalIgnoreCase) ? Skin.Palettes : Skin.Ribbon).Status();
+                if (!string.Equals(which, "Palettes", StringComparison.OrdinalIgnoreCase)) return Skin.Ribbon.Status();
+                string st = Skin.Palettes.Status();
+                return Skin.Palettes.Wanted && Skin.Dark() ? st + "; " + NativeThemes.Status() : st;
             }
             catch (System.Exception ex) { return "error: " + ex.Message; }
         }
@@ -228,6 +231,8 @@ namespace DynALisp.Ribbon
             _next = Environment.TickCount + 1000;
             _due = false;
             foreach (var t in Targets) t.Apply();
+            // The palettes written in C++ (Properties), by their native themes:
+            NativeThemes.Apply(Palettes.Wanted && Dark());
         }
 
         // ---- the walk of the theme ----
