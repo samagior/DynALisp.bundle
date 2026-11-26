@@ -4434,11 +4434,15 @@
   ;;;     opened (see Modules\Dynalisp\Remote\Dyl-SysVars.lsp)
   ;;;   - Display (Overrides, DynalispDisplayOn) and its open button, the display
   ;;;     window (Dyl-Settings-Display.xaml, greyed out while Display is off): the display
-  ;;;     settings applied in every drawing opened while Display is on, for now the
-  ;;;     model space background color, Black, Default or White, or (Not set): the
-  ;;;     current color kept (DynalispBackground, see
-  ;;;     Modules\Dynalisp\Remote\Dyl-EnvColor.lsp). More display settings go in
-  ;;;     that window (Dyl:SetDisplayVals), with their value in st:bkg's place made a list
+  ;;;     settings applied in every drawing opened while Display is on: the model space
+  ;;;     background, the paper of the layouts (each with its crosshair) and the theme
+  ;;;     of AutoCAD (the layouts also the background around the paper), each one (Not
+  ;;;     set) or a name: DynALisp (the dark of the DynALisp windows), Black, Default,
+  ;;;     White, Dark, Light (DynalispBackground,
+  ;;;     DynalispLayoutBackground, DynalispColorTheme, see
+  ;;;     Modules\Dynalisp\Remote\Dyl-EnvColor.lsp). st:bkg holds them, in the order of
+  ;;;     *ec:prefs*; more display settings go in that window (Dyl:SetDisplayVals) and
+  ;;;     in that list
   ;;;   - Layer keys: the answer remembered to "update this layer to its layer key?"
 ;;;     (Remote>>Dyl:LayerKeyCheck): Update them without asking (DynalispLayerKeyUpdate)
 ;;;     or Keep them without asking (DynalispLayerKeyKeep), one of them at most; both
@@ -4516,9 +4520,15 @@
     )
   )
 
-  ;;; Items of the Background popup of the display window: nil, shown as (Not set),
-  ;;; then the names of the colors:
-  (defun Dyl:SetBkgs () (cons nil (mapcar 'car *ec:colors*)))
+  ;;; The popups of the display window, in the order of *ec:prefs* (Remote file
+  ;;; Dyl-EnvColor.lsp): (KEY CONTEXT):
+  (setq *dyl:setdisplay* '(("bkg" model) ("lbk" layout) ("thm" theme)))
+
+  ;;; Items of a popup of the display window: nil, shown as (Not set), then the names
+  ;;; of the choices of its context (model, layout or theme):
+  (defun Dyl:SetBkgs (ctx)
+    (cons nil (if Remote>>Dyl:DisplayNames (Remote>>Dyl:DisplayNames ctx)))
+  )
 
   ;;; The values of the Settings window (Res\Dyl-Settings.xaml, see the Windows region)
   ;;; and of its sub-windows, from the values being edited (st:*). A setting whose
@@ -4602,7 +4612,7 @@
           st:lng (car (nth (Dyl:WinIdx res "lng") *dyl:langs*))
           st:lkm (cond ((Dyl:WinOn-p res "lku") "Update") ((Dyl:WinOn-p res "lkk") "Keep"))
           st:defs (Dyl:SetDefsWinGet res)
-          st:bkg (nth (Dyl:WinIdx res "bkg") (Dyl:SetBkgs))
+          st:bkg (mapcar '(lambda (d) (nth (Dyl:WinIdx res (car d)) (Dyl:SetBkgs (cadr d)))) *dyl:setdisplay*)
           st:cfg (MAJ:PrepWinGet res)
           st:pfp (if st:pfp (cons (Dyl:WinOn-p res "pfo") (Dyl:SetPrefsWinGet res)))
     )
@@ -4658,16 +4668,23 @@
     (cons (and Remote>>Dyl:SetupOn-p (Remote>>Dyl:SetupOn-p) T) (Dyl:SetDefsRead))
   )
 
-  ;;; Display window (Res\Dyl-Settings-Display.xaml): the background, first item: not
-  ;;; set (the current color kept). More display settings: give and read their values
-  ;;; here too:
+  ;;; Display window (Res\Dyl-Settings-Display.xaml): the model space, the layouts and
+  ;;; the theme, first item of each: not set (the current value kept). More display
+  ;;; settings: give and read their values here too (*dyl:setdisplay*):
   (defun Dyl:SetDisplayVals ()
     (append
-      (Dyl:WinList "bkg"
-                   (mapcar '(lambda (b) (cond (b) ("(Not set)"))) (Dyl:SetBkgs))
-                   (cond ((vl-position st:bkg (Dyl:SetBkgs))) (0))
+      (apply 'append
+             (mapcar '(lambda (d / val)
+                        (setq val (nth (vl-position d *dyl:setdisplay*) st:bkg))
+                        (Dyl:WinList (car d)
+                                     (mapcar '(lambda (b) (cond (b) ("(Not set)"))) (Dyl:SetBkgs (cadr d)))
+                                     (cond ((vl-position val (Dyl:SetBkgs (cadr d)))) (0))
+                        )
+                      )
+                     *dyl:setdisplay*
+             )
       )
-      (Dyl:WinOff "bkg" (not Remote>>Dyl:BackgroundSet))
+      (Dyl:WinOff (mapcar 'car *dyl:setdisplay*) (not Remote>>Dyl:DisplayPrefSet))
     )
   )
 
@@ -4835,7 +4852,7 @@
     ;; display preferences are the same in every drawing):
     (if (not (and (equal st:bkg (nth 5 old)) (eq st:dpo (nth 10 old))))
       (progn
-        (Remote>>Dyl:BackgroundPrefSet st:bkg)
+        (Remote>>Dyl:DisplayPrefSet st:bkg)
         (Remote>>Dyl:DisplayOnSet st:dpo)
         (princ (strcat "\nDisplay saved, "
                        (cond
@@ -4888,7 +4905,7 @@
           st:ado  (and Remote>>Dyl:DrawOrderAuto-p (Remote>>Dyl:DrawOrderAuto-p) T)
           st:prp  (MAJ:Redefine-p)
           st:cfg  (MAJ:PrepRead)
-          st:bkg  (if Remote>>Dyl:BackgroundPref (Remote>>Dyl:BackgroundPref))
+          st:bkg  (if Remote>>Dyl:DisplayPref (Remote>>Dyl:DisplayPref) (mapcar '(lambda (d) nil) *dyl:setdisplay*))
           st:dpo  (and Remote>>Dyl:DisplayOn-p (Remote>>Dyl:DisplayOn-p) T)
           st:pfp  (Dyl:SetPrefsRead)
           st:rea  (Dyl:ReactorsOn-p)
