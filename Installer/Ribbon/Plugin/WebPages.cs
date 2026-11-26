@@ -93,10 +93,18 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
         {
             try
             {
-                if (!on) { Undo(); return; }
+                if (!on) { _timer?.Stop(); _timer = null; Undo(); return; }
+                if (_timer == null)
+                {
+                    // The browsers of AcWebView, often: a page shows its own colours until the
+                    // script has run in it.
+                    _timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(Fast) };
+                    _timer.Tick += (s, e) => { try { Native(Script); } catch (System.Exception ex) { _nFail = ex.Message; } };
+                    _timer.Start();
+                    Native(Script);
+                }
                 if (Environment.TickCount - _next < 0) return;
                 _next = Environment.TickCount + 2000;
-                Native(Script);
                 Done.RemoveAll(h => !h.Control.IsAlive);
                 if (!BrowserLoaded()) return;
                 foreach (var c in Controls()) Hook(c);
@@ -207,9 +215,18 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
         static int _nextList = Environment.TickCount;
         static readonly Dictionary<string, string> _last = new(StringComparer.Ordinal);
 
+        static System.Windows.Threading.DispatcherTimer _timer;
+        // How often the script is run in the browsers of AcWebView (it does nothing a second time
+        // in a page), and their windows looked for again (the windows of Chrome of AutoCAD):
+        const int Fast = 150, Look = 1000;
+        static int _nextFind = Environment.TickCount, _nextLook = Environment.TickCount;
+        static string _chrome = "";
+
         static bool NativeFind()
         {
             if (_nLooked) return _nFail == null;
+            if (Environment.TickCount - _nextFind < 0) return false;    // AcWebView.dll not loaded yet: asked every 2 s
+            _nextFind = Environment.TickCount + 2000;
             _nLooked = true;
             var mod = System.Diagnostics.Process.GetCurrentProcess().Modules.Cast<System.Diagnostics.ProcessModule>()
                 .FirstOrDefault(m => m.ModuleName.Equals("AcWebView.dll", StringComparison.OrdinalIgnoreCase));
@@ -255,11 +272,19 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
         static void Native(string script)
         {
             if (!NativeFind()) return;
-            if (_windows.Count == 0 && Environment.TickCount - _nextList >= 0 || Environment.TickCount - _nextList >= 30000)
+            // Listed again when the windows of Chrome of AutoCAD change (a browser made or
+            // closed), and every 30 s:
+            bool relist = Environment.TickCount - _nextList >= 30000;
+            if (Environment.TickCount - _nextLook >= 0)
+            {
+                _nextLook = Environment.TickCount + Look;
+                string chrome = string.Join(",", Children(AcApp.MainWindow.Handle).Where(h => Class(h) == "Chrome_WidgetWin_0").Select(h => h.ToInt64()));
+                if (chrome != _chrome) { _chrome = chrome; relist = true; }
+            }
+            if (relist)
             {
                 _nextList = Environment.TickCount;
                 List();
-                if (_windows.Count == 0) _nextList = Environment.TickCount + 15000;
             }
             foreach (var n in _windows)
             {
