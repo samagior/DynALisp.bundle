@@ -64,6 +64,18 @@
 //     Remote>>Dyl:MaterialBoth gives them: (hatch-presets materials); nil when the Lisp reads
 //     them itself (a materials file of DynALisp 1.1 to split, see Data\Materials.cs).
 //
+//   (Dyl:AsmPats contents cannoscale measurement insunits lunits luprec dimzin)
+//     The patterns of the hatch presets (upper case, SOLID left out) whose units
+//     Dyl:AsmShows needs, found by the Lisp (Remote>>Dyl:MaterialPatUnits); the system
+//     variables of the drawing (CANNOSCALEVALUE, MEASUREMENT, INSUNITS, LUNITS, LUPREC,
+//     DIMZIN). nil when the Lisp makes what is shown itself (see Data\Shows.cs).
+//
+//   (Dyl:AsmShows contents cannoscale measurement insunits lunits luprec dimzin [pattern units file] ...)
+//     What the Quick Draw window shows of each assembly read (Dyl:AsmRead, in its order), as
+//     Dyl:QuickDrawAsmShow gives it: ((id layers width preview description) ...); then, for
+//     each pattern of Dyl:AsmPats, its units ("Imperial", "Metric", "" when no file defines
+//     it) and its file. nil as Dyl:AsmPats.
+//
 //   (Dyl:DataInfo)
 //     What the plugin did in this session, for Dyl-Diagnostics: (("Files" . n) ("Reads" . n)
 //     ("Hits" . n) ("ReadMs" . ms)), the files kept, the reads of a file, the calls given a
@@ -226,6 +238,48 @@ namespace DynALisp.Core
             AddRows(rb, mats);
             rb.Add(new TypedValue((int)LispDataType.ListEnd));
             return Result(rb);
+        }
+
+        // The system variables of the drawing, from the argument i on (see Data\Shows.cs):
+        static Units UnitsOf(List<object> a, int i) => a.Count < i + 6 ? null : new Units
+        {
+            CannoScale = Real(a[i]),
+            Measurement = Int(a[i + 1]),
+            Insunits = Int(a[i + 2]),
+            Lunits = Int(a[i + 3]),
+            Luprec = Int(a[i + 4]),
+            Dimzin = Int(a[i + 5]),
+        };
+
+        [LispFunction("Dyl:AsmPats")]
+        public ResultBuffer AsmPats(ResultBuffer args)
+        {
+            var a = Args(args);
+            var b = BundleOf(a.Count > 0 ? a[0] : null);
+            var u = UnitsOf(a, 1);
+            var pats = b == null || u == null ? null : Shows.Patterns(b, u);
+            if (pats == null) return null;
+            var rb = new List<TypedValue>(pats.Count + 2);
+            rb.Add(new TypedValue((int)LispDataType.ListBegin));
+            foreach (var p in pats) rb.Add(new TypedValue((int)LispDataType.Text, p));
+            rb.Add(new TypedValue((int)LispDataType.ListEnd));
+            return Result(rb);
+        }
+
+        [LispFunction("Dyl:AsmShows")]
+        public ResultBuffer AsmShows(ResultBuffer args)
+        {
+            var a = Args(args);
+            var b = BundleOf(a.Count > 0 ? a[0] : null);
+            var u = UnitsOf(a, 1);
+            if (b == null || u == null) return null;
+            var pats = new Dictionary<string, (string Units, string File)?>(StringComparer.Ordinal);
+            for (int i = 7; i + 2 < a.Count; i += 3)
+            {
+                string p = a[i] as string, units = a[i + 1] as string, file = a[i + 2] as string;
+                if (p != null) pats[p] = string.IsNullOrEmpty(units) ? null : ((string, string)?)(units, file ?? "");
+            }
+            return Rows(Shows.All(b, u, pats));
         }
 
         // A list of rows as the Lisp gets it, nil for none:
