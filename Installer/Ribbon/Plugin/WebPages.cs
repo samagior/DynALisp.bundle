@@ -15,7 +15,12 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // EXPERIMENT, not supported by Autodesk. The Start tab of AutoCAD is a web page, drawn by its
-// own style sheets: neither the managed themes nor the native ones reach it. When it is shown
+// own style sheets: neither the managed themes nor the native ones reach it. In AutoCAD 2027 its
+// browser (WebView2) is made in C++ by AcWebView.dll, whose AcBrowserEngineProxy lists its
+// browser windows and runs a script in one (executeScript): those functions are found in its
+// export table by their full C++ names (as in NativeThemes.cs: a name not exactly the one
+// expected is never called), the windows listed (an iterator AcWebView makes; listed again
+// every 30 s at most, since it is not freed), then found again by their names. When it is shown
 // by a managed browser control (WebView2, in WPF or Windows Forms, or CefSharp), found by its
 // type name and used only by reflection (no reference to either), a script is run in its pages
 // that puts the colours of each element (background, text, borders) through the same filter as
@@ -91,6 +96,7 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
                 if (!on) { Undo(); return; }
                 if (Environment.TickCount - _next < 0) return;
                 _next = Environment.TickCount + 2000;
+                Native(Script);
                 Done.RemoveAll(h => !h.Control.IsAlive);
                 if (!BrowserLoaded()) return;
                 foreach (var c in Controls()) Hook(c);
@@ -116,6 +122,7 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
 
         static void Undo()
         {
+            if (_hooked.Count > 0) { try { Native(UndoScript); } catch { } _hooked.Clear(); }
             foreach (var h in Done)
             {
                 try
@@ -163,6 +170,103 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
         {
             var m = o.GetType().GetMethod(name, BindingFlags.Public | BindingFlags.Instance, null, new[] { typeof(string) }, null);
             return m?.Invoke(o, new object[] { arg });
+        }
+
+        // ---- the browsers of AcWebView.dll (C++) ----
+
+        const string NameInstance = "?Instance@AcBrowserEngineProxy@WebView@Autodesk@@SAPEAV123@XZ";
+        const string NameIterator = "?newWindowIterator@AcBrowserEngineProxy@WebView@Autodesk@@QEAAPEAVAcBrowserWindowProxyIterator@23@XZ";
+        const string NameDone = "?done@AcBrowserWindowProxyIterator@WebView@Autodesk@@QEAA_NXZ";
+        const string NameCurrent = "?current@AcBrowserWindowProxyIterator@WebView@Autodesk@@QEAAPEAVAcBrowserWindowProxy@23@XZ";
+        const string NameNext = "?next@AcBrowserWindowProxyIterator@WebView@Autodesk@@QEAAXXZ";
+        const string NameIterEnd = "??1AcBrowserWindowProxyIterator@WebView@Autodesk@@QEAA@XZ";
+        const string NameFind = "?findBrowserWindowByName@AcBrowserEngineProxy@WebView@Autodesk@@QEAAPEAVAcBrowserWindowProxy@23@PEB_W@Z";
+        const string NameFindUrl = "?findBrowserWindowByUrl@AcBrowserEngineProxy@WebView@Autodesk@@QEAAPEAVAcBrowserWindowProxy@23@PEB_W@Z";
+        const string NameExecute = "?executeScript@AcBrowserWindowProxy@WebView@Autodesk@@QEAA_NPEB_W@Z";
+        const string NameName = "?name@AcBrowserWindowProxy@WebView@Autodesk@@QEBAPEB_WXZ";
+        const string NameUrl = "?url@AcBrowserWindowProxy@WebView@Autodesk@@QEBAPEB_WXZ";
+
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate IntPtr StaticFn();
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall)] delegate IntPtr PtrFn(IntPtr self);
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall)] delegate byte BoolFn(IntPtr self);
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall)] delegate void VoidFn(IntPtr self);
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Unicode)] delegate IntPtr FindFn(IntPtr self, string name);
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall, CharSet = CharSet.Unicode)] delegate byte ExecFn(IntPtr self, string script);
+
+        static bool _nLooked;
+        static string _nFail;
+        static IntPtr _engine;
+        static PtrFn _iterator, _current, _name, _url;
+        static BoolFn _done;
+        static VoidFn _nextWin, _iterEnd;
+        static FindFn _find, _findUrl;
+        static ExecFn _exec;
+        // The browser windows, by name, listed at most every 30 s; those given the script:
+        static readonly List<string> _windows = new();
+        static readonly HashSet<string> _hooked = new(StringComparer.Ordinal);
+        static int _nextList = Environment.TickCount;
+        static readonly Dictionary<string, string> _last = new(StringComparer.Ordinal);
+
+        static bool NativeFind()
+        {
+            if (_nLooked) return _nFail == null;
+            _nLooked = true;
+            var mod = System.Diagnostics.Process.GetCurrentProcess().Modules.Cast<System.Diagnostics.ProcessModule>()
+                .FirstOrDefault(m => m.ModuleName.Equals("AcWebView.dll", StringComparison.OrdinalIgnoreCase));
+            if (mod == null) { _nFail = "no AcWebView.dll"; _nLooked = false; return false; }   // asked again: it may load later
+            var ex = new Dictionary<string, IntPtr>();
+            NativeThemes.Exports(mod.BaseAddress, ex, n => n.Contains("@WebView@Autodesk@@"));
+            var need = new[] { NameInstance, NameIterator, NameDone, NameCurrent, NameNext, NameIterEnd, NameFind, NameFindUrl, NameExecute, NameName, NameUrl };
+            var missing = need.Where(n => !ex.ContainsKey(n)).ToList();
+            if (missing.Count > 0) { _nFail = "AcWebView functions " + string.Join(" ", missing.Select(n => n.TrimStart('?').Split('@')[0])); return false; }
+            T Fn<T>(string n) => Marshal.GetDelegateForFunctionPointer<T>(ex[n]);
+            _iterator = Fn<PtrFn>(NameIterator); _current = Fn<PtrFn>(NameCurrent); _name = Fn<PtrFn>(NameName); _url = Fn<PtrFn>(NameUrl);
+            _done = Fn<BoolFn>(NameDone); _nextWin = Fn<VoidFn>(NameNext); _iterEnd = Fn<VoidFn>(NameIterEnd);
+            _find = Fn<FindFn>(NameFind); _findUrl = Fn<FindFn>(NameFindUrl); _exec = Fn<ExecFn>(NameExecute);
+            _engine = Fn<StaticFn>(NameInstance)();
+            if (_engine == IntPtr.Zero) { _nFail = "no browser engine"; _nLooked = false; return false; }
+            _nFail = null;
+            return true;
+        }
+
+        // The names of the browser windows (an iterator of AcWebView, ended but not freed):
+        static void List()
+        {
+            _windows.Clear();
+            _last.Clear();
+            IntPtr it = _iterator(_engine);
+            if (it == IntPtr.Zero) return;
+            for (int i = 0; i < 100 && _done(it) == 0; i++, _nextWin(it))
+            {
+                IntPtr w = _current(it);
+                if (w == IntPtr.Zero) continue;
+                // By its name, or by its page when it has none ("url:..."):
+                string url = Marshal.PtrToStringUni(_url(w)) ?? "";
+                string n = Marshal.PtrToStringUni(_name(w)) ?? "";
+                if (n.Length == 0) n = "url:" + url;
+                if (n != "url:" && !_windows.Contains(n)) _windows.Add(n);
+                _last[n] = url;
+            }
+            _iterEnd(it);
+        }
+
+        // The script run in each browser window of AcWebView (it does nothing a second time in
+        // the same page, so it is run every 2 s: a page loaded again gets it again).
+        static void Native(string script)
+        {
+            if (!NativeFind()) return;
+            if (_windows.Count == 0 && Environment.TickCount - _nextList >= 0 || Environment.TickCount - _nextList >= 30000)
+            {
+                _nextList = Environment.TickCount;
+                List();
+                if (_windows.Count == 0) _nextList = Environment.TickCount + 15000;
+            }
+            foreach (var n in _windows)
+            {
+                IntPtr w = n.StartsWith("url:", StringComparison.Ordinal) ? _findUrl(_engine, n.Substring(4)) : _find(_engine, n);
+                if (w == IntPtr.Zero) continue;
+                if (_exec(w, script) != 0 && script == Script) _hooked.Add(n);
+            }
         }
 
         // ---- finding them ----
@@ -313,6 +417,19 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
                 r.Add("control " + c.GetType().FullName + ": " + (src ?? "no page") + (hooked ? ", in the colours of DynALisp" : core == null && c.GetType().FullName.Contains("WebView2") ? ", not ready" : ""));
             }
             if (ctls.Count == 0) r.Add("no browser control found");
+            try
+            {
+                if (!NativeFind()) r.Add("AcWebView: " + _nFail);
+                else
+                {
+                    List();
+                    _nextList = Environment.TickCount;
+                    r.Add("AcWebView: " + _windows.Count + " browser windows");
+                    foreach (var n in _windows)
+                        r.Add("browser " + n + ": " + _last.GetValueOrDefault(n, "") + (_hooked.Contains(n) ? ", in the colours of DynALisp" : ""));
+                }
+            }
+            catch (System.Exception ex) { r.Add("AcWebView: " + ex.Message); }
             return r;
         }
     }
