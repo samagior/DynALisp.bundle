@@ -23,13 +23,17 @@
 //     (AdUi25.dll...), by their full C++ names, which say their exact arguments: a function
 //     whose name is not exactly the one expected is never called, and nothing is done;
 //   - the theme manager, from an exported function that returns it and takes nothing;
-//   - the names of the themes, among the words (UTF-16 and ASCII) in the read-only data of
-//     every module of the AutoCAD folder, each asked of the manager with HasTheme (a lookup,
-//     it creates nothing): a palette may draw with a theme of its own (Properties).
-// Each dark theme found (IsDark, or a dark kPaletteBackground) has its colours (elements 8 to 199: kPaletteBackground to the frame
-// colours, the fonts before them left as they are) put through Skin.Map with SetColor, which
-// tells the palettes to draw again; what each was is kept, to give it back. AutoCAD sets them
-// again when its theme changes: a colour found changed is filtered again.
+//   - the themes, by the names known (those of AutoCAD 2026: ACTIVETHEME, PropertyPalette...),
+//     each asked of the manager with HasTheme (a lookup, it creates nothing) at each call, since
+//     a palette makes its theme when it first opens; when none is there (another version), by
+//     the words (UTF-16 and ASCII) in the read-only data of every module of the AutoCAD folder.
+// Each dark theme found (IsDark, or a dark kPaletteBackground) has its colours (elements 8 to
+// 199: kPaletteBackground to the frame colours, the fonts before them left as they are) put
+// through Skin.Map with SetColor, which tells the palettes to draw again; what each was is kept,
+// to give it back. Several names may give the same theme, and themes may share their colours:
+// a theme is filtered once, and a colour already given is never filtered again (Skin.Map
+// darkens each time, so the colours would flip between the two). AutoCAD sets them again when
+// its theme changes: a colour found that DynALisp did not give makes its theme filtered again.
 
 using System;
 using System.Collections.Generic;
@@ -73,7 +77,8 @@ namespace DynALisp.Ribbon
         static GetColorFn _getColor;
         static SetColorFn _setColor;
         static IsDarkFn _isDark;
-        static List<string> _names;
+        static List<string> _names = new();
+        static bool _searched;
         // What the search saw, for (Dyl:RibbonSkin "Native"): the words, the modules, the time,
         // and the module each theme name was found in.
         static int _words, _modules;
@@ -98,47 +103,81 @@ namespace DynALisp.Ribbon
             return "native palettes " + string.Join(", ", Changed.Select(d => d.Name)) + " (" + Changed.Sum(d => d.Colours.Count) + " colours)";
         }
 
-        // Run by Skin.OnIdle: on (the palettes wanted, AutoCAD dark) or off.
+        // The names of the themes found in AutoCAD 2026 (the search of (Dyl:RibbonSkin "Native"
+        // "Search")): asked first, so the search of every module runs only when none is there.
+        static readonly string[] Known = {
+            "ACTIVETHEME", "OwnerDrawButton", "DockControlBar", "DockBar", "PaletteSet", "DialogWorksheet",
+            "ToolPalette", "paletteset", "paletteSet", "PropertyPalette" };
+
+        // The names already seen (changed, the same theme as another name, or light), not asked again:
+        static readonly HashSet<string> Taken = new(StringComparer.Ordinal);
+        // Every colour given, so a theme seen under two names (or sharing its colours with
+        // another one) is never filtered twice, and a colour AutoCAD set again is told apart:
+        static readonly HashSet<uint> Given = new();
+
+        // Run by Skin.OnIdle: on (the palettes wanted, AutoCAD dark) or off. A theme made later
+        // (PropertyPalette, when Properties first opens) is found at the next call.
         public static void Apply(bool on)
         {
             try
             {
                 if (!on) { Undo(); return; }
                 if (!Find()) return;
-                if (Changed.Count > 0 && !Reset()) return;   // still as they were left
-                Undo();
-                Seen.Clear();
+                foreach (var d in Changed) if (d.Colours.Any(c => !Given.Contains(_getColor(d.Theme, c.El)))) Filter(d);
                 foreach (var name in _names)
                 {
+                    if (Taken.Contains(name) || _hasTheme(_manager, name) == 0) continue;
                     IntPtr theme = _getTheme(_manager, name);
-                    if (theme == IntPtr.Zero) { Seen.Add(name + ": no theme"); continue; }
+                    if (theme == IntPtr.Zero) continue;
+                    Taken.Add(name);
+                    var same = Changed.FirstOrDefault(d => d.Theme == theme);
+                    if (same != null) { _release(_manager, theme); Seen.Add(name + ": the theme of " + same.Name); continue; }
                     uint bg = _getColor(theme, First);
                     bool dark = _isDark(theme) != 0;
-                    string seen = name + " (" + Where.GetValueOrDefault(name, "?") + "): " + (dark ? "dark" : "light")
+                    string seen = name + " (" + Where.GetValueOrDefault(name, "known") + "): " + (dark ? "dark" : "light")
                         + ", background " + Hex(bg);
                     if (!dark && Skin.Lightness(FromRef(bg)) >= 0.5) { Seen.Add(seen + ", left as it is"); _release(_manager, theme); continue; }
-                    var d = new Done { Theme = theme, Name = name };
-                    for (int el = First; el <= Last; el++)
-                    {
-                        uint was = _getColor(theme, el);
-                        uint now = ToRef(Skin.Map(FromRef(was)));
-                        if (now == was) continue;
-                        _setColor(theme, el, now);
-                        d.Colours.Add((el, was, now));
-                    }
-                    Seen.Add(seen + ", " + d.Colours.Count + " colours changed");
-                    Changed.Add(d);
+                    var nd = new Done { Theme = theme, Name = name };
+                    Filter(nd);
+                    Seen.Add(seen + ", " + nd.Colours.Count + " colours changed");
+                    Changed.Add(nd);
                 }
             }
             catch (System.Exception ex) { _fail = ex.Message; Host.Log("native palettes: " + ex.Message); }
         }
+
+        // Puts the colours of a theme through Skin.Map, those it has now: a colour already given
+        // is left (the theme shares it, or was filtered already), and so is a key colour (black
+        // or almost, which a palette may use as its transparent colour).
+        static void Filter(Done d)
+        {
+            var was = d.Colours.ToDictionary(c => c.El);
+            d.Colours.Clear();
+            for (int el = First; el <= Last; el++)
+            {
+                uint cur = _getColor(d.Theme, el);
+                if (Given.Contains(cur))
+                {
+                    if (was.TryGetValue(el, out var w) && w.Now == cur) d.Colours.Add(w);
+                    continue;
+                }
+                if (Key(cur)) continue;
+                uint now = ToRef(Skin.Map(FromRef(cur)));
+                if (now == cur) continue;
+                _setColor(d.Theme, el, now);
+                Given.Add(now);
+                d.Colours.Add((el, cur, now));
+            }
+        }
+
+        static bool Key(uint c) => (c & 0xFF) <= 3 && ((c >> 8) & 0xFF) <= 3 && ((c >> 16) & 0xFF) <= 3;
 
         // What was found and done, one line each, for (Dyl:RibbonSkin "Native"):
         public static List<string> Report()
         {
             var r = new List<string>();
             if (!_looked) { r.Add("not searched yet (the palettes off, or AutoCAD not dark)"); return r; }
-            r.Add(_words + " words in " + _modules + " modules, " + _ms + " ms");
+            r.Add(_searched ? _words + " words in " + _modules + " modules, " + _ms + " ms" : "the names known (\"Search\" to search every module)");
             if (_fail != null) r.Add("not found: " + _fail);
             if (_names != null) r.Add(_names.Count + " themes: " + string.Join(", ", _names));
             r.AddRange(Seen);
@@ -147,22 +186,14 @@ namespace DynALisp.Ribbon
 
         static string Hex(uint c) => "#" + (c & 0xFF).ToString("X2") + ((c >> 8) & 0xFF).ToString("X2") + ((c >> 16) & 0xFF).ToString("X2");
 
-        // True when AutoCAD set a colour again since (its theme changed): filtered again.
-        static bool Reset()
-        {
-            foreach (var d in Changed)
-            {
-                var (el, _, now) = d.Colours.FirstOrDefault();
-                if (d.Colours.Count > 0 && _getColor(d.Theme, el) != now) return true;
-            }
-            return false;
-        }
-
         static void Undo()
         {
+            Taken.Clear();
+            Seen.Clear();
             if (_setColor == null) { Changed.Clear(); return; }
-            foreach (var d in Changed)
+            for (int i = Changed.Count - 1; i >= 0; i--)    // the last first: a colour shared goes back to the first
             {
+                var d = Changed[i];
                 try
                 {
                     foreach (var (el, was, now) in d.Colours)
@@ -172,6 +203,7 @@ namespace DynALisp.Ribbon
                 catch { }
             }
             Changed.Clear();
+            Given.Clear();
         }
 
         // COLORREF (0x00BBGGRR) and back:
@@ -184,18 +216,10 @@ namespace DynALisp.Ribbon
         {
             if (_looked) return _fail == null;
             _looked = true;
-            var clock = Stopwatch.StartNew();
             var exports = new Dictionary<string, IntPtr>();
             var modules = new List<ProcessModule>();
-            var others = new List<ProcessModule>();
-            var proc = Process.GetCurrentProcess();
-            string home = System.IO.Path.GetDirectoryName(proc.MainModule.FileName) + System.IO.Path.DirectorySeparatorChar;
-            foreach (ProcessModule m in proc.Modules)
-            {
-                string n = m.ModuleName;
-                if (n.StartsWith("adui", StringComparison.OrdinalIgnoreCase)) modules.Add(m);
-                else if (m.FileName.StartsWith(home, StringComparison.OrdinalIgnoreCase)) others.Add(m);
-            }
+            foreach (ProcessModule m in Process.GetCurrentProcess().Modules)
+                if (m.ModuleName.StartsWith("adui", StringComparison.OrdinalIgnoreCase)) modules.Add(m);
             if (modules.Count == 0) { _fail = "no AdUi module"; return false; }
             foreach (var m in modules) Exports(m.BaseAddress, exports);
 
@@ -215,22 +239,40 @@ namespace DynALisp.Ribbon
             _manager = Marshal.GetDelegateForFunctionPointer<GetManagerFn>(getter[0])();
             if (_manager == IntPtr.Zero) { _fail = "no theme manager"; return false; }
 
+            _names = Known.ToList();
+            if (Known.Any(n => _hasTheme(_manager, n) != 0)) return true;
+            Search();
+            if (_names.Count == 0) { _fail = "no theme name among " + _words + " words"; return false; }
+            return true;
+        }
+
+        // Every word of the read-only data of the modules of the AutoCAD folder asked of the
+        // manager: the names of the themes of another version of AutoCAD, added to those known.
+        // About a second: run when none of the names known is there, or by (Dyl:RibbonSkin
+        // "Native" "Search").
+        public static void Search()
+        {
+            if (!Find() && _manager == IntPtr.Zero) return;
+            var clock = Stopwatch.StartNew();
+            var proc = Process.GetCurrentProcess();
+            string home = System.IO.Path.GetDirectoryName(proc.MainModule.FileName) + System.IO.Path.DirectorySeparatorChar;
             var words = new Dictionary<string, string>(StringComparer.Ordinal);
-            foreach (var m in modules.Concat(others))
+            _modules = 0;
+            foreach (ProcessModule m in proc.Modules)
             {
+                if (!m.ModuleName.StartsWith("adui", StringComparison.OrdinalIgnoreCase) && !m.FileName.StartsWith(home, StringComparison.OrdinalIgnoreCase)) continue;
                 try { Words(m.BaseAddress, m.ModuleName, words); _modules++; } catch { }
             }
             _words = words.Count;
-            _names = new List<string>();
             foreach (var (w, mod) in words)
             {
                 if (_hasTheme(_manager, w) == 0) continue;
-                _names.Add(w);
+                if (!_names.Contains(w)) _names.Add(w);
                 Where[w] = mod;
             }
             _ms = clock.ElapsedMilliseconds;
-            if (_names.Count == 0) { _fail = "no theme name among " + words.Count + " words"; return false; }
-            return true;
+            _searched = true;
+            if (_names.Count > 0 && _fail != null && _fail.StartsWith("no theme name")) _fail = null;
         }
 
         // The names and addresses of the functions a module exports (its export table):
@@ -292,7 +334,7 @@ namespace DynALisp.Ribbon
 
         static bool Part(char c) => char.IsLetterOrDigit(c) || c == '_' || c == ' ' || c == '.' || c == '-';
 
-        const int MaxWords = 400000;
+        const int MaxWords = 1500000;
 
         static void Take(string w, string module, Dictionary<string, string> into)
         {

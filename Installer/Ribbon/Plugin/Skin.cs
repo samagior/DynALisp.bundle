@@ -68,7 +68,10 @@ namespace DynALisp.Ribbon
                 string which = args?.AsArray().Select(v => v.Value as string).FirstOrDefault(v => v != null);
                 if (string.Equals(which, "Native", StringComparison.OrdinalIgnoreCase))
                 {
-                    // What was found of the native palettes, one string each (a diagnostic):
+                    // What was found of the native palettes, one string each (a diagnostic);
+                    // "Search" first searches every module for the names of the themes:
+                    if (args.AsArray().Any(v => string.Equals(v.Value as string, "Search", StringComparison.OrdinalIgnoreCase)))
+                        NativeThemes.Search();
                     var rb = new ResultBuffer();
                     foreach (var line in NativeThemes.Report()) rb.Add(new TypedValue((int)LispDataType.Text, line));
                     return rb;
