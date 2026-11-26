@@ -26,21 +26,25 @@
 ;;  Each display setting is a name, "" or missing: not set, the current value kept:
 ;;    - Model space (DynalispBackground): the model space background, DynALisp, Black,
 ;;      Default (blue-grey, the AutoCAD default) or White.
-;;    - Layouts (DynalispLayoutBackground): the paper of the layouts, DynALisp, Black or
-;;      White (the AutoCAD default).
+;;    - Layouts (DynalispLayoutBackground): the paper of the layouts and the background
+;;      around it, DynALisp, Black or Default (white paper on light grey, the AutoCAD
+;;      default).
 ;;    - Theme (DynalispColorTheme): the theme of AutoCAD (COLORTHEME), Dark or Light,
 ;;      which the DynALisp windows follow too.
 ;;  Each background comes with a crosshair color that stays readable on it. DynALisp is
 ;;  the dark of the DynALisp windows (Installer\Windows\Engine\Session.cs, Theme): the
-;;  model space in the color of their title bar (#1E2229), the darkest, the paper in
-;;  the color of their background (#252A32), the crosshairs in the color of their text
-;;  (#E6EAF0). The colors are the display preferences (Options > Display > Colors):
-;;  user profile settings, so they apply to every drawing.
+;;  model space and the background around the paper a little darker than their title
+;;  bar (#181B20), dark without being black, the paper in the color of their background
+;;  (#252A32), the crosshairs in the color of their text (#E6EAF0). The colors are the
+;;  display preferences (Options > Display > Colors), the background around the paper
+;;  the "Paper background" setting of the profile, which Options does not show: user
+;;  profile settings, so they apply to every drawing.
 ;;
 ;;  Use in an App:
 ;;    (Remote>>Dyl:Background 'model)          -> "DynALisp", "Black", "Default" or
 ;;                                                "White", nil for any other color
-;;    (Remote>>Dyl:BackgroundSet 'layout "White") -> sets the paper and its crosshair
+;;    (Remote>>Dyl:BackgroundSet 'layout "Default") -> sets the paper, its crosshair
+;;                                                and the background around it
 ;;    (Remote>>Dyl:Theme)                      -> "Dark" or "Light"
 ;;    (Remote>>Dyl:ThemeSet "Dark")            -> sets COLORTHEME
 ;;    (Remote>>Dyl:DisplayApply)               -> applies the display settings, returns
@@ -49,18 +53,19 @@
 (vl-load-com)
 
 ;;  The backgrounds of each context: (CONTEXT (BACKGROUND-PROP CROSSHAIR-PROP)
-;;  (NAME BACKGROUND CROSSHAIR) ...), colors as OLE values: R + G*256 + B*65536.
+;;  (NAME BACKGROUND CROSSHAIR [AROUND]) ...), colors as OLE values: R + G*256 + B*65536,
+;;  AROUND the background around the paper of a layout ("Paper background").
 (setq *ec:colors*
        '((model (graphicswinmodelbackgrndcolor modelcrosshaircolor)
-                ("DynALisp" 2695710 15788774) ; RGB 30,34,41 / 230,234,240
+                ("DynALisp" 2104088 15788774) ; RGB 24,27,32 / 230,234,240
                 ("Black" 0 16777215)
                 ("Default" 3155999 16777215) ; RGB 33,40,48
                 ("White" 16777215 0)
          )
          (layout (graphicswinlayoutbackgrndcolor layoutcrosshaircolor)
-                 ("DynALisp" 3287589 15788774) ; RGB 37,42,50 / 230,234,240
-                 ("Black" 0 16777215)
-                 ("White" 16777215 0)
+                 ("DynALisp" 3287589 15788774 2104088) ; RGB 37,42,50 / 230,234,240 / 24,27,32
+                 ("Black" 0 16777215 3355443) ; around: RGB 51,51,51
+                 ("Default" 16777215 0 12566463) ; around: RGB 191,191,191
          )
         )
 )
@@ -77,6 +82,11 @@
 )
 
 (defun ec:display () (vla-get-display (vla-get-preferences (vlax-get-acad-object))))
+
+;;  The background around the paper of the layouts, an OLE color (nil: never set):
+(defun ec:around (/ v)
+  (if (and (setq v (getenv "Paper background")) (/= "" v)) (atoi v))
+)
 
 ;;  Names of the choices of a context (model, layout or theme):
 (defun Remote>>Dyl:DisplayNames (ctx)
@@ -100,17 +110,21 @@
               )
          )
     )
-    (car (vl-some '(lambda (b) (if (= c (cadr b)) b)) (cddr e)))
+    (car (vl-some '(lambda (b) (if (and (= c (cadr b)) (or (not (cadddr b)) (eq (cadddr b) (ec:around)))) b))
+                  (cddr e)
+         )
+    )
   )
 )
 
-;;  Set the background of a context (model or layout) and its crosshair color (name of
-;;  *ec:colors*):
+;;  Set the background of a context (model or layout), its crosshair color and the
+;;  background around the paper of a layout (name of *ec:colors*):
 (defun Remote>>Dyl:BackgroundSet (ctx name / e b)
   (if (and (setq e (assoc ctx *ec:colors*)) (setq b (assoc name (cddr e))))
     (progn
       (vlax-put-property (ec:display) (car (cadr e)) (cadr b))
       (vlax-put-property (ec:display) (cadr (cadr e)) (caddr b))
+      (if (cadddr b) (setenv "Paper background" (itoa (cadddr b))))
       name
     )
   )

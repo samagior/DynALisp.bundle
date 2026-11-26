@@ -32,8 +32,8 @@ gpm=25
 # Display:
 bkg/list=(Not set)|DynALisp|Black|Default|White
 bkg=1
-lbk/list=(Not set)|DynALisp|Black|White
-lbk=3
+lbk/list=(Not set)|DynALisp|Black|Default
+lbk=1
 thm/list=(Not set)|Dark|Light
 thm=1
 # File Preferences:
