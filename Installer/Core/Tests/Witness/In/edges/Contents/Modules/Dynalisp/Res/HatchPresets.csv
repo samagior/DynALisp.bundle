@@ -1,0 +1,4 @@
+Id,Group,Name,Pattern,Scale
+hp-Brick,Masonry,Brick,ANSI31,1
+hp-Void,Generic,Void,,
+hp-None,Generic,None,,

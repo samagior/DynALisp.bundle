@@ -1,0 +1,5 @@
+Id,Group,Name,Material,Shape,Scale
+qs-Brick,Wall,Brick,mt-Brick,Square,1
+qs-Block,Wall,Block,mt-Block,Rect,2
+,Wall,No id default,mt-X,Sq,1
+qs-NoName,Wall,,mt-X

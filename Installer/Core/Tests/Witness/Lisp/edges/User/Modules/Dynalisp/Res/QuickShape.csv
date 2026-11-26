@@ -1,0 +1,17 @@
+Id;Group;Name;Material;Shape;Scale;OutlineKey;BorderColorOn;BorderColor;BorderLinetypeOn;BorderLinetype;BorderLtScaleOn;BorderLtScale;BorderLineweightOn;BorderLineweight;BorderTransparencyOn;BorderTransparency;View
+qs-Brick;wall;Brick mine;mt-Brick;Square;1.5;;;;;;;;;;;;
+cu-Mine;Wall;Mine;mt-Brick;;;;;;;;;;;;;;
+cu-MineAgain;Wall;Mine again;mt-Brick;;;;;;;;;;;;;;
+CU-MINE;Wall;Mine upper;mt-Brick;;;;;;;;;;;;;;
+cu-Odd;Wall;Odd;mt-Brick;;;;;;;;;;;;;;
+cu-Short;Wall;Short;mt-Brick;;;;;;;;;;;;;;
+cu-SpacedName;Wall;spaced name;mt-Brick;;;;;;;;;;;;;;
+cu-BTonCellulaire;Wall;Béton cellulaire;mt-Brick;;;;;;;;;;;;;;
+cu-Mine2;Wall;Mine;mt-Brick;;;;;;;;;;;;;;
+cu-Preset;Wall;#;mt-Brick;;;;;;;;;;;;;;
+cu-Preset2;Wall;#;mt-Brick;;;;;;;;;;;;;;
+cu-GoneDefault;Wall;Gone default;mt-X;;;;;;;;;;;;;;
+cu-NameWithQuotes;Wall;"Name, with ""quotes""";mt-Brick;;;;;;;;;;;;;;
+cu-Long;Wall;Long;mt-Brick;a;b;c;d;e;f;g;h;i;j;k;l;m;n
+"cu-Semi;x";Wall;"Semi;colon";mt-Brick;;;;;;;;;;;;;;
+qs-Block;Wall;Block;mt-Block;Rect;2;;;;;;;;;;;;

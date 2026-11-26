@@ -1,0 +1,6 @@
+﻿Id;Group;Name;Pattern;Scale
+hp-Brick;Masonry;Brick;ANSI31;2
+hp-Void;Generic;Void;;
+;Generic;New void;;
+;Generic;Odd "quote;AR-CONC;1
+hp-Brick;Masonry;"Brick; again";ANSI32;1

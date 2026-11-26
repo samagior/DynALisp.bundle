@@ -1,0 +1,3 @@
+# The witness files of DynALisp.Core: their bytes are what is compared (Witness.lsp,
+# WitnessTests.cs), never converted to the line ends of the computer:
+Installer/Core/Tests/Witness/** -text

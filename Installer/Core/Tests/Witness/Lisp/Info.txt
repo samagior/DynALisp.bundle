@@ -1,0 +1,5 @@
+#info
+sep;
+codepageANSI_1252
+acadver26.0s (LMS Tech)
+coreT
