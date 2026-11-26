@@ -214,6 +214,9 @@ namespace DynALisp.Ribbon
             {
                 if (string.Equals(e.Name, "COLORTHEME", StringComparison.OrdinalIgnoreCase)) _due = true;
             };
+            // At once, as the plugin loads with AutoCAD: the palettes and the ribbon are drawn
+            // in the colours of DynALisp from the start, never first in those of AutoCAD.
+            OnIdle();
         }
 
         // The settings, from the registry (setenv / getenv: FixedProfile\General):

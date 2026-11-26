@@ -153,7 +153,10 @@ namespace DynALisp.Ribbon
                 }
                 foreach (var name in _names)
                 {
-                    if (Taken.Contains(name) || _hasTheme(_manager, name) == 0) continue;
+                    // A name known is made by GetTheme when it is not there yet (PropertyPalette,
+                    // before Properties first opens): the palette finds it in the colours of
+                    // DynALisp, and never shows those of AutoCAD first.
+                    if (Taken.Contains(name) || (!Known.Contains(name) && _hasTheme(_manager, name) == 0)) continue;
                     IntPtr theme = _getTheme(_manager, name);
                     if (theme == IntPtr.Zero) continue;
                     Taken.Add(name);

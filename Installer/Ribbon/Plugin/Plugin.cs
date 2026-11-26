@@ -146,6 +146,9 @@ namespace DynALisp.Ribbon
         // (the startup commands of AutoCAD Architecture, a Lisp expression...):
         static void OnIdle(object sender, EventArgs e)
         {
+            // The colours change no part of the ribbon: they need no quiet, and are not kept
+            // waiting by the startup of the drawings.
+            Skin.OnIdle();
             if (!Quiet()) return;
             if (_dirty && Environment.TickCount - _nextTry >= 0)
             {
@@ -166,7 +169,6 @@ namespace DynALisp.Ribbon
                 try { T.Apply(); } catch (System.Exception ex) { Log(ex.Message); }
             }
             PhaseCombos.AskOnIdle();
-            Skin.OnIdle();
         }
 
         static int _nextLang = Environment.TickCount;
