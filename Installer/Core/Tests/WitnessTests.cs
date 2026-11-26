@@ -76,6 +76,22 @@ namespace DynALisp.Core.Tests
         static List<string> Names(Encoding enc) =>
             new Bundle(Path.Combine(In, "none"), ",", enc, null).Rows(Path.Combine(In, "Probes.csv"), 1).Select(r => r[0]).ToList();
 
+        // The texts read as numbers, the numbers written, the units of the assemblies of Witness.lsp
+        // (wt:nums, wt:reals, wt:dimzins, wt:factors), in the same order:
+        static readonly string[] Nums =
+        {
+            "5", ".5", "5.", "-1.5", "+2", "1,5", "", "a", " 5", "5 ", "1e3", "1E-2", "1/2", "0", "-0",
+            "12.70", "007", "1.2.3", "--1", "e5", "5e", "1'", "15.9", "0.62598425", "1 1/2", "2'6\"",
+        };
+        static readonly double[] Reals =
+        {
+            0.0, 0.5, -0.5, 1.0, 2.5, 10.0, 0.125, 2.675, 1.005, 15.9, 0.62598425, -0.00001, 123456.789,
+            0.1, 0.3, 15.9 * (0.001 / 0.0254), 89.0 * (0.001 / 0.0254), 1.0 / 3.0, 1e-9,
+            99.99999999, 0.05, 0.015, 12.7, 38.1, -0.004, 0.0005, 1e15,
+        };
+        static readonly int[] Dimzins = { 0, 3, 4, 8, 12 };
+        static readonly (string, double)[] Factors = { ("inch", 0.001 / 0.0254), ("metre", 0.001 / 1.0) };
+
         // Probes.txt:
         static List<string> Probes(List<string> names)
         {
@@ -88,6 +104,13 @@ namespace DynALisp.Core.Tests
             foreach (var a in names)
                 foreach (var b in names) o.Put(Line(new[] { a, b, Cell(string.CompareOrdinal(a, b) < 0) }));
             o.Rows("sort", new[] { names.OrderBy(x => x, StringComparer.Ordinal) });
+            o.Sec("distof");
+            foreach (var t in Nums) o.Put(Line(new[] { t, Lisp.Distof(t) is double v ? Lisp.Rtos(v, 15, 0) : null }));
+            o.Sec("rtos");
+            foreach (var dz in Dimzins)
+                foreach (var n in new[] { 0, 2, 4, 8 })
+                    foreach (var v in Reals)
+                        o.Put(Line(new[] { dz.ToString(), n.ToString(), Lisp.Rtos(v, n, dz), Lisp.NumP(v, n, dz) }));
             return o.Lines;
         }
 
@@ -138,6 +161,7 @@ namespace DynALisp.Core.Tests
             o.Sec("aliases of");
             foreach (var c in als.Select(p => p.Value).Distinct())
                 o.Put(Line(new[] { c }.Concat(Aliases.Of(c, als))));
+            Assembly(b, o);
             foreach (var key in Keys)
                 o.Put("#" + key + " write" + Us + Cell(Presets.Write(b, Presets.Spec(key), reads[key])));
             o.Put("#groups write" + Us + Cell(Groups.Write(b, Groups.Of(b, null), null)));
@@ -145,6 +169,33 @@ namespace DynALisp.Core.Tests
             o.Put("#aliases write" + Us + Cell(Aliases.Write(b, als)));
             return o.Lines;
         }
+
+        // The assemblies of the case (wt:assemblies); a case read by the Lisp (Assemblies.Read
+        // gives null: a layer of an older file made of a Quick Draw preset) has a line
+        // #assemblies lisp in place of its rows:
+        static void Assembly(Bundle b, Out o)
+        {
+            o.Rows("assemblies defs", Assemblies.Defs(b));
+            var read = Assemblies.Read(b, 1.0, 0);
+            if (read == null)
+            {
+                o.Sec(LispRead);
+                return;
+            }
+            o.Rows("assemblies read", read);
+            foreach (var dz in new[] { 0, 8 })
+                foreach (var (name, f) in Factors)
+                {
+                    var sc = read.Select(r => Assemblies.Scale(r, f, 8, dz)).ToList();
+                    o.Rows("assemblies " + name + " " + dz, sc.Select(r => new[] { r[0], r[3] }));
+                    o.Rows("assemblies " + name + " " + dz + " back", sc.Select(r => new[] { r[0], Assemblies.Scale(r, 1.0 / f, 4, dz)[3] }));
+                }
+        }
+
+        const string LispRead = "assemblies lisp";
+
+        // The cases whose assemblies the Lisp reads, the C# giving null:
+        static readonly string[] ReadByLisp = { "assemblies-preset" };
 
         // ----- the witness of the Lisp -----
 
@@ -253,7 +304,16 @@ namespace DynALisp.Core.Tests
                     if (!lisp) continue;
                     var witness = Path.Combine(LispDir, name);
                     Assert.True(Directory.Exists(witness), "No witness of the case " + name + ": run Witness.lsp again.");
-                    Same(name, ReadLines(Path.Combine(witness, "Witness.txt")), cs);
+                    var lines = ReadLines(Path.Combine(witness, "Witness.txt"));
+                    Assert.Equal(ReadByLisp.Contains(name), cs.Contains("#" + LispRead));
+                    if (cs.Contains("#" + LispRead))
+                    {
+                        // (the rows read by the Lisp alone left out, the defaults still compared:)
+                        var keep = Sections(lines).Where(x => !(x.Key.StartsWith("assemblies ") && x.Key != "assemblies defs"));
+                        lines = keep.SelectMany(x => new[] { "#" + x.Key }.Concat(x.Value)).ToList();
+                        cs = cs.Where(l => l != "#" + LispRead).ToList();
+                    }
+                    Same(name, lines, cs);
                     // The files written, byte for byte:
                     var lf = Directory.Exists(Path.Combine(witness, "User"))
                         ? Directory.GetFiles(Path.Combine(witness, "User"), "*", SearchOption.AllDirectories).Select(f => Path.GetRelativePath(witness, f)).ToList()

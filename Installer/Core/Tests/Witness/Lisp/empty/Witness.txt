@@ -118,6 +118,16 @@ ZetaZetaZeta
 alphaalphaalpha
 #aliases read
 #aliases of
+#assemblies defs
+#assemblies read
+#assemblies inch 0
+#assemblies inch 0 back
+#assemblies metre 0
+#assemblies metre 0 back
+#assemblies inch 8
+#assemblies inch 8 back
+#assemblies metre 8
+#assemblies metre 8 back
 #QuickShape writeT
 #QuickDrawAssembly writeT
 #QuickDraw writeT

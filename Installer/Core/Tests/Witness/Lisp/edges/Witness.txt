@@ -227,6 +227,36 @@ ZPST-QUICKDRAW-B
 PST-QUICKDRAWBQD-B
 PST-QUICKDRAWAQ-BQ_CQ1QAQD-A
 PST-QUICKDRAW-BZ
+#assemblies defs
+as-W1awallW1a0~0~FirstW1a
+as-W1bwallW1b0~0~FirstW1b
+#assemblies read
+as-W1awallW1a0~0~FirstW1a
+as-W1bwallW1b0~0~FirstW1b
+#assemblies inch 0
+as-W1a
+as-W1b
+#assemblies inch 0 back
+as-W1a
+as-W1b
+#assemblies metre 0
+as-W1a
+as-W1b
+#assemblies metre 0 back
+as-W1a
+as-W1b
+#assemblies inch 8
+as-W1a
+as-W1b
+#assemblies inch 8 back
+as-W1a
+as-W1b
+#assemblies metre 8
+as-W1a
+as-W1b
+#assemblies metre 8 back
+as-W1a
+as-W1b
 #QuickShape writeT
 #QuickDrawAssembly writeT
 #QuickDraw writeT

@@ -69,6 +69,9 @@
 <h2>Reactor Events</h2>
 <p><span class="fixw">Pst-DiagnosticsReactorEvents</span> (<span class="fixw">dg:events</span>) runs twice. The first run starts the counting reactors of <span class="fixw">Reactor\Dyl-Diagnostics.lsp</span> (<span class="fixw">Reactor&gt;&gt;Dyl:DiagEventsStart</span>), made for a moment and removed when it runs again, so they need no setting (<a href="../../../../../CONVENTIONS.md#reactors">Reactors</a> convention). The second run stops them (<span class="fixw">Reactor&gt;&gt;Dyl:DiagEventsStop</span> returns the time and the count of each event) and writes the report. With the reactors off, there is nothing to count: it says so.</p>
 
+<h2>Witness Files</h2>
+<p><span class="fixw">Pst-DiagnosticsWitness</span> (<span class="fixw">dg:witness</span>) loads <span class="fixw">Installer\Core\Tests\Witness\Witness.lsp</span> of the git clone (<span class="fixw">*dyl:repo</span>), which runs at once: the Lisp code that <span class="fixw">DynALisp.Core</span> replaces run on the cases of <span class="fixw">Witness\In</span>, zipped in <span class="fixw">%TEMP%</span> (see its header and <a href="../Plugins/Core.htm">Core</a>). A setup has no <span class="fixw">Installer</span> folder: the command then says so.</p>
+
 <h2>Adding A Check</h2>
 <p>A tool that adds a startup step, a reactor, a data file, a setting or a way to conflict with other programs adds its check in the same change, in the section it belongs to: a function <span class="fixw">dg:&lt;section&gt;-&lt;what&gt;</span> using <span class="fixw">dg:kv</span>, <span class="fixw">dg:bad</span> and <span class="fixw">dg:note</span>, called with <span class="fixw">dg:try</span> from its <span class="fixw">dg:s-*</span> function. A function it calls from another file is checked first, <span class="fixw">(if Remote&gt;&gt;Dyl:X ...)</span>.</p>
 

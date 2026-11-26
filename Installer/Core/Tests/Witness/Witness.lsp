@@ -22,7 +22,8 @@
 ;;  tests of the Core (Installer\Core\Tests\WitnessTests.cs) compare the C# with, cell for cell
 ;;  and byte for byte. Not part of DynALisp: run it once when the Lisp it covers changes.
 ;;
-;;  In AutoCAD, with DynALisp loaded, paste on the command line:
+;;  In AutoCAD, with DynALisp loaded, run Pst-DiagnosticsWitness (DIAG-WITNESS, a child of
+;;  Dyl-Diagnostics), or paste on the command line:
 ;;
 ;;    (load (strcat *dyl:repo "\\Installer\\Core\\Tests\\Witness\\Witness.lsp"))
 ;;
@@ -31,17 +32,20 @@
 ;;  settings or the files of DynALisp is read or changed: each case is a copy of its folder in
 ;;  %TEMP%, the Lisp pointed at it for a moment (*dyl:contents, *dyl:user, *dyl:dylres,
 ;;  *dyl:res, *dyl:alias) and given back its own folders after, the reads kept dropped. The
-;;  files are read by the Lisp itself (Dyl:Data and Dyl:DataHead of the Core hidden meanwhile),
-;;  so the C# is compared with the Lisp, never with itself.
+;;  files are read by the Lisp itself (Dyl:Data, Dyl:DataHead, Dyl:AsmDefs and Dyl:AsmRead of
+;;  the Core hidden meanwhile), so the C# is compared with the Lisp, never with itself.
 ;;
 ;;  What is written, each line its cells divided by (chr 31), nil as (chr 30), a section by a
 ;;  line #name (UTF-8):
 ;;    Info.txt      the list separator of Windows, the code page, the version of AutoCAD
 ;;    Probes.txt    the functions of AutoLISP on the names of In\Probes.csv: the CamelCase of
-;;                  the presets, strcase, <, acad_strlsort, vl-sort
+;;                  the presets, strcase, <, acad_strlsort, vl-sort; distof on the texts of
+;;                  wt:nums, rtos and Remote>>Dyl:MaterialNumP on the numbers of wt:reals
+;;                  with each DIMZIN of wt:dimzins
 ;;    <case>\Witness.txt   for each preset tool: its file, header, rows, defaults, rows
 ;;                  cleaned, presets read and their commands; the groups and their case; the
-;;                  aliases; then whether each one was written
+;;                  aliases; the assemblies (defaults, read and fixed, in the units of
+;;                  wt:factors and back); then whether each one was written
 ;;    <case>\User\  the files written (Remote>>Dyl:PresetWrite, Remote>>Dyl:GroupsWriteOf,
 ;;                  Dyl:AliasWrite), as they are on disk
 
@@ -50,6 +54,22 @@
 
 ;;  A fix that leaves each row as it is (the fix of each tool comes with its tab):
 (defun wt:id (r) r)
+;;  The texts read as numbers (distof), the numbers written as texts (rtos) with each DIMZIN,
+;;  and the units the assemblies are drawn in (the drawing units in a millimetre, see
+;;  Dyl:QuickDrawAsmFactor):
+(setq wt:nums    '("5" ".5" "5." "-1.5" "+2" "1,5" "" "a" " 5" "5 " "1e3" "1E-2" "1/2" "0" "-0"
+                   "12.70" "007" "1.2.3" "--1" "e5" "5e" "1'" "15.9" "0.62598425" "1 1/2" "2'6\""
+                  )
+      wt:reals   (list 0.0 0.5 -0.5 1.0 2.5 10.0 0.125 2.675 1.005 15.9 0.62598425 -0.00001 123456.789
+                       0.1 0.3 (* 15.9 (/ 0.001 0.0254)) (* 89.0 (/ 0.001 0.0254)) (/ 1.0 3.0) 1e-9
+                       99.99999999 0.05 0.015 12.7 38.1 -0.004 0.0005 1e15
+                 )
+      wt:dimzins '(0 3 4 8 12)
+      wt:factors (list (list "inch" (/ 0.001 0.0254)) (list "metre" (/ 0.001 1.0)))
+)
+
+;;  The value v of a number as the C# writes it (15 decimals, DIMZIN 0 set by the caller):
+(defun wt:num (v) (if v (rtos v 2 15)))
 
 ;;  A cell: nil as (chr 30), T as "T", a string as it is:
 (defun wt:cell (x)
@@ -134,6 +154,19 @@
   )
   (wt:rows "strlsort" (list (acad_strlsort wt:names)))
   (wt:rows "sort" (list (vl-sort wt:names '<)))
+  (setvar "DIMZIN" 0)
+  (wt:sec "distof")
+  (foreach s wt:nums (wt:put (wt:line (list s (wt:num (distof s 2))))))
+  (wt:sec "rtos")
+  (foreach dz wt:dimzins
+    (setvar "DIMZIN" dz)
+    (foreach n '(0 2 4 8)
+      (foreach v wt:reals
+        (wt:put (wt:line (list (itoa dz) (itoa n) (rtos v 2 n) (Remote>>Dyl:MaterialNumP v n))))
+      )
+    )
+  )
+  (setvar "DIMZIN" wt:dimzin)
   (wt:write (strcat wt:outdir "\\Probes.txt"))
 )
 
@@ -155,6 +188,34 @@
   (wt:sec (strcat key " commands"))
   (foreach r read (wt:put (wt:cell (Remote>>Dyl:PresetCommand key (car r)))))
   (setq wt:reads (cons (cons key read) wt:reads))
+)
+
+;;  The assemblies of the case (Apps\Draw\Dyl-QuickDraw.lsp): the defaults, the assemblies
+;;  read and fixed, then their layers in the units of each drawing of wt:factors (8 decimals,
+;;  with DIMZIN 0 and 8) and back in millimetres (4 decimals):
+(defun wt:assemblies (/ defs read sc)
+  (setq *qd:asmdefs*    nil
+        *qd:asmcache*   nil
+        *pst:readcache* nil
+        *mt:defcache*   nil
+        *hp:defcache*   nil
+        defs            (Dyl:QuickDrawAsmDefs)
+        read            (Remote>>Dyl:PresetRead "QuickDrawAssembly" defs 'Dyl:QuickDrawAsmFix)
+  )
+  (wt:rows "assemblies defs" defs)
+  (wt:rows "assemblies read" read)
+  (foreach dz '(0 8)
+    (setvar "DIMZIN" dz)
+    (foreach f wt:factors
+      (setq sc (mapcar '(lambda (r) (Dyl:QuickDrawAsmScale r (cadr f) 8)) read))
+      (wt:rows (strcat "assemblies " (car f) " " (itoa dz)) (mapcar '(lambda (r) (list (car r) (nth 3 r))) sc))
+      (wt:rows (strcat "assemblies " (car f) " " (itoa dz) " back")
+               (mapcar '(lambda (r) (list (car r) (nth 3 (Dyl:QuickDrawAsmScale r (/ 1.0 (cadr f)) 4)))) sc)
+      )
+    )
+  )
+  (setvar "DIMZIN" wt:dimzin)
+  (setq *qd:asmdefs* nil *qd:asmcache* nil *pst:readcache* nil *mt:defcache* nil *hp:defcache* nil)
 )
 
 ;;  The groups of the case, and the case of the names of the probes in them:
@@ -201,6 +262,7 @@
   (foreach key wt:keys (wt:preset key))
   (wt:groups)
   (wt:aliases)
+  (wt:assemblies)
   (foreach key wt:keys
     (wt:put (strcat "#" key " write" (chr 31) (wt:cell (Remote>>Dyl:PresetWrite key (cdr (assoc key wt:reads))))))
   )
@@ -249,16 +311,30 @@
   (setq wt:in     (strcat *dyl:repo "\\Installer\\Core\\Tests\\Witness\\In")
         wt:outdir (strcat (getenv "TEMP") "\\DynALisp Witness " (menucmd "M=$(edtime,$(getvar,date),YYYYMODD-HHMMSS)"))
         wt:work   (strcat wt:outdir " work")
-        saved     (list *dyl:contents *dyl:user *dyl:dylres *dyl:res *dyl:alias Dyl:Data Dyl:DataHead)
+        saved     (list *dyl:contents *dyl:user *dyl:dylres *dyl:res *dyl:alias Dyl:Data Dyl:DataHead Dyl:AsmDefs Dyl:AsmRead)
+        wt:dimzin (getvar "DIMZIN")
   )
-  (if (not (vl-file-directory-p wt:in))
-    (princ (strcat "\nWitness: no folder " wt:in "."))
-    (progn
+  ;;  (the assemblies are read by Quick Draw, loaded before the folders are pointed at a case;
+  ;;  never while it is turned off in the Startup Suite:)
+  (if (and (not Dyl:QuickDrawAsmFix) (Dyl:SuiteFileOn-p (Remote>>Dyl:PresetProp "QuickDraw" 'path)))
+    (Dyl:SuiteFileLoad (Remote>>Dyl:PresetProp "QuickDraw" 'path))
+  )
+  (cond
+    ((not (vl-file-directory-p wt:in))
+     (princ (strcat "\nWitness: no folder " wt:in " (only a git clone of DynALisp has it)."))
+    )
+    ((not Dyl:QuickDrawAsmFix)
+     (princ "\nWitness: Quick Draw is turned off in the Startup Suite (Dyl-Suite): turn it on, the assemblies are read through it.")
+    )
+    (T
       (setq Dyl:Data     nil
             Dyl:DataHead nil
+            Dyl:AsmDefs  nil
+            Dyl:AsmRead  nil
             err          (vl-catch-all-apply 'wt:all (list (if (nth 5 saved) T)))
       )
       ;;  The folders and functions of DynALisp given back, the reads of the cases dropped:
+      (setvar "DIMZIN" wt:dimzin)
       (setq *dyl:contents   (nth 0 saved)
             *dyl:user       (nth 1 saved)
             *dyl:dylres     (nth 2 saved)
@@ -266,9 +342,15 @@
             *dyl:alias      (nth 4 saved)
             Dyl:Data        (nth 5 saved)
             Dyl:DataHead    (nth 6 saved)
+            Dyl:AsmDefs     (nth 7 saved)
+            Dyl:AsmRead     (nth 8 saved)
             *pst:readcache* nil
             *grp:cache*     nil
             *mt:oldstamp*   nil
+            *qd:asmdefs*    nil
+            *qd:asmcache*   nil
+            *mt:defcache*   nil
+            *hp:defcache*   nil
             wt:reads        nil
             wt:als          nil
       )

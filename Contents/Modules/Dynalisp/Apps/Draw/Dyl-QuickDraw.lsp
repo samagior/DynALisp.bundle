@@ -3407,26 +3407,41 @@
   (cdr *qd:asmcache*)
 )
 
-;;  The assemblies read, fixed and in the units of the drawing (see Dyl:QuickDrawAsmRead):
+;;  The assemblies read, fixed and in the units of the drawing (see Dyl:QuickDrawAsmRead): by
+;;  DynALisp.Core.dll while it is loaded (Dyl:AsmRead, Installer\Core\Data\Assemblies.cs, the
+;;  same rows, checked by the witness files: read and fixed in Lisp, the 860 assemblies took
+;;  0.9 s of the first window of each session), else here; also here for a file the core leaves
+;;  to the Lisp (a layer of an older file made of a Quick Draw preset, see
+;;  Dyl:QuickDrawAsmFixLayer):
 (defun Dyl:QuickDrawAsmReadAll ()
-  (mapcar 'Dyl:QuickDrawAsmToDwg
-          (Remote>>Dyl:PresetRead "QuickDrawAssembly" (Dyl:QuickDrawAsmDefs) 'Dyl:QuickDrawAsmFix)
+  (cond
+    ;;  (if, never and: and gives T, not the rows)
+    ((if Dyl:AsmRead (Dyl:AsmRead *dyl:contents (Dyl:QuickDrawAsmFactor) (getvar "DIMZIN"))))
+    ((mapcar 'Dyl:QuickDrawAsmToDwg
+             (Remote>>Dyl:PresetRead "QuickDrawAssembly" (Dyl:QuickDrawAsmDefs) 'Dyl:QuickDrawAsmFix)
+     )
+    )
   )
 )
 
 ;;  The default assemblies (as-*, Res\QuickDrawAssemblies.csv as shipped, never its user copy):
 ;;  the typical assemblies of the building code, read once, as they are written (their
 ;;  thicknesses in millimetres, Units "mm"). A user copy has the ones it changed; the others
-;;  are added to it when it is read (see Remote>>Dyl:PresetRead), and Reset gives them back:
+;;  are added to it when it is read (see Remote>>Dyl:PresetRead), and Reset gives them back.
+;;  Read by DynALisp.Core.dll while it is loaded (Dyl:AsmDefs, the same rows):
 (defun Dyl:QuickDrawAsmDefs ()
   (if (not *qd:asmdefs*)
     (setq *qd:asmdefs*
-           (vl-remove-if-not
-             '(lambda (r) (wcmatch (strcase (car r)) (Remote>>Dyl:PresetProp "QuickDrawAssembly" 'default)))
-             (mapcar 'Dyl:QuickDrawAsmFix
-                     (Remote>>Dyl:CsvRead (Remote>>Dyl:PresetDefault "QuickDrawAssembly")
-                                          (length (Remote>>Dyl:PresetProp "QuickDrawAssembly" 'header))
-                     )
+           (cond
+             ((if Dyl:AsmDefs (Dyl:AsmDefs *dyl:contents)))
+             ((vl-remove-if-not
+                '(lambda (r) (wcmatch (strcase (car r)) (Remote>>Dyl:PresetProp "QuickDrawAssembly" 'default)))
+                (mapcar 'Dyl:QuickDrawAsmFix
+                        (Remote>>Dyl:CsvRead (Remote>>Dyl:PresetDefault "QuickDrawAssembly")
+                                             (length (Remote>>Dyl:PresetProp "QuickDrawAssembly" 'header))
+                        )
+                )
+              )
              )
            )
     )

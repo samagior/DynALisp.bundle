@@ -1,0 +1,326 @@
+#caseassemblies
+#QuickShape fileContents\Modules\Dynalisp\Res\QuickShape.csv
+#QuickShape head
+
+#QuickShape csv
+#QuickShape defs
+#QuickShape clean
+#QuickShape read
+#QuickShape commands
+#QuickDrawAssembly fileUser\Modules\Dynalisp\Res\QuickDrawAssemblies.csv
+#QuickDrawAssembly head
+IdGroupNameLayersBorderLinesDividingLinesExteriorUnitsDescriptionFireRatingFireRatingNLBSTCIIC
+#QuickDrawAssembly csv
+as-T1awallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534
+cu-OldWallOldL:Thick:|P:mt-Brick:90|L:Med:|S::25|P:cu-Mine:50:hk~0~1~1,2,3~0~continuous~0~1~0~25~0~50|L:Thin:LASTOld wall
+cu-LinesWallLinesL:a:|L:b:|P:mt-Brick:90|L:c:|L:d:|P:mt-Brick:90|L:e:2~xfirst
+cu-BandSectionBandP:mt-A:10::Line~Line~a~b~c~d~e~f~g~Edge|P:mt-B:5::1~2~3~4~5~6~7~8~9|P:mt-C:7::1~2~3~4~5~6~7~8~9~10~11~12~13~14|P:mt-D:3::1~2Firstmm
+cu-BorderWallBorderP:mt-A:10:::1~thin|P:mt-B:10:::1~k~1~1.2.3~0~continuous~0~1~0~25~0~50|P:mt-C:10:::x~y~z1~a~0~7~1~dashed~0~1~0~25~0~500~bFirst
+cu-HatchWallHatchP:mt-A:10:HK|P:mt-A:10:~1~0~7~0~CONTINUOUS~0~1~0~25~0~50|P:mt-A:10:k~0~1~7~0~X~0~1~0~25~0~50|P:mt-A:10:k~1~1~1.5~0~x~0~1~0~25~0~50Firstmm
+cu-FrameWallFrameP:mt-A:10:::::mt-Wood~23,5|P:mt-A:10:::::mt-Wood~0|P:mt-A:10:::::~50|P:mt-A:10:::::mt-Wood~100|P:mt-A:10::::::1:1|P:mt-A: 1e3 |P:mt-A:.5|P:mt-A:-1|P:mt-A:0|P:mt-A:5.|P:mt-A:1,5Firstmm
+WallNo idP:mt-A:10
+cu-EmptyWallEmpty
+cu-UnitsWallUnitsP:mt-A:15.9|P:mt-A:0.001|P:mt-A:123456.789|P:mt-A:2.675|P:mt-A:0.0005Firstmm
+cu-DrawingWallDrawingP:mt-A:15.9First
+cu-RatingsWallRatingsP:mt-A:15.9FirstmmDesc45305055
+#QuickDrawAssembly defs
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~23|P:mt-Gypsum:12.71~MED1~THINFirstmmTest a4534T1Wood Studs, 1-1 Gypsum
+as-T1bWallT1bP:mt-Gypsum:15.9|P:mt-Void:89::::1:mt-WoodFrame~23|P:mt-Gypsum:15.91~MED1~THINFirstmmTest b6032T1Wood Studs, 1-1 Gypsum
+as-T2floorT2P:mt-Concrete:0.5|P:mt-Gypsum:2.6751~medlastMMOdd
+xx-BadWallBadP:mt-A:1
+as-T3WallT3
+AS-T4SectionT4P:mt-Brick:90|S::25|P:mt-Block:1901~thick0~thinFirstmmT4
+#QuickDrawAssembly clean
+as-T1awallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534
+cu-OldWallOldL:Thick:|P:mt-Brick:90|L:Med:|S::25|P:cu-Mine:50:hk~0~1~1,2,3~0~continuous~0~1~0~25~0~50|L:Thin:LASTOld wall
+cu-LinesWallLinesL:a:|L:b:|P:mt-Brick:90|L:c:|L:d:|P:mt-Brick:90|L:e:2~xfirst
+cu-BandSectionBandP:mt-A:10::Line~Line~a~b~c~d~e~f~g~Edge|P:mt-B:5::1~2~3~4~5~6~7~8~9|P:mt-C:7::1~2~3~4~5~6~7~8~9~10~11~12~13~14|P:mt-D:3::1~2Firstmm
+cu-BorderWallBorderP:mt-A:10:::1~thin|P:mt-B:10:::1~k~1~1.2.3~0~continuous~0~1~0~25~0~50|P:mt-C:10:::x~y~z1~a~0~7~1~dashed~0~1~0~25~0~500~bFirst
+cu-HatchWallHatchP:mt-A:10:HK|P:mt-A:10:~1~0~7~0~CONTINUOUS~0~1~0~25~0~50|P:mt-A:10:k~0~1~7~0~X~0~1~0~25~0~50|P:mt-A:10:k~1~1~1.5~0~x~0~1~0~25~0~50Firstmm
+cu-FrameWallFrameP:mt-A:10:::::mt-Wood~23,5|P:mt-A:10:::::mt-Wood~0|P:mt-A:10:::::~50|P:mt-A:10:::::mt-Wood~100|P:mt-A:10::::::1:1|P:mt-A: 1e3 |P:mt-A:.5|P:mt-A:-1|P:mt-A:0|P:mt-A:5.|P:mt-A:1,5Firstmm
+cu-NoIdWallNo idP:mt-A:10
+cu-UnitsWallUnitsP:mt-A:15.9|P:mt-A:0.001|P:mt-A:123456.789|P:mt-A:2.675|P:mt-A:0.0005Firstmm
+cu-DrawingWallDrawingP:mt-A:15.9First
+cu-RatingsWallRatingsP:mt-A:15.9FirstmmDesc45305055
+#QuickDrawAssembly read
+as-T1awallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534
+cu-OldWallOldL:Thick:|P:mt-Brick:90|L:Med:|S::25|P:cu-Mine:50:hk~0~1~1,2,3~0~continuous~0~1~0~25~0~50|L:Thin:LASTOld wall
+cu-LinesWallLinesL:a:|L:b:|P:mt-Brick:90|L:c:|L:d:|P:mt-Brick:90|L:e:2~xfirst
+cu-BandSectionBandP:mt-A:10::Line~Line~a~b~c~d~e~f~g~Edge|P:mt-B:5::1~2~3~4~5~6~7~8~9|P:mt-C:7::1~2~3~4~5~6~7~8~9~10~11~12~13~14|P:mt-D:3::1~2Firstmm
+cu-BorderWallBorderP:mt-A:10:::1~thin|P:mt-B:10:::1~k~1~1.2.3~0~continuous~0~1~0~25~0~50|P:mt-C:10:::x~y~z1~a~0~7~1~dashed~0~1~0~25~0~500~bFirst
+cu-HatchWallHatchP:mt-A:10:HK|P:mt-A:10:~1~0~7~0~CONTINUOUS~0~1~0~25~0~50|P:mt-A:10:k~0~1~7~0~X~0~1~0~25~0~50|P:mt-A:10:k~1~1~1.5~0~x~0~1~0~25~0~50Firstmm
+cu-FrameWallFrameP:mt-A:10:::::mt-Wood~23,5|P:mt-A:10:::::mt-Wood~0|P:mt-A:10:::::~50|P:mt-A:10:::::mt-Wood~100|P:mt-A:10::::::1:1|P:mt-A: 1e3 |P:mt-A:.5|P:mt-A:-1|P:mt-A:0|P:mt-A:5.|P:mt-A:1,5Firstmm
+cu-NoIdWallNo idP:mt-A:10
+cu-UnitsWallUnitsP:mt-A:15.9|P:mt-A:0.001|P:mt-A:123456.789|P:mt-A:2.675|P:mt-A:0.0005Firstmm
+cu-DrawingWallDrawingP:mt-A:15.9First
+cu-RatingsWallRatingsP:mt-A:15.9FirstmmDesc45305055
+as-T1bWallT1bP:mt-Gypsum:15.9|P:mt-Void:89::::1:mt-WoodFrame~23|P:mt-Gypsum:15.91~MED1~THINFirstmmTest b6032T1Wood Studs, 1-1 Gypsum
+as-T2floorT2P:mt-Concrete:0.5|P:mt-Gypsum:2.6751~medlastMMOdd
+xx-BadWallBadP:mt-A:1
+as-T3WallT3
+AS-T4SectionT4P:mt-Brick:90|S::25|P:mt-Block:1901~thick0~thinFirstmmT4
+#QuickDrawAssembly commands
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#QuickDraw fileContents\Modules\Dynalisp\Res\QuickDraw.csv
+#QuickDraw head
+
+#QuickDraw csv
+#QuickDraw defs
+#QuickDraw clean
+#QuickDraw read
+#QuickDraw commands
+#Material fileUser\Modules\Dynalisp\Res\Materials.csv
+#Material head
+IdGroupNameCutSurfaceConductivityDensityResistancePermeabilityPermeance
+#Material csv
+mt-BrickMasonryBrick0.81900
+cu-MineInsulationMine0.04
+#Material defs
+mt-BrickMasonryBrick0.81900
+#Material clean
+mt-BrickMasonryBrick0.81900
+cu-MineInsulationMine0.04
+#Material read
+mt-BrickMasonryBrick0.81900
+cu-MineInsulationMine0.04
+#Material commands
+
+
+#HatchPreset fileContents\Modules\Dynalisp\Res\HatchPresets.csv
+#HatchPreset head
+
+#HatchPreset csv
+#HatchPreset defs
+#HatchPreset clean
+#HatchPreset read
+#HatchPreset commands
+#groups preset
+Wall
+Floor
+Section
+#groups material
+Concrete
+Masonry
+Metal
+Wood
+Board
+Insulation
+Finish
+Roofing
+Site
+Air
+Phase
+Generic
+#groups defaults preset
+Wall
+Floor
+Section
+#groups defaults material
+Concrete
+Masonry
+Metal
+Wood
+Board
+Insulation
+Finish
+Roofing
+Site
+Air
+Phase
+Generic
+#groups case
+wallWallwall
+SECTIONSectionSECTION
+concreteconcreteConcrete
+INSULATIONINSULATIONInsulation
+Modular brick 2Modular brick 2Modular brick 2
+concrete-blockconcrete-blockconcrete-block
+cMU 8"cMU 8"cMU 8"
+béton cellulairebéton cellulairebéton cellulaire
+a1ba1ba1b
+---------
+ÉQUIPE étéÉQUIPE étéÉQUIPE été
+straßestraßestraße
+Q-BQ-BQ-B
+QAQAQA
+Q_CQ_CQ_C
+Q1Q1Q1
+q-bq-bq-b
+qaqaqa
+ZetaZetaZeta
+alphaalphaalpha
+#aliases read
+#aliases of
+#assemblies defs
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~23|P:mt-Gypsum:12.71~MED1~THINFirstmmTest a4534T1Wood Studs, 1-1 Gypsum
+as-T1bWallT1bP:mt-Gypsum:15.9|P:mt-Void:89::::1:mt-WoodFrame~23|P:mt-Gypsum:15.91~MED1~THINFirstmmTest b6032T1Wood Studs, 1-1 Gypsum
+as-T2FloorT2P:mt-Concrete:0.5|P:mt-Gypsum:2.6751~MED0~LastmmOddT2
+as-T3WallT30~0~FirstT3
+AS-T4SectionT4P:mt-Brick:90|P:mt-Void:25|P:mt-Block:1901~THICK0~THINFirstmmT4
+#assemblies read
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+cu-BandSectionBandP:mt-A:10::Line~Edge~a~b~c~d~e~f~g~0~1~0~0~0|P:mt-B:5::1~2~3~4~5~6~7~8~9~0~1~0~0~0|P:mt-C:7::1~2~3~4~5~6~7~8~9~10~11~12~13~14|P:mt-D:30~0~FirstmmBand
+cu-BorderWallBorderP:mt-A:10:::1~THIN|P:mt-B:10:::1~K~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-C:101~A~0~7~1~DASHED~0~1~0~25~0~500~BFirstBorder
+cu-HatchWallHatchP:mt-A:10:HK|P:mt-A:10|P:mt-A:10:K~0~1~7~0~X~0~1~0~25~0~50|P:mt-A:10:K~1~1~1.5~0~X~0~1~0~25~0~500~0~FirstmmHatch
+cu-FrameWallFrameP:mt-A:10:::::mt-Wood~23,5|P:mt-A:10|P:mt-A:10|P:mt-A:10|P:mt-A:10::::::1:1|P:mt-A:1e3|P:mt-A:.5|P:mt-A:5.0~0~FirstmmFrame
+cu-NoIdWallNo idP:mt-A:100~0~FirstNo id
+cu-UnitsWallUnitsP:mt-A:15.9|P:mt-A:0.001|P:mt-A:123456.789|P:mt-A:2.675|P:mt-A:0.00050~0~FirstmmUnits
+cu-DrawingWallDrawingP:mt-A:15.90~0~FirstDrawing
+cu-RatingsWallRatingsP:mt-A:15.90~0~FirstmmDesc45305055Ratings
+as-T1bWallT1bP:mt-Gypsum:15.9|P:mt-Void:89::::1:mt-WoodFrame~23|P:mt-Gypsum:15.91~MED1~THINFirstmmTest b6032T1Wood Studs, 1-1 Gypsum
+as-T2FloorT2P:mt-Concrete:0.5|P:mt-Gypsum:2.6751~MED0~LastmmOddT2
+as-T3WallT30~0~FirstT3
+AS-T4SectionT4P:mt-Brick:90|P:mt-Void:25|P:mt-Block:1901~THICK0~THINFirstmmT4
+#assemblies inch 0
+as-T1aP:mt-Gypsum:0.5|P:mt-Mineral:3.50393701::::1:mt-WoodFrame~23
+cu-OldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50
+cu-LinesP:mt-Brick:90|P:mt-Brick:90
+cu-BandP:mt-A:0.39370079::Line~Edge~a~b~c~d~e~f~g~0~1~0~0~0|P:mt-B:0.19685039::1~2~3~4~5~6~7~8~9~0~1~0~0~0|P:mt-C:0.27559055::1~2~3~4~5~6~7~8~9~10~11~12~13~14|P:mt-D:0.11811024
+cu-BorderP:mt-A:10:::1~THIN|P:mt-B:10:::1~K~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-C:10
+cu-HatchP:mt-A:0.39370079:HK|P:mt-A:0.39370079|P:mt-A:0.39370079:K~0~1~7~0~X~0~1~0~25~0~50|P:mt-A:0.39370079:K~1~1~1.5~0~X~0~1~0~25~0~50
+cu-FrameP:mt-A:0.39370079:::::mt-Wood~23,5|P:mt-A:0.39370079|P:mt-A:0.39370079|P:mt-A:0.39370079|P:mt-A:0.39370079::::::1:1|P:mt-A:39.37007874|P:mt-A:0.01968504|P:mt-A:0.19685039
+cu-NoIdP:mt-A:10
+cu-UnitsP:mt-A:0.62598425|P:mt-A:0.00003937|P:mt-A:4860.50350394|P:mt-A:0.10531496|P:mt-A:0.00001969
+cu-DrawingP:mt-A:15.9
+cu-RatingsP:mt-A:0.62598425
+as-T1bP:mt-Gypsum:0.62598425|P:mt-Void:3.50393701::::1:mt-WoodFrame~23|P:mt-Gypsum:0.62598425
+as-T2P:mt-Concrete:0.01968504|P:mt-Gypsum:0.10531496
+as-T3
+AS-T4P:mt-Brick:3.54330709|P:mt-Void:0.98425197|P:mt-Block:7.48031496
+#assemblies inch 0 back
+as-T1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~23
+cu-OldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50
+cu-LinesP:mt-Brick:90|P:mt-Brick:90
+cu-BandP:mt-A:10::Line~Edge~a~b~c~d~e~f~g~0~1~0~0~0|P:mt-B:5::1~2~3~4~5~6~7~8~9~0~1~0~0~0|P:mt-C:7::1~2~3~4~5~6~7~8~9~10~11~12~13~14|P:mt-D:3
+cu-BorderP:mt-A:10:::1~THIN|P:mt-B:10:::1~K~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-C:10
+cu-HatchP:mt-A:10:HK|P:mt-A:10|P:mt-A:10:K~0~1~7~0~X~0~1~0~25~0~50|P:mt-A:10:K~1~1~1.5~0~X~0~1~0~25~0~50
+cu-FrameP:mt-A:10:::::mt-Wood~23,5|P:mt-A:10|P:mt-A:10|P:mt-A:10|P:mt-A:10::::::1:1|P:mt-A:1000|P:mt-A:0.5|P:mt-A:5
+cu-NoIdP:mt-A:10
+cu-UnitsP:mt-A:15.9|P:mt-A:0.001|P:mt-A:123456.789|P:mt-A:2.675|P:mt-A:0.0005
+cu-DrawingP:mt-A:15.9
+cu-RatingsP:mt-A:15.9
+as-T1bP:mt-Gypsum:15.9|P:mt-Void:89::::1:mt-WoodFrame~23|P:mt-Gypsum:15.9
+as-T2P:mt-Concrete:0.5|P:mt-Gypsum:2.675
+as-T3
+AS-T4P:mt-Brick:90|P:mt-Void:25|P:mt-Block:190
+#assemblies metre 0
+as-T1aP:mt-Gypsum:0.0127|P:mt-Mineral:0.089::::1:mt-WoodFrame~23
+cu-OldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50
+cu-LinesP:mt-Brick:90|P:mt-Brick:90
+cu-BandP:mt-A:0.01::Line~Edge~a~b~c~d~e~f~g~0~1~0~0~0|P:mt-B:0.005::1~2~3~4~5~6~7~8~9~0~1~0~0~0|P:mt-C:0.007::1~2~3~4~5~6~7~8~9~10~11~12~13~14|P:mt-D:0.003
+cu-BorderP:mt-A:10:::1~THIN|P:mt-B:10:::1~K~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-C:10
+cu-HatchP:mt-A:0.01:HK|P:mt-A:0.01|P:mt-A:0.01:K~0~1~7~0~X~0~1~0~25~0~50|P:mt-A:0.01:K~1~1~1.5~0~X~0~1~0~25~0~50
+cu-FrameP:mt-A:0.01:::::mt-Wood~23,5|P:mt-A:0.01|P:mt-A:0.01|P:mt-A:0.01|P:mt-A:0.01::::::1:1|P:mt-A:1|P:mt-A:0.0005|P:mt-A:0.005
+cu-NoIdP:mt-A:10
+cu-UnitsP:mt-A:0.0159|P:mt-A:0.000001|P:mt-A:123.456789|P:mt-A:0.002675|P:mt-A:0.0000005
+cu-DrawingP:mt-A:15.9
+cu-RatingsP:mt-A:0.0159
+as-T1bP:mt-Gypsum:0.0159|P:mt-Void:0.089::::1:mt-WoodFrame~23|P:mt-Gypsum:0.0159
+as-T2P:mt-Concrete:0.0005|P:mt-Gypsum:0.002675
+as-T3
+AS-T4P:mt-Brick:0.09|P:mt-Void:0.025|P:mt-Block:0.19
+#assemblies metre 0 back
+as-T1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~23
+cu-OldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50
+cu-LinesP:mt-Brick:90|P:mt-Brick:90
+cu-BandP:mt-A:10::Line~Edge~a~b~c~d~e~f~g~0~1~0~0~0|P:mt-B:5::1~2~3~4~5~6~7~8~9~0~1~0~0~0|P:mt-C:7::1~2~3~4~5~6~7~8~9~10~11~12~13~14|P:mt-D:3
+cu-BorderP:mt-A:10:::1~THIN|P:mt-B:10:::1~K~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-C:10
+cu-HatchP:mt-A:10:HK|P:mt-A:10|P:mt-A:10:K~0~1~7~0~X~0~1~0~25~0~50|P:mt-A:10:K~1~1~1.5~0~X~0~1~0~25~0~50
+cu-FrameP:mt-A:10:::::mt-Wood~23,5|P:mt-A:10|P:mt-A:10|P:mt-A:10|P:mt-A:10::::::1:1|P:mt-A:1000|P:mt-A:0.5|P:mt-A:5
+cu-NoIdP:mt-A:10
+cu-UnitsP:mt-A:15.9|P:mt-A:0.001|P:mt-A:123456.789|P:mt-A:2.675|P:mt-A:0.0005
+cu-DrawingP:mt-A:15.9
+cu-RatingsP:mt-A:15.9
+as-T1bP:mt-Gypsum:15.9|P:mt-Void:89::::1:mt-WoodFrame~23|P:mt-Gypsum:15.9
+as-T2P:mt-Concrete:0.5|P:mt-Gypsum:2.675
+as-T3
+AS-T4P:mt-Brick:90|P:mt-Void:25|P:mt-Block:190
+#assemblies inch 8
+as-T1aP:mt-Gypsum:0.5|P:mt-Mineral:3.50393701::::1:mt-WoodFrame~23
+cu-OldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50
+cu-LinesP:mt-Brick:90|P:mt-Brick:90
+cu-BandP:mt-A:0.39370079::Line~Edge~a~b~c~d~e~f~g~0~1~0~0~0|P:mt-B:0.19685039::1~2~3~4~5~6~7~8~9~0~1~0~0~0|P:mt-C:0.27559055::1~2~3~4~5~6~7~8~9~10~11~12~13~14|P:mt-D:0.11811024
+cu-BorderP:mt-A:10:::1~THIN|P:mt-B:10:::1~K~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-C:10
+cu-HatchP:mt-A:0.39370079:HK|P:mt-A:0.39370079|P:mt-A:0.39370079:K~0~1~7~0~X~0~1~0~25~0~50|P:mt-A:0.39370079:K~1~1~1.5~0~X~0~1~0~25~0~50
+cu-FrameP:mt-A:0.39370079:::::mt-Wood~23,5|P:mt-A:0.39370079|P:mt-A:0.39370079|P:mt-A:0.39370079|P:mt-A:0.39370079::::::1:1|P:mt-A:39.37007874|P:mt-A:0.01968504|P:mt-A:0.19685039
+cu-NoIdP:mt-A:10
+cu-UnitsP:mt-A:0.62598425|P:mt-A:0.00003937|P:mt-A:4860.50350394|P:mt-A:0.10531496|P:mt-A:0.00001969
+cu-DrawingP:mt-A:15.9
+cu-RatingsP:mt-A:0.62598425
+as-T1bP:mt-Gypsum:0.62598425|P:mt-Void:3.50393701::::1:mt-WoodFrame~23|P:mt-Gypsum:0.62598425
+as-T2P:mt-Concrete:0.01968504|P:mt-Gypsum:0.10531496
+as-T3
+AS-T4P:mt-Brick:3.54330709|P:mt-Void:0.98425197|P:mt-Block:7.48031496
+#assemblies inch 8 back
+as-T1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~23
+cu-OldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50
+cu-LinesP:mt-Brick:90|P:mt-Brick:90
+cu-BandP:mt-A:10::Line~Edge~a~b~c~d~e~f~g~0~1~0~0~0|P:mt-B:5::1~2~3~4~5~6~7~8~9~0~1~0~0~0|P:mt-C:7::1~2~3~4~5~6~7~8~9~10~11~12~13~14|P:mt-D:3
+cu-BorderP:mt-A:10:::1~THIN|P:mt-B:10:::1~K~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-C:10
+cu-HatchP:mt-A:10:HK|P:mt-A:10|P:mt-A:10:K~0~1~7~0~X~0~1~0~25~0~50|P:mt-A:10:K~1~1~1.5~0~X~0~1~0~25~0~50
+cu-FrameP:mt-A:10:::::mt-Wood~23,5|P:mt-A:10|P:mt-A:10|P:mt-A:10|P:mt-A:10::::::1:1|P:mt-A:1000|P:mt-A:0.5|P:mt-A:5
+cu-NoIdP:mt-A:10
+cu-UnitsP:mt-A:15.9|P:mt-A:0.001|P:mt-A:123456.789|P:mt-A:2.675|P:mt-A:0.0005
+cu-DrawingP:mt-A:15.9
+cu-RatingsP:mt-A:15.9
+as-T1bP:mt-Gypsum:15.9|P:mt-Void:89::::1:mt-WoodFrame~23|P:mt-Gypsum:15.9
+as-T2P:mt-Concrete:0.5|P:mt-Gypsum:2.675
+as-T3
+AS-T4P:mt-Brick:90|P:mt-Void:25|P:mt-Block:190
+#assemblies metre 8
+as-T1aP:mt-Gypsum:0.0127|P:mt-Mineral:0.089::::1:mt-WoodFrame~23
+cu-OldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50
+cu-LinesP:mt-Brick:90|P:mt-Brick:90
+cu-BandP:mt-A:0.01::Line~Edge~a~b~c~d~e~f~g~0~1~0~0~0|P:mt-B:0.005::1~2~3~4~5~6~7~8~9~0~1~0~0~0|P:mt-C:0.007::1~2~3~4~5~6~7~8~9~10~11~12~13~14|P:mt-D:0.003
+cu-BorderP:mt-A:10:::1~THIN|P:mt-B:10:::1~K~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-C:10
+cu-HatchP:mt-A:0.01:HK|P:mt-A:0.01|P:mt-A:0.01:K~0~1~7~0~X~0~1~0~25~0~50|P:mt-A:0.01:K~1~1~1.5~0~X~0~1~0~25~0~50
+cu-FrameP:mt-A:0.01:::::mt-Wood~23,5|P:mt-A:0.01|P:mt-A:0.01|P:mt-A:0.01|P:mt-A:0.01::::::1:1|P:mt-A:1|P:mt-A:0.0005|P:mt-A:0.005
+cu-NoIdP:mt-A:10
+cu-UnitsP:mt-A:0.0159|P:mt-A:0.000001|P:mt-A:123.456789|P:mt-A:0.002675|P:mt-A:0.0000005
+cu-DrawingP:mt-A:15.9
+cu-RatingsP:mt-A:0.0159
+as-T1bP:mt-Gypsum:0.0159|P:mt-Void:0.089::::1:mt-WoodFrame~23|P:mt-Gypsum:0.0159
+as-T2P:mt-Concrete:0.0005|P:mt-Gypsum:0.002675
+as-T3
+AS-T4P:mt-Brick:0.09|P:mt-Void:0.025|P:mt-Block:0.19
+#assemblies metre 8 back
+as-T1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~23
+cu-OldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50
+cu-LinesP:mt-Brick:90|P:mt-Brick:90
+cu-BandP:mt-A:10::Line~Edge~a~b~c~d~e~f~g~0~1~0~0~0|P:mt-B:5::1~2~3~4~5~6~7~8~9~0~1~0~0~0|P:mt-C:7::1~2~3~4~5~6~7~8~9~10~11~12~13~14|P:mt-D:3
+cu-BorderP:mt-A:10:::1~THIN|P:mt-B:10:::1~K~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~50|P:mt-C:10
+cu-HatchP:mt-A:10:HK|P:mt-A:10|P:mt-A:10:K~0~1~7~0~X~0~1~0~25~0~50|P:mt-A:10:K~1~1~1.5~0~X~0~1~0~25~0~50
+cu-FrameP:mt-A:10:::::mt-Wood~23,5|P:mt-A:10|P:mt-A:10|P:mt-A:10|P:mt-A:10::::::1:1|P:mt-A:1000|P:mt-A:0.5|P:mt-A:5
+cu-NoIdP:mt-A:10
+cu-UnitsP:mt-A:15.9|P:mt-A:0.001|P:mt-A:123456.789|P:mt-A:2.675|P:mt-A:0.0005
+cu-DrawingP:mt-A:15.9
+cu-RatingsP:mt-A:15.9
+as-T1bP:mt-Gypsum:15.9|P:mt-Void:89::::1:mt-WoodFrame~23|P:mt-Gypsum:15.9
+as-T2P:mt-Concrete:0.5|P:mt-Gypsum:2.675
+as-T3
+AS-T4P:mt-Brick:90|P:mt-Void:25|P:mt-Block:190
+#QuickShape writeT
+#QuickDrawAssembly writeT
+#QuickDraw writeT
+#Material writeT
+#HatchPreset writeT
+#groups writeT
+#groups material writeT
+#aliases writeT
