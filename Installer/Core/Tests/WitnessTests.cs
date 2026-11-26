@@ -164,6 +164,7 @@ namespace DynALisp.Core.Tests
             Assembly(b, o);
             Material(b, o);
             Show(b, o, lisp);
+            AsmWin(b, o, lisp);
             foreach (var key in Keys)
                 o.Put("#" + key + " write" + Us + Cell(Presets.Write(b, Presets.Spec(key), reads[key])));
             o.Put("#groups write" + Us + Cell(Groups.Write(b, Groups.Of(b, null), null)));
@@ -260,7 +261,42 @@ namespace DynALisp.Core.Tests
             o.Lines.AddRange(lines.Lines);
         }
 
-        const string LispRead = "assemblies lisp", MatLisp = "materials lisp", ShowLisp = "shows lisp";
+        // What the Assembly Presets window is given (wt:asmwin), on the assemblies read, in each
+        // drawing of the setups; the layer key of new lines is the one of the witness (the layer
+        // keys stay in the Lisp; "" without a witness). A case the Lisp makes (a materials file of
+        // DynALisp 1.1, AsmWindow.Mats gives null) has a line #asmwin lisp in place of its rows:
+        static void AsmWin(Bundle b, Out o, List<string> lisp)
+        {
+            var secs = lisp != null ? Sections(lisp) : new Dictionary<string, List<string>>();
+            var lines = new Out();
+            foreach (var (name, v) in Setups)
+            {
+                var u = new Units { Measurement = v[0], Insunits = v[1], Lunits = v[2], Luprec = v[3], Dimzin = v[4] };
+                var read = Materials.OldP(b) ? null : Assemblies.Read(b, 1.0, u.Dimzin);
+                var presets = read?.Select(r => new[] { r[3], r[4], r[5] }).ToList();
+                var lists = presets == null ? null : AsmWindow.Mats(b, u.Dimzin, presets);
+                var data = lists == null ? null : AsmWindow.Data(b, u, lists.Mats.Select(m => m.Id));
+                if (data == null)
+                {
+                    o.Sec(AsmWinLisp);
+                    return;
+                }
+                var rows = Materials.Both(b, u.Dimzin).Value.Rows;
+                lines.Rows("asmwin mats " + name, lists.Mats.Select(m => new[] { m.Id, m.Name, m.Row < 0 ? "" : rows[m.Row][0], m.Group }));
+                lines.Rows("asmwin groups " + name, lists.Groups.Select(g => new[] { g }));
+                lines.Rows("asmwin keys " + name, lists.Used.Select(k => new[] { k }));
+                lines.Rows("asmwin data " + name, lists.Mats.Select((m, i) => new[] { m.Id, data.Value.Rsi[i], data.Value.Mass[i] }));
+                string bk = secs.TryGetValue("asmwin bk " + name, out var bs) && bs.Count > 0 ? bs[0] : "";
+                var def = AsmWindow.Def(lists.Mats, bk);
+                lines.Put("#asmwin bk " + name + Us + bk);
+                lines.Rows("asmwin def " + name, new[] { def });
+                var ext = AsmWindow.Extras(b, u, def, bk, read.Select(r => new[] { r[3], r[4], r[5], Lisp.Nth(r, 7) ?? "" }));
+                lines.Rows("asmwin rows " + name, read.Select((r, i) => new[] { r[0] }.Concat(ext[i]).Select(c => c.Replace('\n', (char)29))));
+            }
+            o.Lines.AddRange(lines.Lines);
+        }
+
+        const string LispRead = "assemblies lisp", MatLisp = "materials lisp", ShowLisp = "shows lisp", AsmWinLisp = "asmwin lisp";
 
         // The cases whose assemblies or materials the Lisp reads, the C# giving null: the
         // marker, the cases, the sections of the Lisp then left out (those of its prefix, but
@@ -270,6 +306,7 @@ namespace DynALisp.Core.Tests
             (LispRead, new[] { "assemblies-preset" }, "assemblies ", "assemblies defs"),
             (MatLisp, new[] { "assemblies", "assemblies-preset", "empty", "materials-section" }, "materials ", "materials old"),
             (ShowLisp, new[] { "assemblies", "assemblies-preset", "edges", "empty", "materials-section" }, "shows ", "shows scale"),
+            (AsmWinLisp, new[] { "assemblies", "assemblies-preset", "edges", "empty", "materials-section" }, "asmwin ", ""),
         };
 
         // ----- the witness of the Lisp -----

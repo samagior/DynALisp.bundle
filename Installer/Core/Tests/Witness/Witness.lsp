@@ -33,8 +33,9 @@
 ;;  %TEMP%, the Lisp pointed at it for a moment (*dyl:contents, *dyl:user, *dyl:dylres,
 ;;  *dyl:res, *dyl:alias) and given back its own folders after, the reads kept dropped. The
 ;;  files are read by the Lisp itself (Dyl:Data, Dyl:DataHead, Dyl:AsmDefs, Dyl:AsmRead,
-;;  Dyl:HatchDefs, Dyl:MatDefs, Dyl:MatBoth, Dyl:AsmPats and Dyl:AsmShows of the Core hidden
-;;  meanwhile), so the C# is compared with the Lisp, never with itself.
+;;  Dyl:HatchDefs, Dyl:MatDefs, Dyl:MatBoth, Dyl:AsmPats, Dyl:AsmShows, Dyl:AsmWinMats,
+;;  Dyl:AsmRows and Dyl:MatData of the Core hidden meanwhile), so the C# is compared with the
+;;  Lisp, never with itself.
 ;;
 ;;  What is written, each line its cells divided by (chr 31), nil as (chr 30), a section by a
 ;;  line #name (UTF-8):
@@ -47,8 +48,9 @@
 ;;                  cleaned, presets read and their commands; the groups and their case; the
 ;;                  aliases; the assemblies (defaults, read and fixed, in the units of
 ;;                  wt:factors and back); the hatch presets and the materials (defaults,
-;;                  read and fixed); what the Quick Draw window shows of each assembly (in
-;;                  each drawing of wt:setups); then whether each one was written
+;;                  read and fixed); what the Quick Draw window shows of each assembly and
+;;                  what the Assembly Presets window is given (in each drawing of
+;;                  wt:setups); then whether each one was written
 ;;    <case>\User\  the files written (Remote>>Dyl:PresetWrite, Remote>>Dyl:GroupsWriteOf,
 ;;                  Dyl:AliasWrite), as they are on disk
 
@@ -306,6 +308,60 @@
   (setq *pst:readcache* nil *mt:defcache* nil *hp:defcache* nil *qd:asmdefs* nil *qd:asmcache* nil *mt:patunits* nil *mt:oldstamp* nil)
 )
 
+;;  The strings of lst, each once, in the order they come (nil and "" left out):
+(defun wt:uniq (lst / res)
+  (foreach x lst
+    (if (and (= 'STR (type x)) (/= "" x) (not (member x res))) (setq res (cons x res)))
+  )
+  (reverse res)
+)
+
+;;  What the Assembly Presets window is given (Apps\Draw\Dyl-QuickDraw.lsp), opened from no
+;;  Quick Draw preset on the assemblies read, in each drawing of wt:setups: the materials of
+;;  the Material list (each with the id of its material row, "" for none), the groups of its
+;;  Group list and the layer keys the assemblies use (Dyl:QuickDrawAsmWinMats, each key once),
+;;  the data of each material (Remote>>Dyl:MaterialDataLists), the layer key of new lines and
+;;  the row Add starts from (Dyl:QuickDrawAsmWinPrep, the layer keys of the case: its
+;;  LayerKeys.csv, else the defaults), then the columns the window adds to each assembly
+;;  (Dyl:QuickDrawAsmExtra, newlines as (chr 29)); not for a materials file of DynALisp 1.1
+;;  (split by the Lisp alone):
+(defun wt:asmwin (/ saved pst:lst qa:r qa:mats qa:grps qa:def qa:bk mt:keys got data *lk:file* *lk:readcache*)
+  (setq saved     (mapcar 'getvar '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC"))
+        *lk:file* (strcat *dyl:dylres "\\LayerKeys.csv")
+  )
+  (setq *mt:oldstamp* nil)
+  (if (Remote>>Dyl:MaterialOld-p)
+    (wt:sec "asmwin lisp")
+    (foreach s wt:setups
+      (mapcar 'setvar '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "DIMZIN") (cdr s))
+      (setq *pst:readcache* nil
+            *mt:defcache*   nil
+            *hp:defcache*   nil
+            *qd:asmdefs*    nil
+            *qd:asmcache*   nil
+            pst:lst         (Remote>>Dyl:PresetRead "QuickDrawAssembly" (Dyl:QuickDrawAsmDefs) 'Dyl:QuickDrawAsmFix)
+            got             (Dyl:QuickDrawAsmWinMats pst:lst)
+            data            (Remote>>Dyl:MaterialDataLists (mapcar 'car (car got)) nil)
+      )
+      (wt:rows (strcat "asmwin mats " (car s))
+               (mapcar '(lambda (m) (list (car m) (cadr m) (if (caddr m) (car (caddr m)) "") (cadddr m))) (car got))
+      )
+      (wt:rows (strcat "asmwin groups " (car s)) (mapcar 'list (cadr got)))
+      (wt:rows (strcat "asmwin keys " (car s)) (mapcar 'list (wt:uniq (caddr got))))
+      (wt:rows (strcat "asmwin data " (car s)) (mapcar 'list (mapcar 'car (car got)) (car data) (cadr data)))
+      (Dyl:QuickDrawAsmWinPrep)
+      (wt:put (strcat "#asmwin bk " (car s) (chr 31) qa:bk))
+      (wt:rows (strcat "asmwin def " (car s)) (list qa:def))
+      (wt:rows (strcat "asmwin rows " (car s))
+               (mapcar '(lambda (a) (mapcar 'wt:nl (cons (car a) (Dyl:QuickDrawAsmExtra a)))) pst:lst)
+      )
+    )
+  )
+  (mapcar '(lambda (v x) (vl-catch-all-apply 'setvar (list v x))) '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC") saved)
+  (setvar "DIMZIN" wt:dimzin)
+  (setq *pst:readcache* nil *mt:defcache* nil *hp:defcache* nil *qd:asmdefs* nil *qd:asmcache* nil *mt:oldstamp* nil)
+)
+
 ;;  The groups of the case, and the case of the names of the probes in them:
 (defun wt:groups ()
   (wt:rows "groups preset" (mapcar 'list (Remote>>Dyl:GroupsOf nil)))
@@ -353,6 +409,7 @@
   (wt:assemblies)
   (wt:materials)
   (wt:shows)
+  (wt:asmwin)
   (foreach key wt:keys
     (wt:put (strcat "#" key " write" (chr 31) (wt:cell (Remote>>Dyl:PresetWrite key (cdr (assoc key wt:reads))))))
   )
@@ -402,7 +459,8 @@
         wt:outdir (strcat (getenv "TEMP") "\\DynALisp Witness " (menucmd "M=$(edtime,$(getvar,date),YYYYMODD-HHMMSS)"))
         wt:work   (strcat wt:outdir " work")
         saved     (list *dyl:contents *dyl:user *dyl:dylres *dyl:res *dyl:alias Dyl:Data Dyl:DataHead Dyl:AsmDefs Dyl:AsmRead
-                        Dyl:HatchDefs Dyl:MatDefs Dyl:MatBoth Dyl:AsmPats Dyl:AsmShows
+                        Dyl:HatchDefs Dyl:MatDefs Dyl:MatBoth Dyl:AsmPats Dyl:AsmShows Dyl:AsmWinMats
+                        Dyl:AsmRows Dyl:MatData
                   )
         wt:dimzin (getvar "DIMZIN")
   )
@@ -428,6 +486,9 @@
             Dyl:MatBoth   nil
             Dyl:AsmPats   nil
             Dyl:AsmShows  nil
+            Dyl:AsmWinMats nil
+            Dyl:AsmRows   nil
+            Dyl:MatData   nil
             err           (vl-catch-all-apply 'wt:all (list (if (nth 5 saved) T)))
       )
       ;;  The folders and functions of DynALisp given back, the reads of the cases dropped:
@@ -446,6 +507,9 @@
             Dyl:MatBoth     (nth 11 saved)
             Dyl:AsmPats     (nth 12 saved)
             Dyl:AsmShows    (nth 13 saved)
+            Dyl:AsmWinMats  (nth 14 saved)
+            Dyl:AsmRows     (nth 15 saved)
+            Dyl:MatData     (nth 16 saved)
             *mt:patunits*   nil
             *pst:readcache* nil
             *grp:cache*     nil

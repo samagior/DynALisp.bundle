@@ -1592,6 +1592,8 @@
 ;;                                      ; to tiles (see pst/tiles in Presets.cs)
 ;;    (extra . <function: preset -> the columns added after the columns of the file, for
 ;;              the window only: a summary, a preview (read, never saved)>)
+;;    (wrows . <function: presets -> the columns extra adds, for each preset at once (made by
+;;             DynALisp.Core), nil when it cannot (extra is called for each one)>)
 ;;    (spec 45 . "mas")                 ; the column of a preview of its own (an assembly), and
 ;;                                      ; the rule of the window when it is used (else the
 ;;                                      ; preview is the hatch of the material)
@@ -1647,7 +1649,7 @@
 ;;  took seconds:
 (defun Remote>>Dyl:PresetWinRows (lst / ctx hit rows)
   (if (not (assoc 'wctx pst:dlg))
-    (mapcar 'Remote>>Dyl:PresetWinRow lst)
+    (Remote>>Dyl:PresetWinRowsOf lst)
     (progn
       (setq ctx (Remote>>Dyl:PresetDlgCall 'wctx nil)
             hit (vl-some '(lambda (c) (if (and (= pst:key (car c)) (eq lst (cadr c)) (equal ctx (caddr c))) c))
@@ -1657,7 +1659,7 @@
       (if hit
         (cadddr hit)
         (progn
-          (setq rows            (mapcar 'Remote>>Dyl:PresetWinRow lst)
+          (setq rows            (Remote>>Dyl:PresetWinRowsOf lst)
                 *pst:rowcache*  (cons (list pst:key lst ctx rows)
                                       (if *pst:rowcache* (Remote>>LM:sublst *pst:rowcache* 0 3))
                                 )
@@ -1666,6 +1668,21 @@
         )
       )
     )
+  )
+)
+
+;;  The rows of the presets lst: the columns of the App added to each one by its wrows at once
+;;  (all of them, or nil when it cannot), else by its extra one by one:
+(defun Remote>>Dyl:PresetWinRowsOf (lst / ext)
+  (cond
+    ((and (assoc 'wrows pst:dlg)
+          (not (assoc 'wrow pst:dlg))
+          (setq ext (Remote>>Dyl:PresetDlgCall 'wrows (list lst)))
+          (= (length ext) (length lst))
+     )
+     (mapcar 'append lst ext)
+    )
+    ((mapcar 'Remote>>Dyl:PresetWinRow lst))
   )
 )
 

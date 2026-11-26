@@ -3101,6 +3101,19 @@
 ;;  read), its resistance "per-unit fixed" and its mass "per-unit", "" when not known:
 ;;  (resistances masses):
 (defun Remote>>Dyl:MaterialDataLists (ids mats / rs ms m d)
+  (cond
+    ;;  (made by DynALisp.Core when it is loaded, see Installer\Core\Data\AsmWindow.cs; nil
+    ;;  when the Lisp reads the materials:)
+    ((if (and (not mats) ids Dyl:MatData)
+       (Dyl:MatData *dyl:contents (getvar "MEASUREMENT") (getvar "INSUNITS") (getvar "DIMZIN") ids)
+     )
+    )
+    ((Remote>>Dyl:MaterialDataListsLisp ids mats))
+  )
+)
+
+;;  The same made by the Lisp:
+(defun Remote>>Dyl:MaterialDataListsLisp (ids mats / rs ms m d)
   (if (not mats) (setq mats (cadr (Remote>>Dyl:MaterialBoth))))
   (foreach id ids
     (setq m  (vl-some '(lambda (x) (if (= (strcase id) (strcase (car x))) x)) mats)
