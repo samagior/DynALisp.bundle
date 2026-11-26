@@ -93,7 +93,15 @@ namespace DynALisp.Ribbon
             public IntPtr Theme;
             public string Name;
             public readonly List<(int El, uint Was, uint Now)> Colours = new();
+            // Filtered again (a colour found that DynALisp did not give), the last colour so
+            // found, and given up past Limit: AutoCAD sets it again each time (it would flicker).
+            public int Again, LastEl;
+            public uint LastGiven, LastFound;
+            public bool GaveUp;
         }
+        const int Limit = 3;
+        // The names of the functions of CAdUiTheme exported, for (Dyl:RibbonSkin "Native" "Exports"):
+        static readonly List<string> Exported = new();
         static readonly List<Done> Changed = new();
 
         public static string Status()
@@ -123,7 +131,17 @@ namespace DynALisp.Ribbon
             {
                 if (!on) { Undo(); return; }
                 if (!Find()) return;
-                foreach (var d in Changed) if (d.Colours.Any(c => !Given.Contains(_getColor(d.Theme, c.El)))) Filter(d);
+                foreach (var d in Changed)
+                {
+                    if (d.GaveUp) continue;
+                    int i = d.Colours.FindIndex(x => !Given.Contains(_getColor(d.Theme, x.El)));
+                    if (i < 0) continue;
+                    var c = d.Colours[i];
+                    d.Again++;
+                    d.LastEl = c.El; d.LastGiven = c.Now; d.LastFound = _getColor(d.Theme, c.El);
+                    if (d.Again > Limit) { GiveUp(d); continue; }
+                    Filter(d);
+                }
                 foreach (var name in _names)
                 {
                     if (Taken.Contains(name) || _hasTheme(_manager, name) == 0) continue;
@@ -170,10 +188,20 @@ namespace DynALisp.Ribbon
             }
         }
 
+        // A theme AutoCAD keeps setting again: its colours given back, and left alone.
+        static void GiveUp(Done d)
+        {
+            foreach (var (el, was, now) in d.Colours)
+                if (_getColor(d.Theme, el) == now) _setColor(d.Theme, el, was);
+            d.Colours.Clear();
+            d.GaveUp = true;
+            Host.Log("native palettes: " + d.Name + " given up, set again " + d.Again + " times");
+        }
+
         static bool Key(uint c) => (c & 0xFF) <= 3 && ((c >> 8) & 0xFF) <= 3 && ((c >> 16) & 0xFF) <= 3;
 
         // What was found and done, one line each, for (Dyl:RibbonSkin "Native"):
-        public static List<string> Report()
+        public static List<string> Report(bool exports = false)
         {
             var r = new List<string>();
             if (!_looked) { r.Add("not searched yet (the palettes off, or AutoCAD not dark)"); return r; }
@@ -181,6 +209,10 @@ namespace DynALisp.Ribbon
             if (_fail != null) r.Add("not found: " + _fail);
             if (_names != null) r.Add(_names.Count + " themes: " + string.Join(", ", _names));
             r.AddRange(Seen);
+            foreach (var d in Changed.Where(d => d.Again > 0))
+                r.Add(d.Name + ": set again by AutoCAD " + d.Again + " times (element " + d.LastEl + ": given " + Hex(d.LastGiven)
+                    + ", found " + Hex(d.LastFound) + ")" + (d.GaveUp ? ", given up" : ""));
+            if (exports) r.AddRange(Exported);
             return r;
         }
 
@@ -222,6 +254,7 @@ namespace DynALisp.Ribbon
                 if (m.ModuleName.StartsWith("adui", StringComparison.OrdinalIgnoreCase)) modules.Add(m);
             if (modules.Count == 0) { _fail = "no AdUi module"; return false; }
             foreach (var m in modules) Exports(m.BaseAddress, exports);
+            Exported.AddRange(exports.Keys.OrderBy(k => k, StringComparer.Ordinal));
 
             IntPtr F(string name) => exports.TryGetValue(name, out var p) ? p : IntPtr.Zero;
             var need = new[] { NameGetTheme, NameHasTheme, NameRelease, NameGetColor, NameSetColor, NameIsDark };

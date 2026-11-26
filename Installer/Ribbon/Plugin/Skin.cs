@@ -70,10 +70,12 @@ namespace DynALisp.Ribbon
                 {
                     // What was found of the native palettes, one string each (a diagnostic);
                     // "Search" first searches every module for the names of the themes:
-                    if (args.AsArray().Any(v => string.Equals(v.Value as string, "Search", StringComparison.OrdinalIgnoreCase)))
-                        NativeThemes.Search();
+                    bool Arg(string a) => args.AsArray().Any(v => string.Equals(v.Value as string, a, StringComparison.OrdinalIgnoreCase));
+                    if (Arg("Search")) NativeThemes.Search();
                     var rb = new ResultBuffer();
-                    foreach (var line in NativeThemes.Report()) rb.Add(new TypedValue((int)LispDataType.Text, line));
+                    rb.Add(new TypedValue((int)LispDataType.Text, "ribbon: " + Skin.Ribbon.Status() + ", " + Skin.Ribbon.Again + " themes made current again"));
+                    rb.Add(new TypedValue((int)LispDataType.Text, "palettes: " + Skin.Palettes.Status() + ", " + Skin.Palettes.Again + " themes made current again"));
+                    foreach (var line in NativeThemes.Report(Arg("Exports"))) rb.Add(new TypedValue((int)LispDataType.Text, line));
                     return rb;
                 }
                 if (!string.Equals(which, "Palettes", StringComparison.OrdinalIgnoreCase)) return Skin.Ribbon.Status();
@@ -103,12 +105,18 @@ namespace DynALisp.Ribbon
         object _inPlace;        // the theme changed in place
         object _copy, _orig;    // the copy made current, and the theme it was made from
         int _count;             // the colours changed
+        // The themes AutoCAD made current again after one was put in the colours of DynALisp:
+        // past Limit, AutoCAD fights back (they would flicker), and the target gives up.
+        public int Again;
+        bool _gaveUp;
+        const int Limit = 5;
 
         public bool Busy => Wanted || _inPlace != null || _copy != null;
 
         public string Status()
         {
             if (!Wanted) return "off";
+            if (_gaveUp) return "given up: AutoCAD made " + Again + " other themes current";
             if (_fail != null) return "not found: " + _fail;
             if (!Skin.Dark()) return "waiting for the dark theme";
             if (_inPlace != null) return "DynALisp (" + _count + " colours)";
@@ -135,9 +143,11 @@ namespace DynALisp.Ribbon
             _fail = null;
             if (Wanted && Skin.Dark())
             {
-                if (ReferenceEquals(cur, _inPlace) || ReferenceEquals(cur, _copy)) return;
+                if (_gaveUp || ReferenceEquals(cur, _inPlace) || ReferenceEquals(cur, _copy)) return;
                 // Another theme made current by AutoCAD: the former one given back first.
+                if (_inPlace != null || _copy != null) Again++;
                 Undo();
+                if (Again > Limit) { _gaveUp = true; Host.Log(Name + " colours: given up, " + Again + " themes made current"); return; }
                 if (Skin.Unfrozen(cur))
                 {
                     _count = Skin.Filter(cur, _changed);
@@ -152,7 +162,7 @@ namespace DynALisp.Ribbon
                     _set(copy);
                 }
             }
-            else Undo();
+            else { Undo(); _gaveUp = false; Again = 0; }
         }
 
         // The colours given back: the theme changed in place, or the theme the copy was made
