@@ -87,6 +87,8 @@ namespace DynALisp.Windows
             // a window of several tabs is kept at the one place, whatever its tab (Tabs.cs):
             string place = view.Window.Content is TabHost host ? host.Place : Path.GetFileNameWithoutExtension(path);
             if (FitToScreen) Fit.Attach(view.Window, place, Places);
+            // (shown once drawn, never white, Reveal.cs)
+            Reveal.Attach(view.Window);
             if (owner != null)
             {
                 view.Window.Owner = owner;

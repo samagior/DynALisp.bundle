@@ -288,56 +288,13 @@ namespace DynALisp.Windows
             _session = s;
             _file = full;
             _state = State.Open;
-            // Shown hidden (cloaked by Windows, drawn but not shown) until its layout has
-            // settled, then shown at once: neither its first frames (white, then placed by
-            // Fit.cs, its lists given their heights, its previews drawn) are seen when the
-            // Manager opens, nor, over the window of the tab left, that window losing its title
-            // bar (the next one is not active until then, and the one left closes in the same
-            // moment). Shown at once, the Manager opened white and the new tab blinked over the
-            // old one; shown at its first frame, the tabs of many fields and previews (Quick
-            // Draw, Materials...) still blinked as their layout went on over the next frames:
+            // Shown hidden until it is drawn (Reveal.cs), so the Manager never opens white; over
+            // the window of the tab left, not active until then (that window would lose its
+            // title bar), and that window closed in the moment it is shown: no blank window and
+            // no blink between two tabs:
             if (old != null) w.ShowActivated = false;
-            bool swapped = false, rendered = false;
-            // (settled: no layout for 80 ms after its first frame, then nothing left for the
-            // dispatcher to do; never left hidden: shown 1.5 s after it is made whatever happens)
-            var settle = new DispatcherTimer(DispatcherPriority.Background, w.Dispatcher) { Interval = TimeSpan.FromMilliseconds(80) };
-            var late = new DispatcherTimer(DispatcherPriority.Normal, w.Dispatcher) { Interval = TimeSpan.FromMilliseconds(1500) };
-            void Swap()
-            {
-                if (swapped) return;
-                swapped = true;
-                late.Stop();
-                settle.Stop();
-                w.LayoutUpdated -= Again;
-                Cloak(w, false);
-                if (old != null)
-                {
-                    Activate(w);
-                    Close(old.Window);
-                }
-            }
-            settle.Tick += (a, b) =>
-            {
-                settle.Stop();
-                w.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, (Action)Swap);
-            };
-            void Again(object a, EventArgs b)
-            {
-                if (!rendered || swapped) return;
-                settle.Stop();
-                settle.Start();
-            }
-            w.LayoutUpdated += Again;
-            w.ContentRendered += (a, b) => { rendered = true; settle.Start(); };
-            late.Tick += (a, b) => { late.Stop(); Swap(); };
-            w.SourceInitialized += (a, b) => { Cloak(w, true); late.Start(); };
-            w.Closed += (a, b) =>
-            {
-                late.Stop();
-                settle.Stop();
-                w.LayoutUpdated -= Again;
-                if (old != null) Close(old.Window);
-            };
+            Reveal.Attach(w, old == null ? (Action)null : () => { Activate(w); Close(old.Window); });
+            if (old != null) w.Closed += (a, b) => Close(old.Window);
             try { ShowWindow(w); }
             catch
             {
@@ -403,20 +360,6 @@ namespace DynALisp.Windows
             {
                 var h = new WindowInteropHelper(w).Handle;
                 if (h != IntPtr.Zero) EnableWindow(h, on);
-            }
-            catch { }
-        }
-
-        // A window hidden (true) or shown again by Windows (DWMWA_CLOAK, Windows 8 and later):
-        // drawn all the same, so it can be shown once its first frame is there. Nothing in
-        // an older Windows (the window is shown as before):
-        static void Cloak(Window w, bool on)
-        {
-            try
-            {
-                var h = new WindowInteropHelper(w).Handle;
-                int v = on ? 1 : 0;
-                if (h != IntPtr.Zero) DwmSetWindowAttribute(h, 13, ref v, sizeof(int));
             }
             catch { }
         }
