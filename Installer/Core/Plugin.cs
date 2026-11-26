@@ -29,6 +29,11 @@
 //     The names of the header of the file at path, as Remote>>Dyl:CsvHead gives them; nil when
 //     the file does not exist or is empty.
 //
+//   (Dyl:DataCols path i ...)
+//     The rows of the file as Dyl:Data gives them, each with only its cells i ... (counted
+//     from 0, "" for a cell it does not have): the 4 columns the startup reads of the 9 of
+//     StartupSuite.csv, the names and descriptions left in .NET. nil as Dyl:Data.
+//
 //   (Dyl:DataDrop [path])
 //     Forgets the file at path (every file without path): its writers call it, so a file
 //     written twice in the same instant is read again all the same. T.
@@ -80,7 +85,7 @@ namespace DynALisp.Core
             int n = a.Count > 1 ? Int(a[1]) : -1;
             var t = store.Get(path);
             if (t == null || t.Rows.Count == 0) return null;
-            var rb = new ResultBuffer();
+            var rb = new List<TypedValue>(t.Rows.Count * ((n < 0 ? (t.Header?.Length ?? 0) : n) + 2) + 2);
             rb.Add(new TypedValue((int)LispDataType.ListBegin));
             foreach (var row in t.Rows)
             {
@@ -90,7 +95,7 @@ namespace DynALisp.Core
                 rb.Add(new TypedValue((int)LispDataType.ListEnd));
             }
             rb.Add(new TypedValue((int)LispDataType.ListEnd));
-            return rb;
+            return Result(rb);
         }
 
         [LispFunction("Dyl:DataHead")]
@@ -100,11 +105,33 @@ namespace DynALisp.Core
             if (a.Count < 1 || !(a[0] is string path)) return null;
             var t = store.Get(path);
             if (t == null || t.Header == null) return null;
-            var rb = new ResultBuffer();
+            var rb = new List<TypedValue>(t.Header.Length + 2);
             rb.Add(new TypedValue((int)LispDataType.ListBegin));
             foreach (var cell in t.Header) rb.Add(new TypedValue((int)LispDataType.Text, cell));
             rb.Add(new TypedValue((int)LispDataType.ListEnd));
-            return rb;
+            return Result(rb);
+        }
+
+        [LispFunction("Dyl:DataCols")]
+        public ResultBuffer DataCols(ResultBuffer args)
+        {
+            var a = Args(args);
+            if (a.Count < 2 || !(a[0] is string path)) return null;
+            var cols = new List<int>();
+            for (int i = 1; i < a.Count; i++) cols.Add(Int(a[i]));
+            var t = store.Get(path);
+            if (t == null || t.Rows.Count == 0) return null;
+            var rb = new List<TypedValue>(t.Rows.Count * (cols.Count + 2) + 2);
+            rb.Add(new TypedValue((int)LispDataType.ListBegin));
+            foreach (var row in t.Rows)
+            {
+                rb.Add(new TypedValue((int)LispDataType.ListBegin));
+                foreach (var c in cols)
+                    rb.Add(new TypedValue((int)LispDataType.Text, c >= 0 && c < row.Length ? row[c] : ""));
+                rb.Add(new TypedValue((int)LispDataType.ListEnd));
+            }
+            rb.Add(new TypedValue((int)LispDataType.ListEnd));
+            return Result(rb);
         }
 
         [LispFunction("Dyl:DataDrop")]
@@ -137,6 +164,14 @@ namespace DynALisp.Core
             rb.Add(new TypedValue((int)LispDataType.Text, key));
             rb.Add(new TypedValue((int)LispDataType.Int32, value));
             rb.Add(new TypedValue((int)LispDataType.DottedPair));
+        }
+
+        // The ResultBuffer of the values, made at once from their array, never with an Add for
+        // each value (a chain of resbufs grown one by one): the 735 rows of 9 cells of the
+        // Startup Suite given that way took longer than dividing the file in Lisp:
+        static ResultBuffer Result(List<TypedValue> values)
+        {
+            return new ResultBuffer(values.ToArray());
         }
 
         // The arguments of a call, the atoms only (a string, a number, null for nil):

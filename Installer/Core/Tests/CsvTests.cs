@@ -136,6 +136,23 @@ namespace DynALisp.Core.Tests
             Assert.All(lk.Rows, r => Assert.True(r.Length <= lk.Header.Length + 1, string.Join("|", r)));
         }
 
+        // The files of the Startup Suite (Contents\Resources), read at the startup of each drawing
+        // (Dyl:SuiteCsv of dynalisp.mnl): every row with the cells the startup reads.
+        [Fact]
+        public void TheStartupSuiteIsRead()
+        {
+            var dir = Path.Combine(Root(), "Contents", "Resources");
+            var suite = Csv.ReadFile(Path.Combine(dir, "StartupSuite.csv"), Encoding.Latin1);
+            Assert.Equal(new[] { "Load", "Command", "Name", "Description", "File", "Module", "Group", "Duplicate", "Path" }, suite.Header);
+            Assert.True(suite.Rows.Count > 400);
+            Assert.All(suite.Rows, r => Assert.EndsWith(".lsp", Csv.Fit(r, 9)[8], StringComparison.OrdinalIgnoreCase));
+            Assert.All(suite.Rows, r => Assert.EndsWith("\\" + Csv.Fit(r, 9)[4], Csv.Fit(r, 9)[8], StringComparison.OrdinalIgnoreCase));
+            var als = Csv.ReadFile(Path.Combine(dir, "Aliases.csv"), Encoding.Latin1);
+            Assert.Equal(new[] { "Alias", "Command" }, als.Header);
+            Assert.True(als.Rows.Count > 300);
+            Assert.All(als.Rows, r => Assert.StartsWith("C:", Csv.Fit(r, 2)[1], StringComparison.OrdinalIgnoreCase));
+        }
+
         // The folder of DynALisp.bundle, above the folder of the tests:
         public static string Root()
         {

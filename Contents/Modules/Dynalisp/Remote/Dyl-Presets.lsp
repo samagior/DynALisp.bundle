@@ -208,16 +208,19 @@
 ;;  on the blackboard, under name: (key . value). f is applied to args only when what it is
 ;;  made from differs from the key kept: key (what the caller adds: the units of the drawing...)
 ;;  with Remote>>Dyl:SessionStamps. A drawing opened after the first one gets it without making
-;;  it (vl-bb-ref gives a copy of it):
-(defun Remote>>Dyl:SessionKept (name key f args / bb v)
-  (setq key (cons (Remote>>Dyl:SessionStamps) key)
-        bb  (vl-bb-ref name)
+;;  it. vl-bb-ref gives a copy of what it holds, so the keys are kept apart
+;;  (*dyl:sessionkeys*: ((name . key) ...)), and the value is copied only when its key is the
+;;  one asked. Each part is timed in the Manager (Pst-DiagnosticsDynalisp):
+(defun Remote>>Dyl:SessionKept (name key f args / keys v)
+  (setq key  (cons (Remote>>Dyl:SessionStamps) key)
+        keys (vl-bb-ref '*dyl:sessionkeys*)
   )
-  (if (and bb (equal key (car bb)))
-    (cdr bb)
+  (if (and (assoc name keys) (equal key (cdr (assoc name keys))))
+    (Remote>>Dyl:ManagerTimed (strcat "Kept for the session, copied (" (vl-symbol-name name) ")") 'vl-bb-ref (list name))
     (progn
-      (setq v (apply f args))
-      (vl-bb-set name (cons key v))
+      (setq v (Remote>>Dyl:ManagerTimed (strcat "Kept for the session, made (" (vl-symbol-name name) ")") f args))
+      (vl-bb-set name v)
+      (vl-bb-set '*dyl:sessionkeys* (cons (cons name key) (vl-remove (assoc name keys) keys)))
       v
     )
   )
@@ -1948,7 +1951,13 @@
     (if (not (and (not err) (setq res (Remote>>Dyl:PresetWinTaken))))
       (progn
         (Remote>>Dyl:PresetWinPrep)
-        (setq res (Remote>>Dyl:ManagerTimed "Window shown" 'Dyl:WinShow (list (cdr (assoc 'window pst:dlg)) (Remote>>Dyl:PresetWinVals err))))
+        (setq res (Remote>>Dyl:ManagerTimed "Window shown"
+                                            'Dyl:WinShow
+                                            (list (cdr (assoc 'window pst:dlg))
+                                                  (Remote>>Dyl:ManagerTimed "Window values" 'Remote>>Dyl:PresetWinVals (list err))
+                                            )
+                  )
+        )
       )
     )
     (setq err nil
