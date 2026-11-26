@@ -343,7 +343,7 @@ namespace DynALisp.Ribbon
         }
 
         // The names and addresses of the functions a module exports (its export table):
-        static void Exports(IntPtr b, Dictionary<string, IntPtr> into)
+        internal static void Exports(IntPtr b, Dictionary<string, IntPtr> into, Func<string, bool> keep = null)
         {
             int pe = Marshal.ReadInt32(b, 0x3C);
             if (Marshal.ReadInt32(b, pe) != 0x4550) return;              // "PE\0\0"
@@ -358,7 +358,7 @@ namespace DynALisp.Ribbon
             for (int i = 0; i < count; i++)
             {
                 string name = Marshal.PtrToStringAnsi(b + Marshal.ReadInt32(b, names + 4 * i));
-                if (name == null || !(name.Contains("CAdUiTheme"))) continue;
+                if (name == null || !(keep != null ? keep(name) : name.Contains("CAdUiTheme"))) continue;
                 int ord = (ushort)Marshal.ReadInt16(b, ords + 2 * i);
                 into[name] = b + Marshal.ReadInt32(b, funcs + 4 * ord);
             }

@@ -69,6 +69,14 @@ namespace DynALisp.Ribbon
                 if (string.Equals(which, "Web", StringComparison.OrdinalIgnoreCase))
                 {
                     var wb = new ResultBuffer();
+                    // "Detail": what AutoCAD gives to reach its browser, long, in a text file of %TEMP%:
+                    if (args.AsArray().Any(v => string.Equals(v.Value as string, "Detail", StringComparison.OrdinalIgnoreCase)))
+                    {
+                        string file = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "DynALisp-Web.txt");
+                        var lines = WebPages.Report(true);
+                        System.IO.File.WriteAllLines(file, lines);
+                        return file + " (" + lines.Count + " lines)";
+                    }
                     foreach (var line in WebPages.Report()) wb.Add(new TypedValue((int)LispDataType.Text, line));
                     return wb;
                 }

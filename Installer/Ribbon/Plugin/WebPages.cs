@@ -231,10 +231,50 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
             return sb.ToString();
         }
 
+        // What AutoCAD gives to reach its browser, for (Dyl:RibbonSkin "Web" "Detail"): the
+        // functions AcWebView.dll exports (the browser of the Start tab is made there, in C++),
+        // and the types and members of AppHomeInterop (managed).
+        static void Detail(List<string> r)
+        {
+            foreach (System.Diagnostics.ProcessModule m in System.Diagnostics.Process.GetCurrentProcess().Modules)
+            {
+                if (!m.ModuleName.Equals("AcWebView.dll", StringComparison.OrdinalIgnoreCase)
+                    && !m.ModuleName.Equals("AppHomeInterop.dll", StringComparison.OrdinalIgnoreCase)) continue;
+                var ex = new Dictionary<string, IntPtr>();
+                try { NativeThemes.Exports(m.BaseAddress, ex, n => true); } catch (System.Exception e) { r.Add(m.ModuleName + ": " + e.Message); }
+                r.Add(m.ModuleName + ": " + ex.Count + " exports");
+                r.AddRange(ex.Keys.OrderBy(k => k, StringComparer.Ordinal).Take(600));
+            }
+            foreach (var a in AppDomain.CurrentDomain.GetAssemblies().Where(a => a.GetName().Name == "AppHomeInterop"))
+            {
+                r.Add("assembly " + a.FullName + " (" + a.Location + ")");
+                Type[] types;
+                try { types = a.GetTypes(); } catch (ReflectionTypeLoadException e) { types = e.Types.Where(t => t != null).ToArray(); }
+                const BindingFlags all = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
+                foreach (var t in types.OrderBy(t => t.FullName))
+                {
+                    if (t.Name.Contains("<")) continue;
+                    var members = t.GetMembers(all)
+                        .Where(x => !x.Name.Contains("<") && !(x is MethodInfo mi && mi.IsSpecialName))
+                        .Select(x => x switch
+                        {
+                            MethodInfo mi => (mi.IsStatic ? "static " : "") + mi.Name + "(" + string.Join(", ", mi.GetParameters().Select(p => p.ParameterType.Name)) + ")",
+                            PropertyInfo pi => pi.PropertyType.Name + " " + pi.Name,
+                            FieldInfo fi => (fi.IsStatic ? "static " : "") + fi.FieldType.Name + " " + fi.Name,
+                            EventInfo ei => "event " + ei.Name,
+                            ConstructorInfo ci => "new(" + string.Join(", ", ci.GetParameters().Select(p => p.ParameterType.Name)) + ")",
+                            _ => x.Name
+                        });
+                    r.Add((t.IsPublic ? "type " : "internal type ") + t.FullName + (t.BaseType != null ? " : " + t.BaseType.Name : "") + " { " + string.Join("; ", members) + " }");
+                }
+            }
+        }
+
         // What was found, one line each, for (Dyl:RibbonSkin "Web"):
-        public static List<string> Report()
+        public static List<string> Report(bool detail = false)
         {
             var r = new List<string>();
+            if (detail) { Detail(r); return r; }
             if (_fail != null) r.Add("error: " + _fail);
             var mods = new List<string>();
             foreach (System.Diagnostics.ProcessModule m in System.Diagnostics.Process.GetCurrentProcess().Modules)
