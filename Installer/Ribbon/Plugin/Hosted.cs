@@ -420,9 +420,15 @@ namespace DynALisp.Ribbon
 
         static string Hex(Color c) => "#" + c.R.ToString("X2") + c.G.ToString("X2") + c.B.ToString("X2");
 
-        public static List<string> Report()
+        public static List<string> Report(bool colours = false)
         {
             var r = new List<string>();
+            if (colours)
+            {
+                r.Add("DynALisp - the colour themes of AutoCAD in C++ (" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + ")");
+                try { Colours2(r); } catch (System.Exception ex) { r.Add("error: " + ex.Message); }
+                return r;
+            }
             r.Add("DynALisp - what keeps the blue-greys of AutoCAD (" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + ")");
             r.Add("look: " + _look.Name + ", on: " + _on + ", ribbon: " + Skin.Ribbon.Status() + ", palettes: " + Skin.Palettes.Status());
             r.Add(Status() + "; " + _walked + " elements walked in " + _ms + " ms");
@@ -482,6 +488,50 @@ namespace DynALisp.Ribbon
             r.Add("Web pages:");
             try { r.AddRange(WebPages.Report().Select(l => "  " + l)); } catch (System.Exception ex) { r.Add("  " + ex.Message); }
             return r;
+        }
+
+        // The colour themes of AutoCAD in C++, read only, for (Dyl:RibbonSkin "Hosted" "Colors"):
+        // CAcColorTheme of AdUi (from which the native themes and their controls take their
+        // colours) and AdColorTheme of AdApplicationFrame.dll (the title bar), each element
+        // from 0 until the call fails or Max: how many elements they have is not known.
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate IntPtr StaticFn();
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall)] delegate uint ColorFn(IntPtr self, int element);
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate int IntFn();
+
+        static void Colours2(List<string> r)
+        {
+            void One(string prefix, string getName, string colName, string darkName, int max)
+            {
+                ProcessModule mod = null;
+                foreach (ProcessModule m in Process.GetCurrentProcess().Modules)
+                    if (m.ModuleName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) { mod = m; break; }
+                if (mod == null) { r.Add(prefix + ": not loaded"); return; }
+                var ex = new Dictionary<string, IntPtr>();
+                NativeThemes.Exports(mod.BaseAddress, ex, x => x == getName || x == colName || x == darkName);
+                if (!ex.TryGetValue(getName, out var g) || !ex.TryGetValue(colName, out var c)) { r.Add(mod.ModuleName + ": functions not found"); return; }
+                IntPtr theme = Marshal.GetDelegateForFunctionPointer<StaticFn>(g)();
+                r.Add(mod.ModuleName + ": current theme " + (theme == IntPtr.Zero ? "none" : "found")
+                    + (ex.TryGetValue(darkName, out var d) ? ", dark " + Marshal.GetDelegateForFunctionPointer<IntFn>(d)() : ""));
+                if (theme == IntPtr.Zero) return;
+                var get = Marshal.GetDelegateForFunctionPointer<ColorFn>(c);
+                var line = new StringBuilder();
+                for (int e = 0; e < max; e++)
+                {
+                    uint v;
+                    try { v = get(theme, e); }
+                    catch (System.Exception x) { r.Add("  element " + e + ": " + x.GetType().Name + ", stopped"); break; }
+                    var col = Color.FromRgb((byte)(v & 0xFF), (byte)(v >> 8 & 0xFF), (byte)(v >> 16 & 0xFF));
+                    line.Append(e.ToString().PadLeft(4) + " " + Hex(col) + (v >> 24 != 0 ? "/" + (v >> 24).ToString("X2") : "   ") + (Blue(col) ? "*" : " "));
+                    if (e % 8 == 7) { r.Add(line.ToString()); line.Clear(); }
+                }
+                if (line.Length > 0) r.Add(line.ToString());
+            }
+            r.Add("* = a blue-grey of AutoCAD");
+            One("adui", "?GetCurrentTheme@CAcColorTheme@@SAAEBV1@XZ", "?GetRGBColor@CAcColorTheme@@QEBAKW4AcThemeElement@1@@Z",
+                "?IsDarkTheme@CAcColorTheme@@SAHXZ", 400);
+            r.Add("");
+            One("AdApplicationFrame", "?GetCurrentTheme@AdColorTheme@@SAPEAV1@XZ", "?GetRGBColor@AdColorTheme@@UEBAKW4AdThemeElement@1@@Z",
+                "-", 120);
         }
 
         // The functions exported by the modules of AutoCAD whose name speaks of the frame
