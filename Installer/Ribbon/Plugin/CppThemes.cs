@@ -35,8 +35,8 @@
 // again when its theme changes: a colour found back at what AutoCAD gave is given again. After a
 // change, the windows of AutoCAD draw again (RedrawWindow) and the title bar with
 // AdApplicationFrame::ForceFrameRepaint. The title bar takes them; the lists of Properties do
-// not (they read another copy): (Dyl:RibbonSkin "Hosted" "Colors") searches the memory for the
-// copies of the table of CAcColorTheme (Copies, read only).
+// not: (Dyl:RibbonSkin "Hosted" "Push") gives the current CAcColorTheme to the native themes of
+// the palettes (CAdUiTheme::SetColorTheme), an experiment run by hand.
 
 using System;
 using System.Collections.Generic;
@@ -286,10 +286,8 @@ namespace DynALisp.Ribbon
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate IntPtr ThemeOfFn(int which);
 
         // For (Dyl:RibbonSkin "Hosted" "Colors"), read only: where the colours of CAcColorTheme
-        // are kept, and every copy of them in the memory of AutoCAD (the lists of Properties
-        // kept the blue-greys once the current theme was changed: they read another copy).
-        // The table AutoCAD gave (the colours before DynALisp) is searched, 4 bytes a colour,
-        // by its first 12 colours, then how many of the 308 follow is counted.
+        // are kept (the lists of Properties kept the blue-greys once the current theme was
+        // changed), and the elements of the native themes still in a blue-grey.
         public static void Copies(List<string> r)
         {
             r.Add("Copies of the colours of CAcColorTheme (" + Status() + ")");
@@ -328,45 +326,63 @@ namespace DynALisp.Ribbon
             foreach (var (n, p) in NativeThemes.Pointers()) ptrs.Add(("CAdUiTheme " + n, p));
             // Where the current colours lie, from the theme (inline or behind a pointer):
             r.Add("  current colours at " + Where(cur, now, ptrs));
-            // Every copy of the colours AutoCAD gave, and of those DynALisp gave:
-            var sw = Stopwatch.StartNew();
-            long scanned = 0;
-            var hits = Scan(was, ref scanned);
-            r.Add("  memory searched: " + (scanned >> 20) + " MB in " + sw.ElapsedMilliseconds + " ms");
-            r.Add("  copies of the colours AutoCAD gave: " + hits.Count);
-            foreach (var h in hits.Take(40)) r.Add("    " + Describe(h.Address, h.Length, ptrs));
-            if (Ac.Changed.Count > 0)
+            // The theme object is 8 bytes (GetTheme(1) follows GetTheme(0)): what it holds,
+            // and the first bytes it points to. The colours are not a table of 4 bytes each (a
+            // search of the whole memory found no copy of them): a map, read by GetRGBColor.
+            try
             {
-                var given = Scan(now, ref scanned);
-                r.Add("  copies of the colours DynALisp gave: " + given.Count);
-                foreach (var h in given.Take(20)) r.Add("    " + Describe(h.Address, h.Length, ptrs));
+                IntPtr q = Marshal.ReadIntPtr(cur);
+                r.Add("  the current theme holds " + Hex(q) + (Readable(q, 64) ? ": " + Bytes(q, 64) : " (not readable)"));
             }
+            catch (System.Exception x) { r.Add("  layout: " + x.Message); }
+            // The native themes of the palettes (CAdUiTheme), elements 0 to 399: those still in
+            // a blue-grey of AutoCAD (NativeThemes filters 8 to 199):
+            r.Add("");
+            r.AddRange(NativeThemes.Blues(400));
+        }
+
+        static string Bytes(IntPtr p, int n)
+        {
+            var b = new byte[n];
+            Marshal.Copy(p, b, 0, n);
+            return BitConverter.ToString(b).Replace("-", " ");
+        }
+
+        // ---- pushed to the palettes (an experiment run by hand) ----
+
+        const string NameSetColorTheme = "?SetColorTheme@CAdUiTheme@@AEAAXAEBVCAcColorTheme@@W4AcColorThemeEnum@@@Z";
+        [UnmanagedFunctionPointer(CallingConvention.ThisCall)] delegate void SetColorThemeFn(IntPtr self, IntPtr colours, int which);
+
+        // (Dyl:RibbonSkin "Hosted" "Push"): each native theme of the palettes (CAdUiTheme) is
+        // given the current CAcColorTheme, in the colours of DynALisp, as AutoCAD gives it when
+        // its theme changes (CAdUiTheme::SetColorTheme, the dark theme: 0), then AutoCAD draws
+        // again. The lists of Properties draw from what the palettes made of it.
+        public static string Push()
+        {
+            if (!_found) Find();
+            if (Ac.Current == null) return "not found: " + Ac.Fail;
+            IntPtr cur = Ac.Current();
+            if (cur == IntPtr.Zero) return "no current theme";
+            ProcessModule mod = Process.GetCurrentProcess().Modules.Cast<ProcessModule>()
+                .FirstOrDefault(m => m.ModuleName.StartsWith(Ac.Prefix, StringComparison.OrdinalIgnoreCase));
+            if (mod == null) return Ac.Prefix + " not loaded";
+            var ex = new Dictionary<string, IntPtr>();
+            NativeThemes.Exports(mod.BaseAddress, ex, x => x == NameSetColorTheme);
+            if (!ex.TryGetValue(NameSetColorTheme, out var f)) return "CAdUiTheme::SetColorTheme not exported";
+            var set = Marshal.GetDelegateForFunctionPointer<SetColorThemeFn>(f);
+            var done = new List<string>();
+            foreach (var (n, p) in NativeThemes.Pointers().GroupBy(x => x.Theme).Select(g => g.First()))
+            {
+                if (p == IntPtr.Zero) continue;
+                set(p, cur, 0);
+                done.Add(n);
+            }
+            Repaint();
+            return "CAcColorTheme (" + Ac.Changed.Count + " colours changed) given to " + done.Count + " native themes: " + string.Join(", ", done);
         }
 
         static string Hex(IntPtr p) => "0x" + p.ToInt64().ToString("X");
         static string Col(uint v) => "#" + (v & 0xFF).ToString("X2") + (v >> 8 & 0xFF).ToString("X2") + (v >> 16 & 0xFF).ToString("X2");
-
-        // A copy: its address, how many colours of the table follow there, and what it is near
-        // (a theme of the list just after or before it, the module holding it, or the heap):
-        static string Describe(IntPtr a, int len, List<(string, IntPtr)> ptrs)
-        {
-            var s = Hex(a) + ": " + len + " colours";
-            foreach (var (n, p) in ptrs)
-            {
-                long d = a.ToInt64() - p.ToInt64();
-                if (p != IntPtr.Zero && d >= -0x100 && d < 0x10000) s += ", " + n + " +0x" + d.ToString("X");
-            }
-            VirtualQuery(a, out var mi, (IntPtr)Marshal.SizeOf<MemoryInfo>());
-            if (mi.Type == 0x1000000)
-            {
-                var m = Process.GetCurrentProcess().Modules.Cast<ProcessModule>().FirstOrDefault(x =>
-                    a.ToInt64() >= x.BaseAddress.ToInt64() && a.ToInt64() < x.BaseAddress.ToInt64() + x.ModuleMemorySize);
-                s += ", in " + (m?.ModuleName ?? "a module") + " +0x" + (m != null ? (a.ToInt64() - m.BaseAddress.ToInt64()).ToString("X") : "?");
-            }
-            else s += mi.Type == 0x20000 ? ", heap" : ", mapped";
-            s += ", protect 0x" + mi.Protect.ToString("X");
-            return s;
-        }
 
         // The colours of a theme in its object (offset, 4 bytes a colour) or behind one of its
         // first 32 pointers:
@@ -399,57 +415,6 @@ namespace DynALisp.Ribbon
                 if (j == 12) return i * 4;
             }
             return -1;
-        }
-
-        // Every readable committed region of the process searched for the first 12 colours.
-        static List<(IntPtr Address, int Length)> Scan(uint[] vals, ref long scanned)
-        {
-            var hits = new List<(IntPtr, int)>();
-            const int Chunk = 4 << 20;
-            var buf = new byte[Chunk + 64 * 4];
-            var pin = GCHandle.Alloc(buf, GCHandleType.Pinned);
-            var pinV = GCHandle.Alloc(vals, GCHandleType.Pinned);
-            long mine = pin.AddrOfPinnedObject().ToInt64(), mineV = pinV.AddrOfPinnedObject().ToInt64();
-            try
-            {
-                long a = 0x10000, end = 0x7FFFFFFF0000;
-                var size = (IntPtr)Marshal.SizeOf<MemoryInfo>();
-                while (a < end && hits.Count < 200)
-                {
-                    if (VirtualQuery((IntPtr)a, out var mi, size) == IntPtr.Zero) break;
-                    long rb = mi.BaseAddress.ToInt64(), rs = mi.RegionSize.ToInt64();
-                    if (rs <= 0) break;
-                    bool ok = mi.State == 0x1000 && (mi.Protect & 0x100) == 0 && (mi.Protect & 0x01) == 0 && (mi.Protect & 0xEE) != 0;
-                    if (ok)
-                    {
-                        for (long off = 0; off < rs; off += Chunk)
-                        {
-                            int n = (int)Math.Min(rs - off, Chunk + 48 * 4);
-                            Marshal.Copy((IntPtr)(rb + off), buf, 0, n);
-                            scanned += Math.Min(n, Chunk);
-                            var u = MemoryMarshal.Cast<byte, uint>(buf.AsSpan(0, n & ~3));
-                            int last = Math.Min(u.Length - 12, Chunk / 4);
-                            for (int i = 0; i < last; i++)
-                            {
-                                if ((u[i] & 0xFFFFFF) != vals[0]) continue;
-                                int j = 1;
-                                while (j < 12 && (u[i + j] & 0xFFFFFF) == vals[j]) j++;
-                                if (j < 12) continue;
-                                long addr = rb + off + i * 4L;
-                                if (addr >= mine && addr < mine + buf.Length) continue;
-                                if (addr >= mineV && addr < mineV + vals.Length * 4) continue;
-                                int len = 12;
-                                long p = addr + 48;
-                                while (len < vals.Length && Readable((IntPtr)p, 4) && (Marshal.ReadInt32((IntPtr)p) & 0xFFFFFF) == vals[len]) { len++; p += 4; }
-                                hits.Add(((IntPtr)addr, len));
-                            }
-                        }
-                    }
-                    a = rb + rs;
-                }
-            }
-            finally { pin.Free(); pinV.Free(); }
-            return hits;
         }
 
         static bool Readable(IntPtr p, int len)

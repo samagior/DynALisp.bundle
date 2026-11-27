@@ -245,6 +245,30 @@ namespace DynALisp.Ribbon
 
         // The elements of the themes changed that had one of these colours (COLORREF), for
         // (Dyl:RibbonSkin "Hosted"): which theme draws what kept the colours of AutoCAD.
+        // The elements of the themes changed, 0 to max, still in a blue-grey of AutoCAD:
+        public static List<string> Blues(int max)
+        {
+            var r = new List<string> { "Native themes, the elements in a blue-grey of AutoCAD (0 to " + (max - 1) + "):" };
+            if (_getColor == null) { r.Add("  not found"); return r; }
+            foreach (var d in Changed)
+            {
+                var line = new StringBuilder("  " + d.Name + ":");
+                int n = 0;
+                for (int e = 0; e < max; e++)
+                {
+                    uint v;
+                    try { v = _getColor(d.Theme, e); } catch { line.Append(" (stopped at " + e + ")"); break; }
+                    var c = Color.FromRgb((byte)(v & 0xFF), (byte)(v >> 8 & 0xFF), (byte)(v >> 16 & 0xFF));
+                    if (!Hosted.Blue(c)) continue;
+                    line.Append(" " + e + " " + Hex(v));
+                    n++;
+                }
+                if (n == 0) line.Append(" none");
+                r.Add(line.ToString());
+            }
+            return r;
+        }
+
         public static IEnumerable<(string Name, IntPtr Theme)> Pointers() => Changed.Select(d => (d.Name, d.Theme));
 
         public static List<string> Holding(uint[] refs)

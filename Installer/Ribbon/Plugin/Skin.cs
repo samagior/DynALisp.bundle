@@ -90,6 +90,9 @@ namespace DynALisp.Ribbon
                 {
                     // What still shows the blue-greys of AutoCAD, long, in a text file of %TEMP%:
                     string file = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "DynALisp-Hosted.txt");
+                    // "Push": the current CAcColorTheme given to the native themes (an experiment):
+                    if (args.AsArray().Any(v => string.Equals(v.Value as string, "Push", StringComparison.OrdinalIgnoreCase)))
+                        return CppThemes.Push();
                     // "Colors": the colour themes of AutoCAD in C++, read only:
                     var lines = Hosted.Report(args.AsArray().Any(v => string.Equals(v.Value as string, "Colors", StringComparison.OrdinalIgnoreCase)));
                     System.IO.File.WriteAllLines(file, lines);
