@@ -152,7 +152,7 @@ namespace DynALisp.Ribbon
         // The themes AutoCAD made current again after one was put in the colours of DynALisp:
         // past Limit, AutoCAD fights back (they would flicker), and the target gives up.
         public int Again;
-        bool _gaveUp;
+        bool _gaveUp, _waiting;
         const int Limit = 5;
         // A copy of the theme made current even when it is not frozen, until AutoCAD made
         // another one current CopyTries times:
@@ -171,6 +171,7 @@ namespace DynALisp.Ribbon
             if (_gaveUp) return "given up: AutoCAD made " + Again + " other themes current";
             if (_fail != null) return "not found: " + _fail;
             if (!Skin.Dark()) return "waiting for the dark theme";
+            if (_waiting && _inPlace == null && _copy == null) return "waiting: its theme is frozen and cannot be copied";
             if (_inPlace != null) return Look.Name + " (" + _count + " colours)";
             if (_copy != null) return Look.Name + " (" + _count + " colours, copy of the theme)";
             return Look.Name + " (on the next idle)";
@@ -207,7 +208,16 @@ namespace DynALisp.Ribbon
                 // theme that it changed (the title bar of AutoCAD keeps its own copy of the
                 // colours, read when a theme is made current); in place when AutoCAD made
                 // another theme current again too often (it takes the copy back).
-                if (Skin.Unfrozen(cur) && !(Copy && Again < CopyTries))
+                // (a theme that cannot be copied, the one of the ribbon: in place when it may be)
+                object copy = null;
+                bool unfrozen = Skin.Unfrozen(cur);
+                if (!(unfrozen && !(Copy && Again < CopyTries)))
+                {
+                    copy = Skin.CopyOf(cur);
+                    if (copy == null && !unfrozen) { _waiting = true; return; }
+                }
+                _waiting = false;
+                if (copy == null)
                 {
                     _count = Skin.Filter(cur, _changed, Look);
                     _inPlace = cur;
@@ -215,7 +225,6 @@ namespace DynALisp.Ribbon
                 }
                 else
                 {
-                    var copy = Skin.CopyOf(cur);
                     _count = Skin.Filter(copy, null, Look);
                     _applied = Look;
                     _orig = cur;
@@ -464,29 +473,15 @@ namespace DynALisp.Ribbon
             }
         }
 
-        // A copy of a theme, of its own type: Freezable.Clone, or when that gives another type
-        // (the Theme of the ribbon, frozen while AutoCAD starts, clones into a RibbonTheme, which
-        // ComponentManager.CurrentTheme does not take, and the ribbon kept the blue-greys of
-        // AutoCAD for 3 s), a new object of its type given each of its settable properties, a
-        // frozen part given as its unfrozen clone.
+        // A copy of a theme, of its own type, or null: the Theme of the ribbon, frozen while
+        // AutoCAD starts, clones into a RibbonTheme, which ComponentManager.CurrentTheme does
+        // not take; a new Theme given its settable properties lost the colours of the quick
+        // access toolbar and of the InfoCenter (drawn light), so the target waits until AutoCAD
+        // makes a theme current that can be changed in place (about 3 s after it starts).
         public static object CopyOf(object cur)
         {
             var c = ((Freezable)cur).Clone();
-            if (cur.GetType().IsInstanceOfType(c)) return c;
-            var n = Activator.CreateInstance(cur.GetType(), true);
-            foreach (var p in Props(cur))
-            {
-                if (!p.CanWrite || p.SetMethod == null || !p.SetMethod.IsPublic) continue;
-                object v;
-                try { v = p.GetValue(cur); } catch { continue; }
-                if (v is Freezable f && f.IsFrozen && IsPart(v.GetType()))
-                {
-                    var fc = f.Clone();
-                    if (p.PropertyType.IsInstanceOfType(fc)) v = fc;
-                }
-                try { p.SetValue(n, v); } catch { }
-            }
-            return n;
+            return cur.GetType().IsInstanceOfType(c) ? c : null;
         }
 
         public static bool Unfrozen(object theme)
