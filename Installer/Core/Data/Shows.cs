@@ -284,7 +284,7 @@ namespace DynALisp.Core.Data
 
         // (Remote>>Dyl:MaterialBand kind mat w), mat with its No hatch off (column 64, see
         // Remote>>Dyl:MaterialNoHatch):
-        static string Band(string kind, string[] mat, double w, Units u, PatUnits pats)
+        internal static string Band(string kind, string[] mat, double w, Units u, PatUnits pats)
         {
             string ws = Lisp.NumP(w, 6, u.Dimzin);
             if (kind == "S" || kind == "L") return kind + "?" + ws;
