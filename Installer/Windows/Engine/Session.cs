@@ -156,10 +156,23 @@ namespace DynALisp.Windows
 
     // The look of the windows: the styles of Theme.xaml (embedded, read once) and the Dyl.*
     // brushes of the light or the dark theme of AutoCAD (COLORTHEME 1 or 0), its blue for
-    // what is picked. A dark window also gets the dark title bar of Windows.
+    // what is picked. A dark window also gets the dark title bar of Windows. Under the
+    // DynALisp Neutral interface (Dyl-Settings > Display), the dark windows are in its neutral
+    // greys, as the ribbon and the palettes around them.
     public static class Theme
     {
         static ResourceDictionary _styles;
+
+        // True when the dark windows take the neutral greys: the Interface of Dyl-Settings is
+        // DynALisp Neutral, read by Bridge.cs at each window (null in Shots: the pictures of the
+        // docs keep the grey blue).
+        public static Func<bool> NeutralOf;
+
+        public static bool Neutral()
+        {
+            try { return NeutralOf != null && NeutralOf(); }
+            catch { return false; }
+        }
 
         // Dark: the grey blue of the palettes of AutoCAD; light: its light greys.
         static readonly Dictionary<string, string> DarkColors = new Dictionary<string, string>
@@ -169,6 +182,17 @@ namespace DynALisp.Windows
             ["Hover"] = "#434C5B", ["Pressed"] = "#525D71", ["Input"] = "#2A3039", ["InputBorder"] = "#4C5566",
             ["Accent"] = "#0696D7", ["AccentHover"] = "#22A9E8", ["AccentText"] = "#FFFFFF", ["ErrorText"] = "#FF8F85",
             ["TitleBar"] = "#1E2229", ["TitleText"] = "#E6EAF0", ["ButtonBack"] = "#3A4250",
+        };
+        // Dark under DynALisp Neutral: the same colours without their hue, a fifth darker (the
+        // palettes of AutoCAD go from #3B4453 to #2C2C2C under it: a card #2F2F2F sits by
+        // them); the texts keep their lightness, the blue of what is picked and the red stay.
+        static readonly Dictionary<string, string> NeutralColors = new Dictionary<string, string>
+        {
+            ["Back"] = "#232323", ["Surface"] = "#2F2F2F", ["Border"] = "#383838", ["BorderStrong"] = "#474747",
+            ["Text"] = "#EBEBEB", ["Heading"] = "#FFFFFF", ["Muted"] = "#AFAFAF", ["Disabled"] = "#7B7B7B",
+            ["Hover"] = "#3F3F3F", ["Pressed"] = "#4D4D4D", ["Input"] = "#272727", ["InputBorder"] = "#474747",
+            ["Accent"] = "#0696D7", ["AccentHover"] = "#22A9E8", ["AccentText"] = "#FFFFFF", ["ErrorText"] = "#FF8F85",
+            ["TitleBar"] = "#1C1C1C", ["TitleText"] = "#EBEBEB", ["ButtonBack"] = "#373737",
         };
         static readonly Dictionary<string, string> LightColors = new Dictionary<string, string>
         {
@@ -191,7 +215,8 @@ namespace DynALisp.Windows
         public static ResourceDictionary Brushes(bool dark)
         {
             var d = new ResourceDictionary();
-            foreach (var kv in dark ? DarkColors : LightColors)
+            var colors = !dark ? LightColors : Neutral() ? NeutralColors : DarkColors;
+            foreach (var kv in colors)
             {
                 var b = new SolidColorBrush((Color)ColorConverter.ConvertFromString(kv.Value));
                 b.Freeze();
@@ -199,7 +224,7 @@ namespace DynALisp.Windows
             }
             // The hatches of the sketches (Dyl.Sketch.* of Theme.xaml): lines of the muted
             // ink, at 45 and -45 degrees, as the sketches of the docs:
-            var ink = (Color)ColorConverter.ConvertFromString((dark ? DarkColors : LightColors)["Muted"]);
+            var ink = (Color)ColorConverter.ConvertFromString(colors["Muted"]);
             d["Dyl.HatchA"] = Hatch(ink, 45);
             d["Dyl.HatchB"] = Hatch(ink, -45);
             return d;

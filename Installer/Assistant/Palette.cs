@@ -18,7 +18,9 @@
 // a conversation changes as it goes, so it is not a window file of Res. It wears the theme of
 // the windows of DynALisp (Theme of DynALisp.Windows.dll, found by reflection; plain colours
 // when that plugin is not loaded), in the light or dark theme of AutoCAD (COLORTHEME), and
-// follows it when it changes.
+// follows it when it changes; dark, in the neutral greys of that theme under the DynALisp
+// Neutral interface of Dyl-Settings > Display, checked again when the palette is shown or the
+// mouse comes over it (the settings are saved while it is open).
 //
 //   top       New chat, the model (Sonnet, Opus: a view choice, kept for the session),
 //             Open Docs
@@ -130,7 +132,7 @@ namespace DynALisp.Assistant
             catch { }
         }
 
-        static bool Dark()
+        internal static bool Dark()
         {
             try { return Convert.ToInt32(AcApp.GetSystemVariable("COLORTHEME")) == 0; }
             catch { return false; }
@@ -167,6 +169,8 @@ namespace DynALisp.Assistant
         {
             SetResourceReference(BackgroundProperty, "Dyl.Back");
             SetResourceReference(ForegroundProperty, "Dyl.Text");
+            IsVisibleChanged += (a, b) => { if (IsVisible) Follow(); };
+            MouseEnter += (a, b) => Follow();
             FontFamily = new FontFamily("Segoe UI");
             FontSize = 12.5;
             TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
@@ -263,12 +267,26 @@ namespace DynALisp.Assistant
 
         // ---- theme ------------------------------------------------------------------
 
+        string _theme;
+
+        // The theme again when the Interface of Dyl-Settings changed, the brushes made only then:
+        void Follow()
+        {
+            if (_theme != null) SetTheme(Palette.Dark());
+        }
+
         public void SetTheme(bool dark)
         {
-            var md = Resources.MergedDictionaries;
-            md.Clear();
             var t = AppDomain.CurrentDomain.GetAssemblies()
                 .FirstOrDefault(a => a.GetName().Name == "DynALisp.Windows")?.GetType("DynALisp.Windows.Theme");
+            bool neutral = false;
+            try { neutral = dark && t?.GetMethod("Neutral", BindingFlags.Public | BindingFlags.Static)?.Invoke(null, null) is true; }
+            catch { }
+            string key = (dark ? "dark" : "light") + (neutral ? " neutral" : "");
+            if (key == _theme) return;
+            _theme = key;
+            var md = Resources.MergedDictionaries;
+            md.Clear();
             ResourceDictionary brushes = null, styles = null;
             try
             {
