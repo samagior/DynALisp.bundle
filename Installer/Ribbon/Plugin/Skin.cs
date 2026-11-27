@@ -29,15 +29,20 @@
 // (Installer\Windows\Engine\Session.cs) and get darker, the light ones (the texts) take their
 // hue, the saturated ones (the blue of what is picked) and the icons stay as they are.
 //
-// The theme is changed in place when AutoCAD left it unfrozen (its controls follow at once),
-// or as a copy made current when it is frozen. Turned off, the colours it had are given back.
+// The theme is put in a copy made current, so AutoCAD tells every part drawn from it (the
+// title bar keeps its own copy of the colours, read when a theme is made current); changed in
+// place when AutoCAD takes the copy back twice, and it is not frozen. Turned off, the colours it had are given back.
 // Everything is done when AutoCAD is idle with no command running (Host.OnIdle), at most once
 // a second; anything not found (another version of AdWindows) leaves the ribbon as it is and
 // says why in (Dyl:RibbonSkin).
 //
-// On while Display is on in Dyl-Settings (DynalispDisplayOn) and its Ribbon (DynalispRibbonColors)
-// or Palettes (DynalispPaletteColors) is DynALisp, read here from the registry when the plugin
-// loads, and again when the Lisp side calls (Dyl:RibbonSkin) after the settings are saved.
+// On while Display is on in Dyl-Settings (DynalispDisplayOn) and its Interface
+// (DynalispInterface) is DynALisp or DynALisp Neutral, read here from the registry when the
+// plugin loads, and again when the Lisp side calls (Dyl:RibbonSkin) after the settings are
+// saved; the former Palettes and Ribbon settings (DynalispPaletteColors, DynalispRibbonColors)
+// are read in its place while it is not set. The WPF parts with a theme of their own (the
+// file tabs) follow by Hosted.cs, the themes in C++ (the native lists, the title bar) by
+// CppThemes.cs.
 
 using System;
 using System.Collections.Generic;
@@ -81,6 +86,27 @@ namespace DynALisp.Ribbon
                     foreach (var line in WebPages.Report()) wb.Add(new TypedValue((int)LispDataType.Text, line));
                     return wb;
                 }
+                if (string.Equals(which, "Timeline", StringComparison.OrdinalIgnoreCase))
+                {
+                    // What was done when since the plugin loaded, in a text file of %TEMP%:
+                    string file = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "DynALisp-Timeline.txt");
+                    var lines = Skin.TimelineReport();
+                    lines.Insert(0, "DynALisp - the colours of the interface, what was done when (" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + ")");
+                    System.IO.File.WriteAllLines(file, lines);
+                    return file + " (" + lines.Count + " lines)";
+                }
+                if (string.Equals(which, "Hosted", StringComparison.OrdinalIgnoreCase))
+                {
+                    // What still shows the blue-greys of AutoCAD, long, in a text file of %TEMP%:
+                    string file = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "DynALisp-Hosted.txt");
+                    // "Push": the current CAcColorTheme given to the native themes (an experiment):
+                    if (args.AsArray().Any(v => string.Equals(v.Value as string, "Push", StringComparison.OrdinalIgnoreCase)))
+                        return CppThemes.Push();
+                    // "Colors": the colour themes of AutoCAD in C++, read only:
+                    var lines = Hosted.Report(args.AsArray().Any(v => string.Equals(v.Value as string, "Colors", StringComparison.OrdinalIgnoreCase)));
+                    System.IO.File.WriteAllLines(file, lines);
+                    return file + " (" + lines.Count + " lines)";
+                }
                 if (string.Equals(which, "Native", StringComparison.OrdinalIgnoreCase))
                 {
                     // What was found of the native palettes, one string each (a diagnostic);
@@ -95,7 +121,7 @@ namespace DynALisp.Ribbon
                 }
                 if (!string.Equals(which, "Palettes", StringComparison.OrdinalIgnoreCase)) return Skin.Ribbon.Status();
                 string st = Skin.Palettes.Status();
-                return Skin.Palettes.Wanted && Skin.Dark() ? st + "; " + NativeThemes.Status() : st;
+                return Skin.Palettes.Wanted && Skin.Dark() ? st + "; " + NativeThemes.Status() + "; " + CppThemes.Status() : st;
             }
             catch (System.Exception ex) { return "error: " + ex.Message; }
         }
@@ -114,6 +140,9 @@ namespace DynALisp.Ribbon
         }
 
         public bool Wanted;
+        // The look chosen (DynALisp or DynALisp Neutral), and the one the theme was put in:
+        public Look Look = Look.DynALisp;
+        Look _applied;
         string _fail;
         // The theme changed in place: (object, property, value it had), to give them back.
         readonly List<(object Node, PropertyInfo Prop, object Was)> _changed = new();
@@ -123,10 +152,21 @@ namespace DynALisp.Ribbon
         // The themes AutoCAD made current again after one was put in the colours of DynALisp:
         // past Limit, AutoCAD fights back (they would flicker), and the target gives up.
         public int Again;
-        bool _gaveUp;
+        bool _gaveUp, _waiting;
         const int Limit = 5;
+        // A copy of the theme made current even when it is not frozen, until AutoCAD made
+        // another one current CopyTries times:
+        public bool Copy = true;
+        const int CopyTries = 2;
 
         public bool Busy => Wanted || _inPlace != null || _copy != null;
+
+        // In the look (or not wanted, given up, AutoCAD light): the cover can be taken away.
+        public bool Done => !Wanted || _gaveUp || !Skin.Dark() || ((_inPlace != null || _copy != null) && _applied == Look);
+
+        // The themes this target changed or made current, and the one a copy was made from
+        // (Hosted.cs leaves them to it):
+        public IEnumerable<object> Themes() => new[] { _inPlace, _copy, _orig, Current() }.Where(t => t != null);
 
         public string Status()
         {
@@ -134,9 +174,10 @@ namespace DynALisp.Ribbon
             if (_gaveUp) return "given up: AutoCAD made " + Again + " other themes current";
             if (_fail != null) return "not found: " + _fail;
             if (!Skin.Dark()) return "waiting for the dark theme";
-            if (_inPlace != null) return "DynALisp (" + _count + " colours)";
-            if (_copy != null) return "DynALisp (" + _count + " colours, copy of the theme)";
-            return "DynALisp (on the next idle)";
+            if (_waiting && _inPlace == null && _copy == null) return "waiting: its theme is frozen and cannot be copied";
+            if (_inPlace != null) return Look.Name + " (" + _count + " colours)";
+            if (_copy != null) return Look.Name + " (" + _count + " colours, copy of the theme)";
+            return Look.Name + " (on the next idle)";
         }
 
         object Current()
@@ -158,20 +199,37 @@ namespace DynALisp.Ribbon
             _fail = null;
             if (Wanted && Skin.Dark())
             {
-                if (_gaveUp || ReferenceEquals(cur, _inPlace) || ReferenceEquals(cur, _copy)) return;
-                // Another theme made current by AutoCAD: the former one given back first.
-                if (_inPlace != null || _copy != null) Again++;
+                bool same = ReferenceEquals(cur, _inPlace) || ReferenceEquals(cur, _copy);
+                if (_gaveUp || same && _applied == Look) return;
+                // Another theme made current by AutoCAD (or another look chosen): the former
+                // one given back first.
+                if (!same && (_inPlace != null || _copy != null)) Again++;
                 Undo();
+                if (same) cur = Current();
                 if (Again > Limit) { _gaveUp = true; Host.Log(Name + " colours: given up, " + Again + " themes made current"); return; }
-                if (Skin.Unfrozen(cur))
+                // A copy made current when it may be: AutoCAD tells every part drawn from the
+                // theme that it changed (the title bar of AutoCAD keeps its own copy of the
+                // colours, read when a theme is made current); in place when AutoCAD made
+                // another theme current again too often (it takes the copy back).
+                // (a theme that cannot be copied, the one of the ribbon: in place when it may be)
+                object copy = null;
+                bool unfrozen = Skin.Unfrozen(cur);
+                if (!(unfrozen && !(Copy && Again < CopyTries)))
                 {
-                    _count = Skin.Filter(cur, _changed);
+                    copy = Skin.CopyOf(cur);
+                    if (copy == null && !unfrozen) { _waiting = true; return; }
+                }
+                _waiting = false;
+                if (copy == null)
+                {
+                    _count = Skin.Filter(cur, _changed, Look);
                     _inPlace = cur;
+                    _applied = Look;
                 }
                 else
                 {
-                    var copy = ((Freezable)cur).Clone();
-                    _count = Skin.Filter(copy, null);
+                    _count = Skin.Filter(copy, null, Look);
+                    _applied = Look;
                     _orig = cur;
                     _copy = copy;
                     _set(copy);
@@ -198,12 +256,33 @@ namespace DynALisp.Ribbon
         }
     }
 
+    // A look the greys of AutoCAD are put in: the value of the setting (Ribbon, Palettes), the
+    // hue and saturation the greys take, and how much darker the surfaces get.
+    public sealed class Look
+    {
+        public readonly string Name;
+        public readonly double Hue, MinSat, MaxSat, Darker;
+        Look(string name, double hue, double minSat, double maxSat, double darker)
+        {
+            Name = name; Hue = hue; MinSat = minSat; MaxSat = maxSat; Darker = darker;
+        }
+
+        // The greys of the DynALisp windows (#252A32, #313844: 217 degrees, 10 to 16 %):
+        // AutoCAD's dark panels (a lightness of about 28 %) come near the cards of the windows
+        // (#313844, 23 %).
+        public static readonly Look DynALisp = new Look("DynALisp", 217, 0.10, 0.16, 0.78);
+        // Its variant in a neutral grey, darker: no hue, the panels near 17 % (#2C2C2C), beside
+        // a model space almost black (#121212).
+        public static readonly Look Neutral = new Look("DynALisp Neutral", 0, 0, 0, 0.62);
+
+        static readonly Look[] All = { DynALisp, Neutral };
+
+        // The look of a value of the setting, null for any other (not set, off):
+        public static Look Of(string name) => All.FirstOrDefault(l => l.Name == name);
+    }
+
     public static class Skin
     {
-        // The hue and the most saturation of the greys of the DynALisp windows (#252A32, #313844:
-        // 217 degrees, 15 %), and how much darker the surfaces get: AutoCAD's dark panels (a
-        // lightness of about 28 %) come near the cards of the windows (#313844, 23 %).
-        const double Hue = 217, MaxSat = 0.16, Darker = 0.78;
         // A colour more saturated than this is a colour, not a grey: it stays.
         const double Grey = 0.35;
         // A colour lighter than this is a text or a light line: it only takes the hue.
@@ -222,25 +301,97 @@ namespace DynALisp.Ribbon
         static bool _due = true;
         static int _next = Environment.TickCount;
 
+        // How often the colours are checked: every 100 ms for 20 s after the plugin loads, the
+        // settings are read again, COLORTHEME changes or a drawing is opened (the palettes,
+        // the tabs and their themes are made one after the other then, and each would show the
+        // blue-greys of AutoCAD for a second or two), once a second after that (Hosted.cs and
+        // CppThemes.cs every 2 s).
+        static int _fastUntil = Environment.TickCount + Fast;
+        const int Fast = 20000;
+        public static bool Settling => Environment.TickCount - _fastUntil < 0;
+
+        // While Settling, a timer of the dispatcher calls OnIdle too: AutoCAD raises no Idle
+        // while it opens the first drawing and runs its startup (the Lisp of the drawings), the
+        // time its palettes and tabs are made, and each stayed in the blue-greys of AutoCAD
+        // until then.
+        static System.Windows.Threading.DispatcherTimer _timer;
+
+        // What was done when, from the time the plugin loaded (Dyl:RibbonSkin "Timeline"):
+        // each status that changed, the idle gaps longer than 300 ms, the main window shown.
+        static readonly System.Diagnostics.Stopwatch Clock = System.Diagnostics.Stopwatch.StartNew();
+        static readonly List<string> Timeline = new();
+        static readonly Dictionary<string, string> LastStatus = new();
+        static long _lastTick = -1;
+        static bool _shown;
+
+        public static void Mark(string what)
+        {
+            if (Timeline.Count < 400) Timeline.Add(Clock.ElapsedMilliseconds.ToString().PadLeft(7) + " ms  " + what);
+        }
+
+        static void Timed(string name, Action step)
+        {
+            long t0 = Clock.ElapsedMilliseconds;
+            step();
+            long d = Clock.ElapsedMilliseconds - t0;
+            if (d > 50) Mark(name + " took " + d + " ms");
+        }
+
+        public static List<string> TimelineReport() => new List<string>(Timeline);
+
+        static void Track(string name, Func<string> status)
+        {
+            string s;
+            try { s = status(); } catch (System.Exception ex) { s = "error: " + ex.Message; }
+            if (LastStatus.TryGetValue(name, out var was) && was == s) return;
+            LastStatus[name] = s;
+            Mark(name + ": " + s);
+        }
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr hwnd);
+        public static void Settle() => _fastUntil = Environment.TickCount + Fast;
+
         public static void Start()
         {
             Read();
             AcApp.SystemVariableChanged += (s, e) =>
             {
-                if (string.Equals(e.Name, "COLORTHEME", StringComparison.OrdinalIgnoreCase)) _due = true;
+                if (string.Equals(e.Name, "COLORTHEME", StringComparison.OrdinalIgnoreCase)) { _due = true; Settle(); }
             };
+            AcApp.DocumentManager.DocumentCreated += (s, e) => { Mark("drawing opened"); Settle(); };
+            Mark("plugin loaded");
+            try
+            {
+                _timer = new System.Windows.Threading.DispatcherTimer(System.Windows.Threading.DispatcherPriority.Normal)
+                { Interval = TimeSpan.FromMilliseconds(100) };
+                _timer.Tick += (s, e) => { if (Settling) Tick("timer"); };
+                _timer.Start();
+            }
+            catch (System.Exception ex) { Mark("timer: " + ex.Message); }
+            // A dark cover over AutoCAD until the ribbon and the palettes are in the look (Cover.cs):
+            if (Palettes.Wanted && Dark()) Cover.Show(Palettes.Look);
             // At once, as the plugin loads with AutoCAD: the palettes and the ribbon are drawn
             // in the colours of DynALisp from the start, never first in those of AutoCAD.
-            OnIdle();
+            Tick("load");
         }
 
         // The settings, from the registry (setenv / getenv: FixedProfile\General):
         public static void Read()
         {
             bool on = Env("DynalispDisplayOn") == "1";
-            foreach (var t in Targets) t.Wanted = on && Env(t.Setting) == "DynALisp";
+            // The Interface of Display (DynalispInterface) colours them all; before it, the
+            // Ribbon and the Palettes were each a setting of their own (still read, until saved).
+            string ifc = new[] { "DynalispInterface", Palettes.Setting, Ribbon.Setting }
+                .Select(Env).FirstOrDefault(v => !string.IsNullOrEmpty(v));
+            foreach (var t in Targets)
+            {
+                var look = Look.Of(ifc);
+                t.Wanted = on && look != null;
+                if (look != null) t.Look = look;
+            }
             _due = true;
             _next = Environment.TickCount;
+            Settle();
         }
 
         static string Env(string name)
@@ -261,18 +412,47 @@ namespace DynALisp.Ribbon
         }
 
         // Run by Host.OnIdle: the skin put on, kept on (AutoCAD makes another theme current when
-        // COLORTHEME changes or the ribbon is made again) or taken off, once a second at most.
-        public static void OnIdle()
+        // COLORTHEME changes or the ribbon is made again) or taken off, once a second at most
+        // (every 100 ms while Settling).
+        public static void OnIdle() => Tick("idle");
+
+        static void Tick(string from)
         {
+            long now = Clock.ElapsedMilliseconds;
+            if (from == "idle")
+            {
+                if (_lastTick >= 0 && now - _lastTick > 300 && Timeline.Count < 400) Mark("no idle for " + (now - _lastTick) + " ms");
+                _lastTick = now;
+            }
+            if (!_shown)
+            {
+                try { if (AcApp.MainWindow != null && IsWindowVisible(AcApp.MainWindow.Handle)) { _shown = true; Mark("main window shown (" + from + ")"); } } catch { }
+            }
+            if (Cover.Shown) Cover.Check(Ribbon.Done && Palettes.Done);
             if (!_due && !Targets.Any(t => t.Busy)) return;
             if (Environment.TickCount - _next < 0) return;
-            _next = Environment.TickCount + 1000;
+            _next = Environment.TickCount + (Settling ? 100 : 1000);
             _due = false;
-            foreach (var t in Targets) t.Apply();
+            bool on = Palettes.Wanted && Dark();
+            // Each step timed for the Timeline (one of more than 50 ms is marked); the title bar
+            // and the lists of the palettes first, the cheapest and most seen:
+            // The themes in C++ of the native lists and buttons and of the title bar:
+            Timed("C++", () => CppThemes.Apply(on, Palettes.Look));
             // The palettes written in C++ (Properties), by their native themes:
-            NativeThemes.Apply(Palettes.Wanted && Dark());
+            Timed("native", () => NativeThemes.Apply(on, Palettes.Look));
+            foreach (var t in Targets) Timed(t.Name, t.Apply);
+            // The WPF parts with a theme of their own (the file tabs):
+            Timed("hosted", () => Hosted.Apply(on, Palettes.Look));
             // The web pages (Start), by a script in their browser:
-            WebPages.Apply(Palettes.Wanted && Dark());
+            Timed("web", () => WebPages.Apply(on, Palettes.Look));
+            if (Timeline.Count < 400)
+            {
+                Track("ribbon", Ribbon.Status);
+                Track("palettes", Palettes.Status);
+                Track("native", NativeThemes.Status);
+                Track("hosted", Hosted.Status);
+                Track("C++", CppThemes.Status);
+            }
         }
 
         // ---- the walk of the theme ----
@@ -286,6 +466,30 @@ namespace DynALisp.Ribbon
         static IEnumerable<PropertyInfo> Props(object node) =>
             node.GetType().GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(p => p.CanRead && p.GetIndexParameters().Length == 0);
+
+        // The theme and every part of it, for Hosted.cs: they are filtered here, never there.
+        public static void Parts(object node, HashSet<object> into)
+        {
+            if (node == null || !into.Add(node)) return;
+            foreach (var p in Props(node))
+            {
+                object v;
+                try { v = p.GetValue(node); } catch { continue; }
+                if (v is Freezable && IsPart(v.GetType())) Parts(v, into);
+            }
+        }
+
+        // A copy of a theme, of its own type, or null: the Theme of the ribbon, frozen while
+        // AutoCAD starts, clones into a RibbonTheme, which ComponentManager.CurrentTheme does
+        // not take; a new Theme given its values, even part by part, drew the quick access
+        // toolbar and the InfoCenter light (tried twice in AutoCAD 2027: their colours are not
+        // in properties a copy reaches), so the target waits until AutoCAD makes a theme current
+        // that can be changed in place (about 3 s after it starts).
+        public static object CopyOf(object cur)
+        {
+            var c = ((Freezable)cur).Clone();
+            return cur.GetType().IsInstanceOfType(c) ? c : null;
+        }
 
         public static bool Unfrozen(object theme)
         {
@@ -309,10 +513,16 @@ namespace DynALisp.Ribbon
 
         // Every colour of the theme through Map; keep (in place): where to remember what it was.
         // Returns how many were changed.
-        public static int Filter(object theme, List<(object, PropertyInfo, object)> keep)
+        // The look the filter puts the colours in, while a theme is filtered:
+        static Look _look = Look.DynALisp;
+
+        public static int Filter(object theme, List<(object, PropertyInfo, object)> keep, Look look)
         {
             var seen = new HashSet<object>(ReferenceEqualityComparer.Instance);
-            return Filter(theme, keep, seen);
+            var was = _look;
+            _look = look;
+            try { return Filter(theme, keep, seen); }
+            finally { _look = was; }
         }
 
         static int Filter(object node, List<(object, PropertyInfo, object)> keep, HashSet<object> seen)
@@ -369,18 +579,20 @@ namespace DynALisp.Ribbon
 
         // A colour of AutoCAD's dark theme in the dark of the DynALisp windows: a grey (not
         // saturated) takes their hue; a dark one gets darker; a saturated one stays.
-        public static Color Map(Color c)
+        public static Color Map(Color c) => Map(c, _look);
+
+        public static Color Map(Color c, Look look)
         {
             if (c.A == 0) return c;
             ToHsl(c, out double h, out double s, out double l);
             if (s > Grey && l > 0.08 && l < 0.92) return c;
-            if (l < Light) l *= Darker;
-            return FromHsl(c.A, Hue, Math.Min(Math.Max(s, 0.10), MaxSat), l);
+            if (l < Light) l *= look.Darker;
+            return FromHsl(c.A, look.Hue, Math.Min(Math.Max(s, look.MinSat), look.MaxSat), l);
         }
 
         public static double Lightness(Color c) { ToHsl(c, out _, out _, out double l); return l; }
 
-        static void ToHsl(Color c, out double h, out double s, out double l)
+        internal static void ToHsl(Color c, out double h, out double s, out double l)
         {
             double r = c.R / 255.0, g = c.G / 255.0, b = c.B / 255.0;
             double max = Math.Max(r, Math.Max(g, b)), min = Math.Min(r, Math.Min(g, b));

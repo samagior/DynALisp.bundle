@@ -74,6 +74,8 @@ namespace DynALisp.Windows
             // places every window, a window of tabs the same way for every tab)
             Modeless.ShowWindow = w => AcApp.ShowModelessWindow(Bridge.MainWindow(), w, false);
             Modeless.Run = Run;
+            // The dark windows in the neutral greys under the DynALisp Neutral interface:
+            Theme.NeutralOf = Bridge.NeutralInterface;
         }
 
         static bool Run(string expr)
@@ -185,6 +187,25 @@ namespace DynALisp.Windows
             }
             rb.Add(new TypedValue((int)LispDataType.ListEnd));
             return rb;
+        }
+
+        // The Interface of Dyl-Settings > Display (DynalispInterface, the former
+        // DynalispPaletteColors while it is not set) is DynALisp Neutral, with Display on:
+        // the user settings (getenv) of the FixedProfile of AutoCAD.
+        internal static bool NeutralInterface()
+        {
+            try
+            {
+                string root = HostApplicationServices.Current.UserRegistryProductRootKey;
+                using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(root + @"\FixedProfile\General"))
+                {
+                    if (key == null || key.GetValue("DynalispDisplayOn") as string != "1") return false;
+                    string v = key.GetValue("DynalispInterface") as string;
+                    if (string.IsNullOrEmpty(v)) v = key.GetValue("DynalispPaletteColors") as string;
+                    return v == "DynALisp Neutral";
+                }
+            }
+            catch { return false; }
         }
 
         // The theme of AutoCAD: COLORTHEME 0 dark, 1 light:

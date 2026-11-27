@@ -1,4 +1,4 @@
-;; Dyl-EnvColor - Dynalisp display colors: backgrounds, crosshairs, theme
+;; Dyl-EnvColor - Dynalisp display colors: interface, backgrounds, crosshairs
 ;; Copyright (C) 2026  Samuel Martineau
 ;;
 ;; This program is free software: you can redistribute it and/or modify
@@ -21,79 +21,83 @@
 ;;  The display settings of Dyl-Settings (Display in Overrides, its open button opening
 ;;  the display window). Display on (DynalispDisplayOn user setting, off by default),
 ;;  each drawing opened applies the display settings chosen (Remote>>Dyl:DisplayApply,
-;;  run by dynalisp.mnl); off, the display preferences are left as they are.
+;;  run by dynalisp.mnl); off, the display preferences are left as they are. The theme
+;;  of AutoCAD (COLORTHEME) is never set here: it is the one chosen in AutoCAD.
 ;;
-;;  Each display setting is a name, "" or missing: not set, the current value kept:
-;;    - Model space (DynalispBackground): the model space background, DynALisp, Black,
-;;      Default (blue-grey, the AutoCAD default) or White.
-;;    - Layouts (DynalispLayoutBackground): the paper of the layouts and the background
-;;      around it, DynALisp, Black or Default (white paper on light grey, the AutoCAD
-;;      default).
-;;    - Theme (DynalispColorTheme): the theme of AutoCAD (COLORTHEME), Dark or Light,
-;;      which the DynALisp windows follow too.
-;;    - Ribbon (DynalispRibbonColors): DynALisp, the ribbon of AutoCAD in the dark of the
-;;      DynALisp windows while AutoCAD is in its dark theme, an experiment that Autodesk
-;;      does not support: done by DynALisp.Ribbon.dll (Installer\Ribbon\Plugin\Skin.cs),
-;;      which reads these settings itself and again when (Dyl:RibbonSkin) is called.
-;;    - Palettes (DynalispPaletteColors): DynALisp, the same for the palettes of AutoCAD
-;;      (Properties...), its status bar, file tabs and command line, by the same plugin
-;;      ((Dyl:RibbonSkin "Palettes") says what it does with them).
+;;  Each display setting is a name, "" or missing: not set:
+;;    - Interface (DynalispInterface): the look of the whole interface, DynALisp or
+;;      DynALisp Neutral (*ec:looks*). Its ribbon, palettes (Properties...), status bar,
+;;      file tabs, command line and Start page, while AutoCAD is in its dark theme, by
+;;      DynALisp.Ribbon.dll (Installer\Ribbon\Plugin\Skin.cs, an experiment that Autodesk
+;;      does not support), which reads these settings itself and again when
+;;      (Dyl:RibbonSkin) is called; and the model space background, the paper of the
+;;      layouts and the background around it, set here. Not set: the colors of AutoCAD.
+;;    - Model space (DynalispBackground): the model space background in place of the one
+;;      of the interface, Black, Default (blue-grey, the AutoCAD default) or White, the
+;;      rest of the interface left as it is. Not set: the one of the interface.
+;;    - Layouts (DynalispLayoutBackground): the paper of the layouts in place of the one
+;;      of the interface, White or Black, the background around it left to the
+;;      interface. Not set: the one of the interface.
 ;;  Each background comes with a crosshair color that stays readable on it. DynALisp is
 ;;  the dark of the DynALisp windows (Installer\Windows\Engine\Session.cs, Theme): the
 ;;  model space and the background around the paper a little darker than their title
 ;;  bar (#181B20), dark without being black, the paper in the color of their background
-;;  (#252A32), the crosshairs in the color of their text (#E6EAF0). The colors are the
-;;  display preferences (Options > Display > Colors), the background around the paper
-;;  the "Paper background" setting of the profile, which Options does not show: user
-;;  profile settings, so they apply to every drawing.
+;;  (#252A32), the crosshairs in the color of their text (#E6EAF0). DynALisp Neutral is
+;;  its variant in a neutral grey, darker: the model space and the background around the
+;;  paper almost black (#121212), the paper a little lighter (#1E1E1E), the crosshairs
+;;  light grey (#E6E6E6), the ribbon and the palettes in greys without hue. The colors
+;;  are the display preferences (Options > Display > Colors), the background around the
+;;  paper the "Paper background" setting of the profile, which Options does not show:
+;;  user profile settings, so they apply to every drawing.
 ;;
-;;  File tabs (DynalispFileTabColors): Project or Sheet set, a band of colour on the file
-;;  tab of each drawing of a project (the first folder holding a .apj from the folder of the
-;;  drawing up, as Remote>>Dyl:RevProject) or of a sheet set (a .dst, as Dyl-OpenFolder), the
-;;  same colour for every drawing of a project: done by DynALisp.Ribbon.dll
-;;  (Installer\Ribbon\Plugin\FileTabs.cs), an experiment too, which reads these settings
-;;  itself and again when (Dyl:RibbonFileTabs) is called.
+;;    - File tabs (DynalispFileTabColors): Project or Sheet set, a band of colour on the
+;;      file tab of each drawing of a project (the first folder holding a .apj from the
+;;      folder of the drawing up, as Remote>>Dyl:RevProject) or of a sheet set (a .dst, as
+;;      Dyl-OpenFolder), the same colour for every drawing of a project: done by
+;;      DynALisp.Ribbon.dll (Installer\Ribbon\Plugin\FileTabs.cs), an experiment too, which
+;;      reads these settings itself and again when (Dyl:RibbonFileTabs) is called.
+;;
+;;  The former settings Ribbon and Palettes (DynalispRibbonColors, DynalispPaletteColors)
+;;  are read as the Interface while it is not set, and Theme (DynalispColorTheme) is no
+;;  longer applied.
 ;;
 ;;  Use in an App:
-;;    (Remote>>Dyl:Background 'model)          -> "DynALisp", "Black", "Default" or
-;;                                                "White", nil for any other color
-;;    (Remote>>Dyl:BackgroundSet 'layout "Default") -> sets the paper, its crosshair
-;;                                                and the background around it
-;;    (Remote>>Dyl:Theme)                      -> "Dark" or "Light"
-;;    (Remote>>Dyl:ThemeSet "Dark")            -> sets COLORTHEME
+;;    (Remote>>Dyl:DisplayWant 'model)         -> (NAME BACKGROUND CROSSHAIR [AROUND])
+;;                                                wanted, nil when not set
+;;    (Remote>>Dyl:DisplayHas 'model)          -> T when the current colors are those
 ;;    (Remote>>Dyl:DisplayApply)               -> applies the display settings, returns
 ;;                                                a status line
 
 (vl-load-com)
 
-;;  The backgrounds of each context: (CONTEXT (BACKGROUND-PROP CROSSHAIR-PROP)
-;;  (NAME BACKGROUND CROSSHAIR [AROUND]) ...), colors as OLE values: R + G*256 + B*65536,
-;;  AROUND the background around the paper of a layout ("Paper background").
+;;  The looks of the interface: (NAME MODEL MODEL-CROSSHAIR PAPER PAPER-CROSSHAIR AROUND),
+;;  colors as OLE values: R + G*256 + B*65536.
+(setq *ec:looks*
+       '(("DynALisp" 2104088 15788774 3287589 15788774 2104088) ; RGB 24,27,32 / 230,234,240 / 37,42,50
+         ("DynALisp Neutral" 1184274 15132390 1973790 15132390 1184274) ; RGB 18,18,18 / 230,230,230 / 30,30,30
+        )
+)
+
+;;  The backgrounds that take the place of those of the interface: (CONTEXT
+;;  (BACKGROUND-PROP CROSSHAIR-PROP) (NAME BACKGROUND CROSSHAIR) ...).
 (setq *ec:colors*
        '((model (graphicswinmodelbackgrndcolor modelcrosshaircolor)
-                ("DynALisp" 2104088 15788774) ; RGB 24,27,32 / 230,234,240
                 ("Black" 0 16777215)
                 ("Default" 3155999 16777215) ; RGB 33,40,48
                 ("White" 16777215 0)
          )
          (layout (graphicswinlayoutbackgrndcolor layoutcrosshaircolor)
-                 ("DynALisp" 3287589 15788774 2104088) ; RGB 37,42,50 / 230,234,240 / 24,27,32
-                 ("Black" 0 16777215 3355443) ; around: RGB 51,51,51
-                 ("Default" 16777215 0 12566463) ; around: RGB 191,191,191
+                 ("White" 16777215 0)
+                 ("Black" 0 16777215)
          )
         )
 )
 
-;;  The themes of AutoCAD: (NAME . COLORTHEME)
-(setq *ec:themes* '(("Dark" . 0) ("Light" . 1)))
-
-;;  The display settings, in this order: (KEY CONTEXT), CONTEXT a context of
-;;  *ec:colors*, theme, ribbon or palettes:
-(setq *ec:prefs* '(("DynalispBackground" model)
+;;  The display settings, in this order: (KEY CONTEXT), CONTEXT interface, model or
+;;  layout:
+(setq *ec:prefs* '(("DynalispInterface" interface)
+                   ("DynalispBackground" model)
                    ("DynalispLayoutBackground" layout)
-                   ("DynalispColorTheme" theme)
-                   ("DynalispRibbonColors" ribbon)
-                   ("DynalispPaletteColors" palettes)
                    ("DynalispFileTabColors" tabs)
                   )
 )
@@ -105,12 +109,24 @@
   (if (and (setq v (getenv "Paper background")) (/= "" v)) (atoi v))
 )
 
-;;  Names of the choices of a context (model, layout, theme, ribbon, palettes or tabs):
+;;  A display preference as an OLE color, nil when it cannot be read:
+(defun ec:get (prop / c)
+  (if (not (vl-catch-all-error-p
+             (setq c (vl-catch-all-apply
+                       '(lambda () (vlax-variant-value (vlax-variant-change-type (vlax-get-property (ec:display) prop) vlax-vblong)))
+                     )
+             )
+           )
+      )
+    c
+  )
+)
+
+;;  Names of the choices of a context (interface, model, layout or tabs):
 (defun Remote>>Dyl:DisplayNames (ctx)
   (cond
-    ((member ctx '(ribbon palettes)) '("DynALisp"))
-    ((mapcar 'car (if (= ctx 'theme) *ec:themes* (cddr (assoc ctx *ec:colors*)))))
     ((= ctx 'tabs) '("Project" "Sheet set"))
+    ((mapcar 'car (if (= ctx 'interface) *ec:looks* (cddr (assoc ctx *ec:colors*)))))
   )
 )
 
@@ -120,52 +136,46 @@
   (if Dyl:RibbonSkin (Dyl:RibbonSkin))
 )
 
-;;  Name of the current background of a context (model or layout), nil when it is not
-;;  one of *ec:colors*:
-(defun Remote>>Dyl:Background (ctx / e c)
-  (if
-    (and (setq e (assoc ctx *ec:colors*))
-         (not (vl-catch-all-error-p
-                (setq c (vl-catch-all-apply
-                          '(lambda ()
-                             (vlax-variant-value
-                               (vlax-variant-change-type (vlax-get-property (ec:display) (car (cadr e))) vlax-vblong)
-                             )
-                           )
-                        )
-                )
-              )
-         )
-    )
-    (car (vl-some '(lambda (b) (if (and (= c (cadr b)) (or (not (cadddr b)) (eq (cadddr b) (ec:around)))) b))
-                  (cddr e)
-         )
+;;  What a context (model or layout) is set to while Display is on: (NAME BACKGROUND
+;;  CROSSHAIR [AROUND]), the background chosen in place of the one of the interface, or
+;;  the one of the interface; the background around the paper is the one of the
+;;  interface. nil when neither is set:
+(defun Remote>>Dyl:DisplayWant (ctx / pref own look)
+  (setq pref (Remote>>Dyl:DisplayPref)
+        own  (assoc (if (= ctx 'model) (cadr pref) (caddr pref)) (cddr (assoc ctx *ec:colors*)))
+        look (assoc (car pref) *ec:looks*)
+  )
+  (cond
+    ((= ctx 'model) (cond (own) (look (list (car look) (nth 1 look) (nth 2 look)))))
+    ((or own look)
+     (append (cond (own) ((list (car look) (nth 3 look) (nth 4 look)))) (if look (list (nth 5 look))))
     )
   )
 )
 
-;;  Set the background of a context (model or layout), its crosshair color and the
-;;  background around the paper of a layout (name of *ec:colors*):
-(defun Remote>>Dyl:BackgroundSet (ctx name / e b)
-  (if (and (setq e (assoc ctx *ec:colors*)) (setq b (assoc name (cddr e))))
+;;  T when the colors of a context are those it is set to (or nothing is wanted):
+(defun Remote>>Dyl:DisplayHas (ctx / w props)
+  (setq w     (Remote>>Dyl:DisplayWant ctx)
+        props (cadr (assoc ctx *ec:colors*))
+  )
+  (or (not w)
+      (and (= (cadr w) (ec:get (car props)))
+           (= (caddr w) (ec:get (cadr props)))
+           (or (not (cadddr w)) (eq (cadddr w) (ec:around)))
+      )
+  )
+)
+
+;;  Set a context to what it is wanted to be (Remote>>Dyl:DisplayWant), its name:
+(defun ec:set (ctx / w props)
+  (if (setq w (Remote>>Dyl:DisplayWant ctx))
     (progn
-      (vlax-put-property (ec:display) (car (cadr e)) (cadr b))
-      (vlax-put-property (ec:display) (cadr (cadr e)) (caddr b))
-      (if (cadddr b) (setenv "Paper background" (itoa (cadddr b))))
-      name
+      (setq props (cadr (assoc ctx *ec:colors*)))
+      (vlax-put-property (ec:display) (car props) (cadr w))
+      (vlax-put-property (ec:display) (cadr props) (caddr w))
+      (if (cadddr w) (setenv "Paper background" (itoa (cadddr w))))
+      (car w)
     )
-  )
-)
-
-;;  Name of the current theme of AutoCAD (COLORTHEME), nil when it is unknown:
-(defun Remote>>Dyl:Theme ()
-  (car (vl-some '(lambda (e) (if (= (getvar "COLORTHEME") (cdr e)) e)) *ec:themes*))
-)
-
-;;  Set the theme of AutoCAD (name of *ec:themes*):
-(defun Remote>>Dyl:ThemeSet (name / e)
-  (if (setq e (assoc name *ec:themes*))
-    (progn (setvar "COLORTHEME" (cdr e)) name)
   )
 )
 
@@ -182,57 +192,67 @@
   (ec:ribbon)
 )
 
-;;  The display settings chosen, in the order of *ec:prefs*: (MODEL LAYOUT THEME RIBBON
-;;  PALETTES TABS), each a name, nil when it is not set:
+;;  The display settings chosen, in the order of *ec:prefs*: (INTERFACE MODEL LAYOUT TABS),
+;;  each a name, nil when it is not set. The Interface not set is the former Palettes
+;;  or Ribbon setting:
 (defun Remote>>Dyl:DisplayPref ()
   (mapcar '(lambda (p / name)
              (setq name (getenv (car p)))
+             (if (and (= (cadr p) 'interface) (member name '(nil "")))
+               (setq name (cond ((vl-some '(lambda (k / v) (if (assoc (setq v (getenv k)) *ec:looks*) v))
+                                          '("DynalispPaletteColors" "DynalispRibbonColors")
+                                 )
+                                )
+                                (name)
+                          )
+               )
+             )
              (if (member name (Remote>>Dyl:DisplayNames (cadr p))) name)
            )
           *ec:prefs*
   )
 )
 
-;;  Choose the display settings, a list in the order of *ec:prefs* (nil: not set, the
-;;  current value kept):
+;;  Choose the display settings, a list in the order of *ec:prefs* (nil: not set); the
+;;  former Ribbon and Palettes settings are cleared, the Interface taking their place:
 (defun Remote>>Dyl:DisplayPrefSet (lst)
   (mapcar '(lambda (p name) (setenv (car p) (cond (name) ("")))) *ec:prefs* lst)
+  (foreach k '("DynalispPaletteColors" "DynalispRibbonColors" "DynalispColorTheme")
+    (if (getenv k) (setenv k ""))
+  )
   (ec:ribbon)
 )
 
-;;  Apply the display settings chosen while they are on: each one set when it differs,
-;;  the ribbon by its plugin. Returns a status line, nil when no display setting is
-;;  chosen:
+;;  Apply the display settings chosen while they are on: the model space and the layouts
+;;  set when they differ, the interface by the ribbon plugin. Returns a status line, nil
+;;  when no display setting is chosen:
 (defun Remote>>Dyl:DisplayApply (/ done rbn)
   (setq rbn (ec:ribbon))
   (if (Remote>>Dyl:DisplayOn-p)
     (progn
-      (mapcar
-        '(lambda (p name / ctx what)
-           (setq ctx  (cadr p)
-                 what (cdr (assoc ctx '((model . "model space ") (layout . "layouts ") (theme . "theme "))))
-           )
-           (cond
-             ((not name))
-             ((= ctx 'ribbon)
-              (setq done (cons (strcat "ribbon " (cond (rbn) ("plugin not loaded"))) done))
-             )
-             ((= ctx 'palettes)
-              (setq done (cons (strcat "palettes " (if Dyl:RibbonSkin (Dyl:RibbonSkin "Palettes") "plugin not loaded")) done))
-             )
-             ((= ctx 'tabs)
-              (setq done (cons (strcat "file tabs " (if Dyl:RibbonFileTabs (Dyl:RibbonFileTabs) "plugin not loaded")) done))
-             )
-             ((= name (if (= ctx 'theme) (Remote>>Dyl:Theme) (Remote>>Dyl:Background ctx)))
-              (setq done (cons (strcat what name) done))
-             )
-             ((if (= ctx 'theme) (Remote>>Dyl:ThemeSet name) (Remote>>Dyl:BackgroundSet ctx name))
-              (setq done (cons (strcat what "set to " name) done))
-             )
-           )
-         )
-        *ec:prefs*
-        (Remote>>Dyl:DisplayPref)
+      (if (car (Remote>>Dyl:DisplayPref))
+        (setq done (list (strcat "interface "
+                                 (if Dyl:RibbonSkin
+                                   (strcat "ribbon " (cond (rbn) ("?")) ", palettes " (Dyl:RibbonSkin "Palettes"))
+                                   "plugin not loaded"
+                                 )
+                         )
+                   )
+        )
+      )
+      (foreach c '((model . "model space ") (layout . "layouts "))
+        (cond
+          ((not (Remote>>Dyl:DisplayWant (car c))))
+          ((Remote>>Dyl:DisplayHas (car c))
+           (setq done (cons (strcat (cdr c) (car (Remote>>Dyl:DisplayWant (car c)))) done))
+          )
+          ((ec:set (car c))
+           (setq done (cons (strcat (cdr c) "set to " (car (Remote>>Dyl:DisplayWant (car c)))) done))
+          )
+        )
+      )
+      (if (cadddr (Remote>>Dyl:DisplayPref))
+        (setq done (cons (strcat "file tabs " (if Dyl:RibbonFileTabs (Dyl:RibbonFileTabs) "plugin not loaded")) done))
       )
       (if done
         (apply 'strcat (cons (car (reverse done)) (mapcar '(lambda (s) (strcat ", " s)) (cdr (reverse done)))))

@@ -134,8 +134,12 @@ namespace DynALisp.Ribbon
 
         // Run by Skin.OnIdle: on (the palettes wanted, AutoCAD dark) or off. A theme made later
         // (PropertyPalette, when Properties first opens) is found at the next call.
-        public static void Apply(bool on)
+        static Look _look = Look.DynALisp;
+
+        public static void Apply(bool on, Look look)
         {
+            // Another look chosen: the themes given back, then put in the new one.
+            if (look != _look) { try { Undo(); } catch { } _look = look; }
             try
             {
                 if (!on) { Undo(); return; }
@@ -203,7 +207,7 @@ namespace DynALisp.Ribbon
                     continue;
                 }
                 if (Key(cur)) continue;
-                uint now = ToRef(Skin.Map(FromRef(cur)));
+                uint now = ToRef(Skin.Map(FromRef(cur), _look));
                 if (now == cur) continue;
                 _setColor(d.Theme, el, now);
                 Given.Add(now);
@@ -236,6 +240,63 @@ namespace DynALisp.Ribbon
                 r.Add(d.Name + ": set again by AutoCAD " + d.Again + " times (element " + d.LastEl + ": given " + Hex(d.LastGiven)
                     + ", found " + Hex(d.LastFound) + ")" + (d.GaveUp ? ", given up" : ""));
             if (exports) r.AddRange(Exported);
+            return r;
+        }
+
+        // The elements of the themes changed that had one of these colours (COLORREF), for
+        // (Dyl:RibbonSkin "Hosted"): which theme draws what kept the colours of AutoCAD.
+        // After CppThemes gave the current CAcColorTheme to the themes (CAdUiTheme::SetColorTheme):
+        // the colours it set there come from the colours of DynALisp already, so they are taken
+        // as given, never put through Skin.Map again (it darkens each time); one still in a
+        // blue-grey of AutoCAD is left to be filtered again.
+        public static void Adopt()
+        {
+            if (_getColor == null) return;
+            foreach (var d in Changed)
+                for (int i = 0; i < d.Colours.Count; i++)
+                {
+                    var (el, was, now) = d.Colours[i];
+                    uint cur = _getColor(d.Theme, el);
+                    if (cur == now || Hosted.Blue(FromRef(cur))) continue;
+                    d.Colours[i] = (el, was, cur);
+                    Given.Add(cur);
+                }
+        }
+
+        // The elements of the themes changed, 0 to max, still in a blue-grey of AutoCAD:
+        public static List<string> Blues(int max)
+        {
+            var r = new List<string> { "Native themes, the elements in a blue-grey of AutoCAD (0 to " + (max - 1) + "):" };
+            if (_getColor == null) { r.Add("  not found"); return r; }
+            foreach (var d in Changed)
+            {
+                var line = new StringBuilder("  " + d.Name + ":");
+                int n = 0;
+                for (int e = 0; e < max; e++)
+                {
+                    uint v;
+                    try { v = _getColor(d.Theme, e); } catch { line.Append(" (stopped at " + e + ")"); break; }
+                    var c = Color.FromRgb((byte)(v & 0xFF), (byte)(v >> 8 & 0xFF), (byte)(v >> 16 & 0xFF));
+                    if (!Hosted.Blue(c)) continue;
+                    line.Append(" " + e + " " + Hex(v));
+                    n++;
+                }
+                if (n == 0) line.Append(" none");
+                r.Add(line.ToString());
+            }
+            return r;
+        }
+
+        public static IEnumerable<(string Name, IntPtr Theme)> Pointers() => Changed.Select(d => (d.Name, d.Theme));
+
+        public static List<string> Holding(uint[] refs)
+        {
+            var r = new List<string>();
+            foreach (var d in Changed)
+                foreach (var (el, was, now) in d.Colours)
+                    if (refs.Contains(was))
+                        r.Add(d.Name + " element " + el + ": " + Hex(was) + " given " + Hex(now) + (_getColor != null ? ", now " + Hex(_getColor(d.Theme, el)) : ""));
+            if (r.Count == 0) r.Add("none: no theme changed had them");
             return r;
         }
 

@@ -636,67 +636,54 @@
 )
 
 ;;  The display settings of Dyl-Settings (Remote\Dyl-EnvColor.lsp) while Display is on:
-;;  a Theme the active system variable profile sets otherwise (each startup would set
-;;  COLORTHEME twice), the colors chosen that another program changed since, and the
-;;  colours of the ribbon and the file tabs (DynALisp.Ribbon.dll):
-(defun dg:cf-display (/ pref pro cth thm)
+;;  a model space or layouts whose colors another program changed since, and the colours
+;;  of the interface and the band of the file tabs (DynALisp.Ribbon.dll), the interface
+;;  only in the dark theme of AutoCAD:
+(defun dg:cf-display (/ pref st)
   (if (and Remote>>Dyl:DisplayOn-p (Remote>>Dyl:DisplayOn-p))
     (progn
       (setq pref (Remote>>Dyl:DisplayPref))
-      (if (and (setq thm (caddr pref))
-               Remote>>Dyl:SysVarOn-p
-               (Remote>>Dyl:SysVarOn-p)
-               (setq pro (Remote>>Dyl:SysVarProfile))
-               (setq cth (cadr (assoc "COLORTHEME" (Remote>>Dyl:SysVarRead pro))))
-               (/= (atoi cth) (cdr (assoc thm *ec:themes*)))
+      (foreach c '((model . "model space") (layout . "layouts"))
+        (if (and (Remote>>Dyl:DisplayWant (car c)) (not (Remote>>Dyl:DisplayHas (car c))))
+          (dg:note (strcat "Display: the " (cdr c) " colors are no longer "
+                           (car (Remote>>Dyl:DisplayWant (car c)))
+                           " (set again when a drawing opens)"
+                   )
           )
-        (dg:bad (strcat "Display sets the theme " thm " but the system variable profile " pro
-                        " sets COLORTHEME to " cth ": remove COLORTHEME from the profile or set Theme to (Not set)"
-                )
         )
       )
-      (mapcar '(lambda (name ctx what / cur)
-                 (if (and name (/= name (setq cur (if (= ctx 'theme) (Remote>>Dyl:Theme) (Remote>>Dyl:Background ctx)))))
-                   (dg:note (strcat "Display: " what " " name " chosen, now " (cond (cur) ("another color"))
-                                    " (set again when a drawing opens)"
-                            )
-                   )
-                 )
-               )
-              pref
-              '(model layout theme)
-              '("model space" "layouts" "theme")
-      )
-      ;; The ribbon in the colours of DynALisp, by DynALisp.Ribbon.dll (Skin.cs, an
+      ;; The interface in the colours of DynALisp, by DynALisp.Ribbon.dll (Skin.cs, an
       ;; experiment): what it does, a problem when it cannot:
-      (mapcar '(lambda (name what arg)
-                 (if name
-                   (cond
-                     ((not Dyl:RibbonSkin) (dg:bad (strcat "Display: " what " is DynALisp but DynALisp.Ribbon.dll is not loaded")))
-                     ((wcmatch (setq thm (if arg (Dyl:RibbonSkin arg) (Dyl:RibbonSkin))) "not found*,error*")
-                      (dg:bad (strcat "Display: the " what " colours cannot be set, " thm " (another version of AutoCAD?)"))
-                     )
-                     ((dg:note (strcat "Display: " what " colours " thm)))
-                   )
-                 )
-               )
-              (cdddr pref)
-              '("ribbon" "palettes")
-              '(nil "Palettes")
+      (if (car pref)
+        (cond
+          ((not Dyl:RibbonSkin) (dg:bad (strcat "Display: Interface is " (car pref) " but DynALisp.Ribbon.dll is not loaded")))
+          ((/= 0 (getvar "COLORTHEME"))
+           (dg:note (strcat "Display: Interface is " (car pref) ", applied only while AutoCAD is in its dark theme (COLORTHEME 0)"))
+          )
+          (T
+           (foreach arg '(nil "Palettes")
+             (setq st (if arg (Dyl:RibbonSkin arg) (Dyl:RibbonSkin)))
+             (if (wcmatch st "not found*,error*")
+               (dg:bad (strcat "Display: the " (if arg "palettes" "ribbon") " colours cannot be set, " st " (another version of AutoCAD?)"))
+               (dg:note (strcat "Display: " (if arg "palettes" "ribbon") " colours " st))
+             )
+           )
+          )
+        )
       )
       ;; The band of colour of the file tabs, by the same plugin (FileTabs.cs, an experiment):
-      (if (nth 5 pref)
+      (if (cadddr pref)
         (cond
           ((not Dyl:RibbonFileTabs)
-           (dg:bad (strcat "Display: File tabs is " (nth 5 pref) " but DynALisp.Ribbon.dll is not loaded"))
+           (dg:bad (strcat "Display: File tabs is " (cadddr pref) " but DynALisp.Ribbon.dll is not loaded"))
           )
-          ((wcmatch (setq thm (Dyl:RibbonFileTabs)) "not found*,error*")
-           (dg:bad (strcat "Display: the file tabs cannot be coloured, " thm
+          ((wcmatch (setq st (Dyl:RibbonFileTabs)) "not found*,error*")
+           (dg:bad (strcat "Display: the file tabs cannot be coloured, " st
                            " (another version of AutoCAD? (Dyl:RibbonFileTabs \"Tree\") writes what it finds)"
                    )
            )
           )
-          ((dg:note (strcat "Display: file tabs " thm)))
+          ((dg:note (strcat "Display: file tabs " st)))
         )
       )
     )
