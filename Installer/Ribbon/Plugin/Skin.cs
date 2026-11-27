@@ -41,7 +41,8 @@
 // plugin loads, and again when the Lisp side calls (Dyl:RibbonSkin) after the settings are
 // saved; the former Palettes and Ribbon settings (DynalispPaletteColors, DynalispRibbonColors)
 // are read in its place while it is not set. The WPF parts with a theme of their own (the
-// file tabs) follow by Hosted.cs.
+// file tabs) follow by Hosted.cs, the themes in C++ (the native lists, the title bar) by
+// CppThemes.cs.
 
 using System;
 using System.Collections.Generic;
@@ -108,7 +109,7 @@ namespace DynALisp.Ribbon
                 }
                 if (!string.Equals(which, "Palettes", StringComparison.OrdinalIgnoreCase)) return Skin.Ribbon.Status();
                 string st = Skin.Palettes.Status();
-                return Skin.Palettes.Wanted && Skin.Dark() ? st + "; " + NativeThemes.Status() : st;
+                return Skin.Palettes.Wanted && Skin.Dark() ? st + "; " + NativeThemes.Status() + "; " + CppThemes.Status() : st;
             }
             catch (System.Exception ex) { return "error: " + ex.Message; }
         }
@@ -338,6 +339,8 @@ namespace DynALisp.Ribbon
             WebPages.Apply(Palettes.Wanted && Dark(), Palettes.Look);
             // The WPF parts with a theme of their own (the file tabs):
             Hosted.Apply(Palettes.Wanted && Dark(), Palettes.Look);
+            // The themes in C++ of the native lists and buttons and of the title bar:
+            CppThemes.Apply(Palettes.Wanted && Dark(), Palettes.Look);
         }
 
         // ---- the walk of the theme ----

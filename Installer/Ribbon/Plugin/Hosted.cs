@@ -412,7 +412,7 @@ namespace DynALisp.Ribbon
 
         // A blue-grey of AutoCAD's dark theme (#222933, #2A303B, #3B4453, #4E5A6E: 215 to 220
         // degrees, 17 to 20 %), not a grey of DynALisp Neutral nor a blue of what is picked.
-        static bool Blue(Color c)
+        internal static bool Blue(Color c)
         {
             Skin.ToHsl(c, out double h, out double s, out double l);
             return h >= 200 && h <= 235 && s >= 0.12 && s <= 0.32 && l >= 0.08 && l <= 0.5;
