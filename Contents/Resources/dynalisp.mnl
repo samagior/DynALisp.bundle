@@ -3040,8 +3040,8 @@
   ;;; releases repository (v1.2 or 1.2). It is checked once per drawing
   ;;; when Dyl-Info opens (Check again checks it again), with short timeouts so
   ;;; AutoCAD never waits long when offline. Its update button shows what changed
-  ;;; and installs the new version (see Updates below), What's new shows the
-  ;;; changes up to this version (CHANGELOG.md).
+  ;;; and installs the new version (see Updates below), What's new shows what
+  ;;; each version up to this one brings (CHANGELOG.md).
   ;;; ============================================================================
   (setq *dyl:gitrepo*   "samagior/DynALisp.bundle"
         *dyl:relrepo*   "samagior/DynALisp.release"
@@ -3147,16 +3147,22 @@
     res
   )
 
-  ;;; Latest version: (VERSION PAGE-URL SETUP-URL NOTES-URL) of the latest release of
-  ;;; the releases repository, nil if it cannot be read. PAGE-URL: the release page,
-  ;;; SETUP-URL: its setup, NOTES-URL: its CHANGELOG.md (each nil when the release has none):
-  (defun Dyl:InfoLatest (/ jsn ver)
+  ;;; Latest version: (VERSION PAGE-URL SETUP-URL NOTES-URL LOCAL-URL) of the latest release
+  ;;; of the releases repository, nil if it cannot be read. PAGE-URL: the release page,
+  ;;; SETUP-URL: its setup, NOTES-URL: its What's New (CHANGELOG.md), LOCAL-URL: its copy in
+  ;;; the language of DynALisp (CHANGELOG.fr.md), each nil when the release has none:
+  (defun Dyl:InfoLatest (/ jsn ver lng)
     (if
       (setq ver (Dyl:InfoAfter (setq jsn (Dyl:InfoHttp (strcat "https://api.github.com/repos/" *dyl:relrepo* "/releases/latest")))
                                "\"tag_name\""
                 )
       )
-      (list ver (strcat *dyl:releases* "/latest") (Dyl:InfoAsset jsn "*.EXE") (Dyl:InfoAsset jsn "*/CHANGELOG.MD"))
+      (list ver
+            (strcat *dyl:releases* "/latest")
+            (Dyl:InfoAsset jsn "*.EXE")
+            (Dyl:InfoAsset jsn "*/CHANGELOG.MD")
+            (if (setq lng (Dyl:DocsLang)) (Dyl:InfoAsset jsn (strcat "*/CHANGELOG." (strcase lng) ".MD")))
+      )
     )
   )
 
@@ -3175,9 +3181,9 @@
   ;;;     User folder (the user's edits) and the modules not shipped are kept;
   ;;;   - as a git clone (a .git folder in the bundle): updated with git pull, never by
   ;;;     the setup (it refuses a clone).
-  ;;; The changes of each version are in CHANGELOG.md ("## <version> - <date>"
-  ;;; headings): shown before an update (the CHANGELOG.md of the release) and once at
-  ;;; the first startup after it (DynalispLastVersion: the version last started).
+  ;;; What each version brings is in CHANGELOG.md (What's New, see below): shown before
+  ;;; an update (the CHANGELOG.md of the release) and once at the first startup after it
+  ;;; (DynalispLastVersion: the version last started).
   ;;; Automatic updates (Updates in Dyl-Settings, DynalispAutoUpdate, off by default):
   ;;; at most once a day (DynalispUpdateChecked: the day checked), the first drawing
   ;;; opened checks for a new version and starts its setup.
@@ -3186,65 +3192,241 @@
   ;;; T when this DynALisp is a git clone (updated with git pull):
   (defun Dyl:InfoGit-p () (vl-file-directory-p (strcat *dyl:repo "\\.git")))
 
-  ;;; Lines of a text file, nil if it cannot be read:
+  ;;; ---------------------------------------------------------------------------
+  ;;; What's New: what each version brings to the user, CHANGELOG.md (its format is
+  ;;; at its top: a "### <title>" heading for each change of a "## <version> - <date>"
+  ;;; section, its text, a picture and a link to its docs page), in the language of
+  ;;; DynALisp when this folder has its copy (CHANGELOG.fr.md; a version the copy does
+  ;;; not have is shown in English). "## Next", what is merged and not released yet, is
+  ;;; shown by a git clone only. Each change is a row of the list of
+  ;;; Res\Dyl-WhatsNew.xaml, its columns divided by tabs: the heading of its version
+  ;;; (on the first change of a version only), its title, its text, its picture (a file
+  ;;; of this computer, or its address on the docs website) and what opens its link (as
+  ;;; Dyl:DocsTarget finds it), then the label of the link.
+  ;;; ---------------------------------------------------------------------------
+
+  ;;; Lines of a text file read as UTF-8 (in the code page of Windows when it cannot
+  ;;; be), nil if it cannot be read:
   (defun Dyl:InfoLines (file / des str lst)
-    (if (and file (setq des (open file "r")))
+    (if (and file
+             (or (and (not (vl-catch-all-error-p (setq des (vl-catch-all-apply 'open (list file "r" "utf8"))))) des)
+                 (setq des (open file "r"))
+             )
+        )
       (progn
-        (while (setq str (read-line des)) (setq lst (cons str lst)))
+        (while (setq str (read-line des)) (setq lst (cons (vl-string-right-trim "\r" str) lst)))
         (close des)
         (reverse lst)
       )
     )
   )
 
-  ;;; Lines of a text (a response), nil for nil:
-  (defun Dyl:InfoSplit (txt)
-    (if txt (mapcar '(lambda (l) (vl-string-right-trim "\r" l)) (Remote>>LM:str->lst txt "\n")))
-  )
-
-  ;;; A changelog line without its markdown marks (` and **) and tabs:
+  ;;; A line of What's New without its markdown marks (` and **) and tabs:
   (defun Dyl:InfoMd (str)
     (setq str (vl-string-translate "\t" " " (vl-list->string (vl-remove 96 (vl-string->list str)))))
     (while (vl-string-search "**" str) (setq str (vl-string-subst "" "**" str)))
     str
   )
 
-  ;;; Notes of the changelog lines lst for the versions newer than from (nil: all) up to
-  ;;; to (nil: no limit): each "## 1.2 - date" heading as "Version 1.2 - date", its
-  ;;; lines under it, a blank line between versions:
-  (defun Dyl:InfoNotes (lst from to / in ver res)
+  ;;; The changes of the What's New lines lst, by version, in the order of the file:
+  ;;; (("2.0 - 2026-11-25" (title text picture link label) ...) ("1.2 - ..." ...) ...),
+  ;;; the paths as the file gives them, nil when it has none. The lines before the first
+  ;;; version (what the file is) are left out; a text line starting with "- " is a line
+  ;;; of its own, the others are joined:
+  (defun Dyl:InfoParse (lst / end done vers head chgs tit txt pic lnk lbl bul s i)
+    (setq end  '(lambda ()
+                  (if (or tit txt)
+                    (setq chgs (cons (list (cond (tit) ("")) (cond (txt) ("")) pic lnk lbl) chgs))
+                  )
+                  (setq tit nil txt nil pic nil lnk nil lbl nil bul nil)
+                )
+          done '(lambda ()
+                  (apply end nil)
+                  (if head (setq vers (cons (cons head (reverse chgs)) vers)))
+                  (setq head nil
+                        chgs nil
+                  )
+                )
+    )
     (foreach l lst
+      (setq s (vl-string-trim " \t" l))
       (cond
-        ((= "## " (substr l 1 3))
-         (setq ver (car (Remote>>LM:str->lst (vl-string-trim " " (substr l 4)) " "))
-               in  (and ver
-                        (wcmatch ver "*#*")
-                        (or (not from) (Dyl:InfoNewer-p (Dyl:InfoVer ver) (Dyl:InfoVer from)))
-                        (or (not to) (not (Dyl:InfoNewer-p (Dyl:InfoVer ver) (Dyl:InfoVer to))))
-                   )
-         )
-         (if in
-           (setq res (cons (strcat "Version " (vl-string-trim " " (substr l 4))) (if res (cons "" res))))
+        ((= "### " (substr s 1 4))
+         (apply end nil)
+         (if head (setq tit (Dyl:InfoMd (vl-string-trim " " (substr s 5)))))
+        )
+        ((= "## " (substr s 1 3))
+         (apply done nil)
+         (setq head (vl-string-trim " " (substr s 4)))
+        )
+        ((or (not head) (= "" s)))
+        ;; ![](path): its picture
+        ((and (= "![" (substr s 1 2)) (setq i (vl-string-search "](" s)) (= ")" (substr s (strlen s))))
+         (setq pic (substr s (+ i 3) (- (strlen s) i 3)))
+        )
+        ;; [label](path): its link
+        ((and (= "[" (substr s 1 1)) (setq i (vl-string-search "](" s)) (= ")" (substr s (strlen s))))
+         (setq lbl (Dyl:InfoMd (substr s 2 (1- i)))
+               lnk (substr s (+ i 3) (- (strlen s) i 3))
          )
         )
-        ((and in (/= "" (vl-string-trim " " l))) (setq res (cons (Dyl:InfoMd l) res)))
+        ((= "- " (substr s 1 2))
+         (setq txt (strcat (if txt (strcat txt "\n") "") (Dyl:InfoMd s))
+               bul T
+         )
+        )
+        (T
+         (setq txt (cond
+                     ((not txt) (Dyl:InfoMd s))
+                     (bul (strcat txt "\n" (Dyl:InfoMd s)))
+                     ((strcat txt " " (Dyl:InfoMd s)))
+                   )
+               bul nil
+         )
+        )
+      )
+    )
+    (apply done nil)
+    (reverse vers)
+  )
+
+  ;;; The version of the heading of a section ("2.0 - 2026-11-25" -> "2.0", "NEXT"):
+  (defun Dyl:InfoVerOf (head) (strcase (car (Remote>>LM:str->lst (strcat head " ") " "))))
+
+  ;;; The versions of vers (Dyl:InfoParse) newer than from (nil: all) up to to (nil: no
+  ;;; limit), and Next when next is T:
+  (defun Dyl:InfoPick (vers from to next / ver)
+    (vl-remove-if-not
+      '(lambda (v)
+         (setq ver (Dyl:InfoVerOf (car v)))
+         (if (wcmatch ver "*#*")
+           (and (or (not from) (Dyl:InfoNewer-p (Dyl:InfoVer ver) (Dyl:InfoVer from)))
+                (or (not to) (not (Dyl:InfoNewer-p (Dyl:InfoVer ver) (Dyl:InfoVer to))))
+           )
+           (and next (= "NEXT" ver))
+         )
+       )
+      vers
+    )
+  )
+
+  ;;; The versions of vers with the changes of loc (the copy in the language of
+  ;;; DynALisp, Dyl:InfoParse) in their place, for those it has:
+  (defun Dyl:InfoLocal (vers loc / k v)
+    (mapcar '(lambda (e)
+               (setq k (Dyl:InfoVerOf (car e)))
+               (if (and (setq v (vl-some '(lambda (x) (if (= k (Dyl:InfoVerOf (car x))) x)) loc)) (cdr v))
+                 (cons (car e) (cdr v))
+                 e
+               )
+             )
+            vers
+    )
+  )
+
+  ;;; A path of a What's New file (from the root of the repository, or an address):
+  ;;; its full path on this computer, nil for an address:
+  (defun Dyl:InfoFull (p)
+    (if (and p (/= "" p) (not (wcmatch (strcase p) "HTTP*")))
+      (strcat *dyl:repo "\\" (vl-string-translate "/" "\\" p))
+    )
+  )
+
+  ;;; What opens the link p of a change (a docs page, #anchor allowed, or an address):
+  ;;; the page in the language of DynALisp, on the website when it has it (Dyl:DocsTarget),
+  ;;; nil when neither the website nor this computer has it:
+  (defun Dyl:InfoLink (p / i anc f r)
+    (cond
+      ((or (not p) (= "" p)) nil)
+      ((wcmatch (strcase p) "HTTP*") p)
+      (T
+       (if (setq i (vl-string-search "#" p))
+         (setq anc (substr p (1+ i))
+               p   (substr p 1 i)
+         )
+       )
+       (if (Dyl:DocsFind (setq f (Dyl:InfoFull p)))
+         (if (and anc (wcmatch (strcase (setq r (Dyl:DocsTarget f))) "HTTP*")) (strcat r anc) (Dyl:DocsTarget f))
+       )
+      )
+    )
+  )
+
+  ;;; The picture p of a change: the file of this computer (its -dark copy in the dark
+  ;;; theme of AutoCAD), else its address on the docs website (a picture of the docs,
+  ;;; which the setup does not install), nil when it is neither:
+  (defun Dyl:InfoPic (p / f d r)
+    (cond
+      ((or (not p) (= "" p)) nil)
+      ((wcmatch (strcase p) "HTTP*") p)
+      ((findfile (setq f (Dyl:InfoFull p)))
+       (if (and (= 0 (getvar "COLORTHEME"))
+                (wcmatch (strcase f) "*.PNG")
+                (findfile (setq d (strcat (substr f 1 (- (strlen f) 4)) "-dark.png")))
+           )
+         d
+         f
+       )
+      )
+      ((setq r (Dyl:DocsRel f)) (strcat *dyl:docsweb* (Dyl:DocsSpaces r)))
+    )
+  )
+
+  ;;; The rows of the window for the versions vers (see above):
+  (defun Dyl:InfoRows (vers / res head)
+    (foreach v vers
+      (setq head (if (= "NEXT" (Dyl:InfoVerOf (car v)))
+                   (if (= "fr" (Dyl:LangCode)) "Prochaine version" "Next version")
+                   (strcat "Version " (car v))
+                 )
+      )
+      (foreach c (cond ((cdr v)) ('(("" "" nil nil nil))))
+        (setq res  (cons (strcat head
+                                 "\t" (nth 0 c)
+                                 "\t" (nth 1 c)
+                                 "\t" (cond ((Dyl:InfoPic (nth 2 c))) (""))
+                                 "\t" (cond ((Dyl:InfoLink (nth 3 c))) (""))
+                                 "\t" (cond ((nth 4 c)) ("Open the docs"))
+                         )
+                         res
+                   )
+              head ""
+        )
       )
     )
     (reverse res)
   )
 
-  ;;; The What's new window (Res\Dyl-WhatsNew.xaml): head (the line above the notes),
-  ;;; lines (the notes), msg (the line under them), ins (the label of the Install button,
-  ;;; nil: greyed out). All releases opens the releases page and shows it again. T when
-  ;;; Install was picked:
-  (defun Dyl:InfoNotesDlg (head lines msg ins / res)
+  ;;; The rows of What's New for the versions newer than from up to to, and Next when
+  ;;; next is T (see Dyl:InfoPick), of the What's New file en and of its copy loc in the
+  ;;; language of DynALisp (nil: none):
+  (defun Dyl:InfoNotes (en loc from to next)
+    (Dyl:InfoRows (Dyl:InfoLocal (Dyl:InfoPick (Dyl:InfoParse (Dyl:InfoLines en)) from to next)
+                                 (if loc (Dyl:InfoParse (Dyl:InfoLines loc)))
+                  )
+    )
+  )
+
+  ;;; The What's New files of this folder: (CHANGELOG.md CHANGELOG.<code>.md), the second
+  ;;; nil in English, or when this folder has no copy in the language of DynALisp:
+  (defun Dyl:InfoFiles (/ lng)
+    (list (findfile (strcat *dyl:repo "\\CHANGELOG.md"))
+          (if (setq lng (Dyl:DocsLang)) (findfile (strcat *dyl:repo "\\CHANGELOG." lng ".md")))
+    )
+  )
+
+  ;;; The What's New window (Res\Dyl-WhatsNew.xaml): head (the line above the changes),
+  ;;; rows (the changes, Dyl:InfoNotes), msg (the line under them), ins (the label of the
+  ;;; Install button, nil: greyed out). All releases opens the releases page and shows it
+  ;;; again. T when Install was picked:
+  (defun Dyl:InfoNotesDlg (head rows msg ins / res)
     (while
       (and (setq res (Dyl:WinShow "Dyl-WhatsNew.xaml"
                                   (append (list (cons "hed" head)
                                                 (cons "msg" (cond (msg) ("")))
                                                 (cons "ins" (cond (ins) ("Install")))
                                                 (cons "lst/list"
-                                                      (cond (lines) ('("(No notes found for these versions in CHANGELOG.md.)")))
+                                                      (cond (rows) ('("\t\tNothing new found for these versions.")))
                                                 )
                                                 (cons "lst" "-1")
                                           )
@@ -3259,14 +3441,23 @@
     (= 2 (car res))
   )
 
-  ;;; What's new button of Dyl-Info: the changes of every version up to this one
-  ;;; (CHANGELOG.md of this folder):
-  (defun Dyl:InfoWhatsNew ()
-    (Dyl:InfoNotesDlg (strcat "Changes of DynALisp, up to version " (Dyl:InfoVersion) " (this one):")
-                      (Dyl:InfoNotes (Dyl:InfoLines (findfile (strcat *dyl:repo "\\CHANGELOG.md"))) nil (Dyl:InfoVersion))
+  ;;; What's new button of Dyl-Info: every version up to this one (CHANGELOG.md of this
+  ;;; folder), and what is not released yet in a git clone:
+  (defun Dyl:InfoWhatsNew (/ fls)
+    (setq fls (Dyl:InfoFiles))
+    (Dyl:InfoNotesDlg (strcat "What's new in DynALisp, up to version " (Dyl:InfoVersion) " (this one):")
+                      (Dyl:InfoNotes (car fls) (cadr fls) nil (Dyl:InfoVersion) (Dyl:InfoGit-p))
                       nil
                       nil
     )
+  )
+
+  ;;; The What's New file url of a release, downloaded to the temp folder as name: its
+  ;;; path, nil when url is nil or it could not be downloaded:
+  (defun Dyl:InfoFetch (url name / dir)
+    (setq dir (strcat (getenv "TEMP") "\\DynALisp"))
+    (vl-mkdir dir)
+    (if (and url (Dyl:InfoDownload url (strcat dir "\\" name))) (strcat dir "\\" name))
   )
 
   ;;; Save url to file (binary), T when saved. Long timeouts: the setup is a few MB:
@@ -3388,9 +3579,10 @@
     )
   )
 
-  ;;; Update button of Dyl-Info: the notes of the versions since this one (the
-  ;;; CHANGELOG.md asset of the latest release), whose Install starts the setup (SETUP); a git
-  ;;; clone gets the notes only (GIT); the release page opened when it has no setup (PAGE).
+  ;;; Update button of Dyl-Info: What's New of the versions since this one (the CHANGELOG.md
+  ;;; of the latest release, and its copy in the language of DynALisp, downloaded), whose
+  ;;; Install starts the setup (SETUP); a git clone gets What's New only (GIT); the release
+  ;;; page opened when it has no setup (PAGE).
   ;;; Returns the status line when the install failed ("-->"), nil else:
   (defun Dyl:InfoUpdate (/ how ver res)
     (setq how (Dyl:InfoUpdHow)
@@ -3400,13 +3592,13 @@
       ((eq how 'PAGE) (Dyl:SuiteDlgShell (list (cadr *dyl:latest*))))
       ((and (member how '(SETUP GIT))
             (Dyl:InfoNotesDlg
-              (strcat "Changes from version " (Dyl:InfoVersion) " (this one) to " ver ":")
+              (strcat "What's new from version " (Dyl:InfoVersion) " (this one) to " ver ":")
               (Dyl:InfoNotes
-                (Dyl:InfoSplit
-                  (if (cadddr *dyl:latest*) (Dyl:InfoHttp (cadddr *dyl:latest*)))
-                )
+                (Dyl:InfoFetch (cadddr *dyl:latest*) (strcat "CHANGELOG-" ver ".md"))
+                (if (nth 4 *dyl:latest*) (Dyl:InfoFetch (nth 4 *dyl:latest*) (strcat "CHANGELOG-" ver "." (Dyl:DocsLang) ".md")))
                 (Dyl:InfoVersion)
                 ver
+                nil
               )
               (if (eq how 'GIT)
                 (strcat "This folder is a git clone: run git pull in it, then restart AutoCAD.")
@@ -3474,10 +3666,10 @@
   )
 
   ;;; Startup step of What's new: the first startup of a new version (installed or
-  ;;; pulled) shows the changes since the version last started, once (the first
+  ;;; pulled) shows what is new since the version last started, once (the first
   ;;; drawing); not in a script. A new installation only saves its version. Returns a
   ;;; status line, nil when there is nothing to tell:
-  (defun Dyl:UpdWhatsNew (/ cur old)
+  (defun Dyl:UpdWhatsNew (/ cur old fls)
     (setq cur (Dyl:InfoVersion)
           old (getenv "DynalispLastVersion")
     )
@@ -3486,8 +3678,8 @@
       (progn
         (if (= 0 (logand 4 (getvar "CMDACTIVE")))
           (Dyl:StartupWait 'Dyl:InfoNotesDlg
-                           (list (strcat "DynALisp is updated: changes from version " old " to " cur ":")
-                                 (Dyl:InfoNotes (Dyl:InfoLines (findfile (strcat *dyl:repo "\\CHANGELOG.md"))) old cur)
+                           (list (strcat "DynALisp is updated: what's new from version " old " to " cur ":")
+                                 (progn (setq fls (Dyl:InfoFiles)) (Dyl:InfoNotes (car fls) (cadr fls) old cur nil))
                                  "Dyl-Info shows them again (What's new)."
                                  nil
                            )

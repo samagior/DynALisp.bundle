@@ -75,7 +75,8 @@ Type `Dyl` in the command line to list the main commands. Those that customize D
 ```text
 DynALisp.bundle
 ├─ PackageContents.xml       Autodesk bundle manifest (its AppVersion is the version of DynALisp)
-├─ CHANGELOG.md              The changes of each version, shown by Dyl-Info
+├─ CHANGELOG.md              What's New: what each version brings to its users, shown by Dyl-Info
+├─ CHANGELOG.fr.md           Its French copy
 ├─ CONVENTIONS.md            The rules every change follows; Conventions\: those of each topic
 ├─ Contents
 │  ├─ Resources              Core: dynalisp.mnl, Startup Suite, aliases, ribbon, plugins (Net10\: .NET 10 builds), docs.css
@@ -178,10 +179,10 @@ To build it on your computer: `powershell -ExecutionPolicy Bypass -File Installe
 
 ### Releasing a Version
 
-1. Raise `AppVersion` in `PackageContents.xml` and add its `## <version> - <date>` section at the top of `CHANGELOG.md`, in a commit of its own.
+1. Raise `AppVersion` in `PackageContents.xml` and turn the `## Next` section of `CHANGELOG.md` and `CHANGELOG.fr.md` into its `## <version> - <date>` section, in a commit of its own. A change that users see adds its `### <title>` to `## Next` (both files) when it is merged: what they can do now and where to find it, with a picture and a link to its docs page (the format is at the top of `CHANGELOG.md`).
 2. Push a tag of that version: `git tag v2.1`, then `git push origin v2.1` (1.x versions are tagged on `release/1.x`).
 
-The [release workflow](.github/workflows/release.yml) checks the tag against `AppVersion`, builds the setup and publishes the release to the public [DynALisp](https://github.com/samagior/DynALisp) repository: the setup and `CHANGELOG.md` as files, its changelog section as notes. Dyl-Info and the automatic updates read that release without signing in to GitHub. The workflow needs the `RELEASE_TOKEN` secret: a fine-grained token with **Contents: Read and write** on the releases repository only (renew it when it expires, then run the workflow by hand with the tag).
+The [release workflow](.github/workflows/release.yml) checks the tag against `AppVersion`, builds the setup and publishes the release to the public [DynALisp](https://github.com/samagior/DynALisp) repository: the setup, `CHANGELOG.md` and `CHANGELOG.fr.md` as files, the section of the version as notes (its pictures and links pointed to the docs website). Dyl-Info and the automatic updates read that release without signing in to GitHub. The workflow needs the `RELEASE_TOKEN` secret: a fine-grained token with **Contents: Read and write** on the releases repository only (renew it when it expires, then run the workflow by hand with the tag).
 
 &nbsp;
 
