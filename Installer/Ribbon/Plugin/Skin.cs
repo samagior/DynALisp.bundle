@@ -473,59 +473,16 @@ namespace DynALisp.Ribbon
             }
         }
 
-        // A copy of a theme, of its own type, or null. Freezable.Clone when it gives that type;
-        // the Theme of the ribbon, frozen while AutoCAD starts (about 3 s), clones into a
-        // RibbonTheme, which ComponentManager.CurrentTheme does not take: a new object of its
-        // type is made instead, and every value of the theme copied into it, part by part
-        // (Into). A part it has no setter for (the quick access toolbar, the InfoCenter: made
-        // by its constructor, in the colours of the light theme) is not replaced but given the
-        // values of the part of the theme; copying only the properties that can be set drew
-        // those two light. Null when anything fails: the target waits for a theme it can change.
+        // A copy of a theme, of its own type, or null: the Theme of the ribbon, frozen while
+        // AutoCAD starts, clones into a RibbonTheme, which ComponentManager.CurrentTheme does
+        // not take; a new Theme given its values, even part by part, drew the quick access
+        // toolbar and the InfoCenter light (tried twice in AutoCAD 2027: their colours are not
+        // in properties a copy reaches), so the target waits until AutoCAD makes a theme current
+        // that can be changed in place (about 3 s after it starts).
         public static object CopyOf(object cur)
         {
-            try
-            {
-                var c = ((Freezable)cur).Clone();
-                if (cur.GetType().IsInstanceOfType(c)) return c;
-                var n = Activator.CreateInstance(cur.GetType(), true);
-                Into(cur, n, new HashSet<object>(ReferenceEqualityComparer.Instance));
-                return n;
-            }
-            catch { return null; }
-        }
-
-        // The values of a part of a theme copied into the same part of another (a new one):
-        static void Into(object from, object to, HashSet<object> seen)
-        {
-            if (from == null || to == null || !seen.Add(from)) return;
-            if (to is Freezable tf && tf.IsFrozen) return;
-            foreach (var p in Props(from))
-            {
-                object v;
-                try { v = p.GetValue(from); } catch { continue; }
-                bool settable = p.CanWrite && p.SetMethod != null && p.SetMethod.IsPublic;
-                bool part = v != null && IsPart(v.GetType());
-                if (part && !settable)
-                {
-                    // A part made by the constructor: given the values of the one of the theme.
-                    object mine;
-                    try { mine = p.GetValue(to); } catch { continue; }
-                    if (mine != null && !ReferenceEquals(mine, v)) Into(v, mine, seen);
-                    continue;
-                }
-                if (!settable) continue;
-                if (part && v is Freezable f && f.IsFrozen)
-                {
-                    var fc = f.Clone();
-                    if (!p.PropertyType.IsInstanceOfType(fc) || !v.GetType().IsInstanceOfType(fc))
-                    {
-                        fc = (Freezable)Activator.CreateInstance(v.GetType(), true);
-                        Into(v, fc, seen);
-                    }
-                    v = fc;
-                }
-                try { p.SetValue(to, v); } catch { }
-            }
+            var c = ((Freezable)cur).Clone();
+            return cur.GetType().IsInstanceOfType(c) ? c : null;
         }
 
         public static bool Unfrozen(object theme)
