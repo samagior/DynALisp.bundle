@@ -4086,40 +4086,44 @@
   (list qa:def qa:bk (Dyl:QuickDrawAsmFactor) qa:mats)
 )
 
+;;  What the preset engine is given for the Assembly Presets window opened on the preset r of
+;;  the Quick Draw window (nil: from no preset, the tab of the Manager), see
+;;  Remote>>Dyl:PresetDialog:
+(defun Dyl:QuickDrawAsmDlg (r)
+  (list (cons 'defs (Dyl:QuickDrawAsmDefs))
+        (cons 'fix 'Dyl:QuickDrawAsmFix)
+        '(tiles)
+        '(groups . T)
+        '(noun . "assemblies")
+        '(window . "Dyl-AssemblyPresets.xaml")
+        '(wtiles . "aex:6,ads:8,afl:9,afn:10,ast:11,aii:12,fam:13,fds:14,abl:16,adl:28")
+        ;;  (a default assembly whose layers only changed is changed too:)
+        '(wncols . 16)
+        ;;  The variants of a family listed once (B6 for B6a to B6e), their
+        ;;  group, exterior and lines the same, the variant picked in the
+        ;;  Layers box by its name and ratings:
+        '(family . "13,14")
+        '(famcols . "6,16-39")
+        '(famlabel . "9:min,10:NLB:min,11:STC,12:IIC")
+        (cons 'select (if (and r (not (or (= "" (nth *qd:layerscol* r)) (vl-string-search ":" (nth *qd:layerscol* r))))) (nth *qd:layerscol* r)))
+        '(new "" "Wall" "New assembly" "" "1~" "1~" "First" "" "" "" "" "" "" "New assembly" "")
+        '(extra . Dyl:QuickDrawAsmExtra)
+        '(wrows . Dyl:QuickDrawAsmExtras)
+        '(wget . Dyl:QuickDrawAsmWinGet)
+        '(rowcheck . Dyl:QuickDrawAsmCheck)
+        '(wprep . Dyl:QuickDrawAsmWinPrep)
+        '(wvals . Dyl:QuickDrawAsmWinVals)
+        '(wctx . Dyl:QuickDrawAsmWinCtx)
+  )
+)
+
 ;;  The Assembly Presets window, opened from the Quick Draw window (its presets qd, its preset
 ;;  shown r), on the assembly of r; a new assembly has its Border lines and Dividing lines on.
 ;;  Returns the assembly selected on OK, saved, nil on Cancel:
 (defun Dyl:QuickDrawAsmDialog (qd r / qa:qd qa:r qa:mats qa:grps qa:def qa:bk mt:keys res)
   (setq qa:qd qd
         qa:r  r
-        res   (Remote>>Dyl:PresetDialog
-                "QuickDrawAssembly"
-                (list (cons 'defs (Dyl:QuickDrawAsmDefs))
-                      (cons 'fix 'Dyl:QuickDrawAsmFix)
-                      '(tiles)
-                      '(groups . T)
-                      '(noun . "assemblies")
-                      '(window . "Dyl-AssemblyPresets.xaml")
-                      '(wtiles . "aex:6,ads:8,afl:9,afn:10,ast:11,aii:12,fam:13,fds:14,abl:16,adl:28")
-                      ;;  (a default assembly whose layers only changed is changed too:)
-                      '(wncols . 16)
-                      ;;  The variants of a family listed once (B6 for B6a to B6e), their
-                      ;;  group, exterior and lines the same, the variant picked in the
-                      ;;  Layers box by its name and ratings:
-                      '(family . "13,14")
-                      '(famcols . "6,16-39")
-                      '(famlabel . "9:min,10:NLB:min,11:STC,12:IIC")
-                      (cons 'select (if (and r (not (or (= "" (nth *qd:layerscol* r)) (vl-string-search ":" (nth *qd:layerscol* r))))) (nth *qd:layerscol* r)))
-                      '(new "" "Wall" "New assembly" "" "1~" "1~" "First" "" "" "" "" "" "" "New assembly" "")
-                      '(extra . Dyl:QuickDrawAsmExtra)
-                      '(wrows . Dyl:QuickDrawAsmExtras)
-                      '(wget . Dyl:QuickDrawAsmWinGet)
-                      '(rowcheck . Dyl:QuickDrawAsmCheck)
-                      '(wprep . Dyl:QuickDrawAsmWinPrep)
-                      '(wvals . Dyl:QuickDrawAsmWinVals)
-                      '(wctx . Dyl:QuickDrawAsmWinCtx)
-                )
-              )
+        res   (Remote>>Dyl:PresetDialog "QuickDrawAssembly" (Dyl:QuickDrawAsmDlg r))
   )
   ;;  The assemblies kept by Quick Draw are read again only when they were saved:
   (if *pst:written* (setq *qd:asmcache* nil))
