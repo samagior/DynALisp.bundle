@@ -161,6 +161,9 @@ namespace DynALisp.Ribbon
 
         public bool Busy => Wanted || _inPlace != null || _copy != null;
 
+        // In the look (or not wanted, given up, AutoCAD light): the cover can be taken away.
+        public bool Done => !Wanted || _gaveUp || !Skin.Dark() || ((_inPlace != null || _copy != null) && _applied == Look);
+
         // The themes this target changed or made current, and the one a copy was made from
         // (Hosted.cs leaves them to it):
         public IEnumerable<object> Themes() => new[] { _inPlace, _copy, _orig, Current() }.Where(t => t != null);
@@ -365,6 +368,8 @@ namespace DynALisp.Ribbon
                 _timer.Start();
             }
             catch (System.Exception ex) { Mark("timer: " + ex.Message); }
+            // A dark cover over AutoCAD until the ribbon and the palettes are in the look (Cover.cs):
+            if (Palettes.Wanted && Dark()) Cover.Show(Palettes.Look);
             // At once, as the plugin loads with AutoCAD: the palettes and the ribbon are drawn
             // in the colours of DynALisp from the start, never first in those of AutoCAD.
             Tick("load");
@@ -423,6 +428,7 @@ namespace DynALisp.Ribbon
             {
                 try { if (AcApp.MainWindow != null && IsWindowVisible(AcApp.MainWindow.Handle)) { _shown = true; Mark("main window shown (" + from + ")"); } } catch { }
             }
+            if (Cover.Shown) Cover.Check(Ribbon.Done && Palettes.Done);
             if (!_due && !Targets.Any(t => t.Busy)) return;
             if (Environment.TickCount - _next < 0) return;
             _next = Environment.TickCount + (Settling ? 100 : 1000);
