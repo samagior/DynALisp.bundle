@@ -53,6 +53,129 @@ namespace DynALisp.Startup
         const int GWL_STYLE = -16;
         static readonly Regex Named = new Regex("sheet ?set|jeux? de feuilles", RegexOptions.IgnoreCase);
 
+        // ---- the sheet sets the palette shows ----
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct MEMORY_BASIC_INFORMATION
+        {
+            public IntPtr BaseAddress, AllocationBase; public uint AllocationProtect; public IntPtr RegionSize;
+            public uint State, Protect, Type;
+        }
+
+        [DllImport("kernel32.dll")] static extern IntPtr VirtualQuery(IntPtr a, out MEMORY_BASIC_INFORMATION m, IntPtr len);
+
+        const int PeekWords = 16;
+
+        // The words at address a, only when they can be read (committed, readable pages): an
+        // item of the list is the address of an object of AutoCAD, never read blindly (a read
+        // that fails crashes AutoCAD, .NET cannot catch it). Empty when they cannot:
+        static long[] Peek(long a)
+        {
+            int len = PeekWords * IntPtr.Size;
+            if (a < 0x10000 || a % IntPtr.Size != 0) return new long[0];
+            for (long p = a; p < a + len;)
+            {
+                if (VirtualQuery((IntPtr)p, out var m, (IntPtr)Marshal.SizeOf<MEMORY_BASIC_INFORMATION>()) == IntPtr.Zero) return new long[0];
+                const uint readable = 0x02 | 0x04 | 0x08 | 0x20 | 0x40 | 0x80;
+                if (m.State != 0x1000 || (m.Protect & readable) == 0 || (m.Protect & 0x100) != 0) return new long[0];
+                p = (long)m.BaseAddress + (long)m.RegionSize;
+            }
+            var w = new long[PeekWords];
+            for (int i = 0; i < PeekWords; i++) w[i] = (long)Marshal.ReadIntPtr((IntPtr)(a + i * IntPtr.Size));
+            return w;
+        }
+
+        // The Sheet Set Manager palette (not the one for the Web), zero when AutoCAD did not make it:
+        static IntPtr _pal;
+        static int _palNext = Environment.TickCount;
+
+        [DllImport("user32.dll")] static extern bool IsWindow(IntPtr h);
+
+        // Kept once found (it lives as long as AutoCAD); looked for again 3 s apart at most while
+        // it is not there, since every window of AutoCAD is read for it:
+        static IntPtr Palette()
+        {
+            if (_pal != IntPtr.Zero && IsWindow(_pal)) return _pal;
+            _pal = IntPtr.Zero;
+            if (Environment.TickCount - _palNext < 0) return IntPtr.Zero;
+            _palNext = Environment.TickCount + 3000;
+            return _pal = FindPalette();
+        }
+
+        static IntPtr FindPalette()
+        {
+            uint me = (uint)System.Diagnostics.Process.GetCurrentProcess().Id;
+            var tops = new List<IntPtr>();
+            EnumWindows((h, l) => { GetWindowThreadProcessId(h, out uint pid); if (pid == me) tops.Add(h); return true; }, IntPtr.Zero);
+            var found = new List<IntPtr>();
+            foreach (var t in tops) Find(t, found, 0);
+            foreach (var h in found)
+                if (Text(h).IndexOf("web", StringComparison.OrdinalIgnoreCase) < 0 && Child(h, "ComboBox", 30100) != IntPtr.Zero) return h;
+            return IntPtr.Zero;
+        }
+
+        // The first window of class cls (and id, when not 0) under h:
+        static IntPtr Child(IntPtr h, string cls, int id, int depth = 0)
+        {
+            if (depth > 30) return IntPtr.Zero;
+            for (var c = GetWindow(h, GW_CHILD); c != IntPtr.Zero; c = GetWindow(c, GW_HWNDNEXT))
+            {
+                if (string.Equals(Class(c), cls, StringComparison.OrdinalIgnoreCase) && (id == 0 || GetDlgCtrlID(c) == id)) return c;
+                var r = Child(c, cls, id, depth + 1);
+                if (r != IntPtr.Zero) return r;
+            }
+            return IntPtr.Zero;
+        }
+
+        // The item data of each item of the list of the palette (CB_GETITEMDATA), with the words
+        // it points to; null when the palette is not there:
+        static List<(long Data, long[] Words)> ComboItems(IntPtr pal)
+        {
+            IntPtr cb = Child(pal, "ComboBox", 30100);
+            if (cb == IntPtr.Zero) return null;
+            var lst = new List<(long, long[])>();
+            int n = (int)SendMessage(cb, 0x146 /* CB_GETCOUNT */, IntPtr.Zero, IntPtr.Zero);
+            for (int i = 0; i < n && i < 200; i++)
+            {
+                long d = (long)SendMessage(cb, 0x150 /* CB_GETITEMDATA */, (IntPtr)i, IntPtr.Zero);
+                lst.Add((d, Peek(d)));
+            }
+            return lst;
+        }
+
+        // The name of the sheet set the palette shows (the root of its Sheet List), "" for none:
+        static string Current(IntPtr pal)
+        {
+            IntPtr tv = Child(pal, "SysTreeView32", 30120);
+            if (tv == IntPtr.Zero) return "";
+            var lst = new List<string>();
+            Tree(tv, lst);
+            return lst.Count > 0 ? lst[0].Trim() : "";
+        }
+
+        // The databases of the manager that the palette shows: those whose address is an item
+        // of its list (the item itself, or a word of the object it points to). Null when it
+        // cannot tell: the palette was not made in this session, or it shows a sheet set but no
+        // item of its list is one of the databases (another version of AutoCAD).
+        public static HashSet<string> Shown(List<SheetSetMgr.Db> dbs) => Shown(dbs, out _);
+
+        static HashSet<string> Shown(List<SheetSetMgr.Db> dbs, out string why)
+        {
+            why = null;
+            IntPtr pal = Palette();
+            if (pal == IntPtr.Zero) { why = "the palette was not made in this session"; return null; }
+            var items = ComboItems(pal);
+            if (items == null) { why = "its list was not found"; return null; }
+            var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var db in dbs)
+                foreach (var it in items)
+                    if (Is(db, it.Data) || Array.Exists(it.Words, w => Is(db, w))) { set.Add(db.File); break; }
+            if (set.Count == 0 && Current(pal) != "") { why = "no item of its list is a database of the manager"; return null; }
+            return set;
+        }
+
+        static bool Is(SheetSetMgr.Db db, long v) => v != 0 && (v == db.Ptr || v == db.Unk);
+
         public static string Tree()
         {
             var sb = new StringBuilder();
@@ -73,6 +196,28 @@ namespace DynALisp.Startup
                 Dump(h, sb, 1, done);
                 sb.AppendLine();
             }
+            // What the plugin makes of it: the databases of the manager and the items of the list:
+            sb.AppendLine("==== The databases of the manager and the list of the palette");
+            try
+            {
+                var dbs = SheetSetMgr.OpenDbs();
+                foreach (var d in dbs) sb.AppendLine("db 0x" + d.Ptr.ToString("X") + " unknown 0x" + d.Unk.ToString("X") + " " + d.File);
+                IntPtr pal = _pal = FindPalette();
+                sb.AppendLine("palette: " + (pal == IntPtr.Zero ? "not found" : Line(pal)) + (pal == IntPtr.Zero ? "" : ", showing \"" + Current(pal) + "\""));
+                if (pal != IntPtr.Zero)
+                {
+                    int i = 0;
+                    foreach (var it in ComboItems(pal) ?? new List<(long, long[])>())
+                    {
+                        var hit = dbs.Find(d => Is(d, it.Data) || Array.Exists(it.Words, w => Is(d, w)));
+                        sb.AppendLine("item " + i++ + ": 0x" + it.Data.ToString("X") + (hit.File != null ? "  = " + hit.File : ""));
+                        if (it.Words.Length > 0) sb.AppendLine("    " + string.Join(" ", Array.ConvertAll(it.Words, w => w.ToString("X"))));
+                    }
+                }
+                var shown = Shown(dbs, out string why);
+                sb.AppendLine("shown: " + (shown == null ? "cannot tell, " + why : string.Join(" | ", shown)));
+            }
+            catch (Exception ex) { sb.AppendLine("error: " + ex.Message); }
             string path = Path.Combine(Path.GetTempPath(), "DynALisp-SheetSets.txt");
             File.WriteAllText(path, sb.ToString(), new UTF8Encoding(true));
             return path;

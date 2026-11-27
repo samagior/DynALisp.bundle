@@ -33,6 +33,12 @@
 //     still not open then is opened in the manager itself (OpenDatabase). A file that no
 //     longer exists is dropped, and said on the command line; one that exists but could not
 //     be opened is kept for the next startup.
+//   - Only the sheet sets the user opened are remembered: the manager also holds those
+//     another part of AutoCAD loaded without the palette (the sheet set of the current
+//     project of the Project Navigator of AutoCAD Architecture). They are the ones whose
+//     database is an item of the list of the palette (SheetSetPalette.cs); when the palette
+//     cannot tell (not made in this session, or another version of AutoCAD), every sheet
+//     set of the manager but those beside a project (a .apj in their folder).
 //   - Nothing is written before the sheet sets are opened again: AutoCAD closed before
 //     that (or started without a drawing and closed) keeps the list as it was.
 // (Dyl:SheetSets) says what it did, (Dyl:SheetSets "Open") lists the sheet sets open in the
@@ -141,6 +147,12 @@ namespace DynALisp.Startup
             catch { return string.Equals(a, b, StringComparison.OrdinalIgnoreCase); }
         }
 
+        static bool BesideProject(string f)
+        {
+            try { return Directory.GetFiles(Path.GetDirectoryName(f), "*.apj").Length > 0; }
+            catch { return false; }
+        }
+
         static bool IsOpen(List<string> open, string f) => open != null && open.Any(x => Same(x, f));
 
         // ---- the list remembered ----
@@ -154,6 +166,12 @@ namespace DynALisp.Startup
                 if (!_ready || _quitting || !On()) return;
                 var open = Open();
                 if (open == null) return;
+                // Only the sheet sets the user opened: those the palette shows. When it cannot
+                // tell, those of the manager, but a sheet set beside a project of the Project
+                // Navigator (a .apj in its folder), which loads it without the palette:
+                HashSet<string> shown = null;
+                try { shown = SheetSetPalette.Shown(SheetSetMgr.OpenDbs()); } catch { }
+                open = open.Where(f => shown != null ? shown.Contains(f) : !BesideProject(f)).ToList();
                 var lst = new List<string>();
                 // the order remembered first, then the ones opened since:
                 foreach (var f in Remembered().Concat(open))

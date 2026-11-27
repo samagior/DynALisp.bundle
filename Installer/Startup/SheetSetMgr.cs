@@ -82,10 +82,21 @@ namespace DynALisp.Startup
             return _mgr;
         }
 
+        // A database open in the manager: its file, its IAcSmDatabase* and its IUnknown*, as
+        // numbers only (released: the manager keeps them), to be found in the palette:
+        public struct Db { public string File; public long Ptr, Unk; }
+
         // The files of the sheet sets open in the manager, in its order:
         public static List<string> OpenFiles()
         {
             var lst = new List<string>();
+            foreach (var d in OpenDbs()) lst.Add(d.File);
+            return lst;
+        }
+
+        public static List<Db> OpenDbs()
+        {
+            var lst = new List<Db>();
             IntPtr en = CallPtr(Mgr(), "IAcSmSheetSetMgr", "GetDatabaseEnumerator");
             if (en == IntPtr.Zero) return lst;
             try
@@ -97,7 +108,12 @@ namespace DynALisp.Startup
                     try
                     {
                         string f = FileOf(db);
-                        if (!string.IsNullOrWhiteSpace(f)) lst.Add(f);
+                        long unk = 0;
+                        Guid iu = new Guid("00000000-0000-0000-C000-000000000046");
+#pragma warning disable CS9191
+                        if (Marshal.QueryInterface(db, ref iu, out IntPtr u) >= 0 && u != IntPtr.Zero) { unk = (long)u; Marshal.Release(u); }
+#pragma warning restore CS9191
+                        if (!string.IsNullOrWhiteSpace(f)) lst.Add(new Db { File = f, Ptr = (long)db, Unk = unk });
                     }
                     finally { Marshal.Release(db); }
                 }
