@@ -245,6 +245,8 @@ namespace DynALisp.Ribbon
 
         // The elements of the themes changed that had one of these colours (COLORREF), for
         // (Dyl:RibbonSkin "Hosted"): which theme draws what kept the colours of AutoCAD.
+        public static IEnumerable<(string Name, IntPtr Theme)> Pointers() => Changed.Select(d => (d.Name, d.Theme));
+
         public static List<string> Holding(uint[] refs)
         {
             var r = new List<string>();

@@ -427,6 +427,8 @@ namespace DynALisp.Ribbon
             {
                 r.Add("DynALisp - the colour themes of AutoCAD in C++ (" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + ")");
                 try { Colours2(r); } catch (System.Exception ex) { r.Add("error: " + ex.Message); }
+                r.Add("");
+                try { CppThemes.Copies(r); } catch (System.Exception ex) { r.Add("copies, error: " + ex.Message); }
                 return r;
             }
             r.Add("DynALisp - what keeps the blue-greys of AutoCAD (" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + ")");

@@ -34,7 +34,9 @@
 // kept, to give it back when the interface is off or another look is chosen. AutoCAD sets them
 // again when its theme changes: a colour found back at what AutoCAD gave is given again. After a
 // change, the windows of AutoCAD draw again (RedrawWindow) and the title bar with
-// AdApplicationFrame::ForceFrameRepaint.
+// AdApplicationFrame::ForceFrameRepaint. The title bar takes them; the lists of Properties do
+// not (they read another copy): (Dyl:RibbonSkin "Hosted" "Colors") searches the memory for the
+// copies of the table of CAcColorTheme (Copies, read only).
 
 using System;
 using System.Collections.Generic;
@@ -276,6 +278,185 @@ namespace DynALisp.Ribbon
                 }
             }
             catch (System.Exception ex) { Host.Log("C++ themes, repaint: " + ex.Message); }
+        }
+
+        // ---- the copies of the table (a report) ----
+
+        const string NameGetTheme = "?GetTheme@CAcColorTheme@@SAAEBV1@W4AcColorThemeEnum@@@Z";
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl)] delegate IntPtr ThemeOfFn(int which);
+
+        // For (Dyl:RibbonSkin "Hosted" "Colors"), read only: where the colours of CAcColorTheme
+        // are kept, and every copy of them in the memory of AutoCAD (the lists of Properties
+        // kept the blue-greys once the current theme was changed: they read another copy).
+        // The table AutoCAD gave (the colours before DynALisp) is searched, 4 bytes a colour,
+        // by its first 12 colours, then how many of the 308 follow is counted.
+        public static void Copies(List<string> r)
+        {
+            r.Add("Copies of the colours of CAcColorTheme (" + Status() + ")");
+            if (!_found) Find();
+            if (Ac.Current == null) { r.Add("  not found: " + Ac.Fail); return; }
+            IntPtr cur = Ac.Current();
+            var was = new uint[Ac.Count];
+            var now = new uint[Ac.Count];
+            for (int e = 0; e < Ac.Count; e++)
+            {
+                now[e] = Ac.Get(cur, e) & 0xFFFFFF;
+                was[e] = Ac.Changed.TryGetValue(e, out var k) && cur == Ac.Last ? k.Was & 0xFFFFFF : now[e];
+            }
+            r.Add("  current theme " + Hex(cur) + ", " + Ac.Changed.Count + " colours changed in it");
+            // GetTheme of each value of AcColorThemeEnum (0 and 1):
+            ProcessModule mod = Process.GetCurrentProcess().Modules.Cast<ProcessModule>()
+                .FirstOrDefault(m => m.ModuleName.StartsWith(Ac.Prefix, StringComparison.OrdinalIgnoreCase));
+            var ptrs = new List<(string, IntPtr)> { ("current", cur) };
+            if (mod != null)
+            {
+                var ex = new Dictionary<string, IntPtr>();
+                NativeThemes.Exports(mod.BaseAddress, ex, x => x == NameGetTheme);
+                if (ex.TryGetValue(NameGetTheme, out var g))
+                {
+                    var of = Marshal.GetDelegateForFunctionPointer<ThemeOfFn>(g);
+                    for (int i = 0; i < 2; i++)
+                    {
+                        IntPtr p = of(i);
+                        ptrs.Add(("GetTheme(" + i + ")", p));
+                        r.Add("  GetTheme(" + i + ") " + Hex(p) + (p == cur ? " (the current one)" : "")
+                            + (p != IntPtr.Zero ? ", element 212 " + Col(Ac.Get(p, 212)) + ", element 0 " + Col(Ac.Get(p, 0)) : ""));
+                    }
+                }
+                else r.Add("  GetTheme not exported");
+            }
+            foreach (var (n, p) in NativeThemes.Pointers()) ptrs.Add(("CAdUiTheme " + n, p));
+            // Where the current colours lie, from the theme (inline or behind a pointer):
+            r.Add("  current colours at " + Where(cur, now, ptrs));
+            // Every copy of the colours AutoCAD gave, and of those DynALisp gave:
+            var sw = Stopwatch.StartNew();
+            long scanned = 0;
+            var hits = Scan(was, ref scanned);
+            r.Add("  memory searched: " + (scanned >> 20) + " MB in " + sw.ElapsedMilliseconds + " ms");
+            r.Add("  copies of the colours AutoCAD gave: " + hits.Count);
+            foreach (var h in hits.Take(40)) r.Add("    " + Describe(h.Address, h.Length, ptrs));
+            if (Ac.Changed.Count > 0)
+            {
+                var given = Scan(now, ref scanned);
+                r.Add("  copies of the colours DynALisp gave: " + given.Count);
+                foreach (var h in given.Take(20)) r.Add("    " + Describe(h.Address, h.Length, ptrs));
+            }
+        }
+
+        static string Hex(IntPtr p) => "0x" + p.ToInt64().ToString("X");
+        static string Col(uint v) => "#" + (v & 0xFF).ToString("X2") + (v >> 8 & 0xFF).ToString("X2") + (v >> 16 & 0xFF).ToString("X2");
+
+        // A copy: its address, how many colours of the table follow there, and what it is near
+        // (a theme of the list just after or before it, the module holding it, or the heap):
+        static string Describe(IntPtr a, int len, List<(string, IntPtr)> ptrs)
+        {
+            var s = Hex(a) + ": " + len + " colours";
+            foreach (var (n, p) in ptrs)
+            {
+                long d = a.ToInt64() - p.ToInt64();
+                if (p != IntPtr.Zero && d >= -0x100 && d < 0x10000) s += ", " + n + " +0x" + d.ToString("X");
+            }
+            VirtualQuery(a, out var mi, (IntPtr)Marshal.SizeOf<MemoryInfo>());
+            if (mi.Type == 0x1000000)
+            {
+                var m = Process.GetCurrentProcess().Modules.Cast<ProcessModule>().FirstOrDefault(x =>
+                    a.ToInt64() >= x.BaseAddress.ToInt64() && a.ToInt64() < x.BaseAddress.ToInt64() + x.ModuleMemorySize);
+                s += ", in " + (m?.ModuleName ?? "a module") + " +0x" + (m != null ? (a.ToInt64() - m.BaseAddress.ToInt64()).ToString("X") : "?");
+            }
+            else s += mi.Type == 0x20000 ? ", heap" : ", mapped";
+            s += ", protect 0x" + mi.Protect.ToString("X");
+            return s;
+        }
+
+        // The colours of a theme in its object (offset, 4 bytes a colour) or behind one of its
+        // first 32 pointers:
+        static string Where(IntPtr theme, uint[] vals, List<(string, IntPtr)> ptrs)
+        {
+            int at = Find(theme, 0x2000, vals);
+            if (at >= 0) return "the theme +0x" + at.ToString("X");
+            for (int i = 0; i < 32; i++)
+            {
+                IntPtr p;
+                try { if (!Readable(theme + i * 8, 8)) break; p = Marshal.ReadIntPtr(theme + i * 8); } catch { break; }
+                if (p == IntPtr.Zero || !Readable(p, 16)) continue;
+                int k = Find(p, 0x2000, vals);
+                if (k >= 0) return "the pointer at +0x" + (i * 8).ToString("X") + " (" + Hex(p) + ") +0x" + k.ToString("X");
+            }
+            return "not found within 0x2000 bytes of the theme or of its pointers";
+        }
+
+        static int Find(IntPtr start, int len, uint[] vals)
+        {
+            int n = Math.Min(len, Readable(start, len) ? len : 0);
+            if (n < 64) return -1;
+            var buf = new byte[n];
+            Marshal.Copy(start, buf, 0, n);
+            var u = MemoryMarshal.Cast<byte, uint>(buf);
+            for (int i = 0; i + 12 <= u.Length; i++)
+            {
+                int j = 0;
+                while (j < 12 && (u[i + j] & 0xFFFFFF) == vals[j]) j++;
+                if (j == 12) return i * 4;
+            }
+            return -1;
+        }
+
+        // Every readable committed region of the process searched for the first 12 colours.
+        static List<(IntPtr Address, int Length)> Scan(uint[] vals, ref long scanned)
+        {
+            var hits = new List<(IntPtr, int)>();
+            const int Chunk = 4 << 20;
+            var buf = new byte[Chunk + 64 * 4];
+            var pin = GCHandle.Alloc(buf, GCHandleType.Pinned);
+            var pinV = GCHandle.Alloc(vals, GCHandleType.Pinned);
+            long mine = pin.AddrOfPinnedObject().ToInt64(), mineV = pinV.AddrOfPinnedObject().ToInt64();
+            try
+            {
+                long a = 0x10000, end = 0x7FFFFFFF0000;
+                var size = (IntPtr)Marshal.SizeOf<MemoryInfo>();
+                while (a < end && hits.Count < 200)
+                {
+                    if (VirtualQuery((IntPtr)a, out var mi, size) == IntPtr.Zero) break;
+                    long rb = mi.BaseAddress.ToInt64(), rs = mi.RegionSize.ToInt64();
+                    if (rs <= 0) break;
+                    bool ok = mi.State == 0x1000 && (mi.Protect & 0x100) == 0 && (mi.Protect & 0x01) == 0 && (mi.Protect & 0xEE) != 0;
+                    if (ok)
+                    {
+                        for (long off = 0; off < rs; off += Chunk)
+                        {
+                            int n = (int)Math.Min(rs - off, Chunk + 48 * 4);
+                            Marshal.Copy((IntPtr)(rb + off), buf, 0, n);
+                            scanned += Math.Min(n, Chunk);
+                            var u = MemoryMarshal.Cast<byte, uint>(buf.AsSpan(0, n & ~3));
+                            int last = Math.Min(u.Length - 12, Chunk / 4);
+                            for (int i = 0; i < last; i++)
+                            {
+                                if ((u[i] & 0xFFFFFF) != vals[0]) continue;
+                                int j = 1;
+                                while (j < 12 && (u[i + j] & 0xFFFFFF) == vals[j]) j++;
+                                if (j < 12) continue;
+                                long addr = rb + off + i * 4L;
+                                if (addr >= mine && addr < mine + buf.Length) continue;
+                                if (addr >= mineV && addr < mineV + vals.Length * 4) continue;
+                                int len = 12;
+                                long p = addr + 48;
+                                while (len < vals.Length && Readable((IntPtr)p, 4) && (Marshal.ReadInt32((IntPtr)p) & 0xFFFFFF) == vals[len]) { len++; p += 4; }
+                                hits.Add(((IntPtr)addr, len));
+                            }
+                        }
+                    }
+                    a = rb + rs;
+                }
+            }
+            finally { pin.Free(); pinV.Free(); }
+            return hits;
+        }
+
+        static bool Readable(IntPtr p, int len)
+        {
+            if (VirtualQuery(p, out var mi, (IntPtr)Marshal.SizeOf<MemoryInfo>()) == IntPtr.Zero) return false;
+            if (mi.State != 0x1000 || (mi.Protect & 0x101) != 0 || (mi.Protect & 0xEE) == 0) return false;
+            return p.ToInt64() + len <= mi.BaseAddress.ToInt64() + mi.RegionSize.ToInt64();
         }
 
         // ---- memory ----
