@@ -133,6 +133,8 @@
           </DockPanel>
           <!-- Clean startup (DynalispCleanStartup, DynALisp.Startup.dll): -->
           <CheckBox x:Name="csu" Content="Clean startup"/>
+          <!-- Start page (DynalispStartPage, StartPage.cs of DynALisp.Windows.dll): -->
+          <CheckBox x:Name="stp" Content="Start page"/>
         </StackPanel>
       </GroupBox>
 

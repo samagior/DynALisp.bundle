@@ -14,6 +14,7 @@ svo=0
 dpo=1
 rvo=0
 csu=1
+stp=1
 lku=0
 lkk=0
 aup=1

@@ -1437,13 +1437,17 @@
 ;;  colour themes of AutoCAD in C++ (read only, and only where the plugin found them: AutoCAD
 ;;  2027). The diagnostics of (Dyl:RibbonSkin ...), gathered: the plugin writes its long reports
 ;;  to %TEMP%, read back here. (Dyl:RibbonSkin "Hosted" "Push"), which changes the themes, is
-;;  never run.
+;;  never run. Then the Start page of DynALisp (Overrides of Dyl-Settings, DynALisp.Windows.dll,
+;;  an experiment too): what it found of the Start tab, and while it is on the windows around
+;;  the browsers of AutoCAD ((Dyl:StartPage "Tree"), for another version of AutoCAD).
 (defun dg:s-interface (/ pal)
   (dg:sub "Settings")
-  (foreach k '("DynalispDisplayOn" "DynalispInterface" "DynalispBackground" "DynalispLayoutBackground" "DynalispFileTabColors")
+  (foreach k '("DynalispDisplayOn" "DynalispInterface" "DynalispBackground" "DynalispLayoutBackground" "DynalispFileTabColors" "DynalispStartPage")
     (dg:kv k (getenv k))
   )
   (dg:kv "COLORTHEME" (getvar "COLORTHEME"))
+  (dg:kv "STARTMODE" (getvar "STARTMODE"))
+  (dg:startpage)
   (if (not Dyl:RibbonSkin)
     (dg:note "DynALisp.Ribbon.dll is not loaded: the interface keeps the colors of AutoCAD")
     (progn
@@ -1465,6 +1469,38 @@
           (dg:if-file (Dyl:RibbonSkin "Hosted" "Colors"))
         )
       )
+    )
+  )
+)
+
+;;  The Start page of DynALisp (StartPage.cs of DynALisp.Windows.dll): a problem when it is on
+;;  and not shown (the plugin not loaded, the Start tab off or not found):
+(defun dg:startpage (/ on lst)
+  (setq on (= "1" (getenv "DynalispStartPage")))
+  (dg:sub "Start page (Dyl:StartPage)")
+  (cond
+    ((not Dyl:StartPage)
+     (if on
+       (dg:bad "Start page is on, but DynALisp.Windows.dll is not loaded: the Start tab shows the page of AutoCAD")
+       (dg:note "DynALisp.Windows.dll is not loaded: no Start page of DynALisp")
+     )
+    )
+    (T
+     (dg:if-lines (setq lst (Dyl:StartPage)))
+     (if on
+       (progn
+         (cond
+           ((= 0 (getvar "STARTMODE"))
+            (dg:bad "Start page is on, but the Start tab is off (STARTMODE 0): set STARTMODE to 1")
+           )
+           ((and (listp lst) (vl-some '(lambda (l) (and (= 'STR (type l)) (wcmatch l "found: no*,found: the browser*"))) lst))
+            (dg:bad "Start page is on, but the Start tab was not found: send this report with the windows below")
+           )
+         )
+         (dg:sub "The windows of the Start tab (Dyl:StartPage \"Tree\")")
+         (dg:if-file (Dyl:StartPage "Tree"))
+       )
+     )
     )
   )
 )

@@ -76,6 +76,8 @@ namespace DynALisp.Windows
             Modeless.Run = Run;
             // The dark windows in the neutral greys under the DynALisp Neutral interface:
             Theme.NeutralOf = Bridge.NeutralInterface;
+            // The Start page of DynALisp in the Start tab, while it is on (StartPage.cs):
+            StartPage.Init();
         }
 
         static bool Run(string expr)

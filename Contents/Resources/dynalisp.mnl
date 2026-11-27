@@ -4339,6 +4339,20 @@
           *dyl:startwarn* (reverse *dyl:warn*)
           *dyl:startnote* (reverse *dyl:note*)
     )
+    ;; The Start page of DynALisp (DynALisp.Windows.dll) shows the last startup, its slowest
+    ;; steps and what failed: it cannot ask the Lisp, which does not run in the Start tab:
+    (if Dyl:StartPageInfo
+      (vl-catch-all-apply 'Dyl:StartPageInfo
+                          (list (cond (*dyl:startms*) (0))
+                                (cond (*dyl:cmdcount*) (0))
+                                (cond (*dyl:aliascount*) (0))
+                                *dyl:startwarn*
+                                *dyl:loaderrs*
+                                (reverse *dyl:steptimes*)
+                                (getvar "DWGNAME")
+                          )
+      )
+    )
     (setq *dyl:quiet* nil
           *dyl:warn*  nil
           *dyl:note*  nil
@@ -4359,6 +4373,28 @@
                    (if on
                      "on: from the next startup, the command line keeps only the drawing created, DynALisp and the errors"
                      "off: from the next startup, the command line keeps every line"
+                   )
+                   "."
+           )
+    )
+  )
+
+  ;;; Start page (Overrides in Dyl-Settings, DynalispStartPage, off by default): the page of
+  ;;; the Start tab of AutoCAD gives way to the Start page of DynALisp (the recent drawings,
+  ;;; DynALisp, its startup, its settings and its last diagnostics). Done by
+  ;;; Resources\DynALisp.Windows.dll (Installer\Windows\StartPage.cs), which defines
+  ;;; Dyl:StartPage and reads the setting itself every second (no Lisp runs in the Start tab):
+  ;;; told at once when it is saved. Turned on while the Start tab is off (STARTMODE 0), the
+  ;;; tab is turned back on, since the page is shown in it:
+  (defun Dyl:StartPageOn-p () (= "1" (getenv "DynalispStartPage")))
+  (defun Dyl:StartPageSet (on)
+    (setenv "DynalispStartPage" (if on "1" "0"))
+    (if (and on (= 0 (getvar "STARTMODE"))) (setvar "STARTMODE" 1))
+    (if Dyl:StartPage (vl-catch-all-apply 'Dyl:StartPage '("Apply")))
+    (princ (strcat "\nStart page "
+                   (if on
+                     "on: the Start tab shows the Start page of DynALisp"
+                     "off: the Start tab shows the page of AutoCAD"
                    )
                    "."
            )
@@ -4457,6 +4493,9 @@
 ;;;   - Clean startup (Overrides, DynalispCleanStartup, see Dyl:CleanStartupSet): the
   ;;;     startup lines removed from the command line, from the next startup; greyed
   ;;;     out without Resources\DynALisp.Startup.dll (Dyl:CleanStartup not defined)
+;;;   - Start page (Overrides, DynalispStartPage, see Dyl:StartPageSet): the Start tab shows
+  ;;;     the Start page of DynALisp; greyed out without Resources\DynALisp.Windows.dll
+  ;;;     (Dyl:StartPage not defined)
 ;;;   - Language (Environment, the first section, DynalispLanguage, see Dyl:Lang): the
   ;;;     language the docs of DynALisp open in (the ribbon is in the language of the
   ;;;     AutoCAD installed); the language of AutoCAD until it is set. Not the Language
@@ -4553,6 +4592,7 @@
             (Dyl:WinTog "dpo" st:dpo)
             (Dyl:WinTog "rvo" st:rvo)
             (Dyl:WinTog "csu" st:csu)
+            (Dyl:WinTog "stp" st:stp)
             (Dyl:WinTog "lku" (= "Update" st:lkm))
             (Dyl:WinTog "lkk" (= "Keep" st:lkm))
             (Dyl:WinTog "aup" st:aup)
@@ -4581,6 +4621,8 @@
       (Dyl:WinOff "rvm" (not (and Remote>>Dyl:RevSyncSet c:Pst-RevisionTitleBlocks)))
       ;; Clean startup: without the plugin that does it:
       (Dyl:WinOff "csu" (not Dyl:CleanStartup))
+      ;; Start page: without the plugin that shows it:
+      (Dyl:WinOff "stp" (not Dyl:StartPage))
       ;; Layer keys: the answer remembered, when Dyl-LayerKey.lsp is not loaded:
       (Dyl:WinOff '("lku" "lkk") (not Remote>>Dyl:LayerKeyMatchSet))
       ;; Automatic updates: greyed out for a git clone (updated with git pull):
@@ -4610,6 +4652,7 @@
           st:aup (Dyl:WinOn-p res "aup")
           st:asl (Dyl:WinOn-p res "asl")
           st:csu (Dyl:WinOn-p res "csu")
+          st:stp (Dyl:WinOn-p res "stp")
           st:rvo (Dyl:WinOn-p res "rvo")
           st:lng (car (nth (Dyl:WinIdx res "lng") *dyl:langs*))
           st:lkm (cond ((Dyl:WinOn-p res "lku") "Update") ((Dyl:WinOn-p res "lkk") "Keep"))
@@ -4804,6 +4847,7 @@
     (if (not (eq st:aup (nth 13 old))) (Dyl:UpdAutoSet st:aup))
     (if (not (eq st:asl (nth 19 old))) (Dyl:AssistantLispSet st:asl))
     (if (not (eq st:csu (nth 16 old))) (Dyl:CleanStartupSet st:csu))
+    (if (not (eq st:stp (nth 20 old))) (Dyl:StartPageSet st:stp))
     (if (/= st:lng (nth 17 old)) (Dyl:LangSet st:lng))
     ;; Revisions: turned on, this drawing updated right away when it is a sheet of a project:
     (if (and Remote>>Dyl:RevSyncSet (not (eq st:rvo (nth 18 old))))
@@ -4903,7 +4947,7 @@
     )
   )
 
-  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:asl st:old st:res st:sta)
+  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:asl st:stp st:old st:res st:sta)
     (setq st:defs (Dyl:SetDefsRead)
           st:aph  (and Remote>>Dyl:PhaseAuto-p (Remote>>Dyl:PhaseAuto-p) T)
           st:ado  (and Remote>>Dyl:DrawOrderAuto-p (Remote>>Dyl:DrawOrderAuto-p) T)
@@ -4924,7 +4968,8 @@
           st:lng  (Dyl:Lang)
           st:rvo  (and Remote>>Dyl:RevSyncOn-p (Remote>>Dyl:RevSyncOn-p) T)
           st:asl  (Dyl:AssistantLispOn-p)
-          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:asl)
+          st:stp  (Dyl:StartPageOn-p)
+          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:asl st:stp)
           st:sta  2
     )
     ;; An open button that runs a command closes the window with its number (dyl:Win.Close

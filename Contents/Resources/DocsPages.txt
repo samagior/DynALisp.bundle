@@ -16,6 +16,8 @@ Dynalisp/Core/Dyl-Info.fr.htm
 Dynalisp/Core/Dyl-Info.htm
 Dynalisp/Core/Dyl-Settings.fr.htm
 Dynalisp/Core/Dyl-Settings.htm
+Dynalisp/Core/Dyl-StartPage.fr.htm
+Dynalisp/Core/Dyl-StartPage.htm
 Dynalisp/Core/Dyl-Suite.fr.htm
 Dynalisp/Core/Dyl-Suite.htm
 Dynalisp/Draw/Dyl-AssemblyPresets.fr.htm

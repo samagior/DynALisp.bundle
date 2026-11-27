@@ -1,0 +1,16 @@
+# Sample values of the Start page (Installer\Windows\StartPage.cs, Res\Dyl-StartPage.xaml), as
+# the plugin gives them: key=value, key/list=item|item, +rec/rows=a row of the recent drawings
+# (path, name, folder, when, thumbnail, missing); \t is a tab, {samples} this folder (the
+# pictures of StartPage\, drawn for the docs: a drawing keeps its own).
+ver=Version 2.0  ·  AutoCAD Architecture 2027
++rec/rows=D:\Projects\2041 Maple House\Plans\A-101 Ground Floor.dwg\tA-101 Ground Floor\tD:\Projects\2041 Maple House\Plans\ttoday 14:02\t{samples}\StartPage\plan.png\t
++rec/rows=D:\Projects\2041 Maple House\Details\A-501 Wall Sections.dwg\tA-501 Wall Sections\tD:\Projects\2041 Maple House\Details\ttoday 11:37\t{samples}\StartPage\section.png\t
++rec/rows=D:\Projects\2041 Maple House\Plans\A-001 Site Plan.dwg\tA-001 Site Plan\tD:\Projects\2041 Maple House\Plans\tyesterday 16:20\t{samples}\StartPage\site.png\t
++rec/rows=D:\Projects\2041 Maple House\Details\A-521 Roof Details.dwg\tA-521 Roof Details\tD:\Projects\2041 Maple House\Details\tyesterday 09:12\t{samples}\StartPage\detail.png\t
++rec/rows=D:\Projects\2038 Library\A-201 Elevations.dwg\tA-201 Elevations\tD:\Projects\2038 Library\t2026-11-24\t{samples}\StartPage\elevation.png\t
++rec/rows=D:\Projects\2038 Library\Old\A-102 Second Floor.dwg\tA-102 Second Floor\tD:\Projects\2038 Library\Old\t2026-11-19\t\t1
++rec/rows=D:\Standards\Office\Arch D.dwt\tArch D\tD:\Standards\Office\t2026-10-30\t\t
+dyi/list=Installed\tSetup\t|Modules\tDynalisp, gileCAD, LeeMac, MyTools\t|Plugins\tAll 6 loaded (.NET 10)\t
+sti/list=Last startup\t412 ms, A-101 Ground Floor.dwg, today 14:02\t|Commands\t516 commands, 453 aliases\t|Slowest steps\tRemote files 168 ms, Startup Suite 74 ms, Ribbon 41 ms\t|Problems\tNone\t
+sei/list=Reactors\tOn\t|Display\tDynALisp Neutral\t|Clean startup\tOn\t|Updates\tInstalled automatically\t|Language\tFrench\t
+dgi/list=Last report\t2026-11-27 09:48\t|Problems\t1\tbad|\tConflicts: alias CL of LM-CENTERLINE is an alias of acad.pgp\tbad
