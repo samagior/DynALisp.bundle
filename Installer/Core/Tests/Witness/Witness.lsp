@@ -501,8 +501,12 @@
             *pst:rowcache*  nil
       )
       (wt:patsset)
+      ;;  (a window that stops is said, with the step it stopped at, and the others go on:)
       (foreach v (list (list "manager" nil nil) (list "quickdraw" "WALL" 1) (list "unknown" "NOSUCHKEY" "as-NoSuchAssembly"))
-        (wt:asmtabof (car s) (car v) (cadr v) (caddr v))
+        (setq wt:at nil)
+        (if (vl-catch-all-error-p (setq e (vl-catch-all-apply 'wt:asmtabof (list (car s) (car v) (cadr v) (caddr v)))))
+          (wt:put (wt:line (list (strcat "#asmtab stopped " (car s) " " (car v)) wt:at (vl-catch-all-error-message e))))
+        )
       )
     )
   )
@@ -518,8 +522,10 @@
                     pst:gren pst:mats pst:smats pst:mgr pst:flt pst:srt pst:shw pst:sent pst:sentof pst:prep qa:qd qa:r
                     qa:mats qa:grps qa:def qa:bk mt:keys vals sel rs n in msg r
                    )
-  (setq pst:key "QuickDrawAssembly"
+  (setq wt:at   "read"
+        pst:key "QuickDrawAssembly"
         pst:lst (Remote>>Dyl:PresetRead pst:key (Dyl:QuickDrawAsmDefs) 'Dyl:QuickDrawAsmFix)
+        wt:at   "spec"
   )
   (if bdr
     (progn
@@ -530,7 +536,8 @@
       )
     )
   )
-  (setq pst:dlg  (Dyl:QuickDrawAsmDlg qa:r)
+  (setq wt:at    "dlg"
+        pst:dlg  (Dyl:QuickDrawAsmDlg qa:r)
         pst:srt  "Name"
         pst:flt  ""
         pst:shw  ""
@@ -540,14 +547,18 @@
         pst:lst0 pst:lst
         pst:gren (length *grp:renames*)
   )
+  (setq wt:at "prep")
   (Remote>>Dyl:PresetWinPrep)
-  (setq vals (Remote>>Dyl:PresetWinVals nil))
+  (setq wt:at "vals"
+        vals  (Remote>>Dyl:PresetWinVals nil)
+  )
   (wt:sec (strcat "asmtab vals " setup " " name))
   (foreach v vals
     (if (or (= "manager" name) (member (car v) '("pst.idx" "pst.sel" "ll/new")))
-      (wt:val v)
+      (progn (setq wt:at (strcat "val " (vl-princ-to-string (car v)))) (wt:val v))
     )
   )
+  (setq wt:at "sent")
   (if (= "manager" name)
     (progn
       (setq rs         (Remote>>LM:sublst pst:sent 0 3)
@@ -557,11 +568,17 @@
             n          (Remote>>Dyl:PresetWinCols)
       )
       (foreach e wt:edits
-        ;;  (no edit without rows sent: a row edited would be nil)
-        (if (and rs (setq in (apply (cdr e) (list rs))))
+        ;;  (without rows sent, only the rows added: a row edited would be nil, see
+        ;;  WitnessTests.Edits)
+        (if (and (or rs (member (car e) '("new" "newempty")))
+                 (progn (setq wt:at (strcat "edit " (car e))) (setq in (apply (cdr e) (list rs))))
+            )
           (progn
-            (setq pst:lst (Remote>>Dyl:PresetWinBack in n)
+            (setq wt:at   (strcat "edit " (car e) " back")
+                  pst:lst (Remote>>Dyl:PresetWinBack in n)
+                  wt:at   (strcat "edit " (car e) " check")
                   msg     (Remote>>Dyl:PresetWinCheck)
+                  wt:at   (strcat "edit " (car e) " written")
             )
             (wt:rows (strcat "asmtab edit " setup " " (car e) " in") (mapcar '(lambda (x) (mapcar 'wt:nl x)) in))
             (wt:rows (strcat "asmtab edit " setup " " (car e) " out")
@@ -741,7 +758,7 @@
          ;;  stopped in is known:
          (if wt:out
            (progn
-             (wt:put (strcat "#stopped" (chr 31) (vl-catch-all-error-message err)))
+             (wt:put (wt:line (list "#stopped" (vl-catch-all-error-message err) wt:at)))
              (wt:write (strcat wt:outdir "\\Stopped " (vl-filename-base (cond (wt:root) ("case"))) ".txt"))
            )
          )
