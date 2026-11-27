@@ -133,6 +133,8 @@
           </DockPanel>
           <!-- Clean startup (DynalispCleanStartup, DynALisp.Startup.dll): -->
           <CheckBox x:Name="csu" Content="Clean startup"/>
+          <!-- Reopen sheet sets (DynalispSheetSetReopen, SheetSets.cs of DynALisp.Startup.dll): -->
+          <CheckBox x:Name="ssr" Content="Reopen sheet sets"/>
         </StackPanel>
       </GroupBox>
 

@@ -1,5 +1,6 @@
 <!--
-  DynALisp.Startup - the clean startup of the command line (Clean startup of Dyl-Settings).
+  DynALisp.Startup - the clean startup of the command line (Clean startup of Dyl-Settings) and
+  the sheet sets opened again (Reopen sheet sets of Dyl-Settings).
 
     dotnet build Installer\Startup -c Release
 
