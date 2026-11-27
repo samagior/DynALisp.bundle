@@ -215,7 +215,7 @@ namespace DynALisp.Ribbon
                 }
                 else
                 {
-                    var copy = ((Freezable)cur).Clone();
+                    var copy = Skin.CopyOf(cur);
                     _count = Skin.Filter(copy, null, Look);
                     _applied = Look;
                     _orig = cur;
@@ -317,6 +317,14 @@ namespace DynALisp.Ribbon
             if (Timeline.Count < 400) Timeline.Add(Clock.ElapsedMilliseconds.ToString().PadLeft(7) + " ms  " + what);
         }
 
+        static void Timed(string name, Action step)
+        {
+            long t0 = Clock.ElapsedMilliseconds;
+            step();
+            long d = Clock.ElapsedMilliseconds - t0;
+            if (d > 50) Mark(name + " took " + d + " ms");
+        }
+
         public static List<string> TimelineReport() => new List<string>(Timeline);
 
         static void Track(string name, Func<string> status)
@@ -410,15 +418,18 @@ namespace DynALisp.Ribbon
             if (Environment.TickCount - _next < 0) return;
             _next = Environment.TickCount + (Settling ? 100 : 1000);
             _due = false;
-            foreach (var t in Targets) t.Apply();
-            // The palettes written in C++ (Properties), by their native themes:
-            NativeThemes.Apply(Palettes.Wanted && Dark(), Palettes.Look);
-            // The web pages (Start), by a script in their browser:
-            WebPages.Apply(Palettes.Wanted && Dark(), Palettes.Look);
-            // The WPF parts with a theme of their own (the file tabs):
-            Hosted.Apply(Palettes.Wanted && Dark(), Palettes.Look);
+            bool on = Palettes.Wanted && Dark();
+            // Each step timed for the Timeline (one of more than 50 ms is marked); the title bar
+            // and the lists of the palettes first, the cheapest and most seen:
             // The themes in C++ of the native lists and buttons and of the title bar:
-            CppThemes.Apply(Palettes.Wanted && Dark(), Palettes.Look);
+            Timed("C++", () => CppThemes.Apply(on, Palettes.Look));
+            // The palettes written in C++ (Properties), by their native themes:
+            Timed("native", () => NativeThemes.Apply(on, Palettes.Look));
+            foreach (var t in Targets) Timed(t.Name, t.Apply);
+            // The WPF parts with a theme of their own (the file tabs):
+            Timed("hosted", () => Hosted.Apply(on, Palettes.Look));
+            // The web pages (Start), by a script in their browser:
+            Timed("web", () => WebPages.Apply(on, Palettes.Look));
             if (Timeline.Count < 400)
             {
                 Track("ribbon", Ribbon.Status);
@@ -451,6 +462,31 @@ namespace DynALisp.Ribbon
                 try { v = p.GetValue(node); } catch { continue; }
                 if (v is Freezable && IsPart(v.GetType())) Parts(v, into);
             }
+        }
+
+        // A copy of a theme, of its own type: Freezable.Clone, or when that gives another type
+        // (the Theme of the ribbon, frozen while AutoCAD starts, clones into a RibbonTheme, which
+        // ComponentManager.CurrentTheme does not take, and the ribbon kept the blue-greys of
+        // AutoCAD for 3 s), a new object of its type given each of its settable properties, a
+        // frozen part given as its unfrozen clone.
+        public static object CopyOf(object cur)
+        {
+            var c = ((Freezable)cur).Clone();
+            if (cur.GetType().IsInstanceOfType(c)) return c;
+            var n = Activator.CreateInstance(cur.GetType(), true);
+            foreach (var p in Props(cur))
+            {
+                if (!p.CanWrite || p.SetMethod == null || !p.SetMethod.IsPublic) continue;
+                object v;
+                try { v = p.GetValue(cur); } catch { continue; }
+                if (v is Freezable f && f.IsFrozen && IsPart(v.GetType()))
+                {
+                    var fc = f.Clone();
+                    if (p.PropertyType.IsInstanceOfType(fc)) v = fc;
+                }
+                try { p.SetValue(n, v); } catch { }
+            }
+            return n;
         }
 
         public static bool Unfrozen(object theme)
