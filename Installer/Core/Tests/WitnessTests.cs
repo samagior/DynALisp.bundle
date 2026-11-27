@@ -36,6 +36,10 @@ namespace DynALisp.Core.Tests
         static readonly string Dir = Path.Combine(Repo.Root, "Installer", "Core", "Tests", "Witness");
         static string In => Path.Combine(Dir, "In");
         static string LispDir => Path.Combine(Dir, "Lisp");
+        // The sections whose Lisp is gone (the window code of a tab moved to .NET: asmwin,
+        // asmtab), taken by the last witness that had it and kept as they were, compared with
+        // the C# as the sections of Lisp are:
+        static string KeptDir => Path.Combine(Dir, "Kept");
 
         const char Us = (char)31, Nil = (char)30;
         static readonly string[] Keys = { "QuickShape", "QuickDrawAssembly", "QuickDraw", "Material", "HatchPreset" };
@@ -564,6 +568,12 @@ namespace DynALisp.Core.Tests
                     var witness = Path.Combine(LispDir, name);
                     if (lisp) Assert.True(Directory.Exists(witness), "No witness of the case " + name + ": run Witness.lsp again.");
                     var lines = lisp ? ReadLines(Path.Combine(witness, "Witness.txt")) : null;
+                    var keptFile = Path.Combine(KeptDir, name, "Witness.txt");
+                    if (lisp)
+                    {
+                        Assert.True(File.Exists(keptFile), "No kept witness of the case " + name + " (Witness\\Kept): its sections cannot be taken again.");
+                        lines.AddRange(ReadLines(keptFile));
+                    }
                     var cs = Case(name, root, info["sep"], enc, names, lines);
                     if (!lisp) continue;
                     foreach (var (mark, cases, prefix, kept) in ReadByLisp)

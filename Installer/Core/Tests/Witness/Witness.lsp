@@ -33,8 +33,8 @@
 ;;  %TEMP%, the Lisp pointed at it for a moment (*dyl:contents, *dyl:user, *dyl:dylres,
 ;;  *dyl:res, *dyl:alias) and given back its own folders after, the reads kept dropped. The
 ;;  files are read by the Lisp itself (Dyl:Data, Dyl:DataHead, Dyl:AsmDefs, Dyl:AsmRead,
-;;  Dyl:HatchDefs, Dyl:MatDefs, Dyl:MatBoth, Dyl:AsmPats, Dyl:AsmShows, Dyl:AsmWinMats,
-;;  Dyl:AsmRows and Dyl:MatData of the Core hidden meanwhile), so the C# is compared with the
+;;  Dyl:HatchDefs, Dyl:MatDefs, Dyl:MatBoth, Dyl:AsmPats, and Dyl:AsmShows of the Core
+;;  hidden meanwhile), so the C# is compared with the
 ;;  Lisp, never with itself.
 ;;
 ;;  What is written, each line its cells divided by (chr 31), nil as (chr 30), a section by a
@@ -48,10 +48,8 @@
 ;;                  cleaned, presets read and their commands; the groups and their case; the
 ;;                  aliases; the assemblies (defaults, read and fixed, in the units of
 ;;                  wt:factors and back); the hatch presets and the materials (defaults,
-;;                  read and fixed); what the Quick Draw window shows of each assembly and
-;;                  what the Assembly Presets window is given, its values and the
-;;                  presets it gives back after each edit of wt:edits (in each drawing of
-;;                  wt:setups); then whether each one was written
+;;                  read and fixed); what the Quick Draw window shows of each assembly (in
+;;                  each drawing of wt:setups); then whether each one was written
 ;;    <case>\User\  the files written (Remote>>Dyl:PresetWrite, Remote>>Dyl:GroupsWriteOf,
 ;;                  Dyl:AliasWrite), as they are on disk
 
@@ -309,290 +307,6 @@
   (setq *pst:readcache* nil *mt:defcache* nil *hp:defcache* nil *qd:asmdefs* nil *qd:asmcache* nil *mt:patunits* nil *mt:oldstamp* nil)
 )
 
-;;  The strings of lst, each once, in the order they come (nil and "" left out):
-(defun wt:uniq (lst / res)
-  (foreach x lst
-    (if (and (= 'STR (type x)) (/= "" x) (not (member x res))) (setq res (cons x res)))
-  )
-  (reverse res)
-)
-
-;;  What the Assembly Presets window is given (Apps\Draw\Dyl-QuickDraw.lsp), opened from no
-;;  Quick Draw preset on the assemblies read, in each drawing of wt:setups: the materials of
-;;  the Material list (each with the id of its material row, "" for none), the groups of its
-;;  Group list and the layer keys the assemblies use (Dyl:QuickDrawAsmWinMats, each key once),
-;;  the data of each material (Remote>>Dyl:MaterialDataLists), the layer key of new lines and
-;;  the row Add starts from (Dyl:QuickDrawAsmWinPrep, the layer keys of the case: its
-;;  LayerKeys.csv, else the defaults), then the columns the window adds to each assembly
-;;  (Dyl:QuickDrawAsmExtra, newlines as (chr 29)); not for a materials file of DynALisp 1.1
-;;  (split by the Lisp alone):
-(defun wt:asmwin (/ saved pst:lst qa:r qa:mats qa:grps qa:def qa:bk mt:keys got data *lk:file* *lk:readcache*)
-  (setq saved     (mapcar 'getvar '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC"))
-        *lk:file* (strcat *dyl:dylres "\\LayerKeys.csv")
-  )
-  (setq *mt:oldstamp* nil)
-  (if (Remote>>Dyl:MaterialOld-p)
-    (wt:sec "asmwin lisp")
-    (foreach s wt:setups
-      (mapcar 'setvar '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "DIMZIN") (cdr s))
-      (setq *pst:readcache* nil
-            *mt:defcache*   nil
-            *hp:defcache*   nil
-            *qd:asmdefs*    nil
-            *qd:asmcache*   nil
-            pst:lst         (Remote>>Dyl:PresetRead "QuickDrawAssembly" (Dyl:QuickDrawAsmDefs) 'Dyl:QuickDrawAsmFix)
-            got             (Dyl:QuickDrawAsmWinMats pst:lst)
-            data            (Remote>>Dyl:MaterialDataLists (mapcar 'car (car got)) nil)
-      )
-      (wt:rows (strcat "asmwin mats " (car s))
-               (mapcar '(lambda (m) (list (car m) (cadr m) (if (caddr m) (car (caddr m)) "") (cadddr m))) (car got))
-      )
-      (wt:rows (strcat "asmwin groups " (car s)) (mapcar 'list (cadr got)))
-      (wt:rows (strcat "asmwin keys " (car s)) (mapcar 'list (wt:uniq (caddr got))))
-      (wt:rows (strcat "asmwin data " (car s)) (mapcar 'list (mapcar 'car (car got)) (car data) (cadr data)))
-      (Dyl:QuickDrawAsmWinPrep)
-      (wt:put (strcat "#asmwin bk " (car s) (chr 31) qa:bk))
-      (wt:rows (strcat "asmwin def " (car s)) (list qa:def))
-      (wt:rows (strcat "asmwin rows " (car s))
-               (mapcar '(lambda (a) (mapcar 'wt:nl (cons (car a) (Dyl:QuickDrawAsmExtra a)))) pst:lst)
-      )
-    )
-  )
-  (mapcar '(lambda (v x) (vl-catch-all-apply 'setvar (list v x))) '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC") saved)
-  (setvar "DIMZIN" wt:dimzin)
-  (setq *pst:readcache* nil *mt:defcache* nil *hp:defcache* nil *qd:asmdefs* nil *qd:asmcache* nil *mt:oldstamp* nil)
-)
-
-;;  The units of the patterns of the hatch presets of the case, those of wt:pat (never those of
-;;  the .pat files of this computer), for the drawing of MEASUREMENT set (*mt:patunits*, see
-;;  Remote>>Dyl:MaterialPatUnits):
-(defun wt:patsset ()
-  (foreach h (car (Remote>>Dyl:MaterialBoth))
-    (setq *mt:patunits* (cons (cons (strcat (strcase (nth 3 h)) "|" (itoa (getvar "MEASUREMENT"))) (wt:pat (strcase (nth 3 h))))
-                              *mt:patunits*
-                        )
-    )
-  )
-)
-
-;;  A value v of a window ((key . value) as the Lisp gives it to Dyl:WinShow), on one line: the
-;;  key, then S and its text, L and its items (nil: none), R and the cells of each of its rows
-;;  (a line each), or N and the number of its rows for the tables of the presets and of their
-;;  defaults (pst/rows, pst/defs: their rows are those of the sections assemblies read and
-;;  asmwin rows):
-(defun wt:val (v / x)
-  (setq x (cdr v))
-  (cond
-    ((= 'STR (type x)) (wt:put (wt:line (list (car v) "S" (wt:nl x)))))
-    ((and (listp (car x)) x (member (car v) '("pst/rows" "pst/defs")))
-     (wt:put (wt:line (list (car v) "N" (itoa (length x)))))
-    )
-    ((and x (listp (car x)))
-     (foreach r x (wt:put (wt:line (cons (car v) (cons "R" (mapcar 'wt:nl r))))))
-    )
-    ((wt:put (wt:line (cons (car v) (cons "L" (mapcar 'wt:nl x))))))
-  )
-)
-
-;;  A row r with the cells of pairs ((i . value) ...):
-(defun wt:cells (r pairs)
-  (foreach p pairs (setq r (Remote>>Dyl:ListSubst r (car p) (cdr p))))
-  r
-)
-
-;;  A row r with the cells of pairs given to its first layer (its column 15, the layers as rows
-;;  of the window, see Dyl:QuickDrawAsmDecode); nil without layers:
-(defun wt:layer (r pairs / ls)
-  (if (setq ls (Dyl:QuickDrawAsmDecode (cond ((nth 15 r)) (""))))
-    (Remote>>Dyl:ListSubst r 15 (Dyl:QuickDrawAsmEncode (cons (wt:cells (car ls) pairs) (cdr ls))))
-  )
-)
-
-;;  The edits made in the window to the first rows sent (rs, 3 at most): (name . function),
-;;  the rows given back by the window, nil when the edit cannot be made on them. Each value of
-;;  the window that wget and rowcheck read: the name and the texts trimmed, the ratings, the
-;;  thicknesses, the materials, the framing, the band settings, the border and the hatch of a
-;;  layer, its flags, the Border lines and the Dividing lines, no layers, a preset added,
-;;  deleted, moved:
-(setq wt:edits
-  '(("same" lambda (rs) rs)
-    ("name" lambda (rs) (cons (wt:cells (car rs) '((2 . "Edited name") (8 . "  A description  ") (13 . " Family ") (14 . " Short "))) (cdr rs)))
-    ("ratings" lambda (rs) (cons (wt:cells (car rs) '((9 . "60") (10 . "45x"))) (cdr rs)))
-    ("sound" lambda (rs) (cons (wt:cells (car rs) '((9 . "") (10 . "90") (11 . "50") (12 . "4.5"))) (cdr rs)))
-    ("ratingsok" lambda (rs) (cons (wt:cells (car rs) '((9 . " 45 ") (10 . "120") (11 . "0") (12 . "55"))) (cdr rs)))
-    ("thick" lambda (rs / r) (if (setq r (wt:layer (car rs) '((2 . "12.5")))) (cons r (cdr rs))))
-    ("thickfine" lambda (rs / r) (if (setq r (wt:layer (car rs) '((2 . "0.62598425")))) (cons r (cdr rs))))
-    ("thickbad" lambda (rs / r) (if (setq r (wt:layer (car rs) '((2 . "0")))) (cons r (cdr rs))))
-    ("thicktext" lambda (rs / r) (if (setq r (wt:layer (car rs) '((2 . "abc")))) (cons r (cdr rs))))
-    ("nomat" lambda (rs / r) (if (setq r (wt:layer (car rs) '((1 . "")))) (cons r (cdr rs))))
-    ("framing" lambda (rs / r) (if (setq r (wt:layer (car rs) '((44 . "mt-Void") (45 . " 23,5 ")))) (cons r (cdr rs))))
-    ("framingbad" lambda (rs / r) (if (setq r (wt:layer (car rs) '((44 . "mt-Void") (45 . "100")))) (cons r (cdr rs))))
-    ("band" lambda (rs / r) (if (setq r (wt:layer (car rs) '((5 . "1") (8 . "abc")))) (cons r (cdr rs))))
-    ("bandangle" lambda (rs / r) (if (setq r (wt:layer (car rs) '((5 . "1") (9 . "85")))) (cons r (cdr rs))))
-    ("bandmiter" lambda (rs / r) (if (setq r (wt:layer (car rs) '((5 . "1") (11 . "0.5")))) (cons r (cdr rs))))
-    ("bandfactor" lambda (rs / r) (if (setq r (wt:layer (car rs) '((5 . "1") (38 . "1") (39 . "0")))) (cons r (cdr rs))))
-    ("bandoffset" lambda (rs / r) (if (setq r (wt:layer (car rs) '((5 . "1") (40 . "1") (41 . "x")))) (cons r (cdr rs))))
-    ("bandok" lambda (rs / r)
-     (if (setq r (wt:layer (car rs) '((5 . "1") (6 . "Edge") (8 . "2") (9 . "30") (11 . "2") (38 . "1") (39 . "1.5") (40 . "1") (41 . "2") (42 . "-1"))))
-       (cons r (cdr rs))
-     )
-    )
-    ("bandoff" lambda (rs / r) (if (setq r (wt:layer (car rs) '((5 . "0") (6 . "Edge")))) (cons r (cdr rs))))
-    ("border" lambda (rs / r) (if (setq r (wt:layer (car rs) '((14 . "1") (15 . "")))) (cons r (cdr rs))))
-    ("borderok" lambda (rs / r)
-     (if (setq r (wt:layer (car rs) '((14 . "1") (15 . "hatch") (19 . "1") (20 . "dashed") (21 . "1") (22 . "2"))))
-       (cons r (cdr rs))
-     )
-    )
-    ("borderbad" lambda (rs / r) (if (setq r (wt:layer (car rs) '((14 . "1") (15 . "HATCH") (17 . "1") (18 . "300")))) (cons r (cdr rs))))
-    ("borderoff" lambda (rs / r) (if (setq r (wt:layer (car rs) '((14 . "0") (15 . "OTHERKEY")))) (cons r (cdr rs))))
-    ("hatchbad" lambda (rs / r) (if (setq r (wt:layer (car rs) '((27 . "1") (36 . "1") (37 . "95")))) (cons r (cdr rs))))
-    ("hatchkey" lambda (rs / r)
-     (if (setq r (wt:layer (car rs) '((27 . "1") (28 . "1") (29 . "1,2,3") (30 . "1") (31 . "dashed") (32 . "1") (33 . "2"))))
-       (cons r (cdr rs))
-     )
-    )
-    ("hatchoff" lambda (rs / r) (if (setq r (wt:layer (car rs) '((27 . "0")))) (cons r (cdr rs))))
-    ("flags" lambda (rs / r) (if (setq r (wt:layer (car rs) '((16 . "1") (46 . "1") (47 . "1")))) (cons r (cdr rs))))
-    ("lines" lambda (rs) (cons (wt:cells (car rs) '((16 . "1") (17 . ""))) (cdr rs)))
-    ("linesok" lambda (rs) (cons (wt:cells (car rs) '((16 . "1") (17 . "hatch") (20 . "1") (21 . "dashed") (28 . "1") (29 . "a"))) (cdr rs)))
-    ("linesbad" lambda (rs) (cons (wt:cells (car rs) '((28 . "1") (29 . "A") (30 . "1") (31 . "abc"))) (cdr rs)))
-    ("linesoff" lambda (rs) (cons (wt:cells (car rs) '((16 . "0") (17 . "") (28 . "0") (29 . ""))) (cdr rs)))
-    ("nolayers" lambda (rs) (cons (wt:cells (car rs) '((15 . ""))) (cdr rs)))
-    ("new" lambda (rs / r)
-     (setq r (wt:cells (Remote>>Dyl:PresetWinRow (cdr (assoc 'new pst:dlg))) '((2 . "Added"))))
-     (append rs (list (cond ((wt:layer r '((1 . "mt-Void") (2 . "25")))) (r))))
-    )
-    ("newempty" lambda (rs) (append rs (list (Remote>>Dyl:PresetWinRow (cdr (assoc 'new pst:dlg))))))
-    ("delete" lambda (rs) (if (cdr rs) (cons (car rs) (cddr rs))))
-    ("move" lambda (rs) (if (cdr rs) (cons (cadr rs) (cons (car rs) (cddr rs)))))
-   )
-)
-
-;;  The Assembly Presets window as the preset engine shows it (Remote>>Dyl:PresetDialog on the
-;;  spec Dyl:QuickDrawAsmDlg of Apps\Draw\Dyl-QuickDraw.lsp): its values (Remote>>Dyl:PresetWinVals,
-;;  each one by wt:val), opened from no Quick Draw preset (manager), from a preset whose border
-;;  is on the key WALL and whose assembly is the second one read (quickdraw: its preset shown
-;;  and its row Add starts from only), and from a preset whose key and assembly no longer exist
-;;  (unknown, the same); then, from no preset, each edit of wt:edits on the first rows sent:
-;;  the rows given back (in), the presets got from them (Remote>>Dyl:PresetWinBack, given
-;;  their ids: out) and why they are not valid (Remote>>Dyl:PresetWinCheck: check, nil when
-;;  they are). In each drawing of wt:setups, at the drawing scale 1:50; not for a materials file
-;;  of DynALisp 1.1 (split by the Lisp alone):
-(defun wt:asmtab (/ saved *lk:file* *lk:readcache* *pst:rowcache* *pst:winsent* rs n e in msg)
-  (setq saved     (mapcar 'getvar '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "CANNOSCALE"))
-        *lk:file* (strcat *dyl:dylres "\\LayerKeys.csv")
-  )
-  (vl-catch-all-apply 'setvar '("CANNOSCALE" "1:50"))
-  (setvar "DIMZIN" 0)
-  (wt:put (strcat "#asmtab scale" (chr 31) (wt:cell (wt:num (getvar "CANNOSCALEVALUE")))))
-  (wt:rows "asmtab layerkeys" (mapcar '(lambda (k) (list (car k))) (Remote>>Dyl:LayerKeyRead)))
-  (setq *mt:oldstamp* nil)
-  (if (Remote>>Dyl:MaterialOld-p)
-    (wt:sec "asmtab lisp")
-    (foreach s wt:setups
-      (mapcar 'setvar '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "DIMZIN") (cdr s))
-      (setq *pst:readcache* nil
-            *mt:defcache*   nil
-            *hp:defcache*   nil
-            *qd:asmdefs*    nil
-            *qd:asmcache*   nil
-            *mt:patunits*   nil
-            *pst:rowcache*  nil
-      )
-      (wt:patsset)
-      ;;  (a window that stops is said, with the step it stopped at, and the others go on:)
-      (foreach v (list (list "manager" nil nil) (list "quickdraw" "WALL" 1) (list "unknown" "NOSUCHKEY" "as-NoSuchAssembly"))
-        (setq wt:at nil)
-        (if (vl-catch-all-error-p (setq e (vl-catch-all-apply 'wt:asmtabof (list (car s) (car v) (cadr v) (caddr v)))))
-          (wt:put (wt:line (list (strcat "#asmtab stopped " (car s) " " (car v)) wt:at (vl-catch-all-error-message e))))
-        )
-      )
-    )
-  )
-  (mapcar '(lambda (v x) (vl-catch-all-apply 'setvar (list v x))) '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "CANNOSCALE") saved)
-  (setvar "DIMZIN" wt:dimzin)
-  (setq *pst:readcache* nil *mt:defcache* nil *hp:defcache* nil *qd:asmdefs* nil *qd:asmcache* nil *mt:patunits* nil *mt:oldstamp* nil)
-)
-
-;;  The window of wt:asmtab in the drawing setup, opened as name: from no preset (bdr nil),
-;;  else from a Quick Draw preset whose border is on the key bdr and whose assembly is asm (its
-;;  id, or the index of a preset read):
-(defun wt:asmtabof (setup name bdr asm / pst:key pst:dlg pst:lst pst:lst0 pst:idx pst:sel pst:als0 pst:als pst:grps
-                    pst:gren pst:mats pst:smats pst:mgr pst:flt pst:srt pst:shw pst:sent pst:sentof pst:prep qa:qd qa:r
-                    qa:mats qa:grps qa:def qa:bk mt:keys vals sel rs n in msg r
-                   )
-  (setq wt:at   "read"
-        pst:key "QuickDrawAssembly"
-        pst:lst (Remote>>Dyl:PresetRead pst:key (Dyl:QuickDrawAsmDefs) 'Dyl:QuickDrawAsmFix)
-        wt:at   "spec"
-  )
-  ;;  (nth on nil fails in AutoCAD: a case without assemblies)
-  (if bdr
-    (progn
-      (setq r (list ""))
-      (repeat 64 (setq r (cons "" r)))
-      (setq r    (Remote>>Dyl:ListSubst r *qd:border* bdr)
-            qa:r (Remote>>Dyl:ListSubst r *qd:layerscol* (if (numberp asm) (cond ((car (if pst:lst (nth asm pst:lst)))) ((car (car pst:lst))) ("")) asm))
-      )
-    )
-  )
-  (setq wt:at    "dlg"
-        pst:dlg  (Dyl:QuickDrawAsmDlg qa:r)
-        pst:srt  "Name"
-        pst:flt  ""
-        pst:shw  ""
-        sel      (cdr (assoc 'select pst:dlg))
-        pst:idx  (max 0 (min (cond ((if sel (vl-position (assoc sel pst:lst) pst:lst))) (0)) (1- (length pst:lst))))
-        pst:sel  (list pst:idx)
-        pst:lst0 pst:lst
-        pst:gren (length *grp:renames*)
-  )
-  (setq wt:at "prep")
-  (Remote>>Dyl:PresetWinPrep)
-  (setq wt:at "vals"
-        vals  (Remote>>Dyl:PresetWinVals nil)
-  )
-  (wt:sec (strcat "asmtab vals " setup " " name))
-  (foreach v vals
-    (if (or (= "manager" name) (member (car v) '("pst.idx" "pst.sel" "ll/new")))
-      (progn (setq wt:at (strcat "val " (vl-princ-to-string (car v)))) (wt:val v))
-    )
-  )
-  (setq wt:at "sent")
-  (if (= "manager" name)
-    (progn
-      (setq rs         (Remote>>LM:sublst pst:sent 0 3)
-            pst:sent   rs
-            pst:sentof (Remote>>LM:sublst pst:sentof 0 3)
-            pst:lst0   pst:sentof
-            n          (Remote>>Dyl:PresetWinCols)
-      )
-      (foreach e wt:edits
-        ;;  (without rows sent, only the rows added: a row edited would be nil, see
-        ;;  WitnessTests.Edits)
-        (if (and (or rs (member (car e) '("new" "newempty")))
-                 (progn (setq wt:at (strcat "edit " (car e))) (setq in (apply (cdr e) (list rs))))
-            )
-          (progn
-            (setq wt:at   (strcat "edit " (car e) " back")
-                  pst:lst (Remote>>Dyl:PresetWinBack in n)
-                  wt:at   (strcat "edit " (car e) " check")
-                  msg     (Remote>>Dyl:PresetWinCheck)
-                  wt:at   (strcat "edit " (car e) " written")
-            )
-            (wt:rows (strcat "asmtab edit " setup " " (car e) " in") (mapcar '(lambda (x) (mapcar 'wt:nl x)) in))
-            (wt:rows (strcat "asmtab edit " setup " " (car e) " out")
-                     (mapcar '(lambda (x) (mapcar 'wt:nl x)) (Remote>>Dyl:PresetIds pst:lst))
-            )
-            (wt:put (strcat "#asmtab edit " setup " " (car e) " check" (chr 31) (wt:cell msg)))
-          )
-        )
-      )
-    )
-  )
-)
-
 ;;  The groups of the case, and the case of the names of the probes in them:
 (defun wt:groups ()
   (wt:rows "groups preset" (mapcar 'list (Remote>>Dyl:GroupsOf nil)))
@@ -640,8 +354,6 @@
   (wt:assemblies)
   (wt:materials)
   (wt:shows)
-  (wt:asmwin)
-  (wt:asmtab)
   (foreach key wt:keys
     (wt:put (strcat "#" key " write" (chr 31) (wt:cell (Remote>>Dyl:PresetWrite key (cdr (assoc key wt:reads))))))
   )
@@ -691,8 +403,7 @@
         wt:outdir (strcat (getenv "TEMP") "\\DynALisp Witness " (menucmd "M=$(edtime,$(getvar,date),YYYYMODD-HHMMSS)"))
         wt:work   (strcat wt:outdir " work")
         saved     (list *dyl:contents *dyl:user *dyl:dylres *dyl:res *dyl:alias Dyl:Data Dyl:DataHead Dyl:AsmDefs Dyl:AsmRead
-                        Dyl:HatchDefs Dyl:MatDefs Dyl:MatBoth Dyl:AsmPats Dyl:AsmShows Dyl:AsmWinMats
-                        Dyl:AsmRows Dyl:MatData
+                        Dyl:HatchDefs Dyl:MatDefs Dyl:MatBoth Dyl:AsmPats Dyl:AsmShows
                   )
         wt:dimzin (getvar "DIMZIN")
   )
@@ -718,9 +429,6 @@
             Dyl:MatBoth   nil
             Dyl:AsmPats   nil
             Dyl:AsmShows  nil
-            Dyl:AsmWinMats nil
-            Dyl:AsmRows   nil
-            Dyl:MatData   nil
             err           (vl-catch-all-apply 'wt:all (list (if (nth 5 saved) T)))
       )
       ;;  The folders and functions of DynALisp given back, the reads of the cases dropped:
@@ -739,9 +447,6 @@
             Dyl:MatBoth     (nth 11 saved)
             Dyl:AsmPats     (nth 12 saved)
             Dyl:AsmShows    (nth 13 saved)
-            Dyl:AsmWinMats  (nth 14 saved)
-            Dyl:AsmRows     (nth 15 saved)
-            Dyl:MatData     (nth 16 saved)
             *mt:patunits*   nil
             *pst:readcache* nil
             *grp:cache*     nil
@@ -759,7 +464,7 @@
          ;;  stopped in is known:
          (if wt:out
            (progn
-             (wt:put (wt:line (list "#stopped" (vl-catch-all-error-message err) wt:at)))
+             (wt:put (strcat "#stopped" (chr 31) (vl-catch-all-error-message err)))
              (wt:write (strcat wt:outdir "\\Stopped " (vl-filename-base (cond (wt:root) ("case"))) ".txt"))
            )
          )

@@ -62,7 +62,7 @@
 // for, all without it), {sel|text} the text, # the number of rows selected, when there are two
 // or more; {per:m:w:list} the total over the rows of a value of the item each one picks in the
 // field of column m, from the list key/list given with that field's items ("a b": a per unit of
-// column w, plus b; the data of the materials of an assembly, Remote>>Dyl:MaterialDataLists),
+// column w, plus b; the data of the materials of an assembly, AsmWindow.Data of the core),
 // 4 significant digits, the rows whose item has none ("") left out; {miss:m:list|one|many} the
 // text one (1) or many (more) with # their number, for the rows left out, "" when there are
 // none; dyl:Win.SummaryEmpty in its place while the list is empty. A row can be made of two

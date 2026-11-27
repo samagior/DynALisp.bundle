@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
-// What the Assembly Presets window (Apps\Draw\Dyl-QuickDraw.lsp) is given of the assemblies
-// and of the materials. Each function gives what the Lisp function it is named after gives,
-// step for step:
+// What the Assembly Presets window (Res\Dyl-AssemblyPresets.xaml) is given of the assemblies
+// and of the materials. Each function gives what the Lisp function it is named after gave,
+// step for step (that Lisp is gone with the Lisp window code: what it gave is kept in
+// Installer\Core\Tests\Witness\Kept, sections asmwin):
 //   AsmWindow.Mats    Dyl:QuickDrawAsmWinMats         the materials of the Material list of a
 //                                                     layer, the groups of its Group list, the
 //                                                     layer keys the assemblies use

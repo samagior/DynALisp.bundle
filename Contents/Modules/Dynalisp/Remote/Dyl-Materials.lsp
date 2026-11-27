@@ -3095,34 +3095,4 @@
   )
 )
 
-;;  The data of each material of a list, for the windows that add them up as the layers are
-;;  edited (the Assembly Presets window, {per} and {miss} of Win.Summary, see
-;;  Installer\Windows\Engine\Rows.cs): for each id of ids, the material rows mats (nil:
-;;  read), its resistance "per-unit fixed" and its mass "per-unit", "" when not known:
-;;  (resistances masses):
-(defun Remote>>Dyl:MaterialDataLists (ids mats / rs ms m d)
-  (cond
-    ;;  (made by DynALisp.Core when it is loaded, see Installer\Core\Data\AsmWindow.cs; nil
-    ;;  when the Lisp reads the materials:)
-    ((if (and (not mats) ids Dyl:MatData)
-       (Dyl:MatData *dyl:contents (getvar "MEASUREMENT") (getvar "INSUNITS") (getvar "DIMZIN") ids)
-     )
-    )
-    ((Remote>>Dyl:MaterialDataListsLisp ids mats))
-  )
-)
-
-;;  The same made by the Lisp:
-(defun Remote>>Dyl:MaterialDataListsLisp (ids mats / rs ms m d)
-  (if (not mats) (setq mats (cadr (Remote>>Dyl:MaterialBoth))))
-  (foreach id ids
-    (setq m  (vl-some '(lambda (x) (if (= (strcase id) (strcase (car x))) x)) mats)
-          d  (if m (Remote>>Dyl:MaterialLayerData m) '(nil nil nil))
-          rs (cons (if (car d) (strcat (Remote>>Dyl:MaterialNumP (car d) 10) " " (Remote>>Dyl:MaterialNumP (cadr d) 10)) "") rs)
-          ms (cons (if (caddr d) (Remote>>Dyl:MaterialNumP (caddr d) 10) "") ms)
-    )
-  )
-  (list (reverse rs) (reverse ms))
-)
-
 (princ)

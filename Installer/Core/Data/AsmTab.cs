@@ -19,7 +19,9 @@
 // Remote\Dyl-Presets.lsp ran it on the spec of Apps\Draw\Dyl-QuickDraw.lsp, now shown by
 // DynALisp.Windows.dll (Bridge.cs, Dyl:AsmWindow) without the Lisp: the values of the window,
 // the presets got back from it, checked, and written. Each step gives what the Lisp function it
-// is named after gave, checked by the witness files (sections asmtab):
+// is named after gave, checked by the witness files (sections asmtab). That Lisp (the spec of
+// the window and its functions in Dyl-QuickDraw.lsp) is gone: what it gave is kept in
+// Installer\Core\Tests\Witness\Kept, and git keeps its code:
 //   AsmTab.Open    Remote>>Dyl:PresetDialog          the presets read, the one shown, Show
 //   AsmTab.Prep    Remote>>Dyl:PresetWinPrep and     the groups, the materials, the layer keys,
 //                  Dyl:QuickDrawAsmWinPrep           the row Add starts from

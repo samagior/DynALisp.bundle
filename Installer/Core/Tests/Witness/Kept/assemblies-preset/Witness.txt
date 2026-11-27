@@ -1,0 +1,1119 @@
+#asmwin mats metric
+mt-ConcreteConcretemt-ConcreteConcrete
+mt-GroutGroutmt-GroutConcrete
+mt-GypsumConcreteGypsum Concretemt-GypsumConcreteConcrete
+mt-HollowCoreSlabHollow Core Slabmt-HollowCoreSlabConcrete
+mt-LightweightConcreteLightweight Concretemt-LightweightConcreteConcrete
+mt-MortarMortarmt-MortarConcrete
+mt-BrickBrickmt-BrickMasonry
+mt-CMUCMUmt-CMUMasonry
+mt-CMU140CMU 140 mm Hollowmt-CMU140Masonry
+mt-CMU140VermiculiteCMU 140 mm Vermiculite Filledmt-CMU140VermiculiteMasonry
+mt-CMU190CMU 190 mm Hollowmt-CMU190Masonry
+mt-CMU190PerliteCMU 190 mm Perlite Filledmt-CMU190PerliteMasonry
+mt-CMU190VermiculiteCMU 190 mm Vermiculite Filledmt-CMU190VermiculiteMasonry
+mt-CMU240CMU 240 mm Hollowmt-CMU240Masonry
+mt-CMU240VermiculiteCMU 240 mm Vermiculite Filledmt-CMU240VermiculiteMasonry
+mt-CMU290CMU 290 mm Hollowmt-CMU290Masonry
+mt-CMU290VermiculiteCMU 290 mm Vermiculite Filledmt-CMU290VermiculiteMasonry
+mt-CMU90CMU 90 mm Hollowmt-CMU90Masonry
+mt-ConcreteBrickConcrete Brickmt-ConcreteBrickMasonry
+mt-FirebrickFirebrickmt-FirebrickMasonry
+mt-MarbleMarblemt-MarbleMasonry
+mt-SandstoneQuartzite And Sandstonemt-SandstoneMasonry
+mt-StoneStonemt-StoneMasonry
+mt-AluminiumAluminiummt-AluminiumMetal
+mt-BronzeBronzemt-BronzeMetal
+mt-IronIronmt-IronMetal
+mt-LeadLeadmt-LeadMetal
+mt-ResilientChannelResilient Metal Channelmt-ResilientChannelMetal
+mt-SteelSteelmt-SteelMetal
+mt-SteelDeckSteel Deckmt-SteelDeckMetal
+mt-SteelFurringSteel Furring Channelmt-SteelFurringMetal
+mt-AmabilisFirAmabilis Firmt-AmabilisFirWood
+mt-BirchBirchmt-BirchWood
+mt-DouglasFirLarchDouglas Fir Or Larchmt-DouglasFirLarchWood
+mt-HardboardHardboardmt-HardboardWood
+mt-HemlockHemlockmt-HemlockWood
+mt-HDFHigh Density Fiberboardmt-HDFWood
+mt-LodgepolePineLodgepole Pinemt-LodgepolePineWood
+mt-LDFLow Density Fiberboardmt-LDFWood
+mt-MapleAshMaple And Ashmt-MapleAshWood
+mt-MDFMedium Density Fiberboardmt-MDFWood
+mt-OakOakmt-OakWood
+mt-OSBOSBmt-OSBWood
+mt-ParticleboardParticleboardmt-ParticleboardWood
+mt-PlywoodPlywoodmt-PlywoodWood
+mt-RedPineRed Pinemt-RedPineWood
+mt-WesternHemlockWestern Hemlockmt-WesternHemlockWood
+mt-WhiteCedarWhite Cedarmt-WhiteCedarWood
+mt-WhitePineWhite Pinemt-WhitePineWood
+mt-WhiteSpruceWhite Sprucemt-WhiteSpruceWood
+mt-WoodFrameWood Framemt-WoodFrameWood
+mt-WoodPlankWood Plankmt-WoodPlankWood
+mt-YellowCypressYellow Cypressmt-YellowCypressWood
+mt-AsphaltFiberboardAsphalt Fiberboard Sheathingmt-AsphaltFiberboardBoard
+mt-FoilFiberboardFoil-Faced Wood Fiberboardmt-FoilFiberboardBoard
+mt-GypsumGypsummt-GypsumBoard
+mt-GypsumTypeXGypsum Board Type Xmt-GypsumTypeXBoard
+mt-GypsumSheathingGypsum Sheathingmt-GypsumSheathingBoard
+mt-CementBoardLightweight Concrete Boardmt-CementBoardBoard
+mt-AbsorptiveMaterialAbsorptive Materialmt-AbsorptiveMaterialInsulation
+mt-StrawBoardCompressed Straw Boardmt-StrawBoardInsulation
+mt-PerliteExpanded Perlitemt-PerliteInsulation
+mt-ExpandedPolystyreneExpanded Polystyrenemt-ExpandedPolystyreneInsulation
+mt-ExpandedPolystyrene1Expanded Polystyrene Type 1mt-ExpandedPolystyrene1Insulation
+mt-ExpandedPolystyrene3Expanded Polystyrene Type 3mt-ExpandedPolystyrene3Insulation
+mt-ExpandedPolystyrene4Expanded Polystyrene Type 4mt-ExpandedPolystyrene4Insulation
+mt-ExtrudedPolystyreneExtruded Polystyrenemt-ExtrudedPolystyreneInsulation
+mt-InsulatingFiberboardInsulating Fiberboardmt-InsulatingFiberboardInsulation
+mt-LooseInsulationLoose Insulationmt-LooseInsulationInsulation
+mt-PhenolicFoamPhenolic Foam Boardmt-PhenolicFoamInsulation
+mt-PolyisocyanuratePolyisocyanuratemt-PolyisocyanurateInsulation
+mt-RigidInsulationRigid Insulationmt-RigidInsulationInsulation
+mt-MineralWoolBoardRigid Mineral Wool Roof Boardmt-MineralWoolBoardInsulation
+mt-SprayInsulationSpray Insulationmt-SprayInsulationInsulation
+mt-SprayPolyurethane1Spray Polyurethane Type 1mt-SprayPolyurethane1Insulation
+mt-SprayPolyurethane2Spray Polyurethane Type 2mt-SprayPolyurethane2Insulation
+mt-SprayedAsbestosSprayed Asbestosmt-SprayedAsbestosInsulation
+mt-WoodFiberBattWood Fiber Battmt-WoodFiberBattInsulation
+mt-CarpetFibrousCarpet - Fibrous Underlaymt-CarpetFibrousFinish
+mt-CarpetRubberCarpet - Rubber Underlaymt-CarpetRubberFinish
+mt-CementPlasterCement Plastermt-CementPlasterFinish
+mt-CorkTileCork Tilemt-CorkTileFinish
+mt-FiberCementSidingFiber Cement Sidingmt-FiberCementSidingFinish
+mt-GypsumSandPlasterGypsum-Sand Plastermt-GypsumSandPlasterFinish
+mt-HardboardSidingHardboard Sidingmt-HardboardSidingFinish
+mt-HardwoodFloorHardwood Flooringmt-HardwoodFloorFinish
+mt-LapSidingMetal Or Vinyl Sidingmt-LapSidingFinish
+mt-LapSidingInsulatedMetal Or Vinyl Siding - Insulatedmt-LapSidingInsulatedFinish
+mt-LapSidingFoilMetal Or Vinyl Siding - Insulated And Foilmt-LapSidingFoilFinish
+mt-PlasterPlastermt-PlasterFinish
+mt-ResilientFlooringResilient Flooringmt-ResilientFlooringFinish
+mt-StuccoStuccomt-StuccoFinish
+mt-TerrazzoTerrazzomt-TerrazzoFinish
+mt-WoodShinglesWood Shingle Sidingmt-WoodShinglesFinish
+mt-WoodShinglesDoubleWood Shingle Siding - Doublemt-WoodShinglesDoubleFinish
+mt-WoodSidingWood Sidingmt-WoodSidingFinish
+mt-AsphaltShinglesAsphalt Shinglesmt-AsphaltShinglesRoofing
+mt-BitumenBitumenmt-BitumenRoofing
+mt-BuiltUpRoofBuilt-Up Roofmt-BuiltUpRoofRoofing
+mt-RollRoofingRoll Roofingmt-RollRoofingRoofing
+mt-SlateSlatemt-SlateRoofing
+mt-WoodShingleRoofWood Shingle Roofingmt-WoodShingleRoofRoofing
+mt-AsphaltAsphaltmt-AsphaltSite
+mt-CompactedSoilCompacted Soilmt-CompactedSoilSite
+mt-CrushedStoneCrushed Stonemt-CrushedStoneSite
+mt-GravelGravelmt-GravelSite
+mt-SandSandmt-SandSite
+mt-TopsoilTopsoilmt-TopsoilSite
+mt-UndisturbedSoilUndisturbed Soilmt-UndisturbedSoilSite
+mt-AirCeiling13Air Space - Ceiling 13 mm+mt-AirCeiling13Air
+mt-AirCeiling40Air Space - Ceiling 40 mm+mt-AirCeiling40Air
+mt-AirFloor13Air Space - Floor 13 mmmt-AirFloor13Air
+mt-AirFloor20Air Space - Floor 20 mm+mt-AirFloor20Air
+mt-AirFloor40Air Space - Floor 40 mm+mt-AirFloor40Air
+mt-AirFloor90Air Space - Floor 90 mm+mt-AirFloor90Air
+mt-AirWall13Air Space - Wall 13 mmmt-AirWall13Air
+mt-AirWall20Air Space - Wall 20 mm+mt-AirWall20Air
+mt-VoidVoidmt-VoidAir
+mt-DemolitionDemolitionmt-DemolitionPhase
+mt-ExistingExistingmt-ExistingPhase
+mt-NotInContractNot In Contractmt-NotInContractPhase
+mt-PlasticPlasticmt-PlasticGeneric
+#asmwin groups metric
+Concrete
+Masonry
+Metal
+Wood
+Board
+Insulation
+Finish
+Roofing
+Site
+Air
+Phase
+Generic
+#asmwin keys metric
+#asmwin data metric
+mt-Concrete0.0004 02.4
+mt-Grout
+mt-GypsumConcrete
+mt-HollowCoreSlab
+mt-LightweightConcrete0.001300052 01.6
+mt-Mortar0.00090009 0
+mt-Brick0.000777605 02.4
+mt-CMU
+mt-CMU1400 0.19
+mt-CMU140Vermiculite0 0.4
+mt-CMU1900 0.21
+mt-CMU190Perlite0 0.53
+mt-CMU190Vermiculite0 0.51
+mt-CMU2400 0.24
+mt-CMU240Vermiculite0 0.61
+mt-CMU2900 0.26
+mt-CMU290Vermiculite0 0.69
+mt-CMU900 0.17
+mt-ConcreteBrick0.0005889282 0
+mt-Firebrick
+mt-Marble0.0004 02.24
+mt-Sandstone0.00030003 02.24
+mt-Stone0.0004 02.24
+mt-Aluminium
+mt-Bronze
+mt-Iron
+mt-Lead
+mt-ResilientChannel
+mt-Steel
+mt-SteelDeck
+mt-SteelFurring
+mt-AmabilisFir0.008 0
+mt-Birch0.0055005501 0
+mt-DouglasFirLarch0.0069013112 0
+mt-Hardboard0.0094966762 00.8
+mt-Hemlock0.0084033613 0
+mt-HDF0.005899705 01
+mt-LodgepolePine0.0081967213 0
+mt-LDF0.0098039216 00.59
+mt-MapleAsh0.0063011972 0
+mt-MDF0.0074019245 00.8
+mt-Oak0.0055991041 0
+mt-OSB0.0098039216 0
+mt-Particleboard0.0076982294 0
+mt-Plywood0.0087032202 0
+mt-RedPine0.0076982294 0
+mt-WesternHemlock0.0074019245 0
+mt-WhiteCedar0.0099009901 0
+mt-WhitePine0.009199632 0
+mt-WhiteSpruce0.009699321 0
+mt-WoodFrame0.0085034014 0
+mt-WoodPlank
+mt-YellowCypress0.0076982294 0
+mt-AsphaltFiberboard0.0164989276 0
+mt-FoilFiberboard0.0193986421 0
+mt-Gypsum0.0061012813 0
+mt-GypsumTypeX0.0061012813 0
+mt-GypsumSheathing0.0063011972 0
+mt-CementBoard0.0069013112 0
+mt-AbsorptiveMaterial
+mt-StrawBoard0.0139004726 0
+mt-Perlite0.0186985789 0
+mt-ExpandedPolystyrene0.0280033604 0
+mt-ExpandedPolystyrene10.0257003341 0
+mt-ExpandedPolystyrene30.0297973778 0
+mt-ExpandedPolystyrene40.0346981263 0
+mt-ExtrudedPolystyrene0.0350017501 0
+mt-InsulatingFiberboard0.0193986421 0
+mt-LooseInsulation
+mt-PhenolicFoam0.0304043782 0
+mt-Polyisocyanurate0.04199916 0
+mt-RigidInsulation
+mt-MineralWoolBoard0.027700831 0
+mt-SprayInsulation
+mt-SprayPolyurethane10.0359971202 0
+mt-SprayPolyurethane20.04 0
+mt-SprayedAsbestos0.0201005025 0
+mt-WoodFiberBatt0.0257003341 0
+mt-CarpetFibrous0 0.37
+mt-CarpetRubber0 0.22
+mt-CementPlaster0.001399972 0
+mt-CorkTile0.0153115909 0
+mt-FiberCementSiding0 0.003
+mt-GypsumSandPlaster
+mt-HardboardSiding0.0109086942 0
+mt-HardwoodFloor0.0063171194 0
+mt-LapSiding0 0.11
+mt-LapSidingInsulated0 0.32
+mt-LapSidingFoil0 0.52
+mt-Plaster
+mt-ResilientFlooring0 0.009
+mt-Stucco0.00090009 0
+mt-Terrazzo0.00059988 0
+mt-WoodShingles0 0.15
+mt-WoodShinglesDouble0 0.21
+mt-WoodSiding0.0069979006 0
+mt-AsphaltShingles0 0.078
+mt-Bitumen0.001399972 0
+mt-BuiltUpRoof0.0059988002 0
+mt-RollRoofing0 0.03
+mt-Slate0.0007692308 0
+mt-WoodShingleRoof0 0.17
+mt-Asphalt
+mt-CompactedSoil
+mt-CrushedStone0.00059988 0
+mt-Gravel
+mt-Sand
+mt-Topsoil
+mt-UndisturbedSoil
+mt-AirCeiling130 0.15
+mt-AirCeiling400 0.16
+mt-AirFloor130 0.16
+mt-AirFloor200 0.18
+mt-AirFloor400 0.2
+mt-AirFloor900 0.22
+mt-AirWall130 0.16
+mt-AirWall200 0.18
+mt-Void
+mt-Demolition
+mt-Existing
+mt-NotInContract
+mt-Plastic
+#asmwin bk metricANNDTOBJ
+#asmwin def metric
+Pmt-Concrete10ANNDTOBJ0LineSquare45Mitered4FirstInterrupted0ANNDTOBJ0070CONTINUOUS010250501070CONTINUOUS0102505001000Concrete00
+#asmwin rows metric
+cu-PresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmwin mats imperial
+mt-ConcreteConcretemt-ConcreteConcrete
+mt-GroutGroutmt-GroutConcrete
+mt-GypsumConcreteGypsum Concretemt-GypsumConcreteConcrete
+mt-HollowCoreSlabHollow Core Slabmt-HollowCoreSlabConcrete
+mt-LightweightConcreteLightweight Concretemt-LightweightConcreteConcrete
+mt-MortarMortarmt-MortarConcrete
+mt-BrickBrickmt-BrickMasonry
+mt-CMUCMUmt-CMUMasonry
+mt-CMU140CMU 140 mm Hollowmt-CMU140Masonry
+mt-CMU140VermiculiteCMU 140 mm Vermiculite Filledmt-CMU140VermiculiteMasonry
+mt-CMU190CMU 190 mm Hollowmt-CMU190Masonry
+mt-CMU190PerliteCMU 190 mm Perlite Filledmt-CMU190PerliteMasonry
+mt-CMU190VermiculiteCMU 190 mm Vermiculite Filledmt-CMU190VermiculiteMasonry
+mt-CMU240CMU 240 mm Hollowmt-CMU240Masonry
+mt-CMU240VermiculiteCMU 240 mm Vermiculite Filledmt-CMU240VermiculiteMasonry
+mt-CMU290CMU 290 mm Hollowmt-CMU290Masonry
+mt-CMU290VermiculiteCMU 290 mm Vermiculite Filledmt-CMU290VermiculiteMasonry
+mt-CMU90CMU 90 mm Hollowmt-CMU90Masonry
+mt-ConcreteBrickConcrete Brickmt-ConcreteBrickMasonry
+mt-FirebrickFirebrickmt-FirebrickMasonry
+mt-MarbleMarblemt-MarbleMasonry
+mt-SandstoneQuartzite And Sandstonemt-SandstoneMasonry
+mt-StoneStonemt-StoneMasonry
+mt-AluminiumAluminiummt-AluminiumMetal
+mt-BronzeBronzemt-BronzeMetal
+mt-IronIronmt-IronMetal
+mt-LeadLeadmt-LeadMetal
+mt-ResilientChannelResilient Metal Channelmt-ResilientChannelMetal
+mt-SteelSteelmt-SteelMetal
+mt-SteelDeckSteel Deckmt-SteelDeckMetal
+mt-SteelFurringSteel Furring Channelmt-SteelFurringMetal
+mt-AmabilisFirAmabilis Firmt-AmabilisFirWood
+mt-BirchBirchmt-BirchWood
+mt-DouglasFirLarchDouglas Fir Or Larchmt-DouglasFirLarchWood
+mt-HardboardHardboardmt-HardboardWood
+mt-HemlockHemlockmt-HemlockWood
+mt-HDFHigh Density Fiberboardmt-HDFWood
+mt-LodgepolePineLodgepole Pinemt-LodgepolePineWood
+mt-LDFLow Density Fiberboardmt-LDFWood
+mt-MapleAshMaple And Ashmt-MapleAshWood
+mt-MDFMedium Density Fiberboardmt-MDFWood
+mt-OakOakmt-OakWood
+mt-OSBOSBmt-OSBWood
+mt-ParticleboardParticleboardmt-ParticleboardWood
+mt-PlywoodPlywoodmt-PlywoodWood
+mt-RedPineRed Pinemt-RedPineWood
+mt-WesternHemlockWestern Hemlockmt-WesternHemlockWood
+mt-WhiteCedarWhite Cedarmt-WhiteCedarWood
+mt-WhitePineWhite Pinemt-WhitePineWood
+mt-WhiteSpruceWhite Sprucemt-WhiteSpruceWood
+mt-WoodFrameWood Framemt-WoodFrameWood
+mt-WoodPlankWood Plankmt-WoodPlankWood
+mt-YellowCypressYellow Cypressmt-YellowCypressWood
+mt-AsphaltFiberboardAsphalt Fiberboard Sheathingmt-AsphaltFiberboardBoard
+mt-FoilFiberboardFoil-Faced Wood Fiberboardmt-FoilFiberboardBoard
+mt-GypsumGypsummt-GypsumBoard
+mt-GypsumTypeXGypsum Board Type Xmt-GypsumTypeXBoard
+mt-GypsumSheathingGypsum Sheathingmt-GypsumSheathingBoard
+mt-CementBoardLightweight Concrete Boardmt-CementBoardBoard
+mt-AbsorptiveMaterialAbsorptive Materialmt-AbsorptiveMaterialInsulation
+mt-StrawBoardCompressed Straw Boardmt-StrawBoardInsulation
+mt-PerliteExpanded Perlitemt-PerliteInsulation
+mt-ExpandedPolystyreneExpanded Polystyrenemt-ExpandedPolystyreneInsulation
+mt-ExpandedPolystyrene1Expanded Polystyrene Type 1mt-ExpandedPolystyrene1Insulation
+mt-ExpandedPolystyrene3Expanded Polystyrene Type 3mt-ExpandedPolystyrene3Insulation
+mt-ExpandedPolystyrene4Expanded Polystyrene Type 4mt-ExpandedPolystyrene4Insulation
+mt-ExtrudedPolystyreneExtruded Polystyrenemt-ExtrudedPolystyreneInsulation
+mt-InsulatingFiberboardInsulating Fiberboardmt-InsulatingFiberboardInsulation
+mt-LooseInsulationLoose Insulationmt-LooseInsulationInsulation
+mt-PhenolicFoamPhenolic Foam Boardmt-PhenolicFoamInsulation
+mt-PolyisocyanuratePolyisocyanuratemt-PolyisocyanurateInsulation
+mt-RigidInsulationRigid Insulationmt-RigidInsulationInsulation
+mt-MineralWoolBoardRigid Mineral Wool Roof Boardmt-MineralWoolBoardInsulation
+mt-SprayInsulationSpray Insulationmt-SprayInsulationInsulation
+mt-SprayPolyurethane1Spray Polyurethane Type 1mt-SprayPolyurethane1Insulation
+mt-SprayPolyurethane2Spray Polyurethane Type 2mt-SprayPolyurethane2Insulation
+mt-SprayedAsbestosSprayed Asbestosmt-SprayedAsbestosInsulation
+mt-WoodFiberBattWood Fiber Battmt-WoodFiberBattInsulation
+mt-CarpetFibrousCarpet - Fibrous Underlaymt-CarpetFibrousFinish
+mt-CarpetRubberCarpet - Rubber Underlaymt-CarpetRubberFinish
+mt-CementPlasterCement Plastermt-CementPlasterFinish
+mt-CorkTileCork Tilemt-CorkTileFinish
+mt-FiberCementSidingFiber Cement Sidingmt-FiberCementSidingFinish
+mt-GypsumSandPlasterGypsum-Sand Plastermt-GypsumSandPlasterFinish
+mt-HardboardSidingHardboard Sidingmt-HardboardSidingFinish
+mt-HardwoodFloorHardwood Flooringmt-HardwoodFloorFinish
+mt-LapSidingMetal Or Vinyl Sidingmt-LapSidingFinish
+mt-LapSidingInsulatedMetal Or Vinyl Siding - Insulatedmt-LapSidingInsulatedFinish
+mt-LapSidingFoilMetal Or Vinyl Siding - Insulated And Foilmt-LapSidingFoilFinish
+mt-PlasterPlastermt-PlasterFinish
+mt-ResilientFlooringResilient Flooringmt-ResilientFlooringFinish
+mt-StuccoStuccomt-StuccoFinish
+mt-TerrazzoTerrazzomt-TerrazzoFinish
+mt-WoodShinglesWood Shingle Sidingmt-WoodShinglesFinish
+mt-WoodShinglesDoubleWood Shingle Siding - Doublemt-WoodShinglesDoubleFinish
+mt-WoodSidingWood Sidingmt-WoodSidingFinish
+mt-AsphaltShinglesAsphalt Shinglesmt-AsphaltShinglesRoofing
+mt-BitumenBitumenmt-BitumenRoofing
+mt-BuiltUpRoofBuilt-Up Roofmt-BuiltUpRoofRoofing
+mt-RollRoofingRoll Roofingmt-RollRoofingRoofing
+mt-SlateSlatemt-SlateRoofing
+mt-WoodShingleRoofWood Shingle Roofingmt-WoodShingleRoofRoofing
+mt-AsphaltAsphaltmt-AsphaltSite
+mt-CompactedSoilCompacted Soilmt-CompactedSoilSite
+mt-CrushedStoneCrushed Stonemt-CrushedStoneSite
+mt-GravelGravelmt-GravelSite
+mt-SandSandmt-SandSite
+mt-TopsoilTopsoilmt-TopsoilSite
+mt-UndisturbedSoilUndisturbed Soilmt-UndisturbedSoilSite
+mt-AirCeiling13Air Space - Ceiling 13 mm+mt-AirCeiling13Air
+mt-AirCeiling40Air Space - Ceiling 40 mm+mt-AirCeiling40Air
+mt-AirFloor13Air Space - Floor 13 mmmt-AirFloor13Air
+mt-AirFloor20Air Space - Floor 20 mm+mt-AirFloor20Air
+mt-AirFloor40Air Space - Floor 40 mm+mt-AirFloor40Air
+mt-AirFloor90Air Space - Floor 90 mm+mt-AirFloor90Air
+mt-AirWall13Air Space - Wall 13 mmmt-AirWall13Air
+mt-AirWall20Air Space - Wall 20 mm+mt-AirWall20Air
+mt-VoidVoidmt-VoidAir
+mt-DemolitionDemolitionmt-DemolitionPhase
+mt-ExistingExistingmt-ExistingPhase
+mt-NotInContractNot In Contractmt-NotInContractPhase
+mt-PlasticPlasticmt-PlasticGeneric
+#asmwin groups imperial
+Concrete
+Masonry
+Metal
+Wood
+Board
+Insulation
+Finish
+Roofing
+Site
+Air
+Phase
+Generic
+#asmwin keys imperial
+#asmwin data imperial
+mt-Concrete0.0576911521 012.485589456
+mt-Grout
+mt-GypsumConcrete
+mt-HollowCoreSlab
+mt-LightweightConcrete0.1875037444 08.323726304
+mt-Mortar0.129818074 0
+mt-Brick0.1121523174 012.485589456
+mt-CMU
+mt-CMU1400 1.07886997
+mt-CMU140Vermiculite0 2.2713052
+mt-CMU1900 1.19243523
+mt-CMU190Perlite0 3.00947939
+mt-CMU190Vermiculite0 2.89591413
+mt-CMU2400 1.36278312
+mt-CMU240Vermiculite0 3.46374043
+mt-CMU2900 1.47634838
+mt-CMU290Vermiculite0 3.91800147
+mt-CMU900 0.96530471
+mt-ConcreteBrick0.0849398588 0
+mt-Firebrick
+mt-Marble0.0576911521 011.6532168256
+mt-Sandstone0.0432726913 011.6532168256
+mt-Stone0.0576911521 011.6532168256
+mt-Aluminium
+mt-Bronze
+mt-Iron
+mt-Lead
+mt-ResilientChannel
+mt-Steel
+mt-SteelDeck
+mt-SteelFurring
+mt-AmabilisFir1.1538230416 0
+mt-Birch0.7933326744 0
+mt-DouglasFirLarch0.9953614921 0
+mt-Hardboard1.369685472 04.161863152
+mt-Hemlock1.2119989933 0
+mt-HDF0.8509019481 05.20232894
+mt-LodgepolePine1.1821957393 0
+mt-LDF1.4139988255 03.0693740746
+mt-MapleAsh0.9088083188 0
+mt-MDF1.0675638801 04.161863152
+mt-Oak0.8075469216 0
+mt-OSB1.4139988255 0
+mt-Particleboard1.1102993087 0
+mt-Plywood1.2552469991 0
+mt-RedPine1.1102993087 0
+mt-WesternHemlock1.0675638801 0
+mt-WhiteCedar1.4279988139 0
+mt-WhitePine1.3268434241 0
+mt-WhiteSpruce1.3989125141 0
+mt-WoodFrame1.2264275527 0
+mt-WoodPlank
+mt-YellowCypress1.1102993087 0
+mt-AsphaltFiberboard2.379605349 0
+mt-FoilFiberboard2.7978250281 0
+mt-Gypsum0.8799748639 0
+mt-GypsumTypeX0.8799748639 0
+mt-GypsumSheathing0.9088083188 0
+mt-CementBoard0.9953614921 0
+mt-AbsorptiveMaterial
+mt-StrawBoard2.0048356992 0
+mt-Perlite2.6968563987 0
+mt-ExpandedPolystyrene4.0388653094 0
+mt-ExpandedPolystyrene13.7067047083 0
+mt-ExpandedPolystyrene34.29761264 0
+mt-ExpandedPolystyrene45.0044372033 0
+mt-ExtrudedPolystyrene5.0482282184 0
+mt-InsulatingFiberboard2.7978250281 0
+mt-LooseInsulation
+mt-PhenolicFoam4.385159021 0
+mt-Polyisocyanurate6.0574498194 0
+mt-RigidInsulation
+mt-MineralWoolBoard3.9952321385 0
+mt-SprayInsulation
+mt-SprayPolyurethane15.1917883441 0
+mt-SprayPolyurethane25.769115208 0
+mt-SprayedAsbestos2.8990528683 0
+mt-WoodFiberBatt3.7067047083 0
+mt-CarpetFibrous0 2.10095731
+mt-CarpetRubber0 1.24921786
+mt-CementPlaster0.201914994 0
+mt-CorkTile2.2083582943 0
+mt-FiberCementSiding0 0.017034789
+mt-GypsumSandPlaster
+mt-HardboardSiding1.5733378444 0
+mt-HardwoodFloor0.9111047391 0
+mt-LapSiding0 0.62460893
+mt-LapSidingInsulated0 1.81704416
+mt-LapSidingFoil0 2.95269676
+mt-Plaster
+mt-ResilientFlooring0 0.051104367
+mt-Stucco0.129818074 0
+mt-Terrazzo0.0865194242 0
+mt-WoodShingles0 0.85173945
+mt-WoodShinglesDouble0 1.19243523
+mt-WoodSiding1.0092923737 0
+mt-AsphaltShingles0 0.442904514
+mt-Bitumen0.201914994 0
+mt-BuiltUpRoof0.8651942424 0
+mt-RollRoofing0 0.17034789
+mt-Slate0.1109445232 0
+mt-WoodShingleRoof0 0.96530471
+mt-Asphalt
+mt-CompactedSoil
+mt-CrushedStone0.0865194242 0
+mt-Gravel
+mt-Sand
+mt-Topsoil
+mt-UndisturbedSoil
+mt-AirCeiling130 0.85173945
+mt-AirCeiling400 0.90852208
+mt-AirFloor130 0.90852208
+mt-AirFloor200 1.02208734
+mt-AirFloor400 1.1356526
+mt-AirFloor900 1.24921786
+mt-AirWall130 0.90852208
+mt-AirWall200 1.02208734
+mt-Void
+mt-Demolition
+mt-Existing
+mt-NotInContract
+mt-Plastic
+#asmwin bk imperialANNDTOBJ
+#asmwin def imperial
+Pmt-Concrete10ANNDTOBJ0LineSquare45Mitered4FirstInterrupted0ANNDTOBJ0070CONTINUOUS010250501070CONTINUOUS0102505001000Concrete00
+#asmwin rows imperial
+cu-PresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab scale0.020000000000000
+#asmtab layerkeys
+FINE
+THIN
+MED
+WIDE
+XLINE
+HATCH
+G-DS-ANNO-STD-BACKGROUND_SCREEN
+MATREGION
+SIMZONE
+SIMCLIMATE
+SIMISOTHERM
+SIMDEWPOINT
+SIMCONDENSATION
+ANNDTOBJ
+ANNELKEY
+ANNELOBJ
+ANNMASK
+ANNMATCH
+ANNOBJ
+ANNREV
+ANNSXKEY
+ANNSXOBJ
+ANNSYMOBJ
+APPL
+CASE
+CASENO
+CEILGRID
+CEILOBJ
+CHASE
+COGO
+COLUMN
+COMMUN
+CONTROL
+CWLAYOUT
+CWUNIT
+DIMLINE
+DIMMAN
+DISPTHEME
+DOOR
+DOORNO
+DRAINAGE
+ELEC
+ELECNO
+ELEV
+ELEVAT
+ELEVHIDE
+EQUIP
+EQUIPNO
+FINCEIL
+FINFLOOR
+FIRE
+FURN
+FURNNO
+G-DS-ANNO-STD-NON_PLOTTABLE_OBJECTS
+G-DS-ANNO-STD-NON_PLOTTABLE_OBJECTS_SCREEN
+GRIDBUB
+GRIDLINE
+HIDDEN
+LAYGRID
+LIGHTCLG
+LIGHTW
+MASS ELEM
+MASSGRPS
+MASSSLCE
+OPENING
+PEOPLE
+PFIXT
+PLANTS
+PLANTSI
+POLYGON
+POWER
+PRCL
+PRK-SYM
+RBFINISHID
+RBQUANTITYID
+ROOF
+ROOFSLAB
+ROOMNO
+SCHEDOBJ
+SEATNO
+SECT
+SECTHIDE
+SITE
+SLAB
+SPACENO
+SPACEOBJ
+STAIR
+STAIRH
+STRUCTBEAM
+STRUCTBEAMIDEN
+STRUCTBRACE
+STRUCTBRACEIDEN
+STRUCTCOLS
+STRUCTCOLSIDEN
+SWITCH
+TINN
+TITSCALE
+TITTEXT
+TITTEXT-DWG
+TOILACC
+TOILNO
+TOPO
+UTIL
+VEHICLES
+VIEWPORT
+WALL
+WALLFIRE
+WALLNO
+WIND
+WINDASSEM
+WINDNO
+ZONE
+ZONENO
+#asmtab vals metric manager
+pst/rowsN1
+pst/defsL
+pst/newRWallNew assembly1~1~FirstNew assembly1ANNDTOBJ070CONTINUOUS010250501ANNDTOBJ070CONTINUOUS01025050
+pst/ncolsS16
+pst/tilesSnam:2,grp:1,aex:6,ads:8,afl:9,afn:10,ast:11,aii:12,fam:13,fds:14,abl:16,adl:28
+pst.idxS0
+pst.selS0
+pst.shwS
+fltS
+pst/titleSAssembly Presets
+pst/nounSassemblies
+errorS
+srt/listLNameGroup
+srtS0
+grp/listLFloorWallCeilingRoofFinishStructuralSiteElevationSectionDetailAnnotationPhaseAreaGeneric
+pst/familyS13,14
+pst/famcolsS6,16-39
+pst/famlabelS9:min,10:NLB:min,11:STC,12:IIC
+ll/newRPmt-Concrete10ANNDTOBJ0LineSquare45Mitered4FirstInterrupted0ANNDTOBJ0070CONTINUOUS010250501070CONTINUOUS0102505001000Concrete00
+lg/listLConcreteMasonryMetalWoodBoardInsulationFinishRoofingSiteAirPhaseGeneric
+lg/valsLConcreteMasonryMetalWoodBoardInsulationFinishRoofingSiteAirPhaseGeneric
+lp/listLConcreteGroutGypsum ConcreteHollow Core SlabLightweight ConcreteMortarBrickCMUCMU 140 mm HollowCMU 140 mm Vermiculite FilledCMU 190 mm HollowCMU 190 mm Perlite FilledCMU 190 mm Vermiculite FilledCMU 240 mm HollowCMU 240 mm Vermiculite FilledCMU 290 mm HollowCMU 290 mm Vermiculite FilledCMU 90 mm HollowConcrete BrickFirebrickMarbleQuartzite And SandstoneStoneAluminiumBronzeIronLeadResilient Metal ChannelSteelSteel DeckSteel Furring ChannelAmabilis FirBirchDouglas Fir Or LarchHardboardHemlockHigh Density FiberboardLodgepole PineLow Density FiberboardMaple And AshMedium Density FiberboardOakOSBParticleboardPlywoodRed PineWestern HemlockWhite CedarWhite PineWhite SpruceWood FrameWood PlankYellow CypressAsphalt Fiberboard SheathingFoil-Faced Wood FiberboardGypsumGypsum Board Type XGypsum SheathingLightweight Concrete BoardAbsorptive MaterialCompressed Straw BoardExpanded PerliteExpanded PolystyreneExpanded Polystyrene Type 1Expanded Polystyrene Type 3Expanded Polystyrene Type 4Extruded PolystyreneInsulating FiberboardLoose InsulationPhenolic Foam BoardPolyisocyanurateRigid InsulationRigid Mineral Wool Roof BoardSpray InsulationSpray Polyurethane Type 1Spray Polyurethane Type 2Sprayed AsbestosWood Fiber BattCarpet - Fibrous UnderlayCarpet - Rubber UnderlayCement PlasterCork TileFiber Cement SidingGypsum-Sand PlasterHardboard SidingHardwood FlooringMetal Or Vinyl SidingMetal Or Vinyl Siding - InsulatedMetal Or Vinyl Siding - Insulated And FoilPlasterResilient FlooringStuccoTerrazzoWood Shingle SidingWood Shingle Siding - DoubleWood SidingAsphalt ShinglesBitumenBuilt-Up RoofRoll RoofingSlateWood Shingle RoofingAsphaltCompacted SoilCrushed StoneGravelSandTopsoilUndisturbed SoilAir Space - Ceiling 13 mm+Air Space - Ceiling 40 mm+Air Space - Floor 13 mmAir Space - Floor 20 mm+Air Space - Floor 40 mm+Air Space - Floor 90 mm+Air Space - Wall 13 mmAir Space - Wall 20 mm+VoidDemolitionExistingNot In ContractPlastic
+lp/valsLmt-Concretemt-Groutmt-GypsumConcretemt-HollowCoreSlabmt-LightweightConcretemt-Mortarmt-Brickmt-CMUmt-CMU140mt-CMU140Vermiculitemt-CMU190mt-CMU190Perlitemt-CMU190Vermiculitemt-CMU240mt-CMU240Vermiculitemt-CMU290mt-CMU290Vermiculitemt-CMU90mt-ConcreteBrickmt-Firebrickmt-Marblemt-Sandstonemt-Stonemt-Aluminiummt-Bronzemt-Ironmt-Leadmt-ResilientChannelmt-Steelmt-SteelDeckmt-SteelFurringmt-AmabilisFirmt-Birchmt-DouglasFirLarchmt-Hardboardmt-Hemlockmt-HDFmt-LodgepolePinemt-LDFmt-MapleAshmt-MDFmt-Oakmt-OSBmt-Particleboardmt-Plywoodmt-RedPinemt-WesternHemlockmt-WhiteCedarmt-WhitePinemt-WhiteSprucemt-WoodFramemt-WoodPlankmt-YellowCypressmt-AsphaltFiberboardmt-FoilFiberboardmt-Gypsummt-GypsumTypeXmt-GypsumSheathingmt-CementBoardmt-AbsorptiveMaterialmt-StrawBoardmt-Perlitemt-ExpandedPolystyrenemt-ExpandedPolystyrene1mt-ExpandedPolystyrene3mt-ExpandedPolystyrene4mt-ExtrudedPolystyrenemt-InsulatingFiberboardmt-LooseInsulationmt-PhenolicFoammt-Polyisocyanuratemt-RigidInsulationmt-MineralWoolBoardmt-SprayInsulationmt-SprayPolyurethane1mt-SprayPolyurethane2mt-SprayedAsbestosmt-WoodFiberBattmt-CarpetFibrousmt-CarpetRubbermt-CementPlastermt-CorkTilemt-FiberCementSidingmt-GypsumSandPlastermt-HardboardSidingmt-HardwoodFloormt-LapSidingmt-LapSidingInsulatedmt-LapSidingFoilmt-Plastermt-ResilientFlooringmt-Stuccomt-Terrazzomt-WoodShinglesmt-WoodShinglesDoublemt-WoodSidingmt-AsphaltShinglesmt-Bitumenmt-BuiltUpRoofmt-RollRoofingmt-Slatemt-WoodShingleRoofmt-Asphaltmt-CompactedSoilmt-CrushedStonemt-Gravelmt-Sandmt-Topsoilmt-UndisturbedSoilmt-AirCeiling13mt-AirCeiling40mt-AirFloor13mt-AirFloor20mt-AirFloor40mt-AirFloor90mt-AirWall13mt-AirWall20mt-Voidmt-Demolitionmt-Existingmt-NotInContractmt-Plastic
+lp/by/listLConcreteConcreteConcreteConcreteConcreteConcreteMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMetalMetalMetalMetalMetalMetalMetalMetalWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodBoardBoardBoardBoardBoardBoardInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishRoofingRoofingRoofingRoofingRoofingRoofingSiteSiteSiteSiteSiteSiteSiteAirAirAirAirAirAirAirAirAirPhasePhasePhaseGeneric
+hky/listLFrom materialANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXLINEZONEZONENO
+hky/valsLANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXLINEZONEZONENO
+out/listLANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXLINEZONEZONENO
+out/valsLANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXLINEZONEZONENO
+bwt/listL0.00 mm0.05 mm0.09 mm0.13 mm0.15 mm0.18 mm0.20 mm0.25 mm0.30 mm0.35 mm0.40 mm0.50 mm0.53 mm0.60 mm0.70 mm0.80 mm0.90 mm1.00 mm1.06 mm1.20 mm1.40 mm1.58 mm2.00 mm2.11 mm
+bwt/valsL0591315182025303540505360708090100106120140158200211
+subS1
+lp/specs/listLP?1?CONCRETE_C?C:\Pat\acad.pat?1?0?1?DraftingP?1?GENERAL_STIPPLE?C:\Pat\acad.pat?2?0?1?DraftingP?1?CONCRETE?C:\Pat\acad.pat?1?0?1?DraftingP?1?CONCRETE_C?C:\Pat\acad.pat?1?0?1?DraftingP?1?CONCRETE?C:\Pat\acad.pat?1?0?1?DraftingP?1?GENERAL_STIPPLE?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI31?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI31?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI35?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI36?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI33?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI33?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI38?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI33?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI31?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?0.5?0?1?DraftingS?1P?1?ANSI32?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI32?C:\Pat\acad.pat?0.5?0?1?DraftingS?1P?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?ANSI31?C:\Pat\acad.pat?1?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?WOOD_GLU-LAMBEAM?C:\Pat\acad.pat?1?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_2?C:\Pat\acad.pat?0.1875?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?CONCRETE?C:\Pat\acad.pat?1?0?1?DraftingP?1?NET3?C:\Pat\acad.pat?1?0?1?DraftingP?1?NET3?C:\Pat\acad.pat?1?0?1?DraftingP?1?NET3?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?NET3?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?HONEY?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?HONEY?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?HONEY?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?HONEY?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?NET3?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI34?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI34?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?CONCRETE?C:\Pat\acad.pat?1?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?ANSI31?C:\Pat\acad.pat?1?0?1?DraftingP?1?WOOD_2?C:\Pat\acad.pat?0.1875?0?1?DraftingP?1?ANSI38?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI38?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI38?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?ANSI34?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?CONCRETE_C?C:\Pat\acad.pat?1?0?1?DraftingP?1?WOOD_2?C:\Pat\acad.pat?0.1875?0?1?DraftingP?1?WOOD_2?C:\Pat\acad.pat?0.1875?0?1?DraftingP?1?WOOD_2?C:\Pat\acad.pat?0.1875?0?1?DraftingP?1?SITEWORK_ASPHALT?C:\Pat\acad.pat?1?90?1?DraftingP?1?SITEWORK_ASPHALT?C:\Pat\acad.pat?1?90?1?DraftingP?1?SITEWORK_ASPHALT?C:\Pat\acad.pat?1?90?1?DraftingP?1?SITEWORK_ASPHALT?C:\Pat\acad.pat?1?90?1?DraftingP?1?ANSI33?C:\Pat\acad.pat?1?0?1?DraftingP?1?WOOD_2?C:\Pat\acad.pat?0.1875?0?1?DraftingP?1?SITEWORK_ASPHALT?C:\Pat\acad.pat?1?90?1?DraftingP?1?SITEWORK_EARTH?C:\Pat\acad.pat?1?45?1?DraftingP?1?SITEWORK_GRAVEL?C:\Pat\acad.pat?0.06?22.5?50?DraftingP?1?SITEWORK_GRAVEL?C:\Pat\acad.pat?0.06?22.5?50?DraftingP?1?GENERAL_STIPPLE?C:\Pat\acad.pat?1?0?1?DraftingP?1?SITEWORK_EARTH?C:\Pat\acad.pat?1?0?1?DraftingP?1?SITEWORK_EARTH?C:\Pat\acad.pat?1?0?1?DraftingS?1S?1S?1S?1S?1S?1S?1S?1S?1P?1?ANSI31?C:\Pat\acad.pat?0.5?90?1?DraftingF?1P?1?ANSI31?C:\Pat\acad.pat?1.5?90?1?DraftingP?1?ANSI34?C:\Pat\acad.pat?0.5?0?1?Drafting
+ll/ends/listLSquare45
+ll/paper/listL0.039370078750
+mthSLayer
+lp/rsi/listL0.0004 00.001300052 00.00090009 00.000777605 00 0.190 0.40 0.210 0.530 0.510 0.240 0.610 0.260 0.690 0.170.0005889282 00.0004 00.00030003 00.0004 00.008 00.0055005501 00.0069013112 00.0094966762 00.0084033613 00.005899705 00.0081967213 00.0098039216 00.0063011972 00.0074019245 00.0055991041 00.0098039216 00.0076982294 00.0087032202 00.0076982294 00.0074019245 00.0099009901 00.009199632 00.009699321 00.0085034014 00.0076982294 00.0164989276 00.0193986421 00.0061012813 00.0061012813 00.0063011972 00.0069013112 00.0139004726 00.0186985789 00.0280033604 00.0257003341 00.0297973778 00.0346981263 00.0350017501 00.0193986421 00.0304043782 00.04199916 00.027700831 00.0359971202 00.04 00.0201005025 00.0257003341 00 0.370 0.220.001399972 00.0153115909 00 0.0030.0109086942 00.0063171194 00 0.110 0.320 0.520 0.0090.00090009 00.00059988 00 0.150 0.210.0069979006 00 0.0780.001399972 00.0059988002 00 0.030.0007692308 00 0.170.00059988 00 0.150 0.160 0.160 0.180 0.20 0.220 0.160 0.18
+lp/mass/listL2.41.62.42.242.242.240.810.590.8
+lfm/listLNoneConcreteGroutGypsum ConcreteHollow Core SlabLightweight ConcreteMortarBrickCMUCMU 140 mm HollowCMU 140 mm Vermiculite FilledCMU 190 mm HollowCMU 190 mm Perlite FilledCMU 190 mm Vermiculite FilledCMU 240 mm HollowCMU 240 mm Vermiculite FilledCMU 290 mm HollowCMU 290 mm Vermiculite FilledCMU 90 mm HollowConcrete BrickFirebrickMarbleQuartzite And SandstoneStoneAluminiumBronzeIronLeadResilient Metal ChannelSteelSteel DeckSteel Furring ChannelAmabilis FirBirchDouglas Fir Or LarchHardboardHemlockHigh Density FiberboardLodgepole PineLow Density FiberboardMaple And AshMedium Density FiberboardOakOSBParticleboardPlywoodRed PineWestern HemlockWhite CedarWhite PineWhite SpruceWood FrameWood PlankYellow CypressAsphalt Fiberboard SheathingFoil-Faced Wood FiberboardGypsumGypsum Board Type XGypsum SheathingLightweight Concrete BoardAbsorptive MaterialCompressed Straw BoardExpanded PerliteExpanded PolystyreneExpanded Polystyrene Type 1Expanded Polystyrene Type 3Expanded Polystyrene Type 4Extruded PolystyreneInsulating FiberboardLoose InsulationPhenolic Foam BoardPolyisocyanurateRigid InsulationRigid Mineral Wool Roof BoardSpray InsulationSpray Polyurethane Type 1Spray Polyurethane Type 2Sprayed AsbestosWood Fiber BattCarpet - Fibrous UnderlayCarpet - Rubber UnderlayCement PlasterCork TileFiber Cement SidingGypsum-Sand PlasterHardboard SidingHardwood FlooringMetal Or Vinyl SidingMetal Or Vinyl Siding - InsulatedMetal Or Vinyl Siding - Insulated And FoilPlasterResilient FlooringStuccoTerrazzoWood Shingle SidingWood Shingle Siding - DoubleWood SidingAsphalt ShinglesBitumenBuilt-Up RoofRoll RoofingSlateWood Shingle RoofingAsphaltCompacted SoilCrushed StoneGravelSandTopsoilUndisturbed SoilAir Space - Ceiling 13 mm+Air Space - Ceiling 40 mm+Air Space - Floor 13 mmAir Space - Floor 20 mm+Air Space - Floor 40 mm+Air Space - Floor 90 mm+Air Space - Wall 13 mmAir Space - Wall 20 mm+VoidDemolitionExistingNot In ContractPlastic
+lfm/valsLmt-Concretemt-Groutmt-GypsumConcretemt-HollowCoreSlabmt-LightweightConcretemt-Mortarmt-Brickmt-CMUmt-CMU140mt-CMU140Vermiculitemt-CMU190mt-CMU190Perlitemt-CMU190Vermiculitemt-CMU240mt-CMU240Vermiculitemt-CMU290mt-CMU290Vermiculitemt-CMU90mt-ConcreteBrickmt-Firebrickmt-Marblemt-Sandstonemt-Stonemt-Aluminiummt-Bronzemt-Ironmt-Leadmt-ResilientChannelmt-Steelmt-SteelDeckmt-SteelFurringmt-AmabilisFirmt-Birchmt-DouglasFirLarchmt-Hardboardmt-Hemlockmt-HDFmt-LodgepolePinemt-LDFmt-MapleAshmt-MDFmt-Oakmt-OSBmt-Particleboardmt-Plywoodmt-RedPinemt-WesternHemlockmt-WhiteCedarmt-WhitePinemt-WhiteSprucemt-WoodFramemt-WoodPlankmt-YellowCypressmt-AsphaltFiberboardmt-FoilFiberboardmt-Gypsummt-GypsumTypeXmt-GypsumSheathingmt-CementBoardmt-AbsorptiveMaterialmt-StrawBoardmt-Perlitemt-ExpandedPolystyrenemt-ExpandedPolystyrene1mt-ExpandedPolystyrene3mt-ExpandedPolystyrene4mt-ExtrudedPolystyrenemt-InsulatingFiberboardmt-LooseInsulationmt-PhenolicFoammt-Polyisocyanuratemt-RigidInsulationmt-MineralWoolBoardmt-SprayInsulationmt-SprayPolyurethane1mt-SprayPolyurethane2mt-SprayedAsbestosmt-WoodFiberBattmt-CarpetFibrousmt-CarpetRubbermt-CementPlastermt-CorkTilemt-FiberCementSidingmt-GypsumSandPlastermt-HardboardSidingmt-HardwoodFloormt-LapSidingmt-LapSidingInsulatedmt-LapSidingFoilmt-Plastermt-ResilientFlooringmt-Stuccomt-Terrazzomt-WoodShinglesmt-WoodShinglesDoublemt-WoodSidingmt-AsphaltShinglesmt-Bitumenmt-BuiltUpRoofmt-RollRoofingmt-Slatemt-WoodShingleRoofmt-Asphaltmt-CompactedSoilmt-CrushedStonemt-Gravelmt-Sandmt-Topsoilmt-UndisturbedSoilmt-AirCeiling13mt-AirCeiling40mt-AirFloor13mt-AirFloor20mt-AirFloor40mt-AirFloor90mt-AirWall13mt-AirWall20mt-Voidmt-Demolitionmt-Existingmt-NotInContractmt-Plastic
+lfm/rsi/listL0.0004 00.001300052 00.00090009 00.000777605 00 0.190 0.40 0.210 0.530 0.510 0.240 0.610 0.260 0.690 0.170.0005889282 00.0004 00.00030003 00.0004 00.008 00.0055005501 00.0069013112 00.0094966762 00.0084033613 00.005899705 00.0081967213 00.0098039216 00.0063011972 00.0074019245 00.0055991041 00.0098039216 00.0076982294 00.0087032202 00.0076982294 00.0074019245 00.0099009901 00.009199632 00.009699321 00.0085034014 00.0076982294 00.0164989276 00.0193986421 00.0061012813 00.0061012813 00.0063011972 00.0069013112 00.0139004726 00.0186985789 00.0280033604 00.0257003341 00.0297973778 00.0346981263 00.0350017501 00.0193986421 00.0304043782 00.04199916 00.027700831 00.0359971202 00.04 00.0201005025 00.0257003341 00 0.370 0.220.001399972 00.0153115909 00 0.0030.0109086942 00.0063171194 00 0.110 0.320 0.520 0.0090.00090009 00.00059988 00 0.150 0.210.0069979006 00 0.0780.001399972 00.0059988002 00 0.030.0007692308 00 0.170.00059988 00 0.150 0.160 0.160 0.180 0.20 0.220 0.160 0.18
+lfm/mass/listL2.41.62.42.242.242.240.810.590.8
+mt.impS0
+aex/listLFirst layerLast layer
+aex/valsLFirstLast
+mht/listLLayer centerLayer edgeDrawing origin
+mht/valsLLineEdgeOrigin
+men/listLSquareOpenExtendedRoundAngled
+men/valsLSquareOpenExtendedRoundAngled
+mco/listLMiteredBeveledRoundLapped
+mco/valsLMiteredBeveledRoundLapped
+mlt/listLFirst segmentNext segment
+mlt/valsLFirstSecond
+mjo/listLInterruptedUninterrupted
+mjo/valsLInterruptedUninterrupted
+#asmtab edit metric same in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric same out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPreset
+#asmtab edit metric same check
+#asmtab edit metric name in
+cu-PresetWallEdited nameP:mt-Plaster:20|P:mt-Brick:900~0~First  A description   Family  Short P	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric name out
+cu-PresetWallEdited nameP:mt-Plaster:20|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstA descriptionFamilyShort
+#asmtab edit metric name check
+#asmtab edit metric ratings in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~First6045xPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric ratings out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirst6045xPreset
+#asmtab edit metric ratings checkPreset: The fire-resistance ratings must be whole numbers of minutes.
+#asmtab edit metric sound in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~First90504.5PresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric sound out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirst90504.5Preset
+#asmtab edit metric sound checkPreset: The IIC must be a whole number.
+#asmtab edit metric ratingsok in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~First 45 120055PresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric ratingsok out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirst45120055Preset
+#asmtab edit metric ratingsok check
+#asmtab edit metric thick in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	12.5		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric thick out
+cu-PresetWallPresetP:mt-Plaster:12.5|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric thick check
+#asmtab edit metric thickfine in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	0.62598425		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric thickfine out
+cu-PresetWallPresetP:mt-Plaster:0.62598425|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric thickfine check
+#asmtab edit metric thickbad in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	0		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric thickbad out
+cu-PresetWallPresetP	mt-Plaster	0		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric thickbad checkPreset: The thickness must be a number greater than 0.
+#asmtab edit metric thicktext in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	abc		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric thicktext out
+cu-PresetWallPresetP	mt-Plaster	abc		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric thicktext checkPreset: The thickness must be a number greater than 0.
+#asmtab edit metric nomat in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP		20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric nomat out
+cu-PresetWallPresetP		20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric nomat checkPreset: No material: add one in the Materials window.
+#asmtab edit metric framing in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish	mt-Void	 23,5 	0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric framing out
+cu-PresetWallPresetP:mt-Plaster:20:::::mt-Void~23.5|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric framing check
+#asmtab edit metric framingbad in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish	mt-Void	100	0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric framingbad out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish	mt-Void	100	0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric framingbad checkPreset: The framing must be a percentage greater than 0 and less than 100.
+#asmtab edit metric band in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square	abc	45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric band out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square	abc	45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric band checkPreset: The extension must be a number, 0 or more (empty: half the width).
+#asmtab edit metric bandangle in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		85	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric bandangle out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		85	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric bandangle checkPreset: The end angle must be a number from -80 to 80 (0: square).
+#asmtab edit metric bandmiter in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		45	Mitered	0.5	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric bandmiter out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		45	Mitered	0.5	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric bandmiter checkPreset: The miter limit must be a number, 1 or more (x the width).
+#asmtab edit metric bandfactor in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric bandfactor out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric bandfactor checkPreset: The width factor must be a number greater than 0.
+#asmtab edit metric bandoffset in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1	x	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric bandoffset out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1	x	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric bandoffset checkPreset: The origin X offset must be a number (0: at the start of the segment).
+#asmtab edit metric bandok in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	1	Edge	Square	2	30	Mitered	2	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	1.5	1	2	-1	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric bandok out
+cu-PresetWallPresetP:mt-Plaster:20::1~Edge~Square~2~30~Mitered~2~First~Interrupted~1~1.5~1~2~-1|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric bandok check
+#asmtab edit metric bandoff in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Edge	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric bandoff out
+cu-PresetWallPresetP:mt-Plaster:20::0~Edge~Square~~45~Mitered~4~First~Interrupted~0~1~0~0~0|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric bandoff check
+#asmtab edit metric border in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1		0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric border out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1		0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric border checkPreset: No layer key for the border: add one in the Layer Keys window.
+#asmtab edit metric borderok in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1	hatch	0	0	7	1	dashed	1	2	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric borderok out
+cu-PresetWallPresetP:mt-Plaster:20:::1~hatch~0~7~1~DASHED~1~2~0~25~0~50|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric borderok check
+#asmtab edit metric borderbad in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1	HATCH	0	1	300	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric borderbad out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1	HATCH	0	1	300	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric borderbad checkPreset: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#asmtab edit metric borderoff in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	OTHERKEY	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric borderoff out
+cu-PresetWallPresetP:mt-Plaster:20:::0~OTHERKEY|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric borderoff check
+#asmtab edit metric hatchbad in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	1	95	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric hatchbad out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	1	95	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric hatchbad checkPreset: The transparency must be a whole number from 0 to 90.
+#asmtab edit metric hatchkey in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	1	1,2,3	1	dashed	1	2	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric hatchkey out
+cu-PresetWallPresetP:mt-Plaster:20:~1~1~1.2.3~1~DASHED~1~2~0~25~0~50|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric hatchkey check
+#asmtab edit metric hatchoff in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric hatchoff out
+cu-PresetWallPresetP:mt-Plaster:20:~0~0~7~0~CONTINUOUS~0~1~0~25~0~50|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric hatchoff check
+#asmtab edit metric flags in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			1	1P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric flags out
+cu-PresetWallPresetP:mt-Plaster:20::::1::1:1|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric flags check
+#asmtab edit metric lines in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric lines out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:901~0~ANNDTOBJFirstPreset
+#asmtab edit metric lines checkPreset: Border lines: no layer key, add one in the Layer Keys window.
+#asmtab edit metric linesok in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01hatch071dashed010250501a070CONTINUOUS01025050
+#asmtab edit metric linesok out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:901~HATCH~0~7~1~DASHED~0~1~0~25~0~501~AFirstPreset
+#asmtab edit metric linesok check
+#asmtab edit metric linesbad in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250501A1abc0CONTINUOUS01025050
+#asmtab edit metric linesbad out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~ANNDTOBJ1~A~1~abc~0~CONTINUOUS~0~1~0~25~0~50FirstPreset
+#asmtab edit metric linesbad checkPreset: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#asmtab edit metric linesoff in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00070CONTINUOUS010250500070CONTINUOUS01025050
+#asmtab edit metric linesoff out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPreset
+#asmtab edit metric linesoff check
+#asmtab edit metric nolayers in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPreset0ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric nolayers out
+cu-PresetWallPreset0~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit metric nolayers checkPreset: No layers: add one.
+#asmtab edit metric new in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+WallAdded1~1~FirstNew assembly1ANNDTOBJ070CONTINUOUS010250501ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric new out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPreset
+cu-AddedWallAdded1~ANNDTOBJ1~ANNDTOBJFirstNew assembly
+#asmtab edit metric new checkAdded: No layers: add one.
+#asmtab edit metric newempty in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+WallNew assembly1~1~FirstNew assembly1ANNDTOBJ070CONTINUOUS010250501ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit metric newempty out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPreset
+cu-NewAssemblyWallNew assembly1~ANNDTOBJ1~ANNDTOBJFirstNew assembly
+#asmtab edit metric newempty checkNew assembly: No layers: add one.
+#asmtab vals metric quickdraw
+pst.idxS0
+pst.selS0
+ll/newRPmt-Concrete10WALL0LineSquare45Mitered4FirstInterrupted0WALL0070CONTINUOUS010250501070CONTINUOUS0102505001000Concrete00
+#asmtab vals metric unknown
+pst.idxS0
+pst.selS0
+ll/newRPmt-Concrete10ANNDTOBJ0LineSquare45Mitered4FirstInterrupted0ANNDTOBJ0070CONTINUOUS010250501070CONTINUOUS0102505001000Concrete00
+#asmtab vals imperial manager
+pst/rowsN1
+pst/defsL
+pst/newRWallNew assembly1~1~FirstNew assembly1ANNDTOBJ070CONTINUOUS010250501ANNDTOBJ070CONTINUOUS01025050
+pst/ncolsS16
+pst/tilesSnam:2,grp:1,aex:6,ads:8,afl:9,afn:10,ast:11,aii:12,fam:13,fds:14,abl:16,adl:28
+pst.idxS0
+pst.selS0
+pst.shwS
+fltS
+pst/titleSAssembly Presets
+pst/nounSassemblies
+errorS
+srt/listLNameGroup
+srtS0
+grp/listLFloorWallCeilingRoofFinishStructuralSiteElevationSectionDetailAnnotationPhaseAreaGeneric
+pst/familyS13,14
+pst/famcolsS6,16-39
+pst/famlabelS9:min,10:NLB:min,11:STC,12:IIC
+ll/newRPmt-Concrete10ANNDTOBJ0LineSquare45Mitered4FirstInterrupted0ANNDTOBJ0070CONTINUOUS010250501070CONTINUOUS0102505001000Concrete00
+lg/listLConcreteMasonryMetalWoodBoardInsulationFinishRoofingSiteAirPhaseGeneric
+lg/valsLConcreteMasonryMetalWoodBoardInsulationFinishRoofingSiteAirPhaseGeneric
+lp/listLConcreteGroutGypsum ConcreteHollow Core SlabLightweight ConcreteMortarBrickCMUCMU 140 mm HollowCMU 140 mm Vermiculite FilledCMU 190 mm HollowCMU 190 mm Perlite FilledCMU 190 mm Vermiculite FilledCMU 240 mm HollowCMU 240 mm Vermiculite FilledCMU 290 mm HollowCMU 290 mm Vermiculite FilledCMU 90 mm HollowConcrete BrickFirebrickMarbleQuartzite And SandstoneStoneAluminiumBronzeIronLeadResilient Metal ChannelSteelSteel DeckSteel Furring ChannelAmabilis FirBirchDouglas Fir Or LarchHardboardHemlockHigh Density FiberboardLodgepole PineLow Density FiberboardMaple And AshMedium Density FiberboardOakOSBParticleboardPlywoodRed PineWestern HemlockWhite CedarWhite PineWhite SpruceWood FrameWood PlankYellow CypressAsphalt Fiberboard SheathingFoil-Faced Wood FiberboardGypsumGypsum Board Type XGypsum SheathingLightweight Concrete BoardAbsorptive MaterialCompressed Straw BoardExpanded PerliteExpanded PolystyreneExpanded Polystyrene Type 1Expanded Polystyrene Type 3Expanded Polystyrene Type 4Extruded PolystyreneInsulating FiberboardLoose InsulationPhenolic Foam BoardPolyisocyanurateRigid InsulationRigid Mineral Wool Roof BoardSpray InsulationSpray Polyurethane Type 1Spray Polyurethane Type 2Sprayed AsbestosWood Fiber BattCarpet - Fibrous UnderlayCarpet - Rubber UnderlayCement PlasterCork TileFiber Cement SidingGypsum-Sand PlasterHardboard SidingHardwood FlooringMetal Or Vinyl SidingMetal Or Vinyl Siding - InsulatedMetal Or Vinyl Siding - Insulated And FoilPlasterResilient FlooringStuccoTerrazzoWood Shingle SidingWood Shingle Siding - DoubleWood SidingAsphalt ShinglesBitumenBuilt-Up RoofRoll RoofingSlateWood Shingle RoofingAsphaltCompacted SoilCrushed StoneGravelSandTopsoilUndisturbed SoilAir Space - Ceiling 13 mm+Air Space - Ceiling 40 mm+Air Space - Floor 13 mmAir Space - Floor 20 mm+Air Space - Floor 40 mm+Air Space - Floor 90 mm+Air Space - Wall 13 mmAir Space - Wall 20 mm+VoidDemolitionExistingNot In ContractPlastic
+lp/valsLmt-Concretemt-Groutmt-GypsumConcretemt-HollowCoreSlabmt-LightweightConcretemt-Mortarmt-Brickmt-CMUmt-CMU140mt-CMU140Vermiculitemt-CMU190mt-CMU190Perlitemt-CMU190Vermiculitemt-CMU240mt-CMU240Vermiculitemt-CMU290mt-CMU290Vermiculitemt-CMU90mt-ConcreteBrickmt-Firebrickmt-Marblemt-Sandstonemt-Stonemt-Aluminiummt-Bronzemt-Ironmt-Leadmt-ResilientChannelmt-Steelmt-SteelDeckmt-SteelFurringmt-AmabilisFirmt-Birchmt-DouglasFirLarchmt-Hardboardmt-Hemlockmt-HDFmt-LodgepolePinemt-LDFmt-MapleAshmt-MDFmt-Oakmt-OSBmt-Particleboardmt-Plywoodmt-RedPinemt-WesternHemlockmt-WhiteCedarmt-WhitePinemt-WhiteSprucemt-WoodFramemt-WoodPlankmt-YellowCypressmt-AsphaltFiberboardmt-FoilFiberboardmt-Gypsummt-GypsumTypeXmt-GypsumSheathingmt-CementBoardmt-AbsorptiveMaterialmt-StrawBoardmt-Perlitemt-ExpandedPolystyrenemt-ExpandedPolystyrene1mt-ExpandedPolystyrene3mt-ExpandedPolystyrene4mt-ExtrudedPolystyrenemt-InsulatingFiberboardmt-LooseInsulationmt-PhenolicFoammt-Polyisocyanuratemt-RigidInsulationmt-MineralWoolBoardmt-SprayInsulationmt-SprayPolyurethane1mt-SprayPolyurethane2mt-SprayedAsbestosmt-WoodFiberBattmt-CarpetFibrousmt-CarpetRubbermt-CementPlastermt-CorkTilemt-FiberCementSidingmt-GypsumSandPlastermt-HardboardSidingmt-HardwoodFloormt-LapSidingmt-LapSidingInsulatedmt-LapSidingFoilmt-Plastermt-ResilientFlooringmt-Stuccomt-Terrazzomt-WoodShinglesmt-WoodShinglesDoublemt-WoodSidingmt-AsphaltShinglesmt-Bitumenmt-BuiltUpRoofmt-RollRoofingmt-Slatemt-WoodShingleRoofmt-Asphaltmt-CompactedSoilmt-CrushedStonemt-Gravelmt-Sandmt-Topsoilmt-UndisturbedSoilmt-AirCeiling13mt-AirCeiling40mt-AirFloor13mt-AirFloor20mt-AirFloor40mt-AirFloor90mt-AirWall13mt-AirWall20mt-Voidmt-Demolitionmt-Existingmt-NotInContractmt-Plastic
+lp/by/listLConcreteConcreteConcreteConcreteConcreteConcreteMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMasonryMetalMetalMetalMetalMetalMetalMetalMetalWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodWoodBoardBoardBoardBoardBoardBoardInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationInsulationFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishFinishRoofingRoofingRoofingRoofingRoofingRoofingSiteSiteSiteSiteSiteSiteSiteAirAirAirAirAirAirAirAirAirPhasePhasePhaseGeneric
+hky/listLFrom materialANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXLINEZONEZONENO
+hky/valsLANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXLINEZONEZONENO
+out/listLANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXLINEZONEZONENO
+out/valsLANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXLINEZONEZONENO
+bwt/listL0 mm0.05 mm0.09 mm0.13 mm0.15 mm0.18 mm0.2 mm0.25 mm0.3 mm0.35 mm0.4 mm0.5 mm0.53 mm0.6 mm0.7 mm0.8 mm0.9 mm1 mm1.06 mm1.2 mm1.4 mm1.58 mm2 mm2.11 mm
+bwt/valsL0591315182025303540505360708090100106120140158200211
+subS1
+lp/specs/listLP?1?CONCRETE_C?C:\Pat\acad.pat?1?0?1?DraftingP?1?GENERAL_STIPPLE?C:\Pat\acad.pat?2?0?1?DraftingP?1?CONCRETE?C:\Pat\acad.pat?1?0?1?DraftingP?1?CONCRETE_C?C:\Pat\acad.pat?1?0?1?DraftingP?1?CONCRETE?C:\Pat\acad.pat?1?0?1?DraftingP?1?GENERAL_STIPPLE?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI31?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI31?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI35?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI36?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI33?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI33?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI38?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI33?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI31?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?0.5?0?1?DraftingS?1P?1?ANSI32?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI32?C:\Pat\acad.pat?0.5?0?1?DraftingS?1P?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?ANSI31?C:\Pat\acad.pat?1?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?WOOD_GLU-LAMBEAM?C:\Pat\acad.pat?1?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?WOOD_2?C:\Pat\acad.pat?0.1875?0?1?DraftingP?1?WOOD_1?C:\Pat\acad.pat?0.75?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?CONCRETE?C:\Pat\acad.pat?1?0?1?DraftingP?1?NET3?C:\Pat\acad.pat?1?0?1?DraftingP?1?NET3?C:\Pat\acad.pat?1?0?1?DraftingP?1?NET3?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?NET3?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingP?1?HONEY?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?HONEY?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?HONEY?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?HONEY?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?NET3?C:\Pat\acad.pat?1?0?1?DraftingP?1?ANSI34?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI34?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?CONCRETE?C:\Pat\acad.pat?1?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?ANSI31?C:\Pat\acad.pat?1?0?1?DraftingP?1?WOOD_2?C:\Pat\acad.pat?0.1875?0?1?DraftingP?1?ANSI38?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI38?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?ANSI38?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?ANSI34?C:\Pat\acad.pat?0.5?0?1?DraftingP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?3?0?1?DraftingP?1?CONCRETE_C?C:\Pat\acad.pat?1?0?1?DraftingP?1?WOOD_2?C:\Pat\acad.pat?0.1875?0?1?DraftingP?1?WOOD_2?C:\Pat\acad.pat?0.1875?0?1?DraftingP?1?WOOD_2?C:\Pat\acad.pat?0.1875?0?1?DraftingP?1?SITEWORK_ASPHALT?C:\Pat\acad.pat?1?90?1?DraftingP?1?SITEWORK_ASPHALT?C:\Pat\acad.pat?1?90?1?DraftingP?1?SITEWORK_ASPHALT?C:\Pat\acad.pat?1?90?1?DraftingP?1?SITEWORK_ASPHALT?C:\Pat\acad.pat?1?90?1?DraftingP?1?ANSI33?C:\Pat\acad.pat?1?0?1?DraftingP?1?WOOD_2?C:\Pat\acad.pat?0.1875?0?1?DraftingP?1?SITEWORK_ASPHALT?C:\Pat\acad.pat?1?90?1?DraftingP?1?SITEWORK_EARTH?C:\Pat\acad.pat?1?45?1?DraftingP?1?SITEWORK_GRAVEL?C:\Pat\acad.pat?0.06?22.5?50?DraftingP?1?SITEWORK_GRAVEL?C:\Pat\acad.pat?0.06?22.5?50?DraftingP?1?GENERAL_STIPPLE?C:\Pat\acad.pat?1?0?1?DraftingP?1?SITEWORK_EARTH?C:\Pat\acad.pat?1?0?1?DraftingP?1?SITEWORK_EARTH?C:\Pat\acad.pat?1?0?1?DraftingS?1S?1S?1S?1S?1S?1S?1S?1S?1P?1?ANSI31?C:\Pat\acad.pat?0.5?90?1?DraftingF?1P?1?ANSI31?C:\Pat\acad.pat?1.5?90?1?DraftingP?1?ANSI34?C:\Pat\acad.pat?0.5?0?1?Drafting
+ll/ends/listLSquare45
+ll/paper/listL150
+mthSLayer
+lp/rsi/listL0.0576911521 00.1875037444 00.129818074 00.1121523174 00 1.078869970 2.27130520 1.192435230 3.009479390 2.895914130 1.362783120 3.463740430 1.476348380 3.918001470 0.965304710.0849398588 00.0576911521 00.0432726913 00.0576911521 01.1538230416 00.7933326744 00.9953614921 01.369685472 01.2119989933 00.8509019481 01.1821957393 01.4139988255 00.9088083188 01.0675638801 00.8075469216 01.4139988255 01.1102993087 01.2552469991 01.1102993087 01.0675638801 01.4279988139 01.3268434241 01.3989125141 01.2264275527 01.1102993087 02.379605349 02.7978250281 00.8799748639 00.8799748639 00.9088083188 00.9953614921 02.0048356992 02.6968563987 04.0388653094 03.7067047083 04.29761264 05.0044372033 05.0482282184 02.7978250281 04.385159021 06.0574498194 03.9952321385 05.1917883441 05.769115208 02.8990528683 03.7067047083 00 2.100957310 1.249217860.201914994 02.2083582943 00 0.0170347891.5733378444 00.9111047391 00 0.624608930 1.817044160 2.952696760 0.0511043670.129818074 00.0865194242 00 0.851739450 1.192435231.0092923737 00 0.4429045140.201914994 00.8651942424 00 0.170347890.1109445232 00 0.965304710.0865194242 00 0.851739450 0.908522080 0.908522080 1.022087340 1.13565260 1.249217860 0.908522080 1.02208734
+lp/mass/listL12.4855894568.32372630412.48558945611.653216825611.653216825611.65321682564.1618631525.202328943.06937407464.161863152
+lfm/listLNoneConcreteGroutGypsum ConcreteHollow Core SlabLightweight ConcreteMortarBrickCMUCMU 140 mm HollowCMU 140 mm Vermiculite FilledCMU 190 mm HollowCMU 190 mm Perlite FilledCMU 190 mm Vermiculite FilledCMU 240 mm HollowCMU 240 mm Vermiculite FilledCMU 290 mm HollowCMU 290 mm Vermiculite FilledCMU 90 mm HollowConcrete BrickFirebrickMarbleQuartzite And SandstoneStoneAluminiumBronzeIronLeadResilient Metal ChannelSteelSteel DeckSteel Furring ChannelAmabilis FirBirchDouglas Fir Or LarchHardboardHemlockHigh Density FiberboardLodgepole PineLow Density FiberboardMaple And AshMedium Density FiberboardOakOSBParticleboardPlywoodRed PineWestern HemlockWhite CedarWhite PineWhite SpruceWood FrameWood PlankYellow CypressAsphalt Fiberboard SheathingFoil-Faced Wood FiberboardGypsumGypsum Board Type XGypsum SheathingLightweight Concrete BoardAbsorptive MaterialCompressed Straw BoardExpanded PerliteExpanded PolystyreneExpanded Polystyrene Type 1Expanded Polystyrene Type 3Expanded Polystyrene Type 4Extruded PolystyreneInsulating FiberboardLoose InsulationPhenolic Foam BoardPolyisocyanurateRigid InsulationRigid Mineral Wool Roof BoardSpray InsulationSpray Polyurethane Type 1Spray Polyurethane Type 2Sprayed AsbestosWood Fiber BattCarpet - Fibrous UnderlayCarpet - Rubber UnderlayCement PlasterCork TileFiber Cement SidingGypsum-Sand PlasterHardboard SidingHardwood FlooringMetal Or Vinyl SidingMetal Or Vinyl Siding - InsulatedMetal Or Vinyl Siding - Insulated And FoilPlasterResilient FlooringStuccoTerrazzoWood Shingle SidingWood Shingle Siding - DoubleWood SidingAsphalt ShinglesBitumenBuilt-Up RoofRoll RoofingSlateWood Shingle RoofingAsphaltCompacted SoilCrushed StoneGravelSandTopsoilUndisturbed SoilAir Space - Ceiling 13 mm+Air Space - Ceiling 40 mm+Air Space - Floor 13 mmAir Space - Floor 20 mm+Air Space - Floor 40 mm+Air Space - Floor 90 mm+Air Space - Wall 13 mmAir Space - Wall 20 mm+VoidDemolitionExistingNot In ContractPlastic
+lfm/valsLmt-Concretemt-Groutmt-GypsumConcretemt-HollowCoreSlabmt-LightweightConcretemt-Mortarmt-Brickmt-CMUmt-CMU140mt-CMU140Vermiculitemt-CMU190mt-CMU190Perlitemt-CMU190Vermiculitemt-CMU240mt-CMU240Vermiculitemt-CMU290mt-CMU290Vermiculitemt-CMU90mt-ConcreteBrickmt-Firebrickmt-Marblemt-Sandstonemt-Stonemt-Aluminiummt-Bronzemt-Ironmt-Leadmt-ResilientChannelmt-Steelmt-SteelDeckmt-SteelFurringmt-AmabilisFirmt-Birchmt-DouglasFirLarchmt-Hardboardmt-Hemlockmt-HDFmt-LodgepolePinemt-LDFmt-MapleAshmt-MDFmt-Oakmt-OSBmt-Particleboardmt-Plywoodmt-RedPinemt-WesternHemlockmt-WhiteCedarmt-WhitePinemt-WhiteSprucemt-WoodFramemt-WoodPlankmt-YellowCypressmt-AsphaltFiberboardmt-FoilFiberboardmt-Gypsummt-GypsumTypeXmt-GypsumSheathingmt-CementBoardmt-AbsorptiveMaterialmt-StrawBoardmt-Perlitemt-ExpandedPolystyrenemt-ExpandedPolystyrene1mt-ExpandedPolystyrene3mt-ExpandedPolystyrene4mt-ExtrudedPolystyrenemt-InsulatingFiberboardmt-LooseInsulationmt-PhenolicFoammt-Polyisocyanuratemt-RigidInsulationmt-MineralWoolBoardmt-SprayInsulationmt-SprayPolyurethane1mt-SprayPolyurethane2mt-SprayedAsbestosmt-WoodFiberBattmt-CarpetFibrousmt-CarpetRubbermt-CementPlastermt-CorkTilemt-FiberCementSidingmt-GypsumSandPlastermt-HardboardSidingmt-HardwoodFloormt-LapSidingmt-LapSidingInsulatedmt-LapSidingFoilmt-Plastermt-ResilientFlooringmt-Stuccomt-Terrazzomt-WoodShinglesmt-WoodShinglesDoublemt-WoodSidingmt-AsphaltShinglesmt-Bitumenmt-BuiltUpRoofmt-RollRoofingmt-Slatemt-WoodShingleRoofmt-Asphaltmt-CompactedSoilmt-CrushedStonemt-Gravelmt-Sandmt-Topsoilmt-UndisturbedSoilmt-AirCeiling13mt-AirCeiling40mt-AirFloor13mt-AirFloor20mt-AirFloor40mt-AirFloor90mt-AirWall13mt-AirWall20mt-Voidmt-Demolitionmt-Existingmt-NotInContractmt-Plastic
+lfm/rsi/listL0.0576911521 00.1875037444 00.129818074 00.1121523174 00 1.078869970 2.27130520 1.192435230 3.009479390 2.895914130 1.362783120 3.463740430 1.476348380 3.918001470 0.965304710.0849398588 00.0576911521 00.0432726913 00.0576911521 01.1538230416 00.7933326744 00.9953614921 01.369685472 01.2119989933 00.8509019481 01.1821957393 01.4139988255 00.9088083188 01.0675638801 00.8075469216 01.4139988255 01.1102993087 01.2552469991 01.1102993087 01.0675638801 01.4279988139 01.3268434241 01.3989125141 01.2264275527 01.1102993087 02.379605349 02.7978250281 00.8799748639 00.8799748639 00.9088083188 00.9953614921 02.0048356992 02.6968563987 04.0388653094 03.7067047083 04.29761264 05.0044372033 05.0482282184 02.7978250281 04.385159021 06.0574498194 03.9952321385 05.1917883441 05.769115208 02.8990528683 03.7067047083 00 2.100957310 1.249217860.201914994 02.2083582943 00 0.0170347891.5733378444 00.9111047391 00 0.624608930 1.817044160 2.952696760 0.0511043670.129818074 00.0865194242 00 0.851739450 1.192435231.0092923737 00 0.4429045140.201914994 00.8651942424 00 0.170347890.1109445232 00 0.965304710.0865194242 00 0.851739450 0.908522080 0.908522080 1.022087340 1.13565260 1.249217860 0.908522080 1.02208734
+lfm/mass/listL12.4855894568.32372630412.48558945611.653216825611.653216825611.65321682564.1618631525.202328943.06937407464.161863152
+mt.impS1
+aex/listLFirst layerLast layer
+aex/valsLFirstLast
+mht/listLLayer centerLayer edgeDrawing origin
+mht/valsLLineEdgeOrigin
+men/listLSquareOpenExtendedRoundAngled
+men/valsLSquareOpenExtendedRoundAngled
+mco/listLMiteredBeveledRoundLapped
+mco/valsLMiteredBeveledRoundLapped
+mlt/listLFirst segmentNext segment
+mlt/valsLFirstSecond
+mjo/listLInterruptedUninterrupted
+mjo/valsLInterruptedUninterrupted
+#asmtab edit imperial same in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial same out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPreset
+#asmtab edit imperial same check
+#asmtab edit imperial name in
+cu-PresetWallEdited nameP:mt-Plaster:20|P:mt-Brick:900~0~First  A description   Family  Short P	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial name out
+cu-PresetWallEdited nameP:mt-Plaster:20|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstA descriptionFamilyShort
+#asmtab edit imperial name check
+#asmtab edit imperial ratings in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~First6045xPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial ratings out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirst6045xPreset
+#asmtab edit imperial ratings checkPreset: The fire-resistance ratings must be whole numbers of minutes.
+#asmtab edit imperial sound in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~First90504.5PresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial sound out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirst90504.5Preset
+#asmtab edit imperial sound checkPreset: The IIC must be a whole number.
+#asmtab edit imperial ratingsok in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~First 45 120055PresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial ratingsok out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirst45120055Preset
+#asmtab edit imperial ratingsok check
+#asmtab edit imperial thick in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	12.5		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial thick out
+cu-PresetWallPresetP:mt-Plaster:12.5|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial thick check
+#asmtab edit imperial thickfine in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	0.62598425		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial thickfine out
+cu-PresetWallPresetP:mt-Plaster:0.62598425|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial thickfine check
+#asmtab edit imperial thickbad in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	0		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial thickbad out
+cu-PresetWallPresetP	mt-Plaster	0		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial thickbad checkPreset: The thickness must be a number greater than 0.
+#asmtab edit imperial thicktext in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	abc		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial thicktext out
+cu-PresetWallPresetP	mt-Plaster	abc		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial thicktext checkPreset: The thickness must be a number greater than 0.
+#asmtab edit imperial nomat in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP		20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial nomat out
+cu-PresetWallPresetP		20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial nomat checkPreset: No material: add one in the Materials window.
+#asmtab edit imperial framing in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish	mt-Void	 23,5 	0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial framing out
+cu-PresetWallPresetP:mt-Plaster:20:::::mt-Void~23.5|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial framing check
+#asmtab edit imperial framingbad in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish	mt-Void	100	0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial framingbad out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish	mt-Void	100	0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial framingbad checkPreset: The framing must be a percentage greater than 0 and less than 100.
+#asmtab edit imperial band in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square	abc	45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial band out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square	abc	45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial band checkPreset: The extension must be a number, 0 or more (empty: half the width).
+#asmtab edit imperial bandangle in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		85	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial bandangle out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		85	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial bandangle checkPreset: The end angle must be a number from -80 to 80 (0: square).
+#asmtab edit imperial bandmiter in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		45	Mitered	0.5	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial bandmiter out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		45	Mitered	0.5	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial bandmiter checkPreset: The miter limit must be a number, 1 or more (x the width).
+#asmtab edit imperial bandfactor in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial bandfactor out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial bandfactor checkPreset: The width factor must be a number greater than 0.
+#asmtab edit imperial bandoffset in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1	x	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial bandoffset out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	1	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1	x	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial bandoffset checkPreset: The origin X offset must be a number (0: at the start of the segment).
+#asmtab edit imperial bandok in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	1	Edge	Square	2	30	Mitered	2	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	1.5	1	2	-1	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial bandok out
+cu-PresetWallPresetP:mt-Plaster:20::1~Edge~Square~2~30~Mitered~2~First~Interrupted~1~1.5~1~2~-1|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial bandok check
+#asmtab edit imperial bandoff in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Edge	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial bandoff out
+cu-PresetWallPresetP:mt-Plaster:20::0~Edge~Square~~45~Mitered~4~First~Interrupted~0~1~0~0~0|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial bandoff check
+#asmtab edit imperial border in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1		0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial border out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1		0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial border checkPreset: No layer key for the border: add one in the Layer Keys window.
+#asmtab edit imperial borderok in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1	hatch	0	0	7	1	dashed	1	2	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial borderok out
+cu-PresetWallPresetP:mt-Plaster:20:::1~hatch~0~7~1~DASHED~1~2~0~25~0~50|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial borderok check
+#asmtab edit imperial borderbad in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1	HATCH	0	1	300	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial borderbad out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1	HATCH	0	1	300	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial borderbad checkPreset: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#asmtab edit imperial borderoff in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	OTHERKEY	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial borderoff out
+cu-PresetWallPresetP:mt-Plaster:20:::0~OTHERKEY|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial borderoff check
+#asmtab edit imperial hatchbad in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	1	95	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial hatchbad out
+cu-PresetWallPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	1	95	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial hatchbad checkPreset: The transparency must be a whole number from 0 to 90.
+#asmtab edit imperial hatchkey in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	1	1,2,3	1	dashed	1	2	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial hatchkey out
+cu-PresetWallPresetP:mt-Plaster:20:~1~1~1.2.3~1~DASHED~1~2~0~25~0~50|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial hatchkey check
+#asmtab edit imperial hatchoff in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial hatchoff out
+cu-PresetWallPresetP:mt-Plaster:20:~0~0~7~0~CONTINUOUS~0~1~0~25~0~50|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial hatchoff check
+#asmtab edit imperial flags in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			1	1P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial flags out
+cu-PresetWallPresetP:mt-Plaster:20::::1::1:1|P:mt-Brick:900~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial flags check
+#asmtab edit imperial lines in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial lines out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:901~0~ANNDTOBJFirstPreset
+#asmtab edit imperial lines checkPreset: Border lines: no layer key, add one in the Layer Keys window.
+#asmtab edit imperial linesok in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01hatch071dashed010250501a070CONTINUOUS01025050
+#asmtab edit imperial linesok out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:901~HATCH~0~7~1~DASHED~0~1~0~25~0~501~AFirstPreset
+#asmtab edit imperial linesok check
+#asmtab edit imperial linesbad in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250501A1abc0CONTINUOUS01025050
+#asmtab edit imperial linesbad out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~ANNDTOBJ1~A~1~abc~0~CONTINUOUS~0~1~0~25~0~50FirstPreset
+#asmtab edit imperial linesbad checkPreset: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#asmtab edit imperial linesoff in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00070CONTINUOUS010250500070CONTINUOUS01025050
+#asmtab edit imperial linesoff out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPreset
+#asmtab edit imperial linesoff check
+#asmtab edit imperial nolayers in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPreset0ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial nolayers out
+cu-PresetWallPreset0~ANNDTOBJ0~ANNDTOBJFirstPreset
+#asmtab edit imperial nolayers checkPreset: No layers: add one.
+#asmtab edit imperial new in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+WallAdded1~1~FirstNew assembly1ANNDTOBJ070CONTINUOUS010250501ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial new out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPreset
+cu-AddedWallAdded1~ANNDTOBJ1~ANNDTOBJFirstNew assembly
+#asmtab edit imperial new checkAdded: No layers: add one.
+#asmtab edit imperial newempty in
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPresetP	mt-Plaster	20		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Finish			0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
+WallNew assembly1~1~FirstNew assembly1ANNDTOBJ070CONTINUOUS010250501ANNDTOBJ070CONTINUOUS01025050
+#asmtab edit imperial newempty out
+cu-PresetWallPresetP:mt-Plaster:20|P:mt-Brick:900~0~FirstPreset
+cu-NewAssemblyWallNew assembly1~ANNDTOBJ1~ANNDTOBJFirstNew assembly
+#asmtab edit imperial newempty checkNew assembly: No layers: add one.
+#asmtab vals imperial quickdraw
+pst.idxS0
+pst.selS0
+ll/newRPmt-Concrete10WALL0LineSquare45Mitered4FirstInterrupted0WALL0070CONTINUOUS010250501070CONTINUOUS0102505001000Concrete00
+#asmtab vals imperial unknown
+pst.idxS0
+pst.selS0
+ll/newRPmt-Concrete10ANNDTOBJ0LineSquare45Mitered4FirstInterrupted0ANNDTOBJ0070CONTINUOUS010250501070CONTINUOUS0102505001000Concrete00
