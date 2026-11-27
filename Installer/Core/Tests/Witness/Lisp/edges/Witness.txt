@@ -274,7 +274,6 @@ mt-BrickMasonryBrickhp-Brick0.8
 mt-AirAirAir space
 #shows scale0.020000000000000
 #shows lisp
-#asmwin lisp
 #QuickShape writeT
 #QuickDrawAssembly writeT
 #QuickDraw writeT

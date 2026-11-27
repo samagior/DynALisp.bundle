@@ -16,7 +16,7 @@
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
   Opened by the open button of Assembly in the Quick Draw window (it closes with 5, the Lisp
-  shows this one: Dyl:QuickDrawAsmDialog of Apps\Draw\Dyl-QuickDraw.lsp), on the assembly of
+  shows this one with Dyl:AsmWindow: Dyl:QuickDrawAsmDialog of Apps\Draw\Dyl-QuickDraw.lsp), on the assembly of
   the preset shown. A preset window (Installer\Windows\Engine\Presets.cs): its list "lst" is
   the assembly presets (pst/rows: id group name layers border-lines dividing-lines exterior
   units description load-bearing-rating non-load-bearing-rating stc iic family
@@ -68,7 +68,7 @@
   the resistance (the isothermal planes method of the building code), by their areas for the
   mass. Under the list, ltm
   (metric) and lti (imperial, mt.imp) add up the thermal resistance and the mass of the layers
-  from lp/rsi and lp/mass, the data of each material (Remote>>Dyl:MaterialDataLists). Add, Remove,
+  from lp/rsi and lp/mass, the data of each material (AsmWindow.Data of DynALisp.Core). Add, Remove,
   Move up, Move down and Flip run in the window. The preview (an AssemblyTile,
   Installer\Windows\Engine\Assembly.cs) draws the rows as they are edited: lp/specs the
   preview of each material (scaled by the thickness of a layer whose band settings say so), ll/ends the ends of the whole band, ll/paper the inches of a drawing

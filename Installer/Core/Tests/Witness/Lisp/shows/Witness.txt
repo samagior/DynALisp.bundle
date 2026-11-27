@@ -401,100 +401,6 @@ as-E3 layers2.4213O*P?0.393701?NOPAT??3?90?1?Drafting*L?0*P?1.968504?ANSI37?C
 as-F3 layers6.7638P?5.511811?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*P?0.625984?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?Drafting*P?0.625984?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingTotal thickness  6.764Mineral Wool + mt-Gone 20%  5.512  (load-bearing)Gypsum Board  0.626Gypsum Board  0.626Thermal resistance  R 1.129  (1 layer unknown)Mass  5.211 lb/ft2  (1 layer unknown)Continuous layers  R 1.129
 as-G4 layers8.1378O*P?0.5?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?Drafting*L?0*P?3.503937?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*L?0*P?3.937008?AR-CONC?C:\Pat\AR-CONC.pat?0.07874016?22.5?1?Drafting*L?0*S?0.19685Total thickness  8.138Gypsum Board  0.5  (low permeance)Mineral Wool  3.504Concrete  3.937Gone hatch  0.197Thermal resistance  R 13.34Mass  51.78 lb/ft2Low permeance ratio  0.03Fire-resistance rating, non-load-bearing 45 min
 as-H3 layers3.4921O*P?1.496063?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*L?0*P?1.496063?ANSI37?C:\Pat\acad.pat?1?45?1?Drafting*L?0*P?0.5?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingTotal thickness  3.492Mineral Wool  1.496Mineral Wool  1.496Gypsum Board  0.5Thermal resistance  R 11.24Mass  2.548 lb/ft2
-#asmwin mats metric
-mt-GypGypsum Boardmt-GypBoard
-mt-InsMineral Woolmt-InsInsulation
-mt-StudWood Studmt-StudWood
-mt-ConcConcretemt-ConcConcrete
-mt-AirAir Spacemt-AirAir
-mt-BrickBrickmt-BrickMasonry
-mt-SteelSteelmt-SteelMetal
-mt-Gone2Gone hatchmt-Gone2Generic
-mt-IsoIso boardmt-IsoGeneric
-mt-NoDataNo datamt-NoDataGeneric
-mt-Gonemt-Gone   (missing material)
-#asmwin groups metric
-Board
-Insulation
-Wood
-Concrete
-Air
-Masonry
-Metal
-Generic
-#asmwin keys metric
-MED
-THIN
-#asmwin data metric
-mt-Gyp0.00625 00.8
-mt-Ins0.025 00.03
-mt-Stud0.0083333333 00.5
-mt-Conc0.0004 02.4
-mt-Air0 0.17
-mt-Brick0.000777605 02.4
-mt-Steel0.00002 07.85
-mt-Gone20.001 00.001
-mt-Iso0 0.030.12
-mt-NoData
-mt-Gone
-#asmwin bk metricANNDTOBJ
-#asmwin def metric
-Pmt-Gyp10ANNDTOBJ0LineSquare45Mitered4FirstInterrupted0ANNDTOBJ0070CONTINUOUS010250501070CONTINUOUS0102505001000Board00
-#asmwin rows metric
-as-AP	mt-Gyp	12.7		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Board			0	0P	mt-Ins	89		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation	mt-Stud	23	0	0P	mt-Gyp	12.7		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Board			0	01THIN070CONTINUOUS010250501THIN070CONTINUOUS01025050
-as-BP	mt-Conc	200		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1	MED	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Concrete			0	0P	mt-Air	25		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Air			0	0P	mt-Ins	50		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			1	1P	mt-Gone	10		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Brick	90		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01MED070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
-cu-CP	mt-Brick	3.625		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Air	1		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Air			0	0P	mt-Iso	0.5		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Generic			0	00ANNDTOBJ070CONTINUOUS010250501THIN070CONTINUOUS01025050
-as-EP	mt-NoData	10		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Generic			0	1P	mt-Ins	50		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	0P	mt-Steel	1.5		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Metal			0	01THIN070CONTINUOUS010250501THIN070CONTINUOUS01025050
-as-FP	mt-Ins	140		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation	mt-Gone	20	0	0P	mt-Gyp	15.9		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	1	3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Board			0	0P	mt-gyp	15.9		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Board			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
-as-GP	mt-Gyp	12.7		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Board			0	1P	mt-Ins	89		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	0P	mt-Conc	100		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Concrete			0	0P	mt-Gone2	5		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Generic			0	01THIN070CONTINUOUS010250501THIN070CONTINUOUS01025050
-as-HP	mt-Ins	38		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1	THIN	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	0P	mt-Ins	38		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1	THIN	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	0P	mt-Gyp	12.7		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Board			0	01THIN070CONTINUOUS010250501THIN070CONTINUOUS01025050
-#asmwin mats imperial
-mt-GypGypsum Boardmt-GypBoard
-mt-InsMineral Woolmt-InsInsulation
-mt-StudWood Studmt-StudWood
-mt-ConcConcretemt-ConcConcrete
-mt-AirAir Spacemt-AirAir
-mt-BrickBrickmt-BrickMasonry
-mt-SteelSteelmt-SteelMetal
-mt-Gone2Gone hatchmt-Gone2Generic
-mt-IsoIso boardmt-IsoGeneric
-mt-NoDataNo datamt-NoDataGeneric
-mt-Gonemt-Gone   (missing material)
-#asmwin groups imperial
-Board
-Insulation
-Wood
-Concrete
-Air
-Masonry
-Metal
-Generic
-#asmwin keys imperial
-MED
-THIN
-#asmwin data imperial
-mt-Gyp0.9014242513 04.161863152
-mt-Ins3.605697005 00.1560698682
-mt-Stud1.2018990017 02.60116447
-mt-Conc0.0576911521 012.485589456
-mt-Air0 0.96530471
-mt-Brick0.1121523174 012.485589456
-mt-Steel0.0028845576 040.838282179
-mt-Gone20.1442278802 00.0052023289
-mt-Iso0 0.170347890.6242794728
-mt-NoData
-mt-Gone
-#asmwin bk imperialANNDTOBJ
-#asmwin def imperial
-Pmt-Gyp10ANNDTOBJ0LineSquare45Mitered4FirstInterrupted0ANNDTOBJ0070CONTINUOUS010250501070CONTINUOUS0102505001000Board00
-#asmwin rows imperial
-as-AP	mt-Gyp	0.5		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Board			0	0P	mt-Ins	3.50393701		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation	mt-Stud	23	0	0P	mt-Gyp	0.5		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Board			0	01THIN070CONTINUOUS010250501THIN070CONTINUOUS01025050
-as-BP	mt-Conc	7.87401575		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1	MED	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Concrete			0	0P	mt-Air	0.98425197		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Air			0	0P	mt-Ins	1.96850394		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			1	1P	mt-Gone	0.39370079		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Brick	3.54330709		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01MED070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
-cu-CP	mt-Brick	3.625		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Air	1		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Air			0	0P	mt-Iso	0.5		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Generic			0	00ANNDTOBJ070CONTINUOUS010250501THIN070CONTINUOUS01025050
-as-EP	mt-NoData	0.39370079		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Generic			0	1P	mt-Ins	1.96850394		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	0P	mt-Steel	0.05905512		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Metal			0	01THIN070CONTINUOUS010250501THIN070CONTINUOUS01025050
-as-FP	mt-Ins	5.51181102		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation	mt-Gone	20	0	0P	mt-Gyp	0.62598425		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	1	3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Board			0	0P	mt-gyp	0.62598425		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Board			0	00ANNDTOBJ070CONTINUOUS010250500ANNDTOBJ070CONTINUOUS01025050
-as-GP	mt-Gyp	0.5		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Board			0	1P	mt-Ins	3.50393701		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	0P	mt-Conc	3.93700787		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Concrete			0	0P	mt-Gone2	0.19685039		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Generic			0	01THIN070CONTINUOUS010250501THIN070CONTINUOUS01025050
-as-HP	mt-Ins	1.49606299		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1	THIN	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	0P	mt-Ins	1.49606299		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	1	THIN	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	0P	mt-Gyp	0.5		ANNDTOBJ	0	Line	Square		45	Mitered	4	First	Interrupted	0	ANNDTOBJ	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Board			0	01THIN070CONTINUOUS010250501THIN070CONTINUOUS01025050
 #QuickShape writeT
 #QuickDrawAssembly writeT
 #QuickDraw writeT

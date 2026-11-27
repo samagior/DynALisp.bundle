@@ -1,0 +1,1011 @@
+#asmwin mats metric
+mt-BrickBrickmt-BrickMasonry
+cu-MineMinecu-MineInsulation
+mt-Gypsummt-Gypsum   (missing material)
+mt-Mineralmt-Mineral   (missing material)
+mt-Voidmt-Void   (missing material)
+mt-Amt-A   (missing material)
+mt-Bmt-B   (missing material)
+mt-Cmt-C   (missing material)
+mt-Dmt-D   (missing material)
+mt-Concretemt-Concrete   (missing material)
+mt-Blockmt-Block   (missing material)
+mt-WoodFramemt-WoodFrame   (missing material)
+mt-Woodmt-Wood   (missing material)
+#asmwin groups metric
+Masonry
+Insulation
+#asmwin keys metric
+HK
+K
+THIN
+MED
+THICK
+A
+X
+B
+#asmwin data metric
+mt-Brick0.00125 01.9
+cu-Mine0.025 0
+mt-Gypsum
+mt-Mineral
+mt-Void
+mt-A
+mt-B
+mt-C
+mt-D
+mt-Concrete
+mt-Block
+mt-WoodFrame
+mt-Wood
+#asmwin bk metricA
+#asmwin def metric
+Pmt-Brick10A0LineSquare45Mitered4FirstInterrupted0A0070CONTINUOUS010250501070CONTINUOUS0102505001000Masonry00
+#asmwin rows metric
+as-T1aP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+cu-BandP	mt-A	10		A	Line	Edge	a	b	c	d	e	f	g	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-B	5		A	1	2	3	4	5	6	7	8	9	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-C	7		A	1	2	3	4	5	6	7	8	9	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	10	11	12	13	14				0	0P	mt-D	3		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-BorderP	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	1	THIN	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-B	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	1	K	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-C	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01A071DASHED010250500B070CONTINUOUS01025050
+cu-HatchP	mt-A	10	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	10	K	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	7	0	X	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	10	K	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	1	1,5	0	X	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-FrameP	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-Wood	23,5	0	0P	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				1	1P	mt-A	1e3		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	5.		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-NoIdP	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-UnitsP	mt-A	15.9		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.001		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	123456.789		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	2.675		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.0005		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-DrawingP	mt-A	15.9		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-RatingsP	mt-A	15.9		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+as-T1bP	mt-Gypsum	15.9		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Void	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	0P	mt-Gypsum	15.9		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+as-T2P	mt-Concrete	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Gypsum	2.675		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01MED070CONTINUOUS010250500A070CONTINUOUS01025050
+as-T30A070CONTINUOUS010250500A070CONTINUOUS01025050
+AS-T4P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Block	190		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01THICK070CONTINUOUS010250500THIN070CONTINUOUS01025050
+#asmwin mats imperial
+mt-BrickBrickmt-BrickMasonry
+cu-MineMinecu-MineInsulation
+mt-Gypsummt-Gypsum   (missing material)
+mt-Mineralmt-Mineral   (missing material)
+mt-Voidmt-Void   (missing material)
+mt-Amt-A   (missing material)
+mt-Bmt-B   (missing material)
+mt-Cmt-C   (missing material)
+mt-Dmt-D   (missing material)
+mt-Concretemt-Concrete   (missing material)
+mt-Blockmt-Block   (missing material)
+mt-WoodFramemt-WoodFrame   (missing material)
+mt-Woodmt-Wood   (missing material)
+#asmwin groups imperial
+Masonry
+Insulation
+#asmwin keys imperial
+HK
+K
+THIN
+MED
+THICK
+A
+X
+B
+#asmwin data imperial
+mt-Brick0.1802848503 09.884424986
+cu-Mine3.605697005 0
+mt-Gypsum
+mt-Mineral
+mt-Void
+mt-A
+mt-B
+mt-C
+mt-D
+mt-Concrete
+mt-Block
+mt-WoodFrame
+mt-Wood
+#asmwin bk imperialA
+#asmwin def imperial
+Pmt-Brick10A0LineSquare45Mitered4FirstInterrupted0A0070CONTINUOUS010250501070CONTINUOUS0102505001000Masonry00
+#asmwin rows imperial
+as-T1aP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+cu-BandP	mt-A	0.39370079		A	Line	Edge	a	b	c	d	e	f	g	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-B	0.19685039		A	1	2	3	4	5	6	7	8	9	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-C	0.27559055		A	1	2	3	4	5	6	7	8	9	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	10	11	12	13	14				0	0P	mt-D	0.11811024		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-BorderP	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	1	THIN	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-B	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	1	K	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-C	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01A071DASHED010250500B070CONTINUOUS01025050
+cu-HatchP	mt-A	0.39370079	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.39370079		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.39370079	K	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	7	0	X	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.39370079	K	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	1	1,5	0	X	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-FrameP	mt-A	0.39370079		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-Wood	23,5	0	0P	mt-A	0.39370079		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.39370079		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.39370079		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.39370079		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				1	1P	mt-A	39.37007874		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.01968504		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.19685039		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-NoIdP	mt-A	10		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-UnitsP	mt-A	0.62598425		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.00003937		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	4860.50350394		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.10531496		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-A	0.00001969		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-DrawingP	mt-A	15.9		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+cu-RatingsP	mt-A	0.62598425		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	00A070CONTINUOUS010250500A070CONTINUOUS01025050
+as-T1bP	mt-Gypsum	0.62598425		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Void	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	0P	mt-Gypsum	0.62598425		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+as-T2P	mt-Concrete	0.01968504		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Gypsum	0.10531496		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01MED070CONTINUOUS010250500A070CONTINUOUS01025050
+as-T30A070CONTINUOUS010250500A070CONTINUOUS01025050
+AS-T4P	mt-Brick	3.54330709		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	0.98425197		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Block	7.48031496		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	01THICK070CONTINUOUS010250500THIN070CONTINUOUS01025050
+#asmtab scale0.020000000000000
+#asmtab layerkeys
+FINE
+THIN
+MED
+WIDE
+XLINE
+HATCH
+G-DS-ANNO-STD-BACKGROUND_SCREEN
+MATREGION
+SIMZONE
+SIMCLIMATE
+SIMISOTHERM
+SIMDEWPOINT
+SIMCONDENSATION
+ANNDTOBJ
+ANNELKEY
+ANNELOBJ
+ANNMASK
+ANNMATCH
+ANNOBJ
+ANNREV
+ANNSXKEY
+ANNSXOBJ
+ANNSYMOBJ
+APPL
+CASE
+CASENO
+CEILGRID
+CEILOBJ
+CHASE
+COGO
+COLUMN
+COMMUN
+CONTROL
+CWLAYOUT
+CWUNIT
+DIMLINE
+DIMMAN
+DISPTHEME
+DOOR
+DOORNO
+DRAINAGE
+ELEC
+ELECNO
+ELEV
+ELEVAT
+ELEVHIDE
+EQUIP
+EQUIPNO
+FINCEIL
+FINFLOOR
+FIRE
+FURN
+FURNNO
+G-DS-ANNO-STD-NON_PLOTTABLE_OBJECTS
+G-DS-ANNO-STD-NON_PLOTTABLE_OBJECTS_SCREEN
+GRIDBUB
+GRIDLINE
+HIDDEN
+LAYGRID
+LIGHTCLG
+LIGHTW
+MASS ELEM
+MASSGRPS
+MASSSLCE
+OPENING
+PEOPLE
+PFIXT
+PLANTS
+PLANTSI
+POLYGON
+POWER
+PRCL
+PRK-SYM
+RBFINISHID
+RBQUANTITYID
+ROOF
+ROOFSLAB
+ROOMNO
+SCHEDOBJ
+SEATNO
+SECT
+SECTHIDE
+SITE
+SLAB
+SPACENO
+SPACEOBJ
+STAIR
+STAIRH
+STRUCTBEAM
+STRUCTBEAMIDEN
+STRUCTBRACE
+STRUCTBRACEIDEN
+STRUCTCOLS
+STRUCTCOLSIDEN
+SWITCH
+TINN
+TITSCALE
+TITTEXT
+TITTEXT-DWG
+TOILACC
+TOILNO
+TOPO
+UTIL
+VEHICLES
+VIEWPORT
+WALL
+WALLFIRE
+WALLNO
+WIND
+WINDASSEM
+WINDNO
+ZONE
+ZONENO
+#asmtab vals metric manager
+pst/rowsN15
+pst/defsN5
+pst/newRWallNew assembly1~1~FirstNew assembly1A070CONTINUOUS010250501A070CONTINUOUS01025050
+pst/ncolsS16
+pst/tilesSnam:2,grp:1,aex:6,ads:8,afl:9,afn:10,ast:11,aii:12,fam:13,fds:14,abl:16,adl:28
+pst.idxS0
+pst.selS0
+pst.shwS
+fltS
+pst/titleSAssembly Presets
+pst/nounSassemblies
+errorS
+srt/listLNameGroup
+srtS0
+grp/listLWallFloorSection
+pst/familyS13,14
+pst/famcolsS6,16-39
+pst/famlabelS9:min,10:NLB:min,11:STC,12:IIC
+ll/newRPmt-Brick10A0LineSquare45Mitered4FirstInterrupted0A0070CONTINUOUS010250501070CONTINUOUS0102505001000Masonry00
+lg/listLMasonryInsulation
+lg/valsLMasonryInsulation
+lp/listLBrickMinemt-Gypsum   (missing material)mt-Mineral   (missing material)mt-Void   (missing material)mt-A   (missing material)mt-B   (missing material)mt-C   (missing material)mt-D   (missing material)mt-Concrete   (missing material)mt-Block   (missing material)mt-WoodFrame   (missing material)mt-Wood   (missing material)
+lp/valsLmt-Brickcu-Minemt-Gypsummt-Mineralmt-Voidmt-Amt-Bmt-Cmt-Dmt-Concretemt-Blockmt-WoodFramemt-Wood
+lp/by/listLMasonryInsulation
+hky/listLFrom materialA   (not defined)ANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLB   (not defined)CASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENHK   (not defined)K   (not defined)LAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHICK   (not defined)THINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOX   (not defined)XLINEZONEZONENO
+hky/valsLAANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLBCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENHKKLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHICKTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXXLINEZONEZONENO
+out/listLA   (not defined)ANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLB   (not defined)CASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENHK   (not defined)K   (not defined)LAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHICK   (not defined)THINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOX   (not defined)XLINEZONEZONENO
+out/valsLAANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLBCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENHKKLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHICKTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXXLINEZONEZONENO
+bwt/listL0.00 mm0.05 mm0.09 mm0.13 mm0.15 mm0.18 mm0.20 mm0.25 mm0.30 mm0.35 mm0.40 mm0.50 mm0.53 mm0.60 mm0.70 mm0.80 mm0.90 mm1.00 mm1.06 mm1.20 mm1.40 mm1.58 mm2.00 mm2.11 mm
+bwt/valsL0591315182025303540505360708090100106120140158200211
+subS1
+lp/specs/listLS?1S?1X?1X?1X?1X?1X?1X?1X?1X?1X?1X?1X?1
+ll/ends/listLSquare45
+ll/paper/listL0.039370078750
+mthSLayer
+lp/rsi/listL0.00125 00.025 0
+lp/mass/listL1.9
+lfm/listLNoneBrickMinemt-Gypsum   (missing material)mt-Mineral   (missing material)mt-Void   (missing material)mt-A   (missing material)mt-B   (missing material)mt-C   (missing material)mt-D   (missing material)mt-Concrete   (missing material)mt-Block   (missing material)mt-WoodFrame   (missing material)mt-Wood   (missing material)
+lfm/valsLmt-Brickcu-Minemt-Gypsummt-Mineralmt-Voidmt-Amt-Bmt-Cmt-Dmt-Concretemt-Blockmt-WoodFramemt-Wood
+lfm/rsi/listL0.00125 00.025 0
+lfm/mass/listL1.9
+mt.impS0
+aex/listLFirst layerLast layer
+aex/valsLFirstLast
+mht/listLLayer centerLayer edgeDrawing origin
+mht/valsLLineEdgeOrigin
+men/listLSquareOpenExtendedRoundAngled
+men/valsLSquareOpenExtendedRoundAngled
+mco/listLMiteredBeveledRoundLapped
+mco/valsLMiteredBeveledRoundLapped
+mlt/listLFirst segmentNext segment
+mlt/valsLFirstSecond
+mjo/listLInterruptedUninterrupted
+mjo/valsLInterruptedUninterrupted
+#asmtab edit metric same in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric same out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric same check
+#asmtab edit metric name in
+as-T1aWallEdited nameP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmm  A description  4534 Family  Short P	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric name out
+as-T1aWallEdited nameP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmA description4534FamilyShort
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric name check
+#asmtab edit metric ratings in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged6045x34T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric ratings out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged6045x34T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric ratings checkT1a: The fire-resistance ratings must be whole numbers of minutes.
+#asmtab edit metric sound in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged90504.5T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric sound out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged90504.5T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric sound checkT1a: The IIC must be a whole number.
+#asmtab edit metric ratingsok in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged 45 120055T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric ratingsok out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged45120055T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric ratingsok check
+#asmtab edit metric thick in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric thick out
+as-T1aWallT1aP:mt-Gypsum:12.5|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric thick check
+#asmtab edit metric thickfine in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.62598425		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric thickfine out
+as-T1aWallT1aP:mt-Gypsum:0.62598425|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric thickfine check
+#asmtab edit metric thickbad in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric thickbad out
+as-T1aWallT1aP	mt-Gypsum	0		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric thickbad checkT1a: The thickness must be a number greater than 0.
+#asmtab edit metric thicktext in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	abc		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric thicktext out
+as-T1aWallT1aP	mt-Gypsum	abc		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric thicktext checkT1a: The thickness must be a number greater than 0.
+#asmtab edit metric nomat in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP		12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric nomat out
+as-T1aWallT1aP		12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric nomat checkT1a: No material: add one in the Materials window.
+#asmtab edit metric framing in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-Void	 23,5 	0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric framing out
+as-T1aWallT1aP:mt-Gypsum:12.7:::::mt-Void~23.5|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric framing check
+#asmtab edit metric framingbad in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-Void	100	0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric framingbad out
+as-T1aWallT1aP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-Void	100	0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric framingbad checkT1a: The framing must be a percentage greater than 0 and less than 100.
+#asmtab edit metric band in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	1	Line	Square	abc	45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric band out
+as-T1aWallT1aP	mt-Gypsum	12.7		A	1	Line	Square	abc	45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric band checkT1a: The extension must be a number, 0 or more (empty: half the width).
+#asmtab edit metric bandangle in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	1	Line	Square		85	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric bandangle out
+as-T1aWallT1aP	mt-Gypsum	12.7		A	1	Line	Square		85	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric bandangle checkT1a: The end angle must be a number from -80 to 80 (0: square).
+#asmtab edit metric bandmiter in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	1	Line	Square		45	Mitered	0.5	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric bandmiter out
+as-T1aWallT1aP	mt-Gypsum	12.7		A	1	Line	Square		45	Mitered	0.5	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric bandmiter checkT1a: The miter limit must be a number, 1 or more (x the width).
+#asmtab edit metric bandfactor in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	1	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric bandfactor out
+as-T1aWallT1aP	mt-Gypsum	12.7		A	1	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric bandfactor checkT1a: The width factor must be a number greater than 0.
+#asmtab edit metric bandoffset in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	1	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1	x	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric bandoffset out
+as-T1aWallT1aP	mt-Gypsum	12.7		A	1	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1	x	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric bandoffset checkT1a: The origin X offset must be a number (0: at the start of the segment).
+#asmtab edit metric bandok in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	1	Edge	Square	2	30	Mitered	2	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	1.5	1	2	-1				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric bandok out
+as-T1aWallT1aP:mt-Gypsum:12.7::1~Edge~Square~2~30~Mitered~2~First~Interrupted~1~1.5~1~2~-1|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric bandok check
+#asmtab edit metric bandoff in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Edge	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric bandoff out
+as-T1aWallT1aP:mt-Gypsum:12.7::0~Edge~Square~~45~Mitered~4~First~Interrupted~0~1~0~0~0|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric bandoff check
+#asmtab edit metric border in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	1		0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric border out
+as-T1aWallT1aP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	1		0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric border checkT1a: No layer key for the border: add one in the Layer Keys window.
+#asmtab edit metric borderok in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	1	hatch	0	0	7	1	dashed	1	2	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric borderok out
+as-T1aWallT1aP:mt-Gypsum:12.7:::1~hatch~0~7~1~DASHED~1~2~0~25~0~50|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric borderok check
+#asmtab edit metric borderbad in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	1	HATCH	0	1	300	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric borderbad out
+as-T1aWallT1aP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	1	HATCH	0	1	300	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric borderbad checkT1a: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#asmtab edit metric borderoff in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	OTHERKEY	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric borderoff out
+as-T1aWallT1aP:mt-Gypsum:12.7:::0~OTHERKEY|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric borderoff check
+#asmtab edit metric hatchbad in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	1	95	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric hatchbad out
+as-T1aWallT1aP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	1	95	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric hatchbad checkT1a: The transparency must be a whole number from 0 to 90.
+#asmtab edit metric hatchkey in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	1	1,2,3	1	dashed	1	2	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric hatchkey out
+as-T1aWallT1aP:mt-Gypsum:12.7:~1~1~1.2.3~1~DASHED~1~2~0~25~0~50|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric hatchkey check
+#asmtab edit metric hatchoff in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric hatchoff out
+as-T1aWallT1aP:mt-Gypsum:12.7:~0~0~7~0~CONTINUOUS~0~1~0~25~0~50|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric hatchoff check
+#asmtab edit metric flags in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				1	1P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric flags out
+as-T1aWallT1aP:mt-Gypsum:12.7::::1::1:1|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric flags check
+#asmtab edit metric lines in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric lines out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric lines checkT1a: Border lines: no layer key, add one in the Layer Keys window.
+#asmtab edit metric linesok in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01hatch071dashed010250501a070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric linesok out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~HATCH~0~7~1~DASHED~0~1~0~25~0~501~AFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric linesok check
+#asmtab edit metric linesbad in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501A1abc0CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric linesbad out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~A~1~abc~0~CONTINUOUS~0~1~0~25~0~50FirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric linesbad checkT1a: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#asmtab edit metric linesoff in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	00070CONTINUOUS010250500070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric linesoff out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~230~0~FirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric linesoff check
+#asmtab edit metric nolayers in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum1MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric nolayers out
+as-T1aWallT1a1~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric nolayers checkT1a: No layers: add one.
+#asmtab edit metric new in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+WallAdded1~1~FirstNew assembly1A070CONTINUOUS010250501A070CONTINUOUS01025050
+#asmtab edit metric new out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+cu-AddedWallAdded1~A1~AFirstNew assembly
+#asmtab edit metric new checkAdded: No layers: add one.
+#asmtab edit metric newempty in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+WallNew assembly1~1~FirstNew assembly1A070CONTINUOUS010250501A070CONTINUOUS01025050
+#asmtab edit metric newempty out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+cu-NewAssemblyWallNew assembly1~A1~AFirstNew assembly
+#asmtab edit metric newempty checkNew assembly: No layers: add one.
+#asmtab edit metric delete in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric delete out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric delete check
+#asmtab edit metric move in
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.7		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	89		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit metric move out
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit metric move check
+#asmtab vals metric quickdraw
+pst.idxS1
+pst.selS1
+ll/newRPmt-Brick10WALL0LineSquare45Mitered4FirstInterrupted0WALL0070CONTINUOUS010250501070CONTINUOUS0102505001000Masonry00
+#asmtab vals metric unknown
+pst.idxS0
+pst.selS0
+ll/newRPmt-Brick10A0LineSquare45Mitered4FirstInterrupted0A0070CONTINUOUS010250501070CONTINUOUS0102505001000Masonry00
+#asmtab vals imperial manager
+pst/rowsN15
+pst/defsN5
+pst/newRWallNew assembly1~1~FirstNew assembly1A070CONTINUOUS010250501A070CONTINUOUS01025050
+pst/ncolsS16
+pst/tilesSnam:2,grp:1,aex:6,ads:8,afl:9,afn:10,ast:11,aii:12,fam:13,fds:14,abl:16,adl:28
+pst.idxS0
+pst.selS0
+pst.shwS
+fltS
+pst/titleSAssembly Presets
+pst/nounSassemblies
+errorS
+srt/listLNameGroup
+srtS0
+grp/listLWallFloorSection
+pst/familyS13,14
+pst/famcolsS6,16-39
+pst/famlabelS9:min,10:NLB:min,11:STC,12:IIC
+ll/newRPmt-Brick10A0LineSquare45Mitered4FirstInterrupted0A0070CONTINUOUS010250501070CONTINUOUS0102505001000Masonry00
+lg/listLMasonryInsulation
+lg/valsLMasonryInsulation
+lp/listLBrickMinemt-Gypsum   (missing material)mt-Mineral   (missing material)mt-Void   (missing material)mt-A   (missing material)mt-B   (missing material)mt-C   (missing material)mt-D   (missing material)mt-Concrete   (missing material)mt-Block   (missing material)mt-WoodFrame   (missing material)mt-Wood   (missing material)
+lp/valsLmt-Brickcu-Minemt-Gypsummt-Mineralmt-Voidmt-Amt-Bmt-Cmt-Dmt-Concretemt-Blockmt-WoodFramemt-Wood
+lp/by/listLMasonryInsulation
+hky/listLFrom materialA   (not defined)ANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLB   (not defined)CASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENHK   (not defined)K   (not defined)LAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHICK   (not defined)THINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOX   (not defined)XLINEZONEZONENO
+hky/valsLAANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLBCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENHKKLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHICKTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXXLINEZONEZONENO
+out/listLA   (not defined)ANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLB   (not defined)CASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENHK   (not defined)K   (not defined)LAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHICK   (not defined)THINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOX   (not defined)XLINEZONEZONENO
+out/valsLAANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLBCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENHKKLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHICKTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXXLINEZONEZONENO
+bwt/listL0 mm0.05 mm0.09 mm0.13 mm0.15 mm0.18 mm0.2 mm0.25 mm0.3 mm0.35 mm0.4 mm0.5 mm0.53 mm0.6 mm0.7 mm0.8 mm0.9 mm1 mm1.06 mm1.2 mm1.4 mm1.58 mm2 mm2.11 mm
+bwt/valsL0591315182025303540505360708090100106120140158200211
+subS1
+lp/specs/listLS?1S?1X?1X?1X?1X?1X?1X?1X?1X?1X?1X?1X?1
+ll/ends/listLSquare45
+ll/paper/listL150
+mthSLayer
+lp/rsi/listL0.1802848503 03.605697005 0
+lp/mass/listL9.884424986
+lfm/listLNoneBrickMinemt-Gypsum   (missing material)mt-Mineral   (missing material)mt-Void   (missing material)mt-A   (missing material)mt-B   (missing material)mt-C   (missing material)mt-D   (missing material)mt-Concrete   (missing material)mt-Block   (missing material)mt-WoodFrame   (missing material)mt-Wood   (missing material)
+lfm/valsLmt-Brickcu-Minemt-Gypsummt-Mineralmt-Voidmt-Amt-Bmt-Cmt-Dmt-Concretemt-Blockmt-WoodFramemt-Wood
+lfm/rsi/listL0.1802848503 03.605697005 0
+lfm/mass/listL9.884424986
+mt.impS1
+aex/listLFirst layerLast layer
+aex/valsLFirstLast
+mht/listLLayer centerLayer edgeDrawing origin
+mht/valsLLineEdgeOrigin
+men/listLSquareOpenExtendedRoundAngled
+men/valsLSquareOpenExtendedRoundAngled
+mco/listLMiteredBeveledRoundLapped
+mco/valsLMiteredBeveledRoundLapped
+mlt/listLFirst segmentNext segment
+mlt/valsLFirstSecond
+mjo/listLInterruptedUninterrupted
+mjo/valsLInterruptedUninterrupted
+#asmtab edit imperial same in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial same out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial same check
+#asmtab edit imperial name in
+as-T1aWallEdited nameP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmm  A description  4534 Family  Short P	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial name out
+as-T1aWallEdited nameP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmA description4534FamilyShort
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial name check
+#asmtab edit imperial ratings in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged6045x34T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial ratings out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged6045x34T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial ratings checkT1a: The fire-resistance ratings must be whole numbers of minutes.
+#asmtab edit imperial sound in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged90504.5T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial sound out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged90504.5T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial sound checkT1a: The IIC must be a whole number.
+#asmtab edit imperial ratingsok in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged 45 120055T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial ratingsok out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged45120055T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial ratingsok check
+#asmtab edit imperial thick in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	12.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial thick out
+as-T1aWallT1aP:mt-Gypsum:317.5|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial thick check
+#asmtab edit imperial thickfine in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.62598425		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial thickfine out
+as-T1aWallT1aP:mt-Gypsum:15.9|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial thickfine check
+#asmtab edit imperial thickbad in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial thickbad out
+as-T1aWallT1aP	mt-Gypsum	0		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial thickbad checkT1a: The thickness must be a number greater than 0.
+#asmtab edit imperial thicktext in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	abc		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial thicktext out
+as-T1aWallT1aP	mt-Gypsum	abc		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial thicktext checkT1a: The thickness must be a number greater than 0.
+#asmtab edit imperial nomat in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP		0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial nomat out
+as-T1aWallT1aP		0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial nomat checkT1a: No material: add one in the Materials window.
+#asmtab edit imperial framing in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-Void	 23,5 	0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial framing out
+as-T1aWallT1aP:mt-Gypsum:12.7:::::mt-Void~23.5|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial framing check
+#asmtab edit imperial framingbad in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-Void	100	0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial framingbad out
+as-T1aWallT1aP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-Void	100	0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial framingbad checkT1a: The framing must be a percentage greater than 0 and less than 100.
+#asmtab edit imperial band in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	1	Line	Square	abc	45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial band out
+as-T1aWallT1aP	mt-Gypsum	0.5		A	1	Line	Square	abc	45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial band checkT1a: The extension must be a number, 0 or more (empty: half the width).
+#asmtab edit imperial bandangle in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	1	Line	Square		85	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial bandangle out
+as-T1aWallT1aP	mt-Gypsum	0.5		A	1	Line	Square		85	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial bandangle checkT1a: The end angle must be a number from -80 to 80 (0: square).
+#asmtab edit imperial bandmiter in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	1	Line	Square		45	Mitered	0.5	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial bandmiter out
+as-T1aWallT1aP	mt-Gypsum	0.5		A	1	Line	Square		45	Mitered	0.5	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial bandmiter checkT1a: The miter limit must be a number, 1 or more (x the width).
+#asmtab edit imperial bandfactor in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	1	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial bandfactor out
+as-T1aWallT1aP	mt-Gypsum	0.5		A	1	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial bandfactor checkT1a: The width factor must be a number greater than 0.
+#asmtab edit imperial bandoffset in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	1	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1	x	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial bandoffset out
+as-T1aWallT1aP	mt-Gypsum	0.5		A	1	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1	x	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial bandoffset checkT1a: The origin X offset must be a number (0: at the start of the segment).
+#asmtab edit imperial bandok in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	1	Edge	Square	2	30	Mitered	2	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	1.5	1	2	-1				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial bandok out
+as-T1aWallT1aP:mt-Gypsum:12.7::1~Edge~Square~2~30~Mitered~2~First~Interrupted~1~1.5~1~2~-1|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial bandok check
+#asmtab edit imperial bandoff in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Edge	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial bandoff out
+as-T1aWallT1aP:mt-Gypsum:12.7::0~Edge~Square~~45~Mitered~4~First~Interrupted~0~1~0~0~0|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial bandoff check
+#asmtab edit imperial border in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	1		0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial border out
+as-T1aWallT1aP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	1		0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial border checkT1a: No layer key for the border: add one in the Layer Keys window.
+#asmtab edit imperial borderok in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	1	hatch	0	0	7	1	dashed	1	2	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial borderok out
+as-T1aWallT1aP:mt-Gypsum:12.7:::1~HATCH~0~7~1~DASHED~1~2~0~25~0~50|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial borderok check
+#asmtab edit imperial borderbad in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	1	HATCH	0	1	300	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial borderbad out
+as-T1aWallT1aP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	1	HATCH	0	1	300	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial borderbad checkT1a: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#asmtab edit imperial borderoff in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	OTHERKEY	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial borderoff out
+as-T1aWallT1aP:mt-Gypsum:12.7:::0~OTHERKEY|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial borderoff check
+#asmtab edit imperial hatchbad in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	1	95	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial hatchbad out
+as-T1aWallT1aP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	1	95	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial hatchbad checkT1a: The transparency must be a whole number from 0 to 90.
+#asmtab edit imperial hatchkey in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	1	1,2,3	1	dashed	1	2	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial hatchkey out
+as-T1aWallT1aP:mt-Gypsum:12.7:~1~1~1.2.3~1~DASHED~1~2~0~25~0~50|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial hatchkey check
+#asmtab edit imperial hatchoff in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial hatchoff out
+as-T1aWallT1aP:mt-Gypsum:12.7:~0~0~7~0~CONTINUOUS~0~1~0~25~0~50|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial hatchoff check
+#asmtab edit imperial flags in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				1	1P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial flags out
+as-T1aWallT1aP:mt-Gypsum:12.7::::1::1:1|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial flags check
+#asmtab edit imperial lines in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial lines out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial lines checkT1a: Border lines: no layer key, add one in the Layer Keys window.
+#asmtab edit imperial linesok in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01hatch071dashed010250501a070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial linesok out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~HATCH~0~7~1~DASHED~0~1~0~25~0~501~AFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial linesok check
+#asmtab edit imperial linesbad in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501A1abc0CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial linesbad out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~A~1~abc~0~CONTINUOUS~0~1~0~25~0~50FirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial linesbad checkT1a: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#asmtab edit imperial linesoff in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	00070CONTINUOUS010250500070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial linesoff out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~230~0~FirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial linesoff check
+#asmtab edit imperial nolayers in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum1MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial nolayers out
+as-T1aWallT1a1~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial nolayers checkT1a: No layers: add one.
+#asmtab edit imperial new in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+WallAdded1~1~FirstNew assembly1A070CONTINUOUS010250501A070CONTINUOUS01025050
+#asmtab edit imperial new out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+cu-AddedWallAdded1~A1~AFirstNew assembly
+#asmtab edit imperial new checkAdded: No layers: add one.
+#asmtab edit imperial newempty in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+WallNew assembly1~1~FirstNew assembly1A070CONTINUOUS010250501A070CONTINUOUS01025050
+#asmtab edit imperial newempty out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+cu-NewAssemblyWallNew assembly1~A1~AFirstNew assembly
+#asmtab edit imperial newempty checkNew assembly: No layers: add one.
+#asmtab edit imperial delete in
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial delete out
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial delete check
+#asmtab edit imperial move in
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOldP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Void	25		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	cu-Mine	50	HK	A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	1,2,3	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Insulation			0	01THICK070CONTINUOUS010250501MED070CONTINUOUS01025050
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 GypsumP	mt-Gypsum	0.5		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0				0	0P	mt-Mineral	3.50393701		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0		mt-WoodFrame	23	0	01MED070CONTINUOUS010250501THIN070CONTINUOUS01025050
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLinesP	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	0P	mt-Brick	90		A	0	Line	Square		45	Mitered	4	First	Interrupted	0	A	0	0	7	0	CONTINUOUS	0	1	0	25	0	50	1	0	7	0	CONTINUOUS	0	1	0	25	0	50	0	1	0	0	0	Masonry			0	01A070CONTINUOUS010250500X070CONTINUOUS01025050
+#asmtab edit imperial move out
+cu-OldWallOldP:mt-Brick:90|P:mt-Void:25|P:cu-Mine:50:HK~0~1~1.2.3~0~CONTINUOUS~0~1~0~25~0~501~THICK1~MEDLastOld wallOld
+as-T1aWallT1aP:mt-Gypsum:12.7|P:mt-Mineral:89::::1:mt-WoodFrame~231~MED1~THINFirstmmChanged4534T1Wood Studs, 1-1 Gypsum
+cu-LinesWallLinesP:mt-Brick:90|P:mt-Brick:901~A0~XFirstLines
+#asmtab edit imperial move check
+#asmtab vals imperial quickdraw
+pst.idxS1
+pst.selS1
+ll/newRPmt-Brick10WALL0LineSquare45Mitered4FirstInterrupted0WALL0070CONTINUOUS010250501070CONTINUOUS0102505001000Masonry00
+#asmtab vals imperial unknown
+pst.idxS0
+pst.selS0
+ll/newRPmt-Brick10A0LineSquare45Mitered4FirstInterrupted0A0070CONTINUOUS010250501070CONTINUOUS0102505001000Masonry00

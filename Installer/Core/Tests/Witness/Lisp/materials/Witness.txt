@@ -253,62 +253,6 @@ mt-ShortMasonryShorthp-Short
 #shows scale0.020000000000000
 #shows metric
 #shows imperial
-#asmwin mats metric
-mt-AConcrete A changedmt-AConcrete
-mt-ShortShortmt-ShortMasonry
-cu-WallWallcu-WallMasonry
-mt-CInsulation Cmt-CInsulation
-mt-BBéton Bmt-BBÉTON
-cu-NewMaterialNew materialcu-NewMaterialGeneric
-cu-NotADefaultNot a defaultcu-NotADefaultOther
-#asmwin groups metric
-Concrete
-Masonry
-Insulation
-BÉTON
-Generic
-Other
-#asmwin keys metric
-#asmwin data metric
-mt-A0.0005714286 0
-mt-Short
-cu-Wall0.002 01.8
-mt-C0.025 2.50.03
-mt-B
-cu-NewMaterial
-cu-NotADefault0.001 10.001
-#asmwin bk metricANNDTOBJ
-#asmwin def metric
-Pmt-A10ANNDTOBJ0LineSquare45Mitered4FirstInterrupted0ANNDTOBJ0070CONTINUOUS010250501070CONTINUOUS0102505001000Concrete00
-#asmwin rows metric
-#asmwin mats imperial
-mt-AConcrete A changedmt-AConcrete
-mt-ShortShortmt-ShortMasonry
-cu-WallWallcu-WallMasonry
-mt-CInsulation Cmt-CInsulation
-mt-BBéton Bmt-BBÉTON
-cu-NewMaterialNew materialcu-NewMaterialGeneric
-cu-NotADefaultNot a defaultcu-NotADefaultOther
-#asmwin groups imperial
-Concrete
-Masonry
-Insulation
-BÉTON
-Generic
-Other
-#asmwin keys imperial
-#asmwin data imperial
-mt-A0.0824159315 0
-mt-Short
-cu-Wall0.2884557604 09.364192092
-mt-C3.605697005 14.19565750.1560698682
-mt-B
-cu-NewMaterial
-cu-NotADefault0.1442278802 5.6782630.0052023289
-#asmwin bk imperialANNDTOBJ
-#asmwin def imperial
-Pmt-A10ANNDTOBJ0LineSquare45Mitered4FirstInterrupted0ANNDTOBJ0070CONTINUOUS010250501070CONTINUOUS0102505001000Concrete00
-#asmwin rows imperial
 #QuickShape writeT
 #QuickDrawAssembly writeT
 #QuickDraw writeT

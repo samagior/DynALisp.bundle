@@ -279,7 +279,10 @@ namespace DynALisp.Core.Data
         public static List<string[]> Read(Bundle b, double f, int dimzin)
         {
             string stamp = Presets.Stamps(b) + "|" + f.ToString("R") + "|" + dimzin;
-            if (b.Reads.TryGetValue("Assemblies", out var o) && o is Kept k && k.Stamp == stamp) return k.Rows;
+            // (kept for each factor: the Assembly Presets window reads them unscaled, Quick Draw
+            // in the units of the drawing)
+            string key = "Assemblies|" + f.ToString("R");
+            if (b.Reads.TryGetValue(key, out var o) && o is Kept k && k.Stamp == stamp) return k.Rows;
             var rows = Presets.Csv(b, Spec);
             List<string[]> res = null;
             var mats = MaterialIds(b);
@@ -294,7 +297,7 @@ namespace DynALisp.Core.Data
                 foreach (var d in defs) if (!ids.Contains(d[0])) lst.Add(d);
                 res = lst.Select(r => Scale(r, f, 8, dimzin)).ToList();
             }
-            b.Reads["Assemblies"] = new Kept { Stamp = stamp, Rows = res };
+            b.Reads[key] = new Kept { Stamp = stamp, Rows = res };
             return res;
         }
 

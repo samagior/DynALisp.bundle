@@ -76,22 +76,11 @@
 //     each pattern of Dyl:AsmPats, its units ("Imperial", "Metric", "" when no file defines
 //     it) and its file. nil as Dyl:AsmPats.
 //
-//   (Dyl:AsmWinMats contents dimzin ((layers border dividing) ...))
-//     What the Assembly Presets window lists for the presets given (their columns 3, 4 and 5),
-//     as Dyl:QuickDrawAsmWinMats gives it: (mats groups keys), mats ((id name row group) ...)
-//     where row is the index of the material among those of Dyl:MatBoth (-1 for a material
-//     missing), groups the groups of the Group list, keys the layer keys the presets use; nil
-//     when the Lisp reads the materials (see Data\AsmWindow.cs).
-//
-//   (Dyl:AsmRows contents measurement insunits dimzin bk def ((layers border dividing units) ...))
-//     The columns the Assembly Presets window adds to each preset given (its columns 3, 4, 5
-//     and 7), as Dyl:QuickDrawAsmExtra gives them: ((rows border-lines... dividing-lines...)
-//     ...), bk the layer key of new lines (qa:bk) and def the row Add starts from (qa:def).
-//     nil as Dyl:AsmWinMats.
-//
-//   (Dyl:MatData contents measurement insunits dimzin (id ...))
-//     The data of each material id, as Remote>>Dyl:MaterialDataLists gives them: (resistances
-//     masses). nil as Dyl:AsmWinMats.
+//   (Dyl:AsmTabPats contents dimzin)
+//     The patterns of the materials (upper case, SOLID left out) whose units the Assembly
+//     Presets window needs for the previews of its Material list, found by the Lisp
+//     (Remote>>Dyl:MaterialPatUnits) and given to Dyl:AsmWindow (DynALisp.Windows.dll). nil
+//     when the Lisp reads the materials (see Data\AsmTab.cs).
 //
 //   (Dyl:DataInfo)
 //     What the plugin did in this session, for Dyl-Diagnostics: (("Files" . n) ("Reads" . n)
@@ -202,7 +191,10 @@ namespace DynALisp.Core
         // The bundles read, by their Contents folder (the witness points the Lisp at others):
         static readonly Dictionary<string, Bundle> bundles = new Dictionary<string, Bundle>(StringComparer.OrdinalIgnoreCase);
 
-        static Bundle BundleOf(object contents)
+        // The bundle of the Contents folder contents, kept for the session (the files it reads
+        // shared by every drawing); also the bundle of the windows of DynALisp.Windows.dll that
+        // read the data (Dyl:AsmWindow):
+        public static Bundle BundleOf(object contents)
         {
             if (!(contents is string c) || c == "") return null;
             if (!bundles.TryGetValue(c, out var b)) bundles[c] = b = new Bundle(c, ",", ansi, store);
@@ -284,6 +276,20 @@ namespace DynALisp.Core
             return Result(rb);
         }
 
+        [LispFunction("Dyl:AsmTabPats")]
+        public ResultBuffer AsmTabPats(ResultBuffer args)
+        {
+            var a = Args(args);
+            var b = BundleOf(a.Count > 0 ? a[0] : null);
+            var pats = b == null || a.Count < 2 ? null : AsmTab.Patterns(b, Int(a[1]));
+            if (pats == null) return null;
+            var rb = new List<TypedValue>(pats.Count + 2);
+            rb.Add(new TypedValue((int)LispDataType.ListBegin));
+            foreach (var p in pats) rb.Add(new TypedValue((int)LispDataType.Text, p));
+            rb.Add(new TypedValue((int)LispDataType.ListEnd));
+            return Result(rb);
+        }
+
         [LispFunction("Dyl:AsmShows")]
         public ResultBuffer AsmShows(ResultBuffer args)
         {
@@ -298,88 +304,6 @@ namespace DynALisp.Core
                 if (p != null) pats[p] = string.IsNullOrEmpty(units) ? null : ((string, string)?)(units, file ?? "");
             }
             return Rows(Shows.All(b, u, pats));
-        }
-
-        [LispFunction("Dyl:AsmWinMats")]
-        public ResultBuffer AsmWinMats(ResultBuffer args)
-        {
-            var a = Tree(args);
-            var b = BundleOf(a.Count > 0 ? a[0] : null);
-            if (b == null || a.Count < 2) return null;
-            var lists = AsmWindow.Mats(b, Int(a[1]), Strings(a.Count > 2 ? a[2] : null));
-            if (lists == null) return null;
-            var rb = new List<TypedValue>(lists.Mats.Count * 6 + lists.Groups.Count + lists.Used.Count + 8);
-            rb.Add(new TypedValue((int)LispDataType.ListBegin));
-            if (lists.Mats.Count == 0) rb.Add(new TypedValue((int)LispDataType.Nil));
-            else
-            {
-                rb.Add(new TypedValue((int)LispDataType.ListBegin));
-                foreach (var m in lists.Mats)
-                {
-                    rb.Add(new TypedValue((int)LispDataType.ListBegin));
-                    rb.Add(new TypedValue((int)LispDataType.Text, m.Id));
-                    rb.Add(new TypedValue((int)LispDataType.Text, m.Name));
-                    rb.Add(new TypedValue((int)LispDataType.Int32, m.Row));
-                    rb.Add(new TypedValue((int)LispDataType.Text, m.Group));
-                    rb.Add(new TypedValue((int)LispDataType.ListEnd));
-                }
-                rb.Add(new TypedValue((int)LispDataType.ListEnd));
-            }
-            AddList(rb, lists.Groups);
-            AddList(rb, lists.Used);
-            rb.Add(new TypedValue((int)LispDataType.ListEnd));
-            return Result(rb);
-        }
-
-        [LispFunction("Dyl:AsmRows")]
-        public ResultBuffer AsmRows(ResultBuffer args)
-        {
-            var a = Tree(args);
-            var b = BundleOf(a.Count > 0 ? a[0] : null);
-            if (b == null || a.Count < 7 || !(a[4] is string bk) || !(a[5] is List<object> def)) return null;
-            var u = new Units { Measurement = Int(a[1]), Insunits = Int(a[2]), Dimzin = Int(a[3]) };
-            var d = def.Select(x => x as string ?? "").ToArray();
-            return Rows(AsmWindow.Extras(b, u, d, bk, Strings(a[6])));
-        }
-
-        [LispFunction("Dyl:MatData")]
-        public ResultBuffer MatData(ResultBuffer args)
-        {
-            var a = Tree(args);
-            var b = BundleOf(a.Count > 0 ? a[0] : null);
-            if (b == null || a.Count < 5 || !(a[4] is List<object> ids)) return null;
-            var u = new Units { Measurement = Int(a[1]), Insunits = Int(a[2]), Dimzin = Int(a[3]) };
-            var data = AsmWindow.Data(b, u, ids.Select(x => x as string ?? ""));
-            if (data == null) return null;
-            var rb = new List<TypedValue>(data.Value.Rsi.Count * 2 + 6);
-            rb.Add(new TypedValue((int)LispDataType.ListBegin));
-            AddList(rb, data.Value.Rsi);
-            AddList(rb, data.Value.Mass);
-            rb.Add(new TypedValue((int)LispDataType.ListEnd));
-            return Result(rb);
-        }
-
-        // The strings of a list as one list (nil for none):
-        static void AddList(List<TypedValue> rb, List<string> lst)
-        {
-            if (lst.Count == 0)
-            {
-                rb.Add(new TypedValue((int)LispDataType.Nil));
-                return;
-            }
-            rb.Add(new TypedValue((int)LispDataType.ListBegin));
-            foreach (var s in lst) rb.Add(new TypedValue((int)LispDataType.Text, s ?? ""));
-            rb.Add(new TypedValue((int)LispDataType.ListEnd));
-        }
-
-        // A list of lists of strings given by the Lisp ((s ...) ...), nil and other atoms as "":
-        static List<string[]> Strings(object o)
-        {
-            var res = new List<string[]>();
-            if (o is List<object> lst)
-                foreach (var x in lst)
-                    res.Add(x is List<object> r ? r.Select(y => y as string ?? "").ToArray() : new string[0]);
-            return res;
         }
 
         // A list of rows as the Lisp gets it, nil for none:
