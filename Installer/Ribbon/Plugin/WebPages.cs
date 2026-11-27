@@ -110,7 +110,7 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
                     // The browsers of AcWebView, often: a page shows its own colours until the
                     // script has run in it.
                     _timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(Fast) };
-                    _timer.Tick += (s, e) => { try { Native(Script); } catch (System.Exception ex) { _nFail = ex.Message; } };
+                    _timer.Tick += (s, e) => { try { Work.Time("colours: script of the web pages (timer)", () => Native(Script)); } catch (System.Exception ex) { _nFail = ex.Message; } };
                     _timer.Start();
                     Native(Script);
                 }
@@ -301,6 +301,7 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
             {
                 IntPtr w = n.StartsWith("url:", StringComparison.Ordinal) ? _findUrl(_engine, n.Substring(4)) : _find(_engine, n);
                 if (w == IntPtr.Zero) continue;
+                Work.Count("colours: script run in a browser of AutoCAD");
                 if (_exec(w, script) != 0 && script == Script) _hooked.Add(n);
             }
         }

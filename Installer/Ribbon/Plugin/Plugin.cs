@@ -37,6 +37,7 @@ using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
 [assembly: CommandClass(typeof(DynALisp.Ribbon.LangCommands))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.SkinCommands))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.FileTabCommands))]
+[assembly: CommandClass(typeof(DynALisp.Ribbon.WorkCommands))]
 
 namespace DynALisp.Ribbon
 {
@@ -44,6 +45,8 @@ namespace DynALisp.Ribbon
     {
         public void Initialize()
         {
+            // The steps of the plugin timed, for Pst-DiagnosticsReactorEvents (Work.cs):
+            try { Work.Start(); } catch { }
             try
             {
                 // The language first: the drop-downs are made in it (Translations.cs):
@@ -121,9 +124,9 @@ namespace DynALisp.Ribbon
         static void Watch(Document d)
         {
             if (d == null || !Watched.Add(d)) return;
-            d.CommandEnded += (s, e) => Each(p => p.CommandEnded());
-            d.CommandCancelled += (s, e) => Each(p => p.CommandEnded());
-            d.LispEnded += (s, e) => Each(p => p.CommandEnded());
+            d.CommandEnded += (s, e) => Work.Time("ribbon: drop-downs after a command", () => Each(p => p.CommandEnded()));
+            d.CommandCancelled += (s, e) => Work.Time("ribbon: drop-downs after a command", () => Each(p => p.CommandEnded()));
+            d.LispEnded += (s, e) => Work.Time("ribbon: drop-downs after a command", () => Each(p => p.CommandEnded()));
         }
 
         static void WatchPaletteSet()
@@ -152,28 +155,29 @@ namespace DynALisp.Ribbon
         {
             // The colours change no part of the ribbon: they need no quiet, and are not kept
             // waiting by the startup of the drawings.
+            Work.Count("AutoCAD idle (events)");
             Skin.OnIdle();
-            FileTabs.OnIdle();
+            Work.Time("file tabs: bands", FileTabs.OnIdle);
             if (!Quiet()) return;
             if (_dirty && Environment.TickCount - _nextTry >= 0)
             {
                 _nextTry = Environment.TickCount + 1000;
-                if (Ensure()) _dirty = false;
+                Work.Time("ribbon: drop-downs put in their panels", () => { if (Ensure()) _dirty = false; });
             }
             foreach (var p in Parts)
                 if (p.Row != null && p.Due)
                 {
                     p.Pending = false;
-                    try { p.Refresh(); } catch (System.Exception ex) { Log(ex.Message); }
+                    try { Work.Time("ribbon: drop-downs shown again", p.Refresh); } catch (System.Exception ex) { Log(ex.Message); }
                 }
             // The texts of the tab in the language of the AutoCAD installed (Translations.cs), once a
             // second at most while the tab is not there:
             if (T.Due && Environment.TickCount - _nextLang >= 0)
             {
                 _nextLang = Environment.TickCount + 1000;
-                try { T.Apply(); } catch (System.Exception ex) { Log(ex.Message); }
+                try { Work.Time("ribbon: translation", () => T.Apply()); } catch (System.Exception ex) { Log(ex.Message); }
             }
-            PhaseCombos.AskOnIdle();
+            Work.Time("ribbon: phase asked", PhaseCombos.AskOnIdle);
         }
 
         static int _nextLang = Environment.TickCount;

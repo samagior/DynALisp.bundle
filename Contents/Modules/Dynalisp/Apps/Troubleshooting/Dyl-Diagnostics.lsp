@@ -1679,34 +1679,70 @@
 
 ;;-------------------------=={ Reactor events }==------------------------;;
 
-;;  Count the events of the drawing (the DynALisp reactors run only on these events)
-;;  between two runs of Pst-DiagnosticsReactorEvents, to see what a slow zoom or pan sends.
-;;  The counting reactors are in Modules\Dynalisp\Reactor\Dyl-Diagnostics.lsp, loaded
-;;  only while the DynALisp reactors are on:
-(defun dg:events (/ res dir pth lines)
+;;  Count the events of the drawing (the DynALisp reactors run only on these events), and
+;;  time the work of the .NET plugins of DynALisp (on the idle of AutoCAD and on timers,
+;;  which no reactor sees), between two runs of Pst-DiagnosticsReactorEvents in the same
+;;  drawing, to see what makes a zoom or a pan slow. The counting reactors are in
+;;  Modules\Dynalisp\Reactor\Dyl-Diagnostics.lsp, loaded only while the DynALisp reactors
+;;  are on; the plugins time their steps themselves ((Dyl:RibbonWork), (Dyl:SheetSets "Work")),
+;;  and the ribbon plugin also says each time AutoCAD did not answer for 100 ms or more.
+;;  *dg:worktest* is T while the plugins time a test started in this drawing.
+(defun dg:events (/ res dir pth lines rbn sht)
   (cond
-    ((or (not Reactor>>Dyl:DiagEventsStart) (not (Dyl:ReactorsOn-p)))
-     (if Reactor>>Dyl:DiagEventsStop (Reactor>>Dyl:DiagEventsStop))
-     (princ "\nThe DynALisp reactors are off (Dyl-Settings): no DynALisp reactor runs, there is nothing to count.")
-    )
-    ((Reactor>>Dyl:DiagEventsOn-p)
-     (setq res   (Reactor>>Dyl:DiagEventsStop)
-           lines (list (strcat "DynALisp reactor events - " (dg:now) " - " (getvar "DWGNAME"))
-                       (strcat "Events during the test (" (rtos (/ (car res) 1000.0) 2 1) " s), the most frequent first:")
-                       "(the lispWillStart of this command is counted too)"
-                 )
+    ((or *dg:worktest* (and Reactor>>Dyl:DiagEventsOn-p (Reactor>>Dyl:DiagEventsOn-p)))
+     (setq lines (list (strcat "DynALisp reactor events and plugin work - " (dg:now) " - " (getvar "DWGNAME")) ""))
+     (cond
+       ((and Reactor>>Dyl:DiagEventsOn-p (Reactor>>Dyl:DiagEventsOn-p))
+        (setq res   (Reactor>>Dyl:DiagEventsStop)
+              lines (append lines
+                            (list (strcat "Reactor events during the test (" (rtos (/ (car res) 1000.0) 2 1) " s), the most frequent first:")
+                                  "(the lispWillStart of this command is counted too)"
+                            )
+                    )
+        )
+        (foreach e (cdr res) (setq lines (append lines (list (strcat "  " (itoa (cdr e)) "  " (car e))))))
+        (if (not (cdr res)) (setq lines (append lines (list "  none: no reactor ran while you worked"))))
+       )
+       ((setq lines (append lines (list "Reactor events: the DynALisp reactors are off (Dyl-Settings), none ran."))))
      )
-     (foreach e (cdr res) (setq lines (append lines (list (strcat "  " (itoa (cdr e)) "  " (car e))))))
-     (if (not (cdr res)) (setq lines (append lines (list "  none: no reactor ran while you worked"))))
-     (setq dir (strcat (getenv "TEMP") "\DynALisp Diagnostics"))
+     (setq lines (append lines (list "")))
+     (if *dg:worktest*
+       (progn
+         (setq rbn (if Dyl:RibbonWork (vl-catch-all-apply 'Dyl:RibbonWork nil))
+               sht (if Dyl:SheetSets (vl-catch-all-apply 'Dyl:SheetSets (list "Work")))
+         )
+         (setq lines (append lines
+                             (cond
+                               ((vl-catch-all-error-p rbn) (list (strcat "DynALisp.Ribbon.dll: " (vl-catch-all-error-message rbn))))
+                               ((= 'STR (type rbn)) (list (strcat "DynALisp.Ribbon.dll: " rbn)))
+                               (rbn)
+                               ((list "DynALisp.Ribbon.dll: not loaded, or no test started.")))
+                             (list "")
+                             (cond
+                               ((vl-catch-all-error-p sht) (list (strcat "DynALisp.Startup.dll: " (vl-catch-all-error-message sht))))
+                               ((= 'STR (type sht)) (list sht))
+                               ((list "DynALisp.Startup.dll: not loaded, or no test started.")))
+                     )
+         )
+       )
+     )
+     (setq *dg:worktest* nil)
+     (setq dir (strcat (getenv "TEMP") "\\DynALisp Diagnostics"))
      (vl-mkdir dir)
-     (if (setq pth (dg:write (strcat dir "\Reactor Events.txt") lines))
+     (if (setq pth (dg:write (strcat dir "\\Reactor Events.txt") lines))
        (dg:open pth)
        (princ (strcat "\n--> Unable to write in " dir))
      )
     )
-    ((Reactor>>Dyl:DiagEventsStart)
-     (princ "\nCounting the events: work the slow way (zoom, pan, draw) for about 20 s, then run Pst-DiagnosticsReactorEvents again.")
+    (T
+     (if (and Reactor>>Dyl:DiagEventsStart (Dyl:ReactorsOn-p))
+       (Reactor>>Dyl:DiagEventsStart)
+       (if Reactor>>Dyl:DiagEventsStop (Reactor>>Dyl:DiagEventsStop))
+     )
+     (if Dyl:RibbonWork (vl-catch-all-apply 'Dyl:RibbonWork (list "Start")))
+     (if Dyl:SheetSets (vl-catch-all-apply 'Dyl:SheetSets (list "Work" "Start")))
+     (setq *dg:worktest* t)
+     (princ "\nCounting the events and timing the plugins: work the slow way (zoom, pan, draw) for about 20 s, then run Pst-DiagnosticsReactorEvents again in this drawing.")
     )
   )
   (princ)

@@ -332,7 +332,7 @@ namespace DynALisp.Ribbon
         static void Timed(string name, Action step)
         {
             long t0 = Clock.ElapsedMilliseconds;
-            step();
+            Work.Time("colours: " + name, step);
             long d = Clock.ElapsedMilliseconds - t0;
             if (d > 50) Mark(name + " took " + d + " ms");
         }
@@ -364,7 +364,7 @@ namespace DynALisp.Ribbon
             {
                 _timer = new System.Windows.Threading.DispatcherTimer(System.Windows.Threading.DispatcherPriority.Normal)
                 { Interval = TimeSpan.FromMilliseconds(100) };
-                _timer.Tick += (s, e) => { if (Settling) Tick("timer"); };
+                _timer.Tick += (s, e) => { if (Settling) { Work.Count("colours: timer of the first 20 s"); Tick("timer"); } };
                 _timer.Start();
             }
             catch (System.Exception ex) { Mark("timer: " + ex.Message); }
