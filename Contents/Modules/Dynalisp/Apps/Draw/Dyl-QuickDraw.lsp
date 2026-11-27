@@ -3803,13 +3803,17 @@
 (defun Dyl:QuickDrawAsmExtras (lst / res)
   (if (and lst
            Dyl:AsmRows
-           (setq res (Dyl:AsmRows *dyl:contents
-                                  (getvar "MEASUREMENT")
-                                  (getvar "INSUNITS")
-                                  (getvar "DIMZIN")
-                                  qa:bk
-                                  qa:def
-                                  (mapcar '(lambda (a) (list (nth 3 a) (nth 4 a) (nth 5 a) (cond ((nth 7 a)) ("")))) lst)
+           (setq res (Remote>>Dyl:ManagerTimed
+                       "Assembly Presets: rows made by the Core"
+                       'Dyl:AsmRows
+                       (list *dyl:contents
+                             (getvar "MEASUREMENT")
+                             (getvar "INSUNITS")
+                             (getvar "DIMZIN")
+                             qa:bk
+                             qa:def
+                             (mapcar '(lambda (a) (list (nth 3 a) (nth 4 a) (nth 5 a) (cond ((nth 7 a)) ("")))) lst)
+                       )
                      )
            )
            (= (length res) (length lst))
@@ -3931,7 +3935,7 @@
         qa:mats (car got)
         qa:grps (cadr got)
   )
-  (Remote>>Dyl:MaterialDlgKeys nil (caddr got))
+  (Remote>>Dyl:ManagerTimed "Assembly Presets: layer keys" 'Remote>>Dyl:MaterialDlgKeys (list nil (caddr got)))
   ;;  (the layer key of the border of the Quick Draw preset; none in the Assembly Presets
   ;;  tab of the Manager, opened from no preset: nth on nil fails in AutoCAD)
   (setq qa:bk  (cond ((if qa:r (car (member (nth *qd:border* qa:r) mt:keys)))) ((car mt:keys)) (""))
@@ -4004,9 +4008,10 @@
 ;;  loaded, the materials read by the Lisp):
 (defun Dyl:QuickDrawAsmWinMatsCore (lst / res rows)
   (if (and Dyl:AsmWinMats
-           (setq res (Dyl:AsmWinMats *dyl:contents
-                                     (getvar "DIMZIN")
-                                     (mapcar '(lambda (a) (list (nth 3 a) (nth 4 a) (nth 5 a))) lst)
+           (setq res (Remote>>Dyl:ManagerTimed
+                       "Assembly Presets: materials listed by the Core"
+                       'Dyl:AsmWinMats
+                       (list *dyl:contents (getvar "DIMZIN") (mapcar '(lambda (a) (list (nth 3 a) (nth 4 a) (nth 5 a))) lst))
                      )
            )
       )

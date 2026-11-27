@@ -1701,7 +1701,7 @@
      )
      (mapcar 'append lst ext)
     )
-    ((mapcar 'Remote>>Dyl:PresetWinRow lst))
+    ((Remote>>Dyl:ManagerTimed "Rows made one by one (extra)" 'mapcar (list 'Remote>>Dyl:PresetWinRow lst)))
   )
 )
 
