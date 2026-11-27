@@ -84,7 +84,13 @@ namespace DynALisp.Startup
 
         // A database open in the manager: its file, its IAcSmDatabase* and its IUnknown*, as
         // numbers only (released: the manager keeps them), to be found in the palette:
-        public struct Db { public string File; public long Ptr, Unk; }
+        public struct Db
+        {
+            public string File, Name;     // its file, the name of its sheet set
+            public long Ptr, Unk;         // IAcSmDatabase*, IUnknown*
+            public long Ss, SsUnk;        // IAcSmSheetSet* of its sheet set, IUnknown*
+            public bool Has(long v) => v != 0 && (v == Ptr || v == Unk || v == Ss || v == SsUnk);
+        }
 
         // The files of the sheet sets open in the manager, in its order:
         public static List<string> OpenFiles()
@@ -113,7 +119,9 @@ namespace DynALisp.Startup
 #pragma warning disable CS9191
                         if (Marshal.QueryInterface(db, ref iu, out IntPtr u) >= 0 && u != IntPtr.Zero) { unk = (long)u; Marshal.Release(u); }
 #pragma warning restore CS9191
-                        if (!string.IsNullOrWhiteSpace(f)) lst.Add(new Db { File = f, Ptr = (long)db, Unk = unk });
+                        var d = new Db { File = f, Ptr = (long)db, Unk = unk };
+                        SheetSetOf(db, ref d);
+                        if (!string.IsNullOrWhiteSpace(f)) lst.Add(d);
                     }
                     finally { Marshal.Release(db); }
                 }
@@ -129,6 +137,30 @@ namespace DynALisp.Startup
             var f = Method<OpenDb>(m, "IAcSmSheetSetMgr", "OpenDatabase");
             Check(f(m, file, 0, out IntPtr db), "OpenDatabase");
             if (db != IntPtr.Zero) Marshal.Release(db);
+        }
+
+        // The sheet set of a database (GetSheetSet): its address and its name (GetName of
+        // IAcSmComponent), what the palette knows it by. Nothing when it cannot be read:
+        static void SheetSetOf(IntPtr db, ref Db d)
+        {
+            IntPtr ss = IntPtr.Zero;
+            try
+            {
+                ss = CallPtr(db, "IAcSmDatabase", "GetSheetSet");
+                if (ss == IntPtr.Zero) return;
+                d.Ss = (long)ss;
+                Guid iu = new Guid("00000000-0000-0000-C000-000000000046");
+#pragma warning disable CS9191
+                if (Marshal.QueryInterface(ss, ref iu, out IntPtr u) >= 0 && u != IntPtr.Zero) { d.SsUnk = (long)u; Marshal.Release(u); }
+#pragma warning restore CS9191
+                var f = Method<OutBstr>(ss, "IAcSmSheetSet", "GetName");
+                if (f(ss, out IntPtr b) >= 0 && b != IntPtr.Zero)
+                {
+                    try { d.Name = Marshal.PtrToStringBSTR(b); } finally { Marshal.FreeBSTR(b); }
+                }
+            }
+            catch { }
+            finally { if (ss != IntPtr.Zero) Marshal.Release(ss); }
         }
 
         // GetFileName of a database (IAcSmDatabase*, the method of one of its bases):

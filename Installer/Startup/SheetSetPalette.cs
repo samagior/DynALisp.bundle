@@ -169,12 +169,28 @@ namespace DynALisp.Startup
             var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var db in dbs)
                 foreach (var it in items)
-                    if (Is(db, it.Data) || Array.Exists(it.Words, w => Is(db, w))) { set.Add(db.File); break; }
-            if (set.Count == 0 && Current(pal) != "") { why = "no item of its list is a database of the manager"; return null; }
+                    if (Hit(db, it)) { set.Add(db.File); break; }
+            // The sheet set its Sheet List shows is open in it, whatever its list holds:
+            string cur = Current(pal);
+            foreach (var db in dbs)
+                if (cur != "" && string.Equals(db.Name, cur, StringComparison.OrdinalIgnoreCase)) set.Add(db.File);
+            if (set.Count == 0 && cur != "") { why = "no item of its list is a database of the manager"; return null; }
             return set;
         }
 
-        static bool Is(SheetSetMgr.Db db, long v) => v != 0 && (v == db.Ptr || v == db.Unk);
+        // An item of the list is a database: its data, a word of the object it points to, or a
+        // word of an object one of those words points to (an item holds the address of the
+        // sheet set it shows, at its second word in AutoCAD 2027), compared as numbers:
+        static bool Hit(SheetSetMgr.Db db, (long Data, long[] Words) it)
+        {
+            if (db.Has(it.Data)) return true;
+            foreach (var w in it.Words)
+                if (db.Has(w)) return true;
+            foreach (var w in it.Words)
+                foreach (var w2 in Peek(w))
+                    if (db.Has(w2)) return true;
+            return false;
+        }
 
         public static string Tree()
         {
@@ -201,7 +217,9 @@ namespace DynALisp.Startup
             try
             {
                 var dbs = SheetSetMgr.OpenDbs();
-                foreach (var d in dbs) sb.AppendLine("db 0x" + d.Ptr.ToString("X") + " unknown 0x" + d.Unk.ToString("X") + " " + d.File);
+                foreach (var d in dbs)
+                    sb.AppendLine("db 0x" + d.Ptr.ToString("X") + " unknown 0x" + d.Unk.ToString("X") + " sheet set 0x" + d.Ss.ToString("X")
+                                  + " unknown 0x" + d.SsUnk.ToString("X") + " \"" + d.Name + "\" " + d.File);
                 IntPtr pal = _pal = FindPalette();
                 sb.AppendLine("palette: " + (pal == IntPtr.Zero ? "not found" : Line(pal)) + (pal == IntPtr.Zero ? "" : ", showing \"" + Current(pal) + "\""));
                 if (pal != IntPtr.Zero)
@@ -209,7 +227,7 @@ namespace DynALisp.Startup
                     int i = 0;
                     foreach (var it in ComboItems(pal) ?? new List<(long, long[])>())
                     {
-                        var hit = dbs.Find(d => Is(d, it.Data) || Array.Exists(it.Words, w => Is(d, w)));
+                        var hit = dbs.Find(d => Hit(d, it));
                         sb.AppendLine("item " + i++ + ": 0x" + it.Data.ToString("X") + (hit.File != null ? "  = " + hit.File : ""));
                         if (it.Words.Length > 0) sb.AppendLine("    " + string.Join(" ", Array.ConvertAll(it.Words, w => w.ToString("X"))));
                     }
