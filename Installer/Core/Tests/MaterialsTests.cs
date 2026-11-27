@@ -41,6 +41,12 @@ namespace DynALisp.Core.Tests
             var cells = System.Text.RegularExpressions.Regex.Matches(lsp.Substring(i, j - i), "\"([^\"]*)\"").Select(m => m.Groups[1].Value);
             Assert.Equal(Materials.Extra, cells);
             Assert.Contains("(setq *mt:toggles* '(" + string.Join(" ", Materials.Toggles) + "))", lsp);
+            // the id and group of each material of *mt:defaults*:
+            i = lsp.IndexOf("(setq *mt:defaults*");
+            j = lsp.IndexOf("\n)", i);
+            var defs = System.Text.RegularExpressions.Regex.Matches(lsp.Substring(i, j - i), "\\(\"([^\"]*)\" \"([^\"]*)\"")
+                                                             .Select(m => (m.Groups[1].Value, m.Groups[2].Value));
+            Assert.Equal(defs, Materials.CodeGroups);
         }
 
         [Fact]
@@ -106,8 +112,11 @@ namespace DynALisp.Core.Tests
             Materials.RowFix(b, raw);
             Assert.Equal("concrete", raw[1]);
             Assert.Equal("2,5", raw[5]);
-            Assert.True(Materials.NeedsLisp(new[] { "mt-A", "section" }, Groups.Of(b, "Material")));
-            Assert.False(Materials.NeedsLisp(new[] { "mt-A", "Section" }, new[] { "SECTION" }.ToList()));
+            // a default material of an older file in the group Section gets its default group
+            // (its id as written); any other one keeps it:
+            Assert.Equal("Concrete", Materials.RowFix(b, new[] { "mt-Concrete", "section" })[1]);
+            Assert.Equal("section", Materials.RowFix(b, new[] { "MT-CONCRETE", "section" })[1]);
+            Assert.Equal("Elevation", Materials.RowFix(b, new[] { "mt-A", "Elevation" })[1]);
         }
 
         [Fact]

@@ -27,8 +27,9 @@
 // What the Lisp has in its code and the C# does not is left to the Lisp, which then reads the
 // files itself (null): the defaults of the code (*hp:defaults*, *mt:defaults*) when a default
 // file is missing, the split of a materials file of DynALisp 1.1 (Remote>>Dyl:MaterialMigrate,
-// which writes both files), and a material of an older file in the group Section or Elevation
-// that is not a group of the materials (given the group of its default in *mt:defaults*).
+// which writes both files). A material of an older file in the group Section or Elevation
+// that is not a group of the materials gets the group of its default in *mt:defaults*
+// (CodeGroups, the ids and groups of that list, checked against the Lisp by the tests).
 
 using System;
 using System.Collections.Generic;
@@ -151,22 +152,72 @@ namespace DynALisp.Core.Data
             return row;
         }
 
-        // A material of an older file in the group Section or Elevation that is not a group of
-        // the materials: Remote>>Dyl:MaterialRowFix gives it the group of its default in
-        // *mt:defaults*, which only the Lisp has:
-        public static bool NeedsLisp(string[] row, List<string> groups)
+        // The id and group of each material of *mt:defaults* (Remote\Dyl-Materials.lsp), in its
+        // order: the group a material of an older file in the group Section or Elevation gets:
+        public static readonly (string Id, string Group)[] CodeGroups =
         {
-            string g = Lisp.StrCase(Lisp.Nth(row, 1) ?? "");
-            return (g == "SECTION" || g == "ELEVATION") && !groups.Any(x => Lisp.StrCase(x) == g);
-        }
+            ("mt-Demolition", "Phase"), ("mt-NotInContract", "Phase"), ("mt-Existing", "Phase"),
+            ("mt-Concrete", "Concrete"), ("mt-LightweightConcrete", "Concrete"), ("mt-Mortar", "Concrete"),
+            ("mt-Brick", "Masonry"), ("mt-Stone", "Masonry"), ("mt-CMU", "Masonry"),
+            ("mt-Firebrick", "Masonry"), ("mt-Marble", "Masonry"), ("mt-Grout", "Concrete"),
+            ("mt-Iron", "Metal"), ("mt-Steel", "Metal"), ("mt-Bronze", "Metal"), ("mt-Lead", "Metal"),
+            ("mt-Aluminium", "Metal"), ("mt-Plywood", "Wood"), ("mt-WoodPlank", "Wood"),
+            ("mt-WoodFrame", "Wood"), ("mt-Particleboard", "Wood"), ("mt-Hardboard", "Wood"),
+            ("mt-Plastic", "Generic"), ("mt-LooseInsulation", "Insulation"),
+            ("mt-SprayInsulation", "Insulation"), ("mt-RigidInsulation", "Insulation"),
+            ("mt-ExtrudedPolystyrene", "Insulation"), ("mt-ExpandedPolystyrene", "Insulation"),
+            ("mt-Polyisocyanurate", "Insulation"), ("mt-Gypsum", "Board"), ("mt-Plaster", "Finish"),
+            ("mt-CompactedSoil", "Site"), ("mt-Topsoil", "Site"), ("mt-UndisturbedSoil", "Site"),
+            ("mt-Sand", "Site"), ("mt-Asphalt", "Site"), ("mt-Gravel", "Site"), ("mt-CrushedStone", "Site"),
+            ("mt-Birch", "Wood"), ("mt-Oak", "Wood"), ("mt-MapleAsh", "Wood"), ("mt-WhiteCedar", "Wood"),
+            ("mt-YellowCypress", "Wood"), ("mt-WhiteSpruce", "Wood"), ("mt-WhitePine", "Wood"),
+            ("mt-LodgepolePine", "Wood"), ("mt-RedPine", "Wood"), ("mt-Hemlock", "Wood"),
+            ("mt-WesternHemlock", "Wood"), ("mt-DouglasFirLarch", "Wood"), ("mt-AmabilisFir", "Wood"),
+            ("mt-OSB", "Wood"), ("mt-AsphaltFiberboard", "Board"), ("mt-GypsumSheathing", "Board"),
+            ("mt-FoilFiberboard", "Board"), ("mt-CementBoard", "Board"),
+            ("mt-ExpandedPolystyrene1", "Insulation"), ("mt-ExpandedPolystyrene3", "Insulation"),
+            ("mt-ExpandedPolystyrene4", "Insulation"), ("mt-MineralWoolBoard", "Insulation"),
+            ("mt-PhenolicFoam", "Insulation"), ("mt-InsulatingFiberboard", "Insulation"),
+            ("mt-StrawBoard", "Insulation"), ("mt-WoodFiberBatt", "Insulation"), ("mt-Perlite", "Insulation"),
+            ("mt-SprayPolyurethane1", "Insulation"), ("mt-SprayPolyurethane2", "Insulation"),
+            ("mt-SprayedAsbestos", "Insulation"), ("mt-CMU90", "Masonry"), ("mt-CMU140", "Masonry"),
+            ("mt-CMU190", "Masonry"), ("mt-CMU240", "Masonry"), ("mt-CMU290", "Masonry"),
+            ("mt-CMU190Perlite", "Masonry"), ("mt-CMU140Vermiculite", "Masonry"),
+            ("mt-CMU190Vermiculite", "Masonry"), ("mt-CMU240Vermiculite", "Masonry"),
+            ("mt-CMU290Vermiculite", "Masonry"), ("mt-ConcreteBrick", "Masonry"), ("mt-Sandstone", "Masonry"),
+            ("mt-Stucco", "Finish"), ("mt-WoodShingles", "Finish"), ("mt-WoodShinglesDouble", "Finish"),
+            ("mt-WoodSiding", "Finish"), ("mt-HardboardSiding", "Finish"), ("mt-FiberCementSiding", "Finish"),
+            ("mt-LapSiding", "Finish"), ("mt-LapSidingInsulated", "Finish"), ("mt-LapSidingFoil", "Finish"),
+            ("mt-RollRoofing", "Roofing"), ("mt-Bitumen", "Roofing"), ("mt-AsphaltShingles", "Roofing"),
+            ("mt-BuiltUpRoof", "Roofing"), ("mt-WoodShingleRoof", "Roofing"), ("mt-Slate", "Roofing"),
+            ("mt-CementPlaster", "Finish"), ("mt-LDF", "Wood"), ("mt-MDF", "Wood"), ("mt-HDF", "Wood"),
+            ("mt-Terrazzo", "Finish"), ("mt-CarpetFibrous", "Finish"), ("mt-CarpetRubber", "Finish"),
+            ("mt-CorkTile", "Finish"), ("mt-HardwoodFloor", "Finish"), ("mt-ResilientFlooring", "Finish"),
+            ("mt-AirWall13", "Air"), ("mt-AirWall20", "Air"), ("mt-AirCeiling13", "Air"),
+            ("mt-AirCeiling40", "Air"), ("mt-AirFloor13", "Air"), ("mt-AirFloor20", "Air"),
+            ("mt-AirFloor40", "Air"), ("mt-AirFloor90", "Air"), ("mt-GypsumTypeX", "Board"),
+            ("mt-GypsumSandPlaster", "Finish"), ("mt-AbsorptiveMaterial", "Insulation"),
+            ("mt-ResilientChannel", "Metal"), ("mt-SteelFurring", "Metal"), ("mt-HollowCoreSlab", "Concrete"),
+            ("mt-GypsumConcrete", "Concrete"), ("mt-SteelDeck", "Metal"), ("mt-Void", "Air")
+        };
 
-        // (Remote>>Dyl:MaterialRowFix row): a row of the materials fixed (10 columns), its group
+        static readonly Dictionary<string, string> codeGroups = CodeGroups.GroupBy(x => x.Id, StringComparer.Ordinal)
+                                                                          .ToDictionary(g => g.Key, g => g.First().Group, StringComparer.Ordinal);
+
+        // (Remote>>Dyl:MaterialRowFix row): a row of the materials fixed (10 columns); a default
+        // material of an older file in the group of the presets it had (Section, Elevation), not
+        // a group of the materials, in its default group (its id as written, CodeGroups); its group
         // as in the groups of the materials (any case), each value of its data a number greater
-        // than 0 (a decimal comma read as a point), else "". Not for a row NeedsLisp:
+        // than 0 (a decimal comma read as a point), else "":
         public static string[] RowFix(Bundle b, string[] row)
         {
             // (a copy: the rows read are shared, never changed)
             row = (string[])Csv.Fit(row, 10).Clone();
+            string g = Lisp.StrCase(row[1]);
+            if ((g == "SECTION" || g == "ELEVATION")
+                && !Groups.Of(b, "Material").Any(x => Lisp.StrCase(x) == g)
+                && codeGroups.TryGetValue(row[0], out var dg))
+                row[1] = dg;
             row[1] = Groups.CaseOf(b, row[1], "Material");
             foreach (var i in new[] { 5, 6, 7, 8, 9 })
             {
@@ -185,13 +236,11 @@ namespace DynALisp.Core.Data
         }
 
         // (Remote>>Dyl:MaterialRowDefs): the default materials fixed; null as HatchDefs (the
-        // defaults of the code, *mt:defaults*), or when one of them NeedsLisp:
+        // defaults of the code, *mt:defaults*):
         public static List<string[]> RowDefs(Bundle b)
         {
-            var groups = Groups.Of(b, "Material");
             var raw = Presets.DefsOf(b, Spec, null, null);
-            if (raw == null || raw.Any(r => NeedsLisp(r, groups))) return null;
-            return raw.Select(r => RowFix(b, r)).ToList();
+            return raw?.Select(r => RowFix(b, r)).ToList();
         }
 
         // (Remote>>Dyl:MaterialOld-p): true when the user copy of the materials file is a file of
@@ -213,9 +262,8 @@ namespace DynALisp.Core.Data
             (List<string[]>, List<string[]>)? res = null;
             var hdefs = HatchDefs(b, dimzin);
             var mdefs = RowDefs(b);
-            var groups = Groups.Of(b, "Material");
             var rows = Presets.Csv(b, Spec);
-            if (!OldP(b) && hdefs != null && mdefs != null && !rows.Any(r => NeedsLisp(r, groups)))
+            if (!OldP(b) && hdefs != null && mdefs != null)
             {
                 Func<string, string> gc = g => Groups.CaseOf(b, g, null);
                 res = (Read(HatchSpec, Presets.Csv(b, HatchSpec).Select(r => Fix(r, dimzin, gc)), hdefs),

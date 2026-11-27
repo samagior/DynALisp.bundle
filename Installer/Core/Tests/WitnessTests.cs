@@ -304,9 +304,9 @@ namespace DynALisp.Core.Tests
         static readonly (string Mark, string[] Cases, string Prefix, string Kept)[] ReadByLisp =
         {
             (LispRead, new[] { "assemblies-preset" }, "assemblies ", "assemblies defs"),
-            (MatLisp, new[] { "assemblies", "assemblies-preset", "empty", "materials-section" }, "materials ", "materials old"),
-            (ShowLisp, new[] { "assemblies", "assemblies-preset", "edges", "empty", "materials-section" }, "shows ", "shows scale"),
-            (AsmWinLisp, new[] { "assemblies", "assemblies-preset", "edges", "empty", "materials-section" }, "asmwin ", ""),
+            (MatLisp, new[] { "assemblies", "assemblies-preset", "empty" }, "materials ", "materials old"),
+            (ShowLisp, new[] { "assemblies", "assemblies-preset", "edges", "empty" }, "shows ", "shows scale"),
+            (AsmWinLisp, new[] { "assemblies", "assemblies-preset", "edges", "empty" }, "asmwin ", ""),
         };
 
         // ----- the witness of the Lisp -----
