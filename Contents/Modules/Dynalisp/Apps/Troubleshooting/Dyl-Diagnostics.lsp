@@ -1417,6 +1417,72 @@
   (dg:kv "Regen" (strcat (itoa (/ (apply '+ lst) 3)) " ms on average " (dg:str (reverse lst))))
 )
 
+;;-------------------------=={ Interface }==------------------------;;
+
+;;  The colours of the interface and the bands of the file tabs (Display of Dyl-Settings,
+;;  DynALisp.Ribbon.dll, an experiment): the settings, what the plugin does with each part,
+;;  the native palettes and the web pages it found, what it did when since it loaded (the
+;;  Timeline: a part late at startup), what still shows a blue-grey of AutoCAD (the Hosted
+;;  report: each WPF element and native window, and where its colour comes from) and the
+;;  colour themes of AutoCAD in C++ (read only, and only where the plugin found them: AutoCAD
+;;  2027). The diagnostics of (Dyl:RibbonSkin ...), gathered: the plugin writes its long reports
+;;  to %TEMP%, read back here. (Dyl:RibbonSkin "Hosted" "Push"), which changes the themes, is
+;;  never run.
+(defun dg:s-interface (/ pal)
+  (dg:sub "Settings")
+  (foreach k '("DynalispDisplayOn" "DynalispInterface" "DynalispBackground" "DynalispLayoutBackground" "DynalispFileTabColors")
+    (dg:kv k (getenv k))
+  )
+  (dg:kv "COLORTHEME" (getvar "COLORTHEME"))
+  (if (not Dyl:RibbonSkin)
+    (dg:note "DynALisp.Ribbon.dll is not loaded: the interface keeps the colors of AutoCAD")
+    (progn
+      (dg:sub "What the plugin does")
+      (dg:kv "Ribbon" (Dyl:RibbonSkin))
+      (dg:kv "Palettes" (setq pal (Dyl:RibbonSkin "Palettes")))
+      (if Dyl:RibbonFileTabs (dg:kv "File tabs" (Dyl:RibbonFileTabs)))
+      (dg:sub "Native palettes (Dyl:RibbonSkin \"Native\")")
+      (dg:if-lines (Dyl:RibbonSkin "Native"))
+      (dg:sub "Web pages (Dyl:RibbonSkin \"Web\")")
+      (dg:if-lines (Dyl:RibbonSkin "Web"))
+      (dg:sub "What was done when since the plugin loaded (Dyl:RibbonSkin \"Timeline\")")
+      (dg:if-file (Dyl:RibbonSkin "Timeline"))
+      (dg:sub "What still shows a blue-grey of AutoCAD (Dyl:RibbonSkin \"Hosted\")")
+      (dg:if-file (Dyl:RibbonSkin "Hosted"))
+      (if (and (= 'STR (type pal)) (wcmatch pal "*CAcColorTheme #*"))
+        (progn
+          (dg:sub "The colour themes of AutoCAD in C++ (Dyl:RibbonSkin \"Hosted\" \"Colors\")")
+          (dg:if-file (Dyl:RibbonSkin "Hosted" "Colors"))
+        )
+      )
+    )
+  )
+)
+
+;;  The strings a diagnostic of the plugin returns (a list, or one string), indented:
+(defun dg:if-lines (x)
+  (cond
+    ((= 'STR (type x)) (dg:add (strcat "    " x)))
+    ((listp x) (foreach l x (dg:add (strcat "    " (dg:str l)))))
+  )
+)
+
+;;  The lines of the file a diagnostic of the plugin wrote ("<file> (<n> lines)"), indented,
+;;  800 at most; what it returned when it wrote none:
+(defun dg:if-file (x / p f n)
+  (if (and (= 'STR (type x)) (setq p (vl-string-position (ascii "(") x nil T)) (< 1 p))
+    (setq f (substr x 1 (1- p)))
+  )
+  (if (and f (findfile f))
+    (progn
+      (setq n 0)
+      (foreach l (dg:lines f 800) (dg:add (strcat "    " l)) (setq n (1+ n)))
+      (if (= n 800) (dg:add "    ... (cut at 800 lines)"))
+    )
+    (dg:add (strcat "    " (dg:str x)))
+  )
+)
+
 ;;-------------------------=={ Running the sections }==------------------------;;
 
 ;;  (name function), in the order of the full report:
@@ -1426,6 +1492,7 @@
                     ("Startup Suite" dg:s-suite)
                     ("Settings" dg:s-settings)
                     ("Reactors" dg:s-reactors)
+                    ("Interface" dg:s-interface)
                     ("Drawing" dg:s-drawing)
                    )
 )
@@ -1661,6 +1728,11 @@
 ;; Counts the events the drawing sends to the reactors between two runs, to find what slows AutoCAD.
 
 (defun c:Pst-DiagnosticsReactorEvents () (dg:events))
+
+;; Diagnostics Interface
+;; Reports the colors of the interface and the file tabs: what DynALisp changes, when, and what still shows the colors of AutoCAD.
+
+(defun c:Pst-DiagnosticsInterface () (dg:one "Interface"))
 
 ;; Diagnostics Drawing
 ;; Reports the units, spaces, draw order tables, layers, xrefs and objects of the drawing, and its regen time.
