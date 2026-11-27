@@ -86,6 +86,15 @@ namespace DynALisp.Ribbon
                     foreach (var line in WebPages.Report()) wb.Add(new TypedValue((int)LispDataType.Text, line));
                     return wb;
                 }
+                if (string.Equals(which, "Timeline", StringComparison.OrdinalIgnoreCase))
+                {
+                    // What was done when since the plugin loaded, in a text file of %TEMP%:
+                    string file = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "DynALisp-Timeline.txt");
+                    var lines = Skin.TimelineReport();
+                    lines.Insert(0, "DynALisp - the colours of the interface, what was done when (" + DateTime.Now.ToString("yyyy-MM-dd HH:mm") + ")");
+                    System.IO.File.WriteAllLines(file, lines);
+                    return file + " (" + lines.Count + " lines)";
+                }
                 if (string.Equals(which, "Hosted", StringComparison.OrdinalIgnoreCase))
                 {
                     // What still shows the blue-greys of AutoCAD, long, in a text file of %TEMP%:
@@ -288,6 +297,38 @@ namespace DynALisp.Ribbon
         static int _fastUntil = Environment.TickCount + Fast;
         const int Fast = 20000;
         public static bool Settling => Environment.TickCount - _fastUntil < 0;
+
+        // While Settling, a timer of the dispatcher calls OnIdle too: AutoCAD raises no Idle
+        // while it opens the first drawing and runs its startup (the Lisp of the drawings), the
+        // time its palettes and tabs are made, and each stayed in the blue-greys of AutoCAD
+        // until then.
+        static System.Windows.Threading.DispatcherTimer _timer;
+
+        // What was done when, from the time the plugin loaded (Dyl:RibbonSkin "Timeline"):
+        // each status that changed, the idle gaps longer than 300 ms, the main window shown.
+        static readonly System.Diagnostics.Stopwatch Clock = System.Diagnostics.Stopwatch.StartNew();
+        static readonly List<string> Timeline = new();
+        static readonly Dictionary<string, string> LastStatus = new();
+        static long _lastTick = -1;
+        static bool _shown;
+
+        public static void Mark(string what)
+        {
+            if (Timeline.Count < 400) Timeline.Add(Clock.ElapsedMilliseconds.ToString().PadLeft(7) + " ms  " + what);
+        }
+
+        public static List<string> TimelineReport() => new List<string>(Timeline);
+
+        static void Track(string name, Func<string> status)
+        {
+            string s;
+            try { s = status(); } catch (System.Exception ex) { s = "error: " + ex.Message; }
+            if (LastStatus.TryGetValue(name, out var was) && was == s) return;
+            LastStatus[name] = s;
+            Mark(name + ": " + s);
+        }
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr hwnd);
         public static void Settle() => _fastUntil = Environment.TickCount + Fast;
 
         public static void Start()
@@ -297,10 +338,19 @@ namespace DynALisp.Ribbon
             {
                 if (string.Equals(e.Name, "COLORTHEME", StringComparison.OrdinalIgnoreCase)) { _due = true; Settle(); }
             };
-            AcApp.DocumentManager.DocumentCreated += (s, e) => Settle();
+            AcApp.DocumentManager.DocumentCreated += (s, e) => { Mark("drawing opened"); Settle(); };
+            Mark("plugin loaded");
+            try
+            {
+                _timer = new System.Windows.Threading.DispatcherTimer(System.Windows.Threading.DispatcherPriority.Normal)
+                { Interval = TimeSpan.FromMilliseconds(100) };
+                _timer.Tick += (s, e) => { if (Settling) Tick("timer"); };
+                _timer.Start();
+            }
+            catch (System.Exception ex) { Mark("timer: " + ex.Message); }
             // At once, as the plugin loads with AutoCAD: the palettes and the ribbon are drawn
             // in the colours of DynALisp from the start, never first in those of AutoCAD.
-            OnIdle();
+            Tick("load");
         }
 
         // The settings, from the registry (setenv / getenv: FixedProfile\General):
@@ -342,8 +392,20 @@ namespace DynALisp.Ribbon
         // Run by Host.OnIdle: the skin put on, kept on (AutoCAD makes another theme current when
         // COLORTHEME changes or the ribbon is made again) or taken off, once a second at most
         // (every 100 ms while Settling).
-        public static void OnIdle()
+        public static void OnIdle() => Tick("idle");
+
+        static void Tick(string from)
         {
+            long now = Clock.ElapsedMilliseconds;
+            if (from == "idle")
+            {
+                if (_lastTick >= 0 && now - _lastTick > 300 && Timeline.Count < 400) Mark("no idle for " + (now - _lastTick) + " ms");
+                _lastTick = now;
+            }
+            if (!_shown)
+            {
+                try { if (AcApp.MainWindow != null && IsWindowVisible(AcApp.MainWindow.Handle)) { _shown = true; Mark("main window shown (" + from + ")"); } } catch { }
+            }
             if (!_due && !Targets.Any(t => t.Busy)) return;
             if (Environment.TickCount - _next < 0) return;
             _next = Environment.TickCount + (Settling ? 100 : 1000);
@@ -357,6 +419,14 @@ namespace DynALisp.Ribbon
             Hosted.Apply(Palettes.Wanted && Dark(), Palettes.Look);
             // The themes in C++ of the native lists and buttons and of the title bar:
             CppThemes.Apply(Palettes.Wanted && Dark(), Palettes.Look);
+            if (Timeline.Count < 400)
+            {
+                Track("ribbon", Ribbon.Status);
+                Track("palettes", Palettes.Status);
+                Track("native", NativeThemes.Status);
+                Track("hosted", Hosted.Status);
+                Track("C++", CppThemes.Status);
+            }
         }
 
         // ---- the walk of the theme ----
