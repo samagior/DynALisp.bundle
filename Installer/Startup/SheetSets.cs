@@ -23,7 +23,8 @@
 //
 //   - What is open is read from the sheet set manager of AutoCAD (AcSmSheetSetMgr, the
 //     COM object of the Sheet Set Manager, one for the whole session: its open databases,
-//     GetDatabaseEnumerator), late bound (no interop assembly), and written when a command
+//     GetDatabaseEnumerator), called through its type library (SheetSetMgr.cs: its objects
+//     have no IDispatch, so no late binding), and written when a command
 //     ends, a drawing is made current or closed, and when AutoCAD quits: a sheet set the
 //     user closed in the manager is no longer open at the next of them, so it is forgotten.
 //   - At startup, once a drawing is open and AutoCAD has been idle for 2 seconds, each sheet
@@ -41,7 +42,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Windows.Threading;
 using Autodesk.AutoCAD.ApplicationServices;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -117,49 +117,21 @@ namespace DynALisp.Startup
 
         // ---- the sheet set manager of AutoCAD ----
 
-        static object _mgr;
         static string _mgrError;
 
-        // The manager (one for the session, the one of the palette), nil when it cannot be made:
-        static object Mgr()
-        {
-            if (_mgr != null) return _mgr;
-            var v = AcApp.Version;
-            foreach (var id in new[] { "AcSmComponents.AcSmSheetSetMgr", "AcSmComponents.AcSmSheetSetMgr." + v.Major,
-                                       "AcSmComponents.AcSmSheetSetMgr." + v.Major + "." + v.Minor })
-            {
-                try
-                {
-                    var t = Type.GetTypeFromProgID(id);
-                    if (t == null) continue;
-                    _mgr = Activator.CreateInstance(t);
-                    if (_mgr != null) { _mgrError = null; return _mgr; }
-                }
-                catch (System.Exception ex) { _mgrError = ex.Message; }
-            }
-            _mgrError = _mgrError ?? "AcSmComponents.AcSmSheetSetMgr is not registered";
-            return null;
-        }
-
-        static object Call(object o, string method, params object[] args) =>
-            o.GetType().InvokeMember(method, BindingFlags.InvokeMethod, null, o, args);
-
-        // The files of the sheet sets open in the manager, in its order; null when it cannot be read:
+        // The files of the sheet sets open in the manager, without the same file twice, in its
+        // order; null when it cannot be read (SheetSetMgr.cs, _mgrError says why):
         static List<string> Open()
         {
-            var m = Mgr();
-            if (m == null) return null;
-            var lst = new List<string>();
-            object en = Call(m, "GetDatabaseEnumerator");
-            if (en == null) return lst;
-            for (int i = 0; i < 1000; i++)
+            try
             {
-                object db = Call(en, "Next");
-                if (db == null) break;
-                string f = Call(db, "GetFileName") as string;
-                if (!string.IsNullOrWhiteSpace(f) && !lst.Any(x => Same(x, f))) lst.Add(f);
+                var lst = new List<string>();
+                foreach (var f in SheetSetMgr.OpenFiles())
+                    if (!lst.Any(x => Same(x, f))) lst.Add(f);
+                _mgrError = null;
+                return lst;
             }
-            return lst;
+            catch (System.Exception ex) { _mgrError = (ex.InnerException ?? ex).Message; return null; }
         }
 
         static bool Same(string a, string b)
@@ -256,7 +228,7 @@ namespace DynALisp.Startup
             foreach (var f in _asked)
             {
                 if (IsOpen(open, f)) continue;
-                try { Call(Mgr(), "OpenDatabase", f, false); _byManager++; }
+                try { SheetSetMgr.OpenDatabase(f); _byManager++; }
                 catch (System.Exception ex)
                 {
                     _kept.Add(f);
@@ -291,7 +263,8 @@ namespace DynALisp.Startup
             if (string.Equals(what, "Open", StringComparison.OrdinalIgnoreCase))
             {
                 var open = Open();
-                if (open == null || open.Count == 0) return null;
+                if (open == null) return "error: " + _mgrError;
+                if (open.Count == 0) return null;
                 return new ResultBuffer(open.Select(f => new TypedValue((int)LispDataType.Text, f)).ToArray());
             }
             if (string.Equals(what, "Save", StringComparison.OrdinalIgnoreCase))
