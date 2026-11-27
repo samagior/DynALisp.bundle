@@ -36,7 +36,8 @@
 //   - Nothing is written before the sheet sets are opened again: AutoCAD closed before
 //     that (or started without a drawing and closed) keeps the list as it was.
 // (Dyl:SheetSets) says what it did, (Dyl:SheetSets "Open") lists the sheet sets open in the
-// manager now, (Dyl:SheetSets "Save") writes them at once (the setting just turned on).
+// manager now, (Dyl:SheetSets "Save") writes them at once (the setting just turned on),
+// (Dyl:SheetSets "Tree") writes what it finds of the palette (SheetSetPalette.cs).
 
 using System;
 using System.Collections.Generic;
@@ -266,6 +267,12 @@ namespace DynALisp.Startup
                 if (open == null) return "error: " + _mgrError;
                 if (open.Count == 0) return null;
                 return new ResultBuffer(open.Select(f => new TypedValue((int)LispDataType.Text, f)).ToArray());
+            }
+            // The palette as the plugin finds it, written to %TEMP%\DynALisp-SheetSets.txt:
+            if (string.Equals(what, "Tree", StringComparison.OrdinalIgnoreCase))
+            {
+                try { return SheetSetPalette.Tree(); }
+                catch (System.Exception ex) { return "error: " + ex.Message; }
             }
             if (string.Equals(what, "Save", StringComparison.OrdinalIgnoreCase))
             {
