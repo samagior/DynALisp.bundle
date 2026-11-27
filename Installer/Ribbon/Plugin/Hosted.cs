@@ -109,7 +109,7 @@ namespace DynALisp.Ribbon
                 _on = true;
                 _look = look;
                 if (!first && Environment.TickCount - _next < 0) return;
-                _next = Environment.TickCount + Every;
+                _next = Environment.TickCount + (Skin.Settling ? 100 : Every);
                 int n = PresentationSource.CurrentSources.Cast<object>().Count();
                 if (first || n != _sources)
                 {

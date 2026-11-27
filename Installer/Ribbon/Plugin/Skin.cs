@@ -280,13 +280,24 @@ namespace DynALisp.Ribbon
         static bool _due = true;
         static int _next = Environment.TickCount;
 
+        // How often the colours are checked: every 100 ms for 20 s after the plugin loads, the
+        // settings are read again, COLORTHEME changes or a drawing is opened (the palettes,
+        // the tabs and their themes are made one after the other then, and each would show the
+        // blue-greys of AutoCAD for a second or two), once a second after that (Hosted.cs and
+        // CppThemes.cs every 2 s).
+        static int _fastUntil = Environment.TickCount + Fast;
+        const int Fast = 20000;
+        public static bool Settling => Environment.TickCount - _fastUntil < 0;
+        public static void Settle() => _fastUntil = Environment.TickCount + Fast;
+
         public static void Start()
         {
             Read();
             AcApp.SystemVariableChanged += (s, e) =>
             {
-                if (string.Equals(e.Name, "COLORTHEME", StringComparison.OrdinalIgnoreCase)) _due = true;
+                if (string.Equals(e.Name, "COLORTHEME", StringComparison.OrdinalIgnoreCase)) { _due = true; Settle(); }
             };
+            AcApp.DocumentManager.DocumentCreated += (s, e) => Settle();
             // At once, as the plugin loads with AutoCAD: the palettes and the ribbon are drawn
             // in the colours of DynALisp from the start, never first in those of AutoCAD.
             OnIdle();
@@ -308,6 +319,7 @@ namespace DynALisp.Ribbon
             }
             _due = true;
             _next = Environment.TickCount;
+            Settle();
         }
 
         static string Env(string name)
@@ -328,12 +340,13 @@ namespace DynALisp.Ribbon
         }
 
         // Run by Host.OnIdle: the skin put on, kept on (AutoCAD makes another theme current when
-        // COLORTHEME changes or the ribbon is made again) or taken off, once a second at most.
+        // COLORTHEME changes or the ribbon is made again) or taken off, once a second at most
+        // (every 100 ms while Settling).
         public static void OnIdle()
         {
             if (!_due && !Targets.Any(t => t.Busy)) return;
             if (Environment.TickCount - _next < 0) return;
-            _next = Environment.TickCount + 1000;
+            _next = Environment.TickCount + (Settling ? 100 : 1000);
             _due = false;
             foreach (var t in Targets) t.Apply();
             // The palettes written in C++ (Properties), by their native themes:
