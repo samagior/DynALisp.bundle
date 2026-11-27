@@ -35,8 +35,11 @@
 // again when its theme changes: a colour found back at what AutoCAD gave is given again. After a
 // change, the windows of AutoCAD draw again (RedrawWindow) and the title bar with
 // AdApplicationFrame::ForceFrameRepaint. The title bar takes them; the lists of Properties do
-// not: (Dyl:RibbonSkin "Hosted" "Push") gives the current CAcColorTheme to the native themes of
-// the palettes (CAdUiTheme::SetColorTheme), an experiment run by hand.
+// not until the native themes of the palettes (NativeThemes.cs) are given the current
+// CAcColorTheme (CAdUiTheme::SetColorTheme, the dark theme 0), as AutoCAD does when its theme
+// changes: done after each change of its colours and when a native theme is found, the colours
+// it sets there taken as given (NativeThemes.Adopt); given again the colours of AutoCAD when
+// turned off. (Dyl:RibbonSkin "Hosted" "Push") does it by hand.
 
 using System;
 using System.Collections.Generic;
@@ -101,7 +104,9 @@ namespace DynALisp.Ribbon
         static readonly Theme[] Themes = { Ac, Frame };
         static bool _on, _found;
         static Look _look = Look.DynALisp;
-        static int _next;
+        static int _next, _pushed = -1;
+        static bool _acWrote;
+        static SetColorThemeFn _give;
         static string _fail;
         static IntPtr _appFrame;
         static RepaintFn _repaint;
@@ -135,6 +140,18 @@ namespace DynALisp.Ribbon
                 if (!_found) Find();
                 bool any = false;
                 foreach (var t in Themes) any |= Keep(t);
+                // The native themes of the palettes given the colours of CAcColorTheme, as AutoCAD
+                // does when its theme changes (the lists of Properties draw from them): when they
+                // changed, and when a native theme is found (Properties opened the first time).
+                int n = NativeThemes.Pointers().Count();
+                if (Ac.Changed.Count > 0 && (_acWrote || n != _pushed))
+                {
+                    _pushed = n;
+                    Give(out _);
+                    NativeThemes.Adopt();
+                    any = true;
+                }
+                _acWrote = false;
                 if (any) Repaint();
             }
             catch (System.Exception ex) { _fail = ex.Message; Host.Log("C++ themes: " + ex.Message); }
@@ -222,6 +239,7 @@ namespace DynALisp.Ribbon
                 t.Changed[e] = (v, given);
                 wrote = true;
             }
+            if (wrote && t == Ac) _acWrote = true;
             return wrote;
         }
 
@@ -243,6 +261,8 @@ namespace DynALisp.Ribbon
                 t.Changed.Clear();
                 t.Last = IntPtr.Zero;
             }
+            // The native themes given the colours of AutoCAD again:
+            if (_pushed >= 0) { try { Give(out _); } catch { } _pushed = -1; }
             Repaint();
         }
 
@@ -348,37 +368,49 @@ namespace DynALisp.Ribbon
             return BitConverter.ToString(b).Replace("-", " ");
         }
 
-        // ---- pushed to the palettes (an experiment run by hand) ----
+        // ---- given to the native themes of the palettes ----
 
         const string NameSetColorTheme = "?SetColorTheme@CAdUiTheme@@AEAAXAEBVCAcColorTheme@@W4AcColorThemeEnum@@@Z";
         [UnmanagedFunctionPointer(CallingConvention.ThisCall)] delegate void SetColorThemeFn(IntPtr self, IntPtr colours, int which);
 
-        // (Dyl:RibbonSkin "Hosted" "Push"): each native theme of the palettes (CAdUiTheme) is
-        // given the current CAcColorTheme, in the colours of DynALisp, as AutoCAD gives it when
+        // (Dyl:RibbonSkin "Hosted" "Push"), done by Apply too: each native theme of the palettes
+        // (CAdUiTheme) is given the current CAcColorTheme, in the colours of DynALisp, as AutoCAD gives it when
         // its theme changes (CAdUiTheme::SetColorTheme, the dark theme: 0), then AutoCAD draws
         // again. The lists of Properties draw from what the palettes made of it.
         public static string Push()
         {
             if (!_found) Find();
+            string why = Give(out var done);
+            if (why != null) return why;
+            Repaint();
+            return "CAcColorTheme (" + Ac.Changed.Count + " colours changed) given to " + done.Count + " native themes: " + string.Join(", ", done);
+        }
+
+        // Each native theme found by NativeThemes given the current CAcColorTheme; null when
+        // done, else why not.
+        static string Give(out List<string> done)
+        {
+            done = new List<string>();
             if (Ac.Current == null) return "not found: " + Ac.Fail;
             IntPtr cur = Ac.Current();
             if (cur == IntPtr.Zero) return "no current theme";
-            ProcessModule mod = Process.GetCurrentProcess().Modules.Cast<ProcessModule>()
-                .FirstOrDefault(m => m.ModuleName.StartsWith(Ac.Prefix, StringComparison.OrdinalIgnoreCase));
-            if (mod == null) return Ac.Prefix + " not loaded";
-            var ex = new Dictionary<string, IntPtr>();
-            NativeThemes.Exports(mod.BaseAddress, ex, x => x == NameSetColorTheme);
-            if (!ex.TryGetValue(NameSetColorTheme, out var f)) return "CAdUiTheme::SetColorTheme not exported";
-            var set = Marshal.GetDelegateForFunctionPointer<SetColorThemeFn>(f);
-            var done = new List<string>();
+            if (_give == null)
+            {
+                ProcessModule mod = Process.GetCurrentProcess().Modules.Cast<ProcessModule>()
+                    .FirstOrDefault(m => m.ModuleName.StartsWith(Ac.Prefix, StringComparison.OrdinalIgnoreCase));
+                if (mod == null) return Ac.Prefix + " not loaded";
+                var ex = new Dictionary<string, IntPtr>();
+                NativeThemes.Exports(mod.BaseAddress, ex, x => x == NameSetColorTheme);
+                if (!ex.TryGetValue(NameSetColorTheme, out var f)) return "CAdUiTheme::SetColorTheme not exported";
+                _give = Marshal.GetDelegateForFunctionPointer<SetColorThemeFn>(f);
+            }
             foreach (var (n, p) in NativeThemes.Pointers().GroupBy(x => x.Theme).Select(g => g.First()))
             {
                 if (p == IntPtr.Zero) continue;
-                set(p, cur, 0);
+                _give(p, cur, 0);
                 done.Add(n);
             }
-            Repaint();
-            return "CAcColorTheme (" + Ac.Changed.Count + " colours changed) given to " + done.Count + " native themes: " + string.Join(", ", done);
+            return null;
         }
 
         static string Hex(IntPtr p) => "0x" + p.ToInt64().ToString("X");

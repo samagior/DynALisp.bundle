@@ -245,6 +245,24 @@ namespace DynALisp.Ribbon
 
         // The elements of the themes changed that had one of these colours (COLORREF), for
         // (Dyl:RibbonSkin "Hosted"): which theme draws what kept the colours of AutoCAD.
+        // After CppThemes gave the current CAcColorTheme to the themes (CAdUiTheme::SetColorTheme):
+        // the colours it set there come from the colours of DynALisp already, so they are taken
+        // as given, never put through Skin.Map again (it darkens each time); one still in a
+        // blue-grey of AutoCAD is left to be filtered again.
+        public static void Adopt()
+        {
+            if (_getColor == null) return;
+            foreach (var d in Changed)
+                for (int i = 0; i < d.Colours.Count; i++)
+                {
+                    var (el, was, now) = d.Colours[i];
+                    uint cur = _getColor(d.Theme, el);
+                    if (cur == now || Hosted.Blue(FromRef(cur))) continue;
+                    d.Colours[i] = (el, was, cur);
+                    Given.Add(cur);
+                }
+        }
+
         // The elements of the themes changed, 0 to max, still in a blue-grey of AutoCAD:
         public static List<string> Blues(int max)
         {
