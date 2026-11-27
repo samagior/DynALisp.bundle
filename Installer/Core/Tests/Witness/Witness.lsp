@@ -527,12 +527,13 @@
         pst:lst (Remote>>Dyl:PresetRead pst:key (Dyl:QuickDrawAsmDefs) 'Dyl:QuickDrawAsmFix)
         wt:at   "spec"
   )
+  ;;  (nth on nil fails in AutoCAD: a case without assemblies)
   (if bdr
     (progn
       (setq r (list ""))
       (repeat 64 (setq r (cons "" r)))
       (setq r    (Remote>>Dyl:ListSubst r *qd:border* bdr)
-            qa:r (Remote>>Dyl:ListSubst r *qd:layerscol* (if (numberp asm) (cond ((car (nth asm pst:lst))) ((car (car pst:lst))) ("")) asm))
+            qa:r (Remote>>Dyl:ListSubst r *qd:layerscol* (if (numberp asm) (cond ((car (if pst:lst (nth asm pst:lst)))) ((car (car pst:lst))) ("")) asm))
       )
     )
   )
