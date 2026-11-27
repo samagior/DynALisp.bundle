@@ -186,7 +186,7 @@ The rest: [Conventions/Claude.md](Conventions/Claude.md), read before changing t
 
 ## Diagnostics
 
-- What goes wrong is found with **`Dyl-Diagnostics`** (`Apps\Troubleshooting`): one section per part (DynALisp, AutoCAD, Conflicts, Startup Suite, Settings, Reactors, Drawing), each a `dg:s-*` function and a `Pst-Diagnostics*` child run alone, all of them in the full report.
+- What goes wrong is found with **`Dyl-Diagnostics`** (`Apps\Troubleshooting`): one section per part (DynALisp, AutoCAD, Conflicts, Startup Suite, Settings, Reactors, Interface, Drawing), each a `dg:s-*` function and a `Pst-Diagnostics*` child run alone, all of them in the full report.
 - A tool that adds a startup step, a reactor, a data file, a setting or a way to conflict with other programs **adds its check** to the section it belongs to, in the same change: a problem is a `dg:bad` line (`[!]`, listed again at the top of the report), what is only worth knowing a `dg:note`.
 - The startup keeps what it did for the report: its time, warnings and notes (`*dyl:startms*`, `*dyl:startwarn*`, `*dyl:startnote*`), the time of each of its steps (`*dyl:steptimes*`, marked by `Dyl:StartupMark`: the time since the mark before; a window a step shows the user, What's new, is shown through `Dyl:StartupWait`, so the time it stays open is not counted) and the Remote and Reactor files that failed to load and their time (`*dyl:loaderrs*`, `*dyl:loadtimes*`). A new startup step goes through `Dyl:StartupStep`, so its errors and its time are kept.
 - A report is **written to a text file** of `%TEMP%` and opened in the text editor (`dg:write`, `dg:open`), never printed on the command line, which keeps only what to do next.
