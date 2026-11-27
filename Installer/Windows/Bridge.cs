@@ -90,10 +90,22 @@ namespace DynALisp.Windows
 
         public void Terminate() { }
 
+        // This assembly by its name; DynALisp.Core (the data of the windows that read it,
+        // AsmPresets.cs) the one AutoCAD loaded, else the one beside this DLL:
         static Assembly Resolve(object sender, ResolveEventArgs e)
         {
             var me = typeof(Plugin).Assembly;
-            return new AssemblyName(e.Name).Name == me.GetName().Name ? me : null;
+            string name = new AssemblyName(e.Name).Name;
+            if (name == me.GetName().Name) return me;
+            if (name != "DynALisp.Core") return null;
+            var got = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(x => x.GetName().Name == name);
+            if (got != null) return got;
+            try
+            {
+                string f = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(me.Location) ?? "", name + ".dll");
+                return System.IO.File.Exists(f) ? Assembly.LoadFrom(f) : null;
+            }
+            catch { return null; }
         }
     }
 
@@ -209,13 +221,13 @@ namespace DynALisp.Windows
         }
 
         // The theme of AutoCAD: COLORTHEME 0 dark, 1 light:
-        static bool DarkTheme()
+        internal static bool DarkTheme()
         {
             try { return Convert.ToInt32(AcApp.GetSystemVariable("COLORTHEME")) == 0; }
             catch { return false; }
         }
 
-        static string Message(System.Exception e)
+        internal static string Message(System.Exception e)
         {
             // the message of each exception down to the first one (a file that does not read
             // says which line, its inner exception why):
@@ -226,7 +238,7 @@ namespace DynALisp.Windows
         }
 
         // The values of the Lisp into the session:
-        static void Give(Session s, Lisp.List vals)
+        internal static void Give(Session s, Lisp.List vals)
         {
             foreach (var item in vals)
             {

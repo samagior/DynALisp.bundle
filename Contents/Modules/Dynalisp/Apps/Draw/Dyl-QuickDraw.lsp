@@ -4119,15 +4119,107 @@
 
 ;;  The Assembly Presets window, opened from the Quick Draw window (its presets qd, its preset
 ;;  shown r), on the assembly of r; a new assembly has its Border lines and Dividing lines on.
-;;  Returns the assembly selected on OK, saved, nil on Cancel:
-(defun Dyl:QuickDrawAsmDialog (qd r / qa:qd qa:r qa:mats qa:grps qa:def qa:bk mt:keys res)
-  (setq qa:qd qd
-        qa:r  r
-        res   (Remote>>Dyl:PresetDialog "QuickDrawAssembly" (Dyl:QuickDrawAsmDlg r))
+;;  Shown by DynALisp.Windows.dll, its assemblies made into rows, read back, checked and saved by
+;;  DynALisp.Core.dll with no Lisp in between (Dyl:AsmWindow, Installer\Windows\AsmPresets.cs and
+;;  Installer\Core\Data\AsmTab.cs, the same values as the preset engine gave, checked by the
+;;  witness files): the 860 assemblies made into rows by the Core, then given to the Lisp and by
+;;  the Lisp to the window, took most of the time of the tab. The Lisp gives it what only the
+;;  Lisp has (Dyl:QuickDrawAsmCtx), reads the assemblies of an older file made of a Quick Draw
+;;  preset (status -1: Dyl:QuickDrawAsmFixLayer) and shows the Preset Groups window (status 8,
+;;  then the window again on the assemblies being edited, given the groups renamed). A
+;;  materials file of DynALisp 1.1 is split first (the Core reads the files written).
+;;  Returns (id) of the assembly selected on OK (and Save), nil on Cancel:
+(defun Dyl:QuickDrawAsmDialog (qd r / file path tabs rows ren res sta more)
+  (setq file "Dyl-AssemblyPresets.xaml"
+        path (Dyl:WinFile file)
+        tabs (Dyl:WinTab-p file)
+        more T
   )
-  ;;  The assemblies kept by Quick Draw are read again only when they were saved:
-  (if *pst:written* (setq *qd:asmcache* nil))
-  res
+  (if (Remote>>Dyl:MaterialOld-p) (Remote>>Dyl:MaterialMigrate))
+  (cond
+    ((not (and Dyl:AsmWindow Dyl:AsmTabPats))
+     (princ "\n--> The Assembly Presets need DynALisp.Windows.dll and DynALisp.Core.dll (not blocked by SECURELOAD).")
+     nil
+    )
+    ((not path) (princ (strcat "\n--> Window file not found: " file)) nil)
+    (T
+     (if tabs (setq *dyl:wintab* nil))
+     (while more
+       (setq res  (Remote>>Dyl:ManagerTimed "Window shown (Core)" 'Dyl:AsmWindow (list path (Dyl:QuickDrawAsmCtx path r tabs rows ren (= 8 sta))))
+             sta  (car res)
+             more nil
+             ren  nil
+       )
+       (cond
+         ((= -1 sta)
+          (setq rows (Remote>>Dyl:PresetRead "QuickDrawAssembly" (Dyl:QuickDrawAsmDefs) 'Dyl:QuickDrawAsmFix)
+                more (if rows T)
+          )
+         )
+         ((= 8 sta)
+          (setq ren  (Remote>>Dyl:GroupsDialogOf (cdr (assoc "counts" (cdr res))) nil)
+                ren  (if (listp ren) ren)
+                more T
+          )
+         )
+       )
+     )
+     (if (= -2 sta) (princ "\n--> The materials could not be read: see Pst-DiagnosticsDynalisp."))
+     ;;  Another tab of the Manager picked (see Dyl:WinTabPicked):
+     (if (and tabs (= *dyl:wintabcode* sta)) (setq *dyl:wintab* (atoi (cond ((cdr (assoc "tab" (cdr res)))) ("0")))))
+     ;;  Saved: what the Lisp kept of the assemblies is made again (see Remote>>Dyl:CsvWrite):
+     (if (assoc "written" (cdr res))
+       (progn
+         (setq *qd:asmcache* nil *pst:readcache* nil *pst:rowcache* nil)
+         (vl-bb-set '*dyl:datawrites* (1+ (cond ((vl-bb-ref '*dyl:datawrites*)) (0))))
+       )
+     )
+     (if (and (member sta (list 1 2 *dyl:wintabcode*)) (assoc "id" (cdr res))) (list (cdr (assoc "id" (cdr res)))))
+    )
+  )
+)
+
+;;  What the Assembly Presets window gets from the Lisp (see Installer\Windows\AsmPresets.cs),
+;;  opened on the window file path from the Quick Draw preset r (nil: from no preset, the tab
+;;  of the Manager), with the tabs of the Manager (tabs T), the assemblies read by the Lisp
+;;  (rows, nil: by the Core), and shown again after the Preset Groups window (resume T, the
+;;  groups renamed ren): the system variables, the layer keys, the layer key of the border
+;;  and the assembly of r, the default Show group, the units of the patterns of the materials,
+;;  the tabs and the Open Docs buttons:
+(defun Dyl:QuickDrawAsmCtx (path r tabs rows ren resume / id)
+  (setq id (if r (cond ((nth *qd:layerscol* r)) (""))))
+  (append
+    (list (cons "contents" *dyl:contents)
+          (cons "vars" (mapcar 'getvar '("CANNOSCALEVALUE" "MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "DIMZIN")))
+          (cons "keys" (mapcar 'car (Remote>>Dyl:LayerKeyRead)))
+          (cons "shw" (cond ((getenv "DynalispPresetShowQuickDrawAssembly")) ("")))
+          (cons "pats"
+                (mapcar '(lambda (p / u)
+                           (setq u (Remote>>Dyl:MaterialPatUnits p))
+                           (list p (cond ((car u)) ("")) (cond ((cdr u)) ("")))
+                         )
+                        (Dyl:AsmTabPats *dyl:contents (getvar "DIMZIN"))
+                )
+          )
+    )
+    (if r (list (cons "border" (cond ((nth *qd:border* r)) ("")))))
+    (if (and id (/= "" id) (not (vl-string-search ":" id))) (list (cons "select" id)))
+    (if rows (list (cons "rows" rows)))
+    (if resume (list (cons "resume" T) (cons "renames" ren)))
+    (list (cons "vals"
+                (append (if tabs
+                          (list (cons "tab/list" (nth 1 *dyl:wintabs*))
+                                (cons "tab" (itoa (nth 2 *dyl:wintabs*)))
+                                (cons "tab/title" (nth 3 *dyl:wintabs*))
+                                (cons "tab/place" (nth 4 *dyl:wintabs*))
+                                (cons "tab/event" (cond ((nth 5 *dyl:wintabs*)) ("")))
+                          )
+                        )
+                        (Dyl:WinDocs path)
+                )
+          )
+    )
+  )
 )
 
 ;;  The Assembly Presets tab of the Manager (Remote\Dyl-Manager.lsp): the window on its own,

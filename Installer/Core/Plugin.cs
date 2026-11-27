@@ -76,6 +76,12 @@
 //     each pattern of Dyl:AsmPats, its units ("Imperial", "Metric", "" when no file defines
 //     it) and its file. nil as Dyl:AsmPats.
 //
+//   (Dyl:AsmTabPats contents dimzin)
+//     The patterns of the materials (upper case, SOLID left out) whose units the Assembly
+//     Presets window needs for the previews of its Material list, found by the Lisp
+//     (Remote>>Dyl:MaterialPatUnits) and given to Dyl:AsmWindow (DynALisp.Windows.dll). nil
+//     when the Lisp reads the materials (see Data\AsmTab.cs).
+//
 //   (Dyl:AsmWinMats contents dimzin ((layers border dividing) ...))
 //     What the Assembly Presets window lists for the presets given (their columns 3, 4 and 5),
 //     as Dyl:QuickDrawAsmWinMats gives it: (mats groups keys), mats ((id name row group) ...)
@@ -202,7 +208,10 @@ namespace DynALisp.Core
         // The bundles read, by their Contents folder (the witness points the Lisp at others):
         static readonly Dictionary<string, Bundle> bundles = new Dictionary<string, Bundle>(StringComparer.OrdinalIgnoreCase);
 
-        static Bundle BundleOf(object contents)
+        // The bundle of the Contents folder contents, kept for the session (the files it reads
+        // shared by every drawing); also the bundle of the windows of DynALisp.Windows.dll that
+        // read the data (Dyl:AsmWindow):
+        public static Bundle BundleOf(object contents)
         {
             if (!(contents is string c) || c == "") return null;
             if (!bundles.TryGetValue(c, out var b)) bundles[c] = b = new Bundle(c, ",", ansi, store);
@@ -276,6 +285,20 @@ namespace DynALisp.Core
             var b = BundleOf(a.Count > 0 ? a[0] : null);
             var u = UnitsOf(a, 1);
             var pats = b == null || u == null ? null : Shows.Patterns(b, u);
+            if (pats == null) return null;
+            var rb = new List<TypedValue>(pats.Count + 2);
+            rb.Add(new TypedValue((int)LispDataType.ListBegin));
+            foreach (var p in pats) rb.Add(new TypedValue((int)LispDataType.Text, p));
+            rb.Add(new TypedValue((int)LispDataType.ListEnd));
+            return Result(rb);
+        }
+
+        [LispFunction("Dyl:AsmTabPats")]
+        public ResultBuffer AsmTabPats(ResultBuffer args)
+        {
+            var a = Args(args);
+            var b = BundleOf(a.Count > 0 ? a[0] : null);
+            var pats = b == null || a.Count < 2 ? null : AsmTab.Patterns(b, Int(a[1]));
             if (pats == null) return null;
             var rb = new List<TypedValue>(pats.Count + 2);
             rb.Add(new TypedValue((int)LispDataType.ListBegin));

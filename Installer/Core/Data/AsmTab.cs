@@ -109,6 +109,22 @@ namespace DynALisp.Core.Data
         public static List<string[]> Read(Bundle b, int dimzin) =>
             Materials.Both(b, dimzin) == null ? null : Assemblies.Read(b, 1.0, dimzin);
 
+        // The patterns of the materials joined to their Cut hatch preset (upper case, SOLID and
+        // none left out), whose units the Lisp gives for the previews of the Material list (see
+        // Vals); null when the Lisp reads the materials:
+        public static List<string> Patterns(Bundle b, int dimzin)
+        {
+            var both = Materials.Both(b, dimzin);
+            if (both == null) return null;
+            var res = new SortedSet<string>(StringComparer.Ordinal);
+            foreach (var m in both.Value.Rows)
+            {
+                string p = Lisp.StrCase(Shows.Join(m, both.Value.Hatches)[3]);
+                if (p != "" && p != "SOLID") res.Add(p);
+            }
+            return res.ToList();
+        }
+
         // (Remote>>Dyl:PresetDialog "QuickDrawAssembly" (Dyl:QuickDrawAsmDlg r)) up to the window:
         // the presets (rows: those the Lisp read, null: read here), the preset shown that of id
         // select (else the one shown last, last, else the first), the Show group shw (the
