@@ -368,7 +368,8 @@ namespace DynALisp.Core.Data
             return res;
         }
 
-        static bool Same(string[] a, string[] b) => a != null && b != null && a.SequenceEqual(b, StringComparer.Ordinal);
+        static bool Same(string[] a, string[] b) =>
+            ReferenceEquals(a, b) || (a != null && b != null && a.SequenceEqual(b, StringComparer.Ordinal));
 
         // (Remote>>Dyl:PresetWinCut r n):
         static string[] Cut(string[] r, int n)
@@ -576,7 +577,8 @@ namespace DynALisp.Core.Data
             for (int i = 0; i < Lst.Count; i++)
             {
                 var r = Lst[i];
-                if (Lst0.Any(x => Same(x, r))) continue;
+                // (a preset not edited is the one read, at the same place: found at once)
+                if ((i < Lst0.Count && Same(Lst0[i], r)) || Lst0.Any(x => Same(x, r))) continue;
                 var m = RowCheck(r);
                 if (m == null) continue;
                 Idx = i;
