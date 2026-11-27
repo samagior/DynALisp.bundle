@@ -557,7 +557,8 @@
             n          (Remote>>Dyl:PresetWinCols)
       )
       (foreach e wt:edits
-        (if (setq in (apply (cdr e) (list rs)))
+        ;;  (no edit without rows sent: a row edited would be nil)
+        (if (and rs (setq in (apply (cdr e) (list rs))))
           (progn
             (setq pst:lst (Remote>>Dyl:PresetWinBack in n)
                   msg     (Remote>>Dyl:PresetWinCheck)
@@ -736,6 +737,14 @@
       )
       (cond
         ((vl-catch-all-error-p err)
+         ;;  The lines of the case it stopped in, written all the same, so the section it
+         ;;  stopped in is known:
+         (if wt:out
+           (progn
+             (wt:put (strcat "#stopped" (chr 31) (vl-catch-all-error-message err)))
+             (wt:write (strcat wt:outdir "\\Stopped " (vl-filename-base (cond (wt:root) ("case"))) ".txt"))
+           )
+         )
          (princ (strcat "\nWitness: stopped, " (vl-catch-all-error-message err) ". What was written is in " wt:outdir "."))
         )
         ((setq zip (wt:zip))
