@@ -22,11 +22,15 @@
 // which shows each moment AutoCAD did not answer for 100 ms or more (a stall: a pan or a
 // zoom that jerks). (Dyl:RibbonWork) ends the test and gives the report, one string a line:
 // the stalls, the steps of the plugin by their time, and those that ran during a stall.
+// During the test, another thread reads the cursor of Windows every 5 ms (GetCursorInfo): each
+// time it changes (a cursor that blinks during a pan) is listed with the steps of the plugin
+// that ended just before it.
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Threading;
 using Autodesk.AutoCAD.DatabaseServices;
@@ -83,13 +87,63 @@ namespace DynALisp.Ribbon
         // One time a thing happened (an event, a window repainted):
         public static void Count(string name) => Add(name, 0, Clock.ElapsedTicks);
 
+        // Every step during a test (its end), to find those just before a change of the cursor:
+        static readonly List<(long End, string Name)> Ends = new();
+        const int EndsMax = 300000;
+
         static void Add(string name, long ticks, long at)
         {
             if (!Stats.TryGetValue(name, out var s)) Stats[name] = s = new Stat();
             s.Count++;
             s.Ticks += ticks;
             if (ticks > s.Max) s.Max = ticks;
-            if (_testing && Ms(ticks) >= 5 && Long.Count < LongMax) Long.Add((at, ticks, name));
+            if (!_testing) return;
+            if (Ms(ticks) >= 5 && Long.Count < LongMax) Long.Add((at, ticks, name));
+            if (Ends.Count < EndsMax) lock (Ends) Ends.Add((at + ticks, name));
+        }
+
+        // ---- the cursor ----
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct CURSORINFO { public int cbSize, flags; public IntPtr hCursor; public int x, y; }
+        [DllImport("user32.dll")] static extern bool GetCursorInfo(ref CURSORINFO pci);
+        [DllImport("user32.dll")] static extern IntPtr LoadCursor(IntPtr hInstance, IntPtr name);
+
+        static Thread _watcher;
+        static readonly List<(long At, IntPtr From, IntPtr To)> Cursors = new();
+        static readonly Dictionary<IntPtr, string> CursorNames = new();
+
+        static string CursorName(IntPtr h)
+        {
+            if (CursorNames.Count == 0)
+                foreach (var (id, n) in new[] { (32512, "arrow"), (32513, "I-beam"), (32514, "wait"), (32515, "cross"), (32516, "up arrow"),
+                                                 (32642, "size NW-SE"), (32643, "size NE-SW"), (32644, "size W-E"), (32645, "size N-S"),
+                                                 (32646, "size all"), (32648, "no"), (32649, "hand"), (32650, "arrow and wait"), (32651, "help") })
+                {
+                    var c = LoadCursor(IntPtr.Zero, (IntPtr)id);
+                    if (c != IntPtr.Zero) CursorNames[c] = n;
+                }
+            if (h == IntPtr.Zero) return "hidden";
+            return CursorNames.TryGetValue(h, out var name) ? name : "cursor 0x" + h.ToInt64().ToString("X");
+        }
+
+        static void Watch()
+        {
+            IntPtr last = IntPtr.Zero;
+            bool first = true;
+            while (_ping)
+            {
+                var ci = new CURSORINFO { cbSize = Marshal.SizeOf<CURSORINFO>() };
+                if (GetCursorInfo(ref ci))
+                {
+                    IntPtr now = (ci.flags & 1) == 0 ? IntPtr.Zero : ci.hCursor;
+                    if (!first && now != last)
+                        lock (Cursors) if (Cursors.Count < 20000) Cursors.Add((Clock.ElapsedTicks, last, now));
+                    last = now;
+                    first = false;
+                }
+                Thread.Sleep(5);
+            }
         }
 
         // ---- the stalls: the thread of AutoCAD not answering ----
@@ -109,6 +163,8 @@ namespace DynALisp.Ribbon
         {
             Stats.Clear();
             Long.Clear();
+            lock (Ends) Ends.Clear();
+            lock (Cursors) Cursors.Clear();
             lock (Lock) { Stalls.Clear(); _worst = 0; _answers = 0; }
             _since = Clock.ElapsedTicks;
             _testing = true;
@@ -116,6 +172,8 @@ namespace DynALisp.Ribbon
             _ping = true;
             _pinger = new Thread(Ping) { IsBackground = true, Name = "DynALisp work test" };
             _pinger.Start();
+            _watcher = new Thread(Watch) { IsBackground = true, Name = "DynALisp cursor test" };
+            _watcher.Start();
         }
 
         // Every 25 ms, a call put on the dispatcher of AutoCAD: the time it waited is the time
@@ -148,6 +206,8 @@ namespace DynALisp.Ribbon
             _ping = false;
             _pinger?.Join(2000);
             _pinger = null;
+            _watcher?.Join(1000);
+            _watcher = null;
             long span = Clock.ElapsedTicks - _since;
             List<(long At, long Ticks)> stalls;
             long worst, answers;
@@ -182,7 +242,46 @@ namespace DynALisp.Ribbon
                     r.Add("    at " + (Ms(st.At - _since) / 1000.0).ToString("0.00").PadLeft(6) + " s, " + (Ms(st.Ticks) + " ms").PadLeft(7) + ": " + what);
                 }
             }
+            Cursor(r);
             return r;
+        }
+
+        // The changes of the cursor, and the steps that ended in the 40 ms before each:
+        static void Cursor(List<string> r)
+        {
+            List<(long At, IntPtr From, IntPtr To)> changes;
+            List<(long End, string Name)> ends;
+            lock (Cursors) changes = Cursors.ToList();
+            lock (Ends) ends = Ends.OrderBy(e => e.End).ToList();
+            r.Add("  The cursor changed " + changes.Count + " time(s) during the test" + (changes.Count == 0 ? "." : ", the most frequent first:"));
+            foreach (var g in changes.GroupBy(c => CursorName(c.From) + " -> " + CursorName(c.To)).OrderByDescending(g => g.Count()).Take(12))
+                r.Add("    " + g.Count().ToString().PadLeft(6) + " x  " + g.Key);
+            if (changes.Count < 2) return;
+            // How often: the time between two changes (a rhythm tells which timer).
+            var gaps = changes.Zip(changes.Skip(1), (a, b) => Ms(b.At - a.At)).OrderBy(x => x).ToList();
+            r.Add("  Time between two changes: median " + gaps[gaps.Count / 2] + " ms, shortest " + gaps[0] + " ms, longest " + gaps[^1] + " ms");
+            long window = Stopwatch.Frequency * 40 / 1000;
+            var before = new Dictionary<string, int>(StringComparer.Ordinal);
+            int none = 0;
+            foreach (var c in changes)
+            {
+                // The first step that ended in the window (the ends sorted), then the others after it:
+                int lo = 0, hi = ends.Count;
+                while (lo < hi) { int mid = (lo + hi) / 2; if (ends[mid].End < c.At - window) lo = mid + 1; else hi = mid; }
+                var names = new List<string>();
+                for (int k = lo; k < ends.Count && ends[k].End <= c.At; k++)
+                    if (!names.Contains(ends[k].Name)) names.Add(ends[k].Name);
+                if (names.Count == 0) none++;
+                foreach (var n in names) before[n] = before.GetValueOrDefault(n) + 1;
+            }
+            r.Add("  The steps of the plugin that ended in the 40 ms before a change of the cursor (changes / runs of the step):");
+            foreach (var kv in before.OrderByDescending(kv => kv.Value))
+                r.Add("    " + kv.Value.ToString().PadLeft(6) + " / " + (Stats.TryGetValue(kv.Key, out var s) ? s.Count : 0).ToString().PadRight(6) + " " + kv.Key);
+            r.Add("    " + none.ToString().PadLeft(6) + " change(s) with no step of the plugin just before");
+            // The first changes, as they came:
+            r.Add("  The first 30 changes, from the start of the test:");
+            foreach (var c in changes.Take(30))
+                r.Add("    at " + (Ms(c.At - _since) / 1000.0).ToString("0.000").PadLeft(7) + " s  " + CursorName(c.From) + " -> " + CursorName(c.To));
         }
     }
 }
