@@ -556,7 +556,7 @@
 
   <!-- A button in teal that is not the default one of its window (New of the Start page, whose
        Enter belongs to its search box): -->
-  <Style x:Key="Dyl.Accent" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+  <Style x:Key="Dyl.AccentButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
     <Setter Property="Foreground" Value="{DynamicResource Dyl.AccentText}"/>
     <Setter Property="Template">
       <Setter.Value>

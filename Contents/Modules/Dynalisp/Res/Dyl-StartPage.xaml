@@ -77,7 +77,7 @@
     <!-- The recent drawings, the newest first: -->
     <DockPanel Grid.Row="1" Grid.Column="0">
       <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-        <Button x:Name="new" DockPanel.Dock="Left" Content="_New" Style="{DynamicResource Dyl.Accent}" Margin="0,0,8,0"/>
+        <Button x:Name="new" DockPanel.Dock="Left" Content="_New" Style="{DynamicResource Dyl.AccentButton}" Margin="0,0,8,0"/>
         <Button x:Name="opn" DockPanel.Dock="Left" Content="_Open..." Margin="0,0,16,0"/>
         <TextBox x:Name="find" DockPanel.Dock="Right" Width="230" Style="{DynamicResource Dyl.Search}" Tag="Search"/>
         <TextBlock x:Name="cnt" DockPanel.Dock="Right" Style="{DynamicResource Dyl.Desc}" Margin="0,0,12,0"
