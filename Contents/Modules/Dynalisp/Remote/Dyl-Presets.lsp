@@ -176,15 +176,34 @@
   (if (and hit (equal stm (cadr hit)))
     (cddr hit)
     (progn
-      (setq lst (Remote>>Dyl:PresetClean key (mapcar fix (Remote>>Dyl:PresetCsv key)) defs))
-      (foreach x defs
-        (if (not (assoc (car x) lst)) (setq miss (cons x miss)))
+      (if (not (setq lst (Remote>>Dyl:PresetReadCore key defs fix)))
+        (progn
+          (setq lst (Remote>>Dyl:PresetClean key (mapcar fix (Remote>>Dyl:PresetCsv key)) defs))
+          (foreach x defs
+            (if (not (assoc (car x) lst)) (setq miss (cons x miss)))
+          )
+          (setq lst (append lst (reverse miss)))
+        )
       )
-      (setq lst              (append lst (reverse miss))
-            *pst:readcache*  (cons (cons key (cons stm lst)) (vl-remove hit *pst:readcache*))
-      )
+      (setq *pst:readcache* (cons (cons key (cons stm lst)) (vl-remove hit *pst:readcache*)))
       lst
     )
+  )
+)
+
+;;  The same read by DynALisp.Core when it is loaded, the same rows (checked by the witness
+;;  files): the assemblies of Quick Draw read with their own fix and defaults (Dyl:AsmRead, in
+;;  millimetres as they are written: the factor 1.0). nil for any other read, or when the Lisp
+;;  reads them (see Installer\Core\Data\Assemblies.cs). The 860 assemblies fixed and cleaned in
+;;  Lisp took a second in each drawing the Assembly Presets tab opened in:
+(defun Remote>>Dyl:PresetReadCore (key defs fix)
+  (if (and (= "QuickDrawAssembly" key)
+           (eq 'Dyl:QuickDrawAsmFix fix)
+           Dyl:AsmRead
+           Dyl:QuickDrawAsmDefs
+           (equal defs (Dyl:QuickDrawAsmDefs))
+      )
+    (Dyl:AsmRead *dyl:contents 1.0 (getvar "DIMZIN"))
   )
 )
 
@@ -1592,6 +1611,8 @@
 ;;                                      ; to tiles (see pst/tiles in Presets.cs)
 ;;    (extra . <function: preset -> the columns added after the columns of the file, for
 ;;              the window only: a summary, a preview (read, never saved)>)
+;;    (wrows . <function: presets -> the columns extra adds, for each preset at once (made by
+;;             DynALisp.Core), nil when it cannot (extra is called for each one)>)
 ;;    (spec 45 . "mas")                 ; the column of a preview of its own (an assembly), and
 ;;                                      ; the rule of the window when it is used (else the
 ;;                                      ; preview is the hatch of the material)
@@ -1647,7 +1668,7 @@
 ;;  took seconds:
 (defun Remote>>Dyl:PresetWinRows (lst / ctx hit rows)
   (if (not (assoc 'wctx pst:dlg))
-    (mapcar 'Remote>>Dyl:PresetWinRow lst)
+    (Remote>>Dyl:PresetWinRowsOf lst)
     (progn
       (setq ctx (Remote>>Dyl:PresetDlgCall 'wctx nil)
             hit (vl-some '(lambda (c) (if (and (= pst:key (car c)) (eq lst (cadr c)) (equal ctx (caddr c))) c))
@@ -1657,7 +1678,7 @@
       (if hit
         (cadddr hit)
         (progn
-          (setq rows            (mapcar 'Remote>>Dyl:PresetWinRow lst)
+          (setq rows            (Remote>>Dyl:PresetWinRowsOf lst)
                 *pst:rowcache*  (cons (list pst:key lst ctx rows)
                                       (if *pst:rowcache* (Remote>>LM:sublst *pst:rowcache* 0 3))
                                 )
@@ -1666,6 +1687,21 @@
         )
       )
     )
+  )
+)
+
+;;  The rows of the presets lst: the columns of the App added to each one by its wrows at once
+;;  (all of them, or nil when it cannot), else by its extra one by one:
+(defun Remote>>Dyl:PresetWinRowsOf (lst / ext)
+  (cond
+    ((and (assoc 'wrows pst:dlg)
+          (not (assoc 'wrow pst:dlg))
+          (setq ext (Remote>>Dyl:PresetDlgCall 'wrows (list lst)))
+          (= (length ext) (length lst))
+     )
+     (mapcar 'append lst ext)
+    )
+    ((Remote>>Dyl:ManagerTimed "Rows made one by one (extra)" 'mapcar (list 'Remote>>Dyl:PresetWinRow lst)))
   )
 )
 

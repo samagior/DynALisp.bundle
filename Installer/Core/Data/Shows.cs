@@ -146,7 +146,7 @@ namespace DynALisp.Core.Data
 
         // (Remote>>Dyl:MaterialLayerData m): per drawing unit of thickness, (r-per-unit r-fixed
         // mass-per-unit), null when not known:
-        static (double? R, double? Fixed, double? M) LayerData(string[] m, Units u)
+        internal static (double? R, double? Fixed, double? M) LayerData(string[] m, Units u)
         {
             double metres = u.Metres;
             double? k = Lisp.Distof(Lisp.Nth(m, 5) ?? ""), d = Lisp.Distof(Lisp.Nth(m, 6) ?? ""), r = Lisp.Distof(Lisp.Nth(m, 7) ?? "");

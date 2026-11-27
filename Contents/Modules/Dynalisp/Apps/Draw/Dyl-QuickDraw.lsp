@@ -3797,6 +3797,31 @@
   )
 )
 
+;;  The columns the window adds to each assembly of lst (see Dyl:QuickDrawAsmExtra), made by
+;;  DynALisp.Core in one call when it is loaded (Installer\Core\Data\AsmWindow.cs); nil when
+;;  the Lisp makes them one by one (the plugin not loaded, the materials read by the Lisp):
+(defun Dyl:QuickDrawAsmExtras (lst / res)
+  (if (and lst
+           Dyl:AsmRows
+           (setq res (Remote>>Dyl:ManagerTimed
+                       "Assembly Presets: rows made by the Core"
+                       'Dyl:AsmRows
+                       (list *dyl:contents
+                             (getvar "MEASUREMENT")
+                             (getvar "INSUNITS")
+                             (getvar "DIMZIN")
+                             qa:bk
+                             qa:def
+                             (mapcar '(lambda (a) (list (nth 3 a) (nth 4 a) (nth 5 a) (cond ((nth 7 a)) ("")))) lst)
+                       )
+                     )
+           )
+           (= (length res) (length lst))
+      )
+    res
+  )
+)
+
 ;;  The lines str split for the window, their layer key qa:bk when they have none; off when
 ;;  there is no layer key at all (a new assembly would be refused for lines never set):
 (defun Dyl:QuickDrawAsmLinesOf (str / b)
@@ -3898,56 +3923,19 @@
   )
 )
 
-;;  Before the window is shown: the materials of the Material list of a layer (qa:mats: (id
-;;  name material group) ..., by group, in the order of the groups, then by name; those of
-;;  the layers that no longer exist after them, marked, without group), the groups of the
-;;  Group list of a layer (qa:grps: those that have materials), the layer keys (mt:keys: those
-;;  of the layers and of the lines kept when they are not defined), the layer key of new
-;;  lines (qa:bk: that of the border of the Quick Draw preset) and the row Add starts from
-;;  (qa:def: a layer of the first material, 10 thick; its band settings off, the defaults; its
-;;  border off, on that key, overriding nothing; its hatch on, on the key of its material,
-;;  overriding nothing):
-(defun Dyl:QuickDrawAsmWinPrep (/ mats ls ups)
-  (setq mats    (mapcar '(lambda (m) (list (car m) (nth 2 m) m (Remote>>Dyl:GroupCaseOf (nth 1 m) "Material"))) (Remote>>Dyl:MaterialRead))
-        qa:grps (Remote>>Dyl:GroupsOf "Material")
+;;  Before the window is shown: the materials of the Material list of a layer, the groups of
+;;  its Group list and the layer keys the assemblies use (see Dyl:QuickDrawAsmWinMats, made by
+;;  DynALisp.Core when it is loaded), the layer keys (mt:keys: those of the layers and of the
+;;  lines kept when they are not defined), the layer key of new lines (qa:bk: that of the
+;;  border of the Quick Draw preset) and the row Add starts from (qa:def: a layer of the first
+;;  material, 10 thick; its band settings off, the defaults; its border off, on that key,
+;;  overriding nothing; its hatch on, on the key of its material, overriding nothing):
+(defun Dyl:QuickDrawAsmWinPrep (/ got)
+  (setq got     (cond ((Dyl:QuickDrawAsmWinMatsCore pst:lst)) ((Dyl:QuickDrawAsmWinMats pst:lst)))
+        qa:mats (car got)
+        qa:grps (cadr got)
   )
-  (foreach m mats
-    (if (not (member (strcase (cadddr m)) (mapcar 'strcase qa:grps))) (setq qa:grps (append qa:grps (list (cadddr m)))))
-  )
-  (setq qa:grps (vl-remove-if-not '(lambda (g) (vl-some '(lambda (m) (= (strcase g) (strcase (cadddr m)))) mats)) qa:grps)
-        qa:mats nil
-  )
-  (foreach g qa:grps
-    (setq qa:mats (append qa:mats
-                          (vl-sort (vl-remove-if-not '(lambda (m) (= (strcase g) (strcase (cadddr m)))) mats)
-                                   '(lambda (a b) (< (strcase (cadr a)) (strcase (cadr b))))
-                          )
-                  )
-    )
-  )
-  (setq ls (apply 'append (mapcar '(lambda (a) (Remote>>Dyl:MaterialLayers (nth 3 a))) pst:lst)))
-  ;;  (the materials of the layers and of their framing; their ids in upper case made once,
-  ;;  not for each layer of the 860 assemblies:)
-  (setq ups (mapcar '(lambda (m) (strcase (car m))) qa:mats))
-  (foreach id (append (mapcar 'cadr (vl-remove-if-not '(lambda (l) (= "P" (car l))) ls))
-                      (vl-remove 'nil (mapcar '(lambda (l) (car (nth 8 l))) ls))
-              )
-    (if (not (member (strcase id) ups))
-      (setq qa:mats (append qa:mats (list (list id (strcat id "   (missing material)") nil "")))
-            ups     (cons (strcase id) ups)
-      )
-    )
-  )
-  (Remote>>Dyl:MaterialDlgKeys nil
-                               (append (mapcar 'cadddr ls)
-                                       (mapcar '(lambda (l) (cadr (nth 5 l))) ls)
-                                       (apply 'append
-                                              (mapcar '(lambda (a) (list (cadr (Remote>>Dyl:MaterialLines (nth 4 a))) (cadr (Remote>>Dyl:MaterialLines (nth 5 a)))))
-                                                      pst:lst
-                                              )
-                                       )
-                               )
-  )
+  (Remote>>Dyl:ManagerTimed "Assembly Presets: layer keys" 'Remote>>Dyl:MaterialDlgKeys (list nil (caddr got)))
   ;;  (the layer key of the border of the Quick Draw preset; none in the Assembly Presets
   ;;  tab of the Manager, opened from no preset: nth on nil fails in AutoCAD)
   (setq qa:bk  (cond ((if qa:r (car (member (nth *qd:border* qa:r) mt:keys)))) ((car mt:keys)) (""))
@@ -3963,6 +3951,77 @@
                        ;;  permeance:
                        (list "" "" "0" "0")
                )
+  )
+)
+
+;;  For the assemblies lst: (mats groups keys), the materials of the Material list of a layer
+;;  (qa:mats: (id name material group) ..., by group, in the order of the groups, then by
+;;  name; those of the layers that no longer exist after them, marked, without group), the
+;;  groups of the Group list of a layer (qa:grps: those that have materials) and the layer keys
+;;  of the layers, of their borders and of the lines of the assemblies (for mt:keys, see
+;;  Remote>>Dyl:MaterialDlgKeys):
+(defun Dyl:QuickDrawAsmWinMats (lst / mats grps res ls ups)
+  (setq mats (mapcar '(lambda (m) (list (car m) (nth 2 m) m (Remote>>Dyl:GroupCaseOf (nth 1 m) "Material"))) (Remote>>Dyl:MaterialRead))
+        grps (Remote>>Dyl:GroupsOf "Material")
+  )
+  (foreach m mats
+    (if (not (member (strcase (cadddr m)) (mapcar 'strcase grps))) (setq grps (append grps (list (cadddr m)))))
+  )
+  (setq grps (vl-remove-if-not '(lambda (g) (vl-some '(lambda (m) (= (strcase g) (strcase (cadddr m)))) mats)) grps))
+  (foreach g grps
+    (setq res (append res
+                      (vl-sort (vl-remove-if-not '(lambda (m) (= (strcase g) (strcase (cadddr m)))) mats)
+                               '(lambda (a b) (< (strcase (cadr a)) (strcase (cadr b))))
+                      )
+              )
+    )
+  )
+  (setq ls (apply 'append (mapcar '(lambda (a) (Remote>>Dyl:MaterialLayers (nth 3 a))) lst)))
+  ;;  (the materials of the layers and of their framing; their ids in upper case made once,
+  ;;  not for each layer of the 860 assemblies:)
+  (setq ups (mapcar '(lambda (m) (strcase (car m))) res))
+  (foreach id (append (mapcar 'cadr (vl-remove-if-not '(lambda (l) (= "P" (car l))) ls))
+                      (vl-remove 'nil (mapcar '(lambda (l) (car (nth 8 l))) ls))
+              )
+    (if (not (member (strcase id) ups))
+      (setq res (append res (list (list id (strcat id "   (missing material)") nil "")))
+            ups (cons (strcase id) ups)
+      )
+    )
+  )
+  (list res
+        grps
+        (append (mapcar 'cadddr ls)
+                (mapcar '(lambda (l) (cadr (nth 5 l))) ls)
+                (apply 'append
+                       (mapcar '(lambda (a) (list (cadr (Remote>>Dyl:MaterialLines (nth 4 a))) (cadr (Remote>>Dyl:MaterialLines (nth 5 a)))))
+                               lst
+                       )
+                )
+        )
+  )
+)
+
+;;  The same made by DynALisp.Core when it is loaded (Installer\Core\Data\AsmWindow.cs): each
+;;  material its row among those read (Remote>>Dyl:MaterialRead, in the order of
+;;  Remote>>Dyl:MaterialBoth), each key once; nil when the Lisp makes them (the plugin not
+;;  loaded, the materials read by the Lisp):
+(defun Dyl:QuickDrawAsmWinMatsCore (lst / res rows)
+  (if (and Dyl:AsmWinMats
+           (setq res (Remote>>Dyl:ManagerTimed
+                       "Assembly Presets: materials listed by the Core"
+                       'Dyl:AsmWinMats
+                       (list *dyl:contents (getvar "DIMZIN") (mapcar '(lambda (a) (list (nth 3 a) (nth 4 a) (nth 5 a))) lst))
+                     )
+           )
+      )
+    (progn
+      (setq rows (Remote>>Dyl:MaterialRead))
+      (list (mapcar '(lambda (m) (list (car m) (cadr m) (if (<= 0 (caddr m)) (nth (caddr m) rows)) (cadddr m))) (car res))
+            (cadr res)
+            (caddr res)
+      )
+    )
   )
 )
 
@@ -4053,6 +4112,7 @@
                       (cons 'select (if (and r (not (or (= "" (nth *qd:layerscol* r)) (vl-string-search ":" (nth *qd:layerscol* r))))) (nth *qd:layerscol* r)))
                       '(new "" "Wall" "New assembly" "" "1~" "1~" "First" "" "" "" "" "" "" "New assembly" "")
                       '(extra . Dyl:QuickDrawAsmExtra)
+                      '(wrows . Dyl:QuickDrawAsmExtras)
                       '(wget . Dyl:QuickDrawAsmWinGet)
                       '(rowcheck . Dyl:QuickDrawAsmCheck)
                       '(wprep . Dyl:QuickDrawAsmWinPrep)
