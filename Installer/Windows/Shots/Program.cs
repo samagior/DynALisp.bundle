@@ -293,7 +293,7 @@ namespace DynALisp.Windows
             BitmapSource picture = bmp;
             if (section != "")
             {
-                // Only the section, with a margin of the window around it:
+                // Only the section, with a margin around it:
                 Rect? r = null;
                 foreach (var spec in section.Split('+').Select(x => x.Trim()))
                 {
@@ -301,12 +301,23 @@ namespace DynALisp.Windows
                     var b = part.TransformToAncestor(frame).TransformBounds(new Rect(part.RenderSize));
                     r = r == null ? b : Rect.Union(r.Value, b);
                 }
+                // the section alone, set on the background of the window: a margin taken from the
+                // window would show the edges of the sections beside it.
                 var cut = r.Value;
-                cut.Inflate(SectionPad, SectionPad);
                 cut.Intersect(new Rect(size));
                 int x = (int)Math.Floor(cut.X * scale), y = (int)Math.Floor(cut.Y * scale);
                 int cw = Math.Min(bmp.PixelWidth - x, (int)Math.Ceiling(cut.Width * scale)), ch = Math.Min(bmp.PixelHeight - y, (int)Math.Ceiling(cut.Height * scale));
-                picture = new CroppedBitmap(bmp, new Int32Rect(x, y, cw, ch));
+                var crop = new CroppedBitmap(bmp, new Int32Rect(x, y, cw, ch));
+                int pad = (int)Math.Round(SectionPad * scale);
+                var dv = new DrawingVisual();
+                using (var dc = dv.RenderOpen())
+                {
+                    dc.DrawRectangle(frame.Background, null, new Rect(0, 0, (cw + 2 * pad) / scale, (ch + 2 * pad) / scale));
+                    dc.DrawImage(crop, new Rect(pad / scale, pad / scale, cw / scale, ch / scale));
+                }
+                var shot = new RenderTargetBitmap(cw + 2 * pad, ch + 2 * pad, 96 * scale, 96 * scale, PixelFormats.Pbgra32);
+                shot.Render(dv);
+                picture = shot;
             }
             Directory.CreateDirectory(Path.GetDirectoryName(png));
             var enc = new PngBitmapEncoder();
