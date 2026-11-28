@@ -264,12 +264,16 @@ namespace DynALisp.Windows
                 rec.Folder += f => Do(() => ShowInFolder(f));
                 rec.Pin += (f, on) => Do(() => Pin(f, on));
                 rec.PinChoices = PinChoices;
+                rec.Preview += (f, how) => Do(() => Preview(f, how));
+                rec.HasPreview = Previews.Has;
             }
             if (_view.Find("pin") is PinnedItems pin)
             {
                 pin.Opened += (f, ro) => Do(() => Open(f, ro));
                 pin.Folder += f => Do(() => ShowInFolder(f));
                 pin.Unpinned += f => Do(() => Pin(f, false));
+                pin.Preview += (f, how) => Do(() => Preview(f, how));
+                pin.HasPreview = Previews.Has;
             }
             if (_view.Find("act") is ActivityGraph act) act.Opened += (f, ro) => Do(() => Open(f, ro));
             // the columns picked for the pins and the recent drawings, kept for the next time:
@@ -289,6 +293,41 @@ namespace DynALisp.Windows
         {
             ("pnc", "DynalispStartPinnedColumns"), ("rcc", "DynalispStartRecentColumns"),
         };
+
+        // ---- the previews (Previews.cs) ----
+
+        // A picture of the user's choice for a drawing (a sheet set, a project): an image file,
+        // the area of the drawing (opened, its two corners picked at its command line), or its
+        // own preview again:
+        static void Preview(string path, string how)
+        {
+            if (how == "Own") { Previews.Forget(path); ReadRows(); return; }
+            if (how == "Picture")
+            {
+                var dlg = new Microsoft.Win32.OpenFileDialog
+                {
+                    Title = "Choose preview picture",
+                    Filter = "Pictures (*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tif;*.tiff)|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tif;*.tiff",
+                };
+                string dir = Path.GetDirectoryName(path);
+                if (!string.IsNullOrEmpty(dir) && Directory.Exists(dir)) dlg.InitialDirectory = dir;
+                if (dlg.ShowDialog() != true) return;
+                Previews.Choose(path, dlg.FileName);
+                ReadRows();
+                return;
+            }
+            if (!System.IO.File.Exists(path)) { Say("Not found: " + Path.GetFileName(path)); return; }
+            var doc = OpenDoc(path);
+            if (doc == null) return;
+            AcApp.DocumentManager.MdiActiveDocument = doc;
+            doc.SendStringToExecute("(Dyl:StartPagePreviewArea)\n", true, false, false);
+        }
+
+        // The rows of the page read again (a preview made in a drawing), when it is shown:
+        internal static void Reread()
+        {
+            if (_s != null && _view != null) ReadRows();
+        }
 
         // ---- the pins ----
 
@@ -518,14 +557,21 @@ namespace DynALisp.Windows
             if (!System.IO.File.Exists(file)) { Say("Not found: " + System.IO.Path.GetFileName(file)); return; }
             if (Kind(file) == "Sheet set") { OpenSheetSet(file); return; }
             if (Kind(file) == "Project") { ShowInFolder(file); return; }
+            OpenDoc(file, readOnly);
+        }
+
+        // A drawing opened, or made current when it is open already:
+        static Document OpenDoc(string file, bool readOnly = false)
+        {
             var dm = AcApp.DocumentManager;
             foreach (Document d in dm)
             {
                 string n = "";
                 try { n = d.Name; } catch { }
-                if (string.Equals(Path.GetFullPath(n), Path.GetFullPath(file), StringComparison.OrdinalIgnoreCase)) { dm.MdiActiveDocument = d; return; }
+                if (!Path.IsPathRooted(n)) continue;
+                if (string.Equals(Path.GetFullPath(n), Path.GetFullPath(file), StringComparison.OrdinalIgnoreCase)) { dm.MdiActiveDocument = d; return d; }
             }
-            dm.Open(file, readOnly);
+            return dm.Open(file, readOnly);
         }
 
         static void ShowInFolder(string file)
@@ -807,7 +853,8 @@ namespace DynALisp.Windows
                 long size = 0;
                 try { var fi = new FileInfo(p); there = fi.Exists; if (there) { t = fi.LastWriteTime; size = fi.Length; } } catch { }
                 string thumb = "";
-                if (there && kind == "Drawing") try { thumb = Thumbnail(p, t, size, cache) ?? ""; } catch { }
+                try { thumb = Previews.Of(p) ?? ""; } catch { }
+                if (thumb == "" && there && kind == "Drawing") try { thumb = Thumbnail(p, t, size, cache) ?? ""; } catch { }
                 rows.Add(new[]
                 {
                     p, NameOf(p, titles), kind, dir, "", thumb, there ? "" : "1", "", "",
@@ -850,7 +897,8 @@ namespace DynALisp.Windows
                 long size = 0;
                 try { var fi = new FileInfo(f); there = fi.Exists; if (there) { t = fi.LastWriteTime; size = fi.Length; } } catch { }
                 string thumb = "";
-                if (there) try { thumb = Thumbnail(f, t, size, cache) ?? ""; } catch { }
+                try { thumb = Previews.Of(f) ?? ""; } catch { }
+                if (thumb == "" && there) try { thumb = Thumbnail(f, t, size, cache) ?? ""; } catch { }
                 rows.Add(new[]
                 {
                     f, NameOf(f, titles), Path.GetDirectoryName(f) ?? "",

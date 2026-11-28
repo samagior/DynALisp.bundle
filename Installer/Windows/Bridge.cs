@@ -80,6 +80,8 @@ namespace DynALisp.Windows
             StartPage.Init();
             // The active time of each drawing, while it is on (Activity.cs):
             Activity.Init();
+            // The previews chosen for the drawings of the Start page, made again at a save (Previews.cs):
+            Previews.Init();
         }
 
         static bool Run(string expr)

@@ -176,7 +176,7 @@ namespace DynALisp.Windows
         }
 
         // The file opened alone (another AutoCAD writing it: tried again for 2 s):
-        static FileStream Lock(string file)
+        internal static FileStream Lock(string file)
         {
             for (int i = 0; ; i++)
             {
@@ -295,6 +295,7 @@ namespace DynALisp.Windows
             }
             catch { }
             r.Add("pinned: " + Pins().Count);
+            r.AddRange(Previews.Report());
             if (_fail != null) r.Add("error: " + _fail);
             return r;
         }

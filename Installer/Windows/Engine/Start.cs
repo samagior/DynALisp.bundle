@@ -62,7 +62,9 @@
 // "drawing,drawings"), Max shows only the first ones, Rows only the first rows. A tile clicked
 // shows only its active time in the graph Graph (clicked again: all of it), double-clicked
 // raises Opened (its path, false), its right-click menu opens it read-only (Opened, true),
-// shows it in its folder (Folder) or pins it, its sheet set or its project (PinChoices, Pin).
+// shows it in its folder (Folder) or pins it, its sheet set or its project (PinChoices, Pin),
+// and gives it a picture of the user's choice (Preview: its path and "Picture", "Area" or
+// "Own", HasPreview saying whether it has one already), as the cards of the pins do.
 //
 // Page.Of(window) takes the content of a window file to show it as a page (the Start page,
 // inside the Start tab of AutoCAD), with the resources and the text settings of the window.
@@ -151,6 +153,18 @@ namespace DynALisp.Windows
             var m = new MenuItem { Header = text, IsEnabled = on };
             m.Click += (s, e) => run();
             return m;
+        }
+
+        // The items of a menu that give a drawing a picture of the user's choice: an image,
+        // the area of the drawing (area: a drawing found), or its own preview again:
+        public static void PreviewItems(ContextMenu menu, string path, bool area, Func<string, bool> has, Action<string, string> run)
+        {
+            if (run == null) return;
+            menu.Items.Add(new Separator());
+            menu.Items.Add(MenuOf("Choose preview picture...", () => run(path, "Picture")));
+            if (!path.EndsWith(".dst", StringComparison.OrdinalIgnoreCase) && !path.EndsWith(".apj", StringComparison.OrdinalIgnoreCase))
+                menu.Items.Add(MenuOf("Set preview area...", () => run(path, "Area"), area));
+            menu.Items.Add(MenuOf("Use its own preview", () => run(path, "Own"), has?.Invoke(path) == true));
         }
 
         // A text that acts as a link (Accent, underlined under the mouse):
@@ -290,6 +304,10 @@ namespace DynALisp.Windows
         // What a drawing can pin (the label of its menu item, the path, pinned already), given
         // by the plugin; none: the drawing itself only.
         public Func<string, List<(string Label, string Path, bool Pinned)>> PinChoices;
+        // A picture chosen for a drawing (its path, then Picture, Area or Own), and whether it
+        // has one (given by the plugin):
+        public event Action<string, string> Preview;
+        public Func<string, bool> HasPreview;
 
         public const string RowsSuffix = StartUi.RowsSuffix;
 
@@ -437,6 +455,7 @@ namespace DynALisp.Windows
                     var (label, path, on) = p;
                     menu.Items.Add(StartUi.MenuOf(on ? "Un" + char.ToLowerInvariant(label[0]) + label.Substring(1) : label, () => Pin?.Invoke(path, !on)));
                 }
+                StartUi.PreviewItems(menu, it.Path, !missing && !Dst(it.Path), HasPreview, Preview);
             };
             return b;
         }
@@ -467,6 +486,9 @@ namespace DynALisp.Windows
         public event Action<string, bool> Opened;
         public event Action<string> Folder;
         public event Action<string> Unpinned;
+        // A picture chosen for a pin (as for the recent drawings):
+        public event Action<string, string> Preview;
+        public Func<string, bool> HasPreview;
 
         readonly WrapPanel _panel = new WrapPanel();
         readonly TextBlock _empty = new TextBlock { Margin = new Thickness(2, 0, 0, 10), TextWrapping = TextWrapping.Wrap };
@@ -567,12 +589,18 @@ namespace DynALisp.Windows
             b.SetResourceReference(StyleProperty, "Dyl.Tile");
             StartUi.ClickOrOpen(b, () => Scope(path, name, kind), () => Open(path, kind));
             var menu = new ContextMenu();
-            if (kind != "Project") menu.Items.Add(StartUi.MenuOf("Open", () => Opened?.Invoke(path, false), !missing));
-            menu.Items.Add(StartUi.MenuOf("Show its active time", () => Scope(path, name, kind), _graph != null));
-            menu.Items.Add(StartUi.MenuOf("Show in folder", () => Folder?.Invoke(path)));
-            menu.Items.Add(new Separator());
-            menu.Items.Add(StartUi.MenuOf("Unpin", () => Unpinned?.Invoke(path)));
             b.ContextMenu = menu;
+            // its items made as it opens (a picture chosen changes Use its own preview):
+            b.ContextMenuOpening += (s, e) =>
+            {
+                menu.Items.Clear();
+                if (kind != "Project") menu.Items.Add(StartUi.MenuOf("Open", () => Opened?.Invoke(path, false), !missing));
+                menu.Items.Add(StartUi.MenuOf("Show its active time", () => Scope(path, name, kind), _graph != null));
+                menu.Items.Add(StartUi.MenuOf("Show in folder", () => Folder?.Invoke(path)));
+                StartUi.PreviewItems(menu, path, !missing && kind == "Drawing", HasPreview, Preview);
+                menu.Items.Add(new Separator());
+                menu.Items.Add(StartUi.MenuOf("Unpin", () => Unpinned?.Invoke(path)));
+            };
             return b;
         }
     }

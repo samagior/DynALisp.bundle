@@ -1562,7 +1562,9 @@
 )
 
 ;;  Active time (Activity.cs of DynALisp.Windows.dll): what it counted and wrote (never the
-;;  drawings: their paths are the user's), a problem when it could not write its time:
+;;  drawings: their paths are the user's), a problem when it could not write its time; the
+;;  previews chosen on the Start page (Previews.cs), a note when one lost its picture or could
+;;  not be made:
 (defun dg:activity (/ on lst)
   (setq on (= "1" (getenv "DynalispActivity")))
   (dg:sub "Active time (Dyl:Activity)")
@@ -1579,6 +1581,9 @@
        ((and on (listp lst) (vl-some '(lambda (l) (and (= 'STR (type l)) (wcmatch l "error:*"))) lst))
         (dg:bad "Active time could not count or write its time: see the error above")
        )
+     )
+     (if (and (listp lst) (vl-some '(lambda (l) (and (= 'STR (type l)) (wcmatch l "previews error:*,previews without*"))) lst))
+       (dg:note "A preview chosen on the Start page lost its picture or could not be made: see above; right-click the drawing and choose it again")
      )
     )
   )
