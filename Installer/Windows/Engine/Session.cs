@@ -306,7 +306,18 @@ namespace DynALisp.Windows
             Window = w;
             Collect(w);
             foreach (var fe in _all) Wire(fe);
+            w.AddHandler(System.Windows.Documents.Hyperlink.RequestNavigateEvent, new System.Windows.Navigation.RequestNavigateEventHandler(Navigate));
             w.Closed += (a, b) => _closed = true;
+        }
+
+        // A link of the window (a Hyperlink and its NavigateUri, in the template of a list:
+        // the docs page of a change of What's New) opens what it names, the window staying
+        // open, as Open Docs:
+        void Navigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            e.Handled = true;
+            try { Session.OpenTarget(e.Uri?.OriginalString); }
+            catch (Exception x) { Error("Unable to open the link: " + x.Message); }
         }
 
         // Every element of the window (its logical tree: what the file holds):
@@ -603,6 +614,11 @@ namespace DynALisp.Windows
                             if (c is ListBox lb && lb.SelectedItem != null) lb.ScrollIntoView(lb.SelectedItem);
                             else if (!has) _s.Values[c.Name] = c.SelectedIndex.ToString(CultureInfo.InvariantCulture);
                             break;
+                        // A list shown only, never picked (the cards of the Start page): its
+                        // items (key/list), in the template of its file:
+                        case ItemsControl ic:
+                            if (_s.Lists.TryGetValue(ic.Name, out var shown)) ic.ItemsSource = shown;
+                            break;
                         case TextBox x:
                             if (has) x.Text = v ?? "";
                             else _s.Values[x.Name] = x.Text;
@@ -614,6 +630,15 @@ namespace DynALisp.Windows
                         // Its value stays the Lisp's (a button gives no value back):
                         case Button b when b.GetType() == typeof(Button):
                             if (has && !string.IsNullOrEmpty(v)) b.Content = v;
+                            break;
+                        // The columns picked for the cards of the Start page (Start.cs), its value:
+                        case ColumnChoice cc:
+                            cc.Attach(Find, has ? v : null);
+                            break;
+                        // The controls of the Start page (Start.cs: the pins, the active time,
+                        // the recent drawings), the table key/rows (none yet: being read):
+                        case IShowsRows sr:
+                            sr.Attach(Find, _s.Rows.TryGetValue(fe.Name + StartUi.RowsSuffix, out var shownRows) ? shownRows : null);
                             break;
                         case Gallery g:
                             g.Attach(Find, k => _s.Lists.TryGetValue(k, out var l) ? l : null);

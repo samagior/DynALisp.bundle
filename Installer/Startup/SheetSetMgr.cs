@@ -139,6 +139,35 @@ namespace DynALisp.Startup
             if (db != IntPtr.Zero) Marshal.Release(db);
         }
 
+        // HRESULT Close(this, IAcSmDatabase*)
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        delegate int CloseDb(IntPtr self, IntPtr db);
+
+        // The title of the sheet set of a file (the name the Sheet Set Manager shows), read
+        // from the database open in the manager, else opened for the moment and closed again;
+        // null when it cannot be read. Also compiled into DynALisp.Windows.dll (the cards of the
+        // Start page). On the thread of AutoCAD only.
+        public static string TitleOf(string file)
+        {
+            foreach (var d in OpenDbs())
+                if (string.Equals(d.File, file, StringComparison.OrdinalIgnoreCase)) return d.Name;
+            IntPtr m = Mgr();
+            var open = Method<OpenDb>(m, "IAcSmSheetSetMgr", "OpenDatabase");
+            Check(open(m, file, 0, out IntPtr db), "OpenDatabase");
+            if (db == IntPtr.Zero) return null;
+            try
+            {
+                var d = new Db();
+                SheetSetOf(db, ref d);
+                return d.Name;
+            }
+            finally
+            {
+                try { Method<CloseDb>(m, "IAcSmSheetSetMgr", "Close")(m, db); } catch { }
+                Marshal.Release(db);
+            }
+        }
+
         // The sheet set of a database (GetSheetSet): its address and its name (GetName of
         // IAcSmComponent), what the palette knows it by. Nothing when it cannot be read:
         static void SheetSetOf(IntPtr db, ref Db d)

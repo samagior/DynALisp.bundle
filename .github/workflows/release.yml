@@ -1,7 +1,8 @@
 # Release: pushing a tag v<AppVersion> (git tag v1.1 && git push origin v1.1) builds
 # the setup (Installer\Build.ps1) and publishes the release to the public releases
-# repository (samagior/DynALisp.release), with the setup and CHANGELOG.md as assets
-# and the changelog section of the version as notes. Dyl-Info and the automatic
+# repository (samagior/DynALisp.release), with the setup and What's New (CHANGELOG.md
+# and its French copy CHANGELOG.fr.md) as assets, and the section of the version as
+# notes. Dyl-Info and the automatic
 # updates read that release (*dyl:relrepo* in dynalisp.mnl).
 #
 # The source repository is private: publishing to the other repository needs the
@@ -68,9 +69,9 @@ jobs:
           gh release view $env:TAG --repo $env:RELEASE_REPO *> $null
           if ($LASTEXITCODE -eq 0) {
             # Published again: same tag, new files and notes.
-            gh release upload $env:TAG $exe CHANGELOG.md --repo $env:RELEASE_REPO --clobber
+            gh release upload $env:TAG $exe CHANGELOG.md CHANGELOG.fr.md --repo $env:RELEASE_REPO --clobber
             gh release edit $env:TAG --repo $env:RELEASE_REPO --notes-file Releases/build/notes.md
           } else {
-            gh release create $env:TAG $exe CHANGELOG.md --repo $env:RELEASE_REPO --title "DynALisp $env:TAG" --notes-file Releases/build/notes.md
+            gh release create $env:TAG $exe CHANGELOG.md CHANGELOG.fr.md --repo $env:RELEASE_REPO --title "DynALisp $env:TAG" --notes-file Releases/build/notes.md
           }
           if ($LASTEXITCODE -ne 0) { throw 'Publishing the release failed.' }
