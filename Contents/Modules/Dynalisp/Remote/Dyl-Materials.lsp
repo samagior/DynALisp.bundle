@@ -2720,24 +2720,27 @@
   ;;  A materials file of DynALisp 1.1 and older is split first, so the hatch presets shown
   ;;  are those of its materials:
   (Remote>>Dyl:MaterialMigrate)
-  (Remote>>Dyl:PresetDialog
-    "HatchPreset"
-    (list (cons 'defs (Remote>>Dyl:HatchPresetDefs))
-          (cons 'fix 'Remote>>Dyl:MaterialFix)
-          (cons 'tiles *mt:tiles*)
-          (cons 'select id)
-          '(groups . T)
-          '(upper "pat" "hat" "hlt")
-          ;;  A new hatch preset: the optional settings off, associative:
-          (cons 'new *hp:new*)
-          '(noun . "hatch presets")
-          '(window . "Dyl-HatchPresets.xaml")
-          '(wprep . Remote>>Dyl:HatchPresetWinPrep)
-          '(wvals . Remote>>Dyl:HatchPresetWinVals)
-          '(wget . Remote>>Dyl:HatchPresetWinGet)
-          '(check . Remote>>Dyl:MaterialDlgCheck)
-          '(status . Remote>>Dyl:MaterialDlgStatus)
-    )
+  (Remote>>Dyl:PresetDialog "HatchPreset" (Remote>>Dyl:HatchPresetDlg id))
+)
+
+;;  The App part of the Hatch Presets window for the preset engine, opened on id (also run by
+;;  the witness of DynALisp.Core, Installer\Core\Tests\Witness\Witness.lsp):
+(defun Remote>>Dyl:HatchPresetDlg (id)
+  (list (cons 'defs (Remote>>Dyl:HatchPresetDefs))
+        (cons 'fix 'Remote>>Dyl:MaterialFix)
+        (cons 'tiles *mt:tiles*)
+        (cons 'select id)
+        '(groups . T)
+        '(upper "pat" "hat" "hlt")
+        ;;  A new hatch preset: the optional settings off, associative:
+        (cons 'new *hp:new*)
+        '(noun . "hatch presets")
+        '(window . "Dyl-HatchPresets.xaml")
+        '(wprep . Remote>>Dyl:HatchPresetWinPrep)
+        '(wvals . Remote>>Dyl:HatchPresetWinVals)
+        '(wget . Remote>>Dyl:HatchPresetWinGet)
+        '(check . Remote>>Dyl:MaterialDlgCheck)
+        '(status . Remote>>Dyl:MaterialDlgStatus)
   )
 )
 
@@ -2904,29 +2907,32 @@
 (defun Remote>>Dyl:MaterialDialog (id / mt:shown)
   ;;  A materials file of DynALisp 1.1 and older is split first:
   (Remote>>Dyl:MaterialMigrate)
-  (Remote>>Dyl:PresetDialog
-    "Material"
-    (list (cons 'defs (Remote>>Dyl:MaterialRowDefs))
-          '(fix . Remote>>Dyl:MaterialRowFix)
-          '(tiles ("sur" . 4) ("cnd" . 5) ("den" . 6) ("rsi" . 7) ("vpm" . 8) ("vpc" . 9))
-          (cons 'select id)
-          ;;  The groups of the materials (MaterialGroups.csv), never those of the presets:
-          '(groups . "Material")
-          '(material . 3)
-          '(mats . Remote>>Dyl:HatchPresetRead)
-          '(matdialog . Remote>>Dyl:HatchPresetDialog)
-          '(matnoun . "hatch preset")
-          '(matfree . T)
-          '(mspec . Remote>>Dyl:MaterialWinSpec)
-          (cons 'new *mt:newrow*)
-          '(noun . "materials")
-          '(window . "Dyl-Materials.xaml")
-          '(wrow . Remote>>Dyl:MaterialWinRow)
-          '(wget . Remote>>Dyl:MaterialWinGet)
-          '(wvals . Remote>>Dyl:MaterialWinVals)
-          '(check . Remote>>Dyl:MaterialWinCheck)
-          '(status . Remote>>Dyl:MaterialWinStatus)
-    )
+  (Remote>>Dyl:PresetDialog "Material" (Remote>>Dyl:MaterialDlg id))
+)
+
+;;  The App part of the Materials window for the preset engine, opened on id (also run by the
+;;  witness of DynALisp.Core, Installer\Core\Tests\Witness\Witness.lsp):
+(defun Remote>>Dyl:MaterialDlg (id)
+  (list (cons 'defs (Remote>>Dyl:MaterialRowDefs))
+        '(fix . Remote>>Dyl:MaterialRowFix)
+        '(tiles ("sur" . 4) ("cnd" . 5) ("den" . 6) ("rsi" . 7) ("vpm" . 8) ("vpc" . 9))
+        (cons 'select id)
+        ;;  The groups of the materials (MaterialGroups.csv), never those of the presets:
+        '(groups . "Material")
+        '(material . 3)
+        '(mats . Remote>>Dyl:HatchPresetRead)
+        '(matdialog . Remote>>Dyl:HatchPresetDialog)
+        '(matnoun . "hatch preset")
+        '(matfree . T)
+        '(mspec . Remote>>Dyl:MaterialWinSpec)
+        (cons 'new *mt:newrow*)
+        '(noun . "materials")
+        '(window . "Dyl-Materials.xaml")
+        '(wrow . Remote>>Dyl:MaterialWinRow)
+        '(wget . Remote>>Dyl:MaterialWinGet)
+        '(wvals . Remote>>Dyl:MaterialWinVals)
+        '(check . Remote>>Dyl:MaterialWinCheck)
+        '(status . Remote>>Dyl:MaterialWinStatus)
   )
 )
 
