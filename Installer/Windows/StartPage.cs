@@ -347,6 +347,59 @@ namespace DynALisp.Windows
         static string NameOf(string pin, Dictionary<string, string> titles) =>
             titles != null && titles.TryGetValue(pin, out var n) ? n : Path.GetFileNameWithoutExtension(pin);
 
+        // ---- the sheet set or project of a drawing ----
+
+        // Its .dst or .apj, as the colours of the file tabs find it (FileTabs.cs of the ribbon
+        // plugin): of the kind of File tabs in Dyl-Settings (DynalispFileTabColors), else its
+        // sheet set, else its project; "" none (a sheet set or a project itself: none). Each
+        // folder looked up once in a read:
+        static string GroupOf(string file, string mode, Dictionary<string, string> folders)
+        {
+            string ext = Path.GetExtension(file).ToLowerInvariant();
+            if (ext == ".dst" || ext == ".apj") return "";
+            string dir = Path.GetDirectoryName(file) ?? "";
+            if (folders.TryGetValue(dir, out var hit)) return hit;
+            string g = mode == "Project" ? Up(file, "*.apj")
+                     : mode == "Sheet set" ? Up(file, "*.dst")
+                     : Up(file, "*.dst") ?? Up(file, "*.apj");
+            return folders[dir] = g ?? "";
+        }
+
+        // The name and colour of the group of each row (its fields i and i + 1, the file of its
+        // group in i until then): the title of a sheet set, the name of a project; the colour
+        // its file tabs have this session, else the colour of its name in their palette.
+        // On the thread of AutoCAD (the titles of the sheet sets).
+        static void Groups(List<string[]> rows, int i)
+        {
+            foreach (var r in rows)
+            {
+                string g = r.Length > i + 1 ? r[i] : "";
+                if (string.IsNullOrEmpty(g)) continue;
+                string name = g.EndsWith(".dst", StringComparison.OrdinalIgnoreCase) ? SheetTitle(g) : Path.GetFileNameWithoutExtension(g);
+                r[i] = name;
+                r[i + 1] = ColourOf(g);
+            }
+        }
+
+        // The palette of FileTabs.cs (DynALisp.Ribbon.dll), in its order: change them together.
+        static readonly string[] Palette = { "#F28C28", "#1FB5A8", "#3D8EF0", "#A066D3", "#E8C547", "#5CB85C", "#E25D8E", "#D9443A" };
+
+        static string ColourOf(string group)
+        {
+            try
+            {
+                // the colour the file tabs gave it this session (another project took its own):
+                var t = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a => a.GetName().Name == "DynALisp.Ribbon")?.GetType("DynALisp.Ribbon.FileTabs");
+                if (t?.GetField("Colours", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)?.GetValue(null) is Dictionary<string, int> kept
+                    && kept.TryGetValue(group, out int k) && k >= 0 && k < Palette.Length)
+                    return Palette[k];
+            }
+            catch { }
+            uint h = 2166136261;     // FNV-1a of the name in lower case, as FileTabs.Hash
+            foreach (char ch in Path.GetFileNameWithoutExtension(group).ToLowerInvariant()) { h ^= ch; h *= 16777619; }
+            return Palette[h % (uint)Palette.Length];
+        }
+
         static string Up(string file, string pattern)
         {
             try
@@ -582,6 +635,7 @@ namespace DynALisp.Windows
             try { recent = RecentFiles(root, profile).Take(48).ToList(); } catch { }
             foreach (var p in pins.Concat(recent))
                 if (!titles.ContainsKey(p) && string.Equals(Path.GetExtension(p), ".dst", StringComparison.OrdinalIgnoreCase)) titles[p] = SheetTitle(p);
+            string mode = Env("DynalispFileTabColors") ?? "";
             _reading = true;
             _readAgain = false;
             var disp = Dispatcher.CurrentDispatcher;
@@ -595,10 +649,16 @@ namespace DynALisp.Windows
                 catch (System.Exception e) { err = "recent drawings: " + e.Message; }
                 try { act = Activity.Rows(pending); pin = PinRows(pins, titles); }
                 catch (System.Exception e) { err = "active time: " + e.Message; }
+                // the sheet set or project of each drawing (its file, named on this thread after):
+                var folders = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                try { if (rec != null) foreach (var r in rec) r[6] = GroupOf(r[0], mode, folders); } catch { }
+                try { if (pin != null) foreach (var r in pin) if (r[2] == "Drawing") r[7] = GroupOf(r[0], mode, folders); } catch { }
                 disp.BeginInvoke(new Action(() =>
                 {
                     _reading = false;
                     if (err != null) _fail = err;
+                    if (rec != null) Groups(rec, 6);
+                    if (pin != null) Groups(pin, 7);
                     if (_s != null && _view != null)
                     {
                         if (rec != null) _s.Rows["rec" + StartUi.RowsSuffix] = rec;
@@ -750,7 +810,7 @@ namespace DynALisp.Windows
                 if (there && kind == "Drawing") try { thumb = Thumbnail(p, t, size, cache) ?? ""; } catch { }
                 rows.Add(new[]
                 {
-                    p, NameOf(p, titles), kind, dir, "", thumb, there ? "" : "1",
+                    p, NameOf(p, titles), kind, dir, "", thumb, there ? "" : "1", "", "",
                 });
             }
             return rows;
@@ -794,7 +854,7 @@ namespace DynALisp.Windows
                 rows.Add(new[]
                 {
                     f, NameOf(f, titles), Path.GetDirectoryName(f) ?? "",
-                    there ? When(t) : "", thumb, there ? "" : "1",
+                    there ? When(t) : "", thumb, there ? "" : "1", "", "",
                 });
             }
             return rows;

@@ -23,7 +23,9 @@
 // wide as the row they fill (CardWidth at least), the fields of a row:
 //   path, name, kind ("Drawing", "Sheet set" or "Project"), where (its folder, not shown: the
 //   path is only in the tip of the card), time (not shown: the time of a pin is in the graph,
-//   its card clicked), thumbnail (a .png file, "" none), missing ("1": not found)
+//   its card clicked), thumbnail (a .png file, "" none), missing ("1": not found), group (the
+//   title of the sheet set or the name of the project of a drawing, "" none), colour (#RRGGBB:
+//   the dot before it, the colour of its file tabs)
 // A card clicked shows only its active time in the graph Graph (a sheet set or a project: the
 // drawings of its folder; clicked again: all of it), marked while it does; double-clicked, it
 // is opened (Opened: a drawing, a sheet set; Folder: a project). Its right-click menu: Open (a drawing, a sheet
@@ -53,7 +55,8 @@
 // of a row:
 //   path, name, folder (not shown: the path is only in the tip of the tile), when (the text of
 //   its date), thumbnail (a .png file, "" none: a sheet is drawn in its place), missing ("1":
-//   the file is not found, its tile greyed out)
+//   the file is not found, its tile greyed out), group, colour (its sheet set or project and
+//   its dot, as for the pins; found by the search too)
 // The tiles shown are filtered as the box Search is typed (every word in the name or the
 // folder, accents and case ignored), Count says how many are shown (its Tag:
 // "drawing,drawings"), Max shows only the first ones, Rows only the first rows. A tile clicked
@@ -117,6 +120,21 @@ namespace DynALisp.Windows
                 if (e.ClickCount <= 2) { b.Focus(); e.Handled = true; }
             };
             b.KeyDown += (s, e) => { if (e.Key == System.Windows.Input.Key.Enter) { open(); e.Handled = true; } };
+        }
+
+        // The sheet set or project of a drawing: a dot of its colour (#RRGGBB, as its file tabs)
+        // and its name; null when it has none:
+        public static FrameworkElement Group(string name, string colour)
+        {
+            if (string.IsNullOrEmpty(name)) return null;
+            var line = new DockPanel { Margin = new Thickness(0, 3, 0, 0) };
+            var dot = new System.Windows.Shapes.Ellipse { Width = 8, Height = 8, Margin = new Thickness(0, 0, 6, 0), VerticalAlignment = VerticalAlignment.Center };
+            try { dot.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(colour)); }
+            catch { dot.SetResourceReference(System.Windows.Shapes.Shape.FillProperty, "Dyl.Accent"); }
+            DockPanel.SetDock(dot, Dock.Left);
+            line.Children.Add(dot);
+            line.Children.Add(Text(name, "Dyl.Muted", 11.5));
+            return line;
         }
 
         // A title that goes on a second line when it is too long for one (cut after the second):
@@ -344,8 +362,8 @@ namespace DynALisp.Windows
                 _panel.Children.Clear();
                 foreach (var r in rows)
                 {
-                    var it = new Item { Path = StartUi.F(r, 0), Hay = View.Fold(StartUi.F(r, 1) + "\n" + StartUi.F(r, 2)) };
-                    it.Tile = Tile(it, StartUi.F(r, 1), StartUi.F(r, 2), StartUi.F(r, 3), StartUi.F(r, 4), StartUi.F(r, 5) == "1");
+                    var it = new Item { Path = StartUi.F(r, 0), Hay = View.Fold(StartUi.F(r, 1) + "\n" + StartUi.F(r, 2) + "\n" + StartUi.F(r, 6)) };
+                    it.Tile = Tile(it, StartUi.F(r, 1), StartUi.F(r, 2), StartUi.F(r, 3), StartUi.F(r, 4), StartUi.F(r, 5) == "1", StartUi.F(r, 6), StartUi.F(r, 7));
                     _items.Add(it);
                     _panel.Children.Add(it.Tile);
                 }
@@ -383,7 +401,7 @@ namespace DynALisp.Windows
             }
         }
 
-        Button Tile(Item it, string name, string folder, string when, string thumb, bool missing)
+        Button Tile(Item it, string name, string folder, string when, string thumb, bool missing, string group, string colour)
         {
             double w = TileWidth;
             var pic = new Border { Height = Math.Round((w - 16) * 0.62), CornerRadius = new CornerRadius(4), ClipToBounds = true };
@@ -398,6 +416,7 @@ namespace DynALisp.Windows
             var stack = new StackPanel();
             stack.Children.Add(pic);
             stack.Children.Add(title);
+            if (StartUi.Group(group, colour) is FrameworkElement g) stack.Children.Add(g);
             stack.Children.Add(date);
             var b = new Button { Content = stack, Width = w, ToolTip = it.Path, Opacity = missing ? 0.55 : 1 };
             b.SetResourceReference(StyleProperty, "Dyl.Tile");
@@ -486,7 +505,7 @@ namespace DynALisp.Windows
             _empty.Visibility = rows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
             foreach (var r in rows)
             {
-                var c = Card(StartUi.F(r, 0), StartUi.F(r, 1), StartUi.F(r, 2), StartUi.F(r, 3), StartUi.F(r, 4), StartUi.F(r, 5), StartUi.F(r, 6) == "1");
+                var c = Card(StartUi.F(r, 0), StartUi.F(r, 1), StartUi.F(r, 2), StartUi.F(r, 3), StartUi.F(r, 4), StartUi.F(r, 5), StartUi.F(r, 6) == "1", StartUi.F(r, 7), StartUi.F(r, 8));
                 _cards.Add((c, StartUi.F(r, 0)));
                 _panel.Children.Add(c);
             }
@@ -515,7 +534,7 @@ namespace DynALisp.Windows
             else Opened?.Invoke(path, false);
         }
 
-        Button Card(string path, string name, string kind, string where, string time, string thumb, bool missing)
+        Button Card(string path, string name, string kind, string where, string time, string thumb, bool missing, string group, string colour)
         {
             var pic = new Border { Width = 58, Height = 44, CornerRadius = new CornerRadius(4), ClipToBounds = true, Margin = new Thickness(0, 0, 10, 0), VerticalAlignment = VerticalAlignment.Top };
             pic.SetResourceReference(Border.BackgroundProperty, "Dyl.Input");
@@ -533,6 +552,7 @@ namespace DynALisp.Windows
             // time is in the graph, a click away: never on the card):
             var lines = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
             lines.Children.Add(top);
+            if (StartUi.Group(group, colour) is FrameworkElement gl) lines.Children.Add(gl);
             if (missing)
             {
                 var t = StartUi.Text("Not found", "Dyl.ErrorText", 11.5);

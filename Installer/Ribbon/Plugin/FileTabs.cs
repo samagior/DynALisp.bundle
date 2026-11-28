@@ -89,6 +89,8 @@ namespace DynALisp.Ribbon
     {
         // The colours of the projects: saturated, readable on the dark and the light tabs, the
         // orange and the teal of the logo first.
+        // Also in StartPage.cs of DynALisp.Windows.dll (the dots of the Start page), which reads
+        // Colours by reflection: change them together.
         static readonly Color[] Palette =
         {
             Color.FromRgb(0xF2, 0x8C, 0x28),  // orange

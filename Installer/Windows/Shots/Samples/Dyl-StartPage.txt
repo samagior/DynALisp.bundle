@@ -1,7 +1,7 @@
 # Sample values of the Start page (Installer\Windows\StartPage.cs, Res\Dyl-StartPage.xaml), as
 # the plugin gives them: key=value, +pin/rows=a pin (path, name, kind, folder, time, thumbnail,
-# missing), +act/rows=the active time of a day in a drawing (date, seconds, drawing),
-# +rec/rows=a recent drawing (path, name, folder, when, thumbnail, missing), +tpl/rows=a
+# missing, group, colour), +act/rows=the active time of a day in a drawing (date, seconds, drawing),
+# +rec/rows=a recent drawing (path, name, folder, when, thumbnail, missing, group, colour), +tpl/rows=a
 # template (path, name, default), +tsk/rows=a task (project, name, kind, id, done, text, error);
 # \t is a tab, {samples} this folder (the pictures of StartPage\, drawn for the docs: a drawing
 # keeps its own).
@@ -11,8 +11,8 @@ pnc=2
 rcc=5
 +pin/rows=D:\Projects\2041 Maple House\2041 Maple House.apj\t2041 Maple House\tProject\tD:\Projects\2041 Maple House\t\t\t
 +pin/rows=D:\Projects\2038 Library\Library.dst\t2038 Public Library - Main Street Branch Renovation\tSheet set\tD:\Projects\2038 Library\t\t\t
-+pin/rows=D:\Projects\2041 Maple House\Plans\A-101 Ground Floor.dwg\tA-101 Ground Floor\tDrawing\tD:\Projects\2041 Maple House\Plans\t\t{samples}\StartPage\plan.png\t
-+pin/rows=D:\Projects\2041 Maple House\Details\A-501 Wall Sections.dwg\tA-501 Wall Sections\tDrawing\tD:\Projects\2041 Maple House\Details\t\t{samples}\StartPage\section.png\t
++pin/rows=D:\Projects\2041 Maple House\Plans\A-101 Ground Floor.dwg\tA-101 Ground Floor\tDrawing\tD:\Projects\2041 Maple House\Plans\t\t{samples}\StartPage\plan.png\t\t2041 Maple House\t#1FB5A8
++pin/rows=D:\Projects\2041 Maple House\Details\A-501 Wall Sections.dwg\tA-501 Wall Sections\tDrawing\tD:\Projects\2041 Maple House\Details\t\t{samples}\StartPage\section.png\t\t2041 Maple House\t#1FB5A8
 +act/rows=2025-11-28\t15971\tD:\Projects\2038 Library\A-301 Sections.dwg
 +act/rows=2025-11-29\t1375\tD:\Projects\2041 Maple House\Details\A-521 Roof Details.dwg
 +act/rows=2025-12-01\t8360\tD:\Projects\2038 Library\A-201 Elevations.dwg
@@ -406,10 +406,10 @@ rcc=5
 +tsk/rows=D:\Projects\2038 Library\Library.dst\t2038 Public Library - Main Street Branch Renovation\tSheet set\tb3\t1\tSecond floor plan revised\t
 +tsk/rows=D:\Projects\2038 Library\Library.dst\t2038 Public Library - Main Street Branch Renovation\tSheet set\tb4\t\tStair details\t
 +tsk/rows=D:\Projects\2038 Library\Library.dst\t2038 Public Library - Main Street Branch Renovation\tSheet set\tb5\t\tSheet index\t
-+rec/rows=D:\Projects\2041 Maple House\Plans\A-101 Ground Floor.dwg\tA-101 Ground Floor\tD:\Projects\2041 Maple House\Plans\ttoday 14:02\t{samples}\StartPage\plan.png\t
-+rec/rows=D:\Projects\2041 Maple House\Details\A-501 Wall Sections.dwg\tA-501 Wall Sections\tD:\Projects\2041 Maple House\Details\ttoday 11:37\t{samples}\StartPage\section.png\t
-+rec/rows=D:\Projects\2041 Maple House\Plans\A-001 Site Plan.dwg\tA-001 Site Plan\tD:\Projects\2041 Maple House\Plans\tyesterday 16:20\t{samples}\StartPage\site.png\t
-+rec/rows=D:\Projects\2041 Maple House\Details\A-521 Roof Details.dwg\tA-521 Roof Details\tD:\Projects\2041 Maple House\Details\tyesterday 09:12\t{samples}\StartPage\detail.png\t
-+rec/rows=D:\Projects\2038 Library\A-201 Elevations.dwg\tA-201 Elevations\tD:\Projects\2038 Library\t2026-11-24\t{samples}\StartPage\elevation.png\t
-+rec/rows=D:\Projects\2038 Library\Old\A-102 Second Floor.dwg\tA-102 Second Floor\tD:\Projects\2038 Library\Old\t2026-11-19\t\t1
++rec/rows=D:\Projects\2041 Maple House\Plans\A-101 Ground Floor.dwg\tA-101 Ground Floor\tD:\Projects\2041 Maple House\Plans\ttoday 14:02\t{samples}\StartPage\plan.png\t\t2041 Maple House\t#1FB5A8
++rec/rows=D:\Projects\2041 Maple House\Details\A-501 Wall Sections.dwg\tA-501 Wall Sections\tD:\Projects\2041 Maple House\Details\ttoday 11:37\t{samples}\StartPage\section.png\t\t2041 Maple House\t#1FB5A8
++rec/rows=D:\Projects\2041 Maple House\Plans\A-001 Site Plan.dwg\tA-001 Site Plan\tD:\Projects\2041 Maple House\Plans\tyesterday 16:20\t{samples}\StartPage\site.png\t\t2041 Maple House\t#1FB5A8
++rec/rows=D:\Projects\2041 Maple House\Details\A-521 Roof Details.dwg\tA-521 Roof Details\tD:\Projects\2041 Maple House\Details\tyesterday 09:12\t{samples}\StartPage\detail.png\t\t2041 Maple House\t#1FB5A8
++rec/rows=D:\Projects\2038 Library\A-201 Elevations.dwg\tA-201 Elevations\tD:\Projects\2038 Library\t2026-11-24\t{samples}\StartPage\elevation.png\t\t2038 Public Library - Main Street Branch Renovation\t#F28C28
++rec/rows=D:\Projects\2038 Library\Old\A-102 Second Floor.dwg\tA-102 Second Floor\tD:\Projects\2038 Library\Old\t2026-11-19\t\t1\t2038 Public Library - Main Street Branch Renovation\t#F28C28
 +rec/rows=D:\Standards\Office\Arch D.dwt\tArch D\tD:\Standards\Office\t2026-10-30\t\t
