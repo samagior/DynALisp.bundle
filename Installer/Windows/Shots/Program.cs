@@ -30,10 +30,10 @@
 // key (the presets of a preset window: +pst/rows=...); {samples} the folder of the samples,
 // \\t a tab, \\T a tab inside a field of a row, \\n a new line), its Open Docs
 // button enabled. Its content is drawn under a
-// plain title bar, at twice its size (192 dpi), into the PNG its docs page names
-// (<!-- picture: images/<Page>-window.png -->), in the light theme of AutoCAD, and in its dark
-// theme beside it (<Page>-window-dark.png, shown by the website in dark mode). Nothing is
-// shown on the screen.
+// plain title bar, at twice its size (192 dpi, shown at its true size by the website), into
+// the PNG its docs page names (<!-- picture: images/<Page>-window.png -->), in DynALisp Dark,
+// the default look of DynALisp (the dark theme of AutoCAD, in its neutral greys): one picture
+// for every page, in light mode as in dark mode. Nothing is shown on the screen.
 
 using System;
 using System.Collections.Generic;
@@ -66,6 +66,8 @@ namespace DynALisp.Windows
                 else only.Add(args[i]);
             }
             if (fit && only.Contains("-trace")) { only.Remove("-trace"); Fit.Trace = Console.WriteLine; }
+            // Every picture in DynALisp Dark (the neutral greys of Theme):
+            Theme.NeutralOf = () => true;
             if (fit) Console.WriteLine("Work area " + Sz(SystemParameters.WorkArea.Size) + ", screen " + SystemParameters.PrimaryScreenWidth + "x" + SystemParameters.PrimaryScreenHeight);
             int errors = 0, done = 0;
             foreach (var line in File.ReadAllLines(Path.Combine(here, "Shots.csv")))
@@ -84,9 +86,8 @@ namespace DynALisp.Windows
                 }
                 try
                 {
-                    Shot(xaml, sample, png, false);
-                    Shot(xaml, sample, Path.ChangeExtension(png, null) + "-dark.png", true);
-                    Console.WriteLine("Drawn " + f[2] + " (light, dark)");
+                    Shot(xaml, sample, png, true);
+                    Console.WriteLine("Drawn " + f[2]);
                     done++;
                 }
                 catch (Exception e)
