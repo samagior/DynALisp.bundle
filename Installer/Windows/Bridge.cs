@@ -74,8 +74,8 @@ namespace DynALisp.Windows
             // places every window, a window of tabs the same way for every tab)
             Modeless.ShowWindow = w => AcApp.ShowModelessWindow(Bridge.MainWindow(), w, false);
             Modeless.Run = Run;
-            // The dark windows in the neutral greys under the DynALisp Neutral interface:
-            Theme.NeutralOf = Bridge.NeutralInterface;
+            // The dark windows in the colours of the Interface of Dyl-Settings > Display:
+            Theme.LookOf = Bridge.InterfaceLook;
             // The Start page of DynALisp in the Start tab, while it is on (StartPage.cs):
             StartPage.Init();
             // The active time of each drawing, while it is on (Activity.cs):
@@ -211,22 +211,25 @@ namespace DynALisp.Windows
         }
 
         // The Interface of Dyl-Settings > Display (DynalispInterface, the former
-        // DynalispPaletteColors while it is not set) is DynALisp Neutral, with Display on:
-        // the user settings (getenv) of the FixedProfile of AutoCAD.
-        internal static bool NeutralInterface()
+        // DynalispPaletteColors while it is not set), with Display on, null when it is off or
+        // not set: the user settings (getenv) of the FixedProfile of AutoCAD. The former names
+        // DynALisp Neutral and DynALisp are given as DynALisp Dark and Midnight.
+        internal static string InterfaceLook()
         {
             try
             {
                 string root = HostApplicationServices.Current.UserRegistryProductRootKey;
                 using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(root + @"\FixedProfile\General"))
                 {
-                    if (key == null || key.GetValue("DynalispDisplayOn") as string != "1") return false;
+                    if (key == null || key.GetValue("DynalispDisplayOn") as string != "1") return null;
                     string v = key.GetValue("DynalispInterface") as string;
                     if (string.IsNullOrEmpty(v)) v = key.GetValue("DynalispPaletteColors") as string;
-                    return v == "DynALisp Neutral";
+                    if (v == "DynALisp Neutral") return "DynALisp Dark";
+                    if (v == "DynALisp") return "Midnight";
+                    return string.IsNullOrEmpty(v) ? null : v;
                 }
             }
-            catch { return false; }
+            catch { return null; }
         }
 
         // The theme of AutoCAD: COLORTHEME 0 dark, 1 light:

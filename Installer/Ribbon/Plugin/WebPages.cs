@@ -77,7 +77,7 @@ window.__dylUndo=function(){ mo.disconnect(); for(var i=done.length-1;i>=0;i--){
 if (document.readyState==='loading') document.addEventListener('DOMContentLoaded',go); else go();
 })();";
 
-        static Look _look = Look.DynALisp;
+        static Look _look = Look.Dark;
         static string _script;
         static string Script => _script ??= Template.Replace("$NAME", _look.Name)
             .Replace("$HUE", N(_look.Hue)).Replace("$MIN", N(_look.MinSat)).Replace("$MAX", N(_look.MaxSat)).Replace("$DARK", N(_look.Darker));

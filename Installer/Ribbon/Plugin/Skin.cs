@@ -37,7 +37,9 @@
 // says why in (Dyl:RibbonSkin).
 //
 // On while Display is on in Dyl-Settings (DynalispDisplayOn) and its Interface
-// (DynalispInterface) is DynALisp or DynALisp Neutral, read here from the registry when the
+// (DynalispInterface) is one of the looks below (DynALisp Dark, Midnight, Blueprint, Forest,
+// Ember, Plum; DynALisp Neutral and DynALisp, the former names of the first two, still read),
+// read here from the registry when the
 // plugin loads, and again when the Lisp side calls (Dyl:RibbonSkin) after the settings are
 // saved; the former Palettes and Ribbon settings (DynalispPaletteColors, DynalispRibbonColors)
 // are read in its place while it is not set. The WPF parts with a theme of their own (the
@@ -140,8 +142,8 @@ namespace DynALisp.Ribbon
         }
 
         public bool Wanted;
-        // The look chosen (DynALisp or DynALisp Neutral), and the one the theme was put in:
-        public Look Look = Look.DynALisp;
+        // The look chosen (DynALisp Dark, Midnight...), and the one the theme was put in:
+        public Look Look = Look.Dark;
         Look _applied;
         string _fail;
         // The theme changed in place: (object, property, value it had), to give them back.
@@ -260,25 +262,33 @@ namespace DynALisp.Ribbon
     // hue and saturation the greys take, and how much darker the surfaces get.
     public sealed class Look
     {
-        public readonly string Name;
+        public readonly string Name, Was;
         public readonly double Hue, MinSat, MaxSat, Darker;
-        Look(string name, double hue, double minSat, double maxSat, double darker)
+        Look(string name, string was, double hue, double minSat, double maxSat, double darker)
         {
-            Name = name; Hue = hue; MinSat = minSat; MaxSat = maxSat; Darker = darker;
+            Name = name; Was = was; Hue = hue; MinSat = minSat; MaxSat = maxSat; Darker = darker;
         }
 
-        // The greys of the DynALisp windows (#252A32, #313844: 217 degrees, 10 to 16 %):
-        // AutoCAD's dark panels (a lightness of about 28 %) come near the cards of the windows
-        // (#313844, 23 %).
-        public static readonly Look DynALisp = new Look("DynALisp", 217, 0.10, 0.16, 0.78);
-        // Its variant in a neutral grey, darker: no hue, the panels near 17 % (#2C2C2C), beside
-        // a model space almost black (#121212).
-        public static readonly Look Neutral = new Look("DynALisp Neutral", 0, 0, 0, 0.62);
+        // DynALisp Dark, the default: a neutral grey, no hue, the panels near 17 % (#2C2C2C),
+        // beside a model space almost black (#121212). Formerly DynALisp Neutral.
+        public static readonly Look Dark = new Look("DynALisp Dark", "DynALisp Neutral", 0, 0, 0, 0.62);
+        // Midnight: the blue-grey of the dark DynALisp windows (#252A32, #313844: 217 degrees,
+        // 10 to 16 %), darker: AutoCAD's dark panels (a lightness of about 28 %) near 20 %.
+        // Formerly DynALisp.
+        public static readonly Look Midnight = new Look("Midnight", "DynALisp", 217, 0.10, 0.16, 0.70);
+        // The same in a hue of their own, more saturated so they tell apart at a glance:
+        // Blueprint, the navy of old blueprints; Forest, a fir green; Ember, a warm charcoal;
+        // Plum, an aubergine.
+        public static readonly Look Blueprint = new Look("Blueprint", null, 212, 0.40, 0.45, 0.70);
+        public static readonly Look Forest = new Look("Forest", null, 152, 0.22, 0.28, 0.66);
+        public static readonly Look Ember = new Look("Ember", null, 22, 0.24, 0.32, 0.66);
+        public static readonly Look Plum = new Look("Plum", null, 285, 0.22, 0.28, 0.66);
 
-        static readonly Look[] All = { DynALisp, Neutral };
+        static readonly Look[] All = { Dark, Midnight, Blueprint, Forest, Ember, Plum };
 
-        // The look of a value of the setting, null for any other (not set, off):
-        public static Look Of(string name) => All.FirstOrDefault(l => l.Name == name);
+        // The look of a value of the setting (its name, or the name it had before), null for
+        // any other (not set, off):
+        public static Look Of(string name) => string.IsNullOrEmpty(name) ? null : All.FirstOrDefault(l => l.Name == name || l.Was == name);
     }
 
     public static class Skin
@@ -522,7 +532,7 @@ namespace DynALisp.Ribbon
         // Every colour of the theme through Map; keep (in place): where to remember what it was.
         // Returns how many were changed.
         // The look the filter puts the colours in, while a theme is filtered:
-        static Look _look = Look.DynALisp;
+        static Look _look = Look.Dark;
 
         public static int Filter(object theme, List<(object, PropertyInfo, object)> keep, Look look)
         {

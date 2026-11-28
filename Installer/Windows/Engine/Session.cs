@@ -157,24 +157,27 @@ namespace DynALisp.Windows
     // The look of the windows: the styles of Theme.xaml (embedded, read once) and the Dyl.*
     // brushes of the light or the dark theme of AutoCAD (COLORTHEME 1 or 0), its blue for
     // what is picked. A dark window also gets the dark title bar of Windows. Under the
-    // DynALisp Neutral interface (Dyl-Settings > Display), the dark windows are in its neutral
+    // DynALisp Dark interface (Dyl-Settings > Display), the dark windows are in its neutral
     // greys, as the ribbon and the palettes around them.
     public static class Theme
     {
         static ResourceDictionary _styles;
 
-        // True when the dark windows take the neutral greys: the Interface of Dyl-Settings is
-        // DynALisp Neutral, read by Bridge.cs at each window (null in Shots: the pictures of the
-        // docs keep the grey blue).
-        public static Func<bool> NeutralOf;
+        // The look of the Interface of Dyl-Settings > Display (DynALisp Dark, Midnight,
+        // Blueprint, Forest, Ember, Plum), null while it is not set: read by Bridge.cs at each
+        // window ("DynALisp Dark" in Shots: the pictures of the docs are in DynALisp Dark).
+        public static Func<string> LookOf;
 
-        public static bool Neutral()
+        public static string Look()
         {
-            try { return NeutralOf != null && NeutralOf(); }
-            catch { return false; }
+            try { return LookOf?.Invoke(); }
+            catch { return null; }
         }
 
-        // Dark: the grey blue of the palettes of AutoCAD; light: its light greys.
+        // The dark windows take the neutral greys: the Interface is DynALisp Dark.
+        public static bool Neutral() => Look() == "DynALisp Dark";
+
+        // Dark: the grey blue of the palettes of AutoCAD (and of Midnight); light: its light greys.
         static readonly Dictionary<string, string> DarkColors = new Dictionary<string, string>
         {
             ["Back"] = "#252A32", ["Surface"] = "#313844", ["Border"] = "#3C4452", ["BorderStrong"] = "#4C5566",
@@ -183,7 +186,7 @@ namespace DynALisp.Windows
             ["Accent"] = "#0696D7", ["AccentHover"] = "#22A9E8", ["AccentText"] = "#FFFFFF", ["ErrorText"] = "#FF8F85",
             ["TitleBar"] = "#1E2229", ["TitleText"] = "#E6EAF0", ["ButtonBack"] = "#3A4250",
         };
-        // Dark under DynALisp Neutral: the same colours without their hue, a fifth darker (the
+        // Dark under DynALisp Dark: the same colours without their hue, a fifth darker (the
         // palettes of AutoCAD go from #3B4453 to #2C2C2C under it: a card #2F2F2F sits by
         // them); the texts keep their lightness, the blue of what is picked and the red stay.
         static readonly Dictionary<string, string> NeutralColors = new Dictionary<string, string>
@@ -203,6 +206,71 @@ namespace DynALisp.Windows
             ["TitleBar"] = "#FFFFFF", ["TitleText"] = "#1F2933", ["ButtonBack"] = "#FFFFFF",
         };
 
+        // The dark colours of a look: DynALisp Dark its neutral greys; the others the greys of
+        // DarkColors in their hue and saturation, the darker ones darker still by a factor (the
+        // texts keep their lightness and little of the hue, the blue of what is picked and the
+        // red stay); no look, the grey blue of AutoCAD.
+        static readonly Dictionary<string, (double Hue, double Sat, double Darker)> Tints = new Dictionary<string, (double, double, double)>
+        {
+            ["Midnight"] = (217, 0.16, 0.88),
+            ["Blueprint"] = (212, 0.42, 0.90),
+            ["Forest"] = (152, 0.26, 0.85),
+            ["Ember"] = (22, 0.28, 0.85),
+            ["Plum"] = (285, 0.26, 0.85),
+        };
+        static readonly Dictionary<string, Dictionary<string, string>> Tinted = new Dictionary<string, Dictionary<string, string>>();
+
+        static Dictionary<string, string> DarkOf(string look)
+        {
+            if (look == "DynALisp Dark") return NeutralColors;
+            if (look == null || !Tints.TryGetValue(look, out var t)) return DarkColors;
+            lock (Tinted)
+            {
+                if (Tinted.TryGetValue(look, out var done)) return done;
+                var d = new Dictionary<string, string>();
+                foreach (var kv in DarkColors)
+                {
+                    if (kv.Key.StartsWith("Accent") || kv.Key == "ErrorText") { d[kv.Key] = kv.Value; continue; }
+                    var c = (Color)ColorConverter.ConvertFromString(kv.Value);
+                    ToHsl(c, out _, out double sat, out double l);
+                    if (l < 0.6) { l *= t.Darker; sat = t.Sat; }
+                    else sat = Math.Min(sat, 0.12);
+                    d[kv.Key] = FromHsl(t.Hue, sat, l);
+                }
+                return Tinted[look] = d;
+            }
+        }
+
+        static void ToHsl(Color c, out double h, out double s, out double l)
+        {
+            double r = c.R / 255.0, g = c.G / 255.0, b = c.B / 255.0;
+            double max = Math.Max(r, Math.Max(g, b)), min = Math.Min(r, Math.Min(g, b));
+            l = (max + min) / 2;
+            double d = max - min;
+            if (d < 1e-9) { h = 0; s = 0; return; }
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            if (max == r) h = (g - b) / d + (g < b ? 6 : 0);
+            else if (max == g) h = (b - r) / d + 2;
+            else h = (r - g) / d + 4;
+            h *= 60;
+        }
+
+        static string FromHsl(double h, double s, double l)
+        {
+            double q = l < 0.5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q, k = h / 360;
+            double Ch(double t)
+            {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1.0 / 6) return p + (q - p) * 6 * t;
+                if (t < 0.5) return q;
+                if (t < 2.0 / 3) return p + (q - p) * (2.0 / 3 - t) * 6;
+                return p;
+            }
+            int B(double v) => (int)Math.Round(Math.Max(0, Math.Min(1, v)) * 255);
+            return string.Format("#{0:X2}{1:X2}{2:X2}", B(Ch(k + 1.0 / 3)), B(Ch(k)), B(Ch(k - 1.0 / 3)));
+        }
+
         static ResourceDictionary Styles()
         {
             if (_styles != null) return _styles;
@@ -215,7 +283,7 @@ namespace DynALisp.Windows
         public static ResourceDictionary Brushes(bool dark)
         {
             var d = new ResourceDictionary();
-            var colors = !dark ? LightColors : Neutral() ? NeutralColors : DarkColors;
+            var colors = !dark ? LightColors : DarkOf(Look());
             foreach (var kv in colors)
             {
                 var b = new SolidColorBrush((Color)ColorConverter.ConvertFromString(kv.Value));

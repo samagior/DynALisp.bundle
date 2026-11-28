@@ -26,8 +26,10 @@
 # guide page linking to its dev page, the stylesheet...). The switch of a page leads to the
 # page of the other set for the same tool when it has one, else to the home of that set.
 # The pictures a guide page names (<!-- picture: images/<Page>-window.png -->) are shown once
-# their file is in the images folder beside the page; its -dark copy (<Page>-window-dark.png),
-# when there is one, in dark mode.
+# their file is in the images folder beside the page, at their true size: a PNG drawn at
+# 192 dpi (its pHYs, Installer\Windows\Shots) at half its pixels, never stretched or shrunk to
+# the column (a picture wider than the column scrolls). One picture, in DynALisp Dark, in light
+# mode as in dark mode.
 #
 # A page already in <folder> is kept, even when the docs no longer have it (renamed, moved,
 # deleted): an installed DynALisp opens the pages of its own version, which stay on the
@@ -42,6 +44,7 @@ import json
 import os
 import re
 import shutil
+import struct
 import sys
 
 import BuildDocs
@@ -167,6 +170,28 @@ def add_nav(text_, nav):
     return text_[:at] + '\n' + nav + text_[at:]
 
 
+def true_size(path):
+    """(width, height) of a picture in CSS pixels: a PNG at 96 dpi per pixel of its pHYs (192 dpi:
+    half its pixels), a GIF at its pixels; None when it cannot be read."""
+    try:
+        with open(path, 'rb') as f:
+            data = f.read()
+    except OSError:
+        return None
+    if data[:8] == b'\x89PNG\r\n\x1a\n':
+        w, h = struct.unpack('>II', data[16:24])
+        i = data.find(b'pHYs', 0, 4096)
+        if i > 0:
+            x, _, unit = struct.unpack('>IIB', data[i + 4:i + 13])
+            dpi = round(x * 0.0254) if unit == 1 else 96
+            if dpi > 96:
+                w, h = round(w * 96 / dpi), round(h * 96 / dpi)
+        return w, h
+    if data[:4] == b'GIF8':
+        return struct.unpack('<HH', data[6:10])
+    return None
+
+
 def show_pictures(text_, src):
     """The pictures the page names, shown when their file is beside it."""
     title = re.search(r'<h1>(.*?)</h1>', text_, re.S)
@@ -177,12 +202,9 @@ def show_pictures(text_, src):
         if not os.path.exists(os.path.join(os.path.dirname(src), *name.split('/'))):
             return m.group(0)
         what = 'sample use' if name.lower().endswith('.gif') else 'window'
-        img = '<img src="%s" alt="%s">' % (html.escape(name), html.escape('%s: %s' % (title, what)))
-        # The picture of the window in the dark theme beside it (<Page>-window-dark.png, drawn
-        # by Installer\Windows\Shots), shown in dark mode:
-        dark = name[:-4] + '-dark' + name[-4:]
-        if os.path.exists(os.path.join(os.path.dirname(src), *dark.split('/'))):
-            img = '<picture><source srcset="%s" media="(prefers-color-scheme: dark)">%s</picture>' % (html.escape(dark), img)
+        size = true_size(os.path.join(os.path.dirname(src), *name.split('/')))
+        wh = ' width="%d" height="%d"' % size if size else ''
+        img = '<img src="%s"%s alt="%s">' % (html.escape(name), wh, html.escape('%s: %s' % (title, what)))
         return '<figure class="shot">%s</figure>' % img
     return BuildDocs.PICTURE.sub(sub, text_)
 

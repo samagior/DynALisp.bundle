@@ -48,7 +48,7 @@ namespace DynALisp.Ribbon
         const uint SWP_NOACTIVATE = 0x10, SWP_SHOWWINDOW = 0x40;
 
         // Shown over the main window, in the dark of the look (its title bar, #1A1A1A under
-        // DynALisp Neutral):
+        // DynALisp Dark):
         public static void Show(Look look)
         {
             if (_w != null) return;

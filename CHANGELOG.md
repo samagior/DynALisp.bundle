@@ -15,6 +15,17 @@ of this repository (`Contents/Modules/Dynalisp/Docs/Core/Dyl-Settings.htm#displa
 DynALisp opens the page on the docs website, in its language, and shows the picture
 from the website when this computer does not have it. Plain ASCII.
 
+## Next
+
+### DynALisp Dark, and five more looks
+The interface look of Dyl-Settings > Display > Interface is now called DynALisp Dark, the default: a neutral dark grey. The former blue-grey is Midnight, a little darker. Blueprint (blue), Forest (green), Ember (warm brown) and Plum (violet) join them. A look chosen before keeps its colors under its new name.
+![](Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Settings-Display.png)
+[Open the docs](Contents/Modules/Dynalisp/Docs/Core/Dyl-Settings.htm#display)
+
+### Shorter docs
+Every page of the docs now says only what you do and what you see, in a few lines. The pictures show the windows at their true size, in DynALisp Dark.
+[Open the docs](Contents/Modules/Dynalisp/Docs/index.htm)
+
 ## 2.1 - 2026-11-27
 
 ### A Start page of your own

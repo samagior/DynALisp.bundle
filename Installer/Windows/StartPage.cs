@@ -85,7 +85,8 @@ namespace DynALisp.Windows
         static HwndSource _src;
         static Session _s;
         static View _view;
-        static bool _dark, _neutral, _shown, _reading;
+        static bool _dark, _shown, _reading;
+        static string _look;
         static string _fail, _found;
         static int _recentCount = -1;
         static string _recentKey;
@@ -125,7 +126,7 @@ namespace DynALisp.Windows
                 }
                 bool vis = IsWindowVisible(_frame);
                 // The theme of AutoCAD changed: the page made again in it.
-                if (_src != null && vis && !_shown && (Dark() != _dark || Theme.Neutral() != _neutral)) Destroy();
+                if (_src != null && vis && !_shown && (Dark() != _dark || Theme.Look() != _look)) Destroy();
                 if (_src == null)
                 {
                     // (a page that cannot be made, its file missing: tried again in 10 s)
@@ -190,7 +191,7 @@ namespace DynALisp.Windows
         {
             string path = Path.Combine(Root(), "Contents", "Modules", "Dynalisp", "Res", PageFile);
             _dark = Dark();
-            _neutral = Theme.Neutral();
+            _look = Theme.Look();
             _s = new Session { Dark = _dark };
             Values(_s);
             _view = _s.Open(path);

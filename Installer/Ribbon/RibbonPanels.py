@@ -3,9 +3,10 @@
 #
 # Run by BuildRibbon.py each time it writes DynALisp.cuix, from the same panels (Ribbon.csv)
 # and icons (RibbonIcons.py), so the pictures always show the ribbon as it is built:
-#   - Docs\Plugins\Ribbon\<Panel>.png and <Panel>-dark.png: each panel, its slide-out open
-#     under it, on the light and the dark ribbon of AutoCAD
-#   - Docs\Plugins\Ribbon\Tab.png and Tab-dark.png: every panel side by side
+#   - Docs\Plugins\Ribbon\<Panel>.png: each panel, its slide-out open under it, on the
+#     ribbon of AutoCAD in DynALisp Dark (the default look of DynALisp: its dark theme in
+#     neutral greys), one picture in light mode as in dark mode
+#   - Docs\Plugins\Ribbon\Tab.png: every panel side by side
 #   - the Panels section of Docs\Plugins\Ribbon.htm and of its copy in each language of TEXT
 #     (Ribbon.fr.htm), between their two BuildRibbon comments: a picture and the tools of each
 #     panel, linked to their pages in the language of the page
@@ -40,14 +41,23 @@ PAD = 4                    # the margin of the buttons
 CONTENT = 3 * ROW + 2 * PAD
 TITLE = 20                 # the title bar of a panel
 
-THEMES = {
-    '': dict(bg=(245, 245, 245, 255), title=(226, 228, 231, 255), border=(200, 204, 210, 255),
-             text=(30, 30, 30, 255), muted=(85, 90, 98, 255), combo=(255, 255, 255, 255),
-             cborder=(165, 170, 178, 255), line=(196, 200, 206, 255)),
-    '-dark': dict(bg=(59, 68, 83, 255), title=(47, 54, 66, 255), border=(34, 40, 50, 255),
-                  text=(238, 240, 243, 255), muted=(196, 202, 210, 255), combo=(43, 50, 62, 255),
-                  cborder=(96, 105, 120, 255), line=(88, 97, 112, 255)),
-}
+# The dark ribbon of AutoCAD, and the same in DynALisp Dark: its greys without hue, the darker
+# ones darker still, as Plugin\Skin.cs puts them (Look.Dark: hue 0, saturation 0, Darker 0.62;
+# a colour lighter than 60 % only loses its hue).
+DARK = dict(bg=(59, 68, 83, 255), title=(47, 54, 66, 255), border=(34, 40, 50, 255),
+            text=(238, 240, 243, 255), muted=(196, 202, 210, 255), combo=(43, 50, 62, 255),
+            cborder=(96, 105, 120, 255), line=(88, 97, 112, 255))
+
+
+def dynalisp_dark(c):
+    l = (max(c[:3]) + min(c[:3])) / 2 / 255
+    if l < 0.6:
+        l *= 0.62
+    v = round(l * 255)
+    return (v, v, v, c[3])
+
+
+THEMES = {'': {k: dynalisp_dark(c) for k, c in DARK.items()}}
 
 # The drop-downs of DynALisp.Ribbon.dll, after the button of their tool: (label, value shown).
 # In each language of the plugin (Plugin\Translations.cs); the phases are the descriptions of
@@ -346,8 +356,8 @@ def tool(it, cmds, lang):
 
 
 def picture(base, w, alt):
-    return ('<p><picture><source srcset="Ribbon/%s-dark.png" media="(prefers-color-scheme: dark)">'
-            '<img src="Ribbon/%s.png" width="%d" alt="%s"></picture></p>' % (base, base, w, html.escape(alt)))
+    """A picture at its true size (drawn at twice it), never stretched to the column."""
+    return '<p class="shot"><img src="Ribbon/%s.png" width="%d" alt="%s"></p>' % (base, w, html.escape(alt))
 
 
 def localized_panels(panels, lang, panel_tr):
@@ -386,7 +396,7 @@ def section(panels, sizes, cmds, lang, panel_tr=None):
 
 def write(panels, cmds, panel_tr=None):
     """The pictures and the Panels section of the page, in each language of TEXT (the French
-    pictures: Draw-fr.png, Draw-fr-dark.png); returns the files written."""
+    pictures: Draw-fr.png); returns the files written."""
     os.makedirs(OUT, exist_ok=True)
     written, sizes, keep = [], {}, set()
     for lang in TEXT:

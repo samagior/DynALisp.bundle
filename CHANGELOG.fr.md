@@ -6,6 +6,17 @@ par la fenêtre What's New quand DynALisp est en français (Dyl-Settings > Envir
 Language). Mêmes versions, mêmes changements, mêmes images et liens ; une version qui
 n'y est pas encore est montrée en anglais. En UTF-8.
 
+## Next
+
+### DynALisp Dark, et cinq autres apparences
+L'apparence de Dyl-Settings > Display > Interface s'appelle maintenant DynALisp Dark, par défaut : un gris foncé neutre. L'ancien gris-bleu devient Midnight, un peu plus foncé. Blueprint (bleu), Forest (vert), Ember (brun chaud) et Plum (violet) s'y ajoutent. Une apparence déjà choisie garde ses couleurs sous son nouveau nom.
+![](Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Settings-Display.png)
+[Ouvrir la documentation](Contents/Modules/Dynalisp/Docs/Core/Dyl-Settings.htm#display)
+
+### Une documentation plus courte
+Chaque page de la documentation dit maintenant seulement ce que vous faites et ce que vous voyez, en quelques lignes. Les images montrent les fenêtres à leur taille réelle, en DynALisp Dark.
+[Ouvrir la documentation](Contents/Modules/Dynalisp/Docs/index.htm)
+
 ## 2.1 - 2026-11-27
 
 ### Une page Début bien à vous

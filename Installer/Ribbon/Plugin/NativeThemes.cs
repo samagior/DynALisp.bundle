@@ -134,7 +134,7 @@ namespace DynALisp.Ribbon
 
         // Run by Skin.OnIdle: on (the palettes wanted, AutoCAD dark) or off. A theme made later
         // (PropertyPalette, when Properties first opens) is found at the next call.
-        static Look _look = Look.DynALisp;
+        static Look _look = Look.Dark;
 
         public static void Apply(bool on, Look look)
         {

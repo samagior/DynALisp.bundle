@@ -4712,7 +4712,7 @@
   ;;;   - Display (Overrides, DynalispDisplayOn) and its open button, the display
   ;;;     window (Dyl-Settings-Display.xaml, greyed out while Display is off): the display
   ;;;     settings applied in every drawing opened while Display is on: the look of the
-  ;;;     interface (DynALisp or DynALisp Neutral: the ribbon and the palettes by
+  ;;;     interface (DynALisp Dark or Midnight: the ribbon and the palettes by
   ;;;     DynALisp.Ribbon.dll, Skin.cs, an experiment, and the model space and the layouts),
   ;;;     then the model space background and the paper of the layouts in place of those
   ;;;     of the interface (Black, Default, White), and the band of colour of the file
