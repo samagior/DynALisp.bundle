@@ -23,17 +23,24 @@
 //                                         and those of its lists (the Windows workflow)
 //   ... -- -fit -trace <window>           the same, with each step of the fit of its lists
 //
-// Each row of Shots.csv (Window;Sample;Picture, paths from the root of the repository) is a
-// window file opened as the plugin opens it (Session.Open: the same engine, the same theme),
+// Each row of Shots.csv (Window;Sample;Picture[;Section], paths from the root of the
+// repository) is a window file opened as the plugin opens it (Session.Open: the same engine, the same theme),
 // on the values of its sample file (Samples\, as the Lisp gives them: key=value,
 // key/list=item|item, key/vals=value|value, key/off=1, +key=field\\tfield a row of the table
 // key (the presets of a preset window: +pst/rows=...); {samples} the folder of the samples,
 // \\t a tab, \\T a tab inside a field of a row, \\n a new line), its Open Docs
-// button enabled. Its content is drawn under a
-// plain title bar, at twice its size (192 dpi, shown at its true size by the website), into
-// the PNG its docs page names (<!-- picture: images/<Page>-window.png -->), in DynALisp Dark,
+// button enabled. Its content is drawn without the title bar of the window and without a frame,
+// at twice its size (192 dpi, shown at its true size by the website), into the PNG its docs
+// page names (<!-- picture: images/<Page>-window.png -->), in DynALisp Dark,
 // the default look of DynALisp (the dark theme of AutoCAD, in its neutral greys): one picture
 // for every page, in light mode as in dark mode. Nothing is shown on the screen.
+//
+// A large window of several sections gets a picture per section, its page describing each one
+// in a section of its own: the Section column names the part of the window drawn, the rest cut
+// away (a margin of the window around it):
+//   Presets          the GroupBox of that header, else the element of that x:Name
+//   GroupBox:nam     the nearest GroupBox (or any type) that holds the element named nam
+//   Presets+Preview  the parts joined, and what lies between them
 
 using System;
 using System.Collections.Generic;
@@ -75,6 +82,7 @@ namespace DynALisp.Windows
                 if (line.Trim() == "" || line.TrimStart().StartsWith("#")) continue;
                 var f = line.Split(';').Select(x => x.Trim()).ToArray();
                 if (f.Length < 3) continue;
+                string section = f.Length > 3 ? f[3] : "";
                 if (only.Count > 0 && !only.Any(o => f[0].Contains(o) || f[2].Contains(o))) continue;
                 string xaml = Path.Combine(root, f[0]), sample = Path.Combine(here, "Samples", f[1]);
                 string png = outDir != null ? Path.Combine(outDir, f[2]) : Path.Combine(root, f[2]);
@@ -86,7 +94,7 @@ namespace DynALisp.Windows
                 }
                 try
                 {
-                    Shot(xaml, sample, png, true);
+                    Shot(xaml, sample, png, true, section);
                     Console.WriteLine("Drawn " + f[2]);
                     done++;
                 }
@@ -216,7 +224,36 @@ namespace DynALisp.Windows
             }
         }
 
-        static void Shot(string xaml, string sample, string png, bool dark)
+        // The part of a window a Section names (see the top of this file):
+        static FrameworkElement Part(DependencyObject root, string spec)
+        {
+            int colon = spec.IndexOf(':');
+            string type = colon > 0 ? spec.Substring(0, colon) : null, name = colon > 0 ? spec.Substring(colon + 1) : spec;
+            FrameworkElement First(Func<FrameworkElement, bool> match)
+            {
+                FrameworkElement found = null;
+                void Walk(DependencyObject o)
+                {
+                    if (found != null) return;
+                    if (o is FrameworkElement fe && match(fe)) { found = fe; return; }
+                    foreach (var c in LogicalTreeHelper.GetChildren(o)) if (c is DependencyObject d) Walk(d);
+                }
+                Walk(root);
+                return found;
+            }
+            // A header first, then a name:
+            var el = (type == null ? First(fe => fe is GroupBox gb && gb.Header is string h && h == name) : null)
+                     ?? First(fe => fe.Name == name);
+            if (el == null || type == null) return el;
+            for (DependencyObject o = el; o != null; o = LogicalTreeHelper.GetParent(o) ?? VisualTreeHelper.GetParent(o))
+                if (o.GetType().Name == type && o is FrameworkElement up) return up;
+            return null;
+        }
+
+        // The margin of the window kept around a section:
+        const double SectionPad = 12;
+
+        static void Shot(string xaml, string sample, string png, bool dark, string section)
         {
             var s = new Session { Dark = dark };
             Read(s, sample);
@@ -225,26 +262,13 @@ namespace DynALisp.Windows
             s.Values[Session.DocsKey(Win.GetDocs(w))] = "https://samagior.github.io/DynALisp.docs/";
             view.Fill();
 
-            // The content of the window under a title bar, with the resources and the text
-            // settings of the window (its styles, its theme):
+            // The content of the window, without its title bar nor a frame, with the resources and
+            // the text settings of the window (its styles, its theme):
             var content = (UIElement)w.Content;
             w.Content = null;
-            var title = new Grid { Height = 32 };
-            title.SetResourceReference(Panel.BackgroundProperty, "Dyl.TitleBar");
-            var caption = new TextBlock { Text = w.Title, Margin = new Thickness(12, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
-            caption.SetResourceReference(TextBlock.ForegroundProperty, "Dyl.TitleText");
-            var close = new TextBlock { Text = "\u2715", Margin = new Thickness(0, 0, 14, 0), HorizontalAlignment = HorizontalAlignment.Right, VerticalAlignment = VerticalAlignment.Center };
-            close.SetResourceReference(TextBlock.ForegroundProperty, "Dyl.Muted");
-            title.Children.Add(caption);
-            title.Children.Add(close);
-            var dock = new DockPanel();
-            DockPanel.SetDock(title, Dock.Top);
-            dock.Children.Add(title);
-            dock.Children.Add(content);
             var frame = new Border
             {
-                Child = dock,
-                BorderThickness = new Thickness(1),
+                Child = content,
                 UseLayoutRounding = true,
                 SnapsToDevicePixels = true,
             };
@@ -253,7 +277,6 @@ namespace DynALisp.Windows
             TextElement.SetFontFamily(frame, w.FontFamily);
             TextElement.SetFontSize(frame, w.FontSize);
             frame.SetResourceReference(Border.BackgroundProperty, "Dyl.Back");
-            frame.SetResourceReference(Border.BorderBrushProperty, "Dyl.BorderStrong");
             frame.SetResourceReference(TextElement.ForegroundProperty, "Dyl.Text");
 
             frame.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
@@ -267,9 +290,27 @@ namespace DynALisp.Windows
             var size = frame.RenderSize;
             var bmp = new RenderTargetBitmap((int)Math.Ceiling(size.Width * scale), (int)Math.Ceiling(size.Height * scale), 96 * scale, 96 * scale, PixelFormats.Pbgra32);
             bmp.Render(frame);
+            BitmapSource picture = bmp;
+            if (section != "")
+            {
+                // Only the section, with a margin of the window around it:
+                Rect? r = null;
+                foreach (var spec in section.Split('+').Select(x => x.Trim()))
+                {
+                    var part = Part(frame, spec) ?? throw new InvalidOperationException("Section not found in " + Path.GetFileName(xaml) + ": " + spec);
+                    var b = part.TransformToAncestor(frame).TransformBounds(new Rect(part.RenderSize));
+                    r = r == null ? b : Rect.Union(r.Value, b);
+                }
+                var cut = r.Value;
+                cut.Inflate(SectionPad, SectionPad);
+                cut.Intersect(new Rect(size));
+                int x = (int)Math.Floor(cut.X * scale), y = (int)Math.Floor(cut.Y * scale);
+                int cw = Math.Min(bmp.PixelWidth - x, (int)Math.Ceiling(cut.Width * scale)), ch = Math.Min(bmp.PixelHeight - y, (int)Math.Ceiling(cut.Height * scale));
+                picture = new CroppedBitmap(bmp, new Int32Rect(x, y, cw, ch));
+            }
             Directory.CreateDirectory(Path.GetDirectoryName(png));
             var enc = new PngBitmapEncoder();
-            enc.Frames.Add(BitmapFrame.Create(bmp));
+            enc.Frames.Add(BitmapFrame.Create(picture));
             using (var fs = File.Create(png)) enc.Save(fs);
         }
     }

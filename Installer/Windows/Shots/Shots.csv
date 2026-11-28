@@ -1,7 +1,9 @@
 # The windows drawn by DynALisp.Windows.Shots for the docs (Program.cs): the window file, its
-# sample values (Samples\), the picture its docs page names. Paths from the root of the
-# repository. A window added or changed gets its row in the same change.
-# Window;Sample;Picture
+# sample values (Samples\), the picture its docs page names, and for a large window of several
+# sections the part drawn (a GroupBox header, an x:Name, Type:name for the Type that holds it,
+# parts joined with +), one row per section. Paths from the root of the repository. A window
+# added or changed gets its row in the same change.
+# Window;Sample;Picture[;Section]
 Contents/Modules/Dynalisp/Res/Dyl-Settings.xaml;Dyl-Settings.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Settings-window.png
 Contents/Modules/Dynalisp/Res/Dyl-Settings-DrawingSettings.xaml;Dyl-Settings.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Settings-DrawingSettings.png
 Contents/Modules/Dynalisp/Res/Dyl-Settings-Display.xaml;Dyl-Settings.txt;Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Settings-Display.png
@@ -9,8 +11,12 @@ Contents/Modules/Dynalisp/Res/Dyl-Settings-FilePreferences.xaml;Dyl-Settings.txt
 Contents/Modules/Dynalisp/Res/Dyl-Settings-OutputPrep.xaml;Dyl-Settings.txt;Contents/Modules/Dynalisp/Docs/Output/images/Dyl-CmdOptimizer-window.png
 Contents/Modules/Dynalisp/Res/Dyl-QuickDrawGallery.xaml;Dyl-QuickDrawGallery.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-QuickDrawGallery-window.png
 Contents/Modules/Dynalisp/Res/Dyl-Settings.xaml;Dyl-Settings.txt;Contents/Modules/Dynalisp/Docs/Plugins/images/Windows-window.png
-Contents/Modules/Dynalisp/Res/Dyl-QuickDraw.xaml;Dyl-QuickDraw.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-QuickDraw-window.png
-Contents/Modules/Dynalisp/Res/Dyl-QuickDraw.xaml;Dyl-QuickDraw-Assembly.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-QuickDraw-assembly.png
+Contents/Modules/Dynalisp/Res/Dyl-QuickDraw.xaml;Dyl-QuickDraw.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-QuickDraw-presets.png;Presets
+Contents/Modules/Dynalisp/Res/Dyl-QuickDraw.xaml;Dyl-QuickDraw.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-QuickDraw-name.png;GroupBox:nam
+Contents/Modules/Dynalisp/Res/Dyl-QuickDraw.xaml;Dyl-QuickDraw.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-QuickDraw-preview.png;Preview
+Contents/Modules/Dynalisp/Res/Dyl-QuickDraw.xaml;Dyl-QuickDraw.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-QuickDraw-parameters.png;Parameters
+Contents/Modules/Dynalisp/Res/Dyl-QuickDraw.xaml;Dyl-QuickDraw.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-QuickDraw-buttons.png;DockPanel:rst
+Contents/Modules/Dynalisp/Res/Dyl-QuickDraw.xaml;Dyl-QuickDraw-Assembly.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-QuickDraw-assembly.png;Parameters
 Contents/Modules/Dynalisp/Res/Dyl-QuickDrawBandSettings.xaml;Dyl-QuickDrawBandSettings.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-QuickDrawBandSettings-window.png
 Contents/Modules/Dynalisp/Res/Dyl-AssemblyPresets.xaml;Dyl-AssemblyPresets.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-AssemblyPresets-window.png
 Contents/Modules/Dynalisp/Res/Dyl-PresetGroups.xaml;Dyl-PresetGroups.txt;Contents/Modules/Dynalisp/Docs/Draw/images/Dyl-PresetGroups-window.png
