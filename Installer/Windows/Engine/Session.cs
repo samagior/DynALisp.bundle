@@ -306,7 +306,18 @@ namespace DynALisp.Windows
             Window = w;
             Collect(w);
             foreach (var fe in _all) Wire(fe);
+            w.AddHandler(System.Windows.Documents.Hyperlink.RequestNavigateEvent, new System.Windows.Navigation.RequestNavigateEventHandler(Navigate));
             w.Closed += (a, b) => _closed = true;
+        }
+
+        // A link of the window (a Hyperlink and its NavigateUri, in the template of a list:
+        // the docs page of a change of What's New) opens what it names, the window staying
+        // open, as Open Docs:
+        void Navigate(object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+        {
+            e.Handled = true;
+            try { Session.OpenTarget(e.Uri?.OriginalString); }
+            catch (Exception x) { Error("Unable to open the link: " + x.Message); }
         }
 
         // Every element of the window (its logical tree: what the file holds):

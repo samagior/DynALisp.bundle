@@ -9,7 +9,9 @@
   Dyl.Label (the label of a value), Dyl.Sub (the title of a sub-section), Dyl.Error (the text
   named "error"), Dyl.OpenButton (set by OpenButton itself), Dyl.Tile (set by Gallery
   itself), Dyl.Chip (the items of a list of names), Dyl.Search (a search box), Dyl.Pill (a
-  group of a gallery, set by Gallery itself, and Dyl.PillSmall its methods). A TextBox
+  group of a gallery, set by Gallery itself, and Dyl.PillSmall its methods), Dyl.Note,
+  Dyl.NoteVersion, Dyl.NoteTitle and Dyl.NotePicture (the changes of What's New), Dyl.Link (a
+  Hyperlink). A TextBox
   shows its Tag as a hint while it is empty. GroupBox, Button, CheckBox, ComboBox, ListBox
   and TextBox take theirs on their own.
   Windows are minimal (Windows convention): no colour or box that does not say something.
@@ -352,6 +354,63 @@
         </ControlTemplate>
       </Setter.Value>
     </Setter>
+  </Style>
+
+  <!-- An item of a list that is read, not picked (the changes of What's New, the
+       ItemContainerStyle of its list): no hover, no selection, the text at the left: -->
+  <Style x:Key="Dyl.Note" TargetType="ListBoxItem">
+    <Setter Property="Foreground" Value="{DynamicResource Dyl.Text}"/>
+    <Setter Property="Focusable" Value="False"/>
+    <Setter Property="Padding" Value="2,0,8,0"/>
+    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ListBoxItem">
+          <Border Background="Transparent" Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- Its parts: the heading of a version, the title of a change, its picture: -->
+  <Style x:Key="Dyl.NoteVersion" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Dyl.Muted}"/>
+    <Setter Property="FontSize" Value="11.5"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+    <Setter Property="Margin" Value="0,4,0,8"/>
+  </Style>
+
+  <Style x:Key="Dyl.NoteTitle" TargetType="TextBlock">
+    <Setter Property="Foreground" Value="{DynamicResource Dyl.Heading}"/>
+    <Setter Property="FontSize" Value="14"/>
+    <Setter Property="FontWeight" Value="SemiBold"/>
+    <Setter Property="TextWrapping" Value="Wrap"/>
+  </Style>
+
+  <Style x:Key="Dyl.NotePicture" TargetType="Image">
+    <Setter Property="MaxWidth" Value="700"/>
+    <Setter Property="MaxHeight" Value="340"/>
+    <Setter Property="Stretch" Value="Uniform"/>
+    <Setter Property="StretchDirection" Value="DownOnly"/>
+    <Setter Property="HorizontalAlignment" Value="Left"/>
+    <Setter Property="Margin" Value="0,8,0,0"/>
+    <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
+  </Style>
+
+  <!-- A link (a Hyperlink: the docs page of a change of What's New), in the blue of AutoCAD,
+       underlined under the mouse: -->
+  <Style x:Key="Dyl.Link" TargetType="Hyperlink">
+    <Setter Property="Foreground" Value="{DynamicResource Dyl.Accent}"/>
+    <Setter Property="TextDecorations" Value="{x:Null}"/>
+    <Style.Triggers>
+      <Trigger Property="IsMouseOver" Value="True">
+        <Setter Property="Foreground" Value="{DynamicResource Dyl.AccentHover}"/>
+        <Setter Property="TextDecorations" Value="Underline"/>
+      </Trigger>
+    </Style.Triggers>
   </Style>
 
   <!-- A search box: a TextBox with a magnifier before its text (the Filter of a list, the

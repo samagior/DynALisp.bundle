@@ -3,9 +3,10 @@
 #
 #   powershell -ExecutionPolicy Bypass -File Installer\Build.ps1 [-Iscc <path of ISCC.exe>]
 #
-# The version is the AppVersion of PackageContents.xml, and CHANGELOG.md must have
-# its "## <version>" section (its notes are written to Releases\build\notes.md, the
-# notes of the GitHub release). The setup holds the files git knows (committed or new,
+# The version is the AppVersion of PackageContents.xml, and CHANGELOG.md (What's New) must
+# have its "## <version>" section (written to Releases\build\notes.md, the notes of the
+# GitHub release, its pictures and links to the docs pointed to the docs website). The
+# setup holds the files git knows (committed or new,
 # never the ignored ones: User, MyTools...), without the dev files (Installer,
 # .github, .vscode, CLAUDE.md, CONVENTIONS.md, Conventions) and without the Docs (User Guide) and
 # DevDocs (Developer docs) folders of each module: the docs open on the website (Resources\DocsPages.txt, the list of its pages,
@@ -21,7 +22,7 @@ $out   = Join-Path $repo 'Releases'
 $build = Join-Path $out 'build'
 $stage = Join-Path $build 'bundle'
 
-# Version, and its notes in CHANGELOG.md:
+# Version, and what it brings in CHANGELOG.md (What's New):
 [xml]$pkg = Get-Content -Raw -LiteralPath (Join-Path $repo 'PackageContents.xml')
 $version = $pkg.ApplicationPackage.AppVersion
 if (-not $version) { throw 'No AppVersion in PackageContents.xml.' }
@@ -35,6 +36,9 @@ foreach ($line in Get-Content -LiteralPath (Join-Path $repo 'CHANGELOG.md') -Enc
     }
 }
 if (-not ($notes -match '\S')) { throw "CHANGELOG.md has no notes for version $version (a '## $version' section)." }
+# Its paths are from the root of the repository (Contents/Modules/Dynalisp/Docs/Core/...):
+# on the release page, the pictures and the pages of the docs website.
+$notes = $notes | ForEach-Object { $_ -replace '\]\(Contents/Modules/([^/)]+)/Docs/', '](https://samagior.github.io/DynALisp.docs/$1/' }
 
 # The list of the pages of the docs website, installed in place of the Docs folders, must
 # have every page (BuildDocs.py run and committed), or their Open Docs buttons are greyed out:

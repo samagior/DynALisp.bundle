@@ -394,7 +394,7 @@
 ;;  2027 and later, Resources\<name> in 2025 and 2026 (PackageContents.xml):
 (defun dg:dll (name) (strcat "Resources\\" (if (dg:net10-p) "Net10\\" "") name))
 
-(defun dg:dyl-install (/ git ver lst res)
+(defun dg:dyl-install (/ git ver lst res wnf wnv)
   (setq ver (Dyl:InfoVersion))
   (dg:kv "Version" ver)
   (dg:kv "Latest release"
@@ -418,6 +418,23 @@
   (if Dyl:Lang
     (dg:kv "Docs language"
            (strcat (Dyl:Lang) (if (getenv "DynalispLanguage") "" " (not set: the language of AutoCAD)"))
+    )
+  )
+  ;;  What's New (CHANGELOG.md, and its copy in the language of DynALisp: Dyl:InfoFiles of
+  ;;  the Info region) has the section of this version, shown after an update:
+  (if Dyl:InfoFiles
+    (cond
+      ((not (car (setq wnf (Dyl:InfoFiles)))) (dg:bad "CHANGELOG.md is missing: What's New of Dyl-Info shows nothing"))
+      ((progn
+         (setq wnv (mapcar '(lambda (v) (Dyl:InfoVerOf (car v))) (Dyl:InfoParse (Dyl:InfoLines (car wnf)))))
+         (not (member (strcase ver) wnv))
+       )
+       (dg:note (strcat "What's New (CHANGELOG.md) has no section for version " ver))
+      )
+      ((and (Dyl:DocsLang) (not (cadr wnf)))
+       (dg:note (strcat "What's New has no copy in " (Dyl:Lang) " (CHANGELOG." (Dyl:DocsLang) ".md): shown in English"))
+      )
+      ((dg:kv "What's New" (strcat (itoa (length wnv)) " versions" (if (cadr wnf) (strcat ", in " (Dyl:Lang)) ""))))
     )
   )
   ;;  DynALisp 2.0 runs in AutoCAD 2025 and later (1.x in an older one), with the .NET 8
