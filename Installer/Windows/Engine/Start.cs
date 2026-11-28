@@ -24,8 +24,9 @@
 //   path, name, kind ("Drawing", "Sheet set" or "Project"), where (its folder, not shown: the
 //   path is only in the tip of the card), time (not shown: the time of a pin is in the graph,
 //   its card clicked), thumbnail (a .png file, "" none), missing ("1": not found)
-// A drawing clicked raises Opened; a sheet set or a project clicked shows only its active time
-// in the graph Graph (clicked again: all of it). Its right-click menu: Open (a drawing, a sheet
+// A card clicked shows only its active time in the graph Graph (a sheet set or a project: the
+// drawings of its folder; clicked again: all of it), marked while it does; double-clicked, it
+// is opened (Opened: a drawing, a sheet set; Folder: a project). Its right-click menu: Open (a drawing, a sheet
 // set), Show its active time, Show in folder (Folder), Unpin (Unpinned).
 //
 // <dyl:ActivityGraph x:Name="act"/>: the active time of each day, as a grid of the weeks of
@@ -56,6 +57,7 @@
 // The tiles shown are filtered as the box Search is typed (every word in the name or the
 // folder, accents and case ignored), Count says how many are shown (its Tag:
 // "drawing,drawings"), Max shows only the first ones, Rows only the first rows. A tile clicked
+// shows only its active time in the graph Graph (clicked again: all of it), double-clicked
 // raises Opened (its path, false), its right-click menu opens it read-only (Opened, true),
 // shows it in its folder (Folder) or pins it, its sheet set or its project (PinChoices, Pin).
 //
@@ -102,6 +104,19 @@ namespace DynALisp.Windows
             if (size > 0) t.FontSize = size;
             if (bold) t.FontWeight = FontWeights.SemiBold;
             return t;
+        }
+
+        // A card that shows (click) or opens (double click) what it is: the first click of a
+        // double click shows it, the second opens it; Enter opens it too.
+        public static void ClickOrOpen(Button b, Action click, Action open)
+        {
+            b.PreviewMouseLeftButtonDown += (s, e) =>
+            {
+                if (e.ClickCount == 1) click();
+                else if (e.ClickCount == 2) open();
+                if (e.ClickCount <= 2) { b.Focus(); e.Handled = true; }
+            };
+            b.KeyDown += (s, e) => { if (e.Key == System.Windows.Input.Key.Enter) { open(); e.Handled = true; } };
         }
 
         // A title that goes on a second line when it is too long for one (cut after the second):
@@ -223,6 +238,7 @@ namespace DynALisp.Windows
         public static readonly DependencyProperty TileWidthProperty = DependencyProperty.Register("TileWidth", typeof(double), typeof(RecentDrawings), new PropertyMetadata(196.0));
         public static readonly DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(int), typeof(RecentDrawings), new PropertyMetadata(0));
         public static readonly DependencyProperty RowsProperty = DependencyProperty.Register("Rows", typeof(int), typeof(RecentDrawings), new PropertyMetadata(0));
+        public static readonly DependencyProperty GraphProperty = DependencyProperty.Register("Graph", typeof(string), typeof(RecentDrawings));
         public static readonly DependencyProperty ColumnsProperty = DependencyProperty.Register("Columns", typeof(int), typeof(RecentDrawings),
             new PropertyMetadata(0, (d, e) => ((RecentDrawings)d).Fit()));
 
@@ -232,6 +248,15 @@ namespace DynALisp.Windows
         public int Max { get => (int)GetValue(MaxProperty); set => SetValue(MaxProperty, value); }
         // Rows of tiles shown at most (0: Max only), as many tiles in a row as fit:
         public int Rows { get => (int)GetValue(RowsProperty); set => SetValue(RowsProperty, value); }
+        // The graph a tile clicked shows the time of (an ActivityGraph):
+        public string Graph { get => (string)GetValue(GraphProperty); set => SetValue(GraphProperty, value); }
+        ActivityGraph _graph;
+
+        void Mark()
+        {
+            foreach (var it in _items)
+                it.Tile.Tag = _graph != null && string.Equals(_graph.ScopePath, it.Path, StringComparison.OrdinalIgnoreCase) ? "sel" : null;
+        }
         // Tiles in a row (0: as many as fit at TileWidth), each as wide as a row divided by them:
         public int Columns { get => (int)GetValue(ColumnsProperty); set => SetValue(ColumnsProperty, value); }
         int _perRow;
@@ -288,6 +313,13 @@ namespace DynALisp.Windows
         // (find: a control of the window by its name):
         public void Attach(Func<string, FrameworkElement> find, List<string[]> rows)
         {
+            var g = find(Graph ?? "") as ActivityGraph;
+            if (g != _graph)
+            {
+                if (_graph != null) _graph.Scopes -= Mark;
+                _graph = g;
+                if (_graph != null) _graph.Scopes += Mark;
+            }
             if (_search != null) _search.TextChanged -= OnSearch;
             _search = find(Search ?? "") as TextBox;
             _count = find(Count ?? "") as TextBlock;
@@ -315,6 +347,7 @@ namespace DynALisp.Windows
                     _panel.Children.Add(it.Tile);
                 }
                 Fit();
+                Mark();
             }
             Filter();
         }
@@ -365,7 +398,7 @@ namespace DynALisp.Windows
             stack.Children.Add(date);
             var b = new Button { Content = stack, Width = w, ToolTip = it.Path, Opacity = missing ? 0.55 : 1 };
             b.SetResourceReference(StyleProperty, "Dyl.Tile");
-            b.Click += (s, e) => Opened?.Invoke(it.Path, false);
+            StartUi.ClickOrOpen(b, () => _graph?.ToggleScope(it.Path, name, false), () => Opened?.Invoke(it.Path, false));
             var menu = new ContextMenu();
             b.ContextMenu = menu;
             // its items made as it opens (what is pinned changes):
@@ -467,10 +500,16 @@ namespace DynALisp.Windows
 
         void Scope(string path, string name, string kind)
         {
-            if (_graph == null) return;
-            if (string.Equals(_graph.ScopePath, path, StringComparison.OrdinalIgnoreCase)) _graph.SetScope(null, null, false);
-            else _graph.SetScope(path, name, kind != "Drawing");
+            _graph?.ToggleScope(path, name, kind != "Drawing");
             Mark();
+        }
+
+        // A card opened: a drawing, a sheet set (in the Sheet Set Manager), a project (its
+        // folder: no command opens one):
+        void Open(string path, string kind)
+        {
+            if (kind == "Project") Folder?.Invoke(path);
+            else Opened?.Invoke(path, false);
         }
 
         Button Card(string path, string name, string kind, string where, string time, string thumb, bool missing)
@@ -503,11 +542,7 @@ namespace DynALisp.Windows
             dock.Children.Add(lines);
             var b = new Button { Content = dock, Width = CardWidth, ToolTip = path, Opacity = missing ? 0.55 : 1, Padding = new Thickness(12, 10, 12, 10) };
             b.SetResourceReference(StyleProperty, "Dyl.Tile");
-            b.Click += (s, e) =>
-            {
-                if (kind == "Drawing") Opened?.Invoke(path, false);
-                else Scope(path, name, kind);
-            };
+            StartUi.ClickOrOpen(b, () => Scope(path, name, kind), () => Open(path, kind));
             var menu = new ContextMenu();
             if (kind != "Project") menu.Items.Add(StartUi.MenuOf("Open", () => Opened?.Invoke(path, false), !missing));
             menu.Items.Add(StartUi.MenuOf("Show its active time", () => Scope(path, name, kind), _graph != null));
@@ -552,7 +587,7 @@ namespace DynALisp.Windows
         public ActivityGraph()
         {
             Focusable = false;
-            _all = StartUi.Link("Show all", () => { SetScope(null, null, false); Scopes?.Invoke(); });
+            _all = StartUi.Link("Show all", () => SetScope(null, null, false));
             _all.Margin = new Thickness(12, 0, 0, 0);
             _all.VerticalAlignment = VerticalAlignment.Bottom;
             // the total, then at its right: Show all (a scope), the years
@@ -618,6 +653,14 @@ namespace DynALisp.Windows
             _scopeName = name;
             _scopeFolder = folder;
             Draw();
+            Scopes?.Invoke();
+        }
+
+        // A card clicked: its time only, clicked again: all of it.
+        public void ToggleScope(string path, string name, bool folder)
+        {
+            if (string.Equals(_scope, path, StringComparison.OrdinalIgnoreCase)) SetScope(null, null, false);
+            else SetScope(path, name, folder);
         }
 
         bool InScope(string p)

@@ -105,9 +105,23 @@
           <ColumnDefinition Width="*" MinWidth="28"/>
           <ColumnDefinition Width="320"/>
         </Grid.ColumnDefinitions>
+        <!-- The headings in a row of their own, so the three columns start at the same height
+             (New, the first pinned card, the first project): -->
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Pinned: drawings, sheet sets, projects (Pin... picks one): -->
+        <DockPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,10">
+          <Button x:Name="pnb" DockPanel.Dock="Right" Content="Pin..." Style="{StaticResource Foot}" FontSize="12.5" VerticalAlignment="Center"/>
+          <dyl:ColumnChoice x:Name="pnc" DockPanel.Dock="Right" Target="pin" Choices="1,2,3,4" Margin="0,0,16,0"/>
+          <TextBlock Text="Pinned" Style="{StaticResource Head}"/>
+        </DockPanel>
+        <TextBlock Grid.Row="0" Grid.Column="4" Text="Projects" Style="{StaticResource Head}" Margin="0,0,0,10"/>
 
         <!-- To start: a new drawing, one to open, a sheet set, the templates: -->
-        <StackPanel Grid.Column="0">
+        <StackPanel Grid.Row="1" Grid.Column="0">
           <Button x:Name="new" Content="_New" Style="{DynamicResource Dyl.AccentButton}" Margin="0,0,0,8" HorizontalAlignment="Stretch"/>
           <Button x:Name="opn" Content="_Open..." Margin="0,0,0,8" HorizontalAlignment="Stretch"/>
           <Button x:Name="osh" Content="Open _sheet set..." Margin="0" HorizontalAlignment="Stretch"/>
@@ -117,13 +131,7 @@
         </StackPanel>
 
         <!-- What was worked on: -->
-        <StackPanel Grid.Column="2">
-          <!-- Pinned: drawings, sheet sets, projects (Pin... picks one): -->
-          <DockPanel Margin="0,0,0,10">
-            <Button x:Name="pnb" DockPanel.Dock="Right" Content="Pin..." Style="{StaticResource Foot}" FontSize="12.5" VerticalAlignment="Center"/>
-            <dyl:ColumnChoice x:Name="pnc" DockPanel.Dock="Right" Target="pin" Choices="1,2,3,4" Margin="0,0,16,0"/>
-            <TextBlock Text="Pinned" Style="{StaticResource Head}"/>
-          </DockPanel>
+        <StackPanel Grid.Row="1" Grid.Column="2">
           <dyl:PinnedItems x:Name="pin" Graph="act" CardWidth="340"/>
 
           <!-- The active time of each day: -->
@@ -138,11 +146,11 @@
                        VerticalAlignment="Center" Tag="drawing,drawings"/>
             <TextBlock Text="Recent" Style="{StaticResource Head}"/>
           </DockPanel>
-          <dyl:RecentDrawings x:Name="rec" Search="find" Count="cnt" Rows="2" TileWidth="150"/>
+          <dyl:RecentDrawings x:Name="rec" Graph="act" Search="find" Count="cnt" Rows="2" TileWidth="150"/>
         </StackPanel>
 
         <!-- Useful for the projects: a problem to report, the tasks of each project: -->
-        <StackPanel Grid.Column="4">
+        <StackPanel Grid.Row="1" Grid.Column="4">
           <Border x:Name="rpp" Visibility="Collapsed" Background="{DynamicResource Dyl.Surface}" CornerRadius="8" Padding="12" Margin="0,0,0,22">
             <StackPanel>
               <TextBlock Text="Report a problem" Style="{StaticResource Head}" Margin="0,0,0,8"/>
@@ -156,7 +164,6 @@
               <TextBlock x:Name="rst" Style="{DynamicResource Dyl.Desc}" TextWrapping="Wrap" Margin="0,6,0,0"/>
             </StackPanel>
           </Border>
-          <TextBlock Text="Projects" Style="{StaticResource Head}" Margin="0,0,0,10"/>
           <dyl:ProjectTasks x:Name="tsk"/>
         </StackPanel>
       </Grid>
