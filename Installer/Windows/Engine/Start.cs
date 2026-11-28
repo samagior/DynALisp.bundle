@@ -62,7 +62,9 @@
 // "drawing,drawings"), Max shows only the first ones, Rows only the first rows. A tile clicked
 // shows only its active time in the graph Graph (clicked again: all of it), double-clicked
 // raises Opened (its path, false), its right-click menu opens it read-only (Opened, true),
-// shows it in its folder (Folder) or pins it, its sheet set or its project (PinChoices, Pin).
+// shows it in its folder (Folder) or pins it, its sheet set or its project (PinChoices, Pin),
+// and gives it a picture of the user's choice (Preview: its path and "Picture", "Area" or
+// "Own", HasPreview saying whether it has one already), as the cards of the pins do.
 //
 // Page.Of(window) takes the content of a window file to show it as a page (the Start page,
 // inside the Start tab of AutoCAD), with the resources and the text settings of the window.
@@ -94,8 +96,13 @@ namespace DynALisp.Windows
         int Columns { get; set; }
     }
 
-    static class StartUi
+    static partial class StartUi
     {
+        // The shape of every picture of a drawing on the page (its width / its height): the
+        // tiles and the cards are cut to it, a picture filling its frame (Previews.cs makes
+        // the pictures chosen in it, Frame.cs frames a picture of another shape):
+        public const double PreviewAspect = 1.6;
+
         public const string RowsSuffix = "/rows";
 
         public static string F(string[] r, int k) => r.Length > k ? r[k] ?? "" : "";
@@ -151,6 +158,18 @@ namespace DynALisp.Windows
             var m = new MenuItem { Header = text, IsEnabled = on };
             m.Click += (s, e) => run();
             return m;
+        }
+
+        // The items of a menu that give a drawing a picture of the user's choice: an image,
+        // the area of the drawing (area: a drawing found), or its own preview again:
+        public static void PreviewItems(ContextMenu menu, string path, bool area, Func<string, bool> has, Action<string, string> run)
+        {
+            if (run == null) return;
+            menu.Items.Add(new Separator());
+            menu.Items.Add(MenuOf("Choose preview picture...", () => run(path, "Picture")));
+            if (!path.EndsWith(".dst", StringComparison.OrdinalIgnoreCase) && !path.EndsWith(".apj", StringComparison.OrdinalIgnoreCase))
+                menu.Items.Add(MenuOf("Set preview area...", () => run(path, "Area"), area));
+            menu.Items.Add(MenuOf("Use its own preview", () => run(path, "Own"), has?.Invoke(path) == true));
         }
 
         // A text that acts as a link (Accent, underlined under the mouse):
@@ -290,6 +309,10 @@ namespace DynALisp.Windows
         // What a drawing can pin (the label of its menu item, the path, pinned already), given
         // by the plugin; none: the drawing itself only.
         public Func<string, List<(string Label, string Path, bool Pinned)>> PinChoices;
+        // A picture chosen for a drawing (its path, then Picture, Area or Own), and whether it
+        // has one (given by the plugin):
+        public event Action<string, string> Preview;
+        public Func<string, bool> HasPreview;
 
         public const string RowsSuffix = StartUi.RowsSuffix;
 
@@ -325,7 +348,7 @@ namespace DynALisp.Windows
             int n = StartUi.FillRow(_panel, TileWidth, 10, (f, w) =>
             {
                 if (f is Button b && b.Content is StackPanel sp && sp.Children.Count > 0 && sp.Children[0] is Border pic)
-                    pic.Height = Math.Round((w - 16) * 0.62);
+                    pic.Height = Math.Round((w - 16) / StartUi.PreviewAspect);
             }, Columns);
             if (n > 0 && n != _perRow) { _perRow = n; if (Rows > 0) Filter(); }
         }
@@ -404,11 +427,11 @@ namespace DynALisp.Windows
         Button Tile(Item it, string name, string folder, string when, string thumb, bool missing, string group, string colour)
         {
             double w = TileWidth;
-            var pic = new Border { Height = Math.Round((w - 16) * 0.62), CornerRadius = new CornerRadius(4), ClipToBounds = true };
+            var pic = new Border { Height = Math.Round((w - 16) / StartUi.PreviewAspect), CornerRadius = new CornerRadius(4), ClipToBounds = true };
             pic.SetResourceReference(Border.BackgroundProperty, "Dyl.Input");
             var img = StartUi.Thumb(thumb);
             pic.Child = img != null
-                ? (UIElement)new Image { Source = img, Stretch = Stretch.Uniform, Margin = new Thickness(2) }
+                ? (UIElement)new Image { Source = img, Stretch = Stretch.UniformToFill, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }
                 : StartUi.Glyph(Dst(it.Path) ? "Sheet set" : "Drawing", 0.8);
             var title = StartUi.Title(name, null, 0, true);
             title.Margin = new Thickness(0, 6, 0, 0);
@@ -437,6 +460,7 @@ namespace DynALisp.Windows
                     var (label, path, on) = p;
                     menu.Items.Add(StartUi.MenuOf(on ? "Un" + char.ToLowerInvariant(label[0]) + label.Substring(1) : label, () => Pin?.Invoke(path, !on)));
                 }
+                StartUi.PreviewItems(menu, it.Path, !missing && !Dst(it.Path), HasPreview, Preview);
             };
             return b;
         }
@@ -460,13 +484,16 @@ namespace DynALisp.Windows
             if (f is Button b && b.Content is DockPanel d && d.Children.Count > 0 && d.Children[0] is Border pic)
             {
                 pic.Width = Math.Max(58, Math.Min(200, Math.Round(w * 0.22)));
-                pic.Height = Math.Round(pic.Width * 0.76);
+                pic.Height = Math.Round(pic.Width / StartUi.PreviewAspect);
             }
         }, Columns);
 
         public event Action<string, bool> Opened;
         public event Action<string> Folder;
         public event Action<string> Unpinned;
+        // A picture chosen for a pin (as for the recent drawings):
+        public event Action<string, string> Preview;
+        public Func<string, bool> HasPreview;
 
         readonly WrapPanel _panel = new WrapPanel();
         readonly TextBlock _empty = new TextBlock { Margin = new Thickness(2, 0, 0, 10), TextWrapping = TextWrapping.Wrap };
@@ -536,10 +563,10 @@ namespace DynALisp.Windows
 
         Button Card(string path, string name, string kind, string where, string time, string thumb, bool missing, string group, string colour)
         {
-            var pic = new Border { Width = 58, Height = 44, CornerRadius = new CornerRadius(4), ClipToBounds = true, Margin = new Thickness(0, 0, 10, 0), VerticalAlignment = VerticalAlignment.Top };
+            var pic = new Border { Width = 58, Height = 36, CornerRadius = new CornerRadius(4), ClipToBounds = true, Margin = new Thickness(0, 0, 10, 0), VerticalAlignment = VerticalAlignment.Top };
             pic.SetResourceReference(Border.BackgroundProperty, "Dyl.Input");
             var img = StartUi.Thumb(thumb);
-            pic.Child = img != null ? (UIElement)new Image { Source = img, Stretch = Stretch.Uniform, Margin = new Thickness(1) } : StartUi.Glyph(kind, 0.62);
+            pic.Child = img != null ? (UIElement)new Image { Source = img, Stretch = Stretch.UniformToFill, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center } : StartUi.Glyph(kind, 0.62);
             var title = StartUi.Title(name, "Dyl.Accent", 13, true);
             var badge = new Border { BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(9), Padding = new Thickness(7, 0, 7, 1), Margin = new Thickness(8, 1, 0, 0), VerticalAlignment = VerticalAlignment.Top };
             badge.SetResourceReference(Border.BorderBrushProperty, "Dyl.BorderStrong");
@@ -567,12 +594,18 @@ namespace DynALisp.Windows
             b.SetResourceReference(StyleProperty, "Dyl.Tile");
             StartUi.ClickOrOpen(b, () => Scope(path, name, kind), () => Open(path, kind));
             var menu = new ContextMenu();
-            if (kind != "Project") menu.Items.Add(StartUi.MenuOf("Open", () => Opened?.Invoke(path, false), !missing));
-            menu.Items.Add(StartUi.MenuOf("Show its active time", () => Scope(path, name, kind), _graph != null));
-            menu.Items.Add(StartUi.MenuOf("Show in folder", () => Folder?.Invoke(path)));
-            menu.Items.Add(new Separator());
-            menu.Items.Add(StartUi.MenuOf("Unpin", () => Unpinned?.Invoke(path)));
             b.ContextMenu = menu;
+            // its items made as it opens (a picture chosen changes Use its own preview):
+            b.ContextMenuOpening += (s, e) =>
+            {
+                menu.Items.Clear();
+                if (kind != "Project") menu.Items.Add(StartUi.MenuOf("Open", () => Opened?.Invoke(path, false), !missing));
+                menu.Items.Add(StartUi.MenuOf("Show its active time", () => Scope(path, name, kind), _graph != null));
+                menu.Items.Add(StartUi.MenuOf("Show in folder", () => Folder?.Invoke(path)));
+                StartUi.PreviewItems(menu, path, !missing && kind == "Drawing", HasPreview, Preview);
+                menu.Items.Add(new Separator());
+                menu.Items.Add(StartUi.MenuOf("Unpin", () => Unpinned?.Invoke(path)));
+            };
             return b;
         }
     }
@@ -994,6 +1027,8 @@ namespace DynALisp.Windows
         public event Action<string, string> Added;
         public event Action<string, string, bool> Checked;
         public event Action<string, string> Removed;
+        // Its tasks kept with the project (project, true) or by the user (false):
+        public event Action<string, bool> Shared;
 
         readonly StackPanel _cards = new StackPanel();
         readonly TextBlock _empty = new TextBlock { TextWrapping = TextWrapping.Wrap };
@@ -1018,15 +1053,16 @@ namespace DynALisp.Windows
             _empty.Visibility = rows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
             foreach (var g in rows.GroupBy(r => StartUi.F(r, 0), StringComparer.OrdinalIgnoreCase))
                 _cards.Children.Add(Card(g.Key, StartUi.F(g.First(), 1), StartUi.F(g.First(), 2), StartUi.F(g.First(), 6),
-                                         g.Where(r => StartUi.F(r, 3).Length > 0).ToList()));
+                                         StartUi.F(g.First(), 7) == "1", g.Where(r => StartUi.F(r, 3).Length > 0).ToList()));
         }
 
-        Border Card(string project, string name, string kind, string error, List<string[]> tasks)
+        Border Card(string project, string name, string kind, string error, bool shared, List<string[]> tasks)
         {
             int done = tasks.Count(t => StartUi.F(t, 4) == "1");
             var stack = new StackPanel();
             var head = new DockPanel();
-            var badge = StartUi.Text(kind, "Dyl.Muted", 11);
+            var badge = StartUi.Text(shared ? kind + ", shared" : kind, "Dyl.Muted", 11);
+            badge.ToolTip = shared ? "Its tasks are kept with the " + kind.ToLowerInvariant() + ": everyone who opens it sees them." : "Its tasks are kept on this computer.";
             badge.VerticalAlignment = VerticalAlignment.Top;
             badge.Margin = new Thickness(8, 2, 0, 0);
             DockPanel.SetDock(badge, Dock.Right);
@@ -1090,6 +1126,10 @@ namespace DynALisp.Windows
             card.SetResourceReference(Border.BorderBrushProperty, "Dyl.Border");
             card.SetResourceReference(Border.BackgroundProperty, "Dyl.Surface");
             card.Child = stack;
+            // where its tasks are kept, picked by its right-click menu:
+            var where = new MenuItem { Header = "Keep tasks with the " + kind.ToLowerInvariant(), IsCheckable = true, IsChecked = shared };
+            where.Click += (s, e) => Shared?.Invoke(project, !shared);
+            card.ContextMenu = new ContextMenu { Items = { where } };
             return card;
         }
     }

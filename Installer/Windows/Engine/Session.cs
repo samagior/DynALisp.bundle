@@ -635,6 +635,11 @@ namespace DynALisp.Windows
                         case ColumnChoice cc:
                             cc.Attach(Find, has ? v : null);
                             break;
+                        // A frame placed on a picture (Frame.cs): its value the file, the part
+                        // kept given back as <key>/crop:
+                        case PictureFrame pf:
+                            pf.Attach(has ? v : null, c => _s.Values[pf.Name + "/crop"] = c);
+                            break;
                         // The controls of the Start page (Start.cs: the pins, the active time,
                         // the recent drawings), the table key/rows (none yet: being read):
                         case IShowsRows sr:

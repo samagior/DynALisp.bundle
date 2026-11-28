@@ -15,12 +15,16 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // The tasks of each project or sheet set pinned on the Start page, with the bar of those done.
-// They belong to the project (Conventions\ProjectFiles.md): kept in the project itself, in the
-// DynALisp folder beside its .apj or its .dst (<project>\DynALisp\Tasks.csv), so everyone who
-// works on it sees the same tasks. A row a task, "Id;Done;Task;Added;DoneOn" (UTF-8, divided
-// by ;, the ; of a task made a ,): the file is read again under a lock just before each change,
-// and only the task changed is added, checked or deleted (by its id), never the whole list
-// written over another user's.
+// They are the user's (CONVENTIONS.md, User Files): kept on this computer, in
+// User\Start\Tasks\<name>-<key>.csv (the name of the .apj or .dst, the key a hash of its path),
+// until the user keeps them with the project (Keep tasks with the project, the right-click
+// menu of its card): then in the DynALisp folder beside its .apj or its .dst
+// (<project>\DynALisp\Tasks.csv, Conventions\ProjectFiles.md), so everyone who works on it
+// sees the same tasks; that file found, it is the one read. Moved either way, the tasks are
+// added to those the other file has (by their id), and the file left deleted.
+// A row a task, "Id;Done;Task;Added;DoneOn" (UTF-8, divided by ;, the ; of a task made a ,):
+// the file is read again under a lock just before each change, and only the task changed is
+// added, checked or deleted (by its id), never the whole list written over another user's.
 
 using System;
 using System.Collections.Generic;
@@ -43,13 +47,55 @@ namespace DynALisp.Windows
             public bool Done;
         }
 
-        internal static string FileOf(string project) =>
+        // The file kept with the project, the file of the user, the one used (the first while
+        // it is there):
+        internal static string SharedFile(string project) =>
             Path.Combine(Path.GetDirectoryName(project) ?? "", "DynALisp", "Tasks.csv");
 
-        // The tasks of a project, in their order (none when it has no file yet):
-        internal static List<Item> Read(string project)
+        internal static string UserFile(string project)
         {
-            string file = FileOf(project);
+            string key;
+            using (var sha = System.Security.Cryptography.SHA1.Create())
+                key = BitConverter.ToString(sha.ComputeHash(Utf8.GetBytes(Path.GetFullPath(project).ToUpperInvariant()))).Replace("-", "").Substring(0, 8);
+            string name = new string(Path.GetFileNameWithoutExtension(project).Select(c => Path.GetInvalidFileNameChars().Contains(c) ? '_' : c).ToArray());
+            return Path.Combine(Activity.Folder, "Tasks", name + "-" + key + ".csv");
+        }
+
+        internal static bool Shared(string project)
+        {
+            try { return File.Exists(SharedFile(project)); } catch { return false; }
+        }
+
+        internal static string FileOf(string project) => Shared(project) ? SharedFile(project) : UserFile(project);
+
+        // The tasks kept with the project (on) or by the user (off): added to the other file
+        // (the tasks it has already kept), this one deleted. The folder of the project must be
+        // writable to keep them there.
+        internal static void Share(string project, bool on)
+        {
+            string from = on ? UserFile(project) : SharedFile(project), to = on ? SharedFile(project) : UserFile(project);
+            var items = File.Exists(from) ? ReadFile(from) : new List<Item>();
+            Change(to, had =>
+            {
+                foreach (var t in items)
+                    if (!had.Any(h => h.Id == t.Id)) had.Add(t);
+            });
+            if (File.Exists(from)) File.Delete(from);
+            // the DynALisp folder of the project left empty is removed:
+            if (!on)
+                try
+                {
+                    string dir = Path.GetDirectoryName(from);
+                    if (Directory.Exists(dir) && !Directory.EnumerateFileSystemEntries(dir).Any()) Directory.Delete(dir);
+                }
+                catch { }
+        }
+
+        // The tasks of a project, in their order (none when it has no file yet):
+        internal static List<Item> Read(string project) => ReadFile(FileOf(project));
+
+        static List<Item> ReadFile(string file)
+        {
             if (!File.Exists(file)) return new List<Item>();
             using (var fs = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
             using (var sr = new StreamReader(fs, Utf8)) return Parse(sr.ReadToEnd());
@@ -74,7 +120,7 @@ namespace DynALisp.Windows
         static string Today() => DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
         internal static void Add(string project, string text) =>
-            Change(project, items => items.Add(new Item
+            Change(FileOf(project), items => items.Add(new Item
             {
                 Id = Guid.NewGuid().ToString("N").Substring(0, 12),
                 Text = text.Replace(';', ',').Replace('\r', ' ').Replace('\n', ' ').Trim(),
@@ -82,18 +128,17 @@ namespace DynALisp.Windows
             }));
 
         internal static void Check(string project, string id, bool done) =>
-            Change(project, items =>
+            Change(FileOf(project), items =>
             {
                 foreach (var t in items.Where(t => t.Id == id)) { t.Done = done; t.DoneOn = done ? Today() : ""; }
             });
 
-        internal static void Remove(string project, string id) => Change(project, items => items.RemoveAll(t => t.Id == id));
+        internal static void Remove(string project, string id) => Change(FileOf(project), items => items.RemoveAll(t => t.Id == id));
 
         // The file read again alone (another user may be changing it: tried again for 2 s),
         // changed, written back:
-        static void Change(string project, Action<List<Item>> change)
+        static void Change(string file, Action<List<Item>> change)
         {
-            string file = FileOf(project);
             Directory.CreateDirectory(Path.GetDirectoryName(file));
             for (int i = 0; ; i++)
             {
