@@ -159,7 +159,27 @@ namespace DynALisp.Startup
 
         // Write the sheet sets open now (and those that could not be opened at startup), once
         // they were opened again, only while the setting is on and only when it changed:
+        // The time of each Save, for the test of Pst-DiagnosticsReactorEvents ((Dyl:SheetSets "Work")):
+        static readonly System.Diagnostics.Stopwatch Clock = System.Diagnostics.Stopwatch.StartNew();
+        static int _saves;
+        static long _saveTicks, _saveMax, _workSince = -1;
+
+        static long Ms(long ticks) => ticks * 1000 / System.Diagnostics.Stopwatch.Frequency;
+
         static void Save()
+        {
+            long t0 = Clock.ElapsedTicks;
+            try { SaveNow(); }
+            finally
+            {
+                long d = Clock.ElapsedTicks - t0;
+                _saves++;
+                _saveTicks += d;
+                if (d > _saveMax) _saveMax = d;
+            }
+        }
+
+        static void SaveNow()
         {
             try
             {
@@ -291,6 +311,21 @@ namespace DynALisp.Startup
             {
                 try { return SheetSetPalette.Tree(); }
                 catch (System.Exception ex) { return "error: " + ex.Message; }
+            }
+            // "Work" "Start": the time of the list written set back to 0; "Work": what it took since.
+            if (string.Equals(what, "Work", StringComparison.OrdinalIgnoreCase))
+            {
+                if (all.Length > 1 && string.Equals(all[1].Value as string, "Start", StringComparison.OrdinalIgnoreCase))
+                {
+                    _saves = 0; _saveTicks = _saveMax = 0; _workSince = Clock.ElapsedTicks;
+                    return true;
+                }
+                if (_workSince < 0) return null;
+                string line = "DynALisp.Startup.dll, during the test: the list of the sheet sets read and written " + _saves
+                    + " time(s) (after each command and drawing made current), " + Ms(_saveTicks) + " ms in all, the longest "
+                    + Ms(_saveMax) + " ms; sheet sets: " + _status;
+                _workSince = -1;
+                return line;
             }
             if (string.Equals(what, "Save", StringComparison.OrdinalIgnoreCase))
             {

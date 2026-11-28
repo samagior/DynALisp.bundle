@@ -162,7 +162,7 @@ namespace DynALisp.Ribbon
         public bool Busy => Wanted || _inPlace != null || _copy != null;
 
         // In the look (or not wanted, given up, AutoCAD light): the cover can be taken away.
-        public bool Done => !Wanted || _gaveUp || !Skin.Dark() || ((_inPlace != null || _copy != null) && _applied == Look);
+        public bool Done => !Wanted || Work.IsOff("themes") || _gaveUp || !Skin.Dark() || ((_inPlace != null || _copy != null) && _applied == Look);
 
         // The themes this target changed or made current, and the one a copy was made from
         // (Hosted.cs leaves them to it):
@@ -197,7 +197,7 @@ namespace DynALisp.Ribbon
             object cur = Current();
             if (cur == null) { _fail ??= Name + " theme"; return; }
             _fail = null;
-            if (Wanted && Skin.Dark())
+            if (Wanted && Skin.Dark() && !Work.IsOff("themes"))
             {
                 bool same = ReferenceEquals(cur, _inPlace) || ReferenceEquals(cur, _copy);
                 if (_gaveUp || same && _applied == Look) return;
@@ -332,7 +332,7 @@ namespace DynALisp.Ribbon
         static void Timed(string name, Action step)
         {
             long t0 = Clock.ElapsedMilliseconds;
-            step();
+            Work.Time("colours: " + name, step);
             long d = Clock.ElapsedMilliseconds - t0;
             if (d > 50) Mark(name + " took " + d + " ms");
         }
@@ -351,6 +351,12 @@ namespace DynALisp.Ribbon
         [System.Runtime.InteropServices.DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr hwnd);
         public static void Settle() => _fastUntil = Environment.TickCount + Fast;
 
+        // The timer stopped or started again (Dyl:RibbonWork "Off" "timers"):
+        public static void Timer(bool on) { if (on) _timer?.Start(); else _timer?.Stop(); }
+
+        // Applied again at the next idle (a part turned off or on, Work.cs):
+        public static void Due() { _due = true; _next = Environment.TickCount; }
+
         public static void Start()
         {
             Read();
@@ -364,7 +370,7 @@ namespace DynALisp.Ribbon
             {
                 _timer = new System.Windows.Threading.DispatcherTimer(System.Windows.Threading.DispatcherPriority.Normal)
                 { Interval = TimeSpan.FromMilliseconds(100) };
-                _timer.Tick += (s, e) => { if (Settling) Tick("timer"); };
+                _timer.Tick += (s, e) => { if (Settling) { Work.Count("colours: timer of the first 20 s"); Tick("timer"); } };
                 _timer.Start();
             }
             catch (System.Exception ex) { Mark("timer: " + ex.Message); }
@@ -434,17 +440,19 @@ namespace DynALisp.Ribbon
             _next = Environment.TickCount + (Settling ? 100 : 1000);
             _due = false;
             bool on = Palettes.Wanted && Dark();
+            // Each part turned off for a test (Work.cs) gives its colours back:
+            bool On(string part) => on && !Work.IsOff(part);
             // Each step timed for the Timeline (one of more than 50 ms is marked); the title bar
             // and the lists of the palettes first, the cheapest and most seen:
             // The themes in C++ of the native lists and buttons and of the title bar:
-            Timed("C++", () => CppThemes.Apply(on, Palettes.Look));
+            Timed("C++", () => CppThemes.Apply(On("cpp"), Palettes.Look));
             // The palettes written in C++ (Properties), by their native themes:
-            Timed("native", () => NativeThemes.Apply(on, Palettes.Look));
+            Timed("native", () => NativeThemes.Apply(On("native"), Palettes.Look));
             foreach (var t in Targets) Timed(t.Name, t.Apply);
             // The WPF parts with a theme of their own (the file tabs):
-            Timed("hosted", () => Hosted.Apply(on, Palettes.Look));
+            Timed("hosted", () => Hosted.Apply(On("hosted"), Palettes.Look));
             // The web pages (Start), by a script in their browser:
-            Timed("web", () => WebPages.Apply(on, Palettes.Look));
+            Timed("web", () => WebPages.Apply(On("web"), Palettes.Look));
             if (Timeline.Count < 400)
             {
                 Track("ribbon", Ribbon.Status);

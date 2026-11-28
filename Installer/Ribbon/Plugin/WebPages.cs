@@ -110,7 +110,7 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
                     // The browsers of AcWebView, often: a page shows its own colours until the
                     // script has run in it.
                     _timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(Fast) };
-                    _timer.Tick += (s, e) => { try { Native(Script); } catch (System.Exception ex) { _nFail = ex.Message; } };
+                    _timer.Tick += (s, e) => { try { Work.Time("colours: script of the web pages (timer)", () => Native(Script)); } catch (System.Exception ex) { _nFail = ex.Message; } };
                     _timer.Start();
                     Native(Script);
                 }
@@ -227,6 +227,9 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
         static readonly Dictionary<string, string> _last = new(StringComparer.Ordinal);
 
         static System.Windows.Threading.DispatcherTimer _timer;
+
+        // The timer stopped or started again (Dyl:RibbonWork "Off" "timers"):
+        public static void Timer(bool on) { if (on) _timer?.Start(); else _timer?.Stop(); }
         // How often the script is run in the browsers of AcWebView (it does nothing a second time
         // in a page), and their windows looked for again (the windows of Chrome of AutoCAD):
         const int Fast = 150, LookEvery = 1000;
@@ -301,6 +304,7 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
             {
                 IntPtr w = n.StartsWith("url:", StringComparison.Ordinal) ? _findUrl(_engine, n.Substring(4)) : _find(_engine, n);
                 if (w == IntPtr.Zero) continue;
+                Work.Count("colours: script run in a browser of AutoCAD");
                 if (_exec(w, script) != 0 && script == Script) _hooked.Add(n);
             }
         }

@@ -46,6 +46,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -441,11 +442,22 @@ namespace DynALisp.Ribbon
                 return false;
             }
 
-            // The colour, and the band drawn again (the text of the tab may have moved):
+            // The colour, and the band drawn again, only when what it is drawn from changed (its
+            // colour, the size of the tab, the place of its title): a band drawn again twice a
+            // second made WPF lay out the file tabs again during a pan or a zoom.
+            string _key;
+
             public void Set(Brush fill, bool side)
             {
+                FrameworkElement on = (FrameworkElement)_over ?? _strip;
+                if (on == null) return;
+                string key;
+                try { key = RuntimeHelpers.GetHashCode(fill) + "|" + side + "|" + on.RenderSize + "|" + TextLeft(on, _tab).ToString("0.0"); }
+                catch { key = null; }
+                if (key != null && key == _key) return;
+                _key = key;
                 if (_over != null) { _over.Fill = fill; _over.Side = side; _over.InvalidateVisual(); return; }
-                if (_strip != null) { _strip.Fill = fill; _strip.Side = side; _strip.InvalidateVisual(); }
+                _strip.Fill = fill; _strip.Side = side; _strip.InvalidateVisual();
             }
 
             public void Remove()

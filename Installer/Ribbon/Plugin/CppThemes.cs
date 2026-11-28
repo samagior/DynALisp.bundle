@@ -223,7 +223,7 @@ namespace DynALisp.Ribbon
                 {
                     if (rgb == (k.Given & 0xFFFFFF)) continue;
                     if (rgb != (k.Was & 0xFFFFFF)) { t.Changed.Remove(e); }
-                    else { t.Write(theme, e, k.Given); wrote = true; continue; }
+                    else { t.Write(theme, e, k.Given); wrote = true; Work.Count("colours: C++ colour given again (AutoCAD set it back)"); continue; }
                 }
                 var c = Rgb(v);
                 if (!Panel(c)) continue;
@@ -277,6 +277,7 @@ namespace DynALisp.Ribbon
 
         static void Repaint()
         {
+            Work.Count("colours: every window of AutoCAD repainted");
             try
             {
                 // The windows of AutoCAD's thread (the main window, its floating palettes):
