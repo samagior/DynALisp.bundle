@@ -177,6 +177,7 @@ The rest: [Conventions/Windows.md](Conventions/Windows.md), read before changing
 
 - Every tool has two pages of the same name, its **User Guide** (`Docs`, for the user, English and French) and its **Developer docs** (`DevDocs`, for the code, English only), made in the same change as the tool.
 - A page that has its French copy is changed in both; run `python Installer\Docs\BuildDocs.py` after adding, moving or translating a page, and commit what it changed.
+- A User Guide page is short and plain: what the user does and sees in AutoCAD, never a programming language, plugin, file format or other technical word (they go in the Developer docs); its pictures at their true size, never stretched to the column, drawn in DynALisp Dark only.
 
 The rest: [Conventions/Docs.md](Conventions/Docs.md), read before changing a docs page, the docs website or their translation.
 
