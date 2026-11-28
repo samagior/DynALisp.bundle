@@ -32,9 +32,9 @@
     err        what could not be done (a drawing that did not open)
   (err and actn take no room while they have no text: shown by the plugin when they have)
 
-  Three columns as wide as the tab, the left one and the right one against its edges, the one
-  of the middle taking the rest (the widest), each of its parts as wide as it (the cards and
-  the tiles widened to fill their rows): to start a drawing at the left (New, Open..., Open sheet set..., the
+  Three columns across the tab, the left one and the right one against its edges, the one of
+  the middle, the widest, 800 wide in the middle of the space between them, each of its parts
+  as wide as it (the cards and the tiles widened to fill their rows): to start a drawing at the left (New, Open..., Open sheet set..., the
   templates), what was worked on in the middle (Pinned, the active time, Recent), the tasks
   of each project at the right. No path is shown: it is in the tip of each card and tile.
 
@@ -100,9 +100,9 @@
       <Grid Margin="28,22,28,22">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="200"/>
-          <ColumnDefinition Width="28"/>
-          <ColumnDefinition Width="*" MinWidth="560"/>
-          <ColumnDefinition Width="28"/>
+          <ColumnDefinition Width="*" MinWidth="28"/>
+          <ColumnDefinition Width="800"/>
+          <ColumnDefinition Width="*" MinWidth="28"/>
           <ColumnDefinition Width="280"/>
         </Grid.ColumnDefinitions>
 
