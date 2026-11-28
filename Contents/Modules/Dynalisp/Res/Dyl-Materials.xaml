@@ -15,9 +15,9 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-  Shown by DynALisp.Windows.dll (Installer\Windows) through the preset engine
-  (Remote>>Dyl:PresetWin of Remote\Dyl-Presets.lsp, for Remote>>Dyl:MaterialDialog of
-  Remote\Dyl-Materials.lsp): by the command Dyl-Materials, and by the open button beside
+  Shown by DynALisp.Windows.dll (Installer\Windows) with Dyl:MatWindow, its values made by
+  DynALisp.Core.dll (MatTab, the values the preset engine gave; Remote>>Dyl:MaterialTab of
+  Remote\Dyl-Materials.lsp, for Remote>>Dyl:MaterialDialog): by the command Dyl-Materials, and by the open button beside
   Material in the Quick Draw and Quick Shape windows. A preset window: its list "lst" is the
   materials (pst/rows: id group name cut surface conductivity density resistance permeability
   permeance), edited in
@@ -26,7 +26,7 @@
   from. mat is the Cut hatch preset (the Material list of the engine, on the hatch presets:
   pst/mats, every one listed, pst/matfree), mpv its preview, sur the Surface hatch preset
   (sur/list, sur/vals: "" Same as Cut), cnd, den, rsi, vpm and vpc the data, in the units
-  of the drawing (mt.imp "1": imperial, the Lisp converts them, *mt:data*). The open buttons close
+  of the drawing (mt.imp "1": imperial, MatTab converts them, *mt:data*). The open buttons close
   the window with the code of what they open: 8 Preset Groups, 9 Hatch Presets on the Cut
   hatch preset, 10 Hatch Presets on the Surface hatch preset; the Lisp opens the window
   again once it is done.

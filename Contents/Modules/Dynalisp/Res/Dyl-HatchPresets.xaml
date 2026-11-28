@@ -16,9 +16,9 @@
   You should have received a copy of the GNU General Public License
   along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-  Shown by DynALisp.Windows.dll (Installer\Windows) through the preset engine
-  (Remote>>Dyl:PresetWin of Remote\Dyl-Presets.lsp, for Remote>>Dyl:HatchPresetDialog of
-  Remote\Dyl-Materials.lsp): by the command Dyl-HatchPresets, and by the open buttons of Cut
+  Shown by DynALisp.Windows.dll (Installer\Windows) with Dyl:HatchWindow, its values made by
+  DynALisp.Core.dll (HatchTab, the values the preset engine gave; Remote>>Dyl:MaterialTab of
+  Remote\Dyl-Materials.lsp, for Remote>>Dyl:HatchPresetDialog): by the command Dyl-HatchPresets, and by the open buttons of Cut
   and Surface in the Materials window. A preset window: its list "lst" is the hatch presets
   (pst/rows: the columns of HatchPresets.csv), edited in the window itself
   (Installer\Windows\Engine\Presets.cs); OK (1) saves them and gives the hatch preset
