@@ -73,8 +73,6 @@ namespace DynALisp.Windows
         const string Setting = "DynalispStartPage";
         const string PageFile = "Dyl-StartPage.xaml";
         const string Docs = @"Core\Dyl-StartPage.htm";
-        // The plugins of DynALisp (PackageContents.xml), by their assembly:
-        static readonly string[] Plugins = { "Core", "Ribbon", "Windows", "Startup", "Assistant", "Simulation" };
 
         static DispatcherTimer _timer;
         static bool _on;
@@ -501,14 +499,13 @@ namespace DynALisp.Windows
             foreach (var key in new[] { "set", "rep" })
                 if (_view?.Find(key) is Button b) b.IsEnabled = !_s.Off.Contains(key);
             // a note without text takes no room:
-            foreach (var key in new[] { "actn", "ftp", "err" })
+            foreach (var key in new[] { "actn", "err" })
                 if (_view?.Find(key) is TextBlock t) t.Visibility = string.IsNullOrEmpty(t.Text) ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
         }
 
         static void Values(Session s)
         {
             s.Values["ver"] = Foot();
-            s.Values["ftp"] = Problems();
             s.Values["actn"] = Env(Activity.Setting) == "1" ? "" : "Active time is off: turn it on in Settings, under Start page.";
             s.Values[Session.DocsKey(Docs)] = DocsHome();
         }
@@ -524,39 +521,6 @@ namespace DynALisp.Windows
             var info = StartPageLisp.Last ?? StartPageLisp.ReadLast();
             return "DynALisp " + Version() + "  \u00b7  " + Product()
                    + (info != null ? "  \u00b7  started in " + info.Ms.ToString(CultureInfo.InvariantCulture) + " ms" : "");
-        }
-
-        // What is wrong, in a few words (in red at the foot of the page), "" when nothing is:
-        // the plugins not loaded, the warnings of the last startup and the files it could not
-        // load, the problems of the last report of Dyl-Diagnostics.
-        static string Problems()
-        {
-            var r = new List<string>();
-            var loaded = new HashSet<string>(AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetName().Name ?? ""), StringComparer.OrdinalIgnoreCase);
-            var missing = Plugins.Where(p => !loaded.Contains("DynALisp." + p)).ToList();
-            if (missing.Count > 0) r.Add("not loaded: " + string.Join(", ", missing));
-            var info = StartPageLisp.Last ?? StartPageLisp.ReadLast();
-            if (info != null && info.Warnings.Count > 0) r.Add(Plural(info.Warnings.Count, "startup warning", "startup warnings"));
-            if (info != null && info.Errors.Count > 0) r.Add(Plural(info.Errors.Count, "file did not load", "files did not load"));
-            int n = ReportProblems();
-            if (n > 0) r.Add(Plural(n, "problem", "problems") + " in the last diagnostics");
-            return string.Join("  \u00b7  ", r);
-        }
-
-        static string Plural(int n, string one, string many) => n.ToString(CultureInfo.InvariantCulture) + " " + (n == 1 ? one : many);
-
-        static int ReportProblems()
-        {
-            string rep = LastReport();
-            if (rep == null) return 0;
-            try
-            {
-                var lines = System.IO.File.ReadLines(rep, Encoding.UTF8).Take(60).ToList();
-                var count = lines.Select(l => Regex.Match(l, @"^Problems found: (\d+)")).FirstOrDefault(x => x.Success);
-                return count != null ? int.Parse(count.Groups[1].Value, CultureInfo.InvariantCulture)
-                                     : lines.Count(l => l.StartsWith("  [!] ", StringComparison.Ordinal));
-            }
-            catch { return 0; }
         }
 
         // The Report.txt of the last DynALisp Report <date> folder of %TEMP% (Dyl-Diagnostics):

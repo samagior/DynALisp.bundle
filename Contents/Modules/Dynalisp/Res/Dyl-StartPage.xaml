@@ -28,7 +28,7 @@
     actn       said when Active time is off
     rec/rows   the recent drawings (dyl:RecentDrawings), thumbnails from the drawings
     tsk/rows   the tasks of the projects and sheet sets pinned (dyl:ProjectTasks, Tasks.cs)
-    ver ftp    the foot of the page: DynALisp, AutoCAD, the last startup; what is wrong
+    ver        the foot of the page: DynALisp, AutoCAD, the last startup
     err        what could not be done (a drawing that did not open)
   (err and actn take no room while they have no text: shown by the plugin when they have)
 
@@ -82,7 +82,7 @@
   </Window.Resources>
 
   <DockPanel Width="1600" Height="1000">
-    <!-- The foot: DynALisp in a line, what is wrong in red, its buttons: -->
+    <!-- The foot: DynALisp in a line, its buttons: -->
     <Border DockPanel.Dock="Bottom" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource Dyl.Border}" Padding="56,7,56,8">
       <DockPanel>
         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
@@ -91,8 +91,6 @@
           <Button x:Name="docs" Content="Docs" Style="{StaticResource Foot}"/>
         </StackPanel>
         <TextBlock x:Name="ver" FontSize="11.5" Foreground="{DynamicResource Dyl.Muted}" VerticalAlignment="Center"/>
-        <TextBlock x:Name="ftp" FontSize="11.5" Foreground="{DynamicResource Dyl.ErrorText}" Margin="14,0,0,0"
-                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
       </DockPanel>
     </Border>
 

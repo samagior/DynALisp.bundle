@@ -6,7 +6,6 @@
 # \t is a tab, {samples} this folder (the pictures of StartPage\, drawn for the docs: a drawing
 # keeps its own).
 ver=DynALisp 2.0  ·  AutoCAD Architecture 2027  ·  started in 412 ms
-ftp=1 problem in the last diagnostics
 actn=
 +pin/rows=D:\Projects\2041 Maple House\2041 Maple House.apj\t2041 Maple House\tProject\tD:\Projects\2041 Maple House\t186 h 40 of active time in the last year\t\t
 +pin/rows=D:\Projects\2038 Library\Library.dst\t2038 Public Library\tSheet set\tD:\Projects\2038 Library\t412 h 15 of active time in the last year\t\t
