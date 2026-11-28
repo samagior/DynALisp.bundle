@@ -31,6 +31,15 @@
 # (committed, or new and not ignored): never those of MyTools, ignored, which open from the
 # computer.
 #
+# The windows of a program (the rows <tr class="window"> of the index of its module, under the
+# program or naming it in "Window of ...") are shown on the page of the program too, written
+# here between <!-- dyl:windows --> and <!-- /dyl:windows --> under "Its Windows": for each
+# window, its title, the first paragraph of its page, its pictures (not the GIF) and the section
+# of its window (the heading "<Name> Window", "The Window", "Fenêtre <Name>", "La fenêtre"),
+# then a link to its page. The block is placed once after the section of the window of the
+# program (else before its aliases), then kept where it is; the row Windows of the program
+# table links to each window.
+#
 # A page is written only when it changed, its line endings kept. --check writes nothing: it
 # fails (exit code 1) when a page or DocsPages.txt is not up to date, or a LeeMac page has no
 # credit to Lee Mac (the docs workflow and Build.ps1 run it).
@@ -56,6 +65,11 @@ LANGS = [('en', '', 'EN', 'English', 'Not translated yet'),
 HEADER = '<p>DynALisp <span>Docs</span></p>'
 NAV = re.compile(r'[ \t]*<nav class="lang"[^>]*>.*?</nav>\r?\n', re.S)
 LINK = re.compile(r'(href=")([^"#:?]+\.htm)((?:#[^"]*)?")')
+# The windows of a program shown on its page (see above):
+WINDOWS = re.compile(r'[ \t]*<!-- dyl:windows -->.*?<!-- /dyl:windows -->[ \t]*\r?\n', re.S)
+WINDOW_H2 = re.compile(r'<h2[^>]*>(?:[^<]+ Window|(?:La )?[Ff]en\u00eatre[^<]*)</h2>')
+WINDOW_TEXTS = {'en': ('Its Windows', 'Windows'), 'fr': ('Ses fen\u00eatres', 'Fen\u00eatres')}
+_windows = None
 
 
 def lang_of(path):
@@ -108,6 +122,131 @@ def fix_links(text, path):
     return LINK.sub(sub, text)
 
 
+def windows_of():
+    """{English path of a program page: [English paths of its windows]}, from the index of each
+    module: a row <tr class="window"> belongs to the program above it and to the programs its
+    "Window of ..." names."""
+    global _windows
+    if _windows is None:
+        _windows = {}
+        for idx in sorted(glob.glob(os.path.join(MODULES, '*', 'Docs', 'index.htm'))):
+            with open(idx, encoding='utf-8') as f:
+                text = f.read()
+            here = os.path.dirname(idx)
+            rows = re.findall(r'<tr( class="window")?><td><a href="([^"#]+)">(.*?)</a></td>(.*?)</tr>', text, re.S)
+            progs = {text_of(name): os.path.normpath(os.path.join(here, href)) for win, href, name, _ in rows if not win}
+            last = None
+            for win, href, name, rest in rows:
+                path = os.path.normpath(os.path.join(here, href))
+                if not win:
+                    last = path
+                    continue
+                owners = [last] if last else []
+                m = re.search(r'Window of (.*)', text_of(rest))
+                for n in re.split(r',\s*|\s+and\s+', m.group(1)) if m else []:
+                    if n.strip() in progs and progs[n.strip()] not in owners:
+                        owners.append(progs[n.strip()])
+                for o in owners:
+                    _windows.setdefault(o, []).append(path)
+    return _windows
+
+
+def window_block(prog, wins, code, eol):
+    """The windows of the page prog in its language code (see the top of this file)."""
+    here = os.path.dirname(prog)
+    its, _ = WINDOW_TEXTS.get(code, WINDOW_TEXTS['en'])
+    out = ['<!-- dyl:windows -->', '<h2 id="windows">%s</h2>' % its]
+    for w in wins:
+        src = in_lang(w, code)
+        if not os.path.exists(src):
+            src = w
+        with open(src, encoding='utf-8') as f:
+            text = f.read()
+        there = os.path.dirname(w)
+        body = text.split('<div id="content">', 1)[-1]
+        if '<div id="footer">' in body:
+            body = body.split('<div id="footer">', 1)[0].rsplit('</div>', 1)[0]
+        h1 = re.search(r'<h1>(.*?)</h1>', body, re.S)
+        name = h1.group(1).strip() if h1 else os.path.basename(w)[:-4]
+        body = body[h1.end():] if h1 else body
+        body = re.sub(r'<div class="programs">.*?</div>', '', body, count=1, flags=re.S)
+
+        def move(fragment):
+            """The links of a fragment of w pointed from the page prog, without its ids."""
+            def sub(m):
+                href = m.group(2)
+                if href.startswith('#'):
+                    return m.group(1) + os.path.basename(w) + href + '"'
+                file, _, anchor = href.partition('#')
+                if re.match(r'[a-z]+:', file):
+                    return m.group(0)
+                target = os.path.normpath(os.path.join(there, file))
+                if os.path.normcase(lang_of(target)[1]) == os.path.normcase(prog):
+                    return m.group(1) + ('#' + anchor if anchor else '#') + '"'
+                new = os.path.relpath(target, here).replace(os.sep, '/')
+                return m.group(1) + new + ('#' + anchor if anchor else '') + '"'
+            fragment = re.sub(r'((?:href|src)=")([^"]*)"', sub, fragment)
+            return re.sub(r' id="[^"]*"', '', fragment)
+        anchor = 'window-' + re.sub(r'^dyl-', '', os.path.basename(w)[:-4].lower())
+        out.append('<h3 id="%s">%s</h3>' % (anchor, name))
+        desc = re.search(r'<p>(.*?)</p>', body, re.S)
+        if desc:
+            out.append(move(desc.group(0)))
+        for pic in PICTURE.findall(body):
+            if not pic.lower().endswith('.gif'):
+                rel = os.path.relpath(os.path.join(there, *pic.split('/')), here).replace(os.sep, '/')
+                out.append('<!-- picture: %s -->' % rel)
+        m = WINDOW_H2.search(body)
+        if m:
+            part = re.split(r'<h2[\s>]', body[m.end():], maxsplit=1)[0]
+            part = PICTURE.sub('', part)
+            part = re.sub(r'<p>(?:(?!</p>).)*&larr;.*?</p>', '', part, flags=re.S)
+            part = re.sub(r'<(/?)h3', r'<\1h4', part)
+            part = '\n'.join(l for l in part.strip().splitlines() if l.strip())
+            if part:
+                out.append(move(part))
+        out.append('<p class="more"><a href="%s">%s &rarr;</a></p>'
+                   % (os.path.relpath(w, here).replace(os.sep, '/'), name))
+    out.append('<!-- /dyl:windows -->')
+    return eol.join(out) + eol
+
+
+def show_windows(text, path, eol):
+    """The page with the windows of its program (see the top of this file)."""
+    code, base = lang_of(path)
+    if os.sep + 'Docs' + os.sep not in path:
+        return text
+    wins = windows_of().get(os.path.normpath(base))
+    old = WINDOWS.search(text)
+    if not wins:
+        return WINDOWS.sub('', text) if old else text
+    block = window_block(os.path.normpath(base), wins, code, eol)
+    if old:
+        text = text[:old.start()] + block + text[old.end():]
+    else:
+        m = WINDOW_H2.search(text)
+        nxt = re.compile(r'<h2[\s>]').search(text, m.end()) if m else None
+        at = nxt.start() if nxt else text.find('<!-- dyl:aliases -->')
+        if at < 0:
+            at = text.find('<div id="footer">')
+            at = text.rfind('</div>', 0, at)
+        text = text[:at] + block + text[at:]
+    # the row Windows of the program table:
+    _, label = WINDOW_TEXTS.get(code, WINDOW_TEXTS['en'])
+    links = ', '.join('<a href="#window-%s">%s</a>' % (a, n) for a, n in re.findall(r'<h3 id="window-([^"]+)">(.*?)</h3>', block))
+    m = re.search(r'(<div class="programs">\s*<table>)(.*?)(</table>)', text, re.S)
+    if m:
+        rows = [r for r in re.findall(r'<tr[^>]*>.*?</tr>', m.group(2), re.S)
+                if not re.search(r'<td>%s</td>' % re.escape(label), r)]
+        cells = [re.findall(r'<td>(.*?)</td>', r, re.S) for r in rows]
+        at = 1 if cells and cells[0] and cells[0][0] in ('Function Syntax', 'Syntaxe') else 0
+        cells[at:at] = [[label, links]]
+        inner = eol + eol.join(('<tr class="alt">' if i % 2 == 0 else '<tr>') + eol + eol.join('<td>%s</td>' % c for c in r) + eol + '</tr>'
+                               for i, r in enumerate(cells)) + eol
+        text = text[:m.start()] + m.group(1) + inner + m.group(3) + text[m.end():]
+    return text
+
+
 def git_files():
     """The files git knows under Contents/Modules (committed, or new and not ignored), as
     normalized full paths."""
@@ -122,7 +261,7 @@ def build_page(path, write=True):
         old = f.read()
     eol = '\r\n' if '\r\n' in old else '\n'
     # the links first, the switch after (its links lead to the other languages on purpose):
-    text = fix_links(NAV.sub('', old), path)
+    text = fix_links(show_windows(NAV.sub('', old), path, eol), path)
     i = text.find(HEADER)
     if i >= 0:
         line_start = text.rfind('\n', 0, i) + 1

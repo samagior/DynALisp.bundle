@@ -76,6 +76,8 @@ Dynalisp/Layer/Dyl-LayerTransfer.fr.htm
 Dynalisp/Layer/Dyl-LayerTransfer.htm
 Dynalisp/Layer/Dyl-ObjectLayerKeys.fr.htm
 Dynalisp/Layer/Dyl-ObjectLayerKeys.htm
+Dynalisp/Licence.fr.htm
+Dynalisp/Licence.htm
 Dynalisp/Navigate/Dyl-SwitchDrawingScale.fr.htm
 Dynalisp/Navigate/Dyl-SwitchDrawingScale.htm
 Dynalisp/Output/Dyl-CmdOptimizer.fr.htm
