@@ -227,6 +227,9 @@ if (document.readyState==='loading') document.addEventListener('DOMContentLoaded
         static readonly Dictionary<string, string> _last = new(StringComparer.Ordinal);
 
         static System.Windows.Threading.DispatcherTimer _timer;
+
+        // The timer stopped or started again (Dyl:RibbonWork "Off" "timers"):
+        public static void Timer(bool on) { if (on) _timer?.Start(); else _timer?.Stop(); }
         // How often the script is run in the browsers of AcWebView (it does nothing a second time
         // in a page), and their windows looked for again (the windows of Chrome of AutoCAD):
         const int Fast = 150, LookEvery = 1000;

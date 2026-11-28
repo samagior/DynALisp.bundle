@@ -25,6 +25,14 @@
 // During the test, another thread reads the cursor of Windows every 5 ms (GetCursorInfo): each
 // time it changes (a cursor that blinks during a pan) is listed with the steps of the plugin
 // that ended just before it.
+//
+// (Dyl:RibbonWork "Off" "<part>") turns a part of the plugin off at once, until AutoCAD is
+// closed, and (Dyl:RibbonWork "On" "<part>") back on, to find which one slows AutoCAD
+// without starting it again: "idle" (the Idle event of AutoCAD no longer handled), "colours"
+// (the colours of the interface kept as they are), "filetabs" (the bands of the file tabs),
+// "ribbon" (the drop-downs and the translation of the tab), "timers" (the timers of the
+// colours stopped), "commands" (nothing done at the end of a command), "all". (Dyl:RibbonWork
+// "Parts") gives the parts turned off.
 
 using System;
 using System.Collections.Generic;
@@ -51,6 +59,12 @@ namespace DynALisp.Ribbon
             {
                 string which = args?.AsArray().Select(v => v.Value as string).FirstOrDefault(v => v != null);
                 if (string.Equals(which, "Start", StringComparison.OrdinalIgnoreCase)) { Work.Begin(); return true; }
+                if (string.Equals(which, "Off", StringComparison.OrdinalIgnoreCase) || string.Equals(which, "On", StringComparison.OrdinalIgnoreCase))
+                {
+                    var part = args.AsArray().Skip(1).Select(v => v.Value as string).FirstOrDefault(v => v != null);
+                    return Work.Switch(part, string.Equals(which, "Off", StringComparison.OrdinalIgnoreCase));
+                }
+                if (string.Equals(which, "Parts", StringComparison.OrdinalIgnoreCase)) return Work.PartsOff();
                 var lines = Work.End();
                 if (lines == null) return null;
                 var rb = new ResultBuffer();
@@ -75,6 +89,30 @@ namespace DynALisp.Ribbon
         const int LongMax = 5000;
 
         static long Ms(long ticks) => ticks * 1000 / Stopwatch.Frequency;
+
+        // ---- the parts turned off for a test ----
+
+        public static readonly string[] Parts = { "idle", "colours", "filetabs", "ribbon", "timers", "commands" };
+        static readonly HashSet<string> Off = new(StringComparer.OrdinalIgnoreCase);
+
+        public static bool IsOff(string part) => Off.Contains(part);
+
+        public static string PartsOff() => Off.Count == 0 ? "none off" : string.Join(" ", Parts.Where(Off.Contains)) + " off";
+
+        // Returns the parts turned off after the change, or what the parts are:
+        public static string Switch(string part, bool off)
+        {
+            var which = string.Equals(part, "all", StringComparison.OrdinalIgnoreCase) ? Parts
+                : Parts.Where(p => string.Equals(p, part, StringComparison.OrdinalIgnoreCase)).ToArray();
+            if (which.Length == 0) return "parts: " + string.Join(" ", Parts) + " all";
+            foreach (var p in which)
+            {
+                if (off) Off.Add(p); else Off.Remove(p);
+                if (p == "idle") Host.Listen(!off);
+                if (p == "timers") { Skin.Timer(!off); WebPages.Timer(!off); }
+            }
+            return PartsOff();
+        }
 
         // One step timed (and counted), what it throws thrown again:
         public static void Time(string name, Action step)

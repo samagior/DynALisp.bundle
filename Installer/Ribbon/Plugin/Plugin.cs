@@ -115,18 +115,33 @@ namespace DynALisp.Ribbon
             dm.DocumentBecameCurrent += (s, e) => { Watch(e.Document); Each(p => p.DocumentChanged()); };
             dm.DocumentToBeDestroyed += (s, e) => Watched.Remove(e.Document);
             foreach (Document d in dm) Watch(d);
-            AcApp.Idle += OnIdle;
+            Listen(true);
             ComponentManager.ItemInitialized += (s, e) => { _dirty = true; T.Dirty(); };
             if (RibbonServices.RibbonPaletteSet != null) WatchPaletteSet();
             else RibbonServices.RibbonPaletteSetCreated += (s, e) => WatchPaletteSet();
         }
 
+        // The Idle event of AutoCAD handled, or no longer (Dyl:RibbonWork "Off" "idle"):
+        static bool _listening;
+        public static void Listen(bool on)
+        {
+            if (on == _listening) return;
+            _listening = on;
+            if (on) AcApp.Idle += OnIdle; else AcApp.Idle -= OnIdle;
+        }
+
         static void Watch(Document d)
         {
             if (d == null || !Watched.Add(d)) return;
-            d.CommandEnded += (s, e) => Work.Time("ribbon: drop-downs after a command", () => Each(p => p.CommandEnded()));
-            d.CommandCancelled += (s, e) => Work.Time("ribbon: drop-downs after a command", () => Each(p => p.CommandEnded()));
-            d.LispEnded += (s, e) => Work.Time("ribbon: drop-downs after a command", () => Each(p => p.CommandEnded()));
+            d.CommandEnded += (s, e) => Ended();
+            d.CommandCancelled += (s, e) => Ended();
+            d.LispEnded += (s, e) => Ended();
+        }
+
+        static void Ended()
+        {
+            if (Work.IsOff("commands")) return;
+            Work.Time("ribbon: drop-downs after a command", () => Each(p => p.CommandEnded()));
         }
 
         static void WatchPaletteSet()
@@ -156,9 +171,9 @@ namespace DynALisp.Ribbon
             // The colours change no part of the ribbon: they need no quiet, and are not kept
             // waiting by the startup of the drawings.
             Work.Count("AutoCAD idle (events)");
-            Skin.OnIdle();
-            Work.Time("file tabs: bands", FileTabs.OnIdle);
-            if (!Quiet()) return;
+            if (!Work.IsOff("colours")) Skin.OnIdle();
+            if (!Work.IsOff("filetabs")) Work.Time("file tabs: bands", FileTabs.OnIdle);
+            if (Work.IsOff("ribbon") || !Quiet()) return;
             if (_dirty && Environment.TickCount - _nextTry >= 0)
             {
                 _nextTry = Environment.TickCount + 1000;

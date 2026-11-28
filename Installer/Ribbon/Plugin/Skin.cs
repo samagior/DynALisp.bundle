@@ -351,6 +351,9 @@ namespace DynALisp.Ribbon
         [System.Runtime.InteropServices.DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr hwnd);
         public static void Settle() => _fastUntil = Environment.TickCount + Fast;
 
+        // The timer stopped or started again (Dyl:RibbonWork "Off" "timers"):
+        public static void Timer(bool on) { if (on) _timer?.Start(); else _timer?.Stop(); }
+
         public static void Start()
         {
             Read();
