@@ -252,6 +252,9 @@ namespace DynALisp.Windows
         public string Graph { get => (string)GetValue(GraphProperty); set => SetValue(GraphProperty, value); }
         ActivityGraph _graph;
 
+        // A sheet set of the recent list (its time: the drawings of its folder):
+        static bool Dst(string path) => path.EndsWith(".dst", StringComparison.OrdinalIgnoreCase);
+
         void Mark()
         {
             foreach (var it in _items)
@@ -388,7 +391,7 @@ namespace DynALisp.Windows
             var img = StartUi.Thumb(thumb);
             pic.Child = img != null
                 ? (UIElement)new Image { Source = img, Stretch = Stretch.Uniform, Margin = new Thickness(2) }
-                : StartUi.Glyph("Drawing", 0.8);
+                : StartUi.Glyph(Dst(it.Path) ? "Sheet set" : "Drawing", 0.8);
             var title = StartUi.Title(name, null, 0, true);
             title.Margin = new Thickness(0, 6, 0, 0);
             var date = StartUi.Text(missing ? "Not found" : when, missing ? "Dyl.ErrorText" : "Dyl.Muted", 11.5);
@@ -398,7 +401,7 @@ namespace DynALisp.Windows
             stack.Children.Add(date);
             var b = new Button { Content = stack, Width = w, ToolTip = it.Path, Opacity = missing ? 0.55 : 1 };
             b.SetResourceReference(StyleProperty, "Dyl.Tile");
-            StartUi.ClickOrOpen(b, () => _graph?.ToggleScope(it.Path, name, false), () => Opened?.Invoke(it.Path, false));
+            StartUi.ClickOrOpen(b, () => _graph?.ToggleScope(it.Path, name, Dst(it.Path)), () => Opened?.Invoke(it.Path, false));
             var menu = new ContextMenu();
             b.ContextMenu = menu;
             // its items made as it opens (what is pinned changes):

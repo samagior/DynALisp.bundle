@@ -576,8 +576,12 @@ namespace DynALisp.Windows
             var pins = Activity.Pins();
             string tdir = TemplateFolder(), qnew = QNew();
             var titles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var p in pins)
-                if (string.Equals(Path.GetExtension(p), ".dst", StringComparison.OrdinalIgnoreCase)) titles[p] = SheetTitle(p);
+            // the titles of the sheet sets pinned or in the recent list (the list read here too,
+            // the registry only: the titles are read on this thread):
+            var recent = new List<string>();
+            try { recent = RecentFiles(root, profile).Take(48).ToList(); } catch { }
+            foreach (var p in pins.Concat(recent))
+                if (!titles.ContainsKey(p) && string.Equals(Path.GetExtension(p), ".dst", StringComparison.OrdinalIgnoreCase)) titles[p] = SheetTitle(p);
             _reading = true;
             _readAgain = false;
             var disp = Dispatcher.CurrentDispatcher;
@@ -587,7 +591,7 @@ namespace DynALisp.Windows
                 string err = null;
                 try { tpl = Templates(tdir, qnew); } catch { tpl = new List<string[]>(); }
                 try { tsk = TaskRows(pins, titles); } catch (System.Exception e) { err = "tasks: " + e.Message; }
-                try { rec = Recent(root, profile); }
+                try { rec = Recent(root, profile, titles); }
                 catch (System.Exception e) { err = "recent drawings: " + e.Message; }
                 try { act = Activity.Rows(pending); pin = PinRows(pins, titles); }
                 catch (System.Exception e) { err = "active time: " + e.Message; }
@@ -773,7 +777,7 @@ namespace DynALisp.Windows
             return files;
         }
 
-        static List<string[]> Recent(string root, string profile)
+        static List<string[]> Recent(string root, string profile, Dictionary<string, string> titles)
         {
             var rows = new List<string[]>();
             var files = RecentFiles(root, profile).Take(48).ToList();
@@ -789,7 +793,7 @@ namespace DynALisp.Windows
                 if (there) try { thumb = Thumbnail(f, t, size, cache) ?? ""; } catch { }
                 rows.Add(new[]
                 {
-                    f, Path.GetFileNameWithoutExtension(f), Path.GetDirectoryName(f) ?? "",
+                    f, NameOf(f, titles), Path.GetDirectoryName(f) ?? "",
                     there ? When(t) : "", thumb, there ? "" : "1",
                 });
             }
