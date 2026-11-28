@@ -1,0 +1,41 @@
+<!--
+  Dyl-StartPagePreview.xaml - the part of a picture kept as the preview of a drawing
+  Copyright (C) 2026  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Shown by the Start page (Installer\Windows\StartPage.cs, Choose preview picture...) when the
+  picture chosen for a drawing is not of the shape of its frames: frm is the file of the
+  picture, the frame placed on it (Engine\Frame.cs, of the shape StartUi.PreviewAspect) gives
+  back the part kept as frm/crop ("x y width height", its pixels) on OK.
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - Preview Picture"
+        dyl:Win.Docs="Core\Dyl-StartPagePreview.htm">
+  <StackPanel Margin="14">
+    <GroupBox Header="Frame the preview" Margin="0">
+      <StackPanel>
+        <dyl:PictureFrame x:Name="frm" Aspect="1.6" Width="640" Height="440"/>
+        <TextBlock Style="{DynamicResource Dyl.Desc}" Margin="0,8,0,0" Text="Drag the frame, or its corner to size it."/>
+      </StackPanel>
+    </GroupBox>
+    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+      <Button Content="OK" IsDefault="True"/>
+      <Button Content="Cancel" IsCancel="True"/>
+      <Button x:Name="docs" Content="Open Docs"/>
+    </StackPanel>
+  </StackPanel>
+</Window>

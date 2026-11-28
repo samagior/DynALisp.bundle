@@ -73,6 +73,9 @@ namespace DynALisp.Windows
         const string Setting = "DynalispStartPage";
         const string PageFile = "Dyl-StartPage.xaml";
         const string Docs = @"Core\Dyl-StartPage.htm";
+        // The window that frames a picture chosen for a drawing (Previews.cs), and its docs:
+        const string PreviewFile = "Dyl-StartPagePreview.xaml";
+        const string PreviewDocs = @"Core\Dyl-StartPagePreview.htm";
 
         static DispatcherTimer _timer;
         static bool _on;
@@ -256,6 +259,7 @@ namespace DynALisp.Windows
                 tsk.Added += (pj, t) => Do(() => { ProjectTasksFile.Add(pj, t); ReadRows(); });
                 tsk.Checked += (pj, id, on) => Do(() => { ProjectTasksFile.Check(pj, id, on); ReadRows(); });
                 tsk.Removed += (pj, id) => Do(() => { ProjectTasksFile.Remove(pj, id); ReadRows(); });
+                tsk.Shared += (pj, on) => Do(() => { ProjectTasksFile.Share(pj, on); ReadRows(); });
             }
             if (_view.Find("pnb") is Button pb) pb.Click += (a, b) => Do(PinAsk);
             if (_view.Find("rec") is RecentDrawings rec)
@@ -264,12 +268,16 @@ namespace DynALisp.Windows
                 rec.Folder += f => Do(() => ShowInFolder(f));
                 rec.Pin += (f, on) => Do(() => Pin(f, on));
                 rec.PinChoices = PinChoices;
+                rec.Preview += (f, how) => Do(() => Preview(f, how));
+                rec.HasPreview = Previews.Has;
             }
             if (_view.Find("pin") is PinnedItems pin)
             {
                 pin.Opened += (f, ro) => Do(() => Open(f, ro));
                 pin.Folder += f => Do(() => ShowInFolder(f));
                 pin.Unpinned += f => Do(() => Pin(f, false));
+                pin.Preview += (f, how) => Do(() => Preview(f, how));
+                pin.HasPreview = Previews.Has;
             }
             if (_view.Find("act") is ActivityGraph act) act.Opened += (f, ro) => Do(() => Open(f, ro));
             // the columns picked for the pins and the recent drawings, kept for the next time:
@@ -289,6 +297,53 @@ namespace DynALisp.Windows
         {
             ("pnc", "DynalispStartPinnedColumns"), ("rcc", "DynalispStartRecentColumns"),
         };
+
+        // ---- the previews (Previews.cs) ----
+
+        // A picture of the user's choice for a drawing (a sheet set, a project): an image file,
+        // the area of the drawing (opened, its two corners picked at its command line), or its
+        // own preview again:
+        static void Preview(string path, string how)
+        {
+            if (how == "Own") { Previews.Forget(path); ReadRows(); return; }
+            if (how == "Picture")
+            {
+                var dlg = new Microsoft.Win32.OpenFileDialog
+                {
+                    Title = "Choose preview picture",
+                    Filter = "Pictures (*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tif;*.tiff)|*.png;*.jpg;*.jpeg;*.bmp;*.gif;*.tif;*.tiff",
+                };
+                string dir = Path.GetDirectoryName(path);
+                if (!string.IsNullOrEmpty(dir) && Directory.Exists(dir)) dlg.InitialDirectory = dir;
+                if (dlg.ShowDialog() != true) return;
+                var pic = StartUi.Picture(dlg.FileName);
+                if (pic == null) { Say("Not a picture: " + Path.GetFileName(dlg.FileName)); return; }
+                // of another shape than the frames of the page: the part to keep framed on it
+                string crop = null;
+                if (Math.Abs(pic.PixelWidth / (double)pic.PixelHeight / StartUi.PreviewAspect - 1) > 0.01)
+                {
+                    var s = new Session { Dark = _dark, FitToScreen = true, Places = new Places(), ShowRoot = w => AcApp.ShowModalWindow(Bridge.MainWindow(), w, false) };
+                    s.Values["frm"] = dlg.FileName;
+                    s.Values[Session.DocsKey(PreviewDocs)] = DocsPage("Dynalisp/Core/Dyl-StartPagePreview", "");
+                    if (s.Show(Path.Combine(Root(), "Contents", "Modules", "Dynalisp", "Res", PreviewFile)) != 1) return;
+                    if (!s.Values.TryGetValue("frm/crop", out crop) || string.IsNullOrEmpty(crop)) return;
+                }
+                Previews.Choose(path, dlg.FileName, crop);
+                ReadRows();
+                return;
+            }
+            if (!System.IO.File.Exists(path)) { Say("Not found: " + Path.GetFileName(path)); return; }
+            var doc = OpenDoc(path);
+            if (doc == null) return;
+            AcApp.DocumentManager.MdiActiveDocument = doc;
+            doc.SendStringToExecute("(Dyl:StartPagePreviewArea)\n", true, false, false);
+        }
+
+        // The rows of the page read again (a preview made in a drawing), when it is shown:
+        internal static void Reread()
+        {
+            if (_s != null && _view != null) ReadRows();
+        }
 
         // ---- the pins ----
 
@@ -518,14 +573,21 @@ namespace DynALisp.Windows
             if (!System.IO.File.Exists(file)) { Say("Not found: " + System.IO.Path.GetFileName(file)); return; }
             if (Kind(file) == "Sheet set") { OpenSheetSet(file); return; }
             if (Kind(file) == "Project") { ShowInFolder(file); return; }
+            OpenDoc(file, readOnly);
+        }
+
+        // A drawing opened, or made current when it is open already:
+        static Document OpenDoc(string file, bool readOnly = false)
+        {
             var dm = AcApp.DocumentManager;
             foreach (Document d in dm)
             {
                 string n = "";
                 try { n = d.Name; } catch { }
-                if (string.Equals(Path.GetFullPath(n), Path.GetFullPath(file), StringComparison.OrdinalIgnoreCase)) { dm.MdiActiveDocument = d; return; }
+                if (!Path.IsPathRooted(n)) continue;
+                if (string.Equals(Path.GetFullPath(n), Path.GetFullPath(file), StringComparison.OrdinalIgnoreCase)) { dm.MdiActiveDocument = d; return d; }
             }
-            dm.Open(file, readOnly);
+            return dm.Open(file, readOnly);
         }
 
         static void ShowInFolder(string file)
@@ -688,7 +750,8 @@ namespace DynALisp.Windows
         }
 
         // The tasks of the projects and sheet sets pinned: project, name, kind, id, done, text,
-        // error (a row without id for a project without a task):
+        // error, shared ("1": kept with the project; a row without id for a project without a
+        // task):
         static List<string[]> TaskRows(List<string> pins, Dictionary<string, string> titles)
         {
             var rows = new List<string[]>();
@@ -701,8 +764,9 @@ namespace DynALisp.Windows
                 string err = "";
                 try { items = ProjectTasksFile.Read(p); }
                 catch (System.Exception e) { items = new List<ProjectTasksFile.Item>(); err = "Tasks not read: " + e.Message; }
-                if (items.Count == 0) rows.Add(new[] { p, name, kind, "", "", "", err });
-                foreach (var t in items) rows.Add(new[] { p, name, kind, t.Id, t.Done ? "1" : "", t.Text, err });
+                string shared = ProjectTasksFile.Shared(p) ? "1" : "";
+                if (items.Count == 0) rows.Add(new[] { p, name, kind, "", "", "", err, shared });
+                foreach (var t in items) rows.Add(new[] { p, name, kind, t.Id, t.Done ? "1" : "", t.Text, err, shared });
             }
             return rows;
         }
@@ -807,7 +871,8 @@ namespace DynALisp.Windows
                 long size = 0;
                 try { var fi = new FileInfo(p); there = fi.Exists; if (there) { t = fi.LastWriteTime; size = fi.Length; } } catch { }
                 string thumb = "";
-                if (there && kind == "Drawing") try { thumb = Thumbnail(p, t, size, cache) ?? ""; } catch { }
+                try { thumb = Previews.Of(p) ?? ""; } catch { }
+                if (thumb == "" && there && kind == "Drawing") try { thumb = Thumbnail(p, t, size, cache) ?? ""; } catch { }
                 rows.Add(new[]
                 {
                     p, NameOf(p, titles), kind, dir, "", thumb, there ? "" : "1", "", "",
@@ -850,7 +915,8 @@ namespace DynALisp.Windows
                 long size = 0;
                 try { var fi = new FileInfo(f); there = fi.Exists; if (there) { t = fi.LastWriteTime; size = fi.Length; } } catch { }
                 string thumb = "";
-                if (there) try { thumb = Thumbnail(f, t, size, cache) ?? ""; } catch { }
+                try { thumb = Previews.Of(f) ?? ""; } catch { }
+                if (thumb == "" && there) try { thumb = Thumbnail(f, t, size, cache) ?? ""; } catch { }
                 rows.Add(new[]
                 {
                     f, NameOf(f, titles), Path.GetDirectoryName(f) ?? "",
@@ -982,16 +1048,23 @@ namespace DynALisp.Windows
             return string.IsNullOrEmpty(name) ? "AutoCAD " + AcApp.Version.ToString(2) : name;
         }
 
-        // The home page of the User Guide on the docs website, in French when DynALisp is:
-        static string DocsHome()
+        const string DocsWeb = "https://samagior.github.io/DynALisp.docs/";
+
+        // The language of DynALisp is French (DynalispLanguage, else that of AutoCAD):
+        static bool French()
         {
-            const string Web = "https://samagior.github.io/DynALisp.docs/";
             string lang = Env("DynalispLanguage");
-            bool french = string.IsNullOrEmpty(lang)
+            return string.IsNullOrEmpty(lang)
                 ? HostApplicationServices.Current.UserRegistryProductRootKey.EndsWith(":40C", StringComparison.OrdinalIgnoreCase)
                 : lang == "French";
-            return Web + (french ? "index.fr.html" : "");
         }
+
+        // The home page of the User Guide on the docs website, in French when DynALisp is:
+        static string DocsHome() => DocsWeb + (French() ? "index.fr.html" : "");
+
+        // A page of the docs website (its path without .htm, then its anchor), in French when
+        // DynALisp is:
+        static string DocsPage(string page, string anchor) => DocsWeb + page + (French() ? ".fr.htm" : ".htm") + anchor;
 
         // A user setting (getenv: the FixedProfile\General key of the profile):
         internal static string Env(string name)

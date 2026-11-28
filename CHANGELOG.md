@@ -17,6 +17,11 @@ from the website when this computer does not have it. Plain ASCII.
 
 ## Next
 
+### A Start page of your own
+Dyl-Settings > Overrides > Start page shows the page of DynALisp in the Start tab: New, Open and your templates on the left; your pinned drawings, sheet sets and projects, the time spent in each drawing day by day, and your recent drawings in the middle; the tasks of each project on the right. Click a drawing to see its days, double-click it to open it. Right-click a drawing to show a picture of your choice, or an area of it made again at each save. Report a problem opens an issue with the diagnostics already in it.
+![](Contents/Modules/Dynalisp/Docs/Core/images/Dyl-StartPage-window.png)
+[Open the docs](Contents/Modules/Dynalisp/Docs/Core/Dyl-StartPage.htm)
+
 ### Dark interface in the DynALisp colors
 Dyl-Settings > Display > Interface colors the whole of AutoCAD in its dark theme to match the DynALisp windows: the ribbon, the palettes, Properties, the status bar, the file tabs, the title bar and the Start tab. DynALisp Neutral is the same in a neutral grey, darker. The model space, the paper of the layouts and the background around it follow, or keep a color of their own. An experiment that Autodesk does not support.
 ![](Contents/Modules/Dynalisp/Docs/Core/images/Dyl-Settings-Display.png)
