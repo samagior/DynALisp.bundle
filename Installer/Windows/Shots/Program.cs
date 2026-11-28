@@ -23,7 +23,7 @@
 //                                         and those of its lists (the Windows workflow)
 //   ... -- -fit -trace <window>           the same, with each step of the fit of its lists
 //
-// Each row of Shots.csv (Window;Sample;Picture[;Section], paths from the root of the
+// Each row of Shots.csv (Window;Sample;Picture[;Section[;Rows]], paths from the root of the
 // repository) is a window file opened as the plugin opens it (Session.Open: the same engine, the same theme),
 // on the values of its sample file (Samples\, as the Lisp gives them: key=value,
 // key/list=item|item, key/vals=value|value, key/off=1, +key=field\\tfield a row of the table
@@ -41,6 +41,9 @@
 //   Presets          the GroupBox of that header, else the element of that x:Name
 //   GroupBox:nam     the nearest GroupBox (or any type) that holds the element named nam
 //   Presets+Preview  the parts joined, and what lies between them
+// and the Rows column, when it has a number, keeps that many rows of each long list of the
+// section, the section as high as what it then holds: a list of repeated rows shows what it is
+// in a few of them, and the page stays short.
 
 using System;
 using System.Collections.Generic;
@@ -83,6 +86,7 @@ namespace DynALisp.Windows
                 var f = line.Split(';').Select(x => x.Trim()).ToArray();
                 if (f.Length < 3) continue;
                 string section = f.Length > 3 ? f[3] : "";
+                int rows = f.Length > 4 && int.TryParse(f[4], out var n) ? n : 0;
                 if (only.Count > 0 && !only.Any(o => f[0].Contains(o) || f[2].Contains(o))) continue;
                 string xaml = Path.Combine(root, f[0]), sample = Path.Combine(here, "Samples", f[1]);
                 string png = outDir != null ? Path.Combine(outDir, f[2]) : Path.Combine(root, f[2]);
@@ -94,7 +98,7 @@ namespace DynALisp.Windows
                 }
                 try
                 {
-                    Shot(xaml, sample, png, true, section);
+                    Shot(xaml, sample, png, true, section, rows);
                     Console.WriteLine("Drawn " + f[2]);
                     done++;
                 }
@@ -250,10 +254,21 @@ namespace DynALisp.Windows
             return null;
         }
 
+        // Every element of a type below root, in the visual tree:
+        static IEnumerable<T> Below<T>(DependencyObject root) where T : DependencyObject
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(root); i++)
+            {
+                var c = VisualTreeHelper.GetChild(root, i);
+                if (c is T t) yield return t;
+                foreach (var d in Below<T>(c)) yield return d;
+            }
+        }
+
         // The margin of the window kept around a section:
         const double SectionPad = 12;
 
-        static void Shot(string xaml, string sample, string png, bool dark, string section)
+        static void Shot(string xaml, string sample, string png, bool dark, string section, int rows = 0)
         {
             var s = new Session { Dark = dark };
             Read(s, sample);
@@ -285,6 +300,29 @@ namespace DynALisp.Windows
             // the bindings and the templates done:
             Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
             frame.UpdateLayout();
+            if (section != "" && rows > 0)
+            {
+                // A long list shows its first rows only, the section as high as what it holds:
+                foreach (var spec in section.Split('+').Select(x => x.Trim()))
+                {
+                    var part = Part(frame, spec);
+                    if (part == null) continue;
+                    foreach (var list in Below<ItemsControl>(part).Where(l => !(l is ComboBox) && !(l is System.Windows.Controls.Primitives.MenuBase) && l.Items.Count > rows))
+                    {
+                        var first = list.ItemContainerGenerator.ContainerFromIndex(0) as FrameworkElement;
+                        if (first == null || first.ActualHeight <= 0) continue;
+                        double top = first.TransformToAncestor(list).Transform(new Point(0, 0)).Y;
+                        var height = top + rows * first.ActualHeight + Math.Max(top, 2);
+                        if (height < list.ActualHeight) list.Height = height;
+                    }
+                    part.VerticalAlignment = VerticalAlignment.Top;
+                }
+                frame.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                frame.Arrange(new Rect(frame.DesiredSize));
+                frame.UpdateLayout();
+                Dispatcher.CurrentDispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+                frame.UpdateLayout();
+            }
 
             const double scale = 2;
             var size = frame.RenderSize;

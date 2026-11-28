@@ -27,8 +27,8 @@
 # page of the other set for the same tool when it has one, else to the home of that set.
 # The pictures a guide page names (<!-- picture: images/<Page>-window.png -->) are shown once
 # their file is in the images folder beside the page, at their true size: a PNG drawn at
-# 192 dpi (its pHYs, Installer\Windows\Shots) at half its pixels, never stretched or shrunk to
-# the column (a picture wider than the column scrolls). One picture, in DynALisp Dark, in light
+# 192 dpi (its pHYs, Installer\Windows\Shots) at half its pixels, never enlarged to fill the
+# column (a picture wider than the column is scaled down to fit). One picture, in DynALisp Dark, in light
 # mode as in dark mode.
 #
 # A page already in <folder> is kept, even when the docs no longer have it (renamed, moved,
