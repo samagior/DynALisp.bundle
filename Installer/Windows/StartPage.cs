@@ -259,6 +259,7 @@ namespace DynALisp.Windows
                 tsk.Added += (pj, t) => Do(() => { ProjectTasksFile.Add(pj, t); ReadRows(); });
                 tsk.Checked += (pj, id, on) => Do(() => { ProjectTasksFile.Check(pj, id, on); ReadRows(); });
                 tsk.Removed += (pj, id) => Do(() => { ProjectTasksFile.Remove(pj, id); ReadRows(); });
+                tsk.Shared += (pj, on) => Do(() => { ProjectTasksFile.Share(pj, on); ReadRows(); });
             }
             if (_view.Find("pnb") is Button pb) pb.Click += (a, b) => Do(PinAsk);
             if (_view.Find("rec") is RecentDrawings rec)
@@ -749,7 +750,8 @@ namespace DynALisp.Windows
         }
 
         // The tasks of the projects and sheet sets pinned: project, name, kind, id, done, text,
-        // error (a row without id for a project without a task):
+        // error, shared ("1": kept with the project; a row without id for a project without a
+        // task):
         static List<string[]> TaskRows(List<string> pins, Dictionary<string, string> titles)
         {
             var rows = new List<string[]>();
@@ -762,8 +764,9 @@ namespace DynALisp.Windows
                 string err = "";
                 try { items = ProjectTasksFile.Read(p); }
                 catch (System.Exception e) { items = new List<ProjectTasksFile.Item>(); err = "Tasks not read: " + e.Message; }
-                if (items.Count == 0) rows.Add(new[] { p, name, kind, "", "", "", err });
-                foreach (var t in items) rows.Add(new[] { p, name, kind, t.Id, t.Done ? "1" : "", t.Text, err });
+                string shared = ProjectTasksFile.Shared(p) ? "1" : "";
+                if (items.Count == 0) rows.Add(new[] { p, name, kind, "", "", "", err, shared });
+                foreach (var t in items) rows.Add(new[] { p, name, kind, t.Id, t.Done ? "1" : "", t.Text, err, shared });
             }
             return rows;
         }

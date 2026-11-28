@@ -1027,6 +1027,8 @@ namespace DynALisp.Windows
         public event Action<string, string> Added;
         public event Action<string, string, bool> Checked;
         public event Action<string, string> Removed;
+        // Its tasks kept with the project (project, true) or by the user (false):
+        public event Action<string, bool> Shared;
 
         readonly StackPanel _cards = new StackPanel();
         readonly TextBlock _empty = new TextBlock { TextWrapping = TextWrapping.Wrap };
@@ -1051,15 +1053,16 @@ namespace DynALisp.Windows
             _empty.Visibility = rows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
             foreach (var g in rows.GroupBy(r => StartUi.F(r, 0), StringComparer.OrdinalIgnoreCase))
                 _cards.Children.Add(Card(g.Key, StartUi.F(g.First(), 1), StartUi.F(g.First(), 2), StartUi.F(g.First(), 6),
-                                         g.Where(r => StartUi.F(r, 3).Length > 0).ToList()));
+                                         StartUi.F(g.First(), 7) == "1", g.Where(r => StartUi.F(r, 3).Length > 0).ToList()));
         }
 
-        Border Card(string project, string name, string kind, string error, List<string[]> tasks)
+        Border Card(string project, string name, string kind, string error, bool shared, List<string[]> tasks)
         {
             int done = tasks.Count(t => StartUi.F(t, 4) == "1");
             var stack = new StackPanel();
             var head = new DockPanel();
-            var badge = StartUi.Text(kind, "Dyl.Muted", 11);
+            var badge = StartUi.Text(shared ? kind + ", shared" : kind, "Dyl.Muted", 11);
+            badge.ToolTip = shared ? "Its tasks are kept with the " + kind.ToLowerInvariant() + ": everyone who opens it sees them." : "Its tasks are kept on this computer.";
             badge.VerticalAlignment = VerticalAlignment.Top;
             badge.Margin = new Thickness(8, 2, 0, 0);
             DockPanel.SetDock(badge, Dock.Right);
@@ -1123,6 +1126,10 @@ namespace DynALisp.Windows
             card.SetResourceReference(Border.BorderBrushProperty, "Dyl.Border");
             card.SetResourceReference(Border.BackgroundProperty, "Dyl.Surface");
             card.Child = stack;
+            // where its tasks are kept, picked by its right-click menu:
+            var where = new MenuItem { Header = "Keep tasks with the " + kind.ToLowerInvariant(), IsCheckable = true, IsChecked = shared };
+            where.Click += (s, e) => Shared?.Invoke(project, !shared);
+            card.ContextMenu = new ContextMenu { Items = { where } };
             return card;
         }
     }
