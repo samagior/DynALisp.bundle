@@ -19,7 +19,9 @@
 // Remote\Dyl-Presets.lsp ran it on the spec of Remote>>Dyl:MaterialDlg
 // (Remote\Dyl-Materials.lsp), shown by DynALisp.Windows.dll (Dyl:MatWindow) without the Lisp.
 // What every preset window does is in PresetTab; here the App part, each step named after the
-// Lisp function it gives what of, checked by the witness files (sections mattab):
+// Lisp function it gives what of, checked by the witness files (sections mattab). That Lisp
+// (the spec of the window and its functions in Dyl-Materials.lsp) is gone: what it gave is
+// kept in Installer\Core\Tests\Witness\Kept, and git keeps its code:
 //   MatTab.Open        Remote>>Dyl:PresetDialog         the materials read, the one shown
 //   MatTab.Prep        Remote>>Dyl:PresetWinPrep        the groups, the hatch presets (mats)
 //   MatTab.Rows        Remote>>Dyl:MaterialWinRow       the data in imperial units, when shown so
@@ -28,7 +30,7 @@
 //   MatTab.WinGet      Remote>>Dyl:MaterialWinGet       the data back in SI units
 //   MatTab.ValueCheck  Remote>>Dyl:MaterialWinCheck     why a value is not valid
 // What stays in the Lisp: the units of the patterns of the hatch presets (their previews), the
-// Hatch Presets window opened from a button (the codes of Remote>>Dyl:MaterialDialog).
+// Hatch Presets window opened from a button (the codes of Remote>>Dyl:MaterialTabCode).
 
 using System;
 using System.Collections.Generic;

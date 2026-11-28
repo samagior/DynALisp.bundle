@@ -19,7 +19,9 @@
 // the spec of Remote>>Dyl:HatchPresetDlg (Remote\Dyl-Materials.lsp), shown by
 // DynALisp.Windows.dll (Dyl:HatchWindow) without the Lisp. What every preset window does is in
 // PresetTab; here the App part, each step named after the Lisp function it gives what of,
-// checked by the witness files (sections hptab):
+// checked by the witness files (sections hptab). That Lisp (the spec of the window and its
+// functions in Dyl-Materials.lsp) is gone: what it gave is kept in
+// Installer\Core\Tests\Witness\Kept, and git keeps its code:
 //   HatchTab.Open      Remote>>Dyl:PresetDialog          the hatch presets read, the one shown
 //   HatchTab.Prep      Remote>>Dyl:HatchPresetWinPrep    the patterns (HatchPresetPats), the
 //                                                        layer keys
@@ -28,7 +30,7 @@
 //   HatchTab.ValueCheck  Remote>>Dyl:MaterialDlgCheck    why a value is not valid
 // What stays in the Lisp: the patterns found on the support path (Remote>>Dyl:SupportDefs) and
 // their units (Remote>>Dyl:MaterialPatUnits), the layer keys (their names given), the buttons
-// that pick in the drawing or open another window (the codes of Remote>>Dyl:HatchPresetDialog).
+// that pick in the drawing or open another window (the codes of Remote>>Dyl:MaterialTabCode).
 
 using System;
 using System.Collections.Generic;

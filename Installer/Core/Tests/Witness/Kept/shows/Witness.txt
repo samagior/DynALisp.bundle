@@ -985,3 +985,1401 @@ ll/newRPmt-Gyp10WALL0LineSquare45Mitered4FirstInterrupted0WALL
 pst.idxS0
 pst.selS0
 ll/newRPmt-Gyp10ANNDTOBJ0LineSquare45Mitered4FirstInterrupted0ANNDTOBJ0070CONTINUOUS010250501070CONTINUOUS0102505001000Board00
+#hptab scale0.020000000000000
+#hptab layerkeys
+FINE
+THIN
+MED
+WIDE
+XLINE
+HATCH
+G-DS-ANNO-STD-BACKGROUND_SCREEN
+MATREGION
+SIMZONE
+SIMCLIMATE
+SIMISOTHERM
+SIMDEWPOINT
+SIMCONDENSATION
+ANNDTOBJ
+ANNELKEY
+ANNELOBJ
+ANNMASK
+ANNMATCH
+ANNOBJ
+ANNREV
+ANNSXKEY
+ANNSXOBJ
+ANNSYMOBJ
+APPL
+CASE
+CASENO
+CEILGRID
+CEILOBJ
+CHASE
+COGO
+COLUMN
+COMMUN
+CONTROL
+CWLAYOUT
+CWUNIT
+DIMLINE
+DIMMAN
+DISPTHEME
+DOOR
+DOORNO
+DRAINAGE
+ELEC
+ELECNO
+ELEV
+ELEVAT
+ELEVHIDE
+EQUIP
+EQUIPNO
+FINCEIL
+FINFLOOR
+FIRE
+FURN
+FURNNO
+G-DS-ANNO-STD-NON_PLOTTABLE_OBJECTS
+G-DS-ANNO-STD-NON_PLOTTABLE_OBJECTS_SCREEN
+GRIDBUB
+GRIDLINE
+HIDDEN
+LAYGRID
+LIGHTCLG
+LIGHTW
+MASS ELEM
+MASSGRPS
+MASSSLCE
+OPENING
+PEOPLE
+PFIXT
+PLANTS
+PLANTSI
+POLYGON
+POWER
+PRCL
+PRK-SYM
+RBFINISHID
+RBQUANTITYID
+ROOF
+ROOFSLAB
+ROOMNO
+SCHEDOBJ
+SEATNO
+SECT
+SECTHIDE
+SITE
+SLAB
+SPACENO
+SPACEOBJ
+STAIR
+STAIRH
+STRUCTBEAM
+STRUCTBEAMIDEN
+STRUCTBRACE
+STRUCTBRACEIDEN
+STRUCTCOLS
+STRUCTCOLSIDEN
+SWITCH
+TINN
+TITSCALE
+TITTEXT
+TITTEXT-DWG
+TOILACC
+TOILNO
+TOPO
+UTIL
+VEHICLES
+VIEWPORT
+WALL
+WALLFIRE
+WALLNO
+WIND
+WINDASSEM
+WINDNO
+ZONE
+ZONENO
+#hptab found
+ACAD_ISO02W100
+ANSI31
+ANSI37
+AR-B816
+AR-CONC
+BRICK
+CROSS
+DOTS
+GOST_GLASS
+NOFILE
+SOLID
+ZIGZAG
+#hptab vals metric manager
+pst/rowsRhp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/rowsRhp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/rowsRhp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/rowsRhp-ConcSectionConcreteAR-CONC222.5WIDEHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/rowsRhp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/rowsRhp-BrickElevationBrickBRICK10.66670THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Model
+pst/rowsRhp-NoFileSectionNo fileNOPAT390MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/rowsRhp-SolidSectionSolidSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/rowsRhp-IsoSectionIsoISO02W1001.50MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-ConcSectionConcreteAR-CONC222.5WIDEHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-BrickElevationBrickBRICK10.66670THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Model
+pst/defsRhp-NoFileSectionNo fileNOPAT390MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-SolidSectionSolidSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-IsoSectionIsoISO02W1001.50MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/newRNew hatch presetANSI311.01.00THINHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+pst/ncolsS64
+pst/tilesSnam:2,grp:1,pat:3:up,typ:63,simp:4,ang:6,hat:8:up,ano:9,sdw:10,hco:22,hcl:23,hbo:24,hbg:25,hwo:26,hwt:27,hto:28,htr:29,asc:30,hxo:41,hxb:42,hlo:47,hlt:48:up,hso:49,hsc:50
+pst.idxS0
+pst.selS0
+pst.shwS
+fltS
+pst/titleSHatch Presets
+pst/nounShatch presets
+errorS
+srt/listLNameGroup
+srtS0
+grp/listLSectionElevationWallFloor
+pat/listLNoneACAD_ISO02W100ANSI31ANSI37AR-B816AR-CONCBRICKCROSSDOTSGENERAL_TEXTURE   (not found on the support path)GOST_GLASSISO02W100   (not found on the support path)NOFILENOPAT   (not found on the support path)SOLIDWOOD_1   (not found on the support path)ZIGZAG
+pat/valsLACAD_ISO02W100ANSI31ANSI37AR-B816AR-CONCBRICKCROSSDOTSGENERAL_TEXTUREGOST_GLASSISO02W100NOFILENOPATSOLIDWOOD_1ZIGZAG
+sunt/byR
+sunt/byRMetric pattern, like this drawing.
+sunt/byRImperial pattern: x25.4 here (metric).
+sunt/byRImperial pattern: x25.4 here (metric).
+sunt/byRMetric pattern, like this drawing.
+sunt/byRMetric pattern, like this drawing.
+sunt/byRImperial pattern: x25.4 here (metric).
+sunt/byRImperial pattern: x25.4 here (metric).
+sunt/byRImperial pattern: x25.4 here (metric).
+sunt/byRImperial pattern: x25.4 here (metric).
+sunt/byRImperial pattern: x25.4 here (metric).
+sunt/byRMetric pattern, like this drawing.
+sunt/byRPattern file not found: scale as is.
+sunt/byRPattern file not found: scale as is.
+sunt/byR
+sunt/byRImperial pattern: x25.4 here (metric).
+sunt/byRImperial pattern: x25.4 here (metric).
+pfl/byR0
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR0
+pfl/byR0
+pfl/byR0
+pfl/byR1
+pfl/byR1
+pst/hatchS3,4,6,9,10,63
+pst/patsRACAD_ISO02W100C:\Pat\ACAD_ISO02W100.pat1
+pst/patsRANSI31C:\Pat\acad.pat0
+pst/patsRANSI37C:\Pat\acad.pat0
+pst/patsRAR-B816C:\Pat\AR-B816.pat1
+pst/patsRAR-CONCC:\Pat\AR-CONC.pat1
+pst/patsRBRICKC:\Pat\acad.pat0
+pst/patsRCROSSC:\Pat\acad.pat0
+pst/patsRDOTSC:\Pat\acad.pat0
+pst/patsRGENERAL_TEXTUREC:\Pat\acad.pat0
+pst/patsRGOST_GLASSC:\Pat\acad.pat0
+pst/patsRISO02W100C:\Pat\ISO02W100.pat1
+pst/patsRNOFILE0
+pst/patsRNOPAT0
+pst/patsRWOOD_1C:\Pat\acad.pat0
+pst/patsRZIGZAGC:\Pat\acad.pat0
+pst/dsS50
+typ/listLDraftingModel
+typ/valsLDraftingModel
+hat/listLANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXLINEZONEZONENO
+hat/valsLANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXLINEZONEZONENO
+hwt/listL0.00 mm0.05 mm0.09 mm0.13 mm0.15 mm0.18 mm0.20 mm0.25 mm0.30 mm0.35 mm0.40 mm0.50 mm0.53 mm0.60 mm0.70 mm0.80 mm0.90 mm1.00 mm1.06 mm1.20 mm1.40 mm1.58 mm2.00 mm2.11 mm
+hwt/valsL0591315182025303540505360708090100106120140158200211
+sinfSThis drawing is at 1:50: hatch scale x50.
+#hptab edit metric same in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric same out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric same check
+#hptab edit metric name in
+hp-Gyp section Edited nameGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric name out
+hp-Gyp section Edited nameGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric name check
+#hptab edit metric pattern in
+hp-GypSectionGypsumansi372.530MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric pattern out
+hp-GypSectionGypsumansi372.530MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric pattern check
+#hptab edit metric scalebad in
+hp-GypSectionGypsumGENERAL_TEXTURE00MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric scalebad out
+hp-GypSectionGypsumGENERAL_TEXTURE00MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric scalebad checkGypsum: The scale must be a number greater than 0.
+#hptab edit metric scaletext in
+hp-GypSectionGypsumGENERAL_TEXTURE1,50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric scaletext out
+hp-GypSectionGypsumGENERAL_TEXTURE1,50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric scaletext checkGypsum: The scale must be a number greater than 0.
+#hptab edit metric scalefine in
+hp-GypSectionGypsumGENERAL_TEXTURE .5 0MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric scalefine out
+hp-GypSectionGypsumGENERAL_TEXTURE .5 0MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric scalefine check
+#hptab edit metric anglebad in
+hp-GypSectionGypsumGENERAL_TEXTURE0.5xMEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric anglebad out
+hp-GypSectionGypsumGENERAL_TEXTURE0.5xMEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric anglebad checkGypsum: The angle must be a number.
+#hptab edit metric keyempty in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MED101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric keyempty out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MED101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric keyempty checkGypsum: The layer key cannot be empty.
+#hptab edit metric colorbad in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS0102505013000254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric colorbad out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS0102505013000254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric colorbad checkGypsum: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#hptab edit metric coloroff in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS010250500abc0254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric coloroff out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS010250500abc0254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric coloroff checkGypsum: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#hptab edit metric background in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050071 10, 20 ,30 013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric background out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050071 10, 20 ,30 013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric background check
+#hptab edit metric bgbad in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS010250500711,2013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric bgbad out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS010250500711,2013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric bgbad checkGypsum: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#hptab edit metric existbad in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center010010000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric existbad out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center010010000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric existbad checkGypsum: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#hptab edit metric weight in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254135050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric weight out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254135050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric weight check
+#hptab edit metric transbad in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013195100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric transbad out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013195100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric transbad checkGypsum: The transparency must be a whole number from 0 to 90.
+#hptab edit metric transtext in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS0102505007025401305.5100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric transtext out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS0102505007025401305.5100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric transtext checkGypsum: The transparency must be a whole number from 0 to 90.
+#hptab edit metric linetype in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253001dashed12.5Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric linetype out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253001dashed12.5Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric linetype check
+#hptab edit metric ltempty in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center0100025300001Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric ltempty out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center0100025300001Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric ltempty checkGypsum: The linetype cannot be empty.
+#hptab edit metric ltscalebad in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS00Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric ltscalebad out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS00Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric ltscalebad checkGypsum: The linetype scale must be a number greater than 0.
+#hptab edit metric model in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH111070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Model
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric model out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Model
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric model check
+#hptab edit metric drafting in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH111070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric drafting out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH111070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric drafting check
+#hptab edit metric solid in
+hp-GypSectionGypsumSOLID0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric solid out
+hp-GypSectionGypsumSOLID0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric solid check
+#hptab edit metric none in
+hp-GypSectionGypsum0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric none out
+hp-GypSectionGypsum0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric none check
+#hptab edit metric new in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+AddedANSI311.01.00THINHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#hptab edit metric new out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+cu-AddedAddedANSI311.01.00THINHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#hptab edit metric new check
+#hptab edit metric newempty in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+New hatch presetANSI311.01.00THINHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#hptab edit metric newempty out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+cu-NewHatchPresetNew hatch presetANSI311.01.00THINHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#hptab edit metric newempty check
+#hptab edit metric delete in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric delete out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric delete check
+#hptab edit metric move in
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric move out
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit metric move check
+#hptab vals metric select
+pst.idxS1
+pst.selS1
+#hptab vals metric unknown
+pst.idxS0
+pst.selS0
+#hptab vals imperial manager
+pst/rowsRhp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/rowsRhp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/rowsRhp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/rowsRhp-ConcSectionConcreteAR-CONC222.5WIDEHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/rowsRhp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/rowsRhp-BrickElevationBrickBRICK10.66670THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Model
+pst/rowsRhp-NoFileSectionNo fileNOPAT390MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/rowsRhp-SolidSectionSolidSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/rowsRhp-IsoSectionIsoISO02W1001.50MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-ConcSectionConcreteAR-CONC222.5WIDEHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-VoidSectionVoid1.00THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-BrickElevationBrickBRICK10.66670THINHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Model
+pst/defsRhp-NoFileSectionNo fileNOPAT390MEDHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-SolidSectionSolidSOLID10MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/defsRhp-IsoSectionIsoISO02W1001.50MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+pst/newRNew hatch presetANSI311.01.00THINHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+pst/ncolsS64
+pst/tilesSnam:2,grp:1,pat:3:up,typ:63,simp:4,ang:6,hat:8:up,ano:9,sdw:10,hco:22,hcl:23,hbo:24,hbg:25,hwo:26,hwt:27,hto:28,htr:29,asc:30,hxo:41,hxb:42,hlo:47,hlt:48:up,hso:49,hsc:50
+pst.idxS0
+pst.selS0
+pst.shwS
+fltS
+pst/titleSHatch Presets
+pst/nounShatch presets
+errorS
+srt/listLNameGroup
+srtS0
+grp/listLSectionElevationWallFloor
+pat/listLNoneACAD_ISO02W100ANSI31ANSI37AR-B816AR-CONCBRICKCROSSDOTSGENERAL_TEXTURE   (not found on the support path)GOST_GLASSISO02W100   (not found on the support path)NOFILENOPAT   (not found on the support path)SOLIDWOOD_1   (not found on the support path)ZIGZAG
+pat/valsLACAD_ISO02W100ANSI31ANSI37AR-B816AR-CONCBRICKCROSSDOTSGENERAL_TEXTUREGOST_GLASSISO02W100NOFILENOPATSOLIDWOOD_1ZIGZAG
+sunt/byR
+sunt/byRMetric pattern: /25.4 here (imperial).
+sunt/byRImperial pattern, like this drawing.
+sunt/byRImperial pattern, like this drawing.
+sunt/byRMetric pattern: /25.4 here (imperial).
+sunt/byRMetric pattern: /25.4 here (imperial).
+sunt/byRImperial pattern, like this drawing.
+sunt/byRImperial pattern, like this drawing.
+sunt/byRImperial pattern, like this drawing.
+sunt/byRImperial pattern, like this drawing.
+sunt/byRImperial pattern, like this drawing.
+sunt/byRMetric pattern: /25.4 here (imperial).
+sunt/byRPattern file not found: scale as is.
+sunt/byRPattern file not found: scale as is.
+sunt/byR
+sunt/byRImperial pattern, like this drawing.
+sunt/byRImperial pattern, like this drawing.
+pfl/byR0
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR1
+pfl/byR0
+pfl/byR0
+pfl/byR0
+pfl/byR1
+pfl/byR1
+pst/hatchS3,4,6,9,10,63
+pst/patsRACAD_ISO02W100C:\Pat\ACAD_ISO02W100.pat1
+pst/patsRANSI31C:\Pat\acad.pat0
+pst/patsRANSI37C:\Pat\acad.pat0
+pst/patsRAR-B816C:\Pat\AR-B816.pat1
+pst/patsRAR-CONCC:\Pat\AR-CONC.pat1
+pst/patsRBRICKC:\Pat\acad.pat0
+pst/patsRCROSSC:\Pat\acad.pat0
+pst/patsRDOTSC:\Pat\acad.pat0
+pst/patsRGENERAL_TEXTUREC:\Pat\acad.pat0
+pst/patsRGOST_GLASSC:\Pat\acad.pat0
+pst/patsRISO02W100C:\Pat\ISO02W100.pat1
+pst/patsRNOFILE0
+pst/patsRNOPAT0
+pst/patsRWOOD_1C:\Pat\acad.pat0
+pst/patsRZIGZAGC:\Pat\acad.pat0
+pst/dsS50
+typ/listLDraftingModel
+typ/valsLDraftingModel
+hat/listLANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXLINEZONEZONENO
+hat/valsLANNDTOBJANNELKEYANNELOBJANNMASKANNMATCHANNOBJANNREVANNSXKEYANNSXOBJANNSYMOBJAPPLCASECASENOCEILGRIDCEILOBJCHASECOGOCOLUMNCOMMUNCONTROLCWLAYOUTCWUNITDIMLINEDIMMANDISPTHEMEDOORDOORNODRAINAGEELECELECNOELEVELEVATELEVHIDEEQUIPEQUIPNOFINCEILFINEFINFLOORFIREFURNFURNNOGRIDBUBGRIDLINEHATCHHIDDENLAYGRIDLIGHTCLGLIGHTWMASS ELEMMASSGRPSMASSSLCEMATREGIONMEDOPENINGPEOPLEPFIXTPLANTSPLANTSIPOLYGONPOWERPRCLPRK-SYMRBFINISHIDRBQUANTITYIDROOFROOFSLABROOMNOSCHEDOBJSEATNOSECTSECTHIDESIMCLIMATESIMCONDENSATIONSIMDEWPOINTSIMISOTHERMSIMZONESITESLABSPACENOSPACEOBJSTAIRSTAIRHSTRUCTBEAMSTRUCTBEAMIDENSTRUCTBRACESTRUCTBRACEIDENSTRUCTCOLSSTRUCTCOLSIDENSWITCHTHINTINNTITSCALETITTEXTTITTEXT-DWGTOILACCTOILNOTOPOUTILVEHICLESVIEWPORTWALLWALLFIREWALLNOWIDEWINDWINDASSEMWINDNOXLINEZONEZONENO
+hwt/listL0 mm0.05 mm0.09 mm0.13 mm0.15 mm0.18 mm0.2 mm0.25 mm0.3 mm0.35 mm0.4 mm0.5 mm0.53 mm0.6 mm0.7 mm0.8 mm0.9 mm1 mm1.06 mm1.2 mm1.4 mm1.58 mm2 mm2.11 mm
+hwt/valsL0591315182025303540505360708090100106120140158200211
+sinfSThis drawing is at 1:50: hatch scale x50.
+#hptab edit imperial same in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial same out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial same check
+#hptab edit imperial name in
+hp-Gyp section Edited nameGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial name out
+hp-Gyp section Edited nameGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial name check
+#hptab edit imperial pattern in
+hp-GypSectionGypsumansi372.530MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial pattern out
+hp-GypSectionGypsumansi372.530MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial pattern check
+#hptab edit imperial scalebad in
+hp-GypSectionGypsumGENERAL_TEXTURE00MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial scalebad out
+hp-GypSectionGypsumGENERAL_TEXTURE00MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial scalebad checkGypsum: The scale must be a number greater than 0.
+#hptab edit imperial scaletext in
+hp-GypSectionGypsumGENERAL_TEXTURE1,50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial scaletext out
+hp-GypSectionGypsumGENERAL_TEXTURE1,50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial scaletext checkGypsum: The scale must be a number greater than 0.
+#hptab edit imperial scalefine in
+hp-GypSectionGypsumGENERAL_TEXTURE .5 0MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial scalefine out
+hp-GypSectionGypsumGENERAL_TEXTURE .5 0MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial scalefine check
+#hptab edit imperial anglebad in
+hp-GypSectionGypsumGENERAL_TEXTURE0.5xMEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial anglebad out
+hp-GypSectionGypsumGENERAL_TEXTURE0.5xMEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial anglebad checkGypsum: The angle must be a number.
+#hptab edit imperial keyempty in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MED101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial keyempty out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MED101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial keyempty checkGypsum: The layer key cannot be empty.
+#hptab edit imperial colorbad in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS0102505013000254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial colorbad out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS0102505013000254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial colorbad checkGypsum: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#hptab edit imperial coloroff in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS010250500abc0254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial coloroff out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS010250500abc0254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial coloroff checkGypsum: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#hptab edit imperial background in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050071 10, 20 ,30 013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial background out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050071 10, 20 ,30 013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial background check
+#hptab edit imperial bgbad in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS010250500711,2013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial bgbad out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS010250500711,2013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial bgbad checkGypsum: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#hptab edit imperial existbad in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center010010000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial existbad out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center010010000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial existbad checkGypsum: A color is an AutoCAD color number 1-255 or r,g,b (0-255 each), or use the open button beside it.
+#hptab edit imperial weight in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254135050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial weight out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254135050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial weight check
+#hptab edit imperial transbad in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013195100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial transbad out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013195100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial transbad checkGypsum: The transparency must be a whole number from 0 to 90.
+#hptab edit imperial transtext in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS0102505007025401305.5100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial transtext out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS0102505007025401305.5100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial transtext checkGypsum: The transparency must be a whole number from 0 to 90.
+#hptab edit imperial linetype in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253001dashed12.5Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial linetype out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253001dashed12.5Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial linetype check
+#hptab edit imperial ltempty in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center0100025300001Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial ltempty out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center0100025300001Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial ltempty checkGypsum: The linetype cannot be empty.
+#hptab edit imperial ltscalebad in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS00Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial ltscalebad out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS00Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial ltscalebad checkGypsum: The linetype scale must be a number greater than 0.
+#hptab edit imperial model in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH111070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Model
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial model out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Model
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial model check
+#hptab edit imperial drafting in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH111070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial drafting out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH111070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial drafting check
+#hptab edit imperial solid in
+hp-GypSectionGypsumSOLID0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial solid out
+hp-GypSectionGypsumSOLID0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial solid check
+#hptab edit imperial none in
+hp-GypSectionGypsum0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial none out
+hp-GypSectionGypsum0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial none check
+#hptab edit imperial new in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+AddedANSI311.01.00THINHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#hptab edit imperial new out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+cu-AddedAddedANSI311.01.00THINHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#hptab edit imperial new check
+#hptab edit imperial newempty in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+New hatch presetANSI311.01.00THINHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#hptab edit imperial newempty out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+cu-NewHatchPresetNew hatch presetANSI311.01.00THINHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine0Drafting
+#hptab edit imperial newempty check
+#hptab edit imperial delete in
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial delete out
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial delete check
+#hptab edit imperial move in
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial move out
+hp-InsSectionInsulationANSI37145HATCHHATCH011070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-GypSectionGypsumGENERAL_TEXTURE0.50MEDHATCH101070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+hp-WoodSectionWoodWOOD_10.750MEDHATCH001070CONTINUOUS01025050070254013050100Center01000253000CONTINUOUS01Square45Mitered4FirstInterruptedLine000Drafting
+#hptab edit imperial move check
+#hptab vals imperial select
+pst.idxS1
+pst.selS1
+#hptab vals imperial unknown
+pst.idxS0
+pst.selS0
+#mattab scale0.020000000000000
+#mattab layerkeys
+FINE
+THIN
+MED
+WIDE
+XLINE
+HATCH
+G-DS-ANNO-STD-BACKGROUND_SCREEN
+MATREGION
+SIMZONE
+SIMCLIMATE
+SIMISOTHERM
+SIMDEWPOINT
+SIMCONDENSATION
+ANNDTOBJ
+ANNELKEY
+ANNELOBJ
+ANNMASK
+ANNMATCH
+ANNOBJ
+ANNREV
+ANNSXKEY
+ANNSXOBJ
+ANNSYMOBJ
+APPL
+CASE
+CASENO
+CEILGRID
+CEILOBJ
+CHASE
+COGO
+COLUMN
+COMMUN
+CONTROL
+CWLAYOUT
+CWUNIT
+DIMLINE
+DIMMAN
+DISPTHEME
+DOOR
+DOORNO
+DRAINAGE
+ELEC
+ELECNO
+ELEV
+ELEVAT
+ELEVHIDE
+EQUIP
+EQUIPNO
+FINCEIL
+FINFLOOR
+FIRE
+FURN
+FURNNO
+G-DS-ANNO-STD-NON_PLOTTABLE_OBJECTS
+G-DS-ANNO-STD-NON_PLOTTABLE_OBJECTS_SCREEN
+GRIDBUB
+GRIDLINE
+HIDDEN
+LAYGRID
+LIGHTCLG
+LIGHTW
+MASS ELEM
+MASSGRPS
+MASSSLCE
+OPENING
+PEOPLE
+PFIXT
+PLANTS
+PLANTSI
+POLYGON
+POWER
+PRCL
+PRK-SYM
+RBFINISHID
+RBQUANTITYID
+ROOF
+ROOFSLAB
+ROOMNO
+SCHEDOBJ
+SEATNO
+SECT
+SECTHIDE
+SITE
+SLAB
+SPACENO
+SPACEOBJ
+STAIR
+STAIRH
+STRUCTBEAM
+STRUCTBEAMIDEN
+STRUCTBRACE
+STRUCTBRACEIDEN
+STRUCTCOLS
+STRUCTCOLSIDEN
+SWITCH
+TINN
+TITSCALE
+TITTEXT
+TITTEXT-DWG
+TOILACC
+TOILNO
+TOPO
+UTIL
+VEHICLES
+VIEWPORT
+WALL
+WALLFIRE
+WALLNO
+WIND
+WINDASSEM
+WINDNO
+ZONE
+ZONENO
+#mattab found
+ACAD_ISO02W100
+ANSI31
+ANSI37
+AR-B816
+AR-CONC
+BRICK
+CROSS
+DOTS
+GOST_GLASS
+NOFILE
+SOLID
+ZIGZAG
+#mattab vals metric manager
+pst/rowsRmt-GypBoardGypsum Boardhp-Gyp0.16800
+pst/rowsRmt-InsInsulationMineral Woolhp-Ins0.0430
+pst/rowsRmt-StudWoodWood Studhp-Wood0.12500
+pst/rowsRmt-ConcConcreteConcretehp-Conc2.52400
+pst/rowsRmt-AirAirAir Spacehp-Void0.17
+pst/rowsRmt-BrickMasonryBrickhp-Brick1.2862400
+pst/rowsRmt-NoDataGenericNo datahp-NoFile
+pst/rowsRmt-SteelMetalSteelhp-Solid507850
+pst/rowsRmt-IsoGenericIso boardhp-Iso1200.03
+pst/rowsRmt-Gone2GenericGone hatchhp-Gone11
+pst/defsRmt-GypBoardGypsum Boardhp-Gyp0.16800
+pst/defsRmt-InsInsulationMineral Woolhp-Ins0.0430
+pst/defsRmt-StudWoodWood Studhp-Wood0.12500
+pst/defsRmt-ConcConcreteConcretehp-Conc2.52400
+pst/defsRmt-AirAirAir Spacehp-Void0.17
+pst/defsRmt-BrickMasonryBrickhp-Brick1.2862400
+pst/defsRmt-NoDataGenericNo datahp-NoFile
+pst/defsRmt-SteelMetalSteelhp-Solid507850
+pst/defsRmt-IsoGenericIso boardhp-Iso1200.03
+pst/defsRmt-Gone2GenericGone hatchhp-Gone11
+pst/newRGenericNew material
+pst/ncolsS10
+pst/tilesSnam:2,grp:1,sur:4,cnd:5,den:6,rsi:7,vpm:8,vpc:9,mat:3
+pst.idxS0
+pst.selS0
+pst.shwS
+fltS
+pst/titleSMaterials
+pst/nounSmaterials
+errorS
+srt/listLNameGroup
+srtS0
+grp/listLBoardInsulationWoodConcreteAirMasonryMetalGeneric
+pst/matS3
+pst/matnounShatch preset
+pst/matfreeS1
+pst/matsRhp-GypSectionGypsumP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingGENERAL_TEXTURE
+pst/matsRhp-InsSectionInsulationP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingANSI37
+pst/matsRhp-WoodSectionWoodP?1?WOOD_1?C:\Pat\acad.pat?0.015?0?50?DraftingWOOD_1
+pst/matsRhp-ConcSectionConcreteP?1?AR-CONC?C:\Pat\AR-CONC.pat?0.07874016?22.5?1?DraftingAR-CONC
+pst/matsRhp-VoidSectionVoidS?1
+pst/matsRhp-BrickElevationBrickP?1?BRICK?C:\Pat\acad.pat?0.213334?0?50?ModelBRICK
+pst/matsRhp-NoFileSectionNo fileP?1?NOPAT??3?90?1?DraftingNOPAT
+pst/matsRhp-SolidSectionSolidF?1SOLID
+pst/matsRhp-IsoSectionIsoP?1?ISO02W100?C:\Pat\ISO02W100.pat?0.0011811?0?50?DraftingISO02W100
+sur/listLSame as CutElevation - BrickSection - ConcreteSection - GypsumSection - InsulationSection - IsoSection - No fileSection - SolidSection - VoidSection - Wood
+sur/valsLhp-Brickhp-Conchp-Gyphp-Inshp-Isohp-NoFilehp-Solidhp-Voidhp-Wood
+mt.impS0
+#mattab edit metric same in
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric same out
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric same check
+#mattab edit metric name in
+mt-Gyp concrete Edited namehp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric name out
+mt-Gyp concrete Edited namehp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric name check
+#mattab edit metric cut in
+mt-GypBoardGypsum Boardhp-Brick0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric cut out
+mt-GypBoardGypsum Boardhp-Brick0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric cut check
+#mattab edit metric cutbad in
+mt-GypBoardGypsum Boardhp-NoSuchHatch0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric cutbad out
+mt-GypBoardGypsum Boardhp-NoSuchHatch0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric cutbad check
+#mattab edit metric cutnone in
+mt-GypBoardGypsum Board0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric cutnone out
+mt-GypBoardGypsum Board0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric cutnone check
+#mattab edit metric surface in
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric surface out
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric surface check
+#mattab edit metric surfacebad in
+mt-GypBoardGypsum Boardhp-Gyphp-NoSuchHatch0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric surfacebad out
+mt-GypBoardGypsum Boardhp-Gyphp-NoSuchHatch0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric surfacebad checkGypsum Board: This hatch preset no longer exists: pick another one.
+#mattab edit metric data in
+mt-GypBoardGypsum Boardhp-Gyp0.512002
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric data out
+mt-GypBoardGypsum Boardhp-Gyp0.512002
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric data check
+#mattab edit metric datafine in
+mt-GypBoardGypsum Boardhp-Gyp0.168000.0123456123456.7
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric datafine out
+mt-GypBoardGypsum Boardhp-Gyp0.168000.0123456123456.7
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric datafine check
+#mattab edit metric datablank in
+mt-GypBoardGypsum Boardhp-Gyp800 
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric datablank out
+mt-GypBoardGypsum Boardhp-Gyp800 
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric datablank check
+#mattab edit metric dataspaces in
+mt-GypBoardGypsum Boardhp-Gyp 0.5 800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric dataspaces out
+mt-GypBoardGypsum Boardhp-Gyp 0.5 800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric dataspaces check
+#mattab edit metric databad in
+mt-GypBoardGypsum Boardhp-Gyp0.16-1
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric databad out
+mt-GypBoardGypsum Boardhp-Gyp0.16-1
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric databad checkGypsum Board: A value of the data must be a number greater than 0 (empty: not known).
+#mattab edit metric datazero in
+mt-GypBoardGypsum Boardhp-Gyp0.168000
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric datazero out
+mt-GypBoardGypsum Boardhp-Gyp0.168000
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric datazero checkGypsum Board: A value of the data must be a number greater than 0 (empty: not known).
+#mattab edit metric datatext in
+mt-GypBoardGypsum Boardhp-Gyp0.16800abc
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric datatext out
+mt-GypBoardGypsum Boardhp-Gyp0.16800abc
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric datatext checkGypsum Board: A value of the data must be a number greater than 0 (empty: not known).
+#mattab edit metric datacomma in
+mt-GypBoardGypsum Boardhp-Gyp0.168001,5
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric datacomma out
+mt-GypBoardGypsum Boardhp-Gyp0.168001,5
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric datacomma checkGypsum Board: A value of the data must be a number greater than 0 (empty: not known).
+#mattab edit metric new in
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+GenericAddedhp-Void0.04
+#mattab edit metric new out
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+cu-AddedGenericAddedhp-Void0.04
+#mattab edit metric new check
+#mattab edit metric newempty in
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+GenericNew material
+#mattab edit metric newempty out
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+cu-NewMaterialGenericNew material
+#mattab edit metric newempty check
+#mattab edit metric delete in
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric delete out
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric delete check
+#mattab edit metric move in
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric move out
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit metric move check
+#mattab vals metric select
+pst.idxS1
+pst.selS1
+#mattab vals metric unknown
+pst.idxS0
+pst.selS0
+#mattab vals imperial manager
+pst/rowsRmt-GypBoardGypsum Boardhp-Gyp1.10949.94
+pst/rowsRmt-InsInsulationMineral Woolhp-Ins0.27731.873
+pst/rowsRmt-StudWoodWood Studhp-Wood0.83231.21
+pst/rowsRmt-ConcConcreteConcretehp-Conc17.33149.8
+pst/rowsRmt-AirAirAir Spacehp-Void0.9653
+pst/rowsRmt-BrickMasonryBrickhp-Brick8.916149.8
+pst/rowsRmt-NoDataGenericNo datahp-NoFile
+pst/rowsRmt-SteelMetalSteelhp-Solid346.7490.1
+pst/rowsRmt-IsoGenericIso boardhp-Iso7.4910.1703
+pst/rowsRmt-Gone2GenericGone hatchhp-Gone6.9330.06243
+pst/defsRmt-GypBoardGypsum Boardhp-Gyp1.10949.94
+pst/defsRmt-InsInsulationMineral Woolhp-Ins0.27731.873
+pst/defsRmt-StudWoodWood Studhp-Wood0.83231.21
+pst/defsRmt-ConcConcreteConcretehp-Conc17.33149.8
+pst/defsRmt-AirAirAir Spacehp-Void0.9653
+pst/defsRmt-BrickMasonryBrickhp-Brick8.916149.8
+pst/defsRmt-NoDataGenericNo datahp-NoFile
+pst/defsRmt-SteelMetalSteelhp-Solid346.7490.1
+pst/defsRmt-IsoGenericIso boardhp-Iso7.4910.1703
+pst/defsRmt-Gone2GenericGone hatchhp-Gone6.9330.06243
+pst/newRGenericNew material
+pst/ncolsS10
+pst/tilesSnam:2,grp:1,sur:4,cnd:5,den:6,rsi:7,vpm:8,vpc:9,mat:3
+pst.idxS0
+pst.selS0
+pst.shwS
+fltS
+pst/titleSMaterials
+pst/nounSmaterials
+errorS
+srt/listLNameGroup
+srtS0
+grp/listLBoardInsulationWoodConcreteAirMasonryMetalGeneric
+pst/matS3
+pst/matnounShatch preset
+pst/matfreeS1
+pst/matsRhp-GypSectionGypsumP?1?GENERAL_TEXTURE?C:\Pat\acad.pat?0.5?0?1?DraftingGENERAL_TEXTURE
+pst/matsRhp-InsSectionInsulationP?1?ANSI37?C:\Pat\acad.pat?1?45?1?DraftingANSI37
+pst/matsRhp-WoodSectionWoodP?1?WOOD_1?C:\Pat\acad.pat?0.015?0?50?DraftingWOOD_1
+pst/matsRhp-ConcSectionConcreteP?1?AR-CONC?C:\Pat\AR-CONC.pat?0.07874016?22.5?1?DraftingAR-CONC
+pst/matsRhp-VoidSectionVoidS?1
+pst/matsRhp-BrickElevationBrickP?1?BRICK?C:\Pat\acad.pat?0.213334?0?50?ModelBRICK
+pst/matsRhp-NoFileSectionNo fileP?1?NOPAT??3?90?1?DraftingNOPAT
+pst/matsRhp-SolidSectionSolidF?1SOLID
+pst/matsRhp-IsoSectionIsoP?1?ISO02W100?C:\Pat\ISO02W100.pat?0.0011811?0?50?DraftingISO02W100
+sur/listLSame as CutElevation - BrickSection - ConcreteSection - GypsumSection - InsulationSection - IsoSection - No fileSection - SolidSection - VoidSection - Wood
+sur/valsLhp-Brickhp-Conchp-Gyphp-Inshp-Isohp-NoFilehp-Solidhp-Voidhp-Wood
+mt.impS1
+#mattab edit imperial same in
+mt-GypBoardGypsum Boardhp-Gyp1.10949.94
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial same out
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial same check
+#mattab edit imperial name in
+mt-Gyp concrete Edited namehp-Gyp1.10949.94
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial name out
+mt-Gyp concrete Edited namehp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial name check
+#mattab edit imperial cut in
+mt-GypBoardGypsum Boardhp-Brick1.10949.94
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial cut out
+mt-GypBoardGypsum Boardhp-Brick0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial cut check
+#mattab edit imperial cutbad in
+mt-GypBoardGypsum Boardhp-NoSuchHatch1.10949.94
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial cutbad out
+mt-GypBoardGypsum Boardhp-NoSuchHatch0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial cutbad check
+#mattab edit imperial cutnone in
+mt-GypBoardGypsum Board1.10949.94
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial cutnone out
+mt-GypBoardGypsum Board0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial cutnone check
+#mattab edit imperial surface in
+mt-GypBoardGypsum Boardhp-Gyp1.10949.94
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial surface out
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial surface check
+#mattab edit imperial surfacebad in
+mt-GypBoardGypsum Boardhp-Gyphp-NoSuchHatch1.10949.94
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial surfacebad out
+mt-GypBoardGypsum Boardhp-Gyphp-NoSuchHatch0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial surfacebad checkGypsum Board: This hatch preset no longer exists: pick another one.
+#mattab edit imperial data in
+mt-GypBoardGypsum Boardhp-Gyp0.512002
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial data out
+mt-GypBoardGypsum Boardhp-Gyp0.07211192220.3522
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial data check
+#mattab edit imperial datafine in
+mt-GypBoardGypsum Boardhp-Gyp1.10949.940.0123456123456.7
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial datafine out
+mt-GypBoardGypsum Boardhp-Gyp0.168000.017947063387
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial datafine check
+#mattab edit imperial datablank in
+mt-GypBoardGypsum Boardhp-Gyp49.94 
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial datablank out
+mt-GypBoardGypsum Boardhp-Gyp800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial datablank check
+#mattab edit imperial dataspaces in
+mt-GypBoardGypsum Boardhp-Gyp 0.5 49.94
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial dataspaces out
+mt-GypBoardGypsum Boardhp-Gyp0.07211800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial dataspaces check
+#mattab edit imperial databad in
+mt-GypBoardGypsum Boardhp-Gyp1.109-1
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial databad out
+mt-GypBoardGypsum Boardhp-Gyp0.16-16.0185
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial databad checkGypsum Board: A value of the data must be a number greater than 0 (empty: not known).
+#mattab edit imperial datazero in
+mt-GypBoardGypsum Boardhp-Gyp1.10949.940
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial datazero out
+mt-GypBoardGypsum Boardhp-Gyp0.168000
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial datazero checkGypsum Board: A value of the data must be a number greater than 0 (empty: not known).
+#mattab edit imperial datatext in
+mt-GypBoardGypsum Boardhp-Gyp1.10949.94abc
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial datatext out
+mt-GypBoardGypsum Boardhp-Gyp0.16800abc
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial datatext checkGypsum Board: A value of the data must be a number greater than 0 (empty: not known).
+#mattab edit imperial datacomma in
+mt-GypBoardGypsum Boardhp-Gyp1.10949.941,5
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial datacomma out
+mt-GypBoardGypsum Boardhp-Gyp0.168001,5
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial datacomma checkGypsum Board: A value of the data must be a number greater than 0 (empty: not known).
+#mattab edit imperial new in
+mt-GypBoardGypsum Boardhp-Gyp1.10949.94
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+GenericAddedhp-Void0.04
+#mattab edit imperial new out
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+cu-AddedGenericAddedhp-Void0.005769
+#mattab edit imperial new check
+#mattab edit imperial newempty in
+mt-GypBoardGypsum Boardhp-Gyp1.10949.94
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-StudWoodWood Studhp-Wood0.83231.21
+GenericNew material
+#mattab edit imperial newempty out
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-StudWoodWood Studhp-Wood0.12500
+cu-NewMaterialGenericNew material
+#mattab edit imperial newempty check
+#mattab edit imperial delete in
+mt-GypBoardGypsum Boardhp-Gyp1.10949.94
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial delete out
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial delete check
+#mattab edit imperial move in
+mt-InsInsulationMineral Woolhp-Ins0.27731.873
+mt-GypBoardGypsum Boardhp-Gyp1.10949.94
+mt-StudWoodWood Studhp-Wood0.83231.21
+#mattab edit imperial move out
+mt-InsInsulationMineral Woolhp-Ins0.0430
+mt-GypBoardGypsum Boardhp-Gyp0.16800
+mt-StudWoodWood Studhp-Wood0.12500
+#mattab edit imperial move check
+#mattab vals imperial select
+pst.idxS1
+pst.selS1
+#mattab vals imperial unknown
+pst.idxS0
+pst.selS0

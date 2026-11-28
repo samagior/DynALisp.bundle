@@ -22,7 +22,7 @@
   and Surface in the Materials window. A preset window: its list "lst" is the hatch presets
   (pst/rows: the columns of HatchPresets.csv), edited in the window itself
   (Installer\Windows\Engine\Presets.cs); OK (1) saves them and gives the hatch preset
-  selected to the window it was opened from. The keys are the tiles of *mt:tiles*: pat the
+  selected to the window it was opened from. The keys are the tiles of HatchTab.Tiles: pat the
   pattern (pat/vals, "" None), typ Drafting or Model, simp the scale, ang the angle, hat the
   hatch layer key, then the layer key overrides and the optional settings (a checkbox and its
   value each). The preview of each hatch preset is drawn from its columns as they are edited

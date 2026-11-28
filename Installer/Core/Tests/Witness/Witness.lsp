@@ -49,9 +49,7 @@
 ;;                  aliases; the assemblies (defaults, read and fixed, in the units of
 ;;                  wt:factors and back); the hatch presets and the materials (defaults,
 ;;                  read and fixed); what the Quick Draw window shows of each assembly (in
-;;                  each drawing of wt:setups); the Hatch Presets and Materials windows
-;;                  (hptab, mattab: their values, the presets got back from the edits of
-;;                  wt:hpedits and wt:matedits, checked); then whether each one was written
+;;                  each drawing of wt:setups); then whether each one was written
 ;;    <case>\User\  the files written (Remote>>Dyl:PresetWrite, Remote>>Dyl:GroupsWriteOf,
 ;;                  Dyl:AliasWrite), as they are on disk
 
@@ -309,237 +307,6 @@
   (setq *pst:readcache* nil *mt:defcache* nil *hp:defcache* nil *qd:asmdefs* nil *qd:asmcache* nil *mt:patunits* nil *mt:oldstamp* nil)
 )
 
-;;  The patterns the witness finds on the support path (Remote>>Dyl:SupportDefs "pat", the
-;;  names of the .pat files in upper case), never those of this computer: names with "-", "_"
-;;  and digits, patterns no hatch preset of the cases uses, one wt:pat finds in no file (NO...):
-(setq wt:found '("ANSI31" "AR-CONC" "ACAD_ISO02W100" "BRICK" "ANSI37" "CROSS" "NOFILE" "SOLID" "ZIGZAG" "AR-B816"
-                 "GOST_GLASS" "DOTS"
-                )
-)
-
-;;  The support path of the witness, for a moment (Remote>>Dyl:SupportDefs given back by
-;;  wt:run, wt:supdefs):
-(defun wt:supportfake (ext) (acad_strlsort (append wt:found nil)))
-
-;;  The units of the patterns of lst (upper case, none left out) as wt:pat gives them, for the
-;;  drawing of MEASUREMENT set (*mt:patunits*, see Remote>>Dyl:MaterialPatUnits):
-(defun wt:patsfor (lst)
-  (foreach p lst
-    (if (and (= 'STR (type p)) (/= "" p))
-      (setq *mt:patunits* (cons (cons (strcat (strcase p) "|" (itoa (getvar "MEASUREMENT"))) (wt:pat (strcase p)))
-                                *mt:patunits*
-                          )
-      )
-    )
-  )
-)
-
-;;  A value v of a window ((key . value) as the Lisp gives it to Dyl:WinShow), on one line: the
-;;  key, then S and its text, L and its items (nil: none), or R and the cells of each of its
-;;  rows (a line each):
-(defun wt:val (v / x)
-  (setq x (cdr v))
-  (cond
-    ((= 'STR (type x)) (wt:put (wt:line (list (car v) "S" (wt:nl x)))))
-    ((and x (listp (car x)))
-     (foreach r x (wt:put (wt:line (cons (car v) (cons "R" (mapcar 'wt:nl r))))))
-    )
-    ((wt:put (wt:line (cons (car v) (cons "L" (mapcar 'wt:nl x))))))
-  )
-)
-
-;;  A row r with the cells of pairs ((i . value) ...):
-(defun wt:cells (r pairs)
-  (foreach p pairs (setq r (Remote>>Dyl:ListSubst r (car p) (cdr p))))
-  r
-)
-
-;;  The edits made in the Hatch Presets window to the first rows sent (rs, 3 at most): (name
-;;  . function), the rows given back by the window, nil when the edit cannot be made on them.
-;;  Each value the checks and wget read: the name, the pattern, the scale, the angle, the layer
-;;  key, the colors (checked on or off), the lineweight, the transparency, the linetype and its
-;;  scale, a Model hatch annotative, SOLID, no pattern, a hatch preset added, deleted, moved:
-(setq wt:hpedits
-  '(("same" lambda (rs) rs)
-    ("name" lambda (rs) (cons (wt:cells (car rs) '((2 . "Edited name") (1 . " section "))) (cdr rs)))
-    ("pattern" lambda (rs) (cons (wt:cells (car rs) '((3 . "ansi37") (4 . "2.5") (6 . "30"))) (cdr rs)))
-    ("scalebad" lambda (rs) (cons (wt:cells (car rs) '((4 . "0"))) (cdr rs)))
-    ("scaletext" lambda (rs) (cons (wt:cells (car rs) '((4 . "1,5"))) (cdr rs)))
-    ("scalefine" lambda (rs) (cons (wt:cells (car rs) '((4 . " .5 "))) (cdr rs)))
-    ("anglebad" lambda (rs) (cons (wt:cells (car rs) '((6 . "x"))) (cdr rs)))
-    ("keyempty" lambda (rs) (cons (wt:cells (car rs) '((8 . ""))) (cdr rs)))
-    ("colorbad" lambda (rs) (cons (wt:cells (car rs) '((22 . "1") (23 . "300"))) (cdr rs)))
-    ("coloroff" lambda (rs) (cons (wt:cells (car rs) '((22 . "0") (23 . "abc"))) (cdr rs)))
-    ("background" lambda (rs) (cons (wt:cells (car rs) '((24 . "1") (25 . " 10, 20 ,30 "))) (cdr rs)))
-    ("bgbad" lambda (rs) (cons (wt:cells (car rs) '((24 . "1") (25 . "1,2"))) (cdr rs)))
-    ("existbad" lambda (rs) (cons (wt:cells (car rs) '((41 . "1") (42 . "0"))) (cdr rs)))
-    ("weight" lambda (rs) (cons (wt:cells (car rs) '((26 . "1") (27 . "35"))) (cdr rs)))
-    ("transbad" lambda (rs) (cons (wt:cells (car rs) '((28 . "1") (29 . "95"))) (cdr rs)))
-    ("transtext" lambda (rs) (cons (wt:cells (car rs) '((29 . "5.5"))) (cdr rs)))
-    ("linetype" lambda (rs) (cons (wt:cells (car rs) '((47 . "1") (48 . "dashed") (49 . "1") (50 . "2.5"))) (cdr rs)))
-    ("ltempty" lambda (rs) (cons (wt:cells (car rs) '((48 . ""))) (cdr rs)))
-    ("ltscalebad" lambda (rs) (cons (wt:cells (car rs) '((50 . "0"))) (cdr rs)))
-    ("model" lambda (rs) (cons (wt:cells (car rs) '((63 . "Model") (9 . "1") (10 . "1"))) (cdr rs)))
-    ("drafting" lambda (rs) (cons (wt:cells (car rs) '((63 . "Drafting") (9 . "1") (10 . "1"))) (cdr rs)))
-    ("solid" lambda (rs) (cons (wt:cells (car rs) '((3 . "SOLID"))) (cdr rs)))
-    ("none" lambda (rs) (cons (wt:cells (car rs) '((3 . ""))) (cdr rs)))
-    ("new" lambda (rs) (append rs (list (wt:cells (Remote>>Dyl:PresetWinRow (cdr (assoc 'new pst:dlg))) '((2 . "Added") (3 . "ANSI31"))))))
-    ("newempty" lambda (rs) (append rs (list (Remote>>Dyl:PresetWinRow (cdr (assoc 'new pst:dlg))))))
-    ("delete" lambda (rs) (if (cdr rs) (cons (car rs) (cddr rs))))
-    ("move" lambda (rs) (if (cdr rs) (cons (cadr rs) (cons (car rs) (cddr rs)))))
-   )
-)
-
-;;  The edits made in the Materials window, the same way: the name, the Cut and Surface hatch
-;;  presets (none, missing), the data (changed, empty, spaces, not a number, a comma, not
-;;  greater than 0), a material added, deleted, moved:
-(setq wt:matedits
-  '(("same" lambda (rs) rs)
-    ("name" lambda (rs) (cons (wt:cells (car rs) '((2 . "Edited name") (1 . " concrete "))) (cdr rs)))
-    ("cut" lambda (rs) (cons (wt:cells (car rs) '((3 . "hp-Brick"))) (cdr rs)))
-    ("cutbad" lambda (rs) (cons (wt:cells (car rs) '((3 . "hp-NoSuchHatch"))) (cdr rs)))
-    ("cutnone" lambda (rs) (cons (wt:cells (car rs) '((3 . ""))) (cdr rs)))
-    ("surface" lambda (rs) (cons (wt:cells (car rs) '((4 . ""))) (cdr rs)))
-    ("surfacebad" lambda (rs) (cons (wt:cells (car rs) '((4 . "hp-NoSuchHatch"))) (cdr rs)))
-    ("data" lambda (rs) (cons (wt:cells (car rs) '((5 . "0.5") (6 . "1200") (7 . "2"))) (cdr rs)))
-    ("datafine" lambda (rs) (cons (wt:cells (car rs) '((8 . "0.0123456") (9 . "123456.7"))) (cdr rs)))
-    ("datablank" lambda (rs) (cons (wt:cells (car rs) '((5 . "") (7 . " "))) (cdr rs)))
-    ("dataspaces" lambda (rs) (cons (wt:cells (car rs) '((5 . " 0.5 "))) (cdr rs)))
-    ("databad" lambda (rs) (cons (wt:cells (car rs) '((6 . "-1"))) (cdr rs)))
-    ("datazero" lambda (rs) (cons (wt:cells (car rs) '((7 . "0"))) (cdr rs)))
-    ("datatext" lambda (rs) (cons (wt:cells (car rs) '((8 . "abc"))) (cdr rs)))
-    ("datacomma" lambda (rs) (cons (wt:cells (car rs) '((9 . "1,5"))) (cdr rs)))
-    ("new" lambda (rs) (append rs (list (wt:cells (Remote>>Dyl:PresetWinRow (cdr (assoc 'new pst:dlg))) '((2 . "Added") (3 . "hp-Void") (5 . "0.04"))))))
-    ("newempty" lambda (rs) (append rs (list (Remote>>Dyl:PresetWinRow (cdr (assoc 'new pst:dlg))))))
-    ("delete" lambda (rs) (if (cdr rs) (cons (car rs) (cddr rs))))
-    ("move" lambda (rs) (if (cdr rs) (cons (cadr rs) (cons (car rs) (cddr rs)))))
-   )
-)
-
-;;  The window of the tool key ("HatchPreset" or "Material") as the preset engine shows it
-;;  (Remote>>Dyl:PresetDialog on the App part of Remote>>Dyl:HatchPresetDlg or
-;;  Remote>>Dyl:MaterialDlg, Remote\Dyl-Materials.lsp), in each drawing of wt:setups at the
-;;  drawing scale 1:50, with the layer keys of the case and the patterns of the witness
-;;  (wt:found, the units of wt:pat): its values (Remote>>Dyl:PresetWinVals, each one by
-;;  wt:val), opened on no preset (manager), on the second one read (select: its preset shown
-;;  only) and on one that does not exist (unknown, the same); then, opened on no preset, each
-;;  edit of edits on the first rows sent: the rows given back (in), the presets got from them
-;;  (Remote>>Dyl:PresetWinBack, given their ids: out) and why they are not valid
-;;  (Remote>>Dyl:PresetWinCheck: check, nil when they are). Sections hptab (the hatch presets)
-;;  and mattab (the materials); not for a materials file of DynALisp 1.1 (split by the Lisp
-;;  alone) nor a default file missing (the defaults of the code: the Core reads none):
-(defun wt:tab (key sec edits / saved *lk:file* *lk:readcache* *pst:rowcache* *pst:winsent* e)
-  (setq saved     (mapcar 'getvar '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "CANNOSCALE"))
-        *lk:file* (strcat *dyl:dylres "\\LayerKeys.csv")
-  )
-  (vl-catch-all-apply 'setvar '("CANNOSCALE" "1:50"))
-  (setvar "DIMZIN" 0)
-  (wt:put (strcat "#" sec " scale" (chr 31) (wt:cell (wt:num (getvar "CANNOSCALEVALUE")))))
-  (wt:rows (strcat sec " layerkeys") (mapcar '(lambda (k) (list (car k))) (Remote>>Dyl:LayerKeyRead)))
-  (wt:rows (strcat sec " found") (mapcar 'list (wt:supportfake "pat")))
-  (setq *mt:oldstamp* nil *pst:readcache* nil *mt:defcache* nil *hp:defcache* nil)
-  (if (or (Remote>>Dyl:MaterialOld-p)
-          (not (findfile (Remote>>Dyl:PresetDefault "HatchPreset")))
-          (not (findfile (Remote>>Dyl:PresetDefault "Material")))
-      )
-    (wt:sec (strcat sec " lisp"))
-    (foreach s wt:setups
-      (mapcar 'setvar '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "DIMZIN") (cdr s))
-      (foreach v (list (list "manager" nil) (list "select" 1) (list "unknown" "zz-NoSuchPreset"))
-        (setq *pst:readcache* nil
-              *mt:defcache*   nil
-              *hp:defcache*   nil
-              *mt:patunits*   nil
-              *pst:rowcache*  nil
-              wt:at           nil
-        )
-        (if (vl-catch-all-error-p (setq e (vl-catch-all-apply 'wt:tabof (list key sec edits (car s) (car v) (cadr v)))))
-          (wt:put (wt:line (list (strcat "#" sec " stopped " (car s) " " (car v)) wt:at (vl-catch-all-error-message e))))
-        )
-      )
-    )
-  )
-  (mapcar '(lambda (v x) (vl-catch-all-apply 'setvar (list v x))) '("MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "CANNOSCALE") saved)
-  (setvar "DIMZIN" wt:dimzin)
-  (setq *pst:readcache* nil *mt:defcache* nil *hp:defcache* nil *mt:patunits* nil *mt:oldstamp* nil)
-)
-
-;;  The window of wt:tab in the drawing setup, opened as name on the preset sel (nil: none, 1:
-;;  the second one read, else its id):
-(defun wt:tabof (key sec edits setup name sel / pst:key pst:dlg pst:lst pst:lst0 pst:idx pst:sel pst:als0 pst:als
-                 pst:grps pst:gren pst:mats pst:smats pst:matids pst:mgr pst:mgrs pst:flt pst:srt pst:shw pst:sent
-                 pst:sentof pst:prep mt:pats mt:found mt:keys mt:shown id vals rs n in msg
-                )
-  (setq wt:at   "read"
-        pst:key key
-        pst:lst (if (= "HatchPreset" key)
-                  (Remote>>Dyl:PresetRead key (Remote>>Dyl:HatchPresetDefs) 'Remote>>Dyl:MaterialFix)
-                  (Remote>>Dyl:PresetRead key (Remote>>Dyl:MaterialRowDefs) 'Remote>>Dyl:MaterialRowFix)
-                )
-        ;;  (nth on nil fails in AutoCAD: a case with one preset or none)
-        id      (cond ((/= 1 sel) sel) ((cdr pst:lst) (car (cadr pst:lst))) (pst:lst (car (car pst:lst))))
-        wt:at   "dlg"
-        pst:dlg (if (= "HatchPreset" key) (Remote>>Dyl:HatchPresetDlg id) (Remote>>Dyl:MaterialDlg id))
-        pst:srt "Name"
-        pst:flt ""
-        pst:shw ""
-        pst:idx (max 0 (min (cond ((if id (vl-position (assoc id pst:lst) pst:lst))) (0)) (1- (length pst:lst))))
-        pst:sel (list pst:idx)
-        pst:lst0 pst:lst
-        pst:gren (length *grp:renames*)
-  )
-  ;;  The support path and the units of the patterns of the witness (the Hatch Presets
-  ;;  window reads its patterns as it is prepared, and forgets their units):
-  (setq wt:at "prep")
-  (defun Remote>>Dyl:SupportDefs (ext) (wt:supportfake ext))
-  (setq *mt:patunits* nil)
-  (wt:patsfor (mapcar 'cadddr (car (Remote>>Dyl:MaterialBoth))))
-  (Remote>>Dyl:PresetWinPrep)
-  (setq Remote>>Dyl:SupportDefs wt:supdefs)
-  (wt:patsfor mt:pats)
-  (wt:patsfor (mapcar 'cadddr (car (Remote>>Dyl:MaterialBoth))))
-  (setq wt:at "vals"
-        vals  (Remote>>Dyl:PresetWinVals nil)
-  )
-  (wt:sec (strcat sec " vals " setup " " name))
-  (foreach v vals
-    (if (or (= "manager" name) (member (car v) '("pst.idx" "pst.sel")))
-      (progn (setq wt:at (strcat "val " (vl-princ-to-string (car v)))) (wt:val v))
-    )
-  )
-  (setq wt:at "sent")
-  (if (= "manager" name)
-    (progn
-      (setq rs         (Remote>>LM:sublst pst:sent 0 3)
-            pst:sent   rs
-            pst:sentof (Remote>>LM:sublst pst:sentof 0 3)
-            pst:lst0   pst:sentof
-            n          (Remote>>Dyl:PresetWinCols)
-      )
-      (foreach e edits
-        ;;  (without rows sent, only the rows added: a row edited would be nil)
-        (if (and (or rs (member (car e) '("new" "newempty")))
-                 (progn (setq wt:at (strcat "edit " (car e))) (setq in (apply (cdr e) (list rs))))
-            )
-          (progn
-            (setq wt:at   (strcat "edit " (car e) " back")
-                  pst:lst (Remote>>Dyl:PresetWinBack in n)
-                  wt:at   (strcat "edit " (car e) " check")
-                  msg     (Remote>>Dyl:PresetWinCheck)
-                  wt:at   (strcat "edit " (car e) " written")
-            )
-            (wt:rows (strcat sec " edit " setup " " (car e) " in") (mapcar '(lambda (x) (mapcar 'wt:nl x)) in))
-            (wt:rows (strcat sec " edit " setup " " (car e) " out")
-                     (mapcar '(lambda (x) (mapcar 'wt:nl x)) (Remote>>Dyl:PresetIds pst:lst))
-            )
-            (wt:put (strcat "#" sec " edit " setup " " (car e) " check" (chr 31) (wt:cell msg)))
-          )
-        )
-      )
-    )
-  )
-)
-
 ;;  The groups of the case, and the case of the names of the probes in them:
 (defun wt:groups ()
   (wt:rows "groups preset" (mapcar 'list (Remote>>Dyl:GroupsOf nil)))
@@ -587,8 +354,6 @@
   (wt:assemblies)
   (wt:materials)
   (wt:shows)
-  (wt:tab "HatchPreset" "hptab" wt:hpedits)
-  (wt:tab "Material" "mattab" wt:matedits)
   (foreach key wt:keys
     (wt:put (strcat "#" key " write" (chr 31) (wt:cell (Remote>>Dyl:PresetWrite key (cdr (assoc key wt:reads))))))
   )
@@ -641,7 +406,6 @@
                         Dyl:HatchDefs Dyl:MatDefs Dyl:MatBoth Dyl:AsmPats Dyl:AsmShows
                   )
         wt:dimzin (getvar "DIMZIN")
-        wt:supdefs Remote>>Dyl:SupportDefs
   )
   ;;  (the assemblies are read by Quick Draw, loaded before the folders are pointed at a case;
   ;;  never while it is turned off in the Startup Suite:)
@@ -669,7 +433,6 @@
       )
       ;;  The folders and functions of DynALisp given back, the reads of the cases dropped:
       (setvar "DIMZIN" wt:dimzin)
-      (setq Remote>>Dyl:SupportDefs wt:supdefs)
       (setq *dyl:contents   (nth 0 saved)
             *dyl:user       (nth 1 saved)
             *dyl:dylres     (nth 2 saved)
