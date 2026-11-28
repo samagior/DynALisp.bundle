@@ -63,7 +63,7 @@
     <PackageReference Include="AutoCAD.NET" Version="26.0.0" ExcludeAssets="runtime" PrivateAssets="all" />
   </ItemGroup>
 
-  <!-- The windows that read the data (the Assembly Presets, AsmPresets.cs) use DynALisp.Core.dll,
+  <!-- The windows that read the data (the Assembly Presets, PresetTabs.cs) use DynALisp.Core.dll,
        loaded by AutoCAD beside this DLL (never copied with it): -->
   <ItemGroup>
     <ProjectReference Include="..\Core\DynALisp.Core.csproj" Private="false" />

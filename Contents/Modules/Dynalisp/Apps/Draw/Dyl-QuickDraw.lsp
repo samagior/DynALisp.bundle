@@ -3218,7 +3218,7 @@
 
 ;;  The Assembly Presets window (Res\Dyl-AssemblyPresets.xaml) is shown, read back, checked
 ;;  and saved by DynALisp.Windows.dll and DynALisp.Core.dll (Dyl:AsmWindow,
-;;  Installer\Windows\AsmPresets.cs and Installer\Core\Data\AsmTab.cs), opened by the open
+;;  Installer\Windows\PresetTabs.cs and Installer\Core\Data\AsmTab.cs), opened by the open
 ;;  button of Assembly in the Quick Draw window on the assembly of the preset shown, or by its
 ;;  tab of the Manager (see Dyl:QuickDrawAsmDialog). Its presets are the assemblies (id group
 ;;  name layers, file Res\QuickDrawAssemblies.csv, spec "QuickDrawAssembly" of
@@ -3585,7 +3585,7 @@
 ;;  The Assembly Presets window, opened from the Quick Draw window (its presets qd, its preset
 ;;  shown r), on the assembly of r; a new assembly has its Border lines and Dividing lines on.
 ;;  Shown by DynALisp.Windows.dll, its assemblies made into rows, read back, checked and saved by
-;;  DynALisp.Core.dll with no Lisp in between (Dyl:AsmWindow, Installer\Windows\AsmPresets.cs and
+;;  DynALisp.Core.dll with no Lisp in between (Dyl:AsmWindow, Installer\Windows\PresetTabs.cs and
 ;;  Installer\Core\Data\AsmTab.cs, the same values as the preset engine gave, checked by the
 ;;  witness files): the 860 assemblies made into rows by the Core, then given to the Lisp and by
 ;;  the Lisp to the window, took most of the time of the tab. The Lisp gives it what only the
@@ -3644,7 +3644,7 @@
   )
 )
 
-;;  What the Assembly Presets window gets from the Lisp (see Installer\Windows\AsmPresets.cs),
+;;  What the Assembly Presets window gets from the Lisp (see Installer\Windows\PresetTabs.cs),
 ;;  opened on the window file path from the Quick Draw preset r (nil: from no preset, the tab
 ;;  of the Manager), with the tabs of the Manager (tabs T), the assemblies read by the Lisp
 ;;  (rows, nil: by the Core), and shown again after the Preset Groups window (resume T, the

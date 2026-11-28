@@ -45,60 +45,31 @@ using System.Linq;
 
 namespace DynALisp.Core.Data
 {
-    // A value of a window, as the Lisp gave it to Dyl:Window: a text, a list (its key ends with
-    // /list or /vals) or a table (its rows), in the order they are given:
-    public sealed class WinVal
-    {
-        public string Key, Text;
-        public List<string> List;
-        public List<string[]> Rows;
-
-        public static WinVal S(string key, string text) => new WinVal { Key = key, Text = text ?? "" };
-        public static WinVal L(string key, IEnumerable<string> items) => new WinVal { Key = key, List = items.ToList() };
-        public static WinVal R(string key, IEnumerable<string[]> rows) => new WinVal { Key = key, Rows = rows.ToList() };
-    }
-
-    public sealed class AsmTab
+    public sealed class AsmTab : PresetTab
     {
         public static PresetSpec Spec => Presets.QuickDrawAssembly;
+        public override PresetSpec Tool => Spec;
+        protected override string Title => "Assembly Presets";
+        protected override string Noun => "assemblies";
+        public override string[] NewRow => New;
+        protected override string TilesText => Tiles;
+        protected override int NCols => 16;
 
-        // *pst:sorts*:
-        public static readonly string[] Sorts = { "Name", "Group" };
-
-        // The columns of a preset in the file:
-        public static int Cols => Spec.Header.Length;
-
-        // What the window is opened on: the bundle, the units of the drawing, the names of the
-        // layer keys defined (Remote>>Dyl:LayerKeyRead, in its order), the layer key of the
-        // border of the Quick Draw preset it was opened from (null: from no preset), the units
-        // of a pattern (Remote>>Dyl:MaterialPatUnits):
-        public readonly Bundle B;
-        public readonly Units U;
-        public readonly List<string> Defined;
+        // The layer key of the border of the Quick Draw preset the window was opened from (null:
+        // from no preset), the units of a pattern (Remote>>Dyl:MaterialPatUnits):
         public readonly string QdBorder;
         public readonly Shows.PatUnits Pats;
 
-        // pst:* of Remote>>Dyl:PresetDialog: the presets edited, as read, the defaults, the
-        // preset shown, those selected, the filter, the sort, the Show group; the rows last
-        // sent and the presets they were made from:
-        public List<string[]> Lst, Lst0, Defs, Sent, SentOf;
-        public int Idx;
-        public List<int> Sel;
-        public string Flt = "", Srt = "Name", Shw = "";
-
-        // What Prep makes: the groups of the Group list (pst:grps), the materials of the
-        // Material list (qa:mats, qa:grps), the layer keys (mt:keys), the layer key of new
-        // lines (qa:bk), the row Add starts from (qa:def):
-        public List<string> Grps, Keys;
+        // What Prep makes besides the groups: the materials of the Material list (qa:mats,
+        // qa:grps), the layer keys (mt:keys), the layer key of new lines (qa:bk), the row Add
+        // starts from (qa:def):
+        public List<string> Keys;
         public AsmWindow.Lists Mats;
         public string Bk = "";
         public string[] Def;
 
-        AsmTab(Bundle b, Units u, List<string> defined, string qdBorder, Shows.PatUnits pats)
+        AsmTab(Bundle b, Units u, List<string> defined, string qdBorder, Shows.PatUnits pats) : base(b, u, defined)
         {
-            B = b;
-            U = u;
-            Defined = defined ?? new List<string>();
             QdBorder = qdBorder;
             Pats = pats ?? (p => null);
         }
@@ -138,85 +109,24 @@ namespace DynALisp.Core.Data
             if (Materials.Both(b, u.Dimzin) == null) return null;
             var lst = rows ?? Read(b, u.Dimzin);
             if (lst == null) return null;
-            var t = new AsmTab(b, u, defined, qdBorder, pats)
-            {
-                Lst = lst,
-                Lst0 = lst,
-                Defs = Assemblies.Defs(b),
-                Srt = Sorts.Contains(srt) ? srt : "Name",
-                Flt = "",
-            };
-            int pos = select != null ? lst.FindIndex(r => r[0] == select) : -1;
-            t.Idx = Math.Max(0, Math.Min(pos >= 0 ? pos : last ?? 0, lst.Count - 1));
-            t.Sel = new List<int> { t.Idx };
-            t.Shw = shw ?? "";
-            if (!lst.Any(t.InShow)) t.Shw = "";
-            if (select == null && t.Idx < lst.Count && !t.InShow(lst[t.Idx]))
-            {
-                t.Idx = t.View().First();
-                t.Sel = new List<int> { t.Idx };
-            }
+            var t = new AsmTab(b, u, defined, qdBorder, pats);
+            t.Init(lst, Assemblies.Defs(b), select, last, shw, srt);
             return t;
         }
 
-        // (Remote>>Dyl:PresetDlgInShow-p r):
-        bool InShow(string[] r) => Shw == "" || Lisp.SameCase(Shw, Lisp.Nth(r, 1));
-
-        // (Remote>>Dyl:PresetDlgView nil): the indexes of the presets of the Show group and of the
-        // filter, in the order of the sort (the same key: the file order):
-        List<int> View()
-        {
-            string f = Lisp.StrCase((Flt ?? "").Trim(' '));
-            var lst = new List<int>();
-            for (int i = 0; i < Lst.Count; i++)
-            {
-                var r = Lst[i];
-                string line = Lisp.StrCase(Lisp.Nth(r, 1) + "\t" + Lisp.Nth(r, 2) + "\t" + (Lisp.Nth(r, 3) ?? ""));
-                if (InShow(r) && (f == "" || line.Contains(f))) lst.Add(i);
-            }
-            Func<int, string> key = i => Lisp.StrCase(Srt == "Group" ? Lst[i][1] + "\t" + Lst[i][2] : Lst[i][2]);
-            return lst.OrderBy(key, StringComparer.Ordinal).ThenBy(i => i).ToList();
-        }
-
-        // The renames of the groups of the presets made in the Preset Groups window ((old new)
-        // ..., Remote>>Dyl:PresetDlgGroupsSync): given to the presets edited, to those as read
-        // and to the Show group:
-        public void Renamed(IEnumerable<(string Old, string New)> pairs)
-        {
-            var ps = pairs.ToList();
-            if (ps.Count == 0) return;
-            string Of(string g)
-            {
-                foreach (var p in ps) if (Lisp.SameCase(p.Old, g)) return p.New;
-                return g;
-            }
-            string[] Row(string[] r) => Lisp.Subst(r, 1, Of(r[1]));
-            Lst = Lst.Select(Row).ToList();
-            Lst0 = Lst0.Select(Row).ToList();
-            if (Shw != "") Shw = Of(Shw);
-        }
-
         // (Remote>>Dyl:PresetWinPrep) with (Dyl:QuickDrawAsmWinPrep): the groups of the Group
-        // list (those of the presets, then the others the presets use), the materials of the
-        // Material list of a layer, the layer keys (those defined that a material may have,
-        // then those the assemblies use that are not, sorted in any case), the layer key of
-        // new lines (that of the border of the Quick Draw preset when it is one of them, else
-        // the first one) and the row Add starts from:
-        public void Prep()
+        // list, the materials of the Material list of a layer, the layer keys (those the
+        // assemblies use with those defined), the layer key of new lines (that of the border of
+        // the Quick Draw preset when it is one of them, else the first one) and the row Add
+        // starts from:
+        public override void Prep()
         {
-            Grps = Groups.Of(B, null).ToList();
-            foreach (var r in Lst) if (!Grps.Contains(r[1])) Grps.Add(r[1]);
+            PrepGroups();
             Mats = AsmWindow.Mats(B, U.Dimzin, Lst.Select(a => new[] { a[3], a[4], a[5] }));
-            Keys = Defined.Where(MaterialKey).ToList();
-            foreach (var k in Mats.Used)
-                if (!string.IsNullOrEmpty(k) && !Keys.Contains(k) && MaterialKey(k)) Keys.Add(k);
-            Keys = Keys.OrderBy(Lisp.StrCase, StringComparer.Ordinal).ToList();
+            Keys = KeysOf(Mats.Used);
             Bk = QdBorder != null && Keys.Contains(QdBorder) ? QdBorder : Keys.FirstOrDefault() ?? "";
             Def = AsmWindow.Def(Mats.Mats, Bk);
         }
-
-        // (Remote>>Dyl:LayerKeyMaterial-p key): a key a material may have (*lk:nomaterial*):
-        static bool MaterialKey(string k) => !Lisp.Wcmatch(Lisp.StrCase(k), "G-DS-ANNO-STD-*");
 
         // The groups of the materials by id in any case (Dyl:QuickDrawAsmMatGroup), for the rows:
         Func<string, string> GroupOf()
@@ -232,7 +142,7 @@ namespace DynALisp.Core.Data
 
         // (Remote>>Dyl:PresetWinRows lst): each preset with the columns the window adds
         // (Dyl:QuickDrawAsmExtra):
-        public List<string[]> Rows(IEnumerable<string[]> lst)
+        public override List<string[]> Rows(IEnumerable<string[]> lst)
         {
             var group = GroupOf();
             return lst.Select(r => r.Concat(AsmWindow.Extra(new[] { r[3], r[4], r[5], Lisp.Nth(r, 7) ?? "" }, U.Factor, U.Dimzin, Def, Bk, group)).ToArray())
@@ -257,45 +167,18 @@ namespace DynALisp.Core.Data
             ("mjo", new[] { ("Interrupted", "Interrupted"), ("Uninterrupted", "Uninterrupted") }),
         };
 
-        // *mt:weights*: the lineweights of AutoCAD, in hundredths of mm:
-        static readonly string[] Weights = { "0", "5", "9", "13", "15", "18", "20", "25", "30", "35", "40", "50", "53", "60", "70", "80", "90",
-                                             "100", "106", "120", "140", "158", "200", "211" };
-
         // (Dyl:QuickDrawUnitInches): the inches of a drawing unit:
         double UnitInches =>
             U.Insunits == 1 ? 1.0 : U.Insunits == 2 ? 12.0 : U.Insunits == 4 ? 1.0 / 25.4 : U.Insunits == 5 ? 1.0 / 2.54
             : U.Insunits == 6 ? 1000.0 / 25.4 : U.Measurement == 1 ? 1.0 / 25.4 : 1.0;
 
-        // (Remote>>Dyl:PresetWinVals err) on the spec of Dyl:QuickDrawAsmDlg, its wvals
-        // (Dyl:QuickDrawAsmWinVals) last; err the message shown (null: none). The rows sent are
-        // kept (Sent, SentOf) for Back:
-        public List<WinVal> Vals(string err)
+        // The values of Dyl:QuickDrawAsmWinVals (wvals), after those of every preset window:
+        protected override void More(List<WinVal> res)
         {
-            SentOf = Lst;
-            Sent = Rows(Lst);
             var mats = Mats.Mats;
             var both = Materials.Both(B, U.Dimzin).Value;
             var data = AsmWindow.Data(B, U, mats.Select(m => m.Id)).Value;
-            var mark = Keys.Select(k => Defined.Contains(k) ? k : k + "   (not defined)").ToList();
-            int srt = Array.IndexOf(Sorts, Srt);
-            var res = new List<WinVal>
-            {
-                WinVal.R("pst/rows", Sent),
-                WinVal.R("pst/defs", Rows(Defs)),
-                WinVal.R("pst/new", Rows(new[] { New })),
-                WinVal.S("pst/ncols", "16"),
-                WinVal.S("pst/tiles", Tiles),
-                WinVal.S("pst.idx", Idx.ToString()),
-                WinVal.S("pst.sel", string.Join(" ", SelOf())),
-                WinVal.S("pst.shw", Shw),
-                WinVal.S("flt", Flt ?? ""),
-                WinVal.S("pst/title", "Assembly Presets"),
-                WinVal.S("pst/noun", "assemblies"),
-                WinVal.S("error", err ?? ""),
-                WinVal.L("srt/list", Sorts),
-                WinVal.S("srt", (srt < 0 ? 0 : srt).ToString()),
-            };
-            if (Grps.Count > 0) res.Add(WinVal.L("grp/list", Grps));
+            var mark = Marked(Keys);
             res.Add(WinVal.S("pst/family", "13,14"));
             res.Add(WinVal.S("pst/famcols", "6,16-39"));
             res.Add(WinVal.S("pst/famlabel", "9:min,10:NLB:min,11:STC,12:IIC"));
@@ -336,56 +219,13 @@ namespace DynALisp.Core.Data
             if (mats.Count == 0) res.Add(WinVal.S("lp/off", "1"));
             if (Mats.Groups.Count == 0) res.Add(WinVal.S("lg/off", "1"));
             if (Keys.Count == 0) res.Add(WinVal.S("out/off", "1"));
-            return res;
-        }
-
-        // (Remote>>Dyl:PresetDlgSel): the presets selected, the one shown with them:
-        List<int> SelOf() => Sel.Contains(Idx) ? Sel : new List<int> { Idx };
-
-        // ----- what the window gives back -----
-
-        // (Remote>>Dyl:PresetWinBack rows n): the presets of the rows got back. A row as it was
-        // sent (at the same place, or with the same id) is the preset it was made from, as it
-        // was read; the others through Get (wget), cut to the columns of the file:
-        public List<string[]> Back(List<string[]> rows)
-        {
-            var sent = Sent ?? new List<string[]>();
-            var orig = SentOf ?? new List<string[]>();
-            var ids = new List<(string Id, string[] S, string[] O)>();
-            for (int i = 0; i < sent.Count && i < orig.Count; i++) ids.Add((sent[i][0], sent[i], orig[i]));
-            var res = new List<string[]>(rows.Count);
-            for (int k = 0; k < rows.Count; k++)
-            {
-                var r = rows[k];
-                var s = k < sent.Count ? sent[k] : null;
-                var o = k < orig.Count ? orig[k] : null;
-                if (o != null && Same(r, s)) { res.Add(o); continue; }
-                if (Lisp.Nth(r, 0) != "" && r.Length > 0)
-                {
-                    int h = ids.FindIndex(x => x.Id == r[0]);
-                    if (h >= 0 && Same(r, ids[h].S)) { res.Add(ids[h].O); continue; }
-                }
-                res.Add(Cut(WinGet(r), Cols));
-            }
-            return res;
-        }
-
-        static bool Same(string[] a, string[] b) =>
-            ReferenceEquals(a, b) || (a != null && b != null && a.SequenceEqual(b, StringComparer.Ordinal));
-
-        // (Remote>>Dyl:PresetWinCut r n):
-        static string[] Cut(string[] r, int n)
-        {
-            var res = new string[n];
-            for (int i = 0; i < n; i++) res[i] = Lisp.Nth(r, i) ?? "";
-            return res;
         }
 
         // (Dyl:QuickDrawAsmWinGet r): its layers from its rows (column 15), back in millimetres
         // for an assembly in millimetres, or its rows themselves in its column 3 when one is not
         // valid; its lines from their columns (their layer key and linetype in upper case); its
         // ratings, its family and its description trimmed:
-        string[] WinGet(string[] r)
+        protected override string[] WinGet(string[] r)
         {
             var (layers, msg) = LayersOf(Decode(Lisp.Nth(r, 15) ?? ""), Def);
             r = Lisp.Subst(r, 3, msg != null ? Lisp.Nth(r, 15) : Assemblies.LayersStr(layers));
@@ -502,25 +342,9 @@ namespace DynALisp.Core.Data
             return null;
         }
 
-        // (wcmatch v "#,##..."): v of min to max digits:
-        static bool IsDigits(string v, int min, int max) =>
-            v != null && v.Length >= min && v.Length <= max && v.All(c => c >= '0' && c <= '9');
-
-        // (Remote>>Dyl:MaterialColorParse s): (n) for an AutoCAD color 1-255, (r g b) for
-        // "r,g,b", null when it is not one:
-        public static int[] ColorParse(string s)
-        {
-            s = (s ?? "").Trim(' ');
-            if (IsDigits(s, 1, 3) && int.Parse(s) is int n && n >= 1 && n <= 255) return new[] { n };
-            var l = s.Split(',');
-            if (l.Length == 3 && l.All(x => IsDigits(x.Trim(' '), 1, 3) && int.Parse(x.Trim(' ')) <= 255))
-                return l.Select(x => int.Parse(x.Trim(' '))).ToArray();
-            return null;
-        }
-
         // (Dyl:QuickDrawAsmCheck r): why the assembly r is not valid (null: it is): its layers,
         // then its lines, then its ratings:
-        public string RowCheck(string[] r)
+        public override string RowCheck(string[] r)
         {
             string ls = Lisp.Nth(r, 3) ?? "";
             if (ls.Contains('\t')) return LayersOf(Decode(ls), Def).Msg;
@@ -549,72 +373,5 @@ namespace DynALisp.Core.Data
             if (d[1] == "") return name + ": no layer key, add one in the Layer Keys window.";
             return Overrides(d, 2);
         }
-
-        // (Remote>>Dyl:PresetWinGet res): the presets of the rows got back (null: the window
-        // gave no table), the preset shown and those selected, the filter, the Show group and
-        // the sort:
-        public void Get(List<string[]> rows, string idx, string sel, string flt, string shw, string srt)
-        {
-            if (rows != null)
-            {
-                Lst = Back(rows);
-                int.TryParse(idx ?? "0", out int i);
-                Idx = Math.Max(0, Math.Min(i, Lst.Count - 1));
-                var s = new List<int>();
-                foreach (var x in (sel ?? "").Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries))
-                    if (int.TryParse(x, out int k) && k >= 0 && k < Lst.Count) s.Add(k);
-                Sel = s.Contains(Idx) ? s : new List<int> { Idx };
-            }
-            Flt = flt ?? "";
-            if (shw != null) Shw = shw;
-            int.TryParse(srt ?? "", out int si);
-            Srt = si >= 0 && si < Sorts.Length ? Sorts[si] : "Name";
-        }
-
-        // (Remote>>Dyl:PresetWinCheck): the message of the first preset changed since the window
-        // opened that is not valid, its name first, the preset shown and selected (null: all
-        // are valid):
-        public string Check()
-        {
-            for (int i = 0; i < Lst.Count; i++)
-            {
-                var r = Lst[i];
-                // (a preset not edited is the one read, at the same place: found at once)
-                if ((i < Lst0.Count && Same(Lst0[i], r)) || Lst0.Any(x => Same(x, r))) continue;
-                var m = RowCheck(r);
-                if (m == null) continue;
-                Idx = i;
-                Sel = new List<int> { i };
-                return Lisp.Nth(r, 2) + ": " + m;
-            }
-            return null;
-        }
-
-        // The presets of each group in upper case (Remote>>Dyl:PresetDlgGroupCounts), for the
-        // Preset Groups window:
-        public List<(string Group, int Count)> GroupCounts()
-        {
-            var res = new List<(string, int)>();
-            foreach (var r in Lst)
-            {
-                string g = Lisp.StrCase(Lisp.Nth(r, 1) ?? "");
-                int k = res.FindIndex(x => x.Item1 == g);
-                if (k >= 0) res[k] = (g, res[k].Item2 + 1); else res.Add((g, 1));
-            }
-            return res;
-        }
-
-        // The presets given their ids (Remote>>Dyl:PresetIds), written when they changed (the
-        // end of Remote>>Dyl:PresetDialog on Draw or Save): true once written, false when they
-        // cannot be (open in Excel), null when nothing changed:
-        public bool? Write()
-        {
-            Lst = Presets.Ids(Lst);
-            if (Lst.Count == Lst0.Count && Lst.Zip(Lst0, Same).All(x => x)) return null;
-            return Presets.Write(B, Spec, Lst);
-        }
-
-        // The preset shown (null: none):
-        public string[] Shown => Idx >= 0 && Idx < Lst.Count ? Lst[Idx] : null;
     }
 }
