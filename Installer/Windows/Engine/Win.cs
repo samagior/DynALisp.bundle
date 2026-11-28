@@ -87,7 +87,10 @@
 //
 // The items of a list given by the Lisp (key/list) may hold columns divided by a tab: its
 // template shows one with {Binding Converter={x:Static dyl:Cell.Converter},
-// ConverterParameter=1} (the second one).
+// ConverterParameter=1} (the second one). Bound to a Visibility, the column hides the
+// element while it is empty; to the Source of an Image, it is its picture (a file, or an
+// address loaded as the window shows); to the NavigateUri of a Hyperlink, what the link
+// opens (the window stays open, as with Open Docs): the changes of What's New.
 
 using System.Windows;
 using System.Windows.Data;
@@ -214,7 +217,9 @@ namespace DynALisp.Windows
 
     // The column n (ConverterParameter, from 0) of an item divided by tabs ("CC\tChange
     // Color"), "" when it has none: {Binding Converter={x:Static dyl:Cell.Converter},
-    // ConverterParameter=1}:
+    // ConverterParameter=1}. As its target needs it: a Visibility (Collapsed while it is
+    // empty), the picture of an Image (the file or the address it names, nothing when it
+    // cannot be read), the Uri of a Hyperlink (null while it is empty):
     public sealed class Cell : System.Windows.Data.IValueConverter
     {
         public static readonly Cell Converter = new Cell();
@@ -222,7 +227,31 @@ namespace DynALisp.Windows
         {
             var f = (value as string ?? "").Split('\t');
             int.TryParse(p as string ?? "0", System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out int n);
-            return n >= 0 && n < f.Length ? f[n] : "";
+            string s = n >= 0 && n < f.Length ? f[n] : "";
+            if (t == typeof(Visibility)) return s.Trim().Length == 0 ? Visibility.Collapsed : Visibility.Visible;
+            if (t == typeof(System.Windows.Media.ImageSource)) return Picture(s);
+            if (t == typeof(System.Uri)) return System.Uri.TryCreate(s.Trim(), System.UriKind.Absolute, out var u) ? u : null;
+            return s;
+        }
+
+        // The picture of a file or an address (loaded as the window shows), at most 1400
+        // pixels wide (the pictures of the docs are drawn at twice their size), null when
+        // it cannot be read:
+        static System.Windows.Media.ImageSource Picture(string s)
+        {
+            if (!System.Uri.TryCreate(s.Trim(), System.UriKind.Absolute, out var u)) return null;
+            try
+            {
+                var b = new System.Windows.Media.Imaging.BitmapImage();
+                b.BeginInit();
+                b.UriSource = u;
+                b.CacheOption = System.Windows.Media.Imaging.BitmapCacheOption.OnLoad;
+                b.CreateOptions = System.Windows.Media.Imaging.BitmapCreateOptions.IgnoreColorProfile;
+                b.DecodePixelWidth = 1400;
+                b.EndInit();
+                return b;
+            }
+            catch { return null; }
         }
         public object ConvertBack(object value, System.Type t, object p, System.Globalization.CultureInfo c) => Binding.DoNothing;
     }
