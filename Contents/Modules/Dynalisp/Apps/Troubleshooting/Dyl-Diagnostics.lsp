@@ -1843,7 +1843,7 @@
 (defun c:Pst-DiagnosticsReactorEvents () (dg:events))
 
 ;; Diagnostics Record
-;; Records in the background what AutoCAD and DynALisp do, for a bug that comes and goes: a red REC badge shows it is on; run again or Stop to end it.
+;; Records in the background what AutoCAD and DynALisp do, for a bug that comes and goes: a red REC badge shows it is on, run again or Stop to end it.
 
 (defun c:Pst-DiagnosticsRecord () (dg:record))
 
