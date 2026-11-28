@@ -1484,13 +1484,17 @@
 ;;  colour themes of AutoCAD in C++ (read only, and only where the plugin found them: AutoCAD
 ;;  2027). The diagnostics of (Dyl:RibbonSkin ...), gathered: the plugin writes its long reports
 ;;  to %TEMP%, read back here. (Dyl:RibbonSkin "Hosted" "Push"), which changes the themes, is
-;;  never run.
+;;  never run. Then the Start page of DynALisp (Overrides of Dyl-Settings, DynALisp.Windows.dll,
+;;  an experiment too): what it found of the Start tab, and while it is on the windows around
+;;  the browsers of AutoCAD ((Dyl:StartPage "Tree"), for another version of AutoCAD).
 (defun dg:s-interface (/ pal prt)
   (dg:sub "Settings")
-  (foreach k '("DynalispDisplayOn" "DynalispInterface" "DynalispBackground" "DynalispLayoutBackground" "DynalispFileTabColors")
+  (foreach k '("DynalispDisplayOn" "DynalispInterface" "DynalispBackground" "DynalispLayoutBackground" "DynalispFileTabColors" "DynalispStartPage" "DynalispActivity" "DynalispStartPinnedColumns" "DynalispStartRecentColumns")
     (dg:kv k (getenv k))
   )
   (dg:kv "COLORTHEME" (getvar "COLORTHEME"))
+  (dg:kv "STARTMODE" (getvar "STARTMODE"))
+  (dg:startpage)
   (if (not Dyl:RibbonSkin)
     (dg:note "DynALisp.Ribbon.dll is not loaded: the interface keeps the colors of AutoCAD")
     (progn
@@ -1520,6 +1524,62 @@
           (dg:if-file (Dyl:RibbonSkin "Hosted" "Colors"))
         )
       )
+    )
+  )
+)
+
+;;  The Start page of DynALisp (StartPage.cs of DynALisp.Windows.dll): a problem when it is on
+;;  and not shown (the plugin not loaded, the Start tab off or not found):
+(defun dg:startpage (/ on lst)
+  (setq on (= "1" (getenv "DynalispStartPage")))
+  (dg:sub "Start page (Dyl:StartPage)")
+  (cond
+    ((not Dyl:StartPage)
+     (if on
+       (dg:bad "Start page is on, but DynALisp.Windows.dll is not loaded: the Start tab shows the page of AutoCAD")
+       (dg:note "DynALisp.Windows.dll is not loaded: no Start page of DynALisp")
+     )
+    )
+    (T
+     (dg:if-lines (setq lst (Dyl:StartPage)))
+     (if on
+       (progn
+         (cond
+           ((= 0 (getvar "STARTMODE"))
+            (dg:bad "Start page is on, but the Start tab is off (STARTMODE 0): set STARTMODE to 1")
+           )
+           ((and (listp lst) (vl-some '(lambda (l) (and (= 'STR (type l)) (wcmatch l "found: no*,found: the browser*"))) lst))
+            (dg:bad "Start page is on, but the Start tab was not found: send this report with the windows below")
+           )
+         )
+         (dg:sub "The windows of the Start tab (Dyl:StartPage \"Tree\")")
+         (dg:if-file (Dyl:StartPage "Tree"))
+       )
+     )
+    )
+  )
+  (dg:activity)
+)
+
+;;  Active time (Activity.cs of DynALisp.Windows.dll): what it counted and wrote (never the
+;;  drawings: their paths are the user's), a problem when it could not write its time:
+(defun dg:activity (/ on lst)
+  (setq on (= "1" (getenv "DynalispActivity")))
+  (dg:sub "Active time (Dyl:Activity)")
+  (cond
+    ((not Dyl:Activity)
+     (if on (dg:bad "Active time is on, but DynALisp.Windows.dll is not loaded: no time is counted"))
+    )
+    (T
+     (dg:if-lines (setq lst (Dyl:Activity)))
+     (cond
+       ((and on (/= "1" (getenv "DynalispStartPage")))
+        (dg:note "Active time is on, but the Start page is off: no time is counted until it is on")
+       )
+       ((and on (listp lst) (vl-some '(lambda (l) (and (= 'STR (type l)) (wcmatch l "error:*"))) lst))
+        (dg:bad "Active time could not count or write its time: see the error above")
+       )
+     )
     )
   )
 )
@@ -1620,7 +1680,7 @@
   )
 )
 
-;;  The new issue page of the releases repository, its title and text filled in: the
+;;  The new issue page of DynALisp.bundle (*dyl:gitrepo*), its title and text filled in: the
 ;;  summary and the problems found (kept short: the whole report is in the zip):
 (defun dg:issue (zip / body n)
   (setq body (strcat "**What happened:**\n\n(what you did, what you saw, what you expected)\n\n"
@@ -1637,7 +1697,7 @@
     (if (< (strlen body) 3500) (setq body (strcat body "- " p "\n") n (1+ n)))
   )
   (if (< n (length dg:probs)) (setq body (strcat body "- ... (" (itoa (- (length dg:probs) n)) " more in the report)\n")))
-  (strcat "https://github.com/" *dyl:relrepo* "/issues/new?title="
+  (strcat "https://github.com/" *dyl:gitrepo* "/issues/new?title="
           (dg:url (strcat "Diagnostics report - DynALisp " (Dyl:InfoVersion) " - " (dg:str (vl-catch-all-apply 'dg:product nil))))
           "&body=" (dg:url (dg:anon body))
   )
@@ -1665,41 +1725,61 @@
 )
 
 ;;  Every section into a DynALisp Report <date> folder of %TEMP%, with the settings and the
-;;  User folder; the folder zipped, the report opened, then the issue offered:
-(defun dg:full (/ dir rep zip)
+;;  User folder (without User\Start: the active time and the pins of the Start page are the
+;;  user's, never in a report); the folder zipped, the report opened, then the issue offered.
+;;  Run for Report a problem of the Start page (*dg:forissue*, set by the plugin), the report
+;;  and its zip are given back to the plugin (Dyl:StartPageIssue), which opens the issue with
+;;  what the user wrote: nothing opened, nothing asked here.
+(defun dg:full (/ dir rep zip forissue)
+  (setq forissue *dg:forissue*
+        *dg:forissue* nil
+  )
   (princ "\nDynALisp diagnostics: checking DynALisp, AutoCAD and the drawing...")
   (setq dir (strcat (getenv "TEMP") "\\DynALisp Report " (menucmd "M=$(edtime,$(getvar,date),YYYY-MO-DD HHMMSS)")))
   (vl-mkdir dir)
   (cond
     ((not (setq rep (dg:write (strcat dir "\\Report.txt") (dg:report (mapcar 'car dg:sections)))))
      (princ (strcat "\n--> Unable to write in " dir))
+     (if (and forissue Dyl:StartPageIssue) (Dyl:StartPageIssue nil nil))
     )
     (T
      (dg:settingsfile dir)
      (if (vl-file-directory-p *dyl:user) (Dyl:SetsCopy *dyl:user (strcat dir "\\User")))
+     (if (vl-file-directory-p (strcat dir "\\User\\Start")) (Dyl:UserRmDir (strcat dir "\\User\\Start")))
      (setq zip (dg:zip dir))
-     (dg:open rep)
-     (if
-       (Dyl:Ask (list (strcat "Report ready: " (itoa (length dg:probs)) " problem(s) found.")
-                      "Send it to the DynALisp developer in a GitHub issue? The issue is public:"
-                      "check the report first. The zip of the report then goes in the issue."
-                )
-                "Open issue"
-                "Close"
-       )
+     (if (and forissue Dyl:StartPageIssue)
        (progn
-         (dg:open (dg:issue (cond (zip) (dir))))
-         (if zip
-           (startapp "explorer" (strcat "/select,\"" zip "\""))
-           (dg:open dir)
-         )
-         (princ (strcat "\nDrag " (vl-filename-base (cond (zip) (dir))) (if zip ".zip" "") " into the issue, describe the problem, then Submit."))
+         (Dyl:StartPageIssue rep zip)
+         (princ (strcat "\nReport ready: " (itoa (length dg:probs)) " problem(s) found, the issue opened in your browser."))
        )
-       (princ (strcat "\nReport saved in " (cond (zip) (dir)) "."))
+       (dg:full-ask rep zip dir)
      )
     )
   )
   (princ)
+)
+
+;;  The report opened, then the issue offered (Dyl-Diagnostics run by hand):
+(defun dg:full-ask (rep zip dir)
+  (dg:open rep)
+  (if
+    (Dyl:Ask (list (strcat "Report ready: " (itoa (length dg:probs)) " problem(s) found.")
+                   "Send it to the DynALisp developer in a GitHub issue? The issue is public:"
+                   "check the report first. The zip of the report then goes in the issue."
+             )
+             "Open issue"
+             "Close"
+    )
+    (progn
+      (dg:open (dg:issue (cond (zip) (dir))))
+      (if zip
+        (startapp "explorer" (strcat "/select,\"" zip "\""))
+        (dg:open dir)
+      )
+      (princ (strcat "\nDrag " (vl-filename-base (cond (zip) (dir))) (if zip ".zip" "") " into the issue, describe the problem, then Submit."))
+    )
+    (princ (strcat "\nReport saved in " (cond (zip) (dir)) "."))
+  )
 )
 
 ;;-------------------------=={ Reactor events }==------------------------;;

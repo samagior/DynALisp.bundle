@@ -478,13 +478,17 @@
   ;;; or made the default whole. Reset and Make it the default ask a second
   ;;; click to confirm.
   ;;; ---------------------------------------------------------------------------
-  ;;  User copies under the folder dir: ((FULL-PATH . FOLDER-P) ...), sorted:
+  ;;  User copies under the folder dir: ((FULL-PATH . FOLDER-P) ...), sorted. User\Start is
+  ;;  not a copy of a default but what the Start page keeps (its active time, its pins,
+  ;;  Activity.cs of DynALisp.Windows.dll): never listed, never made a default:
   (defun Dyl:UserItems (dir / lst)
     (if (findfile (strcat dir "\\" *dyl:userdirmark*))
       (list (cons dir T))
       (progn
         (foreach f (vl-directory-files dir nil 1) (setq lst (cons (cons (strcat dir "\\" f) nil) lst)))
-        (foreach d (vl-remove-if '(lambda (x) (member x '("." ".."))) (vl-directory-files dir nil -1))
+        (foreach d (vl-remove-if '(lambda (x) (or (member x '("." ".."))
+                                                  (and (= (strcase x) "START") (= (strcase dir) (strcase *dyl:user)))))
+                     (vl-directory-files dir nil -1))
           (setq lst (append (Dyl:UserItems (strcat dir "\\" d)) lst))
         )
         (vl-sort lst '(lambda (a b) (< (strcase (car a)) (strcase (car b)))))
@@ -3030,9 +3034,10 @@
   ;;; repository and to the module docs, and the core commands
   ;;; (Res\Dyl-Info.xaml, Res\Dyl-WhatsNew.xaml).
   ;;;
-  ;;; Two repositories: the source (*dyl:gitrepo*, private, the one a git clone
-  ;;; pulls) and the releases (*dyl:relrepo*, public: read without signing in to
-  ;;; GitHub). The release workflow of the source publishes each release to the
+  ;;; Two repositories: the source (*dyl:gitrepo*, public, the one a git clone
+  ;;; pulls, where the issues of Dyl-Diagnostics and of Report a problem of the
+  ;;; Start page are opened) and the releases (*dyl:relrepo*, read without signing
+  ;;; in to GitHub). The release workflow of the source publishes each release to the
   ;;; releases repository, with its setup and CHANGELOG.md as assets.
   ;;;
   ;;; The version is the AppVersion of PackageContents.xml (the one AutoCAD
@@ -4531,6 +4536,20 @@
           *dyl:startwarn* (reverse *dyl:warn*)
           *dyl:startnote* (reverse *dyl:note*)
     )
+    ;; The Start page of DynALisp (DynALisp.Windows.dll) shows the last startup, its slowest
+    ;; steps and what failed: it cannot ask the Lisp, which does not run in the Start tab:
+    (if Dyl:StartPageInfo
+      (vl-catch-all-apply 'Dyl:StartPageInfo
+                          (list (cond (*dyl:startms*) (0))
+                                (cond (*dyl:cmdcount*) (0))
+                                (cond (*dyl:aliascount*) (0))
+                                *dyl:startwarn*
+                                *dyl:loaderrs*
+                                (reverse *dyl:steptimes*)
+                                (getvar "DWGNAME")
+                          )
+      )
+    )
     (setq *dyl:quiet* nil
           *dyl:warn*  nil
           *dyl:note*  nil
@@ -4575,6 +4594,48 @@
                    (if on
                      "on: the sheet sets open in the Sheet Set Manager open again at each startup, until you close them there"
                      "off: the Sheet Set Manager opens no sheet set at startup"
+                   )
+                   "."
+           )
+    )
+  )
+
+  ;;; Start page (Overrides in Dyl-Settings, DynalispStartPage, off by default): the page of
+  ;;; the Start tab of AutoCAD gives way to the Start page of DynALisp (what is pinned, the
+  ;;; active time of each day, the recent drawings, DynALisp in a line at its foot). Done by
+  ;;; Resources\DynALisp.Windows.dll (Installer\Windows\StartPage.cs), which defines
+  ;;; Dyl:StartPage and reads the setting itself every second (no Lisp runs in the Start tab):
+  ;;; told at once when it is saved. Turned on while the Start tab is off (STARTMODE 0), the
+  ;;; tab is turned back on, since the page is shown in it:
+  (defun Dyl:StartPageOn-p () (= "1" (getenv "DynalispStartPage")))
+  (defun Dyl:StartPageSet (on)
+    (setenv "DynalispStartPage" (if on "1" "0"))
+    (if (and on (= 0 (getvar "STARTMODE"))) (setvar "STARTMODE" 1))
+    (if Dyl:StartPage (vl-catch-all-apply 'Dyl:StartPage '("Apply")))
+    (princ (strcat "\nStart page "
+                   (if on
+                     "on: the Start tab shows the Start page of DynALisp"
+                     "off: the Start tab shows the page of AutoCAD"
+                   )
+                   "."
+           )
+    )
+  )
+
+  ;;; Active time (Overrides in Dyl-Settings, under Start page, DynalispActivity, off by
+  ;;; default): the time spent working in each drawing, kept on this computer
+  ;;; (User\Start\Activity) and shown on the Start page, counted only while the Start page is
+  ;;; on too. Done by Resources\DynALisp.Windows.dll (Installer\Windows\Activity.cs), which
+  ;;; defines Dyl:Activity and reads the setting itself at each count: the time counted is
+  ;;; written at once when it is saved.
+  (defun Dyl:ActivityOn-p () (= "1" (getenv "DynalispActivity")))
+  (defun Dyl:ActivitySet (on)
+    (setenv "DynalispActivity" (if on "1" "0"))
+    (if Dyl:Activity (vl-catch-all-apply 'Dyl:Activity '("Apply")))
+    (princ (strcat "\nActive time "
+                   (if on
+                     "on: the time spent in each drawing is counted, for the Start page"
+                     "off: no time is counted"
                    )
                    "."
            )
@@ -4676,6 +4737,12 @@
 ;;;   - Reopen sheet sets (Overrides, DynalispSheetSetReopen, see Dyl:SheetSetsSet): the
   ;;;     sheet sets open in the Sheet Set Manager opened again at each startup; greyed
   ;;;     out without Resources\DynALisp.Startup.dll (Dyl:SheetSets not defined)
+;;;   - Start page (Overrides, DynalispStartPage, see Dyl:StartPageSet): the Start tab shows
+  ;;;     the Start page of DynALisp; greyed out without Resources\DynALisp.Windows.dll
+  ;;;     (Dyl:StartPage not defined)
+;;;   - Active time (Overrides, under Start page, DynalispActivity, see Dyl:ActivitySet): the
+  ;;;     time spent in each drawing counted for the Start page; greyed out while Start page
+  ;;;     is off, and without Resources\DynALisp.Windows.dll (Dyl:Activity not defined)
 ;;;   - Language (Environment, the first section, DynalispLanguage, see Dyl:Lang): the
   ;;;     language the docs of DynALisp open in (the ribbon is in the language of the
   ;;;     AutoCAD installed); the language of AutoCAD until it is set. Not the Language
@@ -4773,6 +4840,8 @@
             (Dyl:WinTog "rvo" st:rvo)
             (Dyl:WinTog "csu" st:csu)
             (Dyl:WinTog "ssr" st:ssr)
+            (Dyl:WinTog "stp" st:stp)
+            (Dyl:WinTog "act" st:act)
             (Dyl:WinTog "lku" (= "Update" st:lkm))
             (Dyl:WinTog "lkk" (= "Keep" st:lkm))
             (Dyl:WinTog "aup" st:aup)
@@ -4803,6 +4872,9 @@
       (Dyl:WinOff "csu" (not Dyl:CleanStartup))
       ;; Reopen sheet sets: without the plugin that does it (the same one):
       (Dyl:WinOff "ssr" (not Dyl:SheetSets))
+      ;; Start page: without the plugin that shows it:
+      (Dyl:WinOff "stp" (not Dyl:StartPage))
+      (Dyl:WinOff "act" (not Dyl:Activity))
       ;; Layer keys: the answer remembered, when Dyl-LayerKey.lsp is not loaded:
       (Dyl:WinOff '("lku" "lkk") (not Remote>>Dyl:LayerKeyMatchSet))
       ;; Automatic updates: greyed out for a git clone (updated with git pull):
@@ -4833,6 +4905,8 @@
           st:asl (Dyl:WinOn-p res "asl")
           st:csu (Dyl:WinOn-p res "csu")
           st:ssr (Dyl:WinOn-p res "ssr")
+          st:stp (Dyl:WinOn-p res "stp")
+          st:act (Dyl:WinOn-p res "act")
           st:rvo (Dyl:WinOn-p res "rvo")
           st:lng (car (nth (Dyl:WinIdx res "lng") *dyl:langs*))
           st:lkm (cond ((Dyl:WinOn-p res "lku") "Update") ((Dyl:WinOn-p res "lkk") "Keep"))
@@ -5028,6 +5102,8 @@
     (if (not (eq st:asl (nth 19 old))) (Dyl:AssistantLispSet st:asl))
     (if (not (eq st:csu (nth 16 old))) (Dyl:CleanStartupSet st:csu))
     (if (not (eq st:ssr (nth 20 old))) (Dyl:SheetSetsSet st:ssr))
+    (if (not (eq st:stp (nth 21 old))) (Dyl:StartPageSet st:stp))
+    (if (not (eq st:act (nth 22 old))) (Dyl:ActivitySet st:act))
     (if (/= st:lng (nth 17 old)) (Dyl:LangSet st:lng))
     ;; Revisions: turned on, this drawing updated right away when it is a sheet of a project:
     (if (and Remote>>Dyl:RevSyncSet (not (eq st:rvo (nth 18 old))))
@@ -5127,7 +5203,7 @@
     )
   )
 
-  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:asl st:ssr st:old st:res st:sta)
+  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:asl st:ssr st:stp st:act st:old st:res st:sta)
     (setq st:defs (Dyl:SetDefsRead)
           st:aph  (and Remote>>Dyl:PhaseAuto-p (Remote>>Dyl:PhaseAuto-p) T)
           st:ado  (and Remote>>Dyl:DrawOrderAuto-p (Remote>>Dyl:DrawOrderAuto-p) T)
@@ -5149,7 +5225,9 @@
           st:rvo  (and Remote>>Dyl:RevSyncOn-p (Remote>>Dyl:RevSyncOn-p) T)
           st:asl  (Dyl:AssistantLispOn-p)
           st:ssr  (Dyl:SheetSetsOn-p)
-          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:asl st:ssr)
+          st:stp  (Dyl:StartPageOn-p)
+          st:act  (Dyl:ActivityOn-p)
+          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:asl st:ssr st:stp st:act)
           st:sta  2
     )
     ;; An open button that runs a command closes the window with its number (dyl:Win.Close

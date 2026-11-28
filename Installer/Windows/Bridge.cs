@@ -76,6 +76,10 @@ namespace DynALisp.Windows
             Modeless.Run = Run;
             // The dark windows in the neutral greys under the DynALisp Neutral interface:
             Theme.NeutralOf = Bridge.NeutralInterface;
+            // The Start page of DynALisp in the Start tab, while it is on (StartPage.cs):
+            StartPage.Init();
+            // The active time of each drawing, while it is on (Activity.cs):
+            Activity.Init();
         }
 
         static bool Run(string expr)
@@ -88,7 +92,10 @@ namespace DynALisp.Windows
             return true;
         }
 
-        public void Terminate() { }
+        public void Terminate()
+        {
+            try { Activity.Flush(); } catch { }
+        }
 
         // This assembly by its name; DynALisp.Core (the data of the windows that read it,
         // AsmPresets.cs) the one AutoCAD loaded, else the one beside this DLL:

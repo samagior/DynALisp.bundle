@@ -614,6 +614,11 @@ namespace DynALisp.Windows
                             if (c is ListBox lb && lb.SelectedItem != null) lb.ScrollIntoView(lb.SelectedItem);
                             else if (!has) _s.Values[c.Name] = c.SelectedIndex.ToString(CultureInfo.InvariantCulture);
                             break;
+                        // A list shown only, never picked (the cards of the Start page): its
+                        // items (key/list), in the template of its file:
+                        case ItemsControl ic:
+                            if (_s.Lists.TryGetValue(ic.Name, out var shown)) ic.ItemsSource = shown;
+                            break;
                         case TextBox x:
                             if (has) x.Text = v ?? "";
                             else _s.Values[x.Name] = x.Text;
@@ -625,6 +630,15 @@ namespace DynALisp.Windows
                         // Its value stays the Lisp's (a button gives no value back):
                         case Button b when b.GetType() == typeof(Button):
                             if (has && !string.IsNullOrEmpty(v)) b.Content = v;
+                            break;
+                        // The columns picked for the cards of the Start page (Start.cs), its value:
+                        case ColumnChoice cc:
+                            cc.Attach(Find, has ? v : null);
+                            break;
+                        // The controls of the Start page (Start.cs: the pins, the active time,
+                        // the recent drawings), the table key/rows (none yet: being read):
+                        case IShowsRows sr:
+                            sr.Attach(Find, _s.Rows.TryGetValue(fe.Name + StartUi.RowsSuffix, out var shownRows) ? shownRows : null);
                             break;
                         case Gallery g:
                             g.Attach(Find, k => _s.Lists.TryGetValue(k, out var l) ? l : null);

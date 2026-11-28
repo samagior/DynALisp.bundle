@@ -1,0 +1,172 @@
+<!--
+  Dyl-StartPage.xaml - the Start page of DynALisp, in place of the page of the Start tab of AutoCAD
+  Copyright (C) 2026  Samuel Martineau
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+  Shown by DynALisp.Windows.dll (Installer\Windows\StartPage.cs) inside the Start tab of
+  AutoCAD, over its own page, while Start page is on in Dyl-Settings (DynalispStartPage):
+  not a window of its own, the content of this file is the page (Engine\Start.cs, Page.Of),
+  so it takes the whole tab (the Width and Height below are those of its picture in the docs,
+  drawn by Installer\Windows\Shots). No Lisp runs in the Start tab (no drawing may be open):
+  the plugin gives the values itself, read again each time the tab is shown:
+
+    tpl/rows   the templates (dyl:TemplateList): the one of QNEW, those of the template folder
+    pin/rows   what is pinned (dyl:PinnedItems): drawings, sheet sets (by their title), projects
+    act/rows   the active time of each day and drawing (dyl:ActivityGraph, Activity.cs)
+    actn       said when Active time is off
+    rec/rows   the recent drawings (dyl:RecentDrawings), thumbnails from the drawings
+    pnc rcc    the columns of the pins and of the recent drawings picked (dyl:ColumnChoice:
+               DynalispStartPinnedColumns, DynalispStartRecentColumns; "": as many as fit)
+    tsk/rows   the tasks of the projects and sheet sets pinned (dyl:ProjectTasks, Tasks.cs)
+    ver        the foot of the page: DynALisp, AutoCAD, the last startup
+    err        what could not be done (a drawing that did not open)
+  (err and actn take no room while they have no text: shown by the plugin when they have)
+
+  Three columns across the tab, the left one and the right one near its edges (56 from them), the one of
+  the middle, the widest, 900 wide in the middle of the space between them, each of its parts
+  as wide as it (the cards and the tiles widened to fill their rows): to start a drawing at the left (New, Open..., Open sheet set..., the
+  templates), what was worked on in the middle (Pinned, the active time, Recent), the tasks
+  of each project at the right. No path is shown: it is in the tip of each card and tile.
+
+  Its buttons are run by the plugin, never by the Lisp: New (the template of QNEW), a
+  template, Open, Open sheet set, Pin, and at the foot Settings (in the drawing open, a new
+  drawing when none is), Report a problem (the panel rpp: what happened, typed in rtx, then
+  rgo makes the report of Dyl-Diagnostics and opens an issue with it, rno closes it, rst says
+  where it is) and Docs (the home page of the User Guide).
+-->
+<Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:dyl="clr-namespace:DynALisp.Windows"
+        Title="DynALisp - Start" dyl:Win.Docs="Core\Dyl-StartPage.htm">
+  <Window.Resources>
+    <!-- A heading of the page: -->
+    <Style x:Key="Head" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="15"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="Foreground" Value="{DynamicResource Dyl.Heading}"/>
+    </Style>
+    <!-- A small button of the foot of the page, a link: -->
+    <Style x:Key="Foot" TargetType="Button">
+      <Setter Property="Foreground" Value="{DynamicResource Dyl.Muted}"/>
+      <Setter Property="FontSize" Value="11.5"/>
+      <Setter Property="Margin" Value="12,0,0,0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <TextBlock x:Name="t" Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" Background="Transparent"/>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="t" Property="TextDecorations" Value="Underline"/>
+                <Setter Property="Foreground" Value="{DynamicResource Dyl.Accent}"/>
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource Dyl.Disabled}"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </Window.Resources>
+
+  <DockPanel Width="1700" Height="1000">
+    <!-- The foot: DynALisp in a line, its buttons: -->
+    <Border DockPanel.Dock="Bottom" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource Dyl.Border}" Padding="56,7,56,8">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+          <Button x:Name="set" Content="Settings" Style="{StaticResource Foot}"/>
+          <Button x:Name="rep" Content="Report a problem" Style="{StaticResource Foot}"/>
+          <Button x:Name="docs" Content="Docs" Style="{StaticResource Foot}"/>
+        </StackPanel>
+        <TextBlock x:Name="ver" FontSize="11.5" Foreground="{DynamicResource Dyl.Muted}" VerticalAlignment="Center"/>
+      </DockPanel>
+    </Border>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+      <Grid Margin="56,22,56,22">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="240"/>
+          <ColumnDefinition Width="*" MinWidth="28"/>
+          <ColumnDefinition Width="900"/>
+          <ColumnDefinition Width="*" MinWidth="28"/>
+          <ColumnDefinition Width="320"/>
+        </Grid.ColumnDefinitions>
+        <!-- The headings in a row of their own, so the three columns start at the same height
+             (New, the first pinned card, the first project): -->
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto"/>
+          <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Pinned: drawings, sheet sets, projects (Pin... picks one): -->
+        <DockPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,10">
+          <Button x:Name="pnb" DockPanel.Dock="Right" Content="Pin..." Style="{StaticResource Foot}" FontSize="12.5" VerticalAlignment="Center"/>
+          <dyl:ColumnChoice x:Name="pnc" DockPanel.Dock="Right" Target="pin" Choices="1,2,3,4" Margin="0,0,16,0"/>
+          <TextBlock Text="Pinned" Style="{StaticResource Head}"/>
+        </DockPanel>
+        <TextBlock Grid.Row="0" Grid.Column="4" Text="Projects" Style="{StaticResource Head}" Margin="0,0,0,10"/>
+
+        <!-- To start: a new drawing, one to open, a sheet set, the templates: -->
+        <StackPanel Grid.Row="1" Grid.Column="0">
+          <Button x:Name="new" Content="_New" Style="{DynamicResource Dyl.AccentButton}" Margin="0,0,0,8" HorizontalAlignment="Stretch"/>
+          <Button x:Name="opn" Content="_Open..." Margin="0,0,0,8" HorizontalAlignment="Stretch"/>
+          <Button x:Name="osh" Content="Open _sheet set..." Margin="0" HorizontalAlignment="Stretch"/>
+          <TextBlock x:Name="err" Style="{DynamicResource Dyl.Error}" Margin="0,8,0,0" TextWrapping="Wrap" Visibility="Collapsed"/>
+          <TextBlock Text="Templates" Style="{StaticResource Head}" Margin="0,26,0,8"/>
+          <dyl:TemplateList x:Name="tpl"/>
+        </StackPanel>
+
+        <!-- What was worked on: -->
+        <StackPanel Grid.Row="1" Grid.Column="2">
+          <dyl:PinnedItems x:Name="pin" Graph="act" CardWidth="340"/>
+
+          <!-- The active time of each day: -->
+          <TextBlock x:Name="actn" Foreground="{DynamicResource Dyl.Muted}" Margin="0,14,0,0" Visibility="Collapsed"/>
+          <dyl:ActivityGraph x:Name="act" Margin="0,6,0,0"/>
+
+          <!-- A few recent drawings: -->
+          <DockPanel Margin="0,26,0,10">
+            <TextBox x:Name="find" DockPanel.Dock="Right" Width="200" Style="{DynamicResource Dyl.Search}" Tag="Search"/>
+            <dyl:ColumnChoice x:Name="rcc" DockPanel.Dock="Right" Target="rec" Choices="2,3,4,5,6" Margin="0,0,16,0"/>
+            <TextBlock x:Name="cnt" DockPanel.Dock="Right" Style="{DynamicResource Dyl.Desc}" Margin="0,0,12,0"
+                       VerticalAlignment="Center" Tag="drawing,drawings"/>
+            <TextBlock Text="Recent" Style="{StaticResource Head}"/>
+          </DockPanel>
+          <dyl:RecentDrawings x:Name="rec" Graph="act" Search="find" Count="cnt" Rows="2" TileWidth="150"/>
+        </StackPanel>
+
+        <!-- Useful for the projects: a problem to report, the tasks of each project: -->
+        <StackPanel Grid.Row="1" Grid.Column="4">
+          <Border x:Name="rpp" Visibility="Collapsed" Background="{DynamicResource Dyl.Surface}" CornerRadius="8" Padding="12" Margin="0,0,0,22">
+            <StackPanel>
+              <TextBlock Text="Report a problem" Style="{StaticResource Head}" Margin="0,0,0,8"/>
+              <TextBox x:Name="rtx" Height="120" AcceptsReturn="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+              <TextBlock Style="{DynamicResource Dyl.Desc}" TextWrapping="Wrap" Margin="0,6,0,0"
+                         Text="What happened, then an issue opens on GitHub with the report of Dyl-Diagnostics."/>
+              <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                <Button x:Name="rgo" Content="Open the issue" Style="{DynamicResource Dyl.AccentButton}" Margin="0,0,8,0"/>
+                <Button x:Name="rno" Content="Cancel" Margin="0"/>
+              </StackPanel>
+              <TextBlock x:Name="rst" Style="{DynamicResource Dyl.Desc}" TextWrapping="Wrap" Margin="0,6,0,0"/>
+            </StackPanel>
+          </Border>
+          <dyl:ProjectTasks x:Name="tsk"/>
+        </StackPanel>
+      </Grid>
+    </ScrollViewer>
+  </DockPanel>
+</Window>
