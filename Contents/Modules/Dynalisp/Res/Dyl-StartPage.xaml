@@ -32,8 +32,9 @@
     err        what could not be done (a drawing that did not open)
   (err and actn take no room while they have no text: shown by the plugin when they have)
 
-  Three columns in the middle of the tab, the one of the middle the widest, each of its parts
-  as wide as it: to start a drawing at the left (New, Open..., Open sheet set..., the
+  Three columns as wide as the tab, the left one and the right one against its edges, the one
+  of the middle taking the rest (the widest), each of its parts as wide as it (the cards and
+  the tiles widened to fill their rows): to start a drawing at the left (New, Open..., Open sheet set..., the
   templates), what was worked on in the middle (Pinned, the active time, Recent), the tasks
   of each project at the right. No path is shown: it is in the tip of each card and tile.
 
@@ -83,7 +84,7 @@
   <DockPanel Width="1400" Height="1000">
     <!-- The foot: DynALisp in a line, what is wrong in red, its buttons: -->
     <Border DockPanel.Dock="Bottom" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource Dyl.Border}" Padding="28,7,28,8">
-      <DockPanel MaxWidth="1336">
+      <DockPanel>
         <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
           <Button x:Name="set" Content="Settings" Style="{StaticResource Foot}"/>
           <Button x:Name="rep" Content="Report a problem" Style="{StaticResource Foot}"/>
@@ -95,12 +96,12 @@
       </DockPanel>
     </Border>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Focusable="False">
-      <Grid Margin="28,22,28,22" HorizontalAlignment="Center">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+      <Grid Margin="28,22,28,22">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="200"/>
           <ColumnDefinition Width="28"/>
-          <ColumnDefinition Width="800"/>
+          <ColumnDefinition Width="*" MinWidth="560"/>
           <ColumnDefinition Width="28"/>
           <ColumnDefinition Width="280"/>
         </Grid.ColumnDefinitions>
@@ -122,7 +123,7 @@
             <Button x:Name="pnb" DockPanel.Dock="Right" Content="Pin..." Style="{StaticResource Foot}" FontSize="12.5"/>
             <TextBlock Text="Pinned" Style="{StaticResource Head}"/>
           </DockPanel>
-          <dyl:PinnedItems x:Name="pin" Graph="act" CardWidth="390"/>
+          <dyl:PinnedItems x:Name="pin" Graph="act" CardWidth="340"/>
 
           <!-- The active time of each day: -->
           <TextBlock x:Name="actn" Foreground="{DynamicResource Dyl.Muted}" Margin="0,14,0,0" Visibility="Collapsed"/>
@@ -135,7 +136,7 @@
                        VerticalAlignment="Center" Tag="drawing,drawings"/>
             <TextBlock Text="Recent" Style="{StaticResource Head}"/>
           </DockPanel>
-          <dyl:RecentDrawings x:Name="rec" Search="find" Count="cnt" Max="10" TileWidth="150"/>
+          <dyl:RecentDrawings x:Name="rec" Search="find" Count="cnt" Rows="2" TileWidth="150"/>
         </StackPanel>
 
         <!-- Useful for the projects: a problem to report, the tasks of each project: -->

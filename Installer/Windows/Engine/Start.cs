@@ -19,7 +19,8 @@
 // and does what they ask (open a drawing, pin it), the pictures tool of the docs (Shots\) draws
 // the page on sample rows.
 //
-// <dyl:PinnedItems x:Name="pin" Graph="act"/>: the cards of what is pinned, the fields of a row:
+// <dyl:PinnedItems x:Name="pin" Graph="act" CardWidth="340"/>: the cards of what is pinned, as
+// wide as the row they fill (CardWidth at least), the fields of a row:
 //   path, name, kind ("Drawing", "Sheet set" or "Project"), where (its folder, not shown: the
 //   path is only in the tip of the card), time (the text of its active time), thumbnail (a
 //   .png file, "" none), missing ("1": not found)
@@ -46,16 +47,17 @@
 // A task checked raises Checked, deleted from its right-click menu Removed, typed in the box
 // under them (Enter) Added.
 //
-// <dyl:RecentDrawings x:Name="rec" Search="find" Count="cnt" Max="12"/>: a tile for each
-// drawing opened last, the fields of a row:
+// <dyl:RecentDrawings x:Name="rec" Search="find" Count="cnt" Rows="2" TileWidth="150"/>: a tile
+// for each drawing opened last, as wide as the row they fill (TileWidth at least), the fields
+// of a row:
 //   path, name, folder (not shown: the path is only in the tip of the tile), when (the text of
 //   its date), thumbnail (a .png file, "" none: a sheet is drawn in its place), missing ("1":
 //   the file is not found, its tile greyed out)
 // The tiles shown are filtered as the box Search is typed (every word in the name or the
 // folder, accents and case ignored), Count says how many are shown (its Tag:
-// "drawing,drawings"), Max shows only the first ones. A tile clicked raises Opened (its path,
-// false), its right-click menu opens it read-only (Opened, true), shows it in its folder
-// (Folder) or pins it, its sheet set or its project (PinChoices, Pin).
+// "drawing,drawings"), Max shows only the first ones, Rows only the first rows. A tile clicked
+// raises Opened (its path, false), its right-click menu opens it read-only (Opened, true),
+// shows it in its folder (Folder) or pins it, its sheet set or its project (PinChoices, Pin).
 //
 // Page.Of(window) takes the content of a window file to show it as a page (the Start page,
 // inside the Start tab of AutoCAD), with the resources and the text settings of the window.
@@ -165,6 +167,25 @@ namespace DynALisp.Windows
             return (m / 60) + " h " + (m % 60).ToString("00", CultureInfo.InvariantCulture);
         }
 
+        // The cards of a row as wide as it, all alike: as many as fit at their least width
+        // min, with a gap after each (the panel is given a margin of -gap on its right, so the
+        // last card of a row ends at the edge of the column); each card resized by size when
+        // given (a picture that follows its width). Gives how many fit in a row:
+        public static int FillRow(WrapPanel panel, double min, double gap, Action<FrameworkElement, double> size = null)
+        {
+            double w = panel.ActualWidth;
+            if (w <= 0) return 0;
+            int n = Math.Max(1, (int)Math.Floor(w / (min + gap)));
+            double each = Math.Floor(w / n - gap);
+            foreach (UIElement c in panel.Children)
+                if (c is FrameworkElement f && Math.Abs(f.Width - each) > 0.5)
+                {
+                    f.Width = each;
+                    size?.Invoke(f, each);
+                }
+            return n;
+        }
+
         // The name of a drawing and its folder:
         public static string Name(string path)
         {
@@ -185,11 +206,15 @@ namespace DynALisp.Windows
         public static readonly DependencyProperty CountProperty = DependencyProperty.Register("Count", typeof(string), typeof(RecentDrawings));
         public static readonly DependencyProperty TileWidthProperty = DependencyProperty.Register("TileWidth", typeof(double), typeof(RecentDrawings), new PropertyMetadata(196.0));
         public static readonly DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(int), typeof(RecentDrawings), new PropertyMetadata(0));
+        public static readonly DependencyProperty RowsProperty = DependencyProperty.Register("Rows", typeof(int), typeof(RecentDrawings), new PropertyMetadata(0));
 
         public string Search { get => (string)GetValue(SearchProperty); set => SetValue(SearchProperty, value); }
         public string Count { get => (string)GetValue(CountProperty); set => SetValue(CountProperty, value); }
         public double TileWidth { get => (double)GetValue(TileWidthProperty); set => SetValue(TileWidthProperty, value); }
         public int Max { get => (int)GetValue(MaxProperty); set => SetValue(MaxProperty, value); }
+        // Rows of tiles shown at most (0: Max only), as many tiles in a row as fit:
+        public int Rows { get => (int)GetValue(RowsProperty); set => SetValue(RowsProperty, value); }
+        int _perRow;
 
         // A drawing to open (its path, read-only), a drawing to show in its folder, a path to
         // pin or unpin (Pin: its path, true to pin):
@@ -224,6 +249,19 @@ namespace DynALisp.Windows
             stack.Children.Add(_empty);
             stack.Children.Add(_panel);
             Content = stack;
+            // the tiles as wide as the column, TileWidth at least:
+            _panel.Margin = new Thickness(0, 0, -10, 0);
+            _panel.SizeChanged += (s, e) => Fit();
+        }
+
+        void Fit()
+        {
+            int n = StartUi.FillRow(_panel, TileWidth, 10, (f, w) =>
+            {
+                if (f is Button b && b.Content is StackPanel sp && sp.Children.Count > 0 && sp.Children[0] is Border pic)
+                    pic.Height = Math.Round((w - 16) * 0.62);
+            });
+            if (n > 0 && n != _perRow) { _perRow = n; if (Rows > 0) Filter(); }
         }
 
         // The tiles of the rows (null: none yet, read), and the controls that filter them
@@ -256,6 +294,7 @@ namespace DynALisp.Windows
                     _items.Add(it);
                     _panel.Children.Add(it.Tile);
                 }
+                Fit();
             }
             Filter();
         }
@@ -269,6 +308,7 @@ namespace DynALisp.Windows
         {
             var words = View.Fold(_search?.Text ?? "").Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             int shown = 0, max = Max > 0 ? Max : int.MaxValue;
+            if (Rows > 0 && _perRow > 0) max = Math.Min(max, Rows * _perRow);
             foreach (var it in _items)
             {
                 bool on = words.All(w => it.Hay.IndexOf(w, StringComparison.Ordinal) >= 0);
@@ -354,6 +394,9 @@ namespace DynALisp.Windows
             stack.Children.Add(_empty);
             stack.Children.Add(_panel);
             Content = stack;
+            // the cards as wide as the column, CardWidth at least:
+            _panel.Margin = new Thickness(0, 0, -10, 0);
+            _panel.SizeChanged += (s, e) => StartUi.FillRow(_panel, CardWidth, 10);
         }
 
         public void Attach(Func<string, FrameworkElement> find, List<string[]> rows)
@@ -378,6 +421,7 @@ namespace DynALisp.Windows
                 _cards.Add((c, StartUi.F(r, 0)));
                 _panel.Children.Add(c);
             }
+            StartUi.FillRow(_panel, CardWidth, 10);
             Mark();
         }
 
