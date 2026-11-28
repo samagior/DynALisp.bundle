@@ -76,7 +76,7 @@ namespace DynALisp.Core.Data
         // layer keys defined (Remote>>Dyl:LayerKeyRead, in its order):
         public readonly Bundle B;
         public readonly Units U;
-        public readonly List<string> Defined;
+        public List<string> Defined;
 
         // pst:* of Remote>>Dyl:PresetDialog: the presets edited, as read, the defaults, the
         // preset shown, those selected, the filter, the sort, the Show group; the rows last
