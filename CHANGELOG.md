@@ -15,7 +15,7 @@ of this repository (`Contents/Modules/Dynalisp/Docs/Core/Dyl-Settings.htm#displa
 DynALisp opens the page on the docs website, in its language, and shows the picture
 from the website when this computer does not have it. Plain ASCII.
 
-## Next
+## 2.1 - 2026-11-27
 
 ### A Start page of your own
 Dyl-Settings > Overrides > Start page shows the page of DynALisp in the Start tab: New, Open and your templates on the left; your pinned drawings, sheet sets and projects, the time spent in each drawing day by day, and your recent drawings in the middle; the tasks of each project on the right. Click a drawing to see its days, double-click it to open it. Right-click a drawing to show a picture of your choice, or an area of it made again at each save. Report a problem opens an issue with the diagnostics already in it.

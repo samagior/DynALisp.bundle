@@ -6,7 +6,7 @@ par la fenêtre What's New quand DynALisp est en français (Dyl-Settings > Envir
 Language). Mêmes versions, mêmes changements, mêmes images et liens ; une version qui
 n'y est pas encore est montrée en anglais. En UTF-8.
 
-## Next
+## 2.1 - 2026-11-27
 
 ### Une page Début bien à vous
 Dyl-Settings > Overrides > Start page affiche la page de DynALisp dans l'onglet Début : New, Open et vos gabarits à gauche ; vos dessins, jeux de feuilles et projets épinglés, le temps passé dans chaque dessin jour par jour et vos dessins récents au centre ; les tâches de chaque projet à droite. Cliquez sur un dessin pour voir ses jours, double-cliquez pour l'ouvrir. Un clic droit sur un dessin lui donne l'image de votre choix, ou une zone du dessin refaite à chaque enregistrement. Report a problem ouvre un ticket où le diagnostic est déjà joint.
