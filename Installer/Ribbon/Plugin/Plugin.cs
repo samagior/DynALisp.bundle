@@ -62,6 +62,8 @@ namespace DynALisp.Ribbon
             // The bands of the file tabs (FileTabs.cs, an experiment), apart too:
             try { FileTabs.Start(); }
             catch (System.Exception ex) { Host.Log("file tabs: " + ex.Message); }
+            // The parts left off for a test by a former session (Work.cs):
+            try { Work.Started(); } catch { }
         }
 
         public void Terminate() { }
@@ -171,7 +173,7 @@ namespace DynALisp.Ribbon
             // The colours change no part of the ribbon: they need no quiet, and are not kept
             // waiting by the startup of the drawings.
             Work.Count("AutoCAD idle (events)");
-            if (!Work.IsOff("colours")) Skin.OnIdle();
+            Skin.OnIdle();
             if (!Work.IsOff("filetabs")) Work.Time("file tabs: bands", FileTabs.OnIdle);
             if (Work.IsOff("ribbon") || !Quiet()) return;
             if (_dirty && Environment.TickCount - _nextTry >= 0)

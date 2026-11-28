@@ -1468,7 +1468,7 @@
 ;;  2027). The diagnostics of (Dyl:RibbonSkin ...), gathered: the plugin writes its long reports
 ;;  to %TEMP%, read back here. (Dyl:RibbonSkin "Hosted" "Push"), which changes the themes, is
 ;;  never run.
-(defun dg:s-interface (/ pal)
+(defun dg:s-interface (/ pal prt)
   (dg:sub "Settings")
   (foreach k '("DynalispDisplayOn" "DynalispInterface" "DynalispBackground" "DynalispLayoutBackground" "DynalispFileTabColors")
     (dg:kv k (getenv k))
@@ -1481,6 +1481,10 @@
       (dg:kv "Ribbon" (Dyl:RibbonSkin))
       (dg:kv "Palettes" (setq pal (Dyl:RibbonSkin "Palettes")))
       (if Dyl:RibbonFileTabs (dg:kv "File tabs" (Dyl:RibbonFileTabs)))
+      ;; Parts of the plugin turned off for a test of a slowness (Pst-DiagnosticsReactorEvents):
+      (if (and Dyl:RibbonWork (/= (setq prt (Dyl:RibbonWork "Parts")) "none off"))
+        (dg:note (strcat "Parts of DynALisp.Ribbon.dll turned off for a test: " prt " (DynalispRibbonOff; (Dyl:RibbonWork \"On\" \"all\") turns them on)"))
+      )
       (dg:sub "Native palettes (Dyl:RibbonSkin \"Native\")")
       (dg:if-lines (Dyl:RibbonSkin "Native"))
       (dg:sub "Web pages (Dyl:RibbonSkin \"Web\")")

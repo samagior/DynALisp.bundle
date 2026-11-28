@@ -26,13 +26,17 @@
 // time it changes (a cursor that blinks during a pan) is listed with the steps of the plugin
 // that ended just before it.
 //
-// (Dyl:RibbonWork "Off" "<part>") turns a part of the plugin off at once, until AutoCAD is
-// closed, and (Dyl:RibbonWork "On" "<part>") back on, to find which one slows AutoCAD
-// without starting it again: "idle" (the Idle event of AutoCAD no longer handled), "colours"
-// (the colours of the interface kept as they are), "filetabs" (the bands of the file tabs),
-// "ribbon" (the drop-downs and the translation of the tab), "timers" (the timers of the
-// colours stopped), "commands" (nothing done at the end of a command), "all". (Dyl:RibbonWork
-// "Parts") gives the parts turned off.
+// (Dyl:RibbonWork "Off" "<part>") turns a part of the plugin off at once and (Dyl:RibbonWork
+// "On" "<part>") back on, to find which one slows AutoCAD: "idle" (the Idle event of AutoCAD
+// no longer handled), the parts of the colours of the interface, their colours given back to
+// AutoCAD ("themes": the ribbon and the palettes, "native": the palettes in C++, "cpp": the
+// lists, buttons and title bar in C++, "hosted": the file tabs and the palettes with a theme
+// of their own, "web": the Start page; "colours" for the five), "filetabs" (the bands of the
+// file tabs), "ribbon" (the drop-downs and the translation of the tab), "timers" (the timers
+// of the colours stopped), "commands" (nothing done at the end of a command), "all". The
+// parts off are kept in DynalispRibbonOff, so a slowness that comes and goes can be watched
+// for a whole session or more, until they are turned on again. (Dyl:RibbonWork "Parts") gives
+// the parts turned off.
 
 using System;
 using System.Collections.Generic;
@@ -92,25 +96,55 @@ namespace DynALisp.Ribbon
 
         // ---- the parts turned off for a test ----
 
-        public static readonly string[] Parts = { "idle", "colours", "filetabs", "ribbon", "timers", "commands" };
+        public static readonly string[] Colours = { "themes", "native", "cpp", "hosted", "web" };
+        public static readonly string[] Parts = { "idle", "themes", "native", "cpp", "hosted", "web", "filetabs", "ribbon", "timers", "commands" };
         static readonly HashSet<string> Off = new(StringComparer.OrdinalIgnoreCase);
+        const string Setting = "DynalispRibbonOff";
 
         public static bool IsOff(string part) => Off.Contains(part);
 
         public static string PartsOff() => Off.Count == 0 ? "none off" : string.Join(" ", Parts.Where(Off.Contains)) + " off";
 
+        // The parts left off by a former session, turned off as the plugin loads (before Host.Start):
+        static void ReadOff()
+        {
+            try
+            {
+                string root = HostApplicationServices.Current.UserRegistryProductRootKey;
+                using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(root + @"\FixedProfile\General");
+                foreach (var p in ((key?.GetValue(Setting) as string) ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries))
+                    if (Parts.Contains(p, StringComparer.OrdinalIgnoreCase)) Off.Add(p);
+            }
+            catch { }
+        }
+
+        static void WriteOff()
+        {
+            try
+            {
+                string root = HostApplicationServices.Current.UserRegistryProductRootKey;
+                using var key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(root + @"\FixedProfile\General");
+                key?.SetValue(Setting, string.Join(" ", Parts.Where(Off.Contains)));
+            }
+            catch { }
+        }
+
         // Returns the parts turned off after the change, or what the parts are:
         public static string Switch(string part, bool off)
         {
             var which = string.Equals(part, "all", StringComparison.OrdinalIgnoreCase) ? Parts
+                : string.Equals(part, "colours", StringComparison.OrdinalIgnoreCase) ? Colours
                 : Parts.Where(p => string.Equals(p, part, StringComparison.OrdinalIgnoreCase)).ToArray();
-            if (which.Length == 0) return "parts: " + string.Join(" ", Parts) + " all";
+            if (which.Length == 0) return "parts: " + string.Join(" ", Parts) + " colours all";
             foreach (var p in which)
             {
                 if (off) Off.Add(p); else Off.Remove(p);
                 if (p == "idle") Host.Listen(!off);
                 if (p == "timers") { Skin.Timer(!off); WebPages.Timer(!off); }
             }
+            WriteOff();
+            // The colours put on or given back at the next idle:
+            Skin.Due();
             return PartsOff();
         }
 
@@ -195,7 +229,18 @@ namespace DynALisp.Ribbon
         const int Every = 25, Stall = 100;
 
         // Called on the thread of AutoCAD when the plugin loads:
-        public static void Start() => _ui = Dispatcher.CurrentDispatcher;
+        public static void Start()
+        {
+            _ui = Dispatcher.CurrentDispatcher;
+            ReadOff();
+        }
+
+        // What was left off, once each part has started (Plugin.Initialize):
+        public static void Started()
+        {
+            if (Off.Contains("idle")) Host.Listen(false);
+            if (Off.Contains("timers")) { Skin.Timer(false); WebPages.Timer(false); }
+        }
 
         public static void Begin()
         {
