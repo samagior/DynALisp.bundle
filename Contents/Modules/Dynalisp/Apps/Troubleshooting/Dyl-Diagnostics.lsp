@@ -1472,7 +1472,7 @@
 ;;  the browsers of AutoCAD ((Dyl:StartPage "Tree"), for another version of AutoCAD).
 (defun dg:s-interface (/ pal)
   (dg:sub "Settings")
-  (foreach k '("DynalispDisplayOn" "DynalispInterface" "DynalispBackground" "DynalispLayoutBackground" "DynalispFileTabColors" "DynalispStartPage" "DynalispActivity")
+  (foreach k '("DynalispDisplayOn" "DynalispInterface" "DynalispBackground" "DynalispLayoutBackground" "DynalispFileTabColors" "DynalispStartPage" "DynalispActivity" "DynalispStartPinnedColumns" "DynalispStartRecentColumns")
     (dg:kv k (getenv k))
   )
   (dg:kv "COLORTHEME" (getvar "COLORTHEME"))

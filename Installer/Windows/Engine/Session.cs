@@ -620,6 +620,10 @@ namespace DynALisp.Windows
                         case Button b when b.GetType() == typeof(Button):
                             if (has && !string.IsNullOrEmpty(v)) b.Content = v;
                             break;
+                        // The columns picked for the cards of the Start page (Start.cs), its value:
+                        case ColumnChoice cc:
+                            cc.Attach(Find, has ? v : null);
+                            break;
                         // The controls of the Start page (Start.cs: the pins, the active time,
                         // the recent drawings), the table key/rows (none yet: being read):
                         case IShowsRows sr:

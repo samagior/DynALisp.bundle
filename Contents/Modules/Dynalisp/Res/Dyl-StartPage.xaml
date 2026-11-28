@@ -27,6 +27,8 @@
     act/rows   the active time of each day and drawing (dyl:ActivityGraph, Activity.cs)
     actn       said when Active time is off
     rec/rows   the recent drawings (dyl:RecentDrawings), thumbnails from the drawings
+    pnc rcc    the columns of the pins and of the recent drawings picked (dyl:ColumnChoice:
+               DynalispStartPinnedColumns, DynalispStartRecentColumns; "": as many as fit)
     tsk/rows   the tasks of the projects and sheet sets pinned (dyl:ProjectTasks, Tasks.cs)
     ver        the foot of the page: DynALisp, AutoCAD, the last startup
     err        what could not be done (a drawing that did not open)
@@ -118,7 +120,8 @@
         <StackPanel Grid.Column="2">
           <!-- Pinned: drawings, sheet sets, projects (Pin... picks one): -->
           <DockPanel Margin="0,0,0,10">
-            <Button x:Name="pnb" DockPanel.Dock="Right" Content="Pin..." Style="{StaticResource Foot}" FontSize="12.5"/>
+            <Button x:Name="pnb" DockPanel.Dock="Right" Content="Pin..." Style="{StaticResource Foot}" FontSize="12.5" VerticalAlignment="Center"/>
+            <dyl:ColumnChoice x:Name="pnc" DockPanel.Dock="Right" Target="pin" Choices="1,2,3,4" Margin="0,0,16,0"/>
             <TextBlock Text="Pinned" Style="{StaticResource Head}"/>
           </DockPanel>
           <dyl:PinnedItems x:Name="pin" Graph="act" CardWidth="340"/>
@@ -130,6 +133,7 @@
           <!-- A few recent drawings: -->
           <DockPanel Margin="0,26,0,10">
             <TextBox x:Name="find" DockPanel.Dock="Right" Width="200" Style="{DynamicResource Dyl.Search}" Tag="Search"/>
+            <dyl:ColumnChoice x:Name="rcc" DockPanel.Dock="Right" Target="rec" Choices="2,3,4,5,6" Margin="0,0,16,0"/>
             <TextBlock x:Name="cnt" DockPanel.Dock="Right" Style="{DynamicResource Dyl.Desc}" Margin="0,0,12,0"
                        VerticalAlignment="Center" Tag="drawing,drawings"/>
             <TextBlock Text="Recent" Style="{StaticResource Head}"/>

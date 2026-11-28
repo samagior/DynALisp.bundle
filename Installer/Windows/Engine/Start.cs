@@ -83,6 +83,12 @@ namespace DynALisp.Windows
         void Attach(Func<string, FrameworkElement> find, List<string[]> rows);
     }
 
+    // A control whose cards are laid in columns picked by a ColumnChoice:
+    public interface IColumns
+    {
+        int Columns { get; set; }
+    }
+
     static class StartUi
     {
         public const string RowsSuffix = "/rows";
@@ -180,11 +186,12 @@ namespace DynALisp.Windows
         // min, with a gap after each (the panel is given a margin of -gap on its right, so the
         // last card of a row ends at the edge of the column); each card resized by size when
         // given (a picture that follows its width). Gives how many fit in a row:
-        public static int FillRow(WrapPanel panel, double min, double gap, Action<FrameworkElement, double> size = null)
+        // columns > 0: that many in a row, whatever their width.
+        public static int FillRow(WrapPanel panel, double min, double gap, Action<FrameworkElement, double> size = null, int columns = 0)
         {
             double w = panel.ActualWidth;
             if (w <= 0) return 0;
-            int n = Math.Max(1, (int)Math.Floor(w / (min + gap)));
+            int n = columns > 0 ? columns : Math.Max(1, (int)Math.Floor(w / (min + gap)));
             double each = Math.Floor(w / n - gap);
             foreach (UIElement c in panel.Children)
                 if (c is FrameworkElement f && Math.Abs(f.Width - each) > 0.5)
@@ -209,13 +216,15 @@ namespace DynALisp.Windows
 
     // ---- the recent drawings ----
 
-    public class RecentDrawings : ContentControl, IShowsRows
+    public class RecentDrawings : ContentControl, IShowsRows, IColumns
     {
         public static readonly DependencyProperty SearchProperty = DependencyProperty.Register("Search", typeof(string), typeof(RecentDrawings));
         public static readonly DependencyProperty CountProperty = DependencyProperty.Register("Count", typeof(string), typeof(RecentDrawings));
         public static readonly DependencyProperty TileWidthProperty = DependencyProperty.Register("TileWidth", typeof(double), typeof(RecentDrawings), new PropertyMetadata(196.0));
         public static readonly DependencyProperty MaxProperty = DependencyProperty.Register("Max", typeof(int), typeof(RecentDrawings), new PropertyMetadata(0));
         public static readonly DependencyProperty RowsProperty = DependencyProperty.Register("Rows", typeof(int), typeof(RecentDrawings), new PropertyMetadata(0));
+        public static readonly DependencyProperty ColumnsProperty = DependencyProperty.Register("Columns", typeof(int), typeof(RecentDrawings),
+            new PropertyMetadata(0, (d, e) => ((RecentDrawings)d).Fit()));
 
         public string Search { get => (string)GetValue(SearchProperty); set => SetValue(SearchProperty, value); }
         public string Count { get => (string)GetValue(CountProperty); set => SetValue(CountProperty, value); }
@@ -223,6 +232,8 @@ namespace DynALisp.Windows
         public int Max { get => (int)GetValue(MaxProperty); set => SetValue(MaxProperty, value); }
         // Rows of tiles shown at most (0: Max only), as many tiles in a row as fit:
         public int Rows { get => (int)GetValue(RowsProperty); set => SetValue(RowsProperty, value); }
+        // Tiles in a row (0: as many as fit at TileWidth), each as wide as a row divided by them:
+        public int Columns { get => (int)GetValue(ColumnsProperty); set => SetValue(ColumnsProperty, value); }
         int _perRow;
 
         // A drawing to open (its path, read-only), a drawing to show in its folder, a path to
@@ -269,7 +280,7 @@ namespace DynALisp.Windows
             {
                 if (f is Button b && b.Content is StackPanel sp && sp.Children.Count > 0 && sp.Children[0] is Border pic)
                     pic.Height = Math.Round((w - 16) * 0.62);
-            });
+            }, Columns);
             if (n > 0 && n != _perRow) { _perRow = n; if (Rows > 0) Filter(); }
         }
 
@@ -378,12 +389,25 @@ namespace DynALisp.Windows
 
     // ---- the pins ----
 
-    public class PinnedItems : ContentControl, IShowsRows
+    public class PinnedItems : ContentControl, IShowsRows, IColumns
     {
         public static readonly DependencyProperty GraphProperty = DependencyProperty.Register("Graph", typeof(string), typeof(PinnedItems));
         public static readonly DependencyProperty CardWidthProperty = DependencyProperty.Register("CardWidth", typeof(double), typeof(PinnedItems), new PropertyMetadata(336.0));
+        public static readonly DependencyProperty ColumnsProperty = DependencyProperty.Register("Columns", typeof(int), typeof(PinnedItems),
+            new PropertyMetadata(0, (d, e) => ((PinnedItems)d).Fit()));
         public string Graph { get => (string)GetValue(GraphProperty); set => SetValue(GraphProperty, value); }
         public double CardWidth { get => (double)GetValue(CardWidthProperty); set => SetValue(CardWidthProperty, value); }
+        // Cards in a row (0: as many as fit at CardWidth), their pictures larger as they widen:
+        public int Columns { get => (int)GetValue(ColumnsProperty); set => SetValue(ColumnsProperty, value); }
+
+        void Fit() => StartUi.FillRow(_panel, CardWidth, 10, (f, w) =>
+        {
+            if (f is Button b && b.Content is DockPanel d && d.Children.Count > 0 && d.Children[0] is Border pic)
+            {
+                pic.Width = Math.Max(58, Math.Min(200, Math.Round(w * 0.22)));
+                pic.Height = Math.Round(pic.Width * 0.76);
+            }
+        }, Columns);
 
         public event Action<string, bool> Opened;
         public event Action<string> Folder;
@@ -405,7 +429,7 @@ namespace DynALisp.Windows
             Content = stack;
             // the cards as wide as the column, CardWidth at least:
             _panel.Margin = new Thickness(0, 0, -10, 0);
-            _panel.SizeChanged += (s, e) => StartUi.FillRow(_panel, CardWidth, 10);
+            _panel.SizeChanged += (s, e) => Fit();
         }
 
         public void Attach(Func<string, FrameworkElement> find, List<string[]> rows)
@@ -430,7 +454,7 @@ namespace DynALisp.Windows
                 _cards.Add((c, StartUi.F(r, 0)));
                 _panel.Children.Add(c);
             }
-            StartUi.FillRow(_panel, CardWidth, 10);
+            Fit();
             Mark();
         }
 
@@ -768,6 +792,71 @@ namespace DynALisp.Windows
                 _list.Children.Add(line);
             }
             if (by.Count > 8) _list.Children.Add(Small("... and " + (by.Count - 8) + " more", new Thickness(0, 4, 0, 0)));
+        }
+    }
+
+    // ---- the columns picked ----
+
+    // <dyl:ColumnChoice x:Name="pnc" Target="pin" Choices="1,2,3,4"/>: the columns of the cards
+    // of Target (an IColumns), as small pills; its value the columns picked ("" or 0: as many
+    // as fit), given by the plugin, Picked raised when the user picks one (to keep it).
+    public class ColumnChoice : ContentControl
+    {
+        public static readonly DependencyProperty TargetProperty = DependencyProperty.Register("Target", typeof(string), typeof(ColumnChoice));
+        public static readonly DependencyProperty ChoicesProperty = DependencyProperty.Register("Choices", typeof(string), typeof(ColumnChoice), new PropertyMetadata("1,2,3,4"));
+
+        public string Target { get => (string)GetValue(TargetProperty); set => SetValue(TargetProperty, value); }
+        public string Choices { get => (string)GetValue(ChoicesProperty); set => SetValue(ChoicesProperty, value); }
+
+        public event Action<int> Picked;
+
+        readonly StackPanel _pills = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+        IColumns _target;
+        int _value = -1;
+        string _built;
+
+        public ColumnChoice()
+        {
+            Focusable = false;
+            ToolTip = "Columns";
+            Content = _pills;
+        }
+
+        public void Attach(Func<string, FrameworkElement> find, string value)
+        {
+            _target = find(Target ?? "") as IColumns;
+            int.TryParse(value ?? "", NumberStyles.Integer, CultureInfo.InvariantCulture, out int n);
+            Build();
+            Set(n, false);
+        }
+
+        void Build()
+        {
+            if (_built == Choices) return;
+            _built = Choices;
+            _pills.Children.Clear();
+            var icon = StartUi.Text("Columns", "Dyl.Muted", 11.5);
+            icon.VerticalAlignment = VerticalAlignment.Center;
+            icon.Margin = new Thickness(0, 0, 2, 0);
+            _pills.Children.Add(icon);
+            foreach (var c in (Choices ?? "").Split(','))
+                if (int.TryParse(c.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out int n) && n > 0)
+                {
+                    var b = new RadioButton { Content = n.ToString(CultureInfo.InvariantCulture), Tag = n, Margin = new Thickness(4, 0, 0, 0), GroupName = "cols" + GetHashCode() };
+                    b.SetResourceReference(StyleProperty, "Dyl.PillSmall");
+                    b.Checked += (s, e) => Set((int)((RadioButton)s).Tag, true);
+                    _pills.Children.Add(b);
+                }
+        }
+
+        void Set(int n, bool picked)
+        {
+            if (n == _value && !picked) return;
+            bool changed = n != _value;
+            _value = n;
+            foreach (var b in _pills.Children.OfType<RadioButton>()) b.IsChecked = (int)b.Tag == n;
+            if (_target != null) _target.Columns = n;
+            if (picked && changed) Picked?.Invoke(n);
         }
     }
 

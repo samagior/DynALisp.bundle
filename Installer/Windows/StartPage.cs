@@ -272,7 +272,23 @@ namespace DynALisp.Windows
                 pin.Unpinned += f => Do(() => Pin(f, false));
             }
             if (_view.Find("act") is ActivityGraph act) act.Opened += (f, ro) => Do(() => Open(f, ro));
+            // the columns picked for the pins and the recent drawings, kept for the next time:
+            foreach (var (key, setting) in Columns)
+                if (_view.Find(key) is ColumnChoice cc)
+                    cc.Picked += n => Do(() =>
+                    {
+                        string v = n.ToString(CultureInfo.InvariantCulture);
+                        SetEnv(setting, v);
+                        if (_s != null) _s.Values[key] = v;
+                    });
         }
+
+        // The columns of the cards (ColumnChoice), each kept in a user setting, unset (as many
+        // as fit) until the user picks one: a view choice of the page, never in Dyl-Settings.
+        static readonly (string Key, string Setting)[] Columns =
+        {
+            ("pnc", "DynalispStartPinnedColumns"), ("rcc", "DynalispStartRecentColumns"),
+        };
 
         // ---- the pins ----
 
@@ -506,6 +522,7 @@ namespace DynALisp.Windows
         static void Values(Session s)
         {
             s.Values["ver"] = Foot();
+            foreach (var (key, setting) in Columns) s.Values[key] = Env(setting) ?? "";
             s.Values["actn"] = Env(Activity.Setting) == "1" ? "" : "Active time is off: turn it on in Settings, under Start page.";
             s.Values[Session.DocsKey(Docs)] = DocsHome();
         }
@@ -921,6 +938,17 @@ namespace DynALisp.Windows
                     return key?.GetValue(name) as string;
             }
             catch { return null; }
+        }
+
+        // (setenv name value): the same key:
+        static void SetEnv(string name, string value)
+        {
+            try
+            {
+                using (var key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(HostApplicationServices.Current.UserRegistryProductRootKey + @"\FixedProfile\General"))
+                    key?.SetValue(name, value ?? "");
+            }
+            catch { }
         }
 
         static bool On() => Env(Setting) == "1";

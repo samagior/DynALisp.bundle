@@ -7,6 +7,8 @@
 # keeps its own).
 ver=DynALisp 2.0  ·  AutoCAD Architecture 2027  ·  started in 412 ms
 actn=
+pnc=2
+rcc=5
 +pin/rows=D:\Projects\2041 Maple House\2041 Maple House.apj\t2041 Maple House\tProject\tD:\Projects\2041 Maple House\t\t\t
 +pin/rows=D:\Projects\2038 Library\Library.dst\t2038 Public Library - Main Street Branch Renovation\tSheet set\tD:\Projects\2038 Library\t\t\t
 +pin/rows=D:\Projects\2041 Maple House\Plans\A-101 Ground Floor.dwg\tA-101 Ground Floor\tDrawing\tD:\Projects\2041 Maple House\Plans\t\t{samples}\StartPage\plan.png\t
