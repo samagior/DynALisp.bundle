@@ -19,7 +19,7 @@
 // the windows of DynALisp (Theme of DynALisp.Windows.dll, found by reflection; plain colours
 // when that plugin is not loaded), in the light or dark theme of AutoCAD (COLORTHEME), and
 // follows it when it changes; dark, in the neutral greys of that theme under the DynALisp
-// Neutral interface of Dyl-Settings > Display, checked again when the palette is shown or the
+// Dark interface of Dyl-Settings > Display, checked again when the palette is shown or the
 // mouse comes over it (the settings are saved while it is open).
 //
 //   top       New chat, the model (Sonnet, Opus: a view choice, kept for the session),

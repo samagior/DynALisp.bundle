@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // EXPERIMENT, not supported by Autodesk. Two parts of AutoCAD keep the blue-greys of its dark
-// theme under DynALisp Neutral, since they draw with neither the themes of Skin.cs nor the
+// theme under DynALisp Dark, since they draw with neither the themes of Skin.cs nor the
 // CAdUiTheme of NativeThemes.cs:
 //   - the native lists and buttons of the palettes (the combo boxes of Properties, the Sheet
 //     Set Manager) read CAcColorTheme of AdUi (adui26.dll), one colour per AcThemeElement;
@@ -103,7 +103,7 @@ namespace DynALisp.Ribbon
 
         static readonly Theme[] Themes = { Ac, Frame };
         static bool _on, _found;
-        static Look _look = Look.DynALisp;
+        static Look _look = Look.Dark;
         static int _next, _pushed = -1;
         static bool _acWrote;
         static SetColorThemeFn _give;

@@ -157,15 +157,15 @@ namespace DynALisp.Windows
     // The look of the windows: the styles of Theme.xaml (embedded, read once) and the Dyl.*
     // brushes of the light or the dark theme of AutoCAD (COLORTHEME 1 or 0), its blue for
     // what is picked. A dark window also gets the dark title bar of Windows. Under the
-    // DynALisp Neutral interface (Dyl-Settings > Display), the dark windows are in its neutral
+    // DynALisp Dark interface (Dyl-Settings > Display), the dark windows are in its neutral
     // greys, as the ribbon and the palettes around them.
     public static class Theme
     {
         static ResourceDictionary _styles;
 
         // True when the dark windows take the neutral greys: the Interface of Dyl-Settings is
-        // DynALisp Neutral, read by Bridge.cs at each window (null in Shots: the pictures of the
-        // docs keep the grey blue).
+        // DynALisp Dark, read by Bridge.cs at each window (always true in Shots: the pictures of
+        // the docs are in DynALisp Dark).
         public static Func<bool> NeutralOf;
 
         public static bool Neutral()
@@ -174,7 +174,7 @@ namespace DynALisp.Windows
             catch { return false; }
         }
 
-        // Dark: the grey blue of the palettes of AutoCAD; light: its light greys.
+        // Dark: the grey blue of the palettes of AutoCAD (and of Midnight); light: its light greys.
         static readonly Dictionary<string, string> DarkColors = new Dictionary<string, string>
         {
             ["Back"] = "#252A32", ["Surface"] = "#313844", ["Border"] = "#3C4452", ["BorderStrong"] = "#4C5566",
@@ -183,7 +183,7 @@ namespace DynALisp.Windows
             ["Accent"] = "#0696D7", ["AccentHover"] = "#22A9E8", ["AccentText"] = "#FFFFFF", ["ErrorText"] = "#FF8F85",
             ["TitleBar"] = "#1E2229", ["TitleText"] = "#E6EAF0", ["ButtonBack"] = "#3A4250",
         };
-        // Dark under DynALisp Neutral: the same colours without their hue, a fifth darker (the
+        // Dark under DynALisp Dark: the same colours without their hue, a fifth darker (the
         // palettes of AutoCAD go from #3B4453 to #2C2C2C under it: a card #2F2F2F sits by
         // them); the texts keep their lightness, the blue of what is picked and the red stay.
         static readonly Dictionary<string, string> NeutralColors = new Dictionary<string, string>

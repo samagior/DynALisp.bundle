@@ -25,8 +25,8 @@
 ;;  of AutoCAD (COLORTHEME) is never set here: it is the one chosen in AutoCAD.
 ;;
 ;;  Each display setting is a name, "" or missing: not set:
-;;    - Interface (DynalispInterface): the look of the whole interface, DynALisp or
-;;      DynALisp Neutral (*ec:looks*). Its ribbon, palettes (Properties...), status bar,
+;;    - Interface (DynalispInterface): the look of the whole interface, DynALisp Dark
+;;      (the default, first in the list) or Midnight (*ec:looks*). Its ribbon, palettes (Properties...), status bar,
 ;;      file tabs, command line and Start page, while AutoCAD is in its dark theme, by
 ;;      DynALisp.Ribbon.dll (Installer\Ribbon\Plugin\Skin.cs, an experiment that Autodesk
 ;;      does not support), which reads these settings itself and again when
@@ -38,14 +38,15 @@
 ;;    - Layouts (DynalispLayoutBackground): the paper of the layouts in place of the one
 ;;      of the interface, White or Black, the background around it left to the
 ;;      interface. Not set: the one of the interface.
-;;  Each background comes with a crosshair color that stays readable on it. DynALisp is
-;;  the dark of the DynALisp windows (Installer\Windows\Engine\Session.cs, Theme): the
-;;  model space and the background around the paper a little darker than their title
-;;  bar (#181B20), dark without being black, the paper in the color of their background
-;;  (#252A32), the crosshairs in the color of their text (#E6EAF0). DynALisp Neutral is
-;;  its variant in a neutral grey, darker: the model space and the background around the
-;;  paper almost black (#121212), the paper a little lighter (#1E1E1E), the crosshairs
-;;  light grey (#E6E6E6), the ribbon and the palettes in greys without hue. The colors
+;;  Each background comes with a crosshair color that stays readable on it. DynALisp Dark
+;;  is a neutral grey, without hue: the model space and the background around the paper
+;;  almost black (#121212), the paper a little lighter (#1E1E1E), the crosshairs light
+;;  grey (#E6E6E6), the ribbon, the palettes and the DynALisp windows in greys without
+;;  hue. Midnight is the blue-grey of AutoCAD, darker (the dark windows of DynALisp,
+;;  Installer\Windows\Engine\Session.cs, Theme): the model space and the background
+;;  around the paper a little darker than their title bar (#181B20), dark without being
+;;  black, the paper in the color of their background (#252A32), the crosshairs in the
+;;  color of their text (#E6EAF0). The colors
 ;;  are the display preferences (Options > Display > Colors), the background around the
 ;;  paper the "Paper background" setting of the profile, which Options does not show:
 ;;  user profile settings, so they apply to every drawing.
@@ -59,7 +60,9 @@
 ;;
 ;;  The former settings Ribbon and Palettes (DynalispRibbonColors, DynalispPaletteColors)
 ;;  are read as the Interface while it is not set, and Theme (DynalispColorTheme) is no
-;;  longer applied.
+;;  longer applied. The former names of the looks (*ec:lookwas*: DynALisp Neutral, now
+;;  DynALisp Dark, and DynALisp, now Midnight) are read as their new names, and written
+;;  so at the next save of the settings; the plugins read both.
 ;;
 ;;  Use in an App:
 ;;    (Remote>>Dyl:DisplayWant 'model)         -> (NAME BACKGROUND CROSSHAIR [AROUND])
@@ -73,10 +76,13 @@
 ;;  The looks of the interface: (NAME MODEL MODEL-CROSSHAIR PAPER PAPER-CROSSHAIR AROUND),
 ;;  colors as OLE values: R + G*256 + B*65536.
 (setq *ec:looks*
-       '(("DynALisp" 2104088 15788774 3287589 15788774 2104088) ; RGB 24,27,32 / 230,234,240 / 37,42,50
-         ("DynALisp Neutral" 1184274 15132390 1973790 15132390 1184274) ; RGB 18,18,18 / 230,230,230 / 30,30,30
+       '(("DynALisp Dark" 1184274 15132390 1973790 15132390 1184274) ; RGB 18,18,18 / 230,230,230 / 30,30,30
+         ("Midnight" 2104088 15788774 3287589 15788774 2104088) ; RGB 24,27,32 / 230,234,240 / 37,42,50
         )
 )
+
+;;  The former names of the looks, read as their new names: (FORMER . NAME).
+(setq *ec:lookwas* '(("DynALisp Neutral" . "DynALisp Dark") ("DynALisp" . "Midnight")))
 
 ;;  The backgrounds that take the place of those of the interface: (CONTEXT
 ;;  (BACKGROUND-PROP CROSSHAIR-PROP) (NAME BACKGROUND CROSSHAIR) ...).
@@ -194,12 +200,20 @@
 
 ;;  The display settings chosen, in the order of *ec:prefs*: (INTERFACE MODEL LAYOUT TABS),
 ;;  each a name, nil when it is not set. The Interface not set is the former Palettes
-;;  or Ribbon setting:
+;;  or Ribbon setting; a former name of a look is read as its new name (*ec:lookwas*):
 (defun Remote>>Dyl:DisplayPref ()
   (mapcar '(lambda (p / name)
              (setq name (getenv (car p)))
+             (if (and (= (cadr p) 'interface) (assoc name *ec:lookwas*))
+               (setq name (cdr (assoc name *ec:lookwas*)))
+             )
              (if (and (= (cadr p) 'interface) (member name '(nil "")))
-               (setq name (cond ((vl-some '(lambda (k / v) (if (assoc (setq v (getenv k)) *ec:looks*) v))
+               (setq name (cond ((vl-some '(lambda (k / v)
+                                             (setq v (getenv k)
+                                                   v (cond ((cdr (assoc v *ec:lookwas*))) (v))
+                                             )
+                                             (if (assoc v *ec:looks*) v)
+                                           )
                                           '("DynalispPaletteColors" "DynalispRibbonColors")
                                  )
                                 )

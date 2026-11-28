@@ -18,7 +18,7 @@
 // two themes of Skin.cs but with a theme object of their own, made once from them: the file
 // tabs (FileTabsColor of AcWindows.dll, a ThemeBase), a palette given its own theme
 // (ThemeManager.OverridePaletteTheme). They kept the blue-greys of AutoCAD under the
-// DynALisp Neutral look. This file finds those themes in the windows of AutoCAD themselves:
+// DynALisp Dark look. This file finds those themes in the windows of AutoCAD themselves:
 // each WPF window of the process (PresentationSource.CurrentSources) is walked, and a theme is
 // an Autodesk Freezable that is the source of a binding of a colour (Background, BorderBrush,
 // Fill...), the data context of an element, a resource of it, or its OverridePaletteTheme,
@@ -66,7 +66,7 @@ namespace DynALisp.Ribbon
 
         static readonly Dictionary<object, Found> Themes = new(ReferenceEqualityComparer.Instance);
         static bool _on;
-        static Look _look = Look.DynALisp;
+        static Look _look = Look.Dark;
         static int _sources = -1, _next, _full, _walked, _ms;
         // The windows already walked: a new one (a palette opened) is walked at once, all of
         // them again every 30 s at most when their number changed (a tree filled later).
@@ -412,7 +412,7 @@ namespace DynALisp.Ribbon
         // ---- the report ----
 
         // A blue-grey of AutoCAD's dark theme (#222933, #2A303B, #3B4453, #4E5A6E: 215 to 220
-        // degrees, 17 to 20 %), not a grey of DynALisp Neutral nor a blue of what is picked.
+        // degrees, 17 to 20 %), not a grey of DynALisp Dark nor a blue of what is picked.
         internal static bool Blue(Color c)
         {
             Skin.ToHsl(c, out double h, out double s, out double l);
