@@ -116,6 +116,7 @@ namespace DynALisp.Ribbon
                     bool all = first || Environment.TickCount - _full >= 0;
                     if (all) { Walked.Clear(); _full = Environment.TickCount + Full; }
                     _sources = n;
+                    Work.Count("colours: the WPF windows walked (" + (all ? "all" : "the new ones") + ")");
                     Walk();
                 }
                 Keep();
@@ -296,8 +297,8 @@ namespace DynALisp.Ribbon
                 ((INotifyCollectionChanged)ic.Items).CollectionChanged += OnList;
         }
 
-        static void OnTab(object sender, EventArgs e) { if (sender is Control c) Fix(c); }
-        static void OnTabLoaded(object sender, RoutedEventArgs e) { if (sender is Control c) Fix(c); }
+        static void OnTab(object sender, EventArgs e) { if (sender is Control c) Work.Time("colours: a tab recoloured (its colour changed)", () => Fix(c)); }
+        static void OnTabLoaded(object sender, RoutedEventArgs e) { if (sender is Control c) Work.Time("colours: a tab recoloured (loaded)", () => Fix(c)); }
 
         static void OnList(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -308,7 +309,7 @@ namespace DynALisp.Ribbon
             {
                 if (!_on) return;
                 int nodes = 0;
-                Visit(ic, "tabs", (th, where) => { }, ref nodes);
+                Work.Time("colours: the tabs walked (a tab added)", () => Visit(ic, "tabs", (th, where) => { }, ref nodes));
             }));
         }
 

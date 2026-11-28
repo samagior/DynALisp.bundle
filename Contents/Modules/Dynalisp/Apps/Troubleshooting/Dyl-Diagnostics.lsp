@@ -1468,7 +1468,7 @@
 ;;  2027). The diagnostics of (Dyl:RibbonSkin ...), gathered: the plugin writes its long reports
 ;;  to %TEMP%, read back here. (Dyl:RibbonSkin "Hosted" "Push"), which changes the themes, is
 ;;  never run.
-(defun dg:s-interface (/ pal)
+(defun dg:s-interface (/ pal prt)
   (dg:sub "Settings")
   (foreach k '("DynalispDisplayOn" "DynalispInterface" "DynalispBackground" "DynalispLayoutBackground" "DynalispFileTabColors")
     (dg:kv k (getenv k))
@@ -1481,6 +1481,14 @@
       (dg:kv "Ribbon" (Dyl:RibbonSkin))
       (dg:kv "Palettes" (setq pal (Dyl:RibbonSkin "Palettes")))
       (if Dyl:RibbonFileTabs (dg:kv "File tabs" (Dyl:RibbonFileTabs)))
+      ;; Parts of the plugin turned off for a test of a slowness (Pst-DiagnosticsReactorEvents):
+      (if (and Dyl:RibbonWork (/= (setq prt (Dyl:RibbonWork "Parts")) "none off"))
+        (dg:note (strcat "Parts of DynALisp.Ribbon.dll turned off for a test: " prt " (DynalispRibbonOff; (Dyl:RibbonWork \"On\" \"all\") turns them on)"))
+      )
+      ;; A recording running (Pst-DiagnosticsRecord):
+      (if (and Dyl:RibbonRecord (Dyl:RibbonRecord))
+        (dg:note "A recording is running (Pst-DiagnosticsRecord, the red REC badge): DIAG-RECORD again ends it")
+      )
       (dg:sub "Native palettes (Dyl:RibbonSkin \"Native\")")
       (dg:if-lines (Dyl:RibbonSkin "Native"))
       (dg:sub "Web pages (Dyl:RibbonSkin \"Web\")")
@@ -1679,34 +1687,99 @@
 
 ;;-------------------------=={ Reactor events }==------------------------;;
 
-;;  Count the events of the drawing (the DynALisp reactors run only on these events)
-;;  between two runs of Pst-DiagnosticsReactorEvents, to see what a slow zoom or pan sends.
-;;  The counting reactors are in Modules\Dynalisp\Reactor\Dyl-Diagnostics.lsp, loaded
-;;  only while the DynALisp reactors are on:
-(defun dg:events (/ res dir pth lines)
+;;  Count the events of the drawing (the DynALisp reactors run only on these events), and
+;;  time the work of the .NET plugins of DynALisp (on the idle of AutoCAD and on timers,
+;;  which no reactor sees), between two runs of Pst-DiagnosticsReactorEvents in the same
+;;  drawing, to see what makes a zoom or a pan slow. The counting reactors are in
+;;  Modules\Dynalisp\Reactor\Dyl-Diagnostics.lsp, loaded only while the DynALisp reactors
+;;  are on; the plugins time their steps themselves ((Dyl:RibbonWork), (Dyl:SheetSets "Work")),
+;;  and the ribbon plugin also says each time AutoCAD did not answer for 100 ms or more.
+;;  *dg:worktest* is T while the plugins time a test started in this drawing.
+(defun dg:events (/ res dir pth lines rbn sht)
   (cond
-    ((or (not Reactor>>Dyl:DiagEventsStart) (not (Dyl:ReactorsOn-p)))
-     (if Reactor>>Dyl:DiagEventsStop (Reactor>>Dyl:DiagEventsStop))
-     (princ "\nThe DynALisp reactors are off (Dyl-Settings): no DynALisp reactor runs, there is nothing to count.")
-    )
-    ((Reactor>>Dyl:DiagEventsOn-p)
-     (setq res   (Reactor>>Dyl:DiagEventsStop)
-           lines (list (strcat "DynALisp reactor events - " (dg:now) " - " (getvar "DWGNAME"))
-                       (strcat "Events during the test (" (rtos (/ (car res) 1000.0) 2 1) " s), the most frequent first:")
-                       "(the lispWillStart of this command is counted too)"
-                 )
+    ((or *dg:worktest* (and Reactor>>Dyl:DiagEventsOn-p (Reactor>>Dyl:DiagEventsOn-p)))
+     (setq lines (list (strcat "DynALisp reactor events and plugin work - " (dg:now) " - " (getvar "DWGNAME")) ""))
+     (cond
+       ((and Reactor>>Dyl:DiagEventsOn-p (Reactor>>Dyl:DiagEventsOn-p))
+        (setq res   (Reactor>>Dyl:DiagEventsStop)
+              lines (append lines
+                            (list (strcat "Reactor events during the test (" (rtos (/ (car res) 1000.0) 2 1) " s), the most frequent first:")
+                                  "(the lispWillStart of this command is counted too)"
+                            )
+                    )
+        )
+        (foreach e (cdr res) (setq lines (append lines (list (strcat "  " (itoa (cdr e)) "  " (car e))))))
+        (if (not (cdr res)) (setq lines (append lines (list "  none: no reactor ran while you worked"))))
+       )
+       ((setq lines (append lines (list "Reactor events: the DynALisp reactors are off (Dyl-Settings), none ran."))))
      )
-     (foreach e (cdr res) (setq lines (append lines (list (strcat "  " (itoa (cdr e)) "  " (car e))))))
-     (if (not (cdr res)) (setq lines (append lines (list "  none: no reactor ran while you worked"))))
-     (setq dir (strcat (getenv "TEMP") "\DynALisp Diagnostics"))
+     (setq lines (append lines (list "")))
+     (if *dg:worktest*
+       (progn
+         (setq rbn (if Dyl:RibbonWork (vl-catch-all-apply 'Dyl:RibbonWork nil))
+               sht (if Dyl:SheetSets (vl-catch-all-apply 'Dyl:SheetSets (list "Work")))
+         )
+         (setq lines (append lines
+                             (cond
+                               ((vl-catch-all-error-p rbn) (list (strcat "DynALisp.Ribbon.dll: " (vl-catch-all-error-message rbn))))
+                               ((= 'STR (type rbn)) (list (strcat "DynALisp.Ribbon.dll: " rbn)))
+                               (rbn)
+                               ((list "DynALisp.Ribbon.dll: not loaded, or no test started.")))
+                             (list "")
+                             (cond
+                               ((vl-catch-all-error-p sht) (list (strcat "DynALisp.Startup.dll: " (vl-catch-all-error-message sht))))
+                               ((= 'STR (type sht)) (list sht))
+                               ((list "DynALisp.Startup.dll: not loaded, or no test started.")))
+                     )
+         )
+       )
+     )
+     (setq *dg:worktest* nil)
+     (setq dir (strcat (getenv "TEMP") "\\DynALisp Diagnostics"))
      (vl-mkdir dir)
-     (if (setq pth (dg:write (strcat dir "\Reactor Events.txt") lines))
+     (if (setq pth (dg:write (strcat dir "\\Reactor Events.txt") lines))
        (dg:open pth)
        (princ (strcat "\n--> Unable to write in " dir))
      )
     )
-    ((Reactor>>Dyl:DiagEventsStart)
-     (princ "\nCounting the events: work the slow way (zoom, pan, draw) for about 20 s, then run Pst-DiagnosticsReactorEvents again.")
+    (T
+     (if (and Reactor>>Dyl:DiagEventsStart (Dyl:ReactorsOn-p))
+       (Reactor>>Dyl:DiagEventsStart)
+       (if Reactor>>Dyl:DiagEventsStop (Reactor>>Dyl:DiagEventsStop))
+     )
+     (if Dyl:RibbonWork (vl-catch-all-apply 'Dyl:RibbonWork (list "Start")))
+     (if Dyl:SheetSets (vl-catch-all-apply 'Dyl:SheetSets (list "Work" "Start")))
+     (setq *dg:worktest* t)
+     (princ "\nCounting the events and timing the plugins: work the slow way (zoom, pan, draw) for about 20 s, then run Pst-DiagnosticsReactorEvents again in this drawing.")
+    )
+  )
+  (princ)
+)
+
+;;-------------------------=={ Record }==------------------------;;
+
+;;  A recording in the background, for a bug that comes and goes (Recorder.cs of
+;;  DynALisp.Ribbon.dll): run once, it starts and a red REC badge stays over AutoCAD (the time
+;;  it has recorded, Bug now, Stop) while the user works as usual, for minutes or hours; run
+;;  again (or Stop on the badge), it ends and opens its file of %TEMP%\DynALisp Diagnostics.
+;;  Only the file names of the drawings are written, never their folder (dg:anon).
+(defun dg:record (/ f)
+  (cond
+    ((not Dyl:RibbonRecord)
+     (princ "\nDiagnostics Record: DynALisp.Ribbon.dll is not loaded, nothing can be recorded.")
+    )
+    ((setq f (Dyl:RibbonRecord))
+     (setq f (Dyl:RibbonRecord "Stop"))
+     (princ "\nRecording stopped (the red REC badge is gone). Its file opens: send it, with the times you felt the bug.")
+     (if (and f (findfile f)) (dg:open f))
+    )
+    ((and (setq f (Dyl:RibbonRecord "Start")) (wcmatch f "error:*"))
+     (princ (strcat "\nDiagnostics Record could not start: " f))
+    )
+    (T
+     (princ "\nRECORDING IS ON: the red REC badge at the top right of AutoCAD shows it, with the time it has recorded.")
+     (princ "\n  Work as usual. When the bug shows (zoom that jumps, pan that sticks), click Bug now on the badge.")
+     (princ "\n  To turn it off: Stop on the badge, or DIAG-RECORD again. Closing AutoCAD ends it too.")
     )
   )
   (princ)
@@ -1768,6 +1841,11 @@
 ;; Counts the events the drawing sends to the reactors between two runs, to find what slows AutoCAD.
 
 (defun c:Pst-DiagnosticsReactorEvents () (dg:events))
+
+;; Diagnostics Record
+;; Records in the background what AutoCAD and DynALisp do, for a bug that comes and goes: a red REC badge shows it is on, run again or Stop to end it.
+
+(defun c:Pst-DiagnosticsRecord () (dg:record))
 
 ;; Diagnostics Interface
 ;; Reports the colors of the interface and the file tabs: what DynALisp changes, when, and what still shows the colors of AutoCAD.

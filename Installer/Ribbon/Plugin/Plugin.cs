@@ -37,6 +37,8 @@ using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
 [assembly: CommandClass(typeof(DynALisp.Ribbon.LangCommands))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.SkinCommands))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.FileTabCommands))]
+[assembly: CommandClass(typeof(DynALisp.Ribbon.WorkCommands))]
+[assembly: CommandClass(typeof(DynALisp.Ribbon.RecordCommands))]
 
 namespace DynALisp.Ribbon
 {
@@ -44,6 +46,8 @@ namespace DynALisp.Ribbon
     {
         public void Initialize()
         {
+            // The steps of the plugin timed, for Pst-DiagnosticsReactorEvents (Work.cs):
+            try { Work.Start(); } catch { }
             try
             {
                 // The language first: the drop-downs are made in it (Translations.cs):
@@ -59,6 +63,8 @@ namespace DynALisp.Ribbon
             // The bands of the file tabs (FileTabs.cs, an experiment), apart too:
             try { FileTabs.Start(); }
             catch (System.Exception ex) { Host.Log("file tabs: " + ex.Message); }
+            // The parts left off for a test by a former session (Work.cs):
+            try { Work.Started(); } catch { }
         }
 
         public void Terminate() { }
@@ -112,18 +118,33 @@ namespace DynALisp.Ribbon
             dm.DocumentBecameCurrent += (s, e) => { Watch(e.Document); Each(p => p.DocumentChanged()); };
             dm.DocumentToBeDestroyed += (s, e) => Watched.Remove(e.Document);
             foreach (Document d in dm) Watch(d);
-            AcApp.Idle += OnIdle;
+            Listen(true);
             ComponentManager.ItemInitialized += (s, e) => { _dirty = true; T.Dirty(); };
             if (RibbonServices.RibbonPaletteSet != null) WatchPaletteSet();
             else RibbonServices.RibbonPaletteSetCreated += (s, e) => WatchPaletteSet();
         }
 
+        // The Idle event of AutoCAD handled, or no longer (Dyl:RibbonWork "Off" "idle"):
+        static bool _listening;
+        public static void Listen(bool on)
+        {
+            if (on == _listening) return;
+            _listening = on;
+            if (on) AcApp.Idle += OnIdle; else AcApp.Idle -= OnIdle;
+        }
+
         static void Watch(Document d)
         {
             if (d == null || !Watched.Add(d)) return;
-            d.CommandEnded += (s, e) => Each(p => p.CommandEnded());
-            d.CommandCancelled += (s, e) => Each(p => p.CommandEnded());
-            d.LispEnded += (s, e) => Each(p => p.CommandEnded());
+            d.CommandEnded += (s, e) => Ended();
+            d.CommandCancelled += (s, e) => Ended();
+            d.LispEnded += (s, e) => Ended();
+        }
+
+        static void Ended()
+        {
+            if (Work.IsOff("commands")) return;
+            Work.Time("ribbon: drop-downs after a command", () => Each(p => p.CommandEnded()));
         }
 
         static void WatchPaletteSet()
@@ -152,28 +173,29 @@ namespace DynALisp.Ribbon
         {
             // The colours change no part of the ribbon: they need no quiet, and are not kept
             // waiting by the startup of the drawings.
+            Work.Count("AutoCAD idle (events)");
             Skin.OnIdle();
-            FileTabs.OnIdle();
-            if (!Quiet()) return;
+            if (!Work.IsOff("filetabs")) Work.Time("file tabs: bands", FileTabs.OnIdle);
+            if (Work.IsOff("ribbon") || !Quiet()) return;
             if (_dirty && Environment.TickCount - _nextTry >= 0)
             {
                 _nextTry = Environment.TickCount + 1000;
-                if (Ensure()) _dirty = false;
+                Work.Time("ribbon: drop-downs put in their panels", () => { if (Ensure()) _dirty = false; });
             }
             foreach (var p in Parts)
                 if (p.Row != null && p.Due)
                 {
                     p.Pending = false;
-                    try { p.Refresh(); } catch (System.Exception ex) { Log(ex.Message); }
+                    try { Work.Time("ribbon: drop-downs shown again", p.Refresh); } catch (System.Exception ex) { Log(ex.Message); }
                 }
             // The texts of the tab in the language of the AutoCAD installed (Translations.cs), once a
             // second at most while the tab is not there:
             if (T.Due && Environment.TickCount - _nextLang >= 0)
             {
                 _nextLang = Environment.TickCount + 1000;
-                try { T.Apply(); } catch (System.Exception ex) { Log(ex.Message); }
+                try { Work.Time("ribbon: translation", () => T.Apply()); } catch (System.Exception ex) { Log(ex.Message); }
             }
-            PhaseCombos.AskOnIdle();
+            Work.Time("ribbon: phase asked", PhaseCombos.AskOnIdle);
         }
 
         static int _nextLang = Environment.TickCount;
