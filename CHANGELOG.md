@@ -39,6 +39,10 @@ In the Assembly Presets window, the assemblies that differ only by their boards,
 The tabs of the Manager open in about half a second, Assembly Presets included, and no longer flicker when you change tab.
 [Open the docs](Contents/Modules/Dynalisp/Docs/Draw/Dyl-Manager.htm)
 
+### Record a bug that comes and goes
+DIAG-RECORD records in the background what AutoCAD and DynALisp do, for a bug too rare to catch at once (a zoom that jumps, a pan that sticks). A red REC badge shows it is on: click Bug now each time you feel it, then Stop, and the file of the recording opens, ready to attach to a report.
+[Open the docs](Contents/Modules/Dynalisp/Docs/Troubleshooting/Dyl-Diagnostics.htm#sending)
+
 ### What's New for you
 This window now shows what each version brings you, with pictures and a link to the docs of each change.
 [Open the docs](Contents/Modules/Dynalisp/Docs/Core/Dyl-Info.htm#updates)

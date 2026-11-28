@@ -30,6 +30,10 @@ Dans la fenêtre Assembly Presets, les assemblages qui ne diffèrent que par leu
 Les onglets du Manager s'ouvrent en une demi-seconde environ, Assembly Presets compris, et ne clignotent plus quand vous changez d'onglet.
 [Ouvrir la documentation](Contents/Modules/Dynalisp/Docs/Draw/Dyl-Manager.htm)
 
+### Enregistrer un bogue intermittent
+DIAG-RECORD enregistre en arrière-plan ce que font AutoCAD et DynALisp, pour un bogue trop rare pour être pris d'un coup (un zoom qui saute, un panoramique qui reste bloqué). Une pastille rouge REC montre qu'il est actif : cliquez Bogue maintenant chaque fois que vous le sentez, puis Arrêter, et le fichier de l'enregistrement s'ouvre, prêt à joindre à un rapport.
+[Ouvrir la documentation](Contents/Modules/Dynalisp/Docs/Troubleshooting/Dyl-Diagnostics.htm#sending)
+
 ### Des nouveautés pour vous
 Cette fenêtre montre maintenant ce que chaque version vous apporte, avec des images et un lien vers la documentation de chaque changement.
 [Ouvrir la documentation](Contents/Modules/Dynalisp/Docs/Core/Dyl-Info.htm#updates)
