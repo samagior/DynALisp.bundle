@@ -82,6 +82,14 @@
 //     (Remote>>Dyl:MaterialPatUnits) and given to Dyl:AsmWindow (DynALisp.Windows.dll). nil
 //     when the Lisp reads the materials (see Data\AsmTab.cs).
 //
+//   (Dyl:PresetTabPats contents dimzin key [found ...])
+//     The patterns (upper case, SOLID left out) whose units the Hatch Presets window (key
+//     "HatchPreset": those of its Pattern list, made of the patterns found on the support path,
+//     found) or the Materials window ("Material": those of the hatch presets, for their
+//     previews) needs, found by the Lisp (Remote>>Dyl:MaterialPatUnits) and given to
+//     Dyl:HatchWindow or Dyl:MatWindow (DynALisp.Windows.dll). nil when the Lisp reads the
+//     materials (see Data\HatchTab.cs, Data\MatTab.cs).
+//
 //   (Dyl:DataInfo)
 //     What the plugin did in this session, for Dyl-Diagnostics: (("Files" . n) ("Reads" . n)
 //     ("Hits" . n) ("ReadMs" . ms)), the files kept, the reads of a file, the calls given a
@@ -282,6 +290,26 @@ namespace DynALisp.Core
             var a = Args(args);
             var b = BundleOf(a.Count > 0 ? a[0] : null);
             var pats = b == null || a.Count < 2 ? null : AsmTab.Patterns(b, Int(a[1]));
+            if (pats == null) return null;
+            var rb = new List<TypedValue>(pats.Count + 2);
+            rb.Add(new TypedValue((int)LispDataType.ListBegin));
+            foreach (var p in pats) rb.Add(new TypedValue((int)LispDataType.Text, p));
+            rb.Add(new TypedValue((int)LispDataType.ListEnd));
+            return Result(rb);
+        }
+
+        [LispFunction("Dyl:PresetTabPats")]
+        public ResultBuffer PresetTabPats(ResultBuffer args)
+        {
+            var a = Args(args);
+            var b = BundleOf(a.Count > 0 ? a[0] : null);
+            string key = a.Count > 2 ? a[2] as string : null;
+            List<string> pats = null;
+            if (b != null && a.Count > 1)
+            {
+                if (key == "HatchPreset") pats = HatchTab.Patterns(b, Int(a[1]), a.Skip(3).OfType<string>());
+                else if (key == "Material") pats = MatTab.Patterns(b, Int(a[1]));
+            }
             if (pats == null) return null;
             var rb = new List<TypedValue>(pats.Count + 2);
             rb.Add(new TypedValue((int)LispDataType.ListBegin));

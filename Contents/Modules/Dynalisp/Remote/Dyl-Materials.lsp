@@ -791,9 +791,6 @@
 ;;  whose material no longer exists (the border and behaviors of a new preset):
 (setq *mt:new* (append '("" "" "New material" "ANSI31" "1.0" "1.0" "0" "THIN" "HATCH" "1" "0" "1") *mt:extra*))
 
-;;  A new hatch preset, the same:
-(setq *hp:new* (cons "" (cons "" (cons "New hatch preset" (cdddr *mt:new*)))))
-
 ;;  The hatch of a material without hatch preset, or whose hatch preset no longer exists: no
 ;;  pattern, no hatch (see Remote>>Dyl:MaterialJoin):
 (setq *hp:none* (append '("" "" "" "") (cddddr *mt:new*)))
@@ -881,7 +878,7 @@
   (setq o (vlax-ename->vla-object e))
   (foreach x (if (= kind 'border)
                '((12 color) (14 linetype) (16 ltscale) (18 lweight) (20 transp))
-               ;;  A SOLID hatch has no lineweight and no linetype (see *mt:solidoff*):
+               ;;  A SOLID hatch has no lineweight and no linetype (greyed out in the Hatch Presets window):
                (if (= "SOLID" (nth 3 mat))
                  '((22 color) (28 transp))
                  '((22 color) (47 linetype) (49 ltscale) (26 lweight) (28 transp))
@@ -983,7 +980,7 @@
 ;;  Dyl-RebuildPat writes it; ;%UNITS=INCH: imperial), else when the name of the file or of
 ;;  its folder has ISO or METRIC in it; else imperial, like the patterns of AutoCAD and its
 ;;  toolsets. Kept in *mt:patunits* (emptied each time the Hatch Presets window opens, see
-;;  Remote>>Dyl:HatchPresetPats):
+;;  Remote>>Dyl:MaterialTabPats):
 (defun Remote>>Dyl:MaterialPatUnits (nam / key std fle res)
   (setq key (strcat (strcase nam) "|" (itoa (getvar "MEASUREMENT"))))
   (if (assoc key *mt:patunits*)
@@ -1067,23 +1064,9 @@
   )
 )
 
-;;  Line under the scale in the Materials window: the units of the pattern of the material r
-;;  and the factor of its scale in the current drawing (see Remote>>Dyl:MaterialUnitFactor):
-(defun Remote>>Dyl:MaterialUnitText (r / u f)
-  (setq u (car (Remote>>Dyl:MaterialPatUnits (nth 3 r)))
-        f (Remote>>Dyl:MaterialUnitFactor r)
-  )
-  (cond
-    ((not u) "Pattern file not found: scale as is.")
-    ((< 1.0 f) (strcat u " pattern: x25.4 here (metric)."))
-    ((> 1.0 f) (strcat u " pattern: /25.4 here (imperial)."))
-    ((strcat u " pattern, like this drawing."))
-  )
-)
-
-;;  Open button of that line: the .pat file defining the pattern nam (see
-;;  Remote>>Dyl:MaterialPatUnits) opened in Notepad to inspect it, the window left open (a
-;;  .pat file has no Windows association):
+;;  The open button of the pattern of the Hatch Presets window (*hp:patcode*): the .pat file
+;;  defining the pattern nam (see Remote>>Dyl:MaterialPatUnits) opened in Notepad to inspect
+;;  it, the window left open (a .pat file has no Windows association):
 (defun Remote>>Dyl:MaterialPatOpen (nam / fle)
   (if (setq fle (cdr (Remote>>Dyl:MaterialPatUnits nam)))
     (startapp "notepad" (strcat "\"" fle "\""))
@@ -1612,7 +1595,7 @@
   (if (and ss (< 0 (sslength ss)))
     (progn
       ;;  Draw order of the new hatch (its background color is set once it is made, see below):
-      ;;  A SOLID hatch has no background color (see *mt:solidoff*):
+      ;;  A SOLID hatch has no background color (greyed out in the Hatch Presets window):
       (setq vars (list (cons "HPDRAWORDER" (getvar "HPDRAWORDER")))
             c    (if (/= "SOLID" (nth 3 mat)) (Remote>>Dyl:MaterialBackground mat))
       )
@@ -1812,44 +1795,10 @@
   lst
 )
 
-;;-------------------------=={ Dialog }==------------------------;;
+;;-------------------------=={ Hatch settings }==------------------------;;
 
-;;  The materials dialog is made by Remote>>Dyl:PresetDialog (Remote\Dyl-Presets.lsp), with the
-;;  tiles below in its Parameters column. The functions below run inside it and use its local
-;;  variable pst:lst, and the local variables of Remote>>Dyl:MaterialDialog: mt:pats (patterns
-;;  of the Pattern popup), mt:found (patterns found in the .pat files), mt:keys (layer keys of
-;;  the layer key popups).
-
-;;  Tiles of the materials and index of their value in a material:
-(setq *mt:tiles* '(("pat" . 3) ("typ" . 63) ("simp" . 4) ("ang" . 6) ("hat" . 8) ("ano" . 9)
-                   ("sdw" . 10)
-                   ;;  Hatch settings (checkbox, value; the border settings: in the presets,
-                   ;;  see *mt:bordertiles*):
-                   ("hco" . 22) ("hcl" . 23) ("hbo" . 24) ("hbg" . 25) ("hwo" . 26) ("hwt" . 27)
-                   ("hto" . 28) ("htr" . 29)
-                   ;;  Associative (a hatch without border, see the presets, is not):
-                   ("asc" . 30)
-                   ;;  Hatch: existing phase background (checkbox, color):
-                   ("hxo" . 41) ("hxb" . 42)
-                   ;;  Hatch settings: linetype and linetype scale (checkbox, value):
-                   ("hlo" . 47) ("hlt" . 48) ("hso" . 49) ("hsc" . 50)
-                  )
-)
-
-;;  Optional hatch settings a SOLID hatch does not use (not set, greyed out in the Hatch
-;;  Presets window: pat!=|SOLID): background color, existing phase background, lineweight,
-;;  linetype and linetype scale:
-(setq *mt:solidoff* '("hbo" "hxo" "hwo" "hlo" "hso"))
-
-;;  The open buttons of the colors (the color dialog) and of the layer keys (the Layer Keys
-;;  window), their icon drawn by Dyl:MoreTile
-;;  (dynalisp.mnl), greyed out with it in place of mode_tile:
-(setq *mt:more* '("bcp" "okp"))
-
-;;  mode_tile of the tile key (m: 0 on, 1 off), the icon of an open button redrawn:
-(defun Remote>>Dyl:MaterialDlgMode (key m)
-  (if (member key *mt:more*) (Dyl:MoreTile key (= 0 m)) (mode_tile key m))
-)
+;;  What the windows of the presets (the hatch presets, the hatch and border settings of
+;;  Quick Draw and Quick Shape) share of the settings of a hatch.
 
 ;;  Lineweights of AutoCAD, in hundredths of mm:
 (setq *mt:weights* '("0" "5" "9" "13" "15" "18" "20" "25" "30" "35" "40" "50" "53" "60" "70" "80" "90"
@@ -1860,23 +1809,6 @@
 ;;  Types of a material (Type column): a size on paper, or a real size (see
 ;;  Remote>>Dyl:MaterialFix):
 (setq *mt:types* '("Drafting" "Model"))
-
-;;  Popup tiles -> list of their values (nil for the other tiles):
-(defun Remote>>Dyl:MaterialDlgItems (key)
-  (cond
-    ((= "pat" key) mt:pats)
-    ((= "typ" key) *mt:types*)
-    ((member key '("out" "hat")) mt:keys)
-    ((member key '("bwt" "hwt")) *mt:weights*)
-    ((= "mth" key) (cons "" (mapcar 'car *mt:methods*)))
-    ((= "mjs" key) (mapcar 'car *mt:justify*))
-    ((= "men" key) (mapcar 'car *mt:ends*))
-    ((= "mco" key) (mapcar 'car *mt:corners*))
-    ((= "mlt" key) (mapcar 'car *mt:laps*))
-    ((= "mjo" key) (mapcar 'car *mt:joints*))
-    ((= "mht" key) (mapcar 'car *mt:hatchmodes*))
-  )
-)
 
 ;;  The AutoCAD color dialog on the color str ("n" or "r,g,b"): the color picked, in the same
 ;;  form, nil when it is cancelled:
@@ -1894,17 +1826,6 @@
     (if (setq tc (cdr (assoc 420 r)))
       (strcat (itoa (lsh tc -16)) "," (itoa (logand (lsh tc -8) 255)) "," (itoa (logand tc 255)))
       (itoa (cdr (assoc 62 r)))
-    )
-  )
-)
-
-;;  Open button of a color: the AutoCAD color dialog on the color of the tile key, the color
-;;  picked put in it and stored:
-(defun Remote>>Dyl:MaterialDlgColor (key / val)
-  (if (setq val (Remote>>Dyl:MaterialColorPick (get_tile key)))
-    (progn
-      (set_tile key val)
-      (if (Remote>>Dyl:PresetDlgField key val) (Remote>>Dyl:PresetDlgState))
     )
   )
 )
@@ -1949,8 +1870,8 @@
   )
 )
 
-;;  Fill the layer key popups tiles (the hatch key of the Materials window, the border key of
-;;  the Border settings box) and mt:keys: keys of LayerKeys.csv and the keys of used (those of
+;;  Fill the layer key popups tiles (the border key of the Border settings box of Quick Draw
+;;  and Quick Shape) and mt:keys: keys of LayerKeys.csv and the keys of used (those of
 ;;  the materials or presets) that are not defined (drawn on a layer of the same name, marked
 ;;  "(not defined)"), sorted by key. The keys only, without their layer: a clean list. The
 ;;  keys kept for compatibility only are left out (see Remote>>Dyl:LayerKeyMaterial-p):
@@ -1969,28 +1890,6 @@
     (foreach k mt:keys (add_list (if (assoc k lks) k (strcat k "   (not defined)"))))
     (end_list)
   )
-)
-
-;;  The patterns of the Pattern list (mt:pats) and those found in the .pat files of the
-;;  support path (mt:found), read once each time the Hatch Presets window opens (a .pat file
-;;  added or changed is read again, with the units of the patterns):
-(defun Remote>>Dyl:HatchPresetPats ()
-  (if (not mt:pats)
-    (progn
-      (setq mt:found       (Remote>>Dyl:SupportDefs "pat")
-            mt:pats        mt:found
-            *mt:patunits* nil
-      )
-      ;;  The patterns used by the hatch presets stay selectable even when no .pat file
-      ;;  defines them:
-      (foreach nam (append '("SOLID" "ANSI31") (mapcar 'cadddr (Remote>>Dyl:HatchPresetDefs)) (mapcar 'cadddr pst:lst))
-        (if (not (member nam mt:pats)) (setq mt:pats (cons nam mt:pats)))
-      )
-      ;;  None first (""): a hatch preset without hatch (Void):
-      (setq mt:pats (cons "" (acad_strlsort (vl-remove "" mt:pats))))
-    )
-  )
-  mt:pats
 )
 
 ;;-------------------------=={ Border settings box }==------------------------;;
@@ -2329,8 +2228,8 @@
 
 ;;-------------------------=={ Legend }==------------------------;;
 
-;;  Code the Draw legend... button of the Materials window closes it with (see
-;;  Remote>>Dyl:MaterialDlgStatus):
+;;  Code the Draw legend... button of the Hatch Presets window closes it with (see
+;;  Remote>>Dyl:MaterialTabCode):
 (setq *mt:legendcode* 7)
 
 ;;  Sizes of the legend at 1:1, in paper units (millimetres in a metric drawing, MEASUREMENT 1,
@@ -2405,21 +2304,10 @@
   )
 )
 
-;;  The materials selected in the Materials window, in the order of its list (pst:view,
-;;  pst:lst: locals of Remote>>Dyl:PresetDialog), the materials being edited:
-(defun Remote>>Dyl:MaterialDlgSelected (/ sel)
-  (setq sel (Remote>>Dyl:PresetDlgSel))
-  (mapcar '(lambda (i) (nth i pst:lst))
-          (append (vl-remove-if-not '(lambda (i) (member i sel)) pst:view)
-                  (vl-remove-if '(lambda (i) (member i pst:view)) sel)
-          )
-  )
-)
-
 ;;-------------------------=={ Pick hatch }==------------------------;;
 
-;;  Code the Pick hatch... button of the Materials window closes it with (see
-;;  Remote>>Dyl:MaterialDlgStatus; 8 and 9 are the codes of the preset engine):
+;;  Code the Pick hatch... button of the Hatch Presets window closes it with (see
+;;  Remote>>Dyl:MaterialTabCode; 8 and 9 are the codes of the preset engine):
 (setq *mt:hatchpickcode* 10)
 
 ;;  The color of the hatch o as a color of a material ("n" or "r,g,b"), nil when it is
@@ -2498,7 +2386,7 @@
        (progn (put 28 "1") (put 29 tr))
        (put 28 "0")
      )
-     ;;  Its background color (a SOLID hatch has none, see *mt:solidoff*):
+     ;;  Its background color (a SOLID hatch has none):
      (if (and (/= "SOLID" pat) (setq v (Remote>>Dyl:MaterialColorOf o T)))
        (progn (put 24 "1") (put 25 v))
        (put 24 "0")
@@ -2559,11 +2447,11 @@
   )
 )
 
-;;  Pick hatch...: a hatch picked in the drawing gives its hatch settings to the materials
-;;  selected (see Remote>>Dyl:MaterialFromHatch, Remote>>Dyl:PresetDlgPut). A pattern that no
-;;  .pat file has can be rebuilt first (see Remote>>Dyl:MaterialPatRebuild), so its scale is
-;;  read in the units of the file rebuilt. Its pattern is added to the Pattern popup when the
-;;  list does not have it:
+;;  Pick hatch...: a hatch picked in the drawing gives its hatch settings to the hatch presets
+;;  selected (see Remote>>Dyl:MaterialFromHatch), r the one shown. A pattern that no .pat file
+;;  has can be rebuilt first (see Remote>>Dyl:MaterialPatRebuild), so its scale is read in the
+;;  units of the file rebuilt. Returns the settings ((column . value) ...), nil when none was
+;;  copied:
 (defun Remote>>Dyl:MaterialPickHatch (r / e o pat vals)
   (while (and (not e) (progn (setvar "ERRNO" 0) (or (setq e (entsel "\nSelect a hatch to copy <cancel>: ")) (= 7 (getvar "ERRNO")))))
     (cond
@@ -2587,23 +2475,17 @@
   )
   (if (and e (setq vals (Remote>>Dyl:MaterialFromHatch (car e) r)))
     (progn
-      (foreach x vals (Remote>>Dyl:PresetDlgPut (car x) (cdr x)))
-      (if (not (member (cdr (assoc 3 vals)) mt:pats)) (setq mt:pats (cons "" (acad_strlsort (vl-remove "" (cons (cdr (assoc 3 vals)) mt:pats))))))
-      (princ (strcat "\nHatch copied: " (Remote>>Dyl:MaterialSummary (nth pst:idx pst:lst)) "."))
+      (foreach x vals (setq r (Remote>>Dyl:ListSubst r (car x) (cdr x))))
+      (princ (strcat "\nHatch copied: " (Remote>>Dyl:MaterialSummary r) "."))
+      vals
     )
   )
 )
 
 ;;-------------------------=={ Hatch Presets window }==------------------------;;
 
-;;  The Hatch Presets window (Res\Dyl-HatchPresets.xaml, shown by DynALisp.Windows.dll): a
-;;  preset window (Installer\Windows\Engine\Presets.cs) of the hatch presets, its values the
-;;  tiles of *mt:tiles*, what each one greys out its rules (dyl:Win.EnabledBy: no pattern, a
-;;  SOLID pattern, a Model hatch). The preview of each hatch preset is drawn by the window from
-;;  its columns as they are edited (pst/hatch), with the .pat file and the units of each
-;;  pattern (pst/pats) and the drawing scale (pst/ds). The functions below use the local
-;;  variables of Remote>>Dyl:HatchPresetDialog: mt:pats (the patterns of the Pattern list),
-;;  mt:found (the patterns found in the .pat files), mt:keys (the layer keys of its list).
+;;  The Hatch Presets window (Res\Dyl-HatchPresets.xaml) is in .NET (see
+;;  Remote>>Dyl:MaterialTab): here the codes of its buttons that need the Lisp.
 
 ;;  The codes the open buttons of the color of the hatch, its background color and its
 ;;  existing phase background close the window with, and the column of that color (its
@@ -2613,145 +2495,18 @@
 ;;  The code the open button of the .pat file of the pattern closes the window with:
 (setq *hp:patcode* 14)
 
-;;  Before the window is shown (again): the patterns (read once), the layer keys of the
-;;  hatch layer key list (those of the hatch presets that are not defined kept, marked):
-(defun Remote>>Dyl:HatchPresetWinPrep ()
-  (Remote>>Dyl:HatchPresetPats)
-  (Remote>>Dyl:MaterialDlgKeys nil (mapcar '(lambda (r) (nth 8 r)) (append (Remote>>Dyl:HatchPresetDefs) pst:lst)))
-  nil
-)
-
-;;  The values of the window: its lists (labels key/list, values key/vals), the units of each
-;;  pattern under the scale and whether a .pat file has it (sunt/by, pfl/by: a row for each
-;;  item of the Pattern list), the patterns the previews are drawn from, the drawing scale,
-;;  the line under Adaptive scaling:
-(defun Remote>>Dyl:HatchPresetWinVals (/ lks u)
-  (setq lks (Remote>>Dyl:LayerKeyRead))
-  (list (cons "pat/list"
-              (mapcar '(lambda (nam)
-                         (cond ((= "" nam) "None") ((member nam mt:found) nam) ((strcat nam "   (not found on the support path)")))
-                       )
-                      mt:pats
-              )
-        )
-        (cons "pat/vals" mt:pats)
-        (cons "sunt/by"
-              (mapcar '(lambda (nam) (list (if (member nam '("" "SOLID")) "" (Remote>>Dyl:MaterialUnitText (list "" "" "" nam)))))
-                      mt:pats
-              )
-        )
-        (cons "pfl/by"
-              (mapcar '(lambda (nam) (list (if (and (not (member nam '("" "SOLID"))) (cdr (Remote>>Dyl:MaterialPatUnits nam))) "1" "0")))
-                      mt:pats
-              )
-        )
-        (cons "pst/hatch" "3,4,6,9,10,63")
-        (cons "pst/pats"
-              (vl-remove nil
-                         (mapcar '(lambda (nam)
-                                    (if (not (member nam '("" "SOLID")))
-                                      (progn
-                                        (setq u (Remote>>Dyl:MaterialPatUnits nam))
-                                        (list nam (cond ((cdr u)) ("")) (if (= "Metric" (car u)) "1" "0"))
-                                      )
-                                    )
-                                  )
-                                 mt:pats
-                         )
-              )
-        )
-        (cons "pst/ds" (Remote>>Dyl:MaterialNumP (Remote>>Dyl:MaterialDrawScale) 6))
-        (cons "typ/list" *mt:types*)
-        (cons "typ/vals" *mt:types*)
-        (cons "hat/list" (mapcar '(lambda (k) (if (assoc k lks) k (strcat k "   (not defined)"))) mt:keys))
-        (cons "hat/vals" mt:keys)
-        (cons "hwt/list" (mapcar '(lambda (w) (strcat (rtos (/ (atoi w) 100.0) 2 2) " mm")) *mt:weights*))
-        (cons "hwt/vals" *mt:weights*)
-        (cons "sinf"
-              (strcat "This drawing is at 1:"
-                      (Remote>>Dyl:MaterialNum (Remote>>Dyl:MaterialDrawScale))
-                      ": hatch scale x"
-                      (Remote>>Dyl:MaterialNum (Remote>>Dyl:MaterialFactor "1"))
-                      "."
-              )
-        )
-  )
-)
-
-;;  A hatch preset got back from the window: a Model hatch is never annotative nor adaptive
-;;  (see Remote>>Dyl:MaterialFix), whatever its checkboxes, greyed out, still hold:
-(defun Remote>>Dyl:HatchPresetWinGet (r)
-  (if (= "Model" (nth 63 r))
-    (Remote>>Dyl:ListSubst (Remote>>Dyl:ListSubst r 9 "0") 10 "0")
-    r
-  )
-)
-
-;;  The open buttons and buttons of the window (code sta, the hatch preset shown r):
-;;  Code 5 = the open button of the hatch layer key: the Layer Keys window on that key, the
-;;  key double-clicked there given to every hatch preset selected (see
-;;  Remote>>Dyl:PresetDlgPut).
-;;  Code *mt:legendcode* = Draw legend...: the legend of the hatch presets selected (as they
-;;  are being edited), drawn from a point picked.
-;;  Code *mt:hatchpickcode* = Pick hatch...: a hatch picked in the drawing gives its settings
-;;  to the hatch presets selected.
-;;  The codes of *hp:colorcodes*: the color window of AutoCAD on that color, the color picked
-;;  given to every hatch preset selected, its checkbox checked.
-;;  Code *hp:patcode*: the .pat file of the pattern opened in Notepad.
-;;  The window is shown again once it is done:
-(defun Remote>>Dyl:MaterialDlgStatus (sta r / k c)
-  (cond
-    ((= 5 sta) (if (setq k (Remote>>Dyl:LayerKeyPick (nth 8 r))) (Remote>>Dyl:PresetDlgPut 8 k)))
-    ((= *mt:legendcode* sta) (Remote>>Dyl:MaterialLegend (Remote>>Dyl:MaterialDlgSelected)))
-    ((= *mt:hatchpickcode* sta) (Remote>>Dyl:MaterialPickHatch r))
-    ((setq c (cdr (assoc sta *hp:colorcodes*)))
-     (if (setq k (Remote>>Dyl:MaterialColorPick (nth c r)))
-       (progn (Remote>>Dyl:PresetDlgPut c k) (Remote>>Dyl:PresetDlgPut (1- c) "1"))
-     )
-    )
-    ((= *hp:patcode* sta) (Remote>>Dyl:MaterialPatOpen (nth 3 r)))
-  )
-  nil
-)
-
-;;  Show the Hatch Presets window, on the hatch preset id (nil: the last one). OK writes the
-;;  hatch presets file. Returns the hatch preset selected on OK, or nil on Cancel:
-(defun Remote>>Dyl:HatchPresetDialog (id / mt:pats mt:found mt:keys)
-  ;;  A materials file of DynALisp 1.1 and older is split first, so the hatch presets shown
-  ;;  are those of its materials:
-  (Remote>>Dyl:MaterialMigrate)
-  (Remote>>Dyl:PresetDialog
-    "HatchPreset"
-    (list (cons 'defs (Remote>>Dyl:HatchPresetDefs))
-          (cons 'fix 'Remote>>Dyl:MaterialFix)
-          (cons 'tiles *mt:tiles*)
-          (cons 'select id)
-          '(groups . T)
-          '(upper "pat" "hat" "hlt")
-          ;;  A new hatch preset: the optional settings off, associative:
-          (cons 'new *hp:new*)
-          '(noun . "hatch presets")
-          '(window . "Dyl-HatchPresets.xaml")
-          '(wprep . Remote>>Dyl:HatchPresetWinPrep)
-          '(wvals . Remote>>Dyl:HatchPresetWinVals)
-          '(wget . Remote>>Dyl:HatchPresetWinGet)
-          '(check . Remote>>Dyl:MaterialDlgCheck)
-          '(status . Remote>>Dyl:MaterialDlgStatus)
-    )
-  )
+;;  Show the Hatch Presets window, on the hatch preset id (nil: the last one), in .NET (see
+;;  Remote>>Dyl:MaterialTab). OK and Save write the hatch presets file. Returns the hatch
+;;  preset selected on OK and Save, or nil on Cancel:
+(defun Remote>>Dyl:HatchPresetDialog (id)
+  (Remote>>Dyl:MaterialTab "HatchPreset" id)
 )
 
 ;;-------------------------=={ Materials window }==------------------------;;
 
-;;  The Materials window (Res\Dyl-Materials.xaml, shown by DynALisp.Windows.dll): a preset
-;;  window (Installer\Windows\Engine\Presets.cs) of the materials, each one its name, its
-;;  group, its Cut hatch preset (the Material list of the engine, mat, on the hatch presets:
-;;  (material . 3), (mats . Remote>>Dyl:HatchPresetRead), every one listed, (matfree . T)),
-;;  previewed (mpv), its open button the Hatch Presets window on it (code 9, matdialog), its
-;;  Surface hatch preset (sur, "": Same as Cut; its open button: code 10) and its data, shown
-;;  in the units of the drawing (see *mt:data*). The functions below use the local variable
-;;  mt:shown of Remote>>Dyl:MaterialDialog: ((column shown) si) of each value shown in
-;;  imperial units, so a value got back unchanged keeps its SI value as it was.
+;;  The Materials window (Res\Dyl-Materials.xaml) is in .NET (see Remote>>Dyl:MaterialTab):
+;;  here the preview of a hatch preset, which Quick Shape shows too, and the data of a
+;;  material in the units of the drawing.
 
 ;;  A band of the preview of a tile (see Installer\Windows\Engine\Hatch.cs), w wide: kind
 ;;  "P" the hatch of the material mat (nil: missing, crossed out), "S" a space, "L" a line.
@@ -2816,117 +2571,183 @@
   )
 )
 
-;;  A material as the window shows it: its data in imperial units in an imperial drawing
-;;  (each value shown kept in mt:shown with its SI value):
-(defun Remote>>Dyl:MaterialWinRow (r / v s)
-  (if (Remote>>Dyl:MaterialImperial-p)
-    (foreach d *mt:data*
-      (if (setq v (distof (nth (car d) r) 2))
-        (progn
-          (setq s (Remote>>Dyl:MaterialSig (* v (cadr d))))
-          (if (not (assoc (list (car d) s) mt:shown))
-            (setq mt:shown (cons (list (list (car d) s) (nth (car d) r)) mt:shown))
-          )
-          (setq r (Remote>>Dyl:ListSubst r (car d) s))
-        )
-      )
-    )
-  )
-  r
+;;  Show the Materials window, on the material id (nil: the last one), in .NET (see
+;;  Remote>>Dyl:MaterialTab). OK and Save write the materials file. Returns the material
+;;  selected on OK and Save (its row of the file), or nil on Cancel:
+(defun Remote>>Dyl:MaterialDialog (id)
+  (Remote>>Dyl:MaterialTab "Material" id)
 )
 
-;;  A material got back from the window: its data in SI units again, a value shown and not
-;;  changed its SI value as it was (no rounding added):
-(defun Remote>>Dyl:MaterialWinGet (r / v m)
-  (if (Remote>>Dyl:MaterialImperial-p)
-    (foreach d *mt:data*
-      (setq v (vl-string-trim " " (cond ((nth (car d) r)) (""))))
-      (setq r (Remote>>Dyl:ListSubst r
-                                     (car d)
-                                     (cond
-                                       ((= "" v) "")
-                                       ((setq m (assoc (list (car d) v) mt:shown)) (cadr m))
-                                       ((distof v 2) (Remote>>Dyl:MaterialSig (/ (distof v 2) (cadr d))))
-                                       (v)
-                                     )
-              )
-      )
-    )
-  )
-  r
-)
+;;-------------------------=={ Hatch Presets and Materials in .NET }==------------------------;;
 
-;;  The values of the window: the Surface list (Same as Cut, then every hatch preset,
-;;  "group - name"), mt.imp ("1": the units shown are imperial, see the window file):
-(defun Remote>>Dyl:MaterialWinVals (/ hps)
-  (setq hps (vl-sort pst:mats
-                     '(lambda (a b) (< (strcase (strcat (nth 1 a) "\t" (nth 2 a))) (strcase (strcat (nth 1 b) "\t" (nth 2 b)))))
-            )
+;;  The Hatch Presets window (key "HatchPreset") or the Materials window ("Material"), opened
+;;  on the preset id (nil: the one shown last). Shown by DynALisp.Windows.dll, its presets made
+;;  into rows, read back, checked and saved by DynALisp.Core.dll with no Lisp in between
+;;  (Dyl:HatchWindow, Dyl:MatWindow: Installer\Windows\PresetTabs.cs, Installer\Core\Data
+;;  HatchTab.cs and MatTab.cs, the same values as the preset engine gave, checked by the
+;;  witness files of Installer\Core\Tests\Witness\Kept, hptab and mattab). The
+;;  Lisp gives it what only the Lisp has (Remote>>Dyl:MaterialTabCtx): the layer keys, the
+;;  patterns of the support path and their units (status -3: asked once, when the window
+;;  opens, so a click of the Manager is answered at once), and runs the buttons that need it
+;;  (Remote>>Dyl:MaterialTabCode), the window then shown again on the presets being edited.
+;;  A materials file of DynALisp 1.1 is split first (the Core reads the files written). mt:found
+;;  (the patterns found on the support path) is the one Remote>>Dyl:MaterialPatRebuild adds a
+;;  pattern rebuilt to. Returns the preset selected on OK and Save (its row), nil on Cancel:
+(defun Remote>>Dyl:MaterialTab (key id / hatch file fn path tabs more res sta pats add mt:found)
+  (setq hatch (= "HatchPreset" key)
+        file  (if hatch "Dyl-HatchPresets.xaml" "Dyl-Materials.xaml")
+        fn    (if hatch 'Dyl:HatchWindow 'Dyl:MatWindow)
+        path  (Dyl:WinFile file)
+        tabs  (Dyl:WinTab-p file)
+        more  T
   )
-  (list (cons "sur/list" (cons "Same as Cut" (mapcar '(lambda (h) (strcat (nth 1 h) " - " (nth 2 h))) hps)))
-        (cons "sur/vals" (cons "" (mapcar 'car hps)))
-        (cons "mt.imp" (if (Remote>>Dyl:MaterialImperial-p) "1" "0"))
-  )
-)
-
-;;  A value of a material (the window checks them too): a hatch preset that exists ("": none),
-;;  a value of its data empty or greater than 0:
-(defun Remote>>Dyl:MaterialWinCheck (key val)
-  (cond
-    ((and (member key '("mat" "sur")) (/= "" val) (not (assoc val pst:mats)))
-     "This hatch preset no longer exists: pick another one."
-    )
-    ((and (member key '("cnd" "den" "rsi" "vpm" "vpc"))
-          (/= "" (vl-string-trim " " val))
-          (not (and (distof val 2) (< 0 (distof val 2))))
-     )
-     "A value of the data must be a number greater than 0 (empty: not known)."
-    )
-  )
-)
-
-;;  Code 10 = the open button of Surface: the Hatch Presets window on the Surface hatch
-;;  preset of the material shown (its Cut when it is Same as Cut); the hatch preset selected
-;;  on OK becomes the Surface of the materials selected:
-(defun Remote>>Dyl:MaterialWinStatus (sta r / h)
-  (if (and (= 10 sta) (setq h (Remote>>Dyl:HatchPresetDialog (if (/= "" (nth 4 r)) (nth 4 r) (nth 3 r)))))
-    (Remote>>Dyl:PresetDlgPut 4 (car h))
-  )
-  nil
-)
-
-;;  A new material: no hatch preset yet, no data:
-(setq *mt:newrow* '("" "Generic" "New material" "" "" "" "" "" "" ""))
-
-;;  Show the Materials window, on the material id (nil: the last one). OK writes the
-;;  materials file. Returns the material selected on OK (its row of the file), or nil on
-;;  Cancel:
-(defun Remote>>Dyl:MaterialDialog (id / mt:shown)
-  ;;  A materials file of DynALisp 1.1 and older is split first:
   (Remote>>Dyl:MaterialMigrate)
-  (Remote>>Dyl:PresetDialog
-    "Material"
-    (list (cons 'defs (Remote>>Dyl:MaterialRowDefs))
-          '(fix . Remote>>Dyl:MaterialRowFix)
-          '(tiles ("sur" . 4) ("cnd" . 5) ("den" . 6) ("rsi" . 7) ("vpm" . 8) ("vpc" . 9))
-          (cons 'select id)
-          ;;  The groups of the materials (MaterialGroups.csv), never those of the presets:
-          '(groups . "Material")
-          '(material . 3)
-          '(mats . Remote>>Dyl:HatchPresetRead)
-          '(matdialog . Remote>>Dyl:HatchPresetDialog)
-          '(matnoun . "hatch preset")
-          '(matfree . T)
-          '(mspec . Remote>>Dyl:MaterialWinSpec)
-          (cons 'new *mt:newrow*)
-          '(noun . "materials")
-          '(window . "Dyl-Materials.xaml")
-          '(wrow . Remote>>Dyl:MaterialWinRow)
-          '(wget . Remote>>Dyl:MaterialWinGet)
-          '(wvals . Remote>>Dyl:MaterialWinVals)
-          '(check . Remote>>Dyl:MaterialWinCheck)
-          '(status . Remote>>Dyl:MaterialWinStatus)
+  (cond
+    ((not (and (eval fn) Dyl:PresetTabPats))
+     (princ (strcat "\n--> The " (if hatch "Hatch Presets" "Materials")
+                    " need DynALisp.Windows.dll and DynALisp.Core.dll (not blocked by SECURELOAD)."
+            )
+     )
+     nil
     )
+    ((not path) (princ (strcat "\n--> Window file not found: " file)) nil)
+    (T
+     (if tabs (setq *dyl:wintab* nil))
+     (while more
+       (setq res  (Remote>>Dyl:ManagerTimed "Window shown (Core)" fn (list path (Remote>>Dyl:MaterialTabCtx key id path tabs (append add pats))))
+             sta  (car res)
+             more nil
+             add  nil
+       )
+       (cond
+         ((= -3 sta) (setq pats (Remote>>Dyl:MaterialTabPats key) more T))
+         ((and sta (<= 3 sta) (/= *dyl:wintabcode* sta))
+          (setq add  (cons '("resume" . T) (Remote>>Dyl:MaterialTabCode key sta res))
+                more T
+          )
+         )
+       )
+     )
+     (if (= -2 sta) (princ "\n--> The materials could not be read: see Pst-DiagnosticsDynalisp."))
+     ;;  Another tab of the Manager picked (see Dyl:WinTabPicked):
+     (if (and tabs (= *dyl:wintabcode* sta)) (setq *dyl:wintab* (atoi (cond ((cdr (assoc "tab" (cdr res)))) ("0")))))
+     ;;  Saved: what the Lisp kept of the presets is made again (see Remote>>Dyl:CsvWrite):
+     (if (assoc "written" (cdr res))
+       (progn
+         (setq *qd:asmcache* nil *pst:readcache* nil *pst:rowcache* nil)
+         (vl-bb-set '*dyl:datawrites* (1+ (cond ((vl-bb-ref '*dyl:datawrites*)) (0))))
+       )
+     )
+     (if (member sta (list 1 2 *dyl:wintabcode*)) (cdr (assoc "shown" (cdr res))))
+    )
+  )
+)
+
+;;  What the window of Remote>>Dyl:MaterialTab gets from the Lisp (see
+;;  Installer\Windows\PresetTabs.cs), on the window file path, with the tabs of the Manager
+;;  (tabs T), and more (the patterns and their units, what a button gives the window shown
+;;  again): the system variables, the default Show group, the layer keys, the preset to show,
+;;  the tabs and the Open Docs buttons:
+(defun Remote>>Dyl:MaterialTabCtx (key id path tabs more)
+  (append
+    (list (cons "contents" *dyl:contents)
+          (cons "vars" (mapcar 'getvar '("CANNOSCALEVALUE" "MEASUREMENT" "INSUNITS" "LUNITS" "LUPREC" "DIMZIN")))
+          (cons "shw" (cond ((getenv (strcat "DynalispPresetShow" key))) ("")))
+    )
+    (if (= "HatchPreset" key) (list (cons "keys" (mapcar 'car (Remote>>Dyl:LayerKeyRead)))))
+    (if (and id (/= "" id)) (list (cons "select" id)))
+    more
+    (list (cons "vals"
+                (append (if tabs
+                          (list (cons "tab/list" (nth 1 *dyl:wintabs*))
+                                (cons "tab" (itoa (nth 2 *dyl:wintabs*)))
+                                (cons "tab/title" (nth 3 *dyl:wintabs*))
+                                (cons "tab/place" (nth 4 *dyl:wintabs*))
+                                (cons "tab/event" (cond ((nth 5 *dyl:wintabs*)) ("")))
+                          )
+                        )
+                        (Dyl:WinDocs path)
+                )
+          )
+    )
+  )
+)
+
+;;  The units of the pattern p as the window gets them: (p units file), "" when no file has it
+;;  (see Remote>>Dyl:MaterialPatUnits):
+(defun Remote>>Dyl:MaterialTabUnits (p / u)
+  (setq u (Remote>>Dyl:MaterialPatUnits p))
+  (list p (cond ((car u)) ("")) (cond ((cdr u)) ("")))
+)
+
+;;  The patterns and their units the window asks for (status -3): the Hatch Presets, those of
+;;  the .pat files of the support path (mt:found, read once each time the window opens, their
+;;  units read again: a .pat file added or changed), and the units of the patterns of its
+;;  Pattern list; the Materials, those of the patterns of the hatch presets (their previews):
+(defun Remote>>Dyl:MaterialTabPats (key)
+  (if (= "HatchPreset" key)
+    (setq mt:found       (Remote>>Dyl:SupportDefs "pat")
+          *mt:patunits* nil
+    )
+  )
+  (append
+    (if (= "HatchPreset" key) (list (cons "found" mt:found)))
+    (list (cons "pats"
+                (mapcar 'Remote>>Dyl:MaterialTabUnits
+                        (apply 'Dyl:PresetTabPats (append (list *dyl:contents (getvar "DIMZIN") key) mt:found))
+                )
+          )
+    )
+  )
+)
+
+;;  The codes of the buttons that need the Lisp (sta, the window answer res: its preset shown
+;;  r, those selected), run here; what the window shown again is given ((key . value) ...: the
+;;  groups renamed, the values given to the presets selected, a pattern added):
+;;  The Hatch Presets: 5 the Layer Keys window on the hatch layer key (the key double-clicked
+;;  there given to column 8), *mt:legendcode* Draw legend... (the hatch presets selected, as
+;;  they are being edited), 8 the Preset Groups window, *mt:hatchpickcode* Pick hatch... (a
+;;  hatch picked in the drawing gives its settings, its pattern added to the Pattern list), the
+;;  codes of *hp:colorcodes* the color window of AutoCAD (the color picked given, its checkbox
+;;  checked), *hp:patcode* the .pat file of the pattern in Notepad.
+;;  The Materials: 8 the Preset Groups window on the groups of the materials, 9 the Hatch
+;;  Presets window on the Cut hatch preset, 10 on the Surface one (the Cut one when Same as
+;;  Cut), the hatch preset selected on OK given to column 3 or 4:
+(defun Remote>>Dyl:MaterialTabCode (key sta res / r k c h ren vals f0)
+  (setq r (cdr (assoc "shown" (cdr res))))
+  (cond
+    ((= 8 sta)
+     (setq ren (Remote>>Dyl:GroupsDialogOf (cdr (assoc "counts" (cdr res))) (if (= "Material" key) "Material")))
+     (list (cons "renames" (if (listp ren) ren)))
+    )
+    ((not r) nil)
+    ((= "Material" key)
+     (if (and (member sta '(9 10))
+              (setq h (Remote>>Dyl:HatchPresetDialog (if (and (= 10 sta) (/= "" (nth 4 r))) (nth 4 r) (nth 3 r))))
+         )
+       (list (cons "put" (list (cons (if (= 9 sta) 3 4) (car h)))))
+     )
+    )
+    ((= 5 sta)
+     (if (setq k (Remote>>Dyl:LayerKeyPick (nth 8 r))) (list (cons "put" (list (cons 8 k)))))
+    )
+    ((= *mt:legendcode* sta) (Remote>>Dyl:MaterialLegend (cdr (assoc "sel" (cdr res)))) nil)
+    ((= *mt:hatchpickcode* sta)
+     (setq f0 mt:found)
+     (if (setq vals (Remote>>Dyl:MaterialPickHatch r))
+       (append (list (cons "put" vals))
+               (if (setq k (cdr (assoc 3 vals)))
+                 (list (cons "addpat" k) (cons "pats" (list (Remote>>Dyl:MaterialTabUnits k))))
+               )
+               ;;  (a pattern rebuilt, see Remote>>Dyl:MaterialPatRebuild:)
+               (if (not (eq f0 mt:found)) (list (cons "addfound" (car mt:found))))
+       )
+     )
+    )
+    ((setq c (cdr (assoc sta *hp:colorcodes*)))
+     (if (setq k (Remote>>Dyl:MaterialColorPick (nth c r))) (list (cons "put" (list (cons c k) (cons (1- c) "1")))))
+    )
+    ((= *hp:patcode* sta) (Remote>>Dyl:MaterialPatOpen (nth 3 r)) nil)
   )
 )
 

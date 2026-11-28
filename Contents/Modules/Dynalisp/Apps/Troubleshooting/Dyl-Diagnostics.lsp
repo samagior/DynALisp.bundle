@@ -475,14 +475,19 @@
     )
     (dg:bad (strcat "Each drawing reads the data files again, slower: " (dg:dll "DynALisp.Core.dll") " is not loaded (blocked by SECURELOAD, missing, or failed to load: see the command line at startup)"))
   )
-  ;;  The Assembly Presets window (Dyl:AsmWindow of DynALisp.Windows.dll) reads its data with
-  ;;  DynALisp.Core.dll: it opens only with both (a DLL left from before, a pull made with
-  ;;  AutoCAD open, has no Dyl:AsmWindow):
-  (if (and Dyl:Window (not (and Dyl:AsmWindow Dyl:AsmTabPats)))
-    (dg:bad (strcat "The Assembly Presets cannot open: "
-                    (dg:dll (if Dyl:AsmWindow "DynALisp.Core.dll" "DynALisp.Windows.dll"))
-                    " is not loaded or is older than DynALisp (close AutoCAD, then git checkout -- the DLL)"
-            )
+  ;;  The tabs in .NET (Dyl:AsmWindow, Dyl:HatchWindow, Dyl:MatWindow of DynALisp.Windows.dll)
+  ;;  read their data with DynALisp.Core.dll: they open only with both (a DLL left from before,
+  ;;  a pull made with AutoCAD open, has no Dyl:HatchWindow):
+  (foreach x '(("The Assembly Presets" Dyl:AsmWindow Dyl:AsmTabPats)
+               ("The Hatch Presets" Dyl:HatchWindow Dyl:PresetTabPats)
+               ("The Materials" Dyl:MatWindow Dyl:PresetTabPats)
+              )
+    (if (and Dyl:Window (not (and (eval (cadr x)) (eval (caddr x)))))
+      (dg:bad (strcat (car x) " cannot open: "
+                      (dg:dll (if (eval (cadr x)) "DynALisp.Core.dll" "DynALisp.Windows.dll"))
+                      " is not loaded or is older than DynALisp (close AutoCAD, then git checkout -- the DLL)"
+              )
+      )
     )
   )
   ;;  The simulation of a 2D detail (Dyl-Simulation) reads the detail with

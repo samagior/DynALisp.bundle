@@ -170,6 +170,8 @@ namespace DynALisp.Core.Tests
             Show(b, o, lisp);
             AsmWin(b, o, lisp);
             AsmTabs(b, o, lisp);
+            PresetTabs(b, o, lisp, "hptab", HpEdits, HpTabLisp);
+            PresetTabs(b, o, lisp, "mattab", MatEdits, MatTabLisp);
             foreach (var key in Keys)
                 o.Put("#" + key + " write" + Us + Cell(Presets.Write(b, Presets.Spec(key), reads[key])));
             o.Put("#groups write" + Us + Cell(Groups.Write(b, Groups.Of(b, null), null)));
@@ -361,15 +363,153 @@ namespace DynALisp.Core.Tests
             o.Lines.AddRange(lines.Lines);
         }
 
+        // The patterns the witness finds on the support path (wt:found), sorted as
+        // acad_strlsort sorts them (wt:supportfake):
+        static readonly string[] Found = { "ANSI31", "AR-CONC", "ACAD_ISO02W100", "BRICK", "ANSI37", "CROSS", "NOFILE", "SOLID", "ZIGZAG",
+                                           "AR-B816", "GOST_GLASS", "DOTS" };
+
+        // The Hatch Presets (hptab) and Materials (mattab) windows as the preset engine showed
+        // them (wt:tab), at the drawing scale and with the layer keys of the witness, the
+        // patterns of Found and the units of Pat: their values opened on no preset (manager), on
+        // the second one read (select) and on one that does not exist (unknown: its preset shown
+        // only, for both); then, from no preset, each edit of edits on the first rows sent: the
+        // rows given back (in), the presets got from them (out) and why they are not valid
+        // (check). A case the Lisp makes (a materials file of DynALisp 1.1, a default file
+        // missing) has a line #<sec> lisp in place of them; a witness taken before them has none
+        // of them, and the C# gives none either:
+        static void PresetTabs(Bundle b, Out o, List<string> lisp, string sec,
+                               List<(string, Func<PresetTab, List<string[]>, List<string[]>>)> edits, string mark)
+        {
+            var secs = lisp != null ? Sections(lisp) : new Dictionary<string, List<string>>();
+            bool witnessed = secs.TryGetValue(sec + " scale", out var sc) && sc.Count > 0;
+            if (lisp != null && !witnessed) return;
+            string scale = witnessed ? sc[0] : "0.020000000000000";
+            o.Put("#" + sec + " scale" + Us + scale);
+            if (Materials.Both(b, 0) == null)
+            {
+                o.Sec(mark);
+                return;
+            }
+            var keys = secs.TryGetValue(sec + " layerkeys", out var ks) ? ks.Select(k => k.Split(Us)[0]).ToList() : new List<string>();
+            o.Rows(sec + " layerkeys", keys.Select(k => new[] { k }));
+            var found = Found.OrderBy(p => p, Aliases.Order).ToList();
+            o.Rows(sec + " found", found.Select(p => new[] { p }));
+            foreach (var (setup, v) in Setups)
+            {
+                var u = new Units
+                {
+                    CannoScale = Lisp.Distof(scale), Measurement = v[0], Insunits = v[1], Lunits = v[2], Luprec = v[3], Dimzin = v[4],
+                };
+                foreach (var (name, sel) in new[] { ("manager", (string)null), ("select", "1"), ("unknown", "zz-NoSuchPreset") })
+                {
+                    PresetTab Of(string id) => sec == "hptab"
+                        ? HatchTab.Open(b, u, id, null, "", "Name", keys, found, p => Pat(p))
+                        : MatTab.Open(b, u, id, null, "", "Name", p => Pat(p));
+                    var t = Of(null);
+                    string id0 = sel == "1" ? (t.Lst.Count > 1 ? t.Lst[1][0] : t.Lst.Count > 0 ? t.Lst[0][0] : null) : sel;
+                    if (id0 != null) t = Of(id0);
+                    t.Prep();
+                    var vals = t.Vals(null);
+                    o.Sec(sec + " vals " + setup + " " + name);
+                    foreach (var x in vals)
+                        if (name == "manager" || x.Key == "pst.idx" || x.Key == "pst.sel") Val(o, x, false);
+                    if (name != "manager") continue;
+                    var rs = t.Sent.Take(3).ToList();
+                    t.Sent = rs;
+                    t.SentOf = t.SentOf.Take(3).ToList();
+                    t.Lst0 = t.SentOf;
+                    foreach (var (edit, f) in edits)
+                    {
+                        if (rs.Count == 0 && edit != "new" && edit != "newempty") continue;
+                        var input = f(t, rs);
+                        if (input == null) continue;
+                        t.Lst = t.Back(input);
+                        var msg = t.Check();
+                        o.Rows(sec + " edit " + setup + " " + edit + " in", input.Select(r => r.Select(Nl)));
+                        o.Rows(sec + " edit " + setup + " " + edit + " out", Presets.Ids(t.Lst).Select(r => r.Select(Nl)));
+                        o.Put("#" + sec + " edit " + setup + " " + edit + " check" + Us + Cell(msg));
+                    }
+                }
+            }
+        }
+
+        // wt:hpedits, wt:matedits: the edits made in each window to the first rows sent (rs),
+        // null when an edit cannot be made on them:
+        static Func<PresetTab, List<string[]>, List<string[]>> First(params (int, string)[] pairs) =>
+            (t, rs) => new[] { Cells(rs[0], pairs) }.Concat(rs.Skip(1)).ToList();
+
+        static List<(string, Func<PresetTab, List<string[]>, List<string[]>>)> Common(
+            List<(string, Func<PresetTab, List<string[]>, List<string[]>>)> edits, params (int, string)[] added)
+        {
+            string[] New(PresetTab t) => t.Rows(new[] { t.NewRow })[0];
+            return edits.Concat(new (string, Func<PresetTab, List<string[]>, List<string[]>>)[]
+            {
+                ("new", (t, rs) => rs.Concat(new[] { Cells(New(t), added) }).ToList()),
+                ("newempty", (t, rs) => rs.Concat(new[] { New(t) }).ToList()),
+                ("delete", (t, rs) => rs.Count > 1 ? new[] { rs[0] }.Concat(rs.Skip(2)).ToList() : null),
+                ("move", (t, rs) => rs.Count > 1 ? new[] { rs[1], rs[0] }.Concat(rs.Skip(2)).ToList() : null),
+            }).ToList();
+        }
+
+        static readonly List<(string, Func<PresetTab, List<string[]>, List<string[]>>)> HpEdits = Common(
+            new List<(string, Func<PresetTab, List<string[]>, List<string[]>>)>
+            {
+                ("same", (t, rs) => rs),
+                ("name", First((2, "Edited name"), (1, " section "))),
+                ("pattern", First((3, "ansi37"), (4, "2.5"), (6, "30"))),
+                ("scalebad", First((4, "0"))),
+                ("scaletext", First((4, "1,5"))),
+                ("scalefine", First((4, " .5 "))),
+                ("anglebad", First((6, "x"))),
+                ("keyempty", First((8, ""))),
+                ("colorbad", First((22, "1"), (23, "300"))),
+                ("coloroff", First((22, "0"), (23, "abc"))),
+                ("background", First((24, "1"), (25, " 10, 20 ,30 "))),
+                ("bgbad", First((24, "1"), (25, "1,2"))),
+                ("existbad", First((41, "1"), (42, "0"))),
+                ("weight", First((26, "1"), (27, "35"))),
+                ("transbad", First((28, "1"), (29, "95"))),
+                ("transtext", First((29, "5.5"))),
+                ("linetype", First((47, "1"), (48, "dashed"), (49, "1"), (50, "2.5"))),
+                ("ltempty", First((48, ""))),
+                ("ltscalebad", First((50, "0"))),
+                ("model", First((63, "Model"), (9, "1"), (10, "1"))),
+                ("drafting", First((63, "Drafting"), (9, "1"), (10, "1"))),
+                ("solid", First((3, "SOLID"))),
+                ("none", First((3, ""))),
+            },
+            (2, "Added"), (3, "ANSI31"));
+
+        static readonly List<(string, Func<PresetTab, List<string[]>, List<string[]>>)> MatEdits = Common(
+            new List<(string, Func<PresetTab, List<string[]>, List<string[]>>)>
+            {
+                ("same", (t, rs) => rs),
+                ("name", First((2, "Edited name"), (1, " concrete "))),
+                ("cut", First((3, "hp-Brick"))),
+                ("cutbad", First((3, "hp-NoSuchHatch"))),
+                ("cutnone", First((3, ""))),
+                ("surface", First((4, ""))),
+                ("surfacebad", First((4, "hp-NoSuchHatch"))),
+                ("data", First((5, "0.5"), (6, "1200"), (7, "2"))),
+                ("datafine", First((8, "0.0123456"), (9, "123456.7"))),
+                ("datablank", First((5, ""), (7, " "))),
+                ("dataspaces", First((5, " 0.5 "))),
+                ("databad", First((6, "-1"))),
+                ("datazero", First((7, "0"))),
+                ("datatext", First((8, "abc"))),
+                ("datacomma", First((9, "1,5"))),
+            },
+            (2, "Added"), (3, "hp-Void"), (5, "0.04"));
+
         static string Nl(string s) => s?.Replace('\n', (char)29);
 
         // A value of the window on one line (wt:val): S and its text, L and its items, R and the
         // cells of each row (a line each), N and the count of the rows of the presets and of their
         // defaults:
-        static void Val(Out o, WinVal v)
+        static void Val(Out o, WinVal v, bool counts = true)
         {
             if (v.Text != null) o.Put(Line(new[] { v.Key, "S", Nl(v.Text) }));
-            else if (v.Rows != null && v.Rows.Count > 0 && (v.Key == "pst/rows" || v.Key == "pst/defs"))
+            else if (counts && v.Rows != null && v.Rows.Count > 0 && (v.Key == "pst/rows" || v.Key == "pst/defs"))
                 o.Put(Line(new[] { v.Key, "N", v.Rows.Count.ToString() }));
             else if (v.Rows != null && v.Rows.Count > 0)
                 foreach (var r in v.Rows) o.Put(Line(new[] { v.Key, "R" }.Concat(r.Select(Nl))));
@@ -448,7 +588,7 @@ namespace DynALisp.Core.Tests
         }
 
         const string LispRead = "assemblies lisp", MatLisp = "materials lisp", ShowLisp = "shows lisp", AsmWinLisp = "asmwin lisp",
-                     AsmTabLisp = "asmtab lisp";
+                     AsmTabLisp = "asmtab lisp", HpTabLisp = "hptab lisp", MatTabLisp = "mattab lisp";
 
         // The cases whose assemblies or materials the Lisp reads, the C# giving null: the
         // marker, the cases, the sections of the Lisp then left out (those of its prefix, but
@@ -460,6 +600,8 @@ namespace DynALisp.Core.Tests
             (ShowLisp, new[] { "assemblies", "assemblies-preset", "edges", "empty" }, "shows ", "shows scale"),
             (AsmWinLisp, new[] { "assemblies", "assemblies-preset", "edges", "empty" }, "asmwin ", ""),
             (AsmTabLisp, new[] { "assemblies", "assemblies-preset", "edges", "empty" }, "asmtab ", "asmtab scale"),
+            (HpTabLisp, new[] { "assemblies", "assemblies-preset", "edges", "empty" }, "hptab ", "hptab scale"),
+            (MatTabLisp, new[] { "assemblies", "assemblies-preset", "edges", "empty" }, "mattab ", "mattab scale"),
         };
 
         // ----- the witness of the Lisp -----
@@ -578,6 +720,9 @@ namespace DynALisp.Core.Tests
                     if (!lisp) continue;
                     foreach (var (mark, cases, prefix, kept) in ReadByLisp)
                     {
+                        // (a window whose sections came after the witness was taken: neither has them)
+                        if (kept != "" && !lines.Contains("#" + kept) && !lines.Any(l => l.StartsWith("#" + kept + Us))
+                            && !cs.Any(l => l == "#" + kept || l.StartsWith("#" + kept + Us))) continue;
                         Assert.True(cases.Contains(name) == cs.Contains("#" + mark), name + ": #" + mark + (cases.Contains(name) ? " expected" : " not expected"));
                         if (!cs.Contains("#" + mark)) continue;
                         // (the rows read by the Lisp alone left out, the one kept still compared:)
