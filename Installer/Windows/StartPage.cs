@@ -572,7 +572,7 @@ namespace DynALisp.Windows
                 try { tsk = TaskRows(pins, titles); } catch (System.Exception e) { err = "tasks: " + e.Message; }
                 try { rec = Recent(root, profile); }
                 catch (System.Exception e) { err = "recent drawings: " + e.Message; }
-                try { act = Activity.Rows(pending); pin = PinRows(pins, act, titles); }
+                try { act = Activity.Rows(pending); pin = PinRows(pins, titles); }
                 catch (System.Exception e) { err = "active time: " + e.Message; }
                 disp.BeginInvoke(new Action(() =>
                 {
@@ -711,22 +711,16 @@ namespace DynALisp.Windows
             Say(zip != null ? "Issue opened in your browser: paste the report (Ctrl+V), check it, then Submit." : "Issue opened in your browser: check it, then Submit.");
         }
 
-        // The cards of the pins: path, name, kind, folder, its active time in the last year (a
-        // sheet set or a project: the drawings of its folder and the folders under it),
-        // thumbnail, missing:
-        static List<string[]> PinRows(List<string> pins, List<string[]> act, Dictionary<string, string> titles)
+        // The cards of the pins: path, name, kind, folder, time (none: the time of a pin is shown
+        // by the graph, its card clicked), thumbnail, missing:
+        static List<string[]> PinRows(List<string> pins, Dictionary<string, string> titles)
         {
-            string from = DateTime.Today.AddDays(-364).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             string cache = Path.Combine(Path.GetTempPath(), "DynALisp Start");
             var rows = new List<string[]>();
             foreach (var p in pins)
             {
                 string kind = Kind(p);
                 string dir = Path.GetDirectoryName(p) ?? "";
-                string under = dir.TrimEnd('\\') + "\\";
-                double s = act.Where(r => string.CompareOrdinal(r[0], from) >= 0
-                                          && (kind == "Drawing" ? string.Equals(r[2], p, StringComparison.OrdinalIgnoreCase) : r[2].StartsWith(under, StringComparison.OrdinalIgnoreCase)))
-                              .Sum(r => double.Parse(r[1], CultureInfo.InvariantCulture));
                 bool there = false;
                 DateTime t = DateTime.MinValue;
                 long size = 0;
@@ -735,9 +729,7 @@ namespace DynALisp.Windows
                 if (there && kind == "Drawing") try { thumb = Thumbnail(p, t, size, cache) ?? ""; } catch { }
                 rows.Add(new[]
                 {
-                    p, NameOf(p, titles), kind, dir,
-                    s > 0 ? StartUi.Dur(s) + " of active time in the last year" : "No active time in the last year",
-                    thumb, there ? "" : "1",
+                    p, NameOf(p, titles), kind, dir, "", thumb, there ? "" : "1",
                 });
             }
             return rows;

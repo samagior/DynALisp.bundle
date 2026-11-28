@@ -22,8 +22,8 @@
 // <dyl:PinnedItems x:Name="pin" Graph="act" CardWidth="340"/>: the cards of what is pinned, as
 // wide as the row they fill (CardWidth at least), the fields of a row:
 //   path, name, kind ("Drawing", "Sheet set" or "Project"), where (its folder, not shown: the
-//   path is only in the tip of the card), time (the text of its active time), thumbnail (a
-//   .png file, "" none), missing ("1": not found)
+//   path is only in the tip of the card), time (not shown: the time of a pin is in the graph,
+//   its card clicked), thumbnail (a .png file, "" none), missing ("1": not found)
 // A drawing clicked raises Opened; a sheet set or a project clicked shows only its active time
 // in the graph Graph (clicked again: all of it). Its right-click menu: Open (a drawing, a sheet
 // set), Show its active time, Show in folder (Folder), Unpin (Unpinned).
@@ -454,11 +454,16 @@ namespace DynALisp.Windows
             DockPanel.SetDock(badge, Dock.Right);
             top.Children.Add(badge);
             top.Children.Add(title);
-            var lines = new StackPanel();
+            // its name and kind beside its picture, Not found under them when it is missing (its
+            // time is in the graph, a click away: never on the card):
+            var lines = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
             lines.Children.Add(top);
-            var t = StartUi.Text(missing ? "Not found" : time, missing ? "Dyl.ErrorText" : "Dyl.Text", 11.5);
-            t.Margin = new Thickness(0, 5, 0, 0);
-            lines.Children.Add(t);
+            if (missing)
+            {
+                var t = StartUi.Text("Not found", "Dyl.ErrorText", 11.5);
+                t.Margin = new Thickness(0, 5, 0, 0);
+                lines.Children.Add(t);
+            }
             var dock = new DockPanel();
             DockPanel.SetDock(pic, Dock.Left);
             dock.Children.Add(pic);
