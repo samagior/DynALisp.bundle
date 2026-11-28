@@ -6,7 +6,7 @@ par la fenêtre What's New quand DynALisp est en français (Dyl-Settings > Envir
 Language). Mêmes versions, mêmes changements, mêmes images et liens ; une version qui
 n'y est pas encore est montrée en anglais. En UTF-8.
 
-## Next
+## 2.1 - 2026-11-27
 
 ### Une page Début bien à vous
 Dyl-Settings > Overrides > Start page affiche la page de DynALisp dans l'onglet Début : New, Open et vos gabarits à gauche ; vos dessins, jeux de feuilles et projets épinglés, le temps passé dans chaque dessin jour par jour et vos dessins récents au centre ; les tâches de chaque projet à droite. Cliquez sur un dessin pour voir ses jours, double-cliquez pour l'ouvrir. Un clic droit sur un dessin lui donne l'image de votre choix, ou une zone du dessin refaite à chaque enregistrement. Report a problem ouvre un ticket où le diagnostic est déjà joint.
@@ -34,6 +34,10 @@ Dans la fenêtre Assembly Presets, les assemblages qui ne diffèrent que par leu
 ### Un Manager plus rapide
 Les onglets du Manager s'ouvrent en une demi-seconde environ, Assembly Presets compris, et ne clignotent plus quand vous changez d'onglet.
 [Ouvrir la documentation](Contents/Modules/Dynalisp/Docs/Draw/Dyl-Manager.htm)
+
+### Enregistrer un bogue intermittent
+DIAG-RECORD enregistre en arrière-plan ce que font AutoCAD et DynALisp, pour un bogue trop rare pour être pris d'un coup (un zoom qui saute, un panoramique qui reste bloqué). Une pastille rouge REC montre qu'il est actif : cliquez Bogue maintenant chaque fois que vous le sentez, puis Arrêter, et le fichier de l'enregistrement s'ouvre, prêt à joindre à un rapport.
+[Ouvrir la documentation](Contents/Modules/Dynalisp/Docs/Troubleshooting/Dyl-Diagnostics.htm#sending)
 
 ### Des nouveautés pour vous
 Cette fenêtre montre maintenant ce que chaque version vous apporte, avec des images et un lien vers la documentation de chaque changement.
