@@ -279,10 +279,11 @@ namespace DynALisp.Assistant
         {
             var t = AppDomain.CurrentDomain.GetAssemblies()
                 .FirstOrDefault(a => a.GetName().Name == "DynALisp.Windows")?.GetType("DynALisp.Windows.Theme");
-            bool neutral = false;
-            try { neutral = dark && t?.GetMethod("Neutral", BindingFlags.Public | BindingFlags.Static)?.Invoke(null, null) is true; }
+            // The look of the Interface (DynALisp Dark, Midnight...), which colours the dark theme:
+            string look = null;
+            try { look = dark ? t?.GetMethod("Look", BindingFlags.Public | BindingFlags.Static)?.Invoke(null, null) as string : null; }
             catch { }
-            string key = (dark ? "dark" : "light") + (neutral ? " neutral" : "");
+            string key = (dark ? "dark" : "light") + (look != null ? " " + look : "");
             if (key == _theme) return;
             _theme = key;
             var md = Resources.MergedDictionaries;

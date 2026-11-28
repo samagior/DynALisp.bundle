@@ -33,7 +33,7 @@ gmt=0
 gpi=1
 gpm=25
 # Display:
-ifc/list=(Not set)|DynALisp Dark|Midnight
+ifc/list=(Not set)|DynALisp Dark|Midnight|Blueprint|Forest|Ember|Plum
 ifc=1
 bkg/list=(Not set)|Black|Default|White
 bkg=0

@@ -26,7 +26,8 @@
 ;;
 ;;  Each display setting is a name, "" or missing: not set:
 ;;    - Interface (DynalispInterface): the look of the whole interface, DynALisp Dark
-;;      (the default, first in the list) or Midnight (*ec:looks*). Its ribbon, palettes (Properties...), status bar,
+;;      (the default, first in the list), Midnight, Blueprint, Forest, Ember or Plum
+;;      (*ec:looks*). Its ribbon, palettes (Properties...), status bar,
 ;;      file tabs, command line and Start page, while AutoCAD is in its dark theme, by
 ;;      DynALisp.Ribbon.dll (Installer\Ribbon\Plugin\Skin.cs, an experiment that Autodesk
 ;;      does not support), which reads these settings itself and again when
@@ -44,9 +45,11 @@
 ;;  grey (#E6E6E6), the ribbon, the palettes and the DynALisp windows in greys without
 ;;  hue. Midnight is the blue-grey of AutoCAD, darker (the dark windows of DynALisp,
 ;;  Installer\Windows\Engine\Session.cs, Theme): the model space and the background
-;;  around the paper a little darker than their title bar (#181B20), dark without being
-;;  black, the paper in the color of their background (#252A32), the crosshairs in the
-;;  color of their text (#E6EAF0). The colors
+;;  around the paper almost black in that blue (#14171B), the paper a little lighter
+;;  (#1F232A), the crosshairs in the color of their text (#E6EAF0). Blueprint (the navy of
+;;  old blueprints, #102A46), Forest (a fir green, #101E17), Ember (a warm charcoal,
+;;  #1E1510) and Plum (an aubergine, #1D1221) are the same in their hue, the ribbon, the
+;;  palettes and the windows tinted with it. The colors
 ;;  are the display preferences (Options > Display > Colors), the background around the
 ;;  paper the "Paper background" setting of the profile, which Options does not show:
 ;;  user profile settings, so they apply to every drawing.
@@ -77,7 +80,11 @@
 ;;  colors as OLE values: R + G*256 + B*65536.
 (setq *ec:looks*
        '(("DynALisp Dark" 1184274 15132390 1973790 15132390 1184274) ; RGB 18,18,18 / 230,230,230 / 30,30,30
-         ("Midnight" 2104088 15788774 3287589 15788774 2104088) ; RGB 24,27,32 / 230,234,240 / 37,42,50
+         ("Midnight" 1775380 15788774 2761503 15788774 1775380) ; RGB 20,23,27 / 230,234,240 / 31,35,42
+         ("Blueprint" 4598288 16248286 5978138 16248286 4598288) ; RGB 16,42,70 / 222,237,247 / 26,56,91
+         ("Forest" 1515024 14543830 2239001 14543830 1515024) ; RGB 16,30,23 / 214,235,221 / 25,42,34
+         ("Ember" 1053982 13689585 1646122 13689585 1053982) ; RGB 30,21,16 / 241,226,208 / 42,30,25
+         ("Plum" 2167325 15784940 2955816 15784940 2167325) ; RGB 29,18,33 / 236,219,240 / 40,26,45
         )
 )
 
