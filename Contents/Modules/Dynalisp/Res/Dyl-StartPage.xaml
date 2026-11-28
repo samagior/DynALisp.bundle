@@ -35,7 +35,7 @@
   (err and actn take no room while they have no text: shown by the plugin when they have)
 
   Three columns across the tab, the left one and the right one near its edges (56 from them), the one of
-  the middle, the widest, 800 wide in the middle of the space between them, each of its parts
+  the middle, the widest, 1000 wide in the middle of the space between them, each of its parts
   as wide as it (the cards and the tiles widened to fill their rows): to start a drawing at the left (New, Open..., Open sheet set..., the
   templates), what was worked on in the middle (Pinned, the active time, Recent), the tasks
   of each project at the right. No path is shown: it is in the tip of each card and tile.
@@ -83,7 +83,7 @@
     </Style>
   </Window.Resources>
 
-  <DockPanel Width="1600" Height="1000">
+  <DockPanel Width="1800" Height="1000">
     <!-- The foot: DynALisp in a line, its buttons: -->
     <Border DockPanel.Dock="Bottom" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource Dyl.Border}" Padding="56,7,56,8">
       <DockPanel>
@@ -101,7 +101,7 @@
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="240"/>
           <ColumnDefinition Width="*" MinWidth="28"/>
-          <ColumnDefinition Width="800"/>
+          <ColumnDefinition Width="1000"/>
           <ColumnDefinition Width="*" MinWidth="28"/>
           <ColumnDefinition Width="320"/>
         </Grid.ColumnDefinitions>
