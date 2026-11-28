@@ -28,6 +28,7 @@
     rec/rows   the recent drawings (dyl:RecentDrawings), thumbnails from the drawings
     ver ftp    the foot of the page: DynALisp, AutoCAD, the last startup; what is wrong
     err        what could not be done (a drawing that did not open)
+  (err and actn take no room while they have no text: shown by the plugin when they have)
 
   Its buttons are run by the plugin, never by the Lisp: New (the template of QNEW), Open,
   Pin, and at the foot Settings and Diagnostics (the command run in the drawing open, greyed
@@ -92,7 +93,7 @@
           <Button x:Name="new" Content="_New" Style="{DynamicResource Dyl.AccentButton}" Margin="0,0,8,0"/>
           <Button x:Name="opn" Content="_Open..." Margin="0"/>
         </StackPanel>
-        <TextBlock x:Name="err" Style="{DynamicResource Dyl.Error}" Margin="0,0,0,6"/>
+        <TextBlock x:Name="err" Style="{DynamicResource Dyl.Error}" Margin="0,0,0,6" Visibility="Collapsed"/>
 
         <!-- Pinned: drawings, sheet sets, projects (Pin... picks one): -->
         <DockPanel Margin="0,10,0,10">
@@ -102,7 +103,7 @@
         <dyl:PinnedItems x:Name="pin" Graph="act"/>
 
         <!-- The active time of each day: -->
-        <TextBlock x:Name="actn" Foreground="{DynamicResource Dyl.Muted}" Margin="0,14,0,0"/>
+        <TextBlock x:Name="actn" Foreground="{DynamicResource Dyl.Muted}" Margin="0,14,0,0" Visibility="Collapsed"/>
         <dyl:ActivityGraph x:Name="act" Margin="0,16,0,0"/>
 
         <!-- A few recent drawings: -->
