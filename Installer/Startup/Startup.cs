@@ -28,6 +28,9 @@
 // its end. In a version where it is not found, or is not a list, nothing is done. Built for
 // .NET 8 (AutoCAD 2025 and 2026) and .NET 10 (AutoCAD 2027 and later), see
 // DynALisp.Startup.csproj.
+//
+// The same plugin opens again the sheet sets left open in the Sheet Set Manager (Reopen sheet
+// sets of Dyl-Settings, SheetSets.cs).
 
 using System;
 using System.Collections;
@@ -41,6 +44,7 @@ using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
 
 [assembly: ExtensionApplication(typeof(DynALisp.Startup.Plugin))]
 [assembly: CommandClass(typeof(DynALisp.Startup.Plugin))]
+[assembly: CommandClass(typeof(DynALisp.Startup.SheetSets))]
 
 namespace DynALisp.Startup
 {
@@ -56,6 +60,9 @@ namespace DynALisp.Startup
 
         public void Initialize()
         {
+            // The sheet sets opened again (SheetSets.cs), apart: it never stops the rest.
+            try { SheetSets.Start(); }
+            catch { }
             try
             {
                 if (!On()) return;

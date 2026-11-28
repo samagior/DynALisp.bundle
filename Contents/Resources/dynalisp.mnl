@@ -357,7 +357,7 @@
   ;;; ---------------------------------------------------------------------------
   (setq *dyl:setsfile*  "DynALisp-Settings.txt"
         *dyl:setslocal* '("DYNALISPLASTVERSION" "DYNALISPUPDATECHECKED" "DYNALISPPREFAPPLIED" "DYNALISPPREFBASE"
-                          "DYNALISPPREFCUSTOMBASE" "DYNALISPSYSVARSTAMP" "DYNALISPWINDOWPLACES"
+                          "DYNALISPPREFCUSTOMBASE" "DYNALISPSYSVARSTAMP" "DYNALISPWINDOWPLACES" "DYNALISPSHEETSETS"
                          )
   )
 
@@ -4379,6 +4379,30 @@
     )
   )
 
+  ;;; Reopen sheet sets (Overrides in Dyl-Settings, DynalispSheetSetReopen, off by default):
+  ;;; the sheet sets open in the Sheet Set Manager of AutoCAD, which forgets them when AutoCAD
+  ;;; closes, are opened again at the next startup, until the user closes them in the
+  ;;; manager. Done by Resources\DynALisp.Startup.dll (SheetSets.cs of Installer\Startup),
+  ;;; which defines Dyl:SheetSets and keeps their list in DynalispSheetSets (a setting of this
+  ;;; computer, *dyl:setslocal*). Turned on, the sheet sets open now are remembered at once;
+  ;;; turned off, the list is forgotten:
+  (defun Dyl:SheetSetsOn-p () (= "1" (getenv "DynalispSheetSetReopen")))
+  (defun Dyl:SheetSetsSet (on)
+    (setenv "DynalispSheetSetReopen" (if on "1" "0"))
+    (if on
+      (if Dyl:SheetSets (vl-catch-all-apply 'Dyl:SheetSets '("Save")))
+      (setenv "DynalispSheetSets" "")
+    )
+    (princ (strcat "\nReopen sheet sets "
+                   (if on
+                     "on: the sheet sets open in the Sheet Set Manager open again at each startup, until you close them there"
+                     "off: the Sheet Set Manager opens no sheet set at startup"
+                   )
+                   "."
+           )
+    )
+  )
+
   ;;; Start page (Overrides in Dyl-Settings, DynalispStartPage, off by default): the page of
   ;;; the Start tab of AutoCAD gives way to the Start page of DynALisp (the recent drawings,
   ;;; DynALisp, its startup, its settings and its last diagnostics). Done by
@@ -4493,6 +4517,9 @@
 ;;;   - Clean startup (Overrides, DynalispCleanStartup, see Dyl:CleanStartupSet): the
   ;;;     startup lines removed from the command line, from the next startup; greyed
   ;;;     out without Resources\DynALisp.Startup.dll (Dyl:CleanStartup not defined)
+;;;   - Reopen sheet sets (Overrides, DynalispSheetSetReopen, see Dyl:SheetSetsSet): the
+  ;;;     sheet sets open in the Sheet Set Manager opened again at each startup; greyed
+  ;;;     out without Resources\DynALisp.Startup.dll (Dyl:SheetSets not defined)
 ;;;   - Start page (Overrides, DynalispStartPage, see Dyl:StartPageSet): the Start tab shows
   ;;;     the Start page of DynALisp; greyed out without Resources\DynALisp.Windows.dll
   ;;;     (Dyl:StartPage not defined)
@@ -4592,6 +4619,7 @@
             (Dyl:WinTog "dpo" st:dpo)
             (Dyl:WinTog "rvo" st:rvo)
             (Dyl:WinTog "csu" st:csu)
+            (Dyl:WinTog "ssr" st:ssr)
             (Dyl:WinTog "stp" st:stp)
             (Dyl:WinTog "lku" (= "Update" st:lkm))
             (Dyl:WinTog "lkk" (= "Keep" st:lkm))
@@ -4621,6 +4649,8 @@
       (Dyl:WinOff "rvm" (not (and Remote>>Dyl:RevSyncSet c:Pst-RevisionTitleBlocks)))
       ;; Clean startup: without the plugin that does it:
       (Dyl:WinOff "csu" (not Dyl:CleanStartup))
+      ;; Reopen sheet sets: without the plugin that does it (the same one):
+      (Dyl:WinOff "ssr" (not Dyl:SheetSets))
       ;; Start page: without the plugin that shows it:
       (Dyl:WinOff "stp" (not Dyl:StartPage))
       ;; Layer keys: the answer remembered, when Dyl-LayerKey.lsp is not loaded:
@@ -4652,6 +4682,7 @@
           st:aup (Dyl:WinOn-p res "aup")
           st:asl (Dyl:WinOn-p res "asl")
           st:csu (Dyl:WinOn-p res "csu")
+          st:ssr (Dyl:WinOn-p res "ssr")
           st:stp (Dyl:WinOn-p res "stp")
           st:rvo (Dyl:WinOn-p res "rvo")
           st:lng (car (nth (Dyl:WinIdx res "lng") *dyl:langs*))
@@ -4847,7 +4878,8 @@
     (if (not (eq st:aup (nth 13 old))) (Dyl:UpdAutoSet st:aup))
     (if (not (eq st:asl (nth 19 old))) (Dyl:AssistantLispSet st:asl))
     (if (not (eq st:csu (nth 16 old))) (Dyl:CleanStartupSet st:csu))
-    (if (not (eq st:stp (nth 20 old))) (Dyl:StartPageSet st:stp))
+    (if (not (eq st:ssr (nth 20 old))) (Dyl:SheetSetsSet st:ssr))
+    (if (not (eq st:stp (nth 21 old))) (Dyl:StartPageSet st:stp))
     (if (/= st:lng (nth 17 old)) (Dyl:LangSet st:lng))
     ;; Revisions: turned on, this drawing updated right away when it is a sheet of a project:
     (if (and Remote>>Dyl:RevSyncSet (not (eq st:rvo (nth 18 old))))
@@ -4947,7 +4979,7 @@
     )
   )
 
-  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:asl st:stp st:old st:res st:sta)
+  (defun c:Dyl-Settings (/ st:defs st:dso st:aph st:ado st:prp st:cfg st:bkg st:dpo st:svo st:pfp st:rea st:syn st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:asl st:ssr st:stp st:old st:res st:sta)
     (setq st:defs (Dyl:SetDefsRead)
           st:aph  (and Remote>>Dyl:PhaseAuto-p (Remote>>Dyl:PhaseAuto-p) T)
           st:ado  (and Remote>>Dyl:DrawOrderAuto-p (Remote>>Dyl:DrawOrderAuto-p) T)
@@ -4968,8 +5000,9 @@
           st:lng  (Dyl:Lang)
           st:rvo  (and Remote>>Dyl:RevSyncOn-p (Remote>>Dyl:RevSyncOn-p) T)
           st:asl  (Dyl:AssistantLispOn-p)
+          st:ssr  (Dyl:SheetSetsOn-p)
           st:stp  (Dyl:StartPageOn-p)
-          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:asl st:stp)
+          st:old  (list st:aph st:ado st:prp st:cfg st:defs st:bkg st:pfp st:rea st:syn st:dso st:dpo st:svo st:gaps st:aup st:lkm st:alk st:csu st:lng st:rvo st:asl st:ssr st:stp)
           st:sta  2
     )
     ;; An open button that runs a command closes the window with its number (dyl:Win.Close

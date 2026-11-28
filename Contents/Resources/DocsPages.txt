@@ -88,6 +88,8 @@ Dynalisp/Plugins/Core.fr.htm
 Dynalisp/Plugins/Core.htm
 Dynalisp/Plugins/Ribbon.fr.htm
 Dynalisp/Plugins/Ribbon.htm
+Dynalisp/Plugins/SheetSets.fr.htm
+Dynalisp/Plugins/SheetSets.htm
 Dynalisp/Plugins/Windows.fr.htm
 Dynalisp/Plugins/Windows.htm
 Dynalisp/Setup/Dyl-SetFilePrefs.fr.htm

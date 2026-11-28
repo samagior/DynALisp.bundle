@@ -301,6 +301,7 @@
   (dg:try 'dg:dyl-startup)
   (dg:try 'dg:dyl-modules)
   (dg:try 'dg:dyl-assistant)
+  (dg:try 'dg:dyl-sheetsets)
 )
 
 ;;  The Assistant (Dyl-Assistant, DynALisp.Assistant.dll) and Text
@@ -352,6 +353,35 @@
       ;;  Claude Code bills ANTHROPIC_API_KEY instead of the subscription when it is set:
       (if (= "1" (dg:ci "apiKey" info))
         (dg:note "ANTHROPIC_API_KEY is set: Claude Code uses that API key (billed by the API), not the Claude subscription")
+      )
+    )
+  )
+)
+
+;;  Reopen sheet sets (Dyl-Settings, DynalispSheetSetReopen, SheetSets.cs of
+;;  DynALisp.Startup.dll): what the plugin did at startup, the sheet sets remembered
+;;  (DynalispSheetSets), each one not found as a problem, and those open in the manager now:
+(defun dg:dyl-sheetsets (/ lst open)
+  (if (Dyl:SheetSetsOn-p)
+    (progn
+      (dg:sub "Reopen sheet sets")
+      (if (not Dyl:SheetSets)
+        (dg:bad (strcat "Reopen sheet sets is on, but " (dg:dll "DynALisp.Startup.dll") " is not loaded: no sheet set is remembered or opened again"))
+        (progn
+          (dg:kv "Startup" (Dyl:SheetSets))
+          (setq lst  (vl-remove "" (Remote>>LM:str->lst (cond ((getenv "DynalispSheetSets")) ("")) "|"))
+                open (Dyl:SheetSets "Open")
+          )
+          (dg:kv "Remembered" (itoa (length lst)))
+          (foreach f lst
+            (if (findfile f)
+              (dg:item f)
+              (dg:bad (strcat "Sheet set remembered but not found (dropped at the next startup): " f))
+            )
+          )
+          (dg:kv "Open in the Sheet Set Manager" (itoa (length open)))
+          (foreach f open (dg:item f))
+        )
       )
     )
   )
