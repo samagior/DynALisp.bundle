@@ -3034,9 +3034,10 @@
   ;;; repository and to the module docs, and the core commands
   ;;; (Res\Dyl-Info.xaml, Res\Dyl-WhatsNew.xaml).
   ;;;
-  ;;; Two repositories: the source (*dyl:gitrepo*, private, the one a git clone
-  ;;; pulls) and the releases (*dyl:relrepo*, public: read without signing in to
-  ;;; GitHub). The release workflow of the source publishes each release to the
+  ;;; Two repositories: the source (*dyl:gitrepo*, public, the one a git clone
+  ;;; pulls, where the issues of Dyl-Diagnostics and of Report a problem of the
+  ;;; Start page are opened) and the releases (*dyl:relrepo*, read without signing
+  ;;; in to GitHub). The release workflow of the source publishes each release to the
   ;;; releases repository, with its setup and CHANGELOG.md as assets.
   ;;;
   ;;; The version is the AppVersion of PackageContents.xml (the one AutoCAD

@@ -1655,7 +1655,7 @@
   )
 )
 
-;;  The new issue page of the releases repository, its title and text filled in: the
+;;  The new issue page of DynALisp.bundle (*dyl:gitrepo*), its title and text filled in: the
 ;;  summary and the problems found (kept short: the whole report is in the zip):
 (defun dg:issue (zip / body n)
   (setq body (strcat "**What happened:**\n\n(what you did, what you saw, what you expected)\n\n"
@@ -1672,7 +1672,7 @@
     (if (< (strlen body) 3500) (setq body (strcat body "- " p "\n") n (1+ n)))
   )
   (if (< n (length dg:probs)) (setq body (strcat body "- ... (" (itoa (- (length dg:probs) n)) " more in the report)\n")))
-  (strcat "https://github.com/" *dyl:relrepo* "/issues/new?title="
+  (strcat "https://github.com/" *dyl:gitrepo* "/issues/new?title="
           (dg:url (strcat "Diagnostics report - DynALisp " (Dyl:InfoVersion) " - " (dg:str (vl-catch-all-apply 'dg:product nil))))
           "&body=" (dg:url (dg:anon body))
   )
@@ -1700,41 +1700,61 @@
 )
 
 ;;  Every section into a DynALisp Report <date> folder of %TEMP%, with the settings and the
-;;  User folder; the folder zipped, the report opened, then the issue offered:
-(defun dg:full (/ dir rep zip)
+;;  User folder (without User\Start: the active time and the pins of the Start page are the
+;;  user's, never in a report); the folder zipped, the report opened, then the issue offered.
+;;  Run for Report a problem of the Start page (*dg:forissue*, set by the plugin), the report
+;;  and its zip are given back to the plugin (Dyl:StartPageIssue), which opens the issue with
+;;  what the user wrote: nothing opened, nothing asked here.
+(defun dg:full (/ dir rep zip forissue)
+  (setq forissue *dg:forissue*
+        *dg:forissue* nil
+  )
   (princ "\nDynALisp diagnostics: checking DynALisp, AutoCAD and the drawing...")
   (setq dir (strcat (getenv "TEMP") "\\DynALisp Report " (menucmd "M=$(edtime,$(getvar,date),YYYY-MO-DD HHMMSS)")))
   (vl-mkdir dir)
   (cond
     ((not (setq rep (dg:write (strcat dir "\\Report.txt") (dg:report (mapcar 'car dg:sections)))))
      (princ (strcat "\n--> Unable to write in " dir))
+     (if (and forissue Dyl:StartPageIssue) (Dyl:StartPageIssue nil nil))
     )
     (T
      (dg:settingsfile dir)
      (if (vl-file-directory-p *dyl:user) (Dyl:SetsCopy *dyl:user (strcat dir "\\User")))
+     (if (vl-file-directory-p (strcat dir "\\User\\Start")) (Dyl:UserRmDir (strcat dir "\\User\\Start")))
      (setq zip (dg:zip dir))
-     (dg:open rep)
-     (if
-       (Dyl:Ask (list (strcat "Report ready: " (itoa (length dg:probs)) " problem(s) found.")
-                      "Send it to the DynALisp developer in a GitHub issue? The issue is public:"
-                      "check the report first. The zip of the report then goes in the issue."
-                )
-                "Open issue"
-                "Close"
-       )
+     (if (and forissue Dyl:StartPageIssue)
        (progn
-         (dg:open (dg:issue (cond (zip) (dir))))
-         (if zip
-           (startapp "explorer" (strcat "/select,\"" zip "\""))
-           (dg:open dir)
-         )
-         (princ (strcat "\nDrag " (vl-filename-base (cond (zip) (dir))) (if zip ".zip" "") " into the issue, describe the problem, then Submit."))
+         (Dyl:StartPageIssue rep zip)
+         (princ (strcat "\nReport ready: " (itoa (length dg:probs)) " problem(s) found, the issue opened in your browser."))
        )
-       (princ (strcat "\nReport saved in " (cond (zip) (dir)) "."))
+       (dg:full-ask rep zip dir)
      )
     )
   )
   (princ)
+)
+
+;;  The report opened, then the issue offered (Dyl-Diagnostics run by hand):
+(defun dg:full-ask (rep zip dir)
+  (dg:open rep)
+  (if
+    (Dyl:Ask (list (strcat "Report ready: " (itoa (length dg:probs)) " problem(s) found.")
+                   "Send it to the DynALisp developer in a GitHub issue? The issue is public:"
+                   "check the report first. The zip of the report then goes in the issue."
+             )
+             "Open issue"
+             "Close"
+    )
+    (progn
+      (dg:open (dg:issue (cond (zip) (dir))))
+      (if zip
+        (startapp "explorer" (strcat "/select,\"" zip "\""))
+        (dg:open dir)
+      )
+      (princ (strcat "\nDrag " (vl-filename-base (cond (zip) (dir))) (if zip ".zip" "") " into the issue, describe the problem, then Submit."))
+    )
+    (princ (strcat "\nReport saved in " (cond (zip) (dir)) "."))
+  )
 )
 
 ;;-------------------------=={ Reactor events }==------------------------;;
