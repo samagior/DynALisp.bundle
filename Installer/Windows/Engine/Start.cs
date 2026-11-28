@@ -34,8 +34,8 @@
 // drawing. The last 12 months, or a year picked over it; a day clicked lists the drawings
 // worked on that day under it (a month clicked over the grid: that month), the most recent
 // month with time until then, by name (the path in its tip); a drawing of that list clicked
-// raises Opened. It takes the
-// width it is given, its grid in the middle of its card, the years at the right of its total.
+// raises Opened. It takes the width it is given, its squares as large as the card lets them
+// (its grid fills it), the years at the right of its total.
 //
 // <dyl:TemplateList x:Name="tpl"/>: the templates to start a drawing from, the fields of a row:
 //   path, name, default ("1": the template of QNEW); one clicked raises New, Browse
@@ -559,6 +559,8 @@ namespace DynALisp.Windows
     public class ActivityGraph : ContentControl, IShowsRows
     {
         const double Cell = 11, Pitch = 14, Left = 30, Top = 18;
+        // the width of the card inside (the squares grow to fill it, Pitch at least):
+        double _avail;
         static readonly double[] Levels = { 1, 3600, 3 * 3600, 6 * 3600 };       // the seconds of a level 1 to 4
         static readonly double[] Opacities = { 0.32, 0.55, 0.78, 1.0 };
 
@@ -608,7 +610,7 @@ namespace DynALisp.Windows
             legend.Children.Add(scale);
             legend.Children.Add(Small("Time spent working in a drawing, each day.", new Thickness(0)));
 
-            // the card takes the width of the page, the grid in its middle:
+            // the card takes the width of the page, the grid fills it (in its middle):
             var inner = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center };
             inner.Children.Add(_grid);
             inner.Children.Add(legend);
@@ -616,6 +618,11 @@ namespace DynALisp.Windows
             card.SetResourceReference(Border.BorderBrushProperty, "Dyl.Border");
             card.SetResourceReference(Border.BackgroundProperty, "Dyl.Surface");
             card.Child = inner;
+            card.SizeChanged += (s, e) =>
+            {
+                double a = e.NewSize.Width - 22;
+                if (Math.Abs(a - _avail) > 1) { _avail = a; Dispatcher.BeginInvoke(new Action(Draw)); }
+            };
 
             var stack = new StackPanel();
             stack.Children.Add(head);
@@ -699,18 +706,21 @@ namespace DynALisp.Windows
             DateTime end = _year == 0 ? to : new DateTime(_year, 12, 31);
             DateTime start = from.AddDays(-(int)from.DayOfWeek);
             int weeks = (int)((end - start).TotalDays / 7) + 1;
-            _grid.Width = Left + weeks * Pitch;
-            _grid.Height = Top + 7 * Pitch;
+            // the squares as large as the width of the card lets them (the grid fills it):
+            double pitch = _avail > 0 ? Math.Max(Pitch, Math.Min(32, Math.Floor((_avail - Left) / weeks))) : Pitch;
+            double cell = Math.Round(pitch * 0.8);
+            _grid.Width = Left + weeks * pitch;
+            _grid.Height = Top + 7 * pitch;
             string[] wd = { "", "Mon", "", "Wed", "", "Fri", "" };
             for (int i = 0; i < 7; i++)
-                if (wd[i].Length > 0) Place(Small(wd[i], new Thickness(0)), 0, Top + i * Pitch - 2);
+                if (wd[i].Length > 0) Place(Small(wd[i], new Thickness(0)), 0, Top + i * pitch - 2 + (cell - Cell) / 2);
             double lastLabel = -100;
             for (int w = 0; w < weeks; w++)
                 for (int i = 0; i < 7; i++)
                 {
                     var d = start.AddDays(w * 7 + i);
-                    double x = Left + w * Pitch, y = Top + i * Pitch;
-                    if (d.Day == 1 && d >= from && d <= end && x - lastLabel >= 3 * Pitch)
+                    double x = Left + w * pitch, y = Top + i * pitch;
+                    if (d.Day == 1 && d >= from && d <= end && x - lastLabel >= 3 * pitch)
                     {
                         var month = new DateTime(d.Year, d.Month, 1);
                         var lbl = StartUi.Link(d.ToString("MMM", CultureInfo.InvariantCulture), () => Pick(month, true), "Dyl.Muted");
@@ -721,7 +731,7 @@ namespace DynALisp.Windows
                     if (d < from || d > end) continue;
                     if (d > to) continue;
                     days.TryGetValue(d, out double s);
-                    var sq = Square(Level(s), new Thickness(0));
+                    var sq = Square(Level(s), new Thickness(0), cell);
                     sq.ToolTip = (s > 0 ? StartUi.Dur(s) + " on " : "No active time on ") + d.ToString("dddd, MMMM d, yyyy", CultureInfo.InvariantCulture);
                     sq.Cursor = Cursors.Hand;
                     var day = d;
@@ -745,9 +755,9 @@ namespace DynALisp.Windows
             return l;
         }
 
-        static Rectangle Square(int level, Thickness margin)
+        static Rectangle Square(int level, Thickness margin, double size = Cell)
         {
-            var r = new Rectangle { Width = Cell, Height = Cell, RadiusX = 2, RadiusY = 2, Margin = margin, VerticalAlignment = VerticalAlignment.Center };
+            var r = new Rectangle { Width = size, Height = size, RadiusX = Math.Max(2, size / 6), RadiusY = Math.Max(2, size / 6), Margin = margin, VerticalAlignment = VerticalAlignment.Center };
             if (level == 0) r.SetResourceReference(Shape.FillProperty, "Dyl.Hover");
             else { r.SetResourceReference(Shape.FillProperty, "Dyl.Accent"); r.Opacity = Opacities[level - 1]; }
             return r;
