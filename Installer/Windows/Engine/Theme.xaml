@@ -554,6 +554,34 @@
     </Setter>
   </Style>
 
+  <!-- A line of a list that is clicked (the templates of the Start page): flat, its
+       background under the mouse: -->
+  <Style x:Key="Dyl.Row" TargetType="Button">
+    <Setter Property="Foreground" Value="{DynamicResource Dyl.Text}"/>
+    <Setter Property="Cursor" Value="Hand"/>
+    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="bd" Background="Transparent" CornerRadius="4" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Dyl.Hover}"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Dyl.Hover}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="bd" Property="Background" Value="{DynamicResource Dyl.Pressed}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <!-- A button in teal that is not the default one of its window (New of the Start page, whose
        Enter belongs to its search box): -->
   <Style x:Key="Dyl.AccentButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">

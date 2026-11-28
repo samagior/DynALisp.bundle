@@ -18,7 +18,9 @@
 // the page of the Start tab of AutoCAD gives way to the page of DynALisp,
 // Res\Dyl-StartPage.xaml: what is pinned (drawings, sheet sets, projects), the active time of
 // each day (Activity.cs), the recent drawings (with the picture each drawing keeps of
-// itself), and a line at its foot on DynALisp (its version, its startup, the problems found).
+// itself) in its middle; New, Open and the templates at its left; the tasks of the projects
+// pinned at its right (Tasks.cs), and Report a problem; a line at its foot on DynALisp (its
+// version, its startup, the problems found).
 //
 // EXPERIMENT, not supported by Autodesk: the Start tab has no API. Its page is a web page,
 // in a browser window (Chrome_WidgetWin_*, CefSharp or WebView2) inside a window of the tab,
@@ -36,8 +38,10 @@
 // No Lisp runs in the Start tab (no drawing may be open): the values are read here, the
 // startup of DynALisp in the last drawing opened given by the Lisp at the end of its startup
 // ((Dyl:StartPageInfo ...), Dyl:StartupSummary of dynalisp.mnl), kept in a file of %TEMP%
-// for the next session. A button that needs the Lisp (Settings, Run Diagnostics) runs its
-// command in a drawing open, greyed out while none is.
+// for the next session. Settings runs its command in a drawing open, in a new drawing while
+// none is (the window of the Lisp needs one). Report a problem asks only what happened: the
+// report of Dyl-Diagnostics is made in a drawing open (the last one made while none is), then
+// the new issue page of DynALisp.bundle opens with it, its zip on the clipboard to paste.
 
 using System;
 using System.Collections.Generic;
@@ -237,11 +241,24 @@ namespace DynALisp.Windows
 
         static void Wire()
         {
-            if (_view.Find("new") is Button nw) nw.Click += (a, b) => Do(New);
+            if (_view.Find("new") is Button nw) nw.Click += (a, b) => Do(() => New(null));
             if (_view.Find("opn") is Button op) op.Click += (a, b) => Do(OpenAsk);
-            if (_view.Find("set") is Button st) st.Click += (a, b) => Do(() => Command("Dyl-Settings"));
-            if (_view.Find("dia") is Button dg) dg.Click += (a, b) => Do(() => Command("Dyl-Diagnostics"));
-            if (_view.Find("rep") is Button rp) rp.Click += (a, b) => Do(() => { var r = LastReport(); if (r != null) Shell(r); });
+            if (_view.Find("osh") is Button os) os.Click += (a, b) => Do(OpenSheetSetAsk);
+            if (_view.Find("set") is Button st) st.Click += (a, b) => Do(Settings);
+            if (_view.Find("rep") is Button rp) rp.Click += (a, b) => Do(() => ReportPanel(true));
+            if (_view.Find("rno") is Button rn) rn.Click += (a, b) => Do(() => ReportPanel(false));
+            if (_view.Find("rgo") is Button rg) rg.Click += (a, b) => Do(ReportGo);
+            if (_view.Find("tpl") is TemplateList tpl)
+            {
+                tpl.New += f => Do(() => New(f));
+                tpl.Browse += () => Do(BrowseTemplates);
+            }
+            if (_view.Find("tsk") is ProjectTasks tsk)
+            {
+                tsk.Added += (pj, t) => Do(() => { ProjectTasksFile.Add(pj, t); ReadRows(); });
+                tsk.Checked += (pj, id, on) => Do(() => { ProjectTasksFile.Check(pj, id, on); ReadRows(); });
+                tsk.Removed += (pj, id) => Do(() => { ProjectTasksFile.Remove(pj, id); ReadRows(); });
+            }
             if (_view.Find("pnb") is Button pb) pb.Click += (a, b) => Do(PinAsk);
             if (_view.Find("rec") is RecentDrawings rec)
             {
@@ -289,10 +306,32 @@ namespace DynALisp.Windows
         {
             var r = new List<(string, string, bool)> { ("Pin", dwg, Activity.Pinned(dwg)) };
             string dst = Up(dwg, "*.dst"), apj = Up(dwg, "*.apj");
-            if (dst != null) r.Add(("Pin sheet set " + Path.GetFileNameWithoutExtension(dst), dst, Activity.Pinned(dst)));
+            if (dst != null) r.Add(("Pin sheet set " + SheetTitle(dst), dst, Activity.Pinned(dst)));
             if (apj != null) r.Add(("Pin project " + Path.GetFileNameWithoutExtension(apj), apj, Activity.Pinned(apj)));
             return r;
         }
+
+        // The title of a sheet set (the name the Sheet Set Manager shows, not the name of its
+        // file), kept with the date of the file: read again only once it changed. Its file name
+        // when it cannot be read. On the thread of AutoCAD (the manager is a COM object of it).
+        static readonly Dictionary<string, (DateTime Stamp, string Title)> _titles =
+            new Dictionary<string, (DateTime, string)>(StringComparer.OrdinalIgnoreCase);
+
+        static string SheetTitle(string dst)
+        {
+            DateTime t = DateTime.MinValue;
+            try { if (System.IO.File.Exists(dst)) t = System.IO.File.GetLastWriteTimeUtc(dst); } catch { }
+            if (_titles.TryGetValue(dst, out var c) && c.Stamp == t) return c.Title;
+            string title = null;
+            if (t != DateTime.MinValue) try { title = DynALisp.Startup.SheetSetMgr.TitleOf(dst); } catch { }
+            if (string.IsNullOrWhiteSpace(title)) title = Path.GetFileNameWithoutExtension(dst);
+            _titles[dst] = (t, title.Trim());
+            return title.Trim();
+        }
+
+        // The name shown of a pin: the title of a sheet set, else the name of its file:
+        static string NameOf(string pin, Dictionary<string, string> titles) =>
+            titles != null && titles.TryGetValue(pin, out var n) ? n : Path.GetFileNameWithoutExtension(pin);
 
         static string Up(string file, string pattern)
         {
@@ -313,8 +352,8 @@ namespace DynALisp.Windows
         // drawing open (as Reopen sheet sets does, SheetSets.cs):
         static void OpenSheetSet(string dst)
         {
-            var doc = Drawing();
-            if (doc == null) { Say("Open a drawing first: the sheet set opens in the Sheet Set Manager of a drawing."); return; }
+            var doc = Drawing() ?? New(null);
+            if (doc == null) return;
             string f = "\"" + dst.Replace("\\", "\\\\").Replace("\"", "") + "\"";
             string lisp = "(progn (setq *dyl:ssopen* (list (getvar \"FILEDIA\") (getvar \"CMDECHO\")))"
                         + " (setvar \"FILEDIA\" 0) (setvar \"CMDECHO\" 0)"
@@ -342,17 +381,50 @@ namespace DynALisp.Windows
         }
 
         // The template of QNEW, else that of the units of AutoCAD:
-        static void New()
+        static Document New(string template)
         {
-            string t = "";
-            try { dynamic prefs = AcApp.Preferences; t = (string)prefs.Files.QNewTemplateFile; } catch { }
+            string t = string.IsNullOrEmpty(template) ? QNew() : template;
             if (string.IsNullOrEmpty(t) || !System.IO.File.Exists(t))
             {
                 int mi = 0;
                 try { mi = Convert.ToInt32(AcApp.GetSystemVariable("MEASUREINIT")); } catch { }
                 t = mi == 1 ? "acadiso.dwt" : "acad.dwt";
             }
-            AcApp.DocumentManager.Add(t);
+            return AcApp.DocumentManager.Add(t);
+        }
+
+        static string QNew()
+        {
+            try { dynamic prefs = AcApp.Preferences; return (string)prefs.Files.QNewTemplateFile; } catch { return ""; }
+        }
+
+        static string TemplateFolder()
+        {
+            try { dynamic prefs = AcApp.Preferences; return (string)prefs.Files.TemplateDwgPath; } catch { return ""; }
+        }
+
+        static void BrowseTemplates()
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog { Title = "New", Filter = "Templates (*.dwt)|*.dwt|Drawings (*.dwg)|*.dwg" };
+            string dir = TemplateFolder();
+            if (!string.IsNullOrEmpty(dir) && Directory.Exists(dir)) dlg.InitialDirectory = dir;
+            if (dlg.ShowDialog() == true) New(dlg.FileName);
+        }
+
+        static void OpenSheetSetAsk()
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog { Title = "Open sheet set", Filter = "Sheet sets (*.dst)|*.dst" };
+            if (dlg.ShowDialog() == true) OpenSheetSet(dlg.FileName);
+        }
+
+        // Dyl-Settings, in a new drawing while none is open (its window is made by the Lisp,
+        // which runs only in a drawing):
+        static void Settings()
+        {
+            var doc = Drawing() ?? New(null);
+            if (doc == null) return;
+            AcApp.DocumentManager.MdiActiveDocument = doc;
+            doc.SendStringToExecute("Dyl-Settings\n", true, false, false);
         }
 
         static void OpenAsk()
@@ -376,7 +448,7 @@ namespace DynALisp.Windows
         // A drawing opened (made current when it is open already):
         static void Open(string file, bool readOnly)
         {
-            if (!System.IO.File.Exists(file)) { Say("Not found: " + file); return; }
+            if (!System.IO.File.Exists(file)) { Say("Not found: " + System.IO.Path.GetFileName(file)); return; }
             if (Kind(file) == "Sheet set") { OpenSheetSet(file); return; }
             if (Kind(file) == "Project") { ShowInFolder(file); return; }
             var dm = AcApp.DocumentManager;
@@ -396,7 +468,7 @@ namespace DynALisp.Windows
             {
                 string dir = Path.GetDirectoryName(file);
                 if (!string.IsNullOrEmpty(dir) && Directory.Exists(dir)) Shell(dir);
-                else Say("Not found: " + (dir ?? file));
+                else Say("Not found: " + System.IO.Path.GetFileName((dir ?? file).TrimEnd('\\', '/')));
             }
         }
 
@@ -409,13 +481,6 @@ namespace DynALisp.Windows
             if (dm.MdiActiveDocument != null) return dm.MdiActiveDocument;
             foreach (Document d in dm) return d;
             return null;
-        }
-
-        static void Command(string cmd)
-        {
-            var doc = Drawing();
-            if (doc == null) { Say("Open a drawing first."); return; }
-            doc.SendStringToExecute(cmd + "\n", true, false, false);
         }
 
         // ---- the values of the page ----
@@ -433,7 +498,7 @@ namespace DynALisp.Windows
         // of Session.Off, but never enables it again: a window is filled once):
         static void Enable()
         {
-            foreach (var key in new[] { "set", "dia", "rep" })
+            foreach (var key in new[] { "set", "rep" })
                 if (_view?.Find(key) is Button b) b.IsEnabled = !_s.Off.Contains(key);
             // a note without text takes no room:
             foreach (var key in new[] { "actn", "ftp", "err" })
@@ -445,11 +510,7 @@ namespace DynALisp.Windows
             s.Values["ver"] = Foot();
             s.Values["ftp"] = Problems();
             s.Values["actn"] = Env(Activity.Setting) == "1" ? "" : "Active time is off: turn it on in Settings, under Start page.";
-            s.Values[Session.DocsKey(Docs)] = DocsTarget();
-            bool dwg = Drawing() != null;
-            Off(s, "set", !dwg);
-            Off(s, "dia", !dwg);
-            Off(s, "rep", LastReport() == null);
+            s.Values[Session.DocsKey(Docs)] = DocsHome();
         }
 
         static void Off(Session s, string key, bool off)
@@ -532,16 +593,22 @@ namespace DynALisp.Windows
             try { profile = AcApp.GetSystemVariable("CPROFILE") as string ?? ""; } catch { }
             var pending = Activity.Pending();
             var pins = Activity.Pins();
+            string tdir = TemplateFolder(), qnew = QNew();
+            var titles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var p in pins)
+                if (string.Equals(Path.GetExtension(p), ".dst", StringComparison.OrdinalIgnoreCase)) titles[p] = SheetTitle(p);
             _reading = true;
             _readAgain = false;
             var disp = Dispatcher.CurrentDispatcher;
             Task.Run(() =>
             {
-                List<string[]> rec = null, act = null, pin = null;
+                List<string[]> rec = null, act = null, pin = null, tpl = null, tsk = null;
                 string err = null;
+                try { tpl = Templates(tdir, qnew); } catch { tpl = new List<string[]>(); }
+                try { tsk = TaskRows(pins, titles); } catch (System.Exception e) { err = "tasks: " + e.Message; }
                 try { rec = Recent(root, profile); }
                 catch (System.Exception e) { err = "recent drawings: " + e.Message; }
-                try { act = Activity.Rows(pending); pin = PinRows(pins, act); }
+                try { act = Activity.Rows(pending); pin = PinRows(pins, act, titles); }
                 catch (System.Exception e) { err = "active time: " + e.Message; }
                 disp.BeginInvoke(new Action(() =>
                 {
@@ -552,6 +619,8 @@ namespace DynALisp.Windows
                         if (rec != null) _s.Rows["rec" + StartUi.RowsSuffix] = rec;
                         if (act != null) _s.Rows["act" + StartUi.RowsSuffix] = act;
                         if (pin != null) _s.Rows["pin" + StartUi.RowsSuffix] = pin;
+                        if (tpl != null) _s.Rows["tpl" + StartUi.RowsSuffix] = tpl;
+                        if (tsk != null) _s.Rows["tsk" + StartUi.RowsSuffix] = tsk;
                         _view.Fill();
                     }
                     if (_readAgain) ReadRows();
@@ -559,10 +628,129 @@ namespace DynALisp.Windows
             });
         }
 
+        // The templates of the template folder of AutoCAD (Files of Options), the one of QNEW
+        // first (marked default, wherever it is), then the others by name, 12 at most:
+        static List<string[]> Templates(string dir, string qnew)
+        {
+            var rows = new List<string[]>();
+            if (!string.IsNullOrEmpty(qnew) && System.IO.File.Exists(qnew))
+                rows.Add(new[] { qnew, Path.GetFileNameWithoutExtension(qnew), "1" });
+            if (!string.IsNullOrEmpty(dir) && Directory.Exists(dir))
+                foreach (var f in Directory.GetFiles(dir, "*.dwt").OrderBy(f => Path.GetFileName(f), StringComparer.OrdinalIgnoreCase))
+                    if (rows.Count < 12 && !string.Equals(f, qnew, StringComparison.OrdinalIgnoreCase))
+                        rows.Add(new[] { f, Path.GetFileNameWithoutExtension(f), "" });
+            return rows;
+        }
+
+        // The tasks of the projects and sheet sets pinned: project, name, kind, id, done, text,
+        // error (a row without id for a project without a task):
+        static List<string[]> TaskRows(List<string> pins, Dictionary<string, string> titles)
+        {
+            var rows = new List<string[]>();
+            foreach (var p in pins)
+            {
+                string kind = Kind(p);
+                if (kind == "Drawing") continue;
+                string name = NameOf(p, titles);
+                List<ProjectTasksFile.Item> items;
+                string err = "";
+                try { items = ProjectTasksFile.Read(p); }
+                catch (System.Exception e) { items = new List<ProjectTasksFile.Item>(); err = "Tasks not read: " + e.Message; }
+                if (items.Count == 0) rows.Add(new[] { p, name, kind, "", "", "", err });
+                foreach (var t in items) rows.Add(new[] { p, name, kind, t.Id, t.Done ? "1" : "", t.Text, err });
+            }
+            return rows;
+        }
+
+        // ---- report a problem ----
+
+        const string IssueRepo = "samagior/DynALisp.bundle";   // *dyl:gitrepo* of dynalisp.mnl
+        static string _issueText;
+
+        static void ReportPanel(bool show)
+        {
+            if (_view?.Find("rpp") is FrameworkElement p) p.Visibility = show ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+            ReportSay("");
+            if (show && _view?.Find("rtx") is TextBox t) t.Focus();
+        }
+
+        static void ReportSay(string msg)
+        {
+            if (_view?.Find("rst") is TextBlock t) t.Text = msg ?? "";
+        }
+
+        // What happened, kept; the report made in a drawing open, which gives it back by
+        // (Dyl:StartPageIssue report zip): the issue opened then. While no drawing is open, or
+        // Dyl-Diagnostics is turned off, the last report made.
+        static void ReportGo()
+        {
+            string text = (_view?.Find("rtx") as TextBox)?.Text?.Trim() ?? "";
+            if (text.Length == 0) { ReportSay("Describe the problem first."); return; }
+            _issueText = text;
+            var doc = Drawing();
+            if (doc == null) { Issue(null, null); return; }
+            ReportSay("Making the report...");
+            AcApp.DocumentManager.MdiActiveDocument = doc;
+            doc.SendStringToExecute("(if c:Dyl-Diagnostics (progn (setq *dg:forissue* T) (c:Dyl-Diagnostics)) (if Dyl:StartPageIssue (Dyl:StartPageIssue nil nil)))\n", true, false, false);
+        }
+
+        // The new issue page of DynALisp.bundle, filled in: what happened, a summary, the
+        // problems found and as much of the report as a link holds (the whole of it is in its
+        // zip, put on the clipboard: Ctrl+V in the issue attaches it).
+        internal static void Issue(string rep, string zip)
+        {
+            bool fresh = rep != null;
+            if (rep == null)
+            {
+                rep = LastReport();
+                if (rep != null)
+                {
+                    string z = Path.GetDirectoryName(rep) + ".zip";
+                    zip = System.IO.File.Exists(z) ? z : null;
+                }
+            }
+            string text = _issueText ?? "";
+            var lines = new List<string>();
+            try { if (rep != null) lines = System.IO.File.ReadAllLines(rep, Encoding.UTF8).ToList(); } catch { }
+            var probs = lines.Where(l => l.StartsWith("  [!] ", StringComparison.Ordinal)).Select(l => l.Substring(6)).ToList();
+            var head = new StringBuilder();
+            head.Append("**What happened:**\n\n").Append(text).Append("\n\n");
+            if (zip != null) head.Append("**Report:** `").Append(Path.GetFileName(zip)).Append("` is on the clipboard: paste it here (Ctrl+V) to attach it.\n\n");
+            head.Append("### Summary\n- DynALisp ").Append(Version()).Append("\n- ").Append(Product()).Append(", .NET ").Append(Environment.Version.ToString(2)).Append('\n');
+            if (rep == null) head.Append("- No report of Dyl-Diagnostics yet\n");
+            else if (!fresh) head.Append("- The last report of Dyl-Diagnostics (no drawing was open): ").Append(Path.GetFileName(Path.GetDirectoryName(rep))).Append('\n');
+            var probText = new StringBuilder("\n### Problems found (" + probs.Count + ")\n");
+            foreach (var p in probs.Take(15)) probText.Append("- ").Append(p).Append('\n');
+            if (probs.Count > 15) probText.Append("- ... (").Append(probs.Count - 15).Append(" more in the report)\n");
+            string title = "Problem: " + (text.Split('\n')[0].Trim() is string t1 && t1.Length > 60 ? t1.Substring(0, 57) + "..." : text.Split('\n')[0].Trim());
+            // as many lines of the report as the link holds (GitHub refuses a link much longer):
+            int keep = lines.Count;
+            string url;
+            while (true)
+            {
+                var body = new StringBuilder(head.ToString()).Append(probText);
+                if (keep > 0)
+                {
+                    body.Append("\n<details><summary>Report").Append(keep < lines.Count ? " (its beginning: the whole of it is in the zip)" : "").Append("</summary>\n\n```\n");
+                    foreach (var l in lines.Take(keep)) body.Append(l).Append('\n');
+                    body.Append("```\n</details>\n");
+                }
+                url = "https://github.com/" + IssueRepo + "/issues/new?title=" + Uri.EscapeDataString(title) + "&body=" + Uri.EscapeDataString(body.ToString());
+                if (url.Length <= 7500 || keep == 0) break;
+                keep = Math.Max(0, Math.Min(keep - 5, (int)(keep * 7500.0 / url.Length)));
+            }
+            if (zip != null)
+                try { System.Windows.Clipboard.SetFileDropList(new System.Collections.Specialized.StringCollection { zip }); } catch { }
+            Shell(url);
+            if (_view?.Find("rtx") is TextBox tb) tb.Text = "";
+            ReportPanel(false);
+            Say(zip != null ? "Issue opened in your browser: paste the report (Ctrl+V), check it, then Submit." : "Issue opened in your browser: check it, then Submit.");
+        }
+
         // The cards of the pins: path, name, kind, folder, its active time in the last year (a
         // sheet set or a project: the drawings of its folder and the folders under it),
         // thumbnail, missing:
-        static List<string[]> PinRows(List<string> pins, List<string[]> act)
+        static List<string[]> PinRows(List<string> pins, List<string[]> act, Dictionary<string, string> titles)
         {
             string from = DateTime.Today.AddDays(-364).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
             string cache = Path.Combine(Path.GetTempPath(), "DynALisp Start");
@@ -583,7 +771,7 @@ namespace DynALisp.Windows
                 if (there && kind == "Drawing") try { thumb = Thumbnail(p, t, size, cache) ?? ""; } catch { }
                 rows.Add(new[]
                 {
-                    p, Path.GetFileNameWithoutExtension(p), kind, dir,
+                    p, NameOf(p, titles), kind, dir,
                     s > 0 ? StartUi.Dur(s) + " of active time in the last year" : "No active time in the last year",
                     thumb, there ? "" : "1",
                 });
@@ -757,25 +945,15 @@ namespace DynALisp.Windows
             return string.IsNullOrEmpty(name) ? "AutoCAD " + AcApp.Version.ToString(2) : name;
         }
 
-        // The page of the docs website (in the language of DynALisp when it has it), as
-        // Dyl:DocsTarget of dynalisp.mnl finds it; the file of a git clone when the website
-        // does not list it:
-        static string DocsTarget()
+        // The home page of the User Guide on the docs website, in French when DynALisp is:
+        static string DocsHome()
         {
             const string Web = "https://samagior.github.io/DynALisp.docs/";
-            string rel = "Dynalisp/" + Docs.Replace('\\', '/');
-            string fr = rel.Substring(0, rel.Length - 4) + ".fr.htm";
             string lang = Env("DynalispLanguage");
             bool french = string.IsNullOrEmpty(lang)
                 ? HostApplicationServices.Current.UserRegistryProductRootKey.EndsWith(":40C", StringComparison.OrdinalIgnoreCase)
                 : lang == "French";
-            List<string> pages;
-            try { pages = System.IO.File.ReadAllLines(Path.Combine(Root(), "Contents", "Resources", "DocsPages.txt")).Select(l => l.Split('\t')[0].Trim()).ToList(); }
-            catch { pages = new List<string>(); }
-            if (french && pages.Contains(fr, StringComparer.OrdinalIgnoreCase)) return Web + fr;
-            if (pages.Contains(rel, StringComparer.OrdinalIgnoreCase)) return Web + rel;
-            string local = Path.Combine(Root(), "Contents", "Modules", "Dynalisp", "Docs", Docs);
-            return System.IO.File.Exists(local) ? local : Web;
+            return Web + (french ? "index.fr.html" : "");
         }
 
         // A user setting (getenv: the FixedProfile\General key of the profile):
@@ -952,6 +1130,20 @@ namespace DynALisp.Windows
                 return true;
             }
             catch { return null; }
+        }
+
+        // (Dyl:StartPageIssue report zip): the report Dyl-Diagnostics just made for Report a
+        // problem of the Start page (nil: none could be made), the issue opened with it.
+        [LispFunction("Dyl:StartPageIssue")]
+        public object Issue(ResultBuffer args)
+        {
+            try
+            {
+                var a = Lisp.Read(args);
+                StartPage.Issue(a.Count > 0 ? a[0] as string : null, a.Count > 1 ? a[1] as string : null);
+                return true;
+            }
+            catch (System.Exception e) { return "error: " + e.Message; }
         }
 
         static void Write(StartupInfo i)

@@ -49,6 +49,12 @@
     <EmbeddedResource Include="Engine\Theme.xaml" LogicalName="DynALisp.Windows.Theme.xaml" />
   </ItemGroup>
 
+  <!-- The Sheet Set Manager called through its type library, shared with DynALisp.Startup (the
+       title of a sheet set pinned on the Start page): -->
+  <ItemGroup>
+    <Compile Include="..\Startup\SheetSetMgr.cs" Link="SheetSetMgr.cs" />
+  </ItemGroup>
+
   <!-- Compile only: AutoCAD gives its own assemblies at run time. -->
   <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
     <PackageReference Include="AutoCAD.NET" Version="25.0.1" ExcludeAssets="runtime" PrivateAssets="all" />

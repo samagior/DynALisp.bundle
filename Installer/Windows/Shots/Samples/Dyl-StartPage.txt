@@ -1,13 +1,15 @@
 # Sample values of the Start page (Installer\Windows\StartPage.cs, Res\Dyl-StartPage.xaml), as
 # the plugin gives them: key=value, +pin/rows=a pin (path, name, kind, folder, time, thumbnail,
-# missing), +act/rows=the active time of a day in a drawing (date, seconds, drawing), +rec/rows=a
-# recent drawing (path, name, folder, when, thumbnail, missing); \t is a tab, {samples} this
-# folder (the pictures of StartPage\, drawn for the docs: a drawing keeps its own).
+# missing), +act/rows=the active time of a day in a drawing (date, seconds, drawing),
+# +rec/rows=a recent drawing (path, name, folder, when, thumbnail, missing), +tpl/rows=a
+# template (path, name, default), +tsk/rows=a task (project, name, kind, id, done, text, error);
+# \t is a tab, {samples} this folder (the pictures of StartPage\, drawn for the docs: a drawing
+# keeps its own).
 ver=DynALisp 2.0  ·  AutoCAD Architecture 2027  ·  started in 412 ms
 ftp=1 problem in the last diagnostics
 actn=
 +pin/rows=D:\Projects\2041 Maple House\2041 Maple House.apj\t2041 Maple House\tProject\tD:\Projects\2041 Maple House\t186 h 40 of active time in the last year\t\t
-+pin/rows=D:\Projects\2038 Library\Library.dst\tLibrary\tSheet set\tD:\Projects\2038 Library\t412 h 15 of active time in the last year\t\t
++pin/rows=D:\Projects\2038 Library\Library.dst\t2038 Public Library\tSheet set\tD:\Projects\2038 Library\t412 h 15 of active time in the last year\t\t
 +pin/rows=D:\Projects\2041 Maple House\Plans\A-101 Ground Floor.dwg\tA-101 Ground Floor\tDrawing\tD:\Projects\2041 Maple House\Plans\t61 h 20 of active time in the last year\t{samples}\StartPage\plan.png\t
 +pin/rows=D:\Projects\2041 Maple House\Details\A-501 Wall Sections.dwg\tA-501 Wall Sections\tDrawing\tD:\Projects\2041 Maple House\Details\t38 h 05 of active time in the last year\t{samples}\StartPage\section.png\t
 +act/rows=2025-11-28\t15971\tD:\Projects\2038 Library\A-301 Sections.dwg
@@ -389,6 +391,20 @@ actn=
 +act/rows=2026-11-24\t15363\tD:\Projects\2041 Maple House\Plans\A-101 Ground Floor.dwg
 +act/rows=2026-11-25\t9667\tD:\Projects\2041 Maple House\Plans\A-101 Ground Floor.dwg
 +act/rows=2026-11-27\t19747\tD:\Projects\2041 Maple House\Plans\A-102 Second Floor.dwg
++tpl/rows=D:\Standards\Office\Arch D.dwt\tArch D\t1
++tpl/rows=D:\Standards\Autodesk\acad.dwt\tacad\t
++tpl/rows=D:\Standards\Autodesk\acadiso.dwt\tacadiso\t
++tpl/rows=D:\Standards\Office\Details.dwt\tDetails\t
++tpl/rows=D:\Standards\Office\Site.dwt\tSite\t
++tsk/rows=D:\Projects\2041 Maple House\2041 Maple House.apj\t2041 Maple House\tProject\ta1\t1\tGround floor plan to the client\t
++tsk/rows=D:\Projects\2041 Maple House\2041 Maple House.apj\t2041 Maple House\tProject\ta2\t1\tWall sections, thermal check\t
++tsk/rows=D:\Projects\2041 Maple House\2041 Maple House.apj\t2041 Maple House\tProject\ta3\t\tRoof details\t
++tsk/rows=D:\Projects\2041 Maple House\2041 Maple House.apj\t2041 Maple House\tProject\ta4\t\tWindow schedule\t
++tsk/rows=D:\Projects\2038 Library\Library.dst\t2038 Public Library\tSheet set\tb1\t1\tElevations, issue for permit\t
++tsk/rows=D:\Projects\2038 Library\Library.dst\t2038 Public Library\tSheet set\tb2\t1\tSections A and B\t
++tsk/rows=D:\Projects\2038 Library\Library.dst\t2038 Public Library\tSheet set\tb3\t1\tSecond floor plan revised\t
++tsk/rows=D:\Projects\2038 Library\Library.dst\t2038 Public Library\tSheet set\tb4\t\tStair details\t
++tsk/rows=D:\Projects\2038 Library\Library.dst\t2038 Public Library\tSheet set\tb5\t\tSheet index\t
 +rec/rows=D:\Projects\2041 Maple House\Plans\A-101 Ground Floor.dwg\tA-101 Ground Floor\tD:\Projects\2041 Maple House\Plans\ttoday 14:02\t{samples}\StartPage\plan.png\t
 +rec/rows=D:\Projects\2041 Maple House\Details\A-501 Wall Sections.dwg\tA-501 Wall Sections\tD:\Projects\2041 Maple House\Details\ttoday 11:37\t{samples}\StartPage\section.png\t
 +rec/rows=D:\Projects\2041 Maple House\Plans\A-001 Site Plan.dwg\tA-001 Site Plan\tD:\Projects\2041 Maple House\Plans\tyesterday 16:20\t{samples}\StartPage\site.png\t

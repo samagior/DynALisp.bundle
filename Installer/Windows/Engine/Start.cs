@@ -14,28 +14,43 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
-// Three controls, each filled from a table of the values (key/rows, null: not read yet, the
+// Five controls, each filled from a table of the values (key/rows, null: not read yet, the
 // rows are being read). Nothing here knows AutoCAD: StartPage.cs of the plugin gives the rows
 // and does what they ask (open a drawing, pin it), the pictures tool of the docs (Shots\) draws
 // the page on sample rows.
 //
 // <dyl:PinnedItems x:Name="pin" Graph="act"/>: the cards of what is pinned, the fields of a row:
-//   path, name, kind ("Drawing", "Sheet set" or "Project"), where (its folder), time (the text
-//   of its active time), thumbnail (a .png file, "" none), missing ("1": not found)
+//   path, name, kind ("Drawing", "Sheet set" or "Project"), where (its folder, not shown: the
+//   path is only in the tip of the card), time (the text of its active time), thumbnail (a
+//   .png file, "" none), missing ("1": not found)
 // A drawing clicked raises Opened; a sheet set or a project clicked shows only its active time
 // in the graph Graph (clicked again: all of it). Its right-click menu: Open (a drawing, a sheet
 // set), Show its active time, Show in folder (Folder), Unpin (Unpinned).
 //
 // <dyl:ActivityGraph x:Name="act"/>: the active time of each day, as a grid of the weeks of
 // the year (a square a day, darker for more time), the rows: date (yyyy-MM-dd), seconds,
-// drawing. The last 12 months, or a year picked at its right; a day clicked lists the drawings
+// drawing. The last 12 months, or a year picked over it; a day clicked lists the drawings
 // worked on that day under it (a month clicked over the grid: that month), the most recent
-// month with time until then; a drawing of that list clicked raises Opened.
+// month with time until then, by name (the path in its tip); a drawing of that list clicked
+// raises Opened. It takes the
+// width it is given, its grid in the middle of its card, the years at the right of its total.
+//
+// <dyl:TemplateList x:Name="tpl"/>: the templates to start a drawing from, the fields of a row:
+//   path, name, default ("1": the template of QNEW); one clicked raises New, Browse
+//   templates... raises Browse.
+//
+// <dyl:ProjectTasks x:Name="tsk"/>: a card for each project or sheet set pinned, with the bar
+// of its tasks done and its tasks, the fields of a row:
+//   project (its .apj or .dst), name, kind, id ("": the project without a task), done ("1"),
+//   text, error (its tasks could not be read)
+// A task checked raises Checked, deleted from its right-click menu Removed, typed in the box
+// under them (Enter) Added.
 //
 // <dyl:RecentDrawings x:Name="rec" Search="find" Count="cnt" Max="12"/>: a tile for each
 // drawing opened last, the fields of a row:
-//   path, name, folder, when (the text of its date), thumbnail (a .png file, "" none: a sheet
-//   is drawn in its place), missing ("1": the file is not found, its tile greyed out)
+//   path, name, folder (not shown: the path is only in the tip of the tile), when (the text of
+//   its date), thumbnail (a .png file, "" none: a sheet is drawn in its place), missing ("1":
+//   the file is not found, its tile greyed out)
 // The tiles shown are filtered as the box Search is typed (every word in the name or the
 // folder, accents and case ignored), Count says how many are shown (its Tag:
 // "drawing,drawings"), Max shows only the first ones. A tile clicked raises Opened (its path,
@@ -283,12 +298,10 @@ namespace DynALisp.Windows
                 : StartUi.Glyph("Drawing", 0.8);
             var title = StartUi.Text(name, null, 0, true);
             title.Margin = new Thickness(0, 6, 0, 0);
-            var where = StartUi.Text(folder, "Dyl.Muted", 11.5);
             var date = StartUi.Text(missing ? "Not found" : when, missing ? "Dyl.ErrorText" : "Dyl.Muted", 11.5);
             var stack = new StackPanel();
             stack.Children.Add(pic);
             stack.Children.Add(title);
-            stack.Children.Add(where);
             stack.Children.Add(date);
             var b = new Button { Content = stack, Width = w, ToolTip = it.Path, Opacity = missing ? 0.55 : 1 };
             b.SetResourceReference(StyleProperty, "Dyl.Tile");
@@ -399,9 +412,6 @@ namespace DynALisp.Windows
             top.Children.Add(title);
             var lines = new StackPanel();
             lines.Children.Add(top);
-            var w = StartUi.Text(where, "Dyl.Muted", 11.5);
-            w.Margin = new Thickness(0, 2, 0, 0);
-            lines.Children.Add(w);
             var t = StartUi.Text(missing ? "Not found" : time, missing ? "Dyl.ErrorText" : "Dyl.Text", 11.5);
             t.Margin = new Thickness(0, 5, 0, 0);
             lines.Children.Add(t);
@@ -442,7 +452,7 @@ namespace DynALisp.Windows
         readonly TextBlock _total = StartUi.Text("", "Dyl.Heading", 14.5);
         readonly TextBlock _all;
         readonly Canvas _grid = new Canvas();
-        readonly StackPanel _years = new StackPanel { Margin = new Thickness(16, 0, 0, 0), MinWidth = 96 };
+        readonly StackPanel _years = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(12, 0, 0, 0) };
         readonly TextBlock _period = StartUi.Text("", "Dyl.Heading", 13, true);
         readonly TextBlock _summary = StartUi.Text("", "Dyl.Muted", 12);
         readonly StackPanel _list = new StackPanel { Margin = new Thickness(0, 6, 0, 0) };
@@ -463,9 +473,13 @@ namespace DynALisp.Windows
             _all = StartUi.Link("Show all", () => { SetScope(null, null, false); Scopes?.Invoke(); });
             _all.Margin = new Thickness(12, 0, 0, 0);
             _all.VerticalAlignment = VerticalAlignment.Bottom;
+            // the total, then at its right: Show all (a scope), the years
             var head = new DockPanel { Margin = new Thickness(0, 0, 0, 8) };
+            DockPanel.SetDock(_years, Dock.Right);
             DockPanel.SetDock(_all, Dock.Right);
+            head.Children.Add(_years);
             head.Children.Add(_all);
+            _total.VerticalAlignment = VerticalAlignment.Center;
             head.Children.Add(_total);
 
             var legend = new DockPanel { Margin = new Thickness(Left, 6, 0, 0) };
@@ -477,27 +491,23 @@ namespace DynALisp.Windows
             legend.Children.Add(scale);
             legend.Children.Add(Small("Time spent working in a drawing, each day.", new Thickness(0)));
 
-            var inner = new StackPanel();
+            // the card takes the width of the page, the grid in its middle:
+            var inner = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center };
             inner.Children.Add(_grid);
             inner.Children.Add(legend);
-            var card = new Border { BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(6), Padding = new Thickness(12, 10, 14, 10), HorizontalAlignment = HorizontalAlignment.Left };
+            var card = new Border { BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(6), Padding = new Thickness(10, 10, 10, 10) };
             card.SetResourceReference(Border.BorderBrushProperty, "Dyl.Border");
             card.SetResourceReference(Border.BackgroundProperty, "Dyl.Surface");
             card.Child = inner;
 
-            var row = new DockPanel { LastChildFill = false };
-            DockPanel.SetDock(_years, Dock.Right);
-            var left = new StackPanel();
-            left.Children.Add(head);
-            left.Children.Add(card);
+            var stack = new StackPanel();
+            stack.Children.Add(head);
+            stack.Children.Add(card);
             _details.Children.Add(_period);
             _details.Children.Add(_summary);
             _details.Children.Add(_list);
-            left.Children.Add(_details);
-            row.Children.Add(left);
-            row.Children.Add(_years);
-            DockPanel.SetDock(left, Dock.Left);
-            Content = row;
+            stack.Children.Add(_details);
+            Content = stack;
             Draw();
         }
 
@@ -644,8 +654,8 @@ namespace DynALisp.Windows
 
         RadioButton Year(string text, int year)
         {
-            var b = new RadioButton { Content = text, IsChecked = _year == year, Margin = new Thickness(0, 0, 0, 6), Padding = new Thickness(14, 5, 14, 5), GroupName = "years" + GetHashCode() };
-            b.SetResourceReference(StyleProperty, "Dyl.Pill");
+            var b = new RadioButton { Content = text, IsChecked = _year == year, Margin = new Thickness(6, 0, 0, 0), GroupName = "years" + GetHashCode() };
+            b.SetResourceReference(StyleProperty, "Dyl.PillSmall");
             b.Checked += (s, e) => { if (_year != year) { _year = year; _day = null; Dispatcher.BeginInvoke(new Action(Draw)); } };
             return b;
         }
@@ -696,17 +706,167 @@ namespace DynALisp.Windows
                 var path = x.Path;
                 var name = StartUi.Link(StartUi.Name(path), () => Opened?.Invoke(path, false));
                 name.ToolTip = path;
-                var folder = StartUi.Text("  " + StartUi.Dir(path), "Dyl.Muted", 11.5);
-                folder.VerticalAlignment = VerticalAlignment.Center;
-                var names = new DockPanel();
-                DockPanel.SetDock(name, Dock.Left);
-                names.Children.Add(name);
-                names.Children.Add(folder);
-                line.Children.Add(names);
+                line.Children.Add(name);
                 _list.Children.Add(line);
             }
             if (by.Count > 8) _list.Children.Add(Small("... and " + (by.Count - 8) + " more", new Thickness(0, 4, 0, 0)));
-            _list.MaxWidth = Math.Max(_grid.Width + 28, 560);
+        }
+    }
+
+    // ---- the templates ----
+
+    public class TemplateList : ContentControl, IShowsRows
+    {
+        // A drawing to start from a template (its path), the templates to browse:
+        public event Action<string> New;
+        public event Action Browse;
+
+        readonly StackPanel _list = new StackPanel();
+        List<string[]> _rows;
+
+        public TemplateList()
+        {
+            Focusable = false;
+            var stack = new StackPanel();
+            stack.Children.Add(_list);
+            var more = StartUi.Link("Browse templates...", () => Browse?.Invoke());
+            more.Margin = new Thickness(2, 8, 0, 0);
+            stack.Children.Add(more);
+            Content = stack;
+        }
+
+        public void Attach(Func<string, FrameworkElement> find, List<string[]> rows)
+        {
+            if (rows == null || (_rows != null && RecentDrawings.Same(_rows, rows))) return;
+            _rows = rows.Select(r => (string[])r.Clone()).ToList();
+            _list.Children.Clear();
+            if (rows.Count == 0) _list.Children.Add(StartUi.Text("No template in the template folder.", "Dyl.Muted", 12));
+            foreach (var r in rows)
+            {
+                string path = StartUi.F(r, 0);
+                var name = StartUi.Text(StartUi.F(r, 1));
+                var line = new DockPanel();
+                if (StartUi.F(r, 2) == "1")
+                {
+                    var tag = StartUi.Text("default", "Dyl.Muted", 11);
+                    tag.Margin = new Thickness(6, 0, 0, 0);
+                    tag.VerticalAlignment = VerticalAlignment.Center;
+                    DockPanel.SetDock(tag, Dock.Right);
+                    line.Children.Add(tag);
+                }
+                line.Children.Add(name);
+                var b = new Button { Content = line, ToolTip = path, HorizontalContentAlignment = HorizontalAlignment.Stretch, Padding = new Thickness(8, 4, 8, 4), Margin = new Thickness(0, 0, 0, 2) };
+                b.SetResourceReference(StyleProperty, "Dyl.Row");
+                b.Click += (s, e) => New?.Invoke(path);
+                _list.Children.Add(b);
+            }
+        }
+    }
+
+    // ---- the tasks of the projects ----
+
+    public class ProjectTasks : ContentControl, IShowsRows
+    {
+        // A task added (project, text), checked or not (project, id, done), deleted (project, id):
+        public event Action<string, string> Added;
+        public event Action<string, string, bool> Checked;
+        public event Action<string, string> Removed;
+
+        readonly StackPanel _cards = new StackPanel();
+        readonly TextBlock _empty = new TextBlock { TextWrapping = TextWrapping.Wrap };
+        List<string[]> _rows;
+
+        public ProjectTasks()
+        {
+            Focusable = false;
+            _empty.SetResourceReference(TextBlock.ForegroundProperty, "Dyl.Muted");
+            var stack = new StackPanel();
+            stack.Children.Add(_empty);
+            stack.Children.Add(_cards);
+            Content = stack;
+        }
+
+        public void Attach(Func<string, FrameworkElement> find, List<string[]> rows)
+        {
+            if (rows == null || (_rows != null && RecentDrawings.Same(_rows, rows))) return;
+            _rows = rows.Select(r => (string[])r.Clone()).ToList();
+            _cards.Children.Clear();
+            _empty.Text = rows.Count == 0 ? "Pin a project or a sheet set to keep its tasks here." : "";
+            _empty.Visibility = rows.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            foreach (var g in rows.GroupBy(r => StartUi.F(r, 0), StringComparer.OrdinalIgnoreCase))
+                _cards.Children.Add(Card(g.Key, StartUi.F(g.First(), 1), StartUi.F(g.First(), 2), StartUi.F(g.First(), 6),
+                                         g.Where(r => StartUi.F(r, 3).Length > 0).ToList()));
+        }
+
+        Border Card(string project, string name, string kind, string error, List<string[]> tasks)
+        {
+            int done = tasks.Count(t => StartUi.F(t, 4) == "1");
+            var stack = new StackPanel();
+            var head = new DockPanel();
+            var badge = StartUi.Text(kind, "Dyl.Muted", 11);
+            badge.VerticalAlignment = VerticalAlignment.Center;
+            DockPanel.SetDock(badge, Dock.Right);
+            head.Children.Add(badge);
+            var title = StartUi.Text(name, "Dyl.Heading", 13, true);
+            title.ToolTip = project;
+            head.Children.Add(title);
+            stack.Children.Add(head);
+            // the progress: the tasks done of all of them
+            var bar = new Border { Height = 6, CornerRadius = new CornerRadius(3), Margin = new Thickness(0, 8, 0, 0) };
+            bar.SetResourceReference(Border.BackgroundProperty, "Dyl.Hover");
+            var fill = new Border { CornerRadius = new CornerRadius(3), HorizontalAlignment = HorizontalAlignment.Left };
+            fill.SetResourceReference(Border.BackgroundProperty, "Dyl.Accent");
+            bar.Child = fill;
+            double part = tasks.Count == 0 ? 0 : (double)done / tasks.Count;
+            bar.SizeChanged += (s, e) => fill.Width = Math.Max(0, e.NewSize.Width * part);
+            stack.Children.Add(bar);
+            var count = StartUi.Text(tasks.Count == 0 ? "No task yet" : done + " of " + tasks.Count + " done" + (done == tasks.Count ? "" : ", " + (int)Math.Round(part * 100) + " %"), "Dyl.Muted", 11.5);
+            count.Margin = new Thickness(0, 4, 0, 4);
+            stack.Children.Add(count);
+            if (error.Length > 0)
+            {
+                var err = StartUi.Text(error, "Dyl.ErrorText", 11.5);
+                err.TextWrapping = TextWrapping.Wrap;
+                stack.Children.Add(err);
+            }
+            // the tasks to do first, then those done
+            foreach (var t in tasks.OrderBy(t => StartUi.F(t, 4) == "1" ? 1 : 0))
+            {
+                string id = StartUi.F(t, 3);
+                bool on = StartUi.F(t, 4) == "1";
+                var text = new TextBlock { Text = StartUi.F(t, 5), TextWrapping = TextWrapping.Wrap };
+                if (on) { text.TextDecorations = TextDecorations.Strikethrough; text.SetResourceReference(TextBlock.ForegroundProperty, "Dyl.Muted"); }
+                var cb = new CheckBox { Content = text, IsChecked = on, Margin = new Thickness(0, 3, 0, 0) };
+                cb.Click += (s, e) => Checked?.Invoke(project, id, cb.IsChecked == true);
+                var menu = new ContextMenu();
+                menu.Items.Add(StartUi.MenuOf("Delete", () => Removed?.Invoke(project, id)));
+                cb.ContextMenu = menu;
+                stack.Children.Add(cb);
+            }
+            // the box to add one, its hint while it is empty:
+            var add = new TextBox { Padding = new Thickness(4, 3, 4, 3) };
+            var hint = StartUi.Text("Add a task, then Enter", "Dyl.Muted", 12);
+            hint.Margin = new Thickness(7, 0, 0, 0);
+            hint.VerticalAlignment = VerticalAlignment.Center;
+            hint.IsHitTestVisible = false;
+            add.TextChanged += (s, e) => hint.Visibility = add.Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
+            var box = new Grid { Margin = new Thickness(0, 8, 0, 0) };
+            box.Children.Add(add);
+            box.Children.Add(hint);
+            add.KeyDown += (s, e) =>
+            {
+                if (e.Key != Key.Enter || string.IsNullOrWhiteSpace(add.Text)) return;
+                e.Handled = true;
+                string txt = add.Text.Trim();
+                add.Text = "";
+                Added?.Invoke(project, txt);
+            };
+            stack.Children.Add(box);
+            var card = new Border { BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(6), Padding = new Thickness(12, 10, 12, 12), Margin = new Thickness(0, 0, 0, 10) };
+            card.SetResourceReference(Border.BorderBrushProperty, "Dyl.Border");
+            card.SetResourceReference(Border.BackgroundProperty, "Dyl.Surface");
+            card.Child = stack;
+            return card;
         }
     }
 
