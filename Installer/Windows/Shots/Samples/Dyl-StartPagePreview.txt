@@ -1,0 +1,3 @@
+# The values of the frame of a preview picture (Res\Dyl-StartPagePreview.xaml) for its picture
+# in the docs, as the Start page gives them for a photo taken upright:
+frm={samples}\StartPage\photo.png

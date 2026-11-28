@@ -73,6 +73,9 @@ namespace DynALisp.Windows
         const string Setting = "DynalispStartPage";
         const string PageFile = "Dyl-StartPage.xaml";
         const string Docs = @"Core\Dyl-StartPage.htm";
+        // The window that frames a picture chosen for a drawing (Previews.cs), and its docs:
+        const string PreviewFile = "Dyl-StartPagePreview.xaml";
+        const string PreviewDocs = @"Core\Dyl-StartPagePreview.htm";
 
         static DispatcherTimer _timer;
         static bool _on;
@@ -312,7 +315,19 @@ namespace DynALisp.Windows
                 string dir = Path.GetDirectoryName(path);
                 if (!string.IsNullOrEmpty(dir) && Directory.Exists(dir)) dlg.InitialDirectory = dir;
                 if (dlg.ShowDialog() != true) return;
-                Previews.Choose(path, dlg.FileName);
+                var pic = StartUi.Picture(dlg.FileName);
+                if (pic == null) { Say("Not a picture: " + Path.GetFileName(dlg.FileName)); return; }
+                // of another shape than the frames of the page: the part to keep framed on it
+                string crop = null;
+                if (Math.Abs(pic.PixelWidth / (double)pic.PixelHeight / StartUi.PreviewAspect - 1) > 0.01)
+                {
+                    var s = new Session { Dark = _dark, FitToScreen = true, Places = new Places(), ShowRoot = w => AcApp.ShowModalWindow(Bridge.MainWindow(), w, false) };
+                    s.Values["frm"] = dlg.FileName;
+                    s.Values[Session.DocsKey(PreviewDocs)] = DocsPage("Dynalisp/Core/Dyl-StartPagePreview", "");
+                    if (s.Show(Path.Combine(Root(), "Contents", "Modules", "Dynalisp", "Res", PreviewFile)) != 1) return;
+                    if (!s.Values.TryGetValue("frm/crop", out crop) || string.IsNullOrEmpty(crop)) return;
+                }
+                Previews.Choose(path, dlg.FileName, crop);
                 ReadRows();
                 return;
             }
@@ -1030,16 +1045,23 @@ namespace DynALisp.Windows
             return string.IsNullOrEmpty(name) ? "AutoCAD " + AcApp.Version.ToString(2) : name;
         }
 
-        // The home page of the User Guide on the docs website, in French when DynALisp is:
-        static string DocsHome()
+        const string DocsWeb = "https://samagior.github.io/DynALisp.docs/";
+
+        // The language of DynALisp is French (DynalispLanguage, else that of AutoCAD):
+        static bool French()
         {
-            const string Web = "https://samagior.github.io/DynALisp.docs/";
             string lang = Env("DynalispLanguage");
-            bool french = string.IsNullOrEmpty(lang)
+            return string.IsNullOrEmpty(lang)
                 ? HostApplicationServices.Current.UserRegistryProductRootKey.EndsWith(":40C", StringComparison.OrdinalIgnoreCase)
                 : lang == "French";
-            return Web + (french ? "index.fr.html" : "");
         }
+
+        // The home page of the User Guide on the docs website, in French when DynALisp is:
+        static string DocsHome() => DocsWeb + (French() ? "index.fr.html" : "");
+
+        // A page of the docs website (its path without .htm, then its anchor), in French when
+        // DynALisp is:
+        static string DocsPage(string page, string anchor) => DocsWeb + page + (French() ? ".fr.htm" : ".htm") + anchor;
 
         // A user setting (getenv: the FixedProfile\General key of the profile):
         internal static string Env(string name)

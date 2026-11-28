@@ -96,8 +96,13 @@ namespace DynALisp.Windows
         int Columns { get; set; }
     }
 
-    static class StartUi
+    static partial class StartUi
     {
+        // The shape of every picture of a drawing on the page (its width / its height): the
+        // tiles and the cards are cut to it, a picture filling its frame (Previews.cs makes
+        // the pictures chosen in it, Frame.cs frames a picture of another shape):
+        public const double PreviewAspect = 1.6;
+
         public const string RowsSuffix = "/rows";
 
         public static string F(string[] r, int k) => r.Length > k ? r[k] ?? "" : "";
@@ -343,7 +348,7 @@ namespace DynALisp.Windows
             int n = StartUi.FillRow(_panel, TileWidth, 10, (f, w) =>
             {
                 if (f is Button b && b.Content is StackPanel sp && sp.Children.Count > 0 && sp.Children[0] is Border pic)
-                    pic.Height = Math.Round((w - 16) * 0.62);
+                    pic.Height = Math.Round((w - 16) / StartUi.PreviewAspect);
             }, Columns);
             if (n > 0 && n != _perRow) { _perRow = n; if (Rows > 0) Filter(); }
         }
@@ -422,11 +427,11 @@ namespace DynALisp.Windows
         Button Tile(Item it, string name, string folder, string when, string thumb, bool missing, string group, string colour)
         {
             double w = TileWidth;
-            var pic = new Border { Height = Math.Round((w - 16) * 0.62), CornerRadius = new CornerRadius(4), ClipToBounds = true };
+            var pic = new Border { Height = Math.Round((w - 16) / StartUi.PreviewAspect), CornerRadius = new CornerRadius(4), ClipToBounds = true };
             pic.SetResourceReference(Border.BackgroundProperty, "Dyl.Input");
             var img = StartUi.Thumb(thumb);
             pic.Child = img != null
-                ? (UIElement)new Image { Source = img, Stretch = Stretch.Uniform, Margin = new Thickness(2) }
+                ? (UIElement)new Image { Source = img, Stretch = Stretch.UniformToFill, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center }
                 : StartUi.Glyph(Dst(it.Path) ? "Sheet set" : "Drawing", 0.8);
             var title = StartUi.Title(name, null, 0, true);
             title.Margin = new Thickness(0, 6, 0, 0);
@@ -479,7 +484,7 @@ namespace DynALisp.Windows
             if (f is Button b && b.Content is DockPanel d && d.Children.Count > 0 && d.Children[0] is Border pic)
             {
                 pic.Width = Math.Max(58, Math.Min(200, Math.Round(w * 0.22)));
-                pic.Height = Math.Round(pic.Width * 0.76);
+                pic.Height = Math.Round(pic.Width / StartUi.PreviewAspect);
             }
         }, Columns);
 
@@ -558,10 +563,10 @@ namespace DynALisp.Windows
 
         Button Card(string path, string name, string kind, string where, string time, string thumb, bool missing, string group, string colour)
         {
-            var pic = new Border { Width = 58, Height = 44, CornerRadius = new CornerRadius(4), ClipToBounds = true, Margin = new Thickness(0, 0, 10, 0), VerticalAlignment = VerticalAlignment.Top };
+            var pic = new Border { Width = 58, Height = 36, CornerRadius = new CornerRadius(4), ClipToBounds = true, Margin = new Thickness(0, 0, 10, 0), VerticalAlignment = VerticalAlignment.Top };
             pic.SetResourceReference(Border.BackgroundProperty, "Dyl.Input");
             var img = StartUi.Thumb(thumb);
-            pic.Child = img != null ? (UIElement)new Image { Source = img, Stretch = Stretch.Uniform, Margin = new Thickness(1) } : StartUi.Glyph(kind, 0.62);
+            pic.Child = img != null ? (UIElement)new Image { Source = img, Stretch = Stretch.UniformToFill, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center } : StartUi.Glyph(kind, 0.62);
             var title = StartUi.Title(name, "Dyl.Accent", 13, true);
             var badge = new Border { BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(9), Padding = new Thickness(7, 0, 7, 1), Margin = new Thickness(8, 1, 0, 0), VerticalAlignment = VerticalAlignment.Top };
             badge.SetResourceReference(Border.BorderBrushProperty, "Dyl.BorderStrong");

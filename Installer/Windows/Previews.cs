@@ -16,11 +16,14 @@
 //
 // The Start page shows the preview a drawing keeps of itself, the view it was last saved in;
 // right-click a drawing (a recent tile or a pin) to show another picture in its place:
-//   - Choose preview picture...: an image file (PNG, JPEG, BMP, GIF, TIFF), copied;
+//   - Choose preview picture...: an image file (PNG, JPEG, BMP, GIF, TIFF), copied; of
+//     another shape than the pictures of the page (StartUi.PreviewAspect, 1.6), the part
+//     to keep framed on it first (Res\Dyl-StartPagePreview.xaml, Engine\Frame.cs), so
+//     every picture fills its frame;
 //   - Set preview area...: the drawing opened, two corners picked in it, and the picture of
 //     that area made at once and again after each save of the drawing (QSAVE, SAVE, SAVEAS),
 //     while the drawing is on the layout of the area: its view zoomed to the area for the
-//     picture and given back;
+//     picture and given back, the area widened to the shape of the pictures of the page;
 //   - Use its own preview: the picture of DynALisp forgotten.
 // A sheet set or a project pinned takes a picture too (not an area).
 //
@@ -173,14 +176,19 @@ namespace DynALisp.Windows
 
         internal static bool Has(string path) => Of(path) != null || Rows().ContainsKey(Full(path));
 
-        // An image file made the picture of a drawing (copied, made a PNG, at most MaxSide):
-        internal static void Choose(string path, string image)
+        // An image file made the picture of a drawing: the part kept (crop, "x y width height"
+        // in its pixels, given by the frame of Dyl-StartPagePreview.xaml; null: all of it, of
+        // the shape of the page already), made a PNG of at most MaxSide:
+        internal static void Choose(string path, string image, string crop)
         {
-            BitmapSource src;
-            using (var fs = new FileStream(image, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            BitmapSource src = StartUi.Picture(image) ?? throw new InvalidDataException("Not a picture: " + Path.GetFileName(image));
+            var c = (crop ?? "").Split(' ');
+            if (c.Length == 4 && c.All(x => int.TryParse(x, NumberStyles.Integer, CultureInfo.InvariantCulture, out _)))
             {
-                var dec = BitmapDecoder.Create(fs, BitmapCreateOptions.IgnoreColorProfile, BitmapCacheOption.OnLoad);
-                src = dec.Frames[0];
+                var r = c.Select(x => int.Parse(x, CultureInfo.InvariantCulture)).ToArray();
+                int x0 = Math.Max(0, Math.Min(src.PixelWidth - 1, r[0])), y0 = Math.Max(0, Math.Min(src.PixelHeight - 1, r[1]));
+                src = new CroppedBitmap(src, new System.Windows.Int32Rect(x0, y0,
+                    Math.Max(1, Math.Min(src.PixelWidth - x0, r[2])), Math.Max(1, Math.Min(src.PixelHeight - y0, r[3]))));
             }
             double scale = Math.Min(1.0, MaxSide / (double)Math.Max(src.PixelWidth, src.PixelHeight));
             if (scale < 1) src = new TransformedBitmap(src, new System.Windows.Media.ScaleTransform(scale, scale));
@@ -290,7 +298,11 @@ namespace DynALisp.Windows
                     var a = new Point3d(area.X1, area.Y1, 0).TransformBy(wcs2dcs);
                     var b = new Point3d(area.X2, area.Y2, 0).TransformBy(wcs2dcs);
                     double w = Math.Abs(b.X - a.X), h = Math.Abs(b.Y - a.Y);
-                    if (w <= 0 || h <= 0) { why = "the area has no width or height"; return false; }
+                    if (w <= 0 && h <= 0) { why = "the area has no width or height"; return false; }
+                    // widened about its middle to the shape of the pictures of the page, so its
+                    // picture fills them (more of the drawing around it):
+                    if (w < h * StartUi.PreviewAspect) w = h * StartUi.PreviewAspect;
+                    else h = w / StartUi.PreviewAspect;
                     var screen = (Point2d)AcApp.GetSystemVariable("SCREENSIZE");
                     double aspect = screen.Y > 0 ? screen.X / screen.Y : 1.5;
                     // the view as wide as the area or as high (the viewport keeps its shape):
