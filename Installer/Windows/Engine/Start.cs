@@ -98,6 +98,15 @@ namespace DynALisp.Windows
             return t;
         }
 
+        // A title that goes on a second line when it is too long for one (cut after the second):
+        public static TextBlock Title(string text, string brush = null, double size = 0, bool bold = false)
+        {
+            var t = Text(text, brush, size, bold);
+            t.TextWrapping = TextWrapping.Wrap;
+            t.MaxHeight = Math.Ceiling((size > 0 ? size : 12) * 1.34 * 2) + 1;
+            return t;
+        }
+
         public static MenuItem MenuOf(string text, Action run, bool on = true)
         {
             var m = new MenuItem { Header = text, IsEnabled = on };
@@ -336,7 +345,7 @@ namespace DynALisp.Windows
             pic.Child = img != null
                 ? (UIElement)new Image { Source = img, Stretch = Stretch.Uniform, Margin = new Thickness(2) }
                 : StartUi.Glyph("Drawing", 0.8);
-            var title = StartUi.Text(name, null, 0, true);
+            var title = StartUi.Title(name, null, 0, true);
             title.Margin = new Thickness(0, 6, 0, 0);
             var date = StartUi.Text(missing ? "Not found" : when, missing ? "Dyl.ErrorText" : "Dyl.Muted", 11.5);
             var stack = new StackPanel();
@@ -446,8 +455,8 @@ namespace DynALisp.Windows
             pic.SetResourceReference(Border.BackgroundProperty, "Dyl.Input");
             var img = StartUi.Thumb(thumb);
             pic.Child = img != null ? (UIElement)new Image { Source = img, Stretch = Stretch.Uniform, Margin = new Thickness(1) } : StartUi.Glyph(kind, 0.62);
-            var title = StartUi.Text(name, "Dyl.Accent", 13, true);
-            var badge = new Border { BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(9), Padding = new Thickness(7, 0, 7, 1), Margin = new Thickness(8, 1, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+            var title = StartUi.Title(name, "Dyl.Accent", 13, true);
+            var badge = new Border { BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(9), Padding = new Thickness(7, 0, 7, 1), Margin = new Thickness(8, 1, 0, 0), VerticalAlignment = VerticalAlignment.Top };
             badge.SetResourceReference(Border.BorderBrushProperty, "Dyl.BorderStrong");
             badge.Child = StartUi.Text(kind, "Dyl.Muted", 11);
             var top = new DockPanel { LastChildFill = true };
@@ -793,13 +802,13 @@ namespace DynALisp.Windows
             foreach (var r in rows)
             {
                 string path = StartUi.F(r, 0);
-                var name = StartUi.Text(StartUi.F(r, 1));
+                var name = StartUi.Title(StartUi.F(r, 1));
                 var line = new DockPanel();
                 if (StartUi.F(r, 2) == "1")
                 {
                     var tag = StartUi.Text("default", "Dyl.Muted", 11);
-                    tag.Margin = new Thickness(6, 0, 0, 0);
-                    tag.VerticalAlignment = VerticalAlignment.Center;
+                    tag.VerticalAlignment = VerticalAlignment.Top;
+                    tag.Margin = new Thickness(6, 1, 0, 0);
                     DockPanel.SetDock(tag, Dock.Right);
                     line.Children.Add(tag);
                 }
@@ -853,10 +862,11 @@ namespace DynALisp.Windows
             var stack = new StackPanel();
             var head = new DockPanel();
             var badge = StartUi.Text(kind, "Dyl.Muted", 11);
-            badge.VerticalAlignment = VerticalAlignment.Center;
+            badge.VerticalAlignment = VerticalAlignment.Top;
+            badge.Margin = new Thickness(8, 2, 0, 0);
             DockPanel.SetDock(badge, Dock.Right);
             head.Children.Add(badge);
-            var title = StartUi.Text(name, "Dyl.Heading", 13, true);
+            var title = StartUi.Title(name, "Dyl.Heading", 13, true);
             title.ToolTip = project;
             head.Children.Add(title);
             stack.Children.Add(head);
