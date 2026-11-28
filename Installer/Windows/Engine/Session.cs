@@ -620,10 +620,10 @@ namespace DynALisp.Windows
                         case Button b when b.GetType() == typeof(Button):
                             if (has && !string.IsNullOrEmpty(v)) b.Content = v;
                             break;
-                        // The recent drawings of the Start page (Start.cs), the table key/rows
-                        // (none yet: being read):
-                        case RecentDrawings rd:
-                            rd.Attach(Find, _s.Rows.TryGetValue(rd.Name + RecentDrawings.RowsSuffix, out var recent) ? recent : null);
+                        // The controls of the Start page (Start.cs: the pins, the active time,
+                        // the recent drawings), the table key/rows (none yet: being read):
+                        case IShowsRows sr:
+                            sr.Attach(Find, _s.Rows.TryGetValue(fe.Name + StartUi.RowsSuffix, out var shownRows) ? shownRows : null);
                             break;
                         case Gallery g:
                             g.Attach(Find, k => _s.Lists.TryGetValue(k, out var l) ? l : null);

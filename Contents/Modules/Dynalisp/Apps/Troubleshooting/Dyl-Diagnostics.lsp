@@ -1472,7 +1472,7 @@
 ;;  the browsers of AutoCAD ((Dyl:StartPage "Tree"), for another version of AutoCAD).
 (defun dg:s-interface (/ pal)
   (dg:sub "Settings")
-  (foreach k '("DynalispDisplayOn" "DynalispInterface" "DynalispBackground" "DynalispLayoutBackground" "DynalispFileTabColors" "DynalispStartPage")
+  (foreach k '("DynalispDisplayOn" "DynalispInterface" "DynalispBackground" "DynalispLayoutBackground" "DynalispFileTabColors" "DynalispStartPage" "DynalispActivity")
     (dg:kv k (getenv k))
   )
   (dg:kv "COLORTHEME" (getvar "COLORTHEME"))
@@ -1529,6 +1529,30 @@
          )
          (dg:sub "The windows of the Start tab (Dyl:StartPage \"Tree\")")
          (dg:if-file (Dyl:StartPage "Tree"))
+       )
+     )
+    )
+  )
+  (dg:activity)
+)
+
+;;  Active time (Activity.cs of DynALisp.Windows.dll): what it counted and wrote (never the
+;;  drawings: their paths are the user's), a problem when it could not write its time:
+(defun dg:activity (/ on lst)
+  (setq on (= "1" (getenv "DynalispActivity")))
+  (dg:sub "Active time (Dyl:Activity)")
+  (cond
+    ((not Dyl:Activity)
+     (if on (dg:bad "Active time is on, but DynALisp.Windows.dll is not loaded: no time is counted"))
+    )
+    (T
+     (dg:if-lines (setq lst (Dyl:Activity)))
+     (cond
+       ((and on (/= "1" (getenv "DynalispStartPage")))
+        (dg:note "Active time is on, but the Start page is off: no time is counted until it is on")
+       )
+       ((and on (listp lst) (vl-some '(lambda (l) (and (= 'STR (type l)) (wcmatch l "error:*"))) lst))
+        (dg:bad "Active time could not count or write its time: see the error above")
        )
      )
     )

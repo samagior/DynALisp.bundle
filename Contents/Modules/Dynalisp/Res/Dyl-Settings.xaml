@@ -137,6 +137,8 @@
           <CheckBox x:Name="ssr" Content="Reopen sheet sets"/>
           <!-- Start page (DynalispStartPage, StartPage.cs of DynALisp.Windows.dll): -->
           <CheckBox x:Name="stp" Content="Start page"/>
+          <!-- Active time (DynalispActivity, Activity.cs of DynALisp.Windows.dll), shown on the Start page: -->
+          <CheckBox x:Name="act" Content="Active time" Margin="22,0,0,0" dyl:Win.EnabledBy="stp"/>
         </StackPanel>
       </GroupBox>
 

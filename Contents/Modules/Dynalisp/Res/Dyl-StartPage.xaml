@@ -22,99 +22,98 @@
   drawn by Installer\Windows\Shots). No Lisp runs in the Start tab (no drawing may be open):
   the plugin gives the values itself, read again each time the tab is shown:
 
-    ver        DynALisp, its version and the AutoCAD it runs in
-    rec/rows   the recent drawings (dyl:RecentDrawings, Engine\Start.cs), thumbnails from
-               the drawings themselves
-    dyi sti sei dgi   the cards (an ItemsControl, its items "label<TAB>value<TAB>state":
-               state "bad" in the red of the errors, "off" muted)
+    pin/rows   what is pinned (dyl:PinnedItems): drawings, sheet sets, projects
+    act/rows   the active time of each day and drawing (dyl:ActivityGraph, Activity.cs)
+    actn       said when Active time is off
+    rec/rows   the recent drawings (dyl:RecentDrawings), thumbnails from the drawings
+    ver ftp    the foot of the page: DynALisp, AutoCAD, the last startup; what is wrong
     err        what could not be done (a drawing that did not open)
 
   Its buttons are run by the plugin, never by the Lisp: New (the template of QNEW), Open,
-  Settings and Run Diagnostics (the command run in the drawing open, greyed out while none
-  is), Open report (the last report of Dyl-Diagnostics), Open Docs.
+  Pin, and at the foot Settings and Diagnostics (the command run in the drawing open, greyed
+  out while none is), Report (the last report of Dyl-Diagnostics), Docs.
 -->
 <Window xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dyl="clr-namespace:DynALisp.Windows"
         Title="DynALisp - Start" dyl:Win.Docs="Core\Dyl-StartPage.htm">
   <Window.Resources>
-    <!-- A line of a card: its label, its value (red when it is a problem): -->
-    <DataTemplate x:Key="Line">
-      <DockPanel Margin="0,0,0,5">
-        <TextBlock DockPanel.Dock="Left" Width="112" Foreground="{DynamicResource Dyl.Muted}"
-                   Text="{Binding Converter={x:Static dyl:Cell.Converter}, ConverterParameter=0}"/>
-        <TextBlock x:Name="v" TextWrapping="Wrap"
-                   Text="{Binding Converter={x:Static dyl:Cell.Converter}, ConverterParameter=1}"/>
-      </DockPanel>
-      <DataTemplate.Triggers>
-        <DataTrigger Binding="{Binding Converter={x:Static dyl:Cell.Converter}, ConverterParameter=2}" Value="bad">
-          <Setter TargetName="v" Property="Foreground" Value="{DynamicResource Dyl.ErrorText}"/>
-        </DataTrigger>
-        <DataTrigger Binding="{Binding Converter={x:Static dyl:Cell.Converter}, ConverterParameter=2}" Value="off">
-          <Setter TargetName="v" Property="Foreground" Value="{DynamicResource Dyl.Muted}"/>
-        </DataTrigger>
-      </DataTemplate.Triggers>
-    </DataTemplate>
+    <!-- A heading of the page: -->
+    <Style x:Key="Head" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="15"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="Foreground" Value="{DynamicResource Dyl.Heading}"/>
+    </Style>
+    <!-- A small button of the foot of the page, a link: -->
+    <Style x:Key="Foot" TargetType="Button">
+      <Setter Property="Foreground" Value="{DynamicResource Dyl.Muted}"/>
+      <Setter Property="FontSize" Value="11.5"/>
+      <Setter Property="Margin" Value="12,0,0,0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <TextBlock x:Name="t" Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}" Background="Transparent"/>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="t" Property="TextDecorations" Value="Underline"/>
+                <Setter Property="Foreground" Value="{DynamicResource Dyl.Accent}"/>
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource Dyl.Disabled}"/>
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
   </Window.Resources>
 
-  <Grid Width="1180" Height="720" Margin="28,22,28,22">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*"/>
-      <ColumnDefinition Width="24"/>
-      <ColumnDefinition Width="340"/>
-    </Grid.ColumnDefinitions>
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto"/>
-      <RowDefinition Height="*"/>
-    </Grid.RowDefinitions>
-
-    <!-- DynALisp, its version and the AutoCAD around it: -->
-    <StackPanel Grid.ColumnSpan="3" Margin="2,0,0,18">
-      <TextBlock Text="DynALisp" FontSize="26" FontWeight="SemiBold" Foreground="{DynamicResource Dyl.Heading}"/>
-      <TextBlock x:Name="ver" Style="{DynamicResource Dyl.Desc}" FontSize="12.5" Margin="1,2,0,0"/>
-    </StackPanel>
-
-    <!-- The recent drawings, the newest first: -->
-    <DockPanel Grid.Row="1" Grid.Column="0">
-      <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-        <Button x:Name="new" DockPanel.Dock="Left" Content="_New" Style="{DynamicResource Dyl.AccentButton}" Margin="0,0,8,0"/>
-        <Button x:Name="opn" DockPanel.Dock="Left" Content="_Open..." Margin="0,0,16,0"/>
-        <TextBox x:Name="find" DockPanel.Dock="Right" Width="230" Style="{DynamicResource Dyl.Search}" Tag="Search"/>
-        <TextBlock x:Name="cnt" DockPanel.Dock="Right" Style="{DynamicResource Dyl.Desc}" Margin="0,0,12,0"
-                   VerticalAlignment="Center" Tag="drawing,drawings"/>
-        <TextBlock Text="Recent drawings" FontSize="15" FontWeight="SemiBold" VerticalAlignment="Center"
-                   Foreground="{DynamicResource Dyl.Heading}"/>
+  <DockPanel Width="1180" Height="1040">
+    <!-- The foot: DynALisp in a line, what is wrong in red, its buttons: -->
+    <Border DockPanel.Dock="Bottom" BorderThickness="0,1,0,0" BorderBrush="{DynamicResource Dyl.Border}" Padding="28,7,28,8">
+      <DockPanel>
+        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+          <Button x:Name="set" Content="Settings" Style="{StaticResource Foot}"/>
+          <Button x:Name="dia" Content="Diagnostics" Style="{StaticResource Foot}"/>
+          <Button x:Name="rep" Content="Report" Style="{StaticResource Foot}"/>
+          <Button x:Name="docs" Content="Docs" Style="{StaticResource Foot}"/>
+        </StackPanel>
+        <TextBlock x:Name="ver" FontSize="11.5" Foreground="{DynamicResource Dyl.Muted}" VerticalAlignment="Center"/>
+        <TextBlock x:Name="ftp" FontSize="11.5" Foreground="{DynamicResource Dyl.ErrorText}" Margin="14,0,0,0"
+                   VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
       </DockPanel>
-      <TextBlock x:Name="err" DockPanel.Dock="Bottom" Style="{DynamicResource Dyl.Error}" Margin="0,8,0,0"/>
-      <dyl:RecentDrawings x:Name="rec" Search="find" Count="cnt"/>
-    </DockPanel>
+    </Border>
 
-    <!-- What DynALisp is, how it started and what it found: -->
-    <ScrollViewer Grid.Row="1" Grid.Column="2" VerticalScrollBarVisibility="Auto" Focusable="False">
-      <StackPanel>
-        <GroupBox Header="DynALisp">
-          <ItemsControl x:Name="dyi" ItemTemplate="{StaticResource Line}" Focusable="False"/>
-        </GroupBox>
-        <GroupBox Header="Startup">
-          <ItemsControl x:Name="sti" ItemTemplate="{StaticResource Line}" Focusable="False"/>
-        </GroupBox>
-        <GroupBox Header="Settings">
-          <StackPanel>
-            <ItemsControl x:Name="sei" ItemTemplate="{StaticResource Line}" Focusable="False"/>
-            <Button x:Name="set" Content="Settings" HorizontalAlignment="Left" Margin="0,6,0,0"/>
-          </StackPanel>
-        </GroupBox>
-        <GroupBox Header="Diagnostics" Margin="0">
-          <StackPanel>
-            <ItemsControl x:Name="dgi" ItemTemplate="{StaticResource Line}" Focusable="False"/>
-            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-              <Button x:Name="dia" Content="Run Diagnostics" Margin="0,0,8,0"/>
-              <Button x:Name="rep" Content="Open report" Margin="0,0,8,0"/>
-              <Button x:Name="docs" Content="Open Docs" Margin="0"/>
-            </StackPanel>
-          </StackPanel>
-        </GroupBox>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
+      <StackPanel Margin="28,20,28,20" MaxWidth="1100" HorizontalAlignment="Left">
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+          <Button x:Name="new" Content="_New" Style="{DynamicResource Dyl.AccentButton}" Margin="0,0,8,0"/>
+          <Button x:Name="opn" Content="_Open..." Margin="0"/>
+        </StackPanel>
+        <TextBlock x:Name="err" Style="{DynamicResource Dyl.Error}" Margin="0,0,0,6"/>
+
+        <!-- Pinned: drawings, sheet sets, projects (Pin... picks one): -->
+        <DockPanel Margin="0,10,0,10">
+          <Button x:Name="pnb" DockPanel.Dock="Right" Content="Pin..." Style="{StaticResource Foot}" FontSize="12.5"/>
+          <TextBlock Text="Pinned" Style="{StaticResource Head}"/>
+        </DockPanel>
+        <dyl:PinnedItems x:Name="pin" Graph="act"/>
+
+        <!-- The active time of each day: -->
+        <TextBlock x:Name="actn" Foreground="{DynamicResource Dyl.Muted}" Margin="0,14,0,0"/>
+        <dyl:ActivityGraph x:Name="act" Margin="0,16,0,0"/>
+
+        <!-- A few recent drawings: -->
+        <DockPanel Margin="0,26,0,10">
+          <TextBox x:Name="find" DockPanel.Dock="Right" Width="200" Style="{DynamicResource Dyl.Search}" Tag="Search"/>
+          <TextBlock x:Name="cnt" DockPanel.Dock="Right" Style="{DynamicResource Dyl.Desc}" Margin="0,0,12,0"
+                     VerticalAlignment="Center" Tag="drawing,drawings"/>
+          <TextBlock Text="Recent" Style="{StaticResource Head}"/>
+        </DockPanel>
+        <dyl:RecentDrawings x:Name="rec" Search="find" Count="cnt" Max="12" TileWidth="160"/>
       </StackPanel>
     </ScrollViewer>
-  </Grid>
+  </DockPanel>
 </Window>

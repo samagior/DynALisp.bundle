@@ -16,8 +16,9 @@
 //
 // Start page (Overrides of Dyl-Settings, the DynalispStartPage user setting, off by default):
 // the page of the Start tab of AutoCAD gives way to the page of DynALisp,
-// Res\Dyl-StartPage.xaml: the recent drawings (with the picture each drawing keeps of
-// itself), and what DynALisp is, how it started, its settings and its last diagnostics.
+// Res\Dyl-StartPage.xaml: what is pinned (drawings, sheet sets, projects), the active time of
+// each day (Activity.cs), the recent drawings (with the picture each drawing keeps of
+// itself), and a line at its foot on DynALisp (its version, its startup, the problems found).
 //
 // EXPERIMENT, not supported by Autodesk: the Start tab has no API. Its page is a web page,
 // in a browser window (Chrome_WidgetWin_*, CefSharp or WebView2) inside a window of the tab,
@@ -83,6 +84,7 @@ namespace DynALisp.Windows
         static string _fail, _found;
         static int _recentCount = -1;
         static string _recentKey;
+        static bool _readAgain;
 
         public static void Init()
         {
@@ -97,6 +99,9 @@ namespace DynALisp.Windows
 
         // (Dyl:StartPage "Apply"): the setting read again at the next tick.
         internal static void Apply() => _nextSetting = Environment.TickCount;
+
+        // The page is shown (the Start tab is the tab in front): no drawing is worked on.
+        internal static bool Showing() => _src != null && _frame != IntPtr.Zero && IsWindowVisible(_frame);
 
         static void Tick()
         {
@@ -237,11 +242,87 @@ namespace DynALisp.Windows
             if (_view.Find("set") is Button st) st.Click += (a, b) => Do(() => Command("Dyl-Settings"));
             if (_view.Find("dia") is Button dg) dg.Click += (a, b) => Do(() => Command("Dyl-Diagnostics"));
             if (_view.Find("rep") is Button rp) rp.Click += (a, b) => Do(() => { var r = LastReport(); if (r != null) Shell(r); });
+            if (_view.Find("pnb") is Button pb) pb.Click += (a, b) => Do(PinAsk);
             if (_view.Find("rec") is RecentDrawings rec)
             {
                 rec.Opened += (f, ro) => Do(() => Open(f, ro));
                 rec.Folder += f => Do(() => ShowInFolder(f));
+                rec.Pin += (f, on) => Do(() => Pin(f, on));
+                rec.PinChoices = PinChoices;
             }
+            if (_view.Find("pin") is PinnedItems pin)
+            {
+                pin.Opened += (f, ro) => Do(() => Open(f, ro));
+                pin.Folder += f => Do(() => ShowInFolder(f));
+                pin.Unpinned += f => Do(() => Pin(f, false));
+            }
+            if (_view.Find("act") is ActivityGraph act) act.Opened += (f, ro) => Do(() => Open(f, ro));
+        }
+
+        // ---- the pins ----
+
+        static string Kind(string path)
+        {
+            string ext = Path.GetExtension(path).ToLowerInvariant();
+            return ext == ".dst" ? "Sheet set" : ext == ".apj" ? "Project" : "Drawing";
+        }
+
+        static void Pin(string path, bool on)
+        {
+            if (!Activity.Pin(path, on)) { Say(Activity.MaxPins + " are pinned already: unpin one first."); return; }
+            ReadRows();
+        }
+
+        static void PinAsk()
+        {
+            var dlg = new Microsoft.Win32.OpenFileDialog
+            {
+                Title = "Pin",
+                Filter = "Drawings, sheet sets and projects (*.dwg;*.dst;*.apj)|*.dwg;*.dst;*.apj|All files (*.*)|*.*",
+            };
+            if (dlg.ShowDialog() == true) Pin(dlg.FileName, true);
+        }
+
+        // What a recent drawing can pin: itself, its sheet set, its project (the first .dst and
+        // .apj from its folder up, as the colours of the file tabs find them):
+        static List<(string Label, string Path, bool Pinned)> PinChoices(string dwg)
+        {
+            var r = new List<(string, string, bool)> { ("Pin", dwg, Activity.Pinned(dwg)) };
+            string dst = Up(dwg, "*.dst"), apj = Up(dwg, "*.apj");
+            if (dst != null) r.Add(("Pin sheet set " + Path.GetFileNameWithoutExtension(dst), dst, Activity.Pinned(dst)));
+            if (apj != null) r.Add(("Pin project " + Path.GetFileNameWithoutExtension(apj), apj, Activity.Pinned(apj)));
+            return r;
+        }
+
+        static string Up(string file, string pattern)
+        {
+            try
+            {
+                for (var d = Path.GetDirectoryName(file); !string.IsNullOrEmpty(d); d = Path.GetDirectoryName(d))
+                {
+                    if (!Directory.Exists(d)) continue;
+                    var hit = Directory.EnumerateFiles(d, pattern).OrderBy(f => f, StringComparer.OrdinalIgnoreCase).FirstOrDefault();
+                    if (hit != null) return hit;
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        // A sheet set opened in the Sheet Set Manager, by OPENSHEETSET at the command line of a
+        // drawing open (as Reopen sheet sets does, SheetSets.cs):
+        static void OpenSheetSet(string dst)
+        {
+            var doc = Drawing();
+            if (doc == null) { Say("Open a drawing first: the sheet set opens in the Sheet Set Manager of a drawing."); return; }
+            string f = "\"" + dst.Replace("\\", "\\\\").Replace("\"", "") + "\"";
+            string lisp = "(progn (setq *dyl:ssopen* (list (getvar \"FILEDIA\") (getvar \"CMDECHO\")))"
+                        + " (setvar \"FILEDIA\" 0) (setvar \"CMDECHO\" 0)"
+                        + " (vl-catch-all-apply 'command-s (list \"_.OPENSHEETSET\" " + f + "))"
+                        + " (setvar \"FILEDIA\" (car *dyl:ssopen*)) (setvar \"CMDECHO\" (cadr *dyl:ssopen*))"
+                        + " (setq *dyl:ssopen* nil) (princ))\n";
+            AcApp.DocumentManager.MdiActiveDocument = doc;
+            doc.SendStringToExecute(lisp, true, false, false);
         }
 
         static void Do(Action a)
@@ -253,7 +334,11 @@ namespace DynALisp.Windows
 
         static void Say(string msg)
         {
-            if (_view?.Find("err") is TextBlock t) t.Text = msg ?? "";
+            if (_view?.Find("err") is TextBlock t)
+            {
+                t.Text = msg ?? "";
+                t.Visibility = string.IsNullOrEmpty(t.Text) ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+            }
         }
 
         // The template of QNEW, else that of the units of AutoCAD:
@@ -292,6 +377,8 @@ namespace DynALisp.Windows
         static void Open(string file, bool readOnly)
         {
             if (!System.IO.File.Exists(file)) { Say("Not found: " + file); return; }
+            if (Kind(file) == "Sheet set") { OpenSheetSet(file); return; }
+            if (Kind(file) == "Project") { ShowInFolder(file); return; }
             var dm = AcApp.DocumentManager;
             foreach (Document d in dm)
             {
@@ -339,7 +426,7 @@ namespace DynALisp.Windows
             Values(_s);
             _view.Fill();
             Enable();
-            ReadRecent();
+            ReadRows();
         }
 
         // The buttons greyed out by Values, and those enabled again (the engine greys out a key
@@ -348,16 +435,17 @@ namespace DynALisp.Windows
         {
             foreach (var key in new[] { "set", "dia", "rep" })
                 if (_view?.Find(key) is Button b) b.IsEnabled = !_s.Off.Contains(key);
+            // a note without text takes no room:
+            foreach (var key in new[] { "actn", "ftp", "err" })
+                if (_view?.Find(key) is TextBlock t) t.Visibility = string.IsNullOrEmpty(t.Text) ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
         }
 
         static void Values(Session s)
         {
-            s.Values["ver"] = "Version " + Version() + "  ·  " + Product();
+            s.Values["ver"] = Foot();
+            s.Values["ftp"] = Problems();
+            s.Values["actn"] = Env(Activity.Setting) == "1" ? "" : "Active time is off: turn it on in Settings, under Start page.";
             s.Values[Session.DocsKey(Docs)] = DocsTarget();
-            s.Lists["dyi"] = AboutLines();
-            s.Lists["sti"] = StartupLines();
-            s.Lists["sei"] = SettingLines();
-            s.Lists["dgi"] = ReportLines();
             bool dwg = Drawing() != null;
             Off(s, "set", !dwg);
             Off(s, "dia", !dwg);
@@ -369,84 +457,45 @@ namespace DynALisp.Windows
             if (off) s.Off.Add(key); else s.Off.Remove(key);
         }
 
-        static string Line(string label, string value, string state = "") => label + "\t" + value + "\t" + state;
+        // The foot of the page: DynALisp, its version, the AutoCAD around it and its last startup:
+        static string Foot()
+        {
+            var info = StartPageLisp.Last ?? StartPageLisp.ReadLast();
+            return "DynALisp " + Version() + "  \u00b7  " + Product()
+                   + (info != null ? "  \u00b7  started in " + info.Ms.ToString(CultureInfo.InvariantCulture) + " ms" : "");
+        }
 
-        static List<string> AboutLines()
+        // What is wrong, in a few words (in red at the foot of the page), "" when nothing is:
+        // the plugins not loaded, the warnings of the last startup and the files it could not
+        // load, the problems of the last report of Dyl-Diagnostics.
+        static string Problems()
         {
             var r = new List<string>();
-            string root = Root();
-            string git = Git(root);
-            r.Add(Line("Installed", git != null ? "Git clone, " + git : "Setup"));
-            try
-            {
-                var mods = Directory.GetDirectories(Path.Combine(root, "Contents", "Modules")).Select(Path.GetFileName).OrderBy(n => n, StringComparer.OrdinalIgnoreCase);
-                r.Add(Line("Modules", string.Join(", ", mods)));
-            }
-            catch { }
             var loaded = new HashSet<string>(AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetName().Name ?? ""), StringComparer.OrdinalIgnoreCase);
             var missing = Plugins.Where(p => !loaded.Contains("DynALisp." + p)).ToList();
-            r.Add(missing.Count == 0
-                ? Line("Plugins", "All " + Plugins.Length + " loaded (.NET " + Environment.Version.Major + ")")
-                : Line("Plugins", "Not loaded: " + string.Join(", ", missing), "bad"));
-            return r;
-        }
-
-        static List<string> StartupLines()
-        {
-            var r = new List<string>();
+            if (missing.Count > 0) r.Add("not loaded: " + string.Join(", ", missing));
             var info = StartPageLisp.Last ?? StartPageLisp.ReadLast();
-            if (info == null) { r.Add(Line("Last startup", "Not known yet: open a drawing.", "off")); return r; }
-            r.Add(Line("Last startup", info.Ms + " ms, " + info.Drawing + ", " + When(info.Time) + (info.Earlier ? " (last session)" : "")));
-            r.Add(Line("Commands", info.Commands + " commands, " + info.Aliases + " aliases"));
-            var slow = info.Steps.OrderByDescending(s => s.Value).Take(3).Select(s => s.Key + " " + s.Value + " ms").ToList();
-            if (slow.Count > 0) r.Add(Line("Slowest steps", string.Join(", ", slow)));
-            foreach (var w in info.Warnings) r.Add(Line("Warning", w, "bad"));
-            foreach (var e in info.Errors) r.Add(Line("Not loaded", e, "bad"));
-            if (info.Warnings.Count == 0 && info.Errors.Count == 0) r.Add(Line("Problems", "None"));
-            return r;
+            if (info != null && info.Warnings.Count > 0) r.Add(Plural(info.Warnings.Count, "startup warning", "startup warnings"));
+            if (info != null && info.Errors.Count > 0) r.Add(Plural(info.Errors.Count, "file did not load", "files did not load"));
+            int n = ReportProblems();
+            if (n > 0) r.Add(Plural(n, "problem", "problems") + " in the last diagnostics");
+            return string.Join("  \u00b7  ", r);
         }
 
-        static List<string> SettingLines()
-        {
-            string G(string k) => Env(k) ?? "";
-            string OnOff(string k) => G(k) == "1" ? "On" : "Off";
-            var r = new List<string>
-            {
-                Line("Reactors", OnOff("DynalispReactors"), G("DynalispReactors") == "1" ? "" : "off"),
-                Line("Display", G("DynalispDisplayOn") != "1" ? "Off" : string.IsNullOrEmpty(Interface()) ? "On" : Interface(), G("DynalispDisplayOn") == "1" ? "" : "off"),
-                Line("Clean startup", OnOff("DynalispCleanStartup"), G("DynalispCleanStartup") == "1" ? "" : "off"),
-                Line("Updates", Git(Root()) != null ? "With git pull" : G("DynalispAutoUpdate") == "1" ? "Installed automatically" : "By hand (Dyl-Info)"),
-                Line("Language", string.IsNullOrEmpty(G("DynalispLanguage")) ? "Of AutoCAD" : G("DynalispLanguage")),
-            };
-            return r;
-        }
+        static string Plural(int n, string one, string many) => n.ToString(CultureInfo.InvariantCulture) + " " + (n == 1 ? one : many);
 
-        static string Interface()
+        static int ReportProblems()
         {
-            string v = Env("DynalispInterface");
-            return string.IsNullOrEmpty(v) ? Env("DynalispPaletteColors") : v;
-        }
-
-        static List<string> ReportLines()
-        {
-            var r = new List<string>();
             string rep = LastReport();
-            if (rep == null) { r.Add(Line("Last report", "None yet", "off")); return r; }
-            string dir = Path.GetFileName(Path.GetDirectoryName(rep)) ?? "";
-            var m = Regex.Match(dir, @"(\d{4})-(\d{2})-(\d{2}) (\d{2})(\d{2})");
-            r.Add(Line("Last report", m.Success ? m.Groups[1].Value + "-" + m.Groups[2].Value + "-" + m.Groups[3].Value + " " + m.Groups[4].Value + ":" + m.Groups[5].Value : dir));
+            if (rep == null) return 0;
             try
             {
                 var lines = System.IO.File.ReadLines(rep, Encoding.UTF8).Take(60).ToList();
-                var probs = lines.Where(l => l.StartsWith("  [!] ", StringComparison.Ordinal)).Select(l => l.Substring(6)).ToList();
                 var count = lines.Select(l => Regex.Match(l, @"^Problems found: (\d+)")).FirstOrDefault(x => x.Success);
-                int n = count != null ? int.Parse(count.Groups[1].Value, CultureInfo.InvariantCulture) : probs.Count;
-                r.Add(Line("Problems", n == 0 ? "None" : n.ToString(CultureInfo.InvariantCulture), n == 0 ? "" : "bad"));
-                foreach (var p in probs.Take(3)) r.Add(Line("", p, "bad"));
-                if (probs.Count > 3) r.Add(Line("", "... and " + (probs.Count - 3) + " more", "off"));
+                return count != null ? int.Parse(count.Groups[1].Value, CultureInfo.InvariantCulture)
+                                     : lines.Count(l => l.StartsWith("  [!] ", StringComparison.Ordinal));
             }
-            catch (System.Exception e) { r.Add(Line("Problems", e.Message, "bad")); }
-            return r;
+            catch { return 0; }
         }
 
         // The Report.txt of the last DynALisp Report <date> folder of %TEMP% (Dyl-Diagnostics):
@@ -471,32 +520,75 @@ namespace DynALisp.Windows
 
         // ---- the recent drawings ----
 
-        // The drawings of the Recent File List of AutoCAD (File1, File2... of the key of the
-        // product, then of the profile), read on another thread with their dates and pictures,
-        // then given to the page:
-        static void ReadRecent()
+        // The rows of the page, read on another thread (a drawing on a network drive can be
+        // slow to answer), then given to it: the drawings of the Recent File List of AutoCAD
+        // (File1, File2... of the key of the product, then of the profile) with their dates and
+        // pictures, the active time kept (with the time not written yet) and the pins:
+        static void ReadRows()
         {
-            if (_reading) return;
+            if (_reading) { _readAgain = true; return; }
             string root = HostApplicationServices.Current.UserRegistryProductRootKey;
             string profile = "";
             try { profile = AcApp.GetSystemVariable("CPROFILE") as string ?? ""; } catch { }
+            var pending = Activity.Pending();
+            var pins = Activity.Pins();
             _reading = true;
+            _readAgain = false;
             var disp = Dispatcher.CurrentDispatcher;
             Task.Run(() =>
             {
-                List<string[]> rows = null;
+                List<string[]> rec = null, act = null, pin = null;
                 string err = null;
-                try { rows = Recent(root, profile); }
-                catch (System.Exception e) { err = e.Message; }
+                try { rec = Recent(root, profile); }
+                catch (System.Exception e) { err = "recent drawings: " + e.Message; }
+                try { act = Activity.Rows(pending); pin = PinRows(pins, act); }
+                catch (System.Exception e) { err = "active time: " + e.Message; }
                 disp.BeginInvoke(new Action(() =>
                 {
                     _reading = false;
-                    if (err != null) _fail = "recent drawings: " + err;
-                    if (rows == null || _s == null || _view == null) return;
-                    _s.Rows["rec" + RecentDrawings.RowsSuffix] = rows;
-                    _view.Fill();
+                    if (err != null) _fail = err;
+                    if (_s != null && _view != null)
+                    {
+                        if (rec != null) _s.Rows["rec" + StartUi.RowsSuffix] = rec;
+                        if (act != null) _s.Rows["act" + StartUi.RowsSuffix] = act;
+                        if (pin != null) _s.Rows["pin" + StartUi.RowsSuffix] = pin;
+                        _view.Fill();
+                    }
+                    if (_readAgain) ReadRows();
                 }));
             });
+        }
+
+        // The cards of the pins: path, name, kind, folder, its active time in the last year (a
+        // sheet set or a project: the drawings of its folder and the folders under it),
+        // thumbnail, missing:
+        static List<string[]> PinRows(List<string> pins, List<string[]> act)
+        {
+            string from = DateTime.Today.AddDays(-364).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+            string cache = Path.Combine(Path.GetTempPath(), "DynALisp Start");
+            var rows = new List<string[]>();
+            foreach (var p in pins)
+            {
+                string kind = Kind(p);
+                string dir = Path.GetDirectoryName(p) ?? "";
+                string under = dir.TrimEnd('\\') + "\\";
+                double s = act.Where(r => string.CompareOrdinal(r[0], from) >= 0
+                                          && (kind == "Drawing" ? string.Equals(r[2], p, StringComparison.OrdinalIgnoreCase) : r[2].StartsWith(under, StringComparison.OrdinalIgnoreCase)))
+                              .Sum(r => double.Parse(r[1], CultureInfo.InvariantCulture));
+                bool there = false;
+                DateTime t = DateTime.MinValue;
+                long size = 0;
+                try { var fi = new FileInfo(p); there = fi.Exists; if (there) { t = fi.LastWriteTime; size = fi.Length; } } catch { }
+                string thumb = "";
+                if (there && kind == "Drawing") try { thumb = Thumbnail(p, t, size, cache) ?? ""; } catch { }
+                rows.Add(new[]
+                {
+                    p, Path.GetFileNameWithoutExtension(p), kind, dir,
+                    s > 0 ? StartUi.Dur(s) + " of active time in the last year" : "No active time in the last year",
+                    thumb, there ? "" : "1",
+                });
+            }
+            return rows;
         }
 
         static List<string> RecentFiles(string root, string profile)
@@ -651,27 +743,6 @@ namespace DynALisp.Windows
                 return m.Success ? m.Groups[1].Value : "?";
             }
             catch { return "?"; }
-        }
-
-        // A git clone: its branch and its commit ("main at 1a2b3c4"), null for a setup:
-        internal static string Git(string root)
-        {
-            try
-            {
-                string git = Path.Combine(root, ".git");
-                if (!Directory.Exists(git)) return null;
-                string head = System.IO.File.ReadAllText(Path.Combine(git, "HEAD")).Trim();
-                if (!head.StartsWith("ref: ", StringComparison.Ordinal)) return "commit " + head.Substring(0, Math.Min(7, head.Length));
-                string re = head.Substring(5).Trim();
-                string branch = re.StartsWith("refs/heads/", StringComparison.Ordinal) ? re.Substring(11) : re;
-                string sha = null;
-                string file = Path.Combine(git, re.Replace('/', Path.DirectorySeparatorChar));
-                if (System.IO.File.Exists(file)) sha = System.IO.File.ReadAllText(file).Trim();
-                else if (System.IO.File.Exists(Path.Combine(git, "packed-refs")))
-                    sha = System.IO.File.ReadLines(Path.Combine(git, "packed-refs")).Select(l => l.Split(' ')).FirstOrDefault(p => p.Length == 2 && p[1] == re)?[0];
-                return "branch " + branch + (sha != null && sha.Length >= 7 ? " at " + sha.Substring(0, 7) : "");
-            }
-            catch { return "branch unknown"; }
         }
 
         static string Product()

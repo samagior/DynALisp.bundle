@@ -16,6 +16,7 @@ rvo=0
 csu=1
 ssr=1
 stp=1
+act=1
 lku=0
 lkk=0
 aup=1
