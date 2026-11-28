@@ -38,6 +38,7 @@ using AcApp = Autodesk.AutoCAD.ApplicationServices.Application;
 [assembly: CommandClass(typeof(DynALisp.Ribbon.SkinCommands))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.FileTabCommands))]
 [assembly: CommandClass(typeof(DynALisp.Ribbon.WorkCommands))]
+[assembly: CommandClass(typeof(DynALisp.Ribbon.RecordCommands))]
 
 namespace DynALisp.Ribbon
 {

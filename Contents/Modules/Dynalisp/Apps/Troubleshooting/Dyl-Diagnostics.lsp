@@ -1485,6 +1485,10 @@
       (if (and Dyl:RibbonWork (/= (setq prt (Dyl:RibbonWork "Parts")) "none off"))
         (dg:note (strcat "Parts of DynALisp.Ribbon.dll turned off for a test: " prt " (DynalispRibbonOff; (Dyl:RibbonWork \"On\" \"all\") turns them on)"))
       )
+      ;; A recording running (Pst-DiagnosticsRecord):
+      (if (and Dyl:RibbonRecord (Dyl:RibbonRecord))
+        (dg:note "A recording is running (Pst-DiagnosticsRecord, the red REC badge): DIAG-RECORD again ends it")
+      )
       (dg:sub "Native palettes (Dyl:RibbonSkin \"Native\")")
       (dg:if-lines (Dyl:RibbonSkin "Native"))
       (dg:sub "Web pages (Dyl:RibbonSkin \"Web\")")
@@ -1752,6 +1756,35 @@
   (princ)
 )
 
+;;-------------------------=={ Record }==------------------------;;
+
+;;  A recording in the background, for a bug that comes and goes (Recorder.cs of
+;;  DynALisp.Ribbon.dll): run once, it starts and a red REC badge stays over AutoCAD (the time
+;;  it has recorded, Bug now, Stop) while the user works as usual, for minutes or hours; run
+;;  again (or Stop on the badge), it ends and opens its file of %TEMP%\DynALisp Diagnostics.
+;;  Only the file names of the drawings are written, never their folder (dg:anon).
+(defun dg:record (/ f)
+  (cond
+    ((not Dyl:RibbonRecord)
+     (princ "\nDiagnostics Record: DynALisp.Ribbon.dll is not loaded, nothing can be recorded.")
+    )
+    ((setq f (Dyl:RibbonRecord))
+     (setq f (Dyl:RibbonRecord "Stop"))
+     (princ "\nRecording stopped (the red REC badge is gone). Its file opens: send it, with the times you felt the bug.")
+     (if (and f (findfile f)) (dg:open f))
+    )
+    ((and (setq f (Dyl:RibbonRecord "Start")) (wcmatch f "error:*"))
+     (princ (strcat "\nDiagnostics Record could not start: " f))
+    )
+    (T
+     (princ "\nRECORDING IS ON: the red REC badge at the top right of AutoCAD shows it, with the time it has recorded.")
+     (princ "\n  Work as usual. When the bug shows (zoom that jumps, pan that sticks), click Bug now on the badge.")
+     (princ "\n  To turn it off: Stop on the badge, or DIAG-RECORD again. Closing AutoCAD ends it too.")
+    )
+  )
+  (princ)
+)
+
 ;;-------------------------=={ Witness }==------------------------;;
 
 ;;  The witness files of DynALisp.Core (Installer\Core\Tests\Witness\Witness.lsp, see its
@@ -1808,6 +1841,11 @@
 ;; Counts the events the drawing sends to the reactors between two runs, to find what slows AutoCAD.
 
 (defun c:Pst-DiagnosticsReactorEvents () (dg:events))
+
+;; Diagnostics Record
+;; Records in the background what AutoCAD and DynALisp do, for a bug that comes and goes: a red REC badge shows it is on; run again or Stop to end it.
+
+(defun c:Pst-DiagnosticsRecord () (dg:record))
 
 ;; Diagnostics Interface
 ;; Reports the colors of the interface and the file tabs: what DynALisp changes, when, and what still shows the colors of AutoCAD.

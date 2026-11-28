@@ -169,6 +169,7 @@ namespace DynALisp.Ribbon
             s.Count++;
             s.Ticks += ticks;
             if (ticks > s.Max) s.Max = ticks;
+            if (Recorder.On) Recorder.Step(name, ticks);
             if (!_testing) return;
             if (Ms(ticks) >= 5 && Long.Count < LongMax) Long.Add((at, ticks, name));
             if (Ends.Count < EndsMax) lock (Ends) Ends.Add((at + ticks, name));
