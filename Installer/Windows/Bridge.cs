@@ -91,7 +91,7 @@ namespace DynALisp.Windows
         public void Terminate() { }
 
         // This assembly by its name; DynALisp.Core (the data of the windows that read it,
-        // AsmPresets.cs) the one AutoCAD loaded, else the one beside this DLL:
+        // PresetTabs.cs) the one AutoCAD loaded, else the one beside this DLL:
         static Assembly Resolve(object sender, ResolveEventArgs e)
         {
             var me = typeof(Plugin).Assembly;
