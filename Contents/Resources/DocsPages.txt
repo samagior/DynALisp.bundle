@@ -138,8 +138,8 @@ Dynalisp/Utilities/Dyl-UngroupNext.fr.htm
 Dynalisp/Utilities/Dyl-UngroupNext.htm
 Dynalisp/Utilities/Dyl-ViewportToPaperSpace.fr.htm
 Dynalisp/Utilities/Dyl-ViewportToPaperSpace.htm
-Dynalisp/index.fr.htm	Module Dynalisp	Le module Dynalisp regroupe les programmes maison de DynALisp : outils de dessin et de hachures, normes de calques (création, phases, filtres, transferts), unités de dessin, grilles et échelles, configuration de l'environnement, utilitaires généraux et diagnostics qui trouvent ce qui ne va pas.
-Dynalisp/index.htm	Dynalisp Module	The Dynalisp module groups the in-house DynALisp programs: drawing and hatching tools, layer standards (creation, phases, filters, transfers), drawing units, grids and scales, environment setup, general utilities and the diagnostics that find what goes wrong.
+Dynalisp/index.fr.htm	Module Dynalisp	Les outils de DynALisp : dessin et hachures, calques et phases, unités, grilles et échelles, configuration, utilitaires et diagnostics.
+Dynalisp/index.htm	Dynalisp Module	The tools of DynALisp: draw and hatch, layers and phases, units, grids and scales, setup, utilities and diagnostics.
 LeeMac/General/LM-2DProjection.htm
 LeeMac/General/LM-AddObjectsToBlock.htm
 LeeMac/General/LM-AddPolylineVertex.htm
