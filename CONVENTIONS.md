@@ -35,6 +35,8 @@ Each module is a folder of `Contents\Modules\<Module>` (Dynalisp, LeeMac...), wi
 
 `Contents\Resources` is kept for the core of DynALisp itself: `dynalisp.mnl`, the Startup Suite (`StartupSuite.csv`, `Aliases.csv`), the ribbon (`DynALisp.cuix`, `DynALisp.Ribbon.dll`), the core dialogs and `docs.css`. A file that belongs to a module never goes there.
 
+The **logo** (`Contents\Resources\Icons\dynalisp-logo.svg`, `-white`, `-mono`) and the banner of the README (`dynalisp-banner-readme.svg`) are drawn by `Installer\Logo\BuildLogo.py`, never edited by hand: its orange and teal are the colours of DynALisp, in the docs website and the ribbon icons as well.
+
 The **LeeMac** module is the **sample module**: in its docs index, its pages, the README and the core windows it is described as a sample that showcases what DynALisp does with existing AutoLISP programs (indexed in the Startup Suite, main and child commands, aliases, shared subfunctions, a docs page per program), and the model for a module of one's own. Its programs keep their author and licence.
 
 *Why: a module stays self-contained, and the core holds only what runs every module. A drawing that runs only the tools of Dynalisp never reads the libraries of the other modules, so it opens faster. The user decides which Apps are turned on, and an App turned on is only autoloaded: its functions are defined once one of its commands has run. The LeeMac module shows, with real programs, how any collection of AutoLISP code becomes a DynALisp module. In the docs, what runs every module is kept apart from the Apps, so a page found in a group folder is always the page of a program or of one of its windows, and a window is found under its program.*
